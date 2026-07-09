@@ -1,0 +1,151 @@
+{
+  "approved_at": "2026-07-09T22:19:32+00:00",
+  "assets": {
+    "display": {
+      "filename": "display.png",
+      "sha256": "895f31c2f2ffb05d04436de4677ed508472f21500230bce897c91b9b10fa15b3"
+    },
+    "portrait": {
+      "filename": "portrait.png",
+      "sha256": "ec7d84f54be14e595c9f5a3855f99137e79257f9647124b784546630b52df41c"
+    }
+  },
+  "common_name": "Northern House Wren",
+  "generation": {
+    "attempt": 1,
+    "generated_at": "2026-07-09T22:19:32+00:00",
+    "generator": "Codex subscription / built-in gpt-image-2",
+    "max_attempts": 3,
+    "prompt_version": "field-journal-v2"
+  },
+  "profile": {
+    "behavior": "Actively forages through shrubs, low branches, and ground cover for insects and spiders; frequently holds its tail cocked and delivers a rapid, bubbly song from a perch. Nests in sheltered cavities, including natural holes and nest boxes.",
+    "common_name": "Northern House Wren",
+    "family": "Troglodytidae",
+    "field_marks": [
+      "Very small, compact, plain gray-brown wren with a flat-headed profile.",
+      "Thin, slightly curved bill; upper mandible dark, lower mandible often paler.",
+      "Faint pale eyebrow and pale grayish throat; no strong facial pattern.",
+      "Fine dark barring across the warmer brown wings and tail.",
+      "Short wings and a relatively long, narrow tail, often cocked upward.",
+      "Slim pinkish-gray legs and feet."
+    ],
+    "habitat": "Open woodland, forest edge, scrub, thickets, and brushy clearings with trees or shrubs; also readily uses human-made settings that provide cover and nest cavities. Usually favors structurally varied vegetation rather than dense, closed canopy.",
+    "measurements": {
+      "length": "11\u201313 cm (4.3\u20135.1 in)",
+      "weight": "10\u201312 g (0.3\u20130.4 oz)",
+      "wingspan": "15 cm (5.9 in)"
+    },
+    "palette": [
+      "gray-brown",
+      "warm brown",
+      "buff",
+      "pale gray",
+      "dark brown"
+    ],
+    "scientific_name": "Troglodytes aedon",
+    "sources": [
+      {
+        "title": "Northern House Wren Identification \u2014 Cornell Lab of Ornithology",
+        "url": "https://www.allaboutbirds.org/guide/House_Wren/id"
+      },
+      {
+        "title": "Northern House Wren Life History \u2014 Cornell Lab of Ornithology",
+        "url": "https://www.allaboutbirds.org/guide/Northern_House_Wren/lifehistory"
+      },
+      {
+        "title": "Northern House Wren Field Guide \u2014 Missouri Department of Conservation",
+        "url": "https://mdc.mo.gov/discover-nature/field-guide/northern-house-wren"
+      }
+    ],
+    "taxon_id": 7562
+  },
+  "quality_review": {
+    "anatomy_accuracy": 5,
+    "composition_quality": 5,
+    "findings": [
+      "Species identity is well supported: the plate shows the compact gray-brown Northern House Wren with a faint eyebrow, pale throat, thin slightly curved bill, fine dark barring on warmer brown wings and tail, short wings, cocked tail, and slender pinkish-gray legs.",
+      "Scientific name, family, and all three printed measurements match independent Cornell verification: 11\u201313 cm length, 10\u201312 g weight, and 15 cm wingspan.",
+      "The habitat, cavity-nesting, low-shrub/ground foraging, insect-and-spider diet, and bubbly song claims align with Cornell and Missouri Department of Conservation guidance.",
+      "No place name, ZIP code, coordinates, map, or local-observation detail appears.",
+      "The central bird\u2019s anatomy is coherent: one head, one beak, two wings, two legs, and one tail; the separate wing and head studies are clearly labeled anatomical details rather than additional birds."
+    ],
+    "location_free": true,
+    "passed": true,
+    "species_accuracy": 5,
+    "text_accuracy": 5,
+    "verification_sources": [
+      {
+        "title": "Northern House Wren Identification \u2014 Cornell Lab of Ornithology",
+        "url": "https://www.allaboutbirds.org/guide/House_Wren/id"
+      },
+      {
+        "title": "Northern House Wren Life History \u2014 Cornell Lab of Ornithology",
+        "url": "https://www.allaboutbirds.org/guide/Northern_House_Wren/lifehistory"
+      },
+      {
+        "title": "Northern House Wren \u2014 Missouri Department of Conservation",
+        "url": "https://mdc.mo.gov/discover-nature/field-guide/northern-house-wren"
+      }
+    ]
+  },
+  "references": [
+    {
+      "attribution": "(c) Bill Keim, some rights reserved (CC BY)",
+      "filename": "01-9539278.jpg",
+      "height": 1365,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/9539278/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 7357735,
+      "observer": "keimwj",
+      "photo_id": 9539278,
+      "sha256": "e89be238e36829a105b5c7ed3fc682ee8ddc7015ff869088d59838e9f981294b",
+      "source_url": "https://www.inaturalist.org/observations/7357735",
+      "width": 2048
+    },
+    {
+      "attribution": "no rights reserved",
+      "filename": "02-82605279.jpg",
+      "height": 1153,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/82605279/large.jpg",
+      "license_code": "cc0",
+      "observation_id": 51976174,
+      "observer": "k-simpkins",
+      "photo_id": 82605279,
+      "sha256": "8af92f983f7a50634a55a142eec915bcbb92dcf52609d1e85d4e35a2e078fdc3",
+      "source_url": "https://www.inaturalist.org/observations/51976174",
+      "width": 1613
+    },
+    {
+      "attribution": "(c) Madeleine Claire, some rights reserved (CC BY)",
+      "filename": "03-277992285.jpeg",
+      "height": 2048,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/277992285/large.jpeg",
+      "license_code": "cc-by",
+      "observation_id": 160854164,
+      "observer": "madily",
+      "photo_id": 277992285,
+      "sha256": "21102bf47d48ba0d5c22cd85cc0ab90bae30be8622a57cc8281ba8381e9adb6f",
+      "source_url": "https://www.inaturalist.org/observations/160854164",
+      "width": 1365
+    },
+    {
+      "attribution": "no rights reserved",
+      "filename": "04-196404989.jpg",
+      "height": 1070,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/196404989/large.jpg",
+      "license_code": "cc0",
+      "observation_id": 116356797,
+      "observer": "davidfbird",
+      "photo_id": 196404989,
+      "sha256": "b1ca56e065d86cb6fe06cd086f59862eb5a7c4162e3b8f8553e4ad110f90f1df",
+      "source_url": "https://www.inaturalist.org/observations/116356797",
+      "width": 1420
+    }
+  ],
+  "schema_version": 1,
+  "scientific_name": "Troglodytes aedon",
+  "slug": "northern-house-wren",
+  "status": "approved",
+  "taxon_id": 7562
+}

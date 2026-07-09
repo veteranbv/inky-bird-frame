@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-09T19:05:59+00:00",
+  "generated_at": "2026-07-09T22:29:46+00:00",
   "schema_version": 1,
   "species": [
     {
@@ -23,6 +23,28 @@
       "scientific_name": "Cardinalis cardinalis",
       "slug": "northern-cardinal",
       "taxon_id": 9083
+    },
+    {
+      "approved_at": "2026-07-09T22:19:32+00:00",
+      "common_name": "Northern House Wren",
+      "display_path": "species/7562-northern-house-wren/display.png",
+      "display_sha256": "895f31c2f2ffb05d04436de4677ed508472f21500230bce897c91b9b10fa15b3",
+      "portrait_path": "species/7562-northern-house-wren/portrait.png",
+      "portrait_sha256": "ec7d84f54be14e595c9f5a3855f99137e79257f9647124b784546630b52df41c",
+      "scientific_name": "Troglodytes aedon",
+      "slug": "northern-house-wren",
+      "taxon_id": 7562
+    },
+    {
+      "approved_at": "2026-07-09T22:29:46+00:00",
+      "common_name": "Tree Swallow",
+      "display_path": "species/11935-tree-swallow/display.png",
+      "display_sha256": "3cdf3e15298f66796b0178d24c2d851ea48d1689de97b563fb70fa0d6b4bfcdd",
+      "portrait_path": "species/11935-tree-swallow/portrait.png",
+      "portrait_sha256": "cfe6f542acaa329935aa09917474156b0809b2f83ec2c06ab0f4bef8b33f2037",
+      "scientific_name": "Tachycineta bicolor",
+      "slug": "tree-swallow",
+      "taxon_id": 11935
     }
   ]
 }
