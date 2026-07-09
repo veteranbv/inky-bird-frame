@@ -11,6 +11,7 @@ app_dir=${INKY_BIRD_APP_DIR:-"${HOME}/Services/inky-bird-frame"}
 support_dir=${INKY_BIRD_SUPPORT_DIR:-"${HOME}/Library/Application Support/Inky Bird Frame"}
 config_path=${INKY_BIRD_CONFIG_PATH:-"${support_dir}/config.toml"}
 uv_bin=${UV_BIN:-/opt/homebrew/bin/uv}
+python_version=${INKY_BIRD_PYTHON_VERSION:-3.11}
 log_dir="${support_dir}/logs"
 agents_dir="${HOME}/Library/LaunchAgents"
 serve_plist="${agents_dir}/com.inky-bird-frame.serve.plist"
@@ -32,7 +33,7 @@ for file in pyproject.toml uv.lock README.md LICENSE; do
   install -m 0644 "${root}/${file}" "${app_dir}/${file}"
 done
 
-"${uv_bin}" sync --project "${app_dir}" --locked
+"${uv_bin}" sync --project "${app_dir}" --python "${python_version}" --locked
 
 /usr/bin/python3 - "${serve_plist}" "${cycle_plist}" "${app_dir}" "${config_path}" "${log_dir}" <<'PY'
 import plistlib
