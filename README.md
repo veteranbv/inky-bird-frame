@@ -20,8 +20,9 @@ The frame follows public bird observations within a configurable distance and
 rolling time window. When a new species appears, a controller researches it,
 collects licensed reference photographs, creates a plate through Codex, and
 subjects the result to an independent factual and visual review. Passing plates
-join an immutable, reusable catalog; a lightweight Raspberry Pi rotates that
-catalog on the display.
+join an immutable, reusable catalog. A lightweight Raspberry Pi rotates the
+approved birds that are active in the installation's current observation
+window.
 
 ## How it works
 
@@ -33,13 +34,15 @@ flowchart LR
     D --> E{"Independent AI review"}
     E -->|pass| F["Immutable public catalog"]
     E -->|revise| D
-    F --> G["E-paper display"]
+    F --> G["Active local rotation"]
+    G --> H["E-paper display"]
 ```
 
 The system has two deliberately small roles:
 
-- The **controller** discovers species, downloads references, researches facts,
-  generates and reviews candidates, and serves the approved catalog.
+- The **controller** refreshes observations, builds a private active catalog,
+  downloads references, researches facts, generates and reviews candidates,
+  and serves approved assets.
 - The **display node** downloads approved assets, verifies their checksums, and
   rotates them on the Inky panel. It does no AI or discovery work.
 
@@ -95,9 +98,9 @@ cp config.example.toml config.toml
 uv run inky-bird-frame discover --config config.toml
 ```
 
-Set the private discovery ZIP, radius, rolling window, local paths, and
-controller URL in `config.toml`. The file is ignored by Git and must remain
-private.
+Set the private discovery ZIP, radius, rolling window, local paths, controller
+URL, schedules, display geometry, and rotation policy in `config.toml`. The file
+is ignored by Git and must remain private.
 
 On the Pi, install the hardware extra into the Python environment that contains
 the Pimoroni drivers:
@@ -109,8 +112,11 @@ python -m pip install -e '.[inky]'
 ## Operate
 
 ```bash
-# Generate and AI-review a bounded number of missing species.
-uv run inky-bird-frame controller-cycle --config config.toml
+# Refresh observations and the private active catalog without invoking Codex.
+uv run inky-bird-frame refresh --config config.toml
+
+# Generate and AI-review missing plates from the latest refresh.
+uv run inky-bird-frame generate --config config.toml
 
 # Inspect approved, pending, and failed work.
 uv run inky-bird-frame status --config config.toml
@@ -122,6 +128,10 @@ uv run inky-bird-frame display-cycle --config config.toml
 
 Observation windows are `last-day`, `last-week`, `last-30-days`, and
 `all-time`. Discovery distance is configured in kilometers with `radius_km`.
+Rotation modes are `sequential`, `shuffle`, and `weighted`. Shuffle visits every
+active bird before repeating; weighted selection uses local observation counts
+and avoids displaying the same bird twice in succession when alternatives are
+available.
 Recovery and operator-override commands are documented in
 [`docs/operations.md`](docs/operations.md).
 

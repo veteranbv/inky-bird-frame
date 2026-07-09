@@ -9,12 +9,13 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from urllib.parse import unquote, urlsplit
 
-from .catalog import rebuild_catalog_index
+from .catalog import read_json, rebuild_catalog_index
 from .config import ControllerConfig
 
 
 class CatalogRequestHandler(BaseHTTPRequestHandler):
     catalog_dir: Path
+    active_catalog_path: Path
 
     def _send_json(self, status: HTTPStatus, payload: object) -> None:
         body = json.dumps(payload, sort_keys=True).encode()
@@ -39,14 +40,29 @@ class CatalogRequestHandler(BaseHTTPRequestHandler):
         request_path = urlsplit(self.path).path
         if request_path == "/health":
             entries = rebuild_catalog_index(self.catalog_dir)
+            active_count = 0
+            if self.active_catalog_path.is_file():
+                active = read_json(self.active_catalog_path)
+                if isinstance(active, dict) and isinstance(active.get("species"), list):
+                    active_count = len(active["species"])
             self._send_json(
                 HTTPStatus.OK,
-                {"ok": True, "approved_species": len(entries), "schema_version": 1},
+                {
+                    "ok": True,
+                    "approved_species": len(entries),
+                    "active_species": active_count,
+                    "schema_version": 1,
+                },
             )
             return
         if request_path == "/v1/catalog":
-            rebuild_catalog_index(self.catalog_dir)
-            self._send_file(self.catalog_dir / "index.json")
+            if not self.active_catalog_path.is_file():
+                self._send_json(
+                    HTTPStatus.SERVICE_UNAVAILABLE,
+                    {"ok": False, "error": "active catalog unavailable", "schema_version": 1},
+                )
+                return
+            self._send_file(self.active_catalog_path)
             return
         prefix = "/v1/assets/"
         if request_path.startswith(prefix):
@@ -75,7 +91,10 @@ def serve_catalog(config: ControllerConfig) -> None:
     handler = type(
         "ConfiguredCatalogRequestHandler",
         (CatalogRequestHandler,),
-        {"catalog_dir": config.catalog_dir},
+        {
+            "catalog_dir": config.catalog_dir,
+            "active_catalog_path": config.state_dir / "active-catalog.json",
+        },
     )
     server = ThreadingHTTPServer((config.bind_host, config.port), handler)
     try:

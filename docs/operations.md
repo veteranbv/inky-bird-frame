@@ -10,14 +10,31 @@ copies its final image there. `catalog_dir` and `state_dir` must persist across
 deployments. `codex_path` must point to a Codex CLI whose `login status` reports
 a ChatGPT-authenticated session.
 
-Recommended schedule:
+Schedules are configured in `[schedule]`. Conservative starting values are:
 
 - controller HTTP service: always running;
+- observation refresh: every 15 minutes;
 - generation cycle: every six hours, one candidate per cycle;
 - display cycle: every 30 minutes.
 
-The cycle limit and `max_generation_attempts` keep subscription use bounded.
-Only a candidate that passes the independent AI review is published.
+The refresh command does not invoke Codex. `generation_minutes`,
+`generations_per_cycle`, and `max_generation_attempts` jointly bound
+subscription use. If generation takes longer than its interval, the service
+manager does not start a second copy and the generation lock also rejects
+manual overlap. Only a candidate that passes the independent AI review is
+published.
+
+`rotation_mode` is configured under `[display_node]`:
+
+- `sequential`: stable round-robin order;
+- `shuffle`: every active species once per shuffled round; or
+- `weighted`: random selection weighted by current observation count, without
+  immediate repeats when another species is active.
+
+Display dimensions and orientation live in `[display]`. Controller and display
+state paths remain TOML configuration. Installer bootstrap paths, including the
+TOML path itself, remain environment variables because the installer must find
+the configuration before it can load it.
 
 ## Maintainer deployment on macOS
 
@@ -58,8 +75,9 @@ generation quota on it.
 
 ## Failure recovery
 
-- Network or source failure: inspect `var/controller/runs/` and the JSON command
-  result. The taxon remains eligible for the next scheduled cycle.
+- Network or source failure: inspect the refresh or generation log and JSON
+  result. Generation refuses a discovery snapshot older than twice the
+  configured refresh interval.
 - Unsuitable licensed references: inspect the reference manifest and source
   pages. Retry only after deciding the source set can be improved.
 - Generated image or text defect: the controller feeds review findings into a

@@ -30,9 +30,10 @@ class CatalogEntry:
     display_path: str
     display_sha256: str
     approved_at: str
+    observation_count: int | None = None
 
     def as_dict(self) -> dict[str, object]:
-        return {
+        value: dict[str, object] = {
             "taxon_id": self.taxon_id,
             "common_name": self.common_name,
             "scientific_name": self.scientific_name,
@@ -43,6 +44,9 @@ class CatalogEntry:
             "display_sha256": self.display_sha256,
             "approved_at": self.approved_at,
         }
+        if self.observation_count is not None:
+            value["observation_count"] = self.observation_count
+        return value
 
 
 def utc_now() -> str:

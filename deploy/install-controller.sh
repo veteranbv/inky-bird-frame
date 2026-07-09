@@ -15,7 +15,9 @@ python_version=${INKY_BIRD_PYTHON_VERSION:-3.11}
 log_dir="${support_dir}/logs"
 agents_dir="${HOME}/Library/LaunchAgents"
 serve_plist="${agents_dir}/com.inky-bird-frame.serve.plist"
-cycle_plist="${agents_dir}/com.inky-bird-frame.controller-cycle.plist"
+refresh_plist="${agents_dir}/com.inky-bird-frame.refresh.plist"
+generation_plist="${agents_dir}/com.inky-bird-frame.generate.plist"
+legacy_cycle_plist="${agents_dir}/com.inky-bird-frame.controller-cycle.plist"
 
 if [ ! -f "${config_path}" ]; then
   echo "Controller configuration is missing: ${config_path}" >&2
@@ -35,13 +37,20 @@ done
 
 "${uv_bin}" sync --project "${app_dir}" --python "${python_version}" --locked
 
-/usr/bin/python3 - "${serve_plist}" "${cycle_plist}" "${app_dir}" "${config_path}" "${log_dir}" <<'PY'
+"${app_dir}/.venv/bin/python" - \
+  "${serve_plist}" "${refresh_plist}" "${generation_plist}" \
+  "${app_dir}" "${config_path}" "${log_dir}" <<'PY'
 import plistlib
 import sys
 from pathlib import Path
 
-serve_path, cycle_path, app_dir, config_path, log_dir = map(Path, sys.argv[1:])
+from inky_bird_frame.config import load_config
+
+serve_path, refresh_path, generation_path, app_dir, config_path, log_dir = map(
+    Path, sys.argv[1:]
+)
 executable = app_dir / ".venv/bin/inky-bird-frame"
+schedule = load_config(config_path).schedule
 
 common = {
     "WorkingDirectory": str(app_dir),
@@ -58,15 +67,28 @@ serve = {
     "StandardOutPath": str(log_dir / "serve.log"),
     "StandardErrorPath": str(log_dir / "serve.error.log"),
 }
-cycle = {
+refresh = {
     **common,
-    "Label": "com.inky-bird-frame.controller-cycle",
-    "ProgramArguments": [str(executable), "controller-cycle", "--config", str(config_path)],
-    "StartInterval": 21600,
-    "StandardOutPath": str(log_dir / "controller-cycle.log"),
-    "StandardErrorPath": str(log_dir / "controller-cycle.error.log"),
+    "Label": "com.inky-bird-frame.refresh",
+    "ProgramArguments": [str(executable), "refresh", "--config", str(config_path)],
+    "RunAtLoad": True,
+    "StartInterval": schedule.refresh_minutes * 60,
+    "StandardOutPath": str(log_dir / "refresh.log"),
+    "StandardErrorPath": str(log_dir / "refresh.error.log"),
 }
-for path, payload in ((serve_path, serve), (cycle_path, cycle)):
+generation = {
+    **common,
+    "Label": "com.inky-bird-frame.generate",
+    "ProgramArguments": [str(executable), "generate", "--config", str(config_path)],
+    "StartInterval": schedule.generation_minutes * 60,
+    "StandardOutPath": str(log_dir / "generate.log"),
+    "StandardErrorPath": str(log_dir / "generate.error.log"),
+}
+for path, payload in (
+    (serve_path, serve),
+    (refresh_path, refresh),
+    (generation_path, generation),
+):
     with path.open("wb") as handle:
         plistlib.dump(payload, handle, sort_keys=True)
 PY
@@ -74,10 +96,15 @@ PY
 uid=$(id -u)
 launchctl bootout "gui/${uid}/com.inky-bird-frame.serve" 2>/dev/null || true
 launchctl bootout "gui/${uid}/com.inky-bird-frame.controller-cycle" 2>/dev/null || true
+launchctl bootout "gui/${uid}/com.inky-bird-frame.refresh" 2>/dev/null || true
+launchctl bootout "gui/${uid}/com.inky-bird-frame.generate" 2>/dev/null || true
+rm -f "${legacy_cycle_plist}"
 launchctl bootstrap "gui/${uid}" "${serve_plist}"
-launchctl bootstrap "gui/${uid}" "${cycle_plist}"
+launchctl bootstrap "gui/${uid}" "${refresh_plist}"
+launchctl bootstrap "gui/${uid}" "${generation_plist}"
 launchctl print "gui/${uid}/com.inky-bird-frame.serve" >/dev/null
-launchctl print "gui/${uid}/com.inky-bird-frame.controller-cycle" >/dev/null
+launchctl print "gui/${uid}/com.inky-bird-frame.refresh" >/dev/null
+launchctl print "gui/${uid}/com.inky-bird-frame.generate" >/dev/null
 
 echo "Controller installed from ${root} into ${app_dir}."
 echo "Configuration: ${config_path}"
