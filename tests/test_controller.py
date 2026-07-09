@@ -131,6 +131,44 @@ class ControllerTests(unittest.TestCase):
         self.assertNotIn("zip_code", active)
         self.assertEqual(len(snapshot["species"]), 2)
 
+    def test_refresh_preserves_approved_catalog_order(self) -> None:
+        first = BirdSpecies(1, "Alpha Bird", "Alpha avis", 2, "iNaturalist")
+        second = BirdSpecies(2, "Beta Bird", "Beta avis", 9, "iNaturalist")
+        location = ZipLocation("12345", "Exampleville", "XY", 1.0, 2.0)
+        approved = [
+            CatalogEntry(
+                species.taxon_id,
+                species.common_name,
+                species.scientific_name,
+                species.common_name.lower().replace(" ", "-"),
+                f"species/{species.taxon_id}/portrait.png",
+                "a" * 64,
+                f"species/{species.taxon_id}/display.png",
+                "b" * 64,
+                "2026-07-09T00:00:00+00:00",
+            )
+            for species in (first, second)
+        ]
+        with TemporaryDirectory() as temporary:
+            config_path = Path(temporary) / "config.toml"
+            config_path.write_text(CONFIG)
+            config = load_config(config_path)
+            with (
+                patch(
+                    "inky_bird_frame.controller.discover_species",
+                    return_value=(location, [second, first]),
+                ),
+                patch(
+                    "inky_bird_frame.controller.rebuild_catalog_index",
+                    return_value=approved,
+                ),
+            ):
+                run_refresh_cycle(config)
+            active = json.loads((config.controller.state_dir / "active-catalog.json").read_text())
+
+        self.assertEqual([item["taxon_id"] for item in active["species"]], [1, 2])
+        self.assertEqual([item["observation_count"] for item in active["species"]], [2, 9])
+
     def test_transient_source_failure_remains_eligible(self) -> None:
         species = BirdSpecies(9083, "Northern Cardinal", "Cardinalis cardinalis", 2, "test")
         location = ZipLocation("12345", "Exampleville", "XY", 1.0, 2.0)

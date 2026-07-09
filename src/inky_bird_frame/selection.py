@@ -49,7 +49,9 @@ def select_catalog_entry(
 
     remaining = [taxon_id for taxon_id in shuffle_remaining if taxon_id in by_taxon]
     if not remaining:
-        remaining = [entry.taxon_id for entry in candidates]
+        remaining = list(by_taxon)
         random_source.shuffle(remaining)
+        if len(remaining) > 1 and remaining[0] == last_taxon_id:
+            remaining[0], remaining[1] = remaining[1], remaining[0]
     selected = by_taxon[remaining.pop(0)]
     return selected, next_index, remaining

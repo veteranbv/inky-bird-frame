@@ -62,6 +62,30 @@ class SelectionTests(unittest.TestCase):
         self.assertEqual(set(selected_ids), {1, 2, 3})
         self.assertEqual(remaining, [])
 
+    def test_shuffle_refill_includes_every_entry_without_immediate_repeat(self) -> None:
+        entries = [catalog_entry(1, 10), catalog_entry(2, 5), catalog_entry(3, 1)]
+        rng = random.Random(7)
+        remaining: list[int] = []
+        selected_ids: list[int] = []
+        last_taxon_id: int | None = None
+        for _ in range(len(entries) * 2):
+            selected, _, remaining = select_catalog_entry(
+                entries,
+                RotationMode.SHUFFLE,
+                next_index=0,
+                last_taxon_id=last_taxon_id,
+                shuffle_remaining=remaining,
+                rng=rng,
+            )
+            selected_ids.append(selected.taxon_id)
+            last_taxon_id = selected.taxon_id
+
+        self.assertEqual(set(selected_ids[:3]), {1, 2, 3})
+        self.assertEqual(set(selected_ids[3:]), {1, 2, 3})
+        self.assertTrue(
+            all(left != right for left, right in zip(selected_ids, selected_ids[1:], strict=False))
+        )
+
     def test_weighted_selection_uses_observation_counts_and_avoids_repeat(self) -> None:
         entries = [catalog_entry(1, 10), catalog_entry(2, 3)]
         selected, _, _ = select_catalog_entry(

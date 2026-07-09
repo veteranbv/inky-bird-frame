@@ -62,7 +62,7 @@ class CatalogRequestHandler(BaseHTTPRequestHandler):
                     {"ok": False, "error": "active catalog unavailable", "schema_version": 1},
                 )
                 return
-            self._send_file(self.active_catalog_path)
+            self._send_json(HTTPStatus.OK, read_json(self.active_catalog_path))
             return
         prefix = "/v1/assets/"
         if request_path.startswith(prefix):

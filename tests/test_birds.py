@@ -43,6 +43,9 @@ class InaturalistParsingTests(unittest.TestCase):
         with self.assertRaises(DataSourceError):
             parse_inaturalist_species_counts({"results": [{"taxon": {}}]})
 
+    def test_parse_species_counts_accepts_an_empty_result_set(self) -> None:
+        self.assertEqual(parse_inaturalist_species_counts({"results": []}), [])
+
     def test_date_range_for_window(self) -> None:
         today = date(2026, 7, 9)
 

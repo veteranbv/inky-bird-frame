@@ -94,13 +94,12 @@ def _species_payload(species: BirdSpecies) -> dict[str, object]:
 
 
 def _write_active_catalog(config: AppConfig, species_list: list[BirdSpecies]) -> int:
-    approved = {
-        entry.taxon_id: entry for entry in rebuild_catalog_index(config.controller.catalog_dir)
-    }
+    approved = rebuild_catalog_index(config.controller.catalog_dir)
+    observed = {species.taxon_id: species for species in species_list}
     active: list[dict[str, object]] = []
-    for species in species_list:
-        entry = approved.get(species.taxon_id)
-        if entry is None:
+    for entry in approved:
+        species = observed.get(entry.taxon_id)
+        if species is None:
             continue
         value = entry.as_dict()
         value["observation_count"] = species.observation_count

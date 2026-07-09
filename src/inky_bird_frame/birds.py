@@ -79,6 +79,8 @@ def parse_inaturalist_species_counts(payload: object) -> list[BirdSpecies]:
     results = payload.get("results")
     if not isinstance(results, list):
         raise DataSourceError("iNaturalist response did not include a results list")
+    if not results:
+        return []
 
     species: list[BirdSpecies] = []
     for item in results:
