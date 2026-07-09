@@ -11,6 +11,7 @@ from inky_bird_frame.catalog import candidate_directory, write_candidate_manifes
 from inky_bird_frame.config import load_config
 from inky_bird_frame.controller import generate_candidate, run_controller_cycle
 from inky_bird_frame.errors import (
+    CatalogError,
     DataSourceError,
     GenerationError,
     InsufficientReferencesError,
@@ -288,6 +289,28 @@ class ControllerTests(unittest.TestCase):
         if isinstance(first_failure, dict):
             self.assertEqual(first_failure["error"], "profile failed")
             self.assertFalse(first_failure["terminal"])
+
+    def test_catalog_failure_aborts_cycle_without_terminal_species_state(self) -> None:
+        species = BirdSpecies(9083, "Northern Cardinal", "Cardinalis cardinalis", 2, "test")
+        location = ZipLocation("12345", "Exampleville", "XY", 1.0, 2.0)
+        with TemporaryDirectory() as temporary:
+            config_path = Path(temporary) / "config.toml"
+            config_path.write_text(CONFIG)
+            config = load_config(config_path)
+            with (
+                patch(
+                    "inky_bird_frame.controller.discover_species",
+                    return_value=(location, [species]),
+                ),
+                patch("inky_bird_frame.controller.generate_candidate") as generate,
+            ):
+                generate.side_effect = CatalogError("cached references are invalid")
+                with self.assertRaisesRegex(CatalogError, "cached references are invalid"):
+                    run_controller_cycle(config)
+
+            failures = list((config.controller.state_dir / "failed").glob("9083-*"))
+
+        self.assertEqual(failures, [])
 
     def test_exhausted_quality_review_becomes_terminal(self) -> None:
         species = BirdSpecies(9083, "Northern Cardinal", "Cardinalis cardinalis", 2, "test")

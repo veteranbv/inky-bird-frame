@@ -95,7 +95,7 @@ def _path(value: str, base_dir: Path) -> Path:
 
 def _executable_path(value: str, base_dir: Path) -> Path:
     path = Path(value).expanduser()
-    if path.is_absolute() or len(path.parts) > 1:
+    if path.is_absolute() or value.startswith("./") or len(path.parts) > 1:
         return _path(value, base_dir)
     resolved = which(value)
     return Path(resolved) if resolved is not None else path

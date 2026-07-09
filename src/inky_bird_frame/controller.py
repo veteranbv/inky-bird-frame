@@ -389,6 +389,8 @@ def run_controller_cycle(config: AppConfig) -> dict[str, object]:
                         "terminal": True,
                     }
                 )
+            except CatalogError:
+                raise
             except InkyBirdFrameError as exc:
                 failures.append(
                     {

@@ -69,6 +69,20 @@ class ConfigTests(unittest.TestCase):
 
         self.assertEqual(config.controller.codex_path, Path("/opt/local/bin/codex"))
 
+    def test_resolves_explicit_relative_codex_path_from_config_directory(self) -> None:
+        with TemporaryDirectory() as temporary:
+            path = Path(temporary) / "config.toml"
+            path.write_text(
+                CONFIG.replace(
+                    'codex_path = "/Applications/Codex.app/Contents/Resources/codex"',
+                    'codex_path = "./codex"',
+                )
+            )
+
+            config = load_config(path)
+
+        self.assertEqual(config.controller.codex_path, (Path(temporary) / "codex").resolve())
+
 
 if __name__ == "__main__":
     unittest.main()
