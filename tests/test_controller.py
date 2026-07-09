@@ -12,6 +12,7 @@ from inky_bird_frame.catalog import CatalogEntry, candidate_directory, write_can
 from inky_bird_frame.config import load_config
 from inky_bird_frame.controller import (
     DiscoverySnapshot,
+    exclusive_refresh_lock,
     generate_candidate,
     run_controller_cycle,
     run_generation_cycle,
@@ -69,6 +70,20 @@ state_dir = "display"
 
 
 class ControllerTests(unittest.TestCase):
+    def test_overlapping_refresh_is_rejected_before_discovery(self) -> None:
+        with TemporaryDirectory() as temporary:
+            config_path = Path(temporary) / "config.toml"
+            config_path.write_text(CONFIG)
+            config = load_config(config_path)
+            with (
+                exclusive_refresh_lock(config.controller.state_dir),
+                patch("inky_bird_frame.controller.discover_species") as discover,
+                self.assertRaisesRegex(DataSourceError, "already running"),
+            ):
+                run_refresh_cycle(config)
+
+        discover.assert_not_called()
+
     def test_generation_recovers_pending_before_requiring_discovery(self) -> None:
         with TemporaryDirectory() as temporary:
             config_path = Path(temporary) / "config.toml"
