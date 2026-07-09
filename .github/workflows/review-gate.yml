@@ -1,0 +1,107 @@
+name: review-gate
+
+# Bridges Codex review comments into a required CheckRun. Codex posts findings
+# as PR review comments (not as CheckRuns), so the standard
+# `required_status_checks` mechanism cannot gate on them directly. This
+# workflow runs once per pushed head SHA and fails when Codex has flagged a
+# blocking-severity finding. Codex review submissions are handled by
+# `review-gate-retrigger.yml`, which re-runs this workflow's gate job IN PLACE
+# (a new attempt of the same check suite) rather than starting a parallel run.
+#
+# Severity mapping (see `.github/scripts/review_gate.py`):
+#   Codex  `P0 Badge` / `P1 Badge`  -> blocking
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+  # Deliberately NOT `pull_request_review`: a review-event run creates a
+  # second check suite with a same-named check run on the same head SHA, and
+  # required-status evaluation demands EVERY suite's run pass. Combined with
+  # cancel-in-progress this left cancelled runs blocking auto-merge until a
+  # manual `gh run rerun` (PRs #76/#79/#80/#81). Review events now re-run the
+  # gate job via `review-gate-retrigger.yml` instead.
+  #
+  # Note: GitHub does NOT expose `pull_request_review_thread` as a workflow
+  # trigger (only as a webhook), so clicking "Resolve conversation" doesn't
+  # auto-fire this gate. To re-evaluate after resolving threads, push any
+  # commit (`git commit --allow-empty -m "rerun" && git push`).
+
+# One run per head SHA, never cancelled: a cancelled conclusion on the
+# current head blocks required-status evaluation (the auto-merge stall this
+# group previously caused). Runs for superseded heads exit early on their
+# own — review_gate.py returns success as soon as it sees the PR head move,
+# so CI minutes stay bounded without cancel-in-progress.
+concurrency:
+  group: review-gate-${{ github.event.pull_request.number }}-${{ github.event.pull_request.head.sha }}
+  cancel-in-progress: false
+
+permissions:
+  # Audited against every endpoint review_gate.py touches:
+  #   /repos/{r}/pulls/{n}             -> pull-requests: read
+  #   /repos/{r}/pulls/{n}/reviews     -> pull-requests: read
+  #   /repos/{r}/pulls/{n}/comments    -> pull-requests: read
+  #   /repos/{r}/issues/{n}/reactions  -> issues: read
+  #   /repos/{r}/commits/{sha}         -> contents: read
+  #   /repos/{r}/commits/{sha}/check-runs -> checks: read
+  checks: read
+  contents: read
+  issues: read
+  pull-requests: read
+
+jobs:
+  # Codex review is explicitly requested on EVERY qualifying event — opened
+  # included. The previous design trusted Codex's auto-review on `opened` and
+  # only nudged on `synchronize`; when the auto-review silently never arrived
+  # (PR #117), the gate failed closed after its engagement wait and nothing ever
+  # re-summoned Codex — a deadlock only a human comment could break. An
+  # explicit request on open is deterministic; if it occasionally doubles up
+  # with the auto-review, the gate simply reads the newest review.
+  request-codex-review:
+    # Skip on fork PRs — their GITHUB_TOKEN is read-only, so `gh pr comment`
+    # would fail. Fork PRs don't gain auto-review acceleration; this is a
+    # known and acceptable tradeoff for security.
+    if: >-
+      github.event_name == 'pull_request'
+      && contains(fromJSON('["opened", "synchronize", "reopened"]'), github.event.action)
+      && github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+    steps:
+      - name: Ask Codex to review the new head
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          PR_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          REPO: ${{ github.repository }}
+        run: |
+          BODY="@codex review
+
+          head: ${PR_HEAD_SHA}"
+          gh pr comment "$PR_NUMBER" --repo "$REPO" --body "$BODY"
+
+  review-gate:
+    runs-on: ubuntu-latest
+    # Explicit job-level permissions (mirrors the workflow-level audit) so
+    # static review tools can see at a glance that this job has what it needs.
+    permissions:
+      checks: read
+      contents: read
+      issues: read
+      pull-requests: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+
+      - name: Set up Python
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
+        with:
+          python-version: "3.12"
+
+      - name: Run review gate
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          PR_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: python .github/scripts/review_gate.py

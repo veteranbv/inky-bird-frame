@@ -1,0 +1,130 @@
+name: review-gate-retrigger
+
+# Re-evaluates the required `review-gate` check when Codex submits, edits, or
+# dismisses a review. Instead of running the gate directly (which
+# would create a second check suite on the head SHA — any non-success
+# conclusion there blocks required-status evaluation; see review-gate.yml),
+# this re-runs the existing pull_request-event gate job IN PLACE. A re-run is
+# a new attempt of the same check suite, so it replaces the stale conclusion
+# rather than competing with it. This is the automated form of the manual
+# `gh run rerun` that previously unblocked stalled auto-merges.
+#
+# This workflow is NOT a required check, so its own conclusions (including
+# cancellations from the concurrency group below) can never block a merge.
+
+on:
+  pull_request_review:
+    types: [submitted, edited, dismissed]
+  issue_comment:
+    types: [created, edited]
+
+# Later review events supersede earlier ones: the gate re-run fetches live PR
+# state, so the surviving retrigger's re-run covers every review up to that
+# point. Cancelled retrigger runs are harmless (not a required check).
+concurrency:
+  group: review-gate-retrigger-${{ github.event.pull_request.number || github.event.issue.number }}
+  cancel-in-progress: true
+
+permissions:
+  actions: write
+  pull-requests: read
+
+jobs:
+  retrigger:
+    # Only bot reviews and Codex clean issue comments can change the gate's
+    # verdict. Skip fork PRs too: their GITHUB_TOKEN is read-only, so the
+    # re-run API call would fail.
+    if: >-
+      (
+        github.event_name == 'pull_request_review'
+        && github.event.pull_request.head.repo.full_name == github.repository
+        && github.event.review.user.login == 'chatgpt-codex-connector[bot]'
+      )
+      || (
+        github.event_name == 'issue_comment'
+        && github.event.issue.pull_request
+        && github.event.comment.user.login == 'chatgpt-codex-connector[bot]'
+        && contains(github.event.comment.body, 'Codex Review:')
+      )
+    runs-on: ubuntu-latest
+    steps:
+      - name: Re-run the review-gate job for this head SHA
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          PR_NUMBER: ${{ github.event.pull_request.number || github.event.issue.number }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        # Decision table for the gate run's status at event time:
+        #   completed   -> re-run: its verdict may predate this review.
+        #   queued      -> skip: it hasn't fetched PR state yet, so its run
+        #                  will include this review.
+        #   in_progress -> ambiguous. If it's mid-poll, every later fetch
+        #                  includes this review (the gate evaluates live
+        #                  state), so a re-run is redundant. If it's already
+        #                  past its final fetch, it finishes within seconds.
+        #                  A short grace poll separates the two: completion
+        #                  within ~2 min means it may have raced -> re-run;
+        #                  still running after that means mid-poll -> skip.
+        run: |
+          set -euo pipefail
+
+          if [ "${GITHUB_EVENT_NAME}" = "issue_comment" ]; then
+            pr_json=$(gh api "repos/${REPO}/pulls/${PR_NUMBER}")
+            head_repo=$(jq -r '.head.repo.full_name' <<<"${pr_json}")
+            if [ "${head_repo}" != "${REPO}" ]; then
+              echo "Skipping fork PR from ${head_repo}."
+              exit 0
+            fi
+            HEAD_SHA=$(jq -r '.head.sha' <<<"${pr_json}")
+          fi
+
+          deadline=$(( SECONDS + 150 ))
+          while :; do
+            # Transient API failures (e.g. the 2026-06-10 GraphQL 401 blip)
+            # must not kill the retrigger via set -e; retry within the grace
+            # period and fail visibly only if the API never recovers.
+            if ! run_json=$(gh api \
+              "repos/${REPO}/actions/workflows/review-gate.yml/runs?head_sha=${HEAD_SHA}&event=pull_request&per_page=1" \
+              --jq '.workflow_runs[0]'); then
+              if [ "${SECONDS}" -ge "${deadline}" ]; then
+                echo "Could not list review-gate runs within the grace period." >&2
+                exit 1
+              fi
+              echo "API error listing review-gate runs; rechecking in 15s..."
+              sleep 15
+              continue
+            fi
+            if [ -z "${run_json}" ] || [ "${run_json}" = "null" ]; then
+              echo "No review-gate run exists for ${HEAD_SHA}; nothing to retrigger."
+              exit 0
+            fi
+            run_id=$(jq -r '.id' <<<"${run_json}")
+            run_status=$(jq -r '.status' <<<"${run_json}")
+            case "${run_status}" in
+              completed)
+                break
+                ;;
+              queued|waiting|pending|requested)
+                echo "Run ${run_id} is ${run_status}; it will see this review once it starts."
+                exit 0
+                ;;
+            esac
+            if [ "${SECONDS}" -ge "${deadline}" ]; then
+              echo "Run ${run_id} still in progress after grace period; its poll loop sees this review."
+              exit 0
+            fi
+            echo "Run ${run_id} is ${run_status}; rechecking in 15s..."
+            sleep 15
+          done
+
+          # Re-run only the gate job. A full-run re-run would also repeat
+          # request-codex-review, posting another "@codex review" comment and
+          # looping forever: review -> retrigger -> comment -> review -> ...
+          job_id=$(gh api "repos/${REPO}/actions/runs/${run_id}/jobs?filter=latest&per_page=100" \
+            --jq '[.jobs[] | select(.name == "review-gate")][0].id')
+          if [ -z "${job_id}" ] || [ "${job_id}" = "null" ]; then
+            echo "review-gate job not found in run ${run_id}" >&2
+            exit 1
+          fi
+          echo "Re-running review-gate job ${job_id} (run ${run_id}) to evaluate this review."
+          gh api -X POST "repos/${REPO}/actions/jobs/${job_id}/rerun"

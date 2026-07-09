@@ -1,0 +1,35 @@
+name: deploy
+
+on:
+  workflow_dispatch:
+    inputs:
+      deploy_display_node:
+        description: Deploy and refresh the display node
+        required: true
+        type: boolean
+        default: true
+
+permissions:
+  contents: read
+
+concurrency:
+  group: production-deploy
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    if: github.actor == 'veteranbv' && github.ref == 'refs/heads/main'
+    runs-on: [self-hosted, macOS, ARM64, inky-bird-controller]
+    timeout-minutes: 30
+    steps:
+      - name: Checkout trusted main revision
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+        with:
+          persist-credentials: false
+
+      - name: Install controller revision and services
+        run: ./deploy/install-controller.sh
+
+      - name: Deploy display node
+        if: inputs.deploy_display_node
+        run: ./deploy/install-display-node.sh
