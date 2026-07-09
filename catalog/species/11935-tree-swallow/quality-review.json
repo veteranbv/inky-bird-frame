@@ -1,0 +1,24 @@
+{
+  "anatomy_accuracy": 4,
+  "composition_quality": 5,
+  "findings": [
+    "Independent verification supports the identification as Tree Swallow (Tachycineta bicolor), family Hirundinidae. The plate\u2019s listed length (12\u201315 cm), wingspan (30\u201335 cm), and weight (16\u201325 g) exactly match Cornell Lab\u2019s published ranges.",
+    "The visible claims on adult plumage, thin dark eye mask, very short flat black bill, long pointed wings with blackish flight feathers, and white underparts are supported by Cornell and align with the supplied field-reference photos. The habitat, aerial-insectivore behavior, flocking/communal-roost behavior, and cavity/nest-box nesting claims are also supported.",
+    "The illustration depicts one head, one beak, two wings, two legs, and one tail. The folded-wing and tail treatment are slightly stylized, and the feet appear darker/larger than in the references, but these are not material identification errors.",
+    "No place name, ZIP code, coordinates, map, or local-observation detail appears on the candidate."
+  ],
+  "location_free": true,
+  "passed": true,
+  "species_accuracy": 4,
+  "text_accuracy": 5,
+  "verification_sources": [
+    {
+      "title": "Tree Swallow Identification \u2014 Cornell Lab of Ornithology",
+      "url": "https://www.allaboutbirds.org/guide/Tree_Swallow/id"
+    },
+    {
+      "title": "Tachycineta bicolor \u2014 Animal Diversity Web, University of Michigan",
+      "url": "https://animaldiversity.org/accounts/Tachycineta_bicolor/"
+    }
+  ]
+}

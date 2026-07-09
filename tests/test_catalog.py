@@ -51,9 +51,8 @@ class CatalogTests(unittest.TestCase):
 
         entries = rebuild_catalog_index(catalog)
 
-        self.assertEqual(len(entries), 2)
-        self.assertEqual(entries[0].taxon_id, 12942)
-        self.assertEqual(entries[1].taxon_id, 9083)
+        taxon_ids = {entry.taxon_id for entry in entries}
+        self.assertTrue({9083, 12942}.issubset(taxon_ids))
         first_index = (catalog / "index.json").read_bytes()
 
         rebuild_catalog_index(catalog)

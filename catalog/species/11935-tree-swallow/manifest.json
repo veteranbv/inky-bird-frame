@@ -1,0 +1,146 @@
+{
+  "approved_at": "2026-07-09T22:29:46+00:00",
+  "assets": {
+    "display": {
+      "filename": "display.png",
+      "sha256": "3cdf3e15298f66796b0178d24c2d851ea48d1689de97b563fb70fa0d6b4bfcdd"
+    },
+    "portrait": {
+      "filename": "portrait.png",
+      "sha256": "cfe6f542acaa329935aa09917474156b0809b2f83ec2c06ab0f4bef8b33f2037"
+    }
+  },
+  "common_name": "Tree Swallow",
+  "generation": {
+    "attempt": 3,
+    "generated_at": "2026-07-09T22:29:46+00:00",
+    "generator": "Codex subscription / built-in gpt-image-2",
+    "max_attempts": 3,
+    "prompt_version": "field-journal-v2"
+  },
+  "profile": {
+    "behavior": "An agile aerial insectivore, catching small flying insects on the wing. Often forages in flocks; outside the breeding season it may gather in large communal roosts. Nests in cavities or nest boxes.",
+    "common_name": "Tree Swallow",
+    "family": "Hirundinidae",
+    "field_marks": [
+      "Iridescent blue-green head and upperparts in adults",
+      "Clean white throat, breast, and belly",
+      "Thin dark mask through the eye",
+      "Very short, flat black bill",
+      "Long, pointed wings with blackish flight feathers",
+      "Short tail, squared to slightly notched"
+    ],
+    "habitat": "Open country near water, including fields, marshes, shorelines, ponds, and wooded swamps; requires cavities or nest boxes for nesting.",
+    "measurements": {
+      "length": "12\u201315 cm (4.7\u20135.9 in)",
+      "weight": "16\u201325 g (0.6\u20130.9 oz)",
+      "wingspan": "30\u201335 cm (11.8\u201313.8 in)"
+    },
+    "palette": [
+      "iridescent blue-green",
+      "white",
+      "blackish charcoal",
+      "soft gray",
+      "brownish gray"
+    ],
+    "scientific_name": "Tachycineta bicolor",
+    "sources": [
+      {
+        "title": "Tree Swallow Identification \u2014 Cornell Lab of Ornithology",
+        "url": "https://www.allaboutbirds.org/guide/Tree_Swallow/id"
+      },
+      {
+        "title": "Tree Swallow Life History \u2014 Cornell Lab of Ornithology",
+        "url": "https://www.allaboutbirds.org/guide/Tree_Swallow/lifehistory"
+      },
+      {
+        "title": "Tachycineta bicolor \u2014 Animal Diversity Web, University of Michigan",
+        "url": "https://animaldiversity.org/accounts/Tachycineta_bicolor/"
+      }
+    ],
+    "taxon_id": 11935
+  },
+  "quality_review": {
+    "anatomy_accuracy": 4,
+    "composition_quality": 5,
+    "findings": [
+      "Independent verification supports the identification as Tree Swallow (Tachycineta bicolor), family Hirundinidae. The plate\u2019s listed length (12\u201315 cm), wingspan (30\u201335 cm), and weight (16\u201325 g) exactly match Cornell Lab\u2019s published ranges.",
+      "The visible claims on adult plumage, thin dark eye mask, very short flat black bill, long pointed wings with blackish flight feathers, and white underparts are supported by Cornell and align with the supplied field-reference photos. The habitat, aerial-insectivore behavior, flocking/communal-roost behavior, and cavity/nest-box nesting claims are also supported.",
+      "The illustration depicts one head, one beak, two wings, two legs, and one tail. The folded-wing and tail treatment are slightly stylized, and the feet appear darker/larger than in the references, but these are not material identification errors.",
+      "No place name, ZIP code, coordinates, map, or local-observation detail appears on the candidate."
+    ],
+    "location_free": true,
+    "passed": true,
+    "species_accuracy": 4,
+    "text_accuracy": 5,
+    "verification_sources": [
+      {
+        "title": "Tree Swallow Identification \u2014 Cornell Lab of Ornithology",
+        "url": "https://www.allaboutbirds.org/guide/Tree_Swallow/id"
+      },
+      {
+        "title": "Tachycineta bicolor \u2014 Animal Diversity Web, University of Michigan",
+        "url": "https://animaldiversity.org/accounts/Tachycineta_bicolor/"
+      }
+    ]
+  },
+  "references": [
+    {
+      "attribution": "no rights reserved",
+      "filename": "01-196885341.jpeg",
+      "height": 1536,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/196885341/large.jpeg",
+      "license_code": "cc0",
+      "observation_id": 116627747,
+      "observer": "carterdorscht",
+      "photo_id": 196885341,
+      "sha256": "cea079ec1dfab062159a79b64556b522d1fa721d3daed588832c893c4e69b75f",
+      "source_url": "https://www.inaturalist.org/observations/116627747",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) Bill Levine, some rights reserved (CC BY)",
+      "filename": "02-330274968.jpeg",
+      "height": 1133,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/330274968/large.jpeg",
+      "license_code": "cc-by",
+      "observation_id": 188667247,
+      "observer": "blevine",
+      "photo_id": 330274968,
+      "sha256": "58477532cdf874363b7792060e91b4a2ef1c72c9dd09a13f5c30945bfa605354",
+      "source_url": "https://www.inaturalist.org/observations/188667247",
+      "width": 1699
+    },
+    {
+      "attribution": "(c) Matt Felperin, some rights reserved (CC BY)",
+      "filename": "03-133783442.jpg",
+      "height": 1366,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/133783442/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 81555355,
+      "observer": "mattyfelp",
+      "photo_id": 133783442,
+      "sha256": "92acc750129362b0651904b827ee950581ce07ebe6b67f7f530b82717083046a",
+      "source_url": "https://www.inaturalist.org/observations/81555355",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) Kat B, some rights reserved (CC BY)",
+      "filename": "04-369406273.jpg",
+      "height": 1366,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/369406273/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 208770341,
+      "observer": "sorrykb",
+      "photo_id": 369406273,
+      "sha256": "b01eaf86de9cf19efb5ec134150a3288e7cca5e63d2377b6d7de9bd87e0da1c5",
+      "source_url": "https://www.inaturalist.org/observations/208770341",
+      "width": 2048
+    }
+  ],
+  "schema_version": 1,
+  "scientific_name": "Tachycineta bicolor",
+  "slug": "tree-swallow",
+  "status": "approved",
+  "taxon_id": 11935
+}

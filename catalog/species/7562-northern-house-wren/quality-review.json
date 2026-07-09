@@ -1,0 +1,29 @@
+{
+  "anatomy_accuracy": 5,
+  "composition_quality": 5,
+  "findings": [
+    "Species identity is well supported: the plate shows the compact gray-brown Northern House Wren with a faint eyebrow, pale throat, thin slightly curved bill, fine dark barring on warmer brown wings and tail, short wings, cocked tail, and slender pinkish-gray legs.",
+    "Scientific name, family, and all three printed measurements match independent Cornell verification: 11\u201313 cm length, 10\u201312 g weight, and 15 cm wingspan.",
+    "The habitat, cavity-nesting, low-shrub/ground foraging, insect-and-spider diet, and bubbly song claims align with Cornell and Missouri Department of Conservation guidance.",
+    "No place name, ZIP code, coordinates, map, or local-observation detail appears.",
+    "The central bird\u2019s anatomy is coherent: one head, one beak, two wings, two legs, and one tail; the separate wing and head studies are clearly labeled anatomical details rather than additional birds."
+  ],
+  "location_free": true,
+  "passed": true,
+  "species_accuracy": 5,
+  "text_accuracy": 5,
+  "verification_sources": [
+    {
+      "title": "Northern House Wren Identification \u2014 Cornell Lab of Ornithology",
+      "url": "https://www.allaboutbirds.org/guide/House_Wren/id"
+    },
+    {
+      "title": "Northern House Wren Life History \u2014 Cornell Lab of Ornithology",
+      "url": "https://www.allaboutbirds.org/guide/Northern_House_Wren/lifehistory"
+    },
+    {
+      "title": "Northern House Wren \u2014 Missouri Department of Conservation",
+      "url": "https://mdc.mo.gov/discover-nature/field-guide/northern-house-wren"
+    }
+  ]
+}
