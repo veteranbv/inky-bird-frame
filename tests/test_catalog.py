@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import unittest
+from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 from tempfile import TemporaryDirectory
 
@@ -11,6 +12,7 @@ from inky_bird_frame.catalog import (
     candidate_directory,
     rebuild_catalog_index,
     write_candidate_manifest,
+    write_json_atomic,
 )
 from inky_bird_frame.errors import CatalogError
 from inky_bird_frame.models import QualityReview, SpeciesProfileData
@@ -33,6 +35,17 @@ PROFILE = SpeciesProfileData(
 
 
 class CatalogTests(unittest.TestCase):
+    def test_atomic_json_writes_support_concurrent_health_requests(self) -> None:
+        with TemporaryDirectory() as temporary:
+            path = Path(temporary) / "index.json"
+            with ThreadPoolExecutor(max_workers=8) as executor:
+                list(
+                    executor.map(lambda value: write_json_atomic(path, {"value": value}), range(32))
+                )
+            payload = json.loads(path.read_text())
+
+        self.assertIn(payload["value"], range(32))
+
     def test_approved_seed_has_valid_checksums(self) -> None:
         catalog = Path(__file__).parents[1] / "catalog"
 

@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
+from tempfile import NamedTemporaryFile
 from typing import cast
 from urllib.error import HTTPError, URLError
 from urllib.request import Request, urlopen
@@ -44,6 +45,16 @@ def get_bytes(url: str, timeout_seconds: float = 30.0) -> bytes:
 
 def write_bytes_atomic(path: Path, content: bytes) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
-    temporary = path.with_name(f".{path.name}.tmp")
-    temporary.write_bytes(content)
-    temporary.replace(path)
+    with NamedTemporaryFile(
+        "wb",
+        dir=path.parent,
+        prefix=f".{path.name}.",
+        suffix=".tmp",
+        delete=False,
+    ) as handle:
+        handle.write(content)
+        temporary = Path(handle.name)
+    try:
+        temporary.replace(path)
+    finally:
+        temporary.unlink(missing_ok=True)
