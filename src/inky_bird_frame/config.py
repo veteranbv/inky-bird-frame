@@ -4,22 +4,26 @@ from __future__ import annotations
 
 import tomllib
 from dataclasses import dataclass
+from enum import StrEnum
 from pathlib import Path
 from shutil import which
-from typing import Final
 
 from .birds import ObservationWindow, parse_observation_window
 from .errors import ConfigurationError
 
-PORTRAIT_SIZE: Final = (1200, 1600)
-HARDWARE_SIZE: Final = (1600, 1200)
+
+class RotationMode(StrEnum):
+    SEQUENTIAL = "sequential"
+    SHUFFLE = "shuffle"
+    WEIGHTED = "weighted"
 
 
-@dataclass(frozen=True)
-class DisplayConfig:
-    portrait_size: tuple[int, int] = PORTRAIT_SIZE
-    hardware_size: tuple[int, int] = HARDWARE_SIZE
-    rotation_degrees: int = 90
+def parse_rotation_mode(value: str) -> RotationMode:
+    try:
+        return RotationMode(value)
+    except ValueError as exc:
+        allowed = ", ".join(item.value for item in RotationMode)
+        raise ValueError(f"rotation_mode must be one of: {allowed}") from exc
 
 
 @dataclass(frozen=True)
@@ -47,6 +51,16 @@ class ControllerConfig:
 class DisplayNodeConfig:
     controller_url: str
     state_dir: Path
+    rotation_mode: RotationMode = RotationMode.SEQUENTIAL
+
+
+@dataclass(frozen=True)
+class ScheduleConfig:
+    refresh_minutes: int = 15
+    generation_minutes: int = 360
+    rotation_minutes: int = 30
+    rotation_jitter_seconds: int = 0
+    display_startup_delay_seconds: int = 120
 
 
 @dataclass(frozen=True)
@@ -54,7 +68,7 @@ class AppConfig:
     discovery: DiscoveryConfig
     controller: ControllerConfig
     display_node: DisplayNodeConfig
-    display: DisplayConfig = DisplayConfig()
+    schedule: ScheduleConfig = ScheduleConfig()
 
 
 def _section(data: object, name: str) -> dict[str, object]:
@@ -63,6 +77,15 @@ def _section(data: object, name: str) -> dict[str, object]:
     value = data.get(name)
     if not isinstance(value, dict):
         raise ConfigurationError(f"Missing [{name}] configuration section")
+    return value
+
+
+def _optional_section(data: object, name: str) -> dict[str, object]:
+    if not isinstance(data, dict):
+        raise ConfigurationError("Configuration root must be a TOML table")
+    value = data.get(name, {})
+    if not isinstance(value, dict):
+        raise ConfigurationError(f"[{name}] must be a TOML table")
     return value
 
 
@@ -86,6 +109,12 @@ def _optional_integer(
     if name not in section:
         return default
     return _integer(section, name, minimum=minimum)
+
+
+def _optional_string(section: dict[str, object], name: str, *, default: str) -> str:
+    if name not in section:
+        return default
+    return _string(section, name)
 
 
 def _path(value: str, base_dir: Path) -> Path:
@@ -112,6 +141,7 @@ def load_config(path: Path) -> AppConfig:
     discovery = _section(raw, "discovery")
     controller = _section(raw, "controller")
     display_node = _section(raw, "display_node")
+    schedule = _optional_section(raw, "schedule")
     base_dir = path.parent.resolve()
 
     zip_code = _string(discovery, "zip_code")
@@ -127,6 +157,14 @@ def load_config(path: Path) -> AppConfig:
     controller_url = _string(display_node, "controller_url").rstrip("/")
     if not controller_url.startswith(("http://", "https://")):
         raise ConfigurationError("controller_url must start with http:// or https://")
+
+    rotation_mode_value = _optional_string(
+        display_node, "rotation_mode", default=RotationMode.SEQUENTIAL.value
+    )
+    try:
+        rotation_mode = parse_rotation_mode(rotation_mode_value)
+    except ValueError as exc:
+        raise ConfigurationError(str(exc)) from exc
 
     return AppConfig(
         discovery=DiscoveryConfig(
@@ -151,5 +189,17 @@ def load_config(path: Path) -> AppConfig:
         display_node=DisplayNodeConfig(
             controller_url=controller_url,
             state_dir=_path(_string(display_node, "state_dir"), base_dir),
+            rotation_mode=rotation_mode,
+        ),
+        schedule=ScheduleConfig(
+            refresh_minutes=_optional_integer(schedule, "refresh_minutes", default=15),
+            generation_minutes=_optional_integer(schedule, "generation_minutes", default=360),
+            rotation_minutes=_optional_integer(schedule, "rotation_minutes", default=30),
+            rotation_jitter_seconds=_optional_integer(
+                schedule, "rotation_jitter_seconds", default=0, minimum=0
+            ),
+            display_startup_delay_seconds=_optional_integer(
+                schedule, "display_startup_delay_seconds", default=120, minimum=0
+            ),
         ),
     )

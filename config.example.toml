@@ -21,3 +21,14 @@ max_generation_attempts = 3
 [display_node]
 controller_url = "http://controller.example:8793"
 state_dir = "var/display-node"
+# sequential visits the sorted active catalog, shuffle visits every active bird before
+# repeating, and weighted uses local observation counts as selection weights.
+rotation_mode = "shuffle"
+
+[schedule]
+refresh_minutes = 15
+# Generation can consume substantial Codex usage. Start conservatively.
+generation_minutes = 360
+rotation_minutes = 30
+rotation_jitter_seconds = 0
+display_startup_delay_seconds = 120

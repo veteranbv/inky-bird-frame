@@ -51,6 +51,22 @@ fi
 
 "${venv}/bin/python" -m pip install --disable-pip-version-check -e "${app_dir}"
 
+read -r startup_delay_seconds rotation_seconds rotation_jitter_seconds < <(
+  "${venv}/bin/python" - "${config_path}" <<'PY'
+import sys
+from pathlib import Path
+
+from inky_bird_frame.config import load_config
+
+schedule = load_config(Path(sys.argv[1])).schedule
+print(
+    schedule.display_startup_delay_seconds,
+    schedule.rotation_minutes * 60,
+    schedule.rotation_jitter_seconds,
+)
+PY
+)
+
 sudo tee /etc/systemd/system/inky-bird-frame-display.service >/dev/null <<UNIT
 [Unit]
 Description=Rotate the next approved Inky Bird Frame plate
@@ -66,14 +82,14 @@ ExecStart=${venv}/bin/inky-bird-frame display-cycle --config ${config_path}
 TimeoutStartSec=15min
 UNIT
 
-sudo tee /etc/systemd/system/inky-bird-frame-display.timer >/dev/null <<'UNIT'
+sudo tee /etc/systemd/system/inky-bird-frame-display.timer >/dev/null <<UNIT
 [Unit]
-Description=Rotate the Inky Bird Frame every 30 minutes
+Description=Rotate the Inky Bird Frame on its configured schedule
 
 [Timer]
-OnBootSec=2min
-OnUnitActiveSec=30min
-RandomizedDelaySec=2min
+OnBootSec=${startup_delay_seconds}s
+OnUnitActiveSec=${rotation_seconds}s
+RandomizedDelaySec=${rotation_jitter_seconds}s
 Persistent=true
 Unit=inky-bird-frame-display.service
 

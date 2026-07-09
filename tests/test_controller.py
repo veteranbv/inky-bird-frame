@@ -2,14 +2,22 @@ from __future__ import annotations
 
 import json
 import unittest
+from datetime import UTC, datetime
 from pathlib import Path
 from tempfile import TemporaryDirectory
 from unittest.mock import patch
 
 from inky_bird_frame.birds import BirdSpecies
-from inky_bird_frame.catalog import candidate_directory, write_candidate_manifest
+from inky_bird_frame.catalog import CatalogEntry, candidate_directory, write_candidate_manifest
 from inky_bird_frame.config import load_config
-from inky_bird_frame.controller import generate_candidate, run_controller_cycle
+from inky_bird_frame.controller import (
+    DiscoverySnapshot,
+    exclusive_refresh_lock,
+    generate_candidate,
+    run_controller_cycle,
+    run_generation_cycle,
+    run_refresh_cycle,
+)
 from inky_bird_frame.errors import (
     CatalogError,
     DataSourceError,
@@ -62,6 +70,178 @@ state_dir = "display"
 
 
 class ControllerTests(unittest.TestCase):
+    def test_overlapping_refresh_is_rejected_before_discovery(self) -> None:
+        with TemporaryDirectory() as temporary:
+            config_path = Path(temporary) / "config.toml"
+            config_path.write_text(CONFIG)
+            config = load_config(config_path)
+            with (
+                exclusive_refresh_lock(config.controller.state_dir),
+                patch("inky_bird_frame.controller.discover_species") as discover,
+                self.assertRaisesRegex(DataSourceError, "already running"),
+            ):
+                run_refresh_cycle(config)
+
+        discover.assert_not_called()
+
+    def test_generation_recovers_pending_before_requiring_discovery(self) -> None:
+        with TemporaryDirectory() as temporary:
+            config_path = Path(temporary) / "config.toml"
+            config_path.write_text(CONFIG)
+            config = load_config(config_path)
+            recovered: list[str] = []
+
+            def approve(_config: object) -> list[dict[str, object]]:
+                recovered.append("approved")
+                return []
+
+            with (
+                patch(
+                    "inky_bird_frame.controller.approve_passing_candidates",
+                    side_effect=approve,
+                ),
+                patch(
+                    "inky_bird_frame.controller._read_discovery_snapshot",
+                    side_effect=DataSourceError("missing"),
+                ),
+                self.assertRaisesRegex(DataSourceError, "missing"),
+            ):
+                run_generation_cycle(config)
+
+        self.assertEqual(recovered, ["approved"])
+
+    def test_generation_rebuilds_active_catalog_from_latest_snapshot(self) -> None:
+        initial = DiscoverySnapshot(
+            datetime.now(UTC),
+            "Exampleville",
+            "XY",
+            [BirdSpecies(1, "Alpha Bird", "Alpha avis", 1, "iNaturalist")],
+        )
+        latest = DiscoverySnapshot(
+            datetime.now(UTC),
+            "Exampleville",
+            "XY",
+            [BirdSpecies(2, "Beta Bird", "Beta avis", 4, "iNaturalist")],
+        )
+        with TemporaryDirectory() as temporary:
+            config_path = Path(temporary) / "config.toml"
+            config_path.write_text(CONFIG)
+            config = load_config(config_path)
+            with (
+                patch("inky_bird_frame.controller.approve_passing_candidates", return_value=[]),
+                patch(
+                    "inky_bird_frame.controller._read_discovery_snapshot",
+                    side_effect=[initial, latest],
+                ),
+                patch("inky_bird_frame.controller._has_terminal_state", return_value=True),
+                patch("inky_bird_frame.controller._write_active_catalog", return_value=0) as write,
+            ):
+                run_generation_cycle(config)
+
+        write.assert_called_once_with(config, latest.species)
+
+    def test_generation_rejects_a_stale_discovery_snapshot(self) -> None:
+        with TemporaryDirectory() as temporary:
+            config_path = Path(temporary) / "config.toml"
+            config_path.write_text(CONFIG)
+            config = load_config(config_path)
+            config.controller.state_dir.mkdir(parents=True)
+            (config.controller.state_dir / "discovery.json").write_text(
+                json.dumps(
+                    {
+                        "schema_version": 1,
+                        "refreshed_at": "2000-01-01T00:00:00+00:00",
+                        "place_name": "Exampleville",
+                        "state": "XY",
+                        "species": [],
+                    }
+                )
+            )
+
+            with self.assertRaisesRegex(DataSourceError, "stale"):
+                run_generation_cycle(config)
+
+    def test_refresh_writes_only_observed_approved_species_to_private_active_catalog(
+        self,
+    ) -> None:
+        observed = BirdSpecies(12942, "Eastern Bluebird", "Sialia sialis", 9, "iNaturalist")
+        unapproved = BirdSpecies(
+            7513, "Carolina Wren", "Thryothorus ludovicianus", 4, "iNaturalist"
+        )
+        location = ZipLocation("12345", "Exampleville", "XY", 1.0, 2.0)
+        approved = CatalogEntry(
+            12942,
+            "Eastern Bluebird",
+            "Sialia sialis",
+            "eastern-bluebird",
+            "species/12942/portrait.png",
+            "a" * 64,
+            "species/12942/display.png",
+            "b" * 64,
+            "2026-07-09T00:00:00+00:00",
+        )
+        with TemporaryDirectory() as temporary:
+            config_path = Path(temporary) / "config.toml"
+            config_path.write_text(CONFIG)
+            config = load_config(config_path)
+            with (
+                patch(
+                    "inky_bird_frame.controller.discover_species",
+                    return_value=(location, [observed, unapproved]),
+                ),
+                patch(
+                    "inky_bird_frame.controller.rebuild_catalog_index",
+                    return_value=[approved],
+                ),
+            ):
+                result = run_refresh_cycle(config)
+            active = json.loads((config.controller.state_dir / "active-catalog.json").read_text())
+            snapshot = json.loads((config.controller.state_dir / "discovery.json").read_text())
+
+        self.assertEqual(result["active_approved_count"], 1)
+        self.assertEqual(active["species"][0]["taxon_id"], 12942)
+        self.assertEqual(active["species"][0]["observation_count"], 9)
+        self.assertNotIn("zip_code", active)
+        self.assertEqual(len(snapshot["species"]), 2)
+
+    def test_refresh_preserves_approved_catalog_order(self) -> None:
+        first = BirdSpecies(1, "Alpha Bird", "Alpha avis", 2, "iNaturalist")
+        second = BirdSpecies(2, "Beta Bird", "Beta avis", 9, "iNaturalist")
+        location = ZipLocation("12345", "Exampleville", "XY", 1.0, 2.0)
+        approved = [
+            CatalogEntry(
+                species.taxon_id,
+                species.common_name,
+                species.scientific_name,
+                species.common_name.lower().replace(" ", "-"),
+                f"species/{species.taxon_id}/portrait.png",
+                "a" * 64,
+                f"species/{species.taxon_id}/display.png",
+                "b" * 64,
+                "2026-07-09T00:00:00+00:00",
+            )
+            for species in (first, second)
+        ]
+        with TemporaryDirectory() as temporary:
+            config_path = Path(temporary) / "config.toml"
+            config_path.write_text(CONFIG)
+            config = load_config(config_path)
+            with (
+                patch(
+                    "inky_bird_frame.controller.discover_species",
+                    return_value=(location, [second, first]),
+                ),
+                patch(
+                    "inky_bird_frame.controller.rebuild_catalog_index",
+                    return_value=approved,
+                ),
+            ):
+                run_refresh_cycle(config)
+            active = json.loads((config.controller.state_dir / "active-catalog.json").read_text())
+
+        self.assertEqual([item["taxon_id"] for item in active["species"]], [1, 2])
+        self.assertEqual([item["observation_count"] for item in active["species"]], [2, 9])
+
     def test_transient_source_failure_remains_eligible(self) -> None:
         species = BirdSpecies(9083, "Northern Cardinal", "Cardinalis cardinalis", 2, "test")
         location = ZipLocation("12345", "Exampleville", "XY", 1.0, 2.0)
@@ -123,14 +303,17 @@ class ControllerTests(unittest.TestCase):
             )
             with patch(
                 "inky_bird_frame.controller.discover_species",
-                return_value=(location, []),
+                return_value=(location, [species]),
             ):
                 result = run_controller_cycle(config)
 
             published = (config.controller.catalog_dir / "species/9083-northern-cardinal").is_dir()
+            active = json.loads((config.controller.state_dir / "active-catalog.json").read_text())
 
         self.assertTrue(published)
         self.assertEqual(result["approved_count"], 1)
+        self.assertEqual(result["active_approved_count"], 1)
+        self.assertEqual([item["taxon_id"] for item in active["species"]], [9083])
         published_pending = result["published_pending"]
         self.assertIsInstance(published_pending, list)
         if isinstance(published_pending, list):

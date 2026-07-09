@@ -17,7 +17,12 @@ from .catalog import (
     reject_candidate,
 )
 from .config import AppConfig, load_config
-from .controller import discover_species, run_controller_cycle
+from .controller import (
+    discover_species,
+    run_controller_cycle,
+    run_generation_cycle,
+    run_refresh_cycle,
+)
 from .display import show_on_inky
 from .display_node import run_display_cycle
 from .errors import InkyBirdFrameError
@@ -77,6 +82,16 @@ def discover_command(args: argparse.Namespace) -> int:
 
 def controller_cycle_command(args: argparse.Namespace) -> int:
     print_result(run_controller_cycle(_config(args)))
+    return 0
+
+
+def refresh_command(args: argparse.Namespace) -> int:
+    print_result(run_refresh_cycle(_config(args)))
+    return 0
+
+
+def generate_command(args: argparse.Namespace) -> int:
+    print_result(run_generation_cycle(_config(args)))
     return 0
 
 
@@ -208,6 +223,20 @@ def build_parser() -> argparse.ArgumentParser:
     )
     add_config_argument(cycle_parser)
     cycle_parser.set_defaults(func=controller_cycle_command)
+
+    refresh_parser = subparsers.add_parser(
+        "refresh",
+        help="Refresh local observations and the active display catalog",
+    )
+    add_config_argument(refresh_parser)
+    refresh_parser.set_defaults(func=refresh_command)
+
+    generate_parser = subparsers.add_parser(
+        "generate",
+        help="Generate missing plates from the latest observation refresh",
+    )
+    add_config_argument(generate_parser)
+    generate_parser.set_defaults(func=generate_command)
 
     approve_parser = subparsers.add_parser("approve", help="Publish a pending candidate")
     add_config_argument(approve_parser)

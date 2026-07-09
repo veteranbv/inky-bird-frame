@@ -7,7 +7,8 @@ import json
 import shutil
 from collections.abc import Iterator
 from contextlib import contextmanager
-from datetime import UTC, datetime
+from dataclasses import dataclass
+from datetime import UTC, datetime, timedelta
 from pathlib import Path
 from tempfile import TemporaryDirectory
 from typing import cast
@@ -18,6 +19,7 @@ from .catalog import (
     approved_taxon_ids,
     candidate_directory,
     find_taxon_directory,
+    rebuild_catalog_index,
     write_candidate_manifest,
     write_json_atomic,
 )
@@ -38,6 +40,14 @@ from .prompts import PROMPT_VERSION
 from .references import download_references, fetch_reference_candidates
 
 
+@dataclass(frozen=True)
+class DiscoverySnapshot:
+    refreshed_at: datetime
+    place_name: str
+    state: str
+    species: list[BirdSpecies]
+
+
 @contextmanager
 def exclusive_cycle_lock(state_dir: Path) -> Iterator[None]:
     state_dir.mkdir(parents=True, exist_ok=True)
@@ -47,6 +57,31 @@ def exclusive_cycle_lock(state_dir: Path) -> Iterator[None]:
             fcntl.flock(handle.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
         except BlockingIOError as exc:
             raise GenerationError("Another controller cycle is already running") from exc
+        try:
+            yield
+        finally:
+            fcntl.flock(handle.fileno(), fcntl.LOCK_UN)
+
+
+@contextmanager
+def catalog_state_lock(state_dir: Path) -> Iterator[None]:
+    state_dir.mkdir(parents=True, exist_ok=True)
+    with (state_dir / "catalog-state.lock").open("a+") as handle:
+        fcntl.flock(handle.fileno(), fcntl.LOCK_EX)
+        try:
+            yield
+        finally:
+            fcntl.flock(handle.fileno(), fcntl.LOCK_UN)
+
+
+@contextmanager
+def exclusive_refresh_lock(state_dir: Path) -> Iterator[None]:
+    state_dir.mkdir(parents=True, exist_ok=True)
+    with (state_dir / "refresh.lock").open("a+") as handle:
+        try:
+            fcntl.flock(handle.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
+        except BlockingIOError as exc:
+            raise DataSourceError("Another observation refresh is already running") from exc
         try:
             yield
         finally:
@@ -63,6 +98,129 @@ def discover_species(config: AppConfig) -> tuple[ZipLocation, list[BirdSpecies]]
         window=config.discovery.observation_window,
     )
     return location, species
+
+
+def _snapshot_path(config: AppConfig) -> Path:
+    return config.controller.state_dir / "discovery.json"
+
+
+def _active_catalog_path(config: AppConfig) -> Path:
+    return config.controller.state_dir / "active-catalog.json"
+
+
+def _species_payload(species: BirdSpecies) -> dict[str, object]:
+    return {
+        "taxon_id": species.taxon_id,
+        "common_name": species.common_name,
+        "scientific_name": species.scientific_name,
+        "observation_count": species.observation_count,
+        "source": species.source,
+    }
+
+
+def _write_active_catalog(config: AppConfig, species_list: list[BirdSpecies]) -> int:
+    approved = rebuild_catalog_index(config.controller.catalog_dir)
+    observed = {species.taxon_id: species for species in species_list}
+    active: list[dict[str, object]] = []
+    for entry in approved:
+        species = observed.get(entry.taxon_id)
+        if species is None:
+            continue
+        value = entry.as_dict()
+        value["observation_count"] = species.observation_count
+        active.append(value)
+    write_json_atomic(
+        _active_catalog_path(config),
+        {
+            "schema_version": 1,
+            "generated_at": datetime.now(UTC).replace(microsecond=0).isoformat(),
+            "species": active,
+        },
+    )
+    return len(active)
+
+
+def run_refresh_cycle(config: AppConfig) -> dict[str, object]:
+    with exclusive_refresh_lock(config.controller.state_dir):
+        location, species_list = discover_species(config)
+        with catalog_state_lock(config.controller.state_dir):
+            refreshed_at = datetime.now(UTC).replace(microsecond=0)
+            write_json_atomic(
+                _snapshot_path(config),
+                {
+                    "schema_version": 1,
+                    "refreshed_at": refreshed_at.isoformat(),
+                    "place_name": location.place_name,
+                    "state": location.state,
+                    "species": [_species_payload(species) for species in species_list],
+                },
+            )
+            active_count = _write_active_catalog(config, species_list)
+    return {
+        "refreshed_at": refreshed_at.isoformat(),
+        "place_name": location.place_name,
+        "state": location.state,
+        "window": config.discovery.observation_window.value,
+        "radius_km": config.discovery.radius_km,
+        "species_count": len(species_list),
+        "active_approved_count": active_count,
+    }
+
+
+def _read_discovery_snapshot(config: AppConfig) -> DiscoverySnapshot:
+    path = _snapshot_path(config)
+    try:
+        raw = json.loads(path.read_text())
+    except FileNotFoundError as exc:
+        raise DataSourceError("Discovery state is missing; run refresh before generation") from exc
+    except json.JSONDecodeError as exc:
+        raise CatalogError(f"Invalid discovery state: {path}") from exc
+    if not isinstance(raw, dict) or raw.get("schema_version") != 1:
+        raise CatalogError(f"Unsupported discovery state: {path}")
+    refreshed_at = raw.get("refreshed_at")
+    place_name = raw.get("place_name")
+    state = raw.get("state")
+    species_raw = raw.get("species")
+    if (
+        not isinstance(refreshed_at, str)
+        or not isinstance(place_name, str)
+        or not isinstance(state, str)
+        or not isinstance(species_raw, list)
+    ):
+        raise CatalogError(f"Invalid discovery state: {path}")
+    try:
+        refreshed = datetime.fromisoformat(refreshed_at)
+    except ValueError as exc:
+        raise CatalogError(f"Invalid discovery timestamp: {path}") from exc
+    if refreshed.tzinfo is None:
+        raise CatalogError(f"Discovery timestamp has no timezone: {path}")
+
+    species: list[BirdSpecies] = []
+    for item in species_raw:
+        if not isinstance(item, dict):
+            raise CatalogError(f"Invalid species in discovery state: {path}")
+        taxon_id = item.get("taxon_id")
+        observation_count = item.get("observation_count")
+        strings = [item.get(name) for name in ("common_name", "scientific_name", "source")]
+        if (
+            not isinstance(taxon_id, int)
+            or isinstance(taxon_id, bool)
+            or not isinstance(observation_count, int)
+            or isinstance(observation_count, bool)
+            or observation_count < 0
+            or any(not isinstance(value, str) or not value for value in strings)
+        ):
+            raise CatalogError(f"Invalid species in discovery state: {path}")
+        species.append(
+            BirdSpecies(
+                taxon_id=taxon_id,
+                common_name=cast(str, strings[0]),
+                scientific_name=cast(str, strings[1]),
+                observation_count=observation_count,
+                source=cast(str, strings[2]),
+            )
+        )
+    return DiscoverySnapshot(refreshed, place_name, state, species)
 
 
 def _reference_from_dict(raw: object) -> ReferencePhoto:
@@ -330,10 +488,17 @@ def _is_bounded_generation(generation: object) -> bool:
     )
 
 
-def run_controller_cycle(config: AppConfig) -> dict[str, object]:
+def run_generation_cycle(config: AppConfig) -> dict[str, object]:
     with exclusive_cycle_lock(config.controller.state_dir):
-        published = approve_passing_candidates(config)
-        location, species_list = discover_species(config)
+        with catalog_state_lock(config.controller.state_dir):
+            published = approve_passing_candidates(config)
+        snapshot = _read_discovery_snapshot(config)
+        maximum_age = timedelta(minutes=config.schedule.refresh_minutes * 2)
+        if datetime.now(UTC) - snapshot.refreshed_at.astimezone(UTC) > maximum_age:
+            raise DataSourceError(
+                "Discovery state is stale; a successful refresh is required before generation"
+            )
+        species_list = snapshot.species
         approved = approved_taxon_ids(config.controller.catalog_dir)
         eligible = [
             species
@@ -346,11 +511,12 @@ def run_controller_cycle(config: AppConfig) -> dict[str, object]:
         for species in eligible[: config.controller.generations_per_cycle]:
             try:
                 generate_candidate(config, species, config.controller.workspace_dir)
-                entry = approve_candidate(
-                    config.controller.state_dir,
-                    config.controller.catalog_dir,
-                    species.taxon_id,
-                )
+                with catalog_state_lock(config.controller.state_dir):
+                    entry = approve_candidate(
+                        config.controller.state_dir,
+                        config.controller.catalog_dir,
+                        species.taxon_id,
+                    )
                 generated.append(
                     {
                         "taxon_id": species.taxon_id,
@@ -401,17 +567,28 @@ def run_controller_cycle(config: AppConfig) -> dict[str, object]:
                     }
                 )
 
+        with catalog_state_lock(config.controller.state_dir):
+            latest_snapshot = _read_discovery_snapshot(config)
+            active_count = _write_active_catalog(config, latest_snapshot.species)
         return {
             "discovery": {
-                "place_name": location.place_name,
-                "state": location.state,
+                "refreshed_at": snapshot.refreshed_at.isoformat(),
+                "place_name": snapshot.place_name,
+                "state": snapshot.state,
                 "window": config.discovery.observation_window.value,
                 "radius_km": config.discovery.radius_km,
                 "species_count": len(species_list),
             },
             "approved_count": len(approved_taxon_ids(config.controller.catalog_dir)),
+            "active_approved_count": active_count,
             "published_pending": published,
             "eligible_count": len(eligible),
             "generated": generated,
             "failures": failures,
         }
+
+
+def run_controller_cycle(config: AppConfig) -> dict[str, object]:
+    refresh = run_refresh_cycle(config)
+    generation = run_generation_cycle(config)
+    return {**generation, "refresh": refresh}
