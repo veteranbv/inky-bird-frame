@@ -29,7 +29,7 @@ on:
 # One run per head SHA, never cancelled: a cancelled conclusion on the
 # current head blocks required-status evaluation (the auto-merge stall this
 # group previously caused). Runs for superseded heads exit early on their
-# own — review_gate.py returns success as soon as it sees the PR head move,
+  # own. review_gate.py returns success as soon as it sees the PR head move,
 # so CI minutes stay bounded without cancel-in-progress.
 concurrency:
   group: review-gate-${{ github.event.pull_request.number }}-${{ github.event.pull_request.head.sha }}
@@ -48,38 +48,11 @@ permissions:
   issues: read
   pull-requests: read
 
+# The gate intentionally does not post `@codex review`. GitHub Actions comments
+# are authored by a bot account that cannot authorize Codex. A maintainer must
+# request review on the current head, which also keeps contributor PRs from
+# advancing through the full lifecycle without owner action.
 jobs:
-  # Codex review is explicitly requested on EVERY qualifying event — opened
-  # included. The previous design trusted Codex's auto-review on `opened` and
-  # only nudged on `synchronize`; when the auto-review silently never arrived
-  # (PR #117), the gate failed closed after its engagement wait and nothing ever
-  # re-summoned Codex — a deadlock only a human comment could break. An
-  # explicit request on open is deterministic; if it occasionally doubles up
-  # with the auto-review, the gate simply reads the newest review.
-  request-codex-review:
-    # Skip on fork PRs — their GITHUB_TOKEN is read-only, so `gh pr comment`
-    # would fail. Fork PRs don't gain auto-review acceleration; this is a
-    # known and acceptable tradeoff for security.
-    if: >-
-      github.event_name == 'pull_request'
-      && contains(fromJSON('["opened", "synchronize", "reopened"]'), github.event.action)
-      && github.event.pull_request.head.repo.full_name == github.repository
-    runs-on: ubuntu-latest
-    permissions:
-      pull-requests: write
-    steps:
-      - name: Ask Codex to review the new head
-        env:
-          GH_TOKEN: ${{ github.token }}
-          PR_NUMBER: ${{ github.event.pull_request.number }}
-          PR_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
-          REPO: ${{ github.repository }}
-        run: |
-          BODY="@codex review
-
-          head: ${PR_HEAD_SHA}"
-          gh pr comment "$PR_NUMBER" --repo "$REPO" --body "$BODY"
-
   review-gate:
     runs-on: ubuntu-latest
     # Explicit job-level permissions (mirrors the workflow-level audit) so

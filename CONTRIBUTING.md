@@ -30,7 +30,8 @@ Approval does not happen in CI.
 ## Review and release
 
 Pull requests must pass formatting, lint, strict typing, tests, and the Codex
-review gate. All review conversations must be resolved before merge.
+review gate. A maintainer requests review by commenting `@codex review` after
+each push. All review conversations must be resolved before merge.
 
 Production deployment is not available to contributors. It is an explicit
 owner-only workflow dispatched from `main` on a trusted self-hosted runner.
