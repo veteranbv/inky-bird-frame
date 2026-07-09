@@ -1,0 +1,17 @@
+{
+  "generated_at": "2026-07-09T00:00:00+00:00",
+  "schema_version": 1,
+  "species": [
+    {
+      "approved_at": "2026-07-09T00:00:00+00:00",
+      "common_name": "Eastern Bluebird",
+      "display_path": "species/12942-eastern-bluebird/display.png",
+      "display_sha256": "48088bcb8bab23bf3ee17f1ec5c5cd7351e3a772fdc478a715675876055f8210",
+      "portrait_path": "species/12942-eastern-bluebird/portrait.png",
+      "portrait_sha256": "a0bbb7602d82862fab3b53c901a52c792a99df0056f08b74109ff37a71d8f047",
+      "scientific_name": "Sialia sialis",
+      "slug": "eastern-bluebird",
+      "taxon_id": 12942
+    }
+  ]
+}

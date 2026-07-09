@@ -1,0 +1,20 @@
+[discovery]
+# This location is used only to discover species. It is never rendered on a plate.
+zip_code = "12345"
+radius_km = 8
+species_limit = 12
+window = "last-week"
+
+[controller]
+workspace_dir = "."
+catalog_dir = "catalog"
+state_dir = "var/controller"
+codex_path = "/Applications/Codex.app/Contents/Resources/codex"
+bind_host = "0.0.0.0"
+port = 8793
+references_per_species = 4
+generations_per_cycle = 1
+
+[display_node]
+controller_url = "http://controller.example:8793"
+state_dir = "var/display-node"

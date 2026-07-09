@@ -1,0 +1,45 @@
+[project]
+name = "inky-bird-frame"
+version = "0.1.0"
+description = "Generate and display reusable bird field-journal plates"
+readme = "README.md"
+requires-python = ">=3.11"
+license = "MIT"
+authors = [{ name = "Henry Sowell" }]
+dependencies = [
+    "pillow>=10.0",
+]
+
+[project.optional-dependencies]
+inky = [
+    "inky>=2.4",
+]
+dev = [
+    "mypy>=1.8.0",
+    "pytest>=8.0.0",
+    "ruff>=0.4.0",
+]
+
+[project.scripts]
+inky-bird-frame = "inky_bird_frame.cli:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["B", "E", "F", "I", "N", "SIM", "UP", "W"]
+
+[tool.mypy]
+python_version = "3.11"
+strict = true
+warn_unused_configs = true
+files = ["src/inky_bird_frame", "tests"]
+
+[tool.pytest.ini_options]
+addopts = "-q"
+testpaths = ["tests"]

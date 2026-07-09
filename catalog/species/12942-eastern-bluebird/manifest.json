@@ -1,0 +1,69 @@
+{
+  "approved_at": "2026-07-09T00:00:00+00:00",
+  "assets": {
+    "display": {
+      "filename": "display.png",
+      "sha256": "48088bcb8bab23bf3ee17f1ec5c5cd7351e3a772fdc478a715675876055f8210"
+    },
+    "portrait": {
+      "filename": "portrait.png",
+      "sha256": "a0bbb7602d82862fab3b53c901a52c792a99df0056f08b74109ff37a71d8f047"
+    }
+  },
+  "common_name": "Eastern Bluebird",
+  "generation": {
+    "generated_at": "2026-07-09T00:00:00+00:00",
+    "generator": "User-approved seed image",
+    "prompt_version": "field-journal-seed-v1"
+  },
+  "profile": {
+    "behavior": "Perches in open areas and drops to the ground for insects.",
+    "common_name": "Eastern Bluebird",
+    "family": "Turdidae",
+    "field_marks": [
+      "Brilliant blue head, back, wings, and tail",
+      "Warm rufous throat and breast",
+      "White lower belly",
+      "Dark bill with a paler lower edge"
+    ],
+    "habitat": "Open woodland, farms, orchards, and fields with scattered trees.",
+    "measurements": {
+      "length": "6.5-7.0 in",
+      "weight": "0.8-1.1 oz",
+      "wingspan": "9.8-12.6 in"
+    },
+    "palette": [
+      "cobalt blue",
+      "rufous orange",
+      "warm white",
+      "charcoal"
+    ],
+    "scientific_name": "Sialia sialis",
+    "sources": [
+      {
+        "title": "iNaturalist: Eastern Bluebird",
+        "url": "https://www.inaturalist.org/taxa/12942-Sialia-sialis"
+      },
+      {
+        "title": "Cornell Lab All About Birds: Eastern Bluebird",
+        "url": "https://www.allaboutbirds.org/guide/Eastern_Bluebird/overview"
+      }
+    ],
+    "taxon_id": 12942
+  },
+  "quality_review": {
+    "anatomy_accuracy": 5,
+    "composition_quality": 5,
+    "findings": [],
+    "location_free": true,
+    "passed": true,
+    "species_accuracy": 5,
+    "text_accuracy": 5
+  },
+  "references": [],
+  "schema_version": 1,
+  "scientific_name": "Sialia sialis",
+  "slug": "eastern-bluebird",
+  "status": "approved",
+  "taxon_id": 12942
+}
