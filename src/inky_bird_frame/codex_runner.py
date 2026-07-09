@@ -99,6 +99,7 @@ class CodexRunner:
             [
                 "exec",
                 "--ephemeral",
+                "--skip-git-repo-check",
                 "--sandbox",
                 "workspace-write" if writable else "read-only",
             ]

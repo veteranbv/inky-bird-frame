@@ -22,7 +22,7 @@ from .catalog import (
 )
 from .codex_runner import CodexRunner
 from .config import AppConfig
-from .errors import CatalogError, GenerationError
+from .errors import CatalogError, GenerationError, InkyBirdFrameError
 from .geo import ZipLocation, lookup_us_zip
 from .images import prepare_generated_plate
 from .models import ReferencePhoto
@@ -212,6 +212,27 @@ def _has_terminal_state(state_dir: Path, taxon_id: int) -> bool:
     ) or bool(list((state_dir / "failed").glob(f"{taxon_id}-*")))
 
 
+def record_failure(state_dir: Path, species: BirdSpecies, error: InkyBirdFrameError) -> Path:
+    existing = sorted((state_dir / "failed").glob(f"{species.taxon_id}-*"))
+    if existing:
+        return existing[-1]
+    destination = state_dir / "failed" / f"{species.taxon_id}-{_timestamp()}"
+    write_json_atomic(
+        destination / "failure.json",
+        {
+            "schema_version": 1,
+            "status": "failed",
+            "failed_at": datetime.now(UTC).replace(microsecond=0).isoformat(),
+            "taxon_id": species.taxon_id,
+            "common_name": species.common_name,
+            "scientific_name": species.scientific_name,
+            "error_type": type(error).__name__,
+            "error": str(error),
+        },
+    )
+    return destination
+
+
 def run_controller_cycle(config: AppConfig) -> dict[str, object]:
     with exclusive_cycle_lock(config.controller.state_dir):
         location, species_list = discover_species(config)
@@ -234,12 +255,14 @@ def run_controller_cycle(config: AppConfig) -> dict[str, object]:
                         "candidate": str(destination),
                     }
                 )
-            except (CatalogError, GenerationError) as exc:
+            except InkyBirdFrameError as exc:
+                failure_path = record_failure(config.controller.state_dir, species, exc)
                 failures.append(
                     {
                         "taxon_id": species.taxon_id,
                         "common_name": species.common_name,
                         "error": str(exc),
+                        "failure": str(failure_path),
                     }
                 )
 
