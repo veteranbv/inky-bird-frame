@@ -31,3 +31,7 @@ class CatalogError(InkyBirdFrameError):
 
 class GenerationError(InkyBirdFrameError):
     """Raised when Codex cannot produce or validate an artifact."""
+
+
+class QualityReviewError(GenerationError):
+    """Raised when a species exhausts its automated visual-review attempts."""

@@ -3,6 +3,7 @@ from __future__ import annotations
 import unittest
 from pathlib import Path
 from tempfile import TemporaryDirectory
+from unittest.mock import patch
 
 from inky_bird_frame.birds import ObservationWindow
 from inky_bird_frame.config import load_config
@@ -53,6 +54,20 @@ class ConfigTests(unittest.TestCase):
 
             with self.assertRaises(ConfigurationError):
                 load_config(path)
+
+    def test_resolves_bare_codex_name_from_path(self) -> None:
+        with TemporaryDirectory() as temporary:
+            path = Path(temporary) / "config.toml"
+            path.write_text(
+                CONFIG.replace(
+                    'codex_path = "/Applications/Codex.app/Contents/Resources/codex"',
+                    'codex_path = "codex"',
+                )
+            )
+            with patch("inky_bird_frame.config.which", return_value="/opt/local/bin/codex"):
+                config = load_config(path)
+
+        self.assertEqual(config.controller.codex_path, Path("/opt/local/bin/codex"))
 
 
 if __name__ == "__main__":

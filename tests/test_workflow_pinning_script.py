@@ -122,3 +122,4 @@ def test_review_gate_retrigger_accepts_only_exact_head_owner_requests() -> None:
 
     assert "github.event.comment.user.login == github.repository_owner" in workflow
     assert '[[ "${COMMENT_BODY}" != *"${HEAD_SHA}"* ]]' in workflow
+    assert "Skipping fork PR" not in workflow

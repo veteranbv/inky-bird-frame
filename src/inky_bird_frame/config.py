@@ -5,6 +5,7 @@ from __future__ import annotations
 import tomllib
 from dataclasses import dataclass
 from pathlib import Path
+from shutil import which
 from typing import Final
 
 from .birds import ObservationWindow, parse_observation_window
@@ -92,6 +93,14 @@ def _path(value: str, base_dir: Path) -> Path:
     return path if path.is_absolute() else (base_dir / path).resolve()
 
 
+def _executable_path(value: str, base_dir: Path) -> Path:
+    path = Path(value).expanduser()
+    if path.is_absolute() or len(path.parts) > 1:
+        return _path(value, base_dir)
+    resolved = which(value)
+    return Path(resolved) if resolved is not None else path
+
+
 def load_config(path: Path) -> AppConfig:
     try:
         raw = tomllib.loads(path.read_text())
@@ -130,7 +139,7 @@ def load_config(path: Path) -> AppConfig:
             workspace_dir=_path(_string(controller, "workspace_dir"), base_dir),
             catalog_dir=_path(_string(controller, "catalog_dir"), base_dir),
             state_dir=_path(_string(controller, "state_dir"), base_dir),
-            codex_path=_path(_string(controller, "codex_path"), base_dir),
+            codex_path=_executable_path(_string(controller, "codex_path"), base_dir),
             bind_host=_string(controller, "bind_host"),
             port=_integer(controller, "port"),
             references_per_species=_integer(controller, "references_per_species"),

@@ -10,7 +10,12 @@ from inky_bird_frame.birds import BirdSpecies
 from inky_bird_frame.catalog import candidate_directory, write_candidate_manifest
 from inky_bird_frame.config import load_config
 from inky_bird_frame.controller import generate_candidate, run_controller_cycle
-from inky_bird_frame.errors import DataSourceError, GenerationError, InsufficientReferencesError
+from inky_bird_frame.errors import (
+    DataSourceError,
+    GenerationError,
+    InsufficientReferencesError,
+    QualityReviewError,
+)
 from inky_bird_frame.geo import ZipLocation
 from inky_bird_frame.models import QualityReview, SpeciesProfileData
 from inky_bird_frame.prompts import PROMPT_VERSION
@@ -245,12 +250,17 @@ class ControllerTests(unittest.TestCase):
             ):
                 candidate = generate_candidate(config, species, config.controller.workspace_dir)
             manifest = json.loads((candidate / "manifest.json").read_text())
+            private_histories = list(
+                (config.controller.state_dir / "runs").glob("*/attempt-history.json")
+            )
 
         self.assertEqual(FakeRunner.corrections, [(), ("Crest is too short",)])
         self.assertEqual(manifest["generation"]["attempt"], 2)
         self.assertEqual(manifest["status"], "pending")
+        self.assertFalse((candidate / "attempt-history.json").exists())
+        self.assertEqual(len(private_histories), 1)
 
-    def test_expected_generation_failure_becomes_terminal(self) -> None:
+    def test_runtime_generation_failure_remains_eligible(self) -> None:
         species = BirdSpecies(9083, "Northern Cardinal", "Cardinalis cardinalis", 2, "test")
         location = ZipLocation("12345", "Exampleville", "XY", 1.0, 2.0)
         with TemporaryDirectory() as temporary:
@@ -269,7 +279,7 @@ class ControllerTests(unittest.TestCase):
 
             failures = list((config.controller.state_dir / "failed").glob("9083-*"))
 
-        self.assertEqual(len(failures), 1)
+        self.assertEqual(failures, [])
         self.assertEqual(result["eligible_count"], 1)
         failure_results = result["failures"]
         self.assertIsInstance(failure_results, list)
@@ -277,6 +287,32 @@ class ControllerTests(unittest.TestCase):
         self.assertIsInstance(first_failure, dict)
         if isinstance(first_failure, dict):
             self.assertEqual(first_failure["error"], "profile failed")
+            self.assertFalse(first_failure["terminal"])
+
+    def test_exhausted_quality_review_becomes_terminal(self) -> None:
+        species = BirdSpecies(9083, "Northern Cardinal", "Cardinalis cardinalis", 2, "test")
+        location = ZipLocation("12345", "Exampleville", "XY", 1.0, 2.0)
+        with TemporaryDirectory() as temporary:
+            config_path = Path(temporary) / "config.toml"
+            config_path.write_text(CONFIG)
+            config = load_config(config_path)
+            with (
+                patch(
+                    "inky_bird_frame.controller.discover_species",
+                    return_value=(location, [species]),
+                ),
+                patch("inky_bird_frame.controller.generate_candidate") as generate,
+            ):
+                generate.side_effect = QualityReviewError("review attempts exhausted")
+                result = run_controller_cycle(config)
+
+            failures = list((config.controller.state_dir / "failed").glob("9083-*"))
+
+        self.assertEqual(len(failures), 1)
+        failure_results = result["failures"]
+        self.assertIsInstance(failure_results, list)
+        if isinstance(failure_results, list):
+            self.assertTrue(failure_results[0]["terminal"])
 
 
 if __name__ == "__main__":
