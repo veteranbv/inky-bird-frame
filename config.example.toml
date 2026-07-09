@@ -9,11 +9,14 @@ window = "last-week"
 workspace_dir = "."
 catalog_dir = "catalog"
 state_dir = "var/controller"
-codex_path = "/Applications/Codex.app/Contents/Resources/codex"
+# Use an absolute path when a service manager does not inherit your shell PATH.
+codex_path = "codex"
 bind_host = "0.0.0.0"
 port = 8793
 references_per_species = 4
 generations_per_cycle = 1
+# Failed visual reviews are regenerated with their findings as corrective input.
+max_generation_attempts = 3
 
 [display_node]
 controller_url = "http://controller.example:8793"

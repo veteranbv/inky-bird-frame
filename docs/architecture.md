@@ -13,8 +13,10 @@ The controller owns discovery and generation. One locked cycle:
 5. creates a sourced, structured species profile through Codex;
 6. generates a plate through the built-in `$imagegen` skill;
 7. prepares portrait and display assets;
-8. runs a second structured Codex visual review; and
-9. places passing output in the pending queue.
+8. runs an independent, sourced Codex factual and visual review;
+9. regenerates failed reviews with corrective findings, within a configured
+   attempt limit; and
+10. atomically publishes passing output through the pending queue.
 
 The controller also exposes a read-only HTTP catalog:
 
@@ -33,18 +35,17 @@ The display node does not discover birds or generate art. Each timer cycle:
 5. writes it to a local cache atomically; and
 6. updates the Inky panel before advancing state.
 
-This pull model avoids embedding the display node's address in controller
-state. Moving the Pi from temporary Ethernet to Wi-Fi does not change catalog
-or generation configuration.
+This pull model keeps display addressing out of controller state and limits the
+node to a read-only catalog relationship.
 
 ## State model
 
 | State | Meaning | Automatic generation allowed |
 | --- | --- | --- |
-| approved | Human accepted and published | No |
-| pending | Automated review passed; awaiting human | No |
-| rejected | Human rejected | No |
-| failed | Generation or automated review failed | No |
+| approved | Independent AI review passed; published immutably | No |
+| pending | Passing candidate awaiting atomic publication or crash recovery | No |
+| rejected | Operator override rejected a candidate | No |
+| failed | Generation exhausted its bounded attempts | No |
 | eligible | No terminal state exists | Yes |
 
 `retry TAXON_ID` archives rejected or failed state and makes that taxon
@@ -65,9 +66,10 @@ state and are not redistributed in the catalog.
 
 Deterministic code handles discovery parameters, terminal-state selection,
 license filtering, reference checksums, prompt assembly, image dimensions,
-rotation, catalog checksums, approval, serving, downloading, and display
+rotation, catalog checksums, publication, serving, downloading, and display
 rotation.
 
-Codex handles factual synthesis, image generation, and visual review. Those
-steps are intentionally bounded by structured schemas, attached references,
-versioned prompts, terminal failure state, and mandatory human approval.
+Codex handles factual synthesis, image generation, and independent factual and
+visual review. Those steps are bounded by structured schemas, attached
+references, sourced verification, versioned prompts, configurable attempts,
+and a terminal failure state. Human approval is not required for normal flow.

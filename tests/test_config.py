@@ -24,6 +24,7 @@ bind_host = "0.0.0.0"
 port = 8793
 references_per_species = 4
 generations_per_cycle = 1
+max_generation_attempts = 3
 
 [display_node]
 controller_url = "http://controller.test:8793/"
@@ -42,6 +43,7 @@ class ConfigTests(unittest.TestCase):
         self.assertEqual(config.discovery.observation_window, ObservationWindow.LAST_30_DAYS)
         self.assertEqual(config.discovery.radius_km, 16)
         self.assertEqual(config.controller.catalog_dir, (Path(temporary) / "catalog").resolve())
+        self.assertEqual(config.controller.max_generation_attempts, 3)
         self.assertEqual(config.display_node.controller_url, "http://controller.test:8793")
 
     def test_rejects_invalid_zip(self) -> None:

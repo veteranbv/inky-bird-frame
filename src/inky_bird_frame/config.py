@@ -39,6 +39,7 @@ class ControllerConfig:
     port: int
     references_per_species: int
     generations_per_cycle: int
+    max_generation_attempts: int
 
 
 @dataclass(frozen=True)
@@ -76,6 +77,14 @@ def _integer(section: dict[str, object], name: str, *, minimum: int = 1) -> int:
     if not isinstance(value, int) or isinstance(value, bool) or value < minimum:
         raise ConfigurationError(f"{name} must be an integer greater than or equal to {minimum}")
     return value
+
+
+def _optional_integer(
+    section: dict[str, object], name: str, *, default: int, minimum: int = 1
+) -> int:
+    if name not in section:
+        return default
+    return _integer(section, name, minimum=minimum)
 
 
 def _path(value: str, base_dir: Path) -> Path:
@@ -126,6 +135,9 @@ def load_config(path: Path) -> AppConfig:
             port=_integer(controller, "port"),
             references_per_species=_integer(controller, "references_per_species"),
             generations_per_cycle=_integer(controller, "generations_per_cycle"),
+            max_generation_attempts=_optional_integer(
+                controller, "max_generation_attempts", default=3
+            ),
         ),
         display_node=DisplayNodeConfig(
             controller_url=controller_url,

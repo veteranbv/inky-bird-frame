@@ -8,7 +8,7 @@ from pathlib import Path
 from typing import Final
 from urllib.parse import urlencode, urlsplit, urlunsplit
 
-from .errors import DataSourceError, MissingDependencyError
+from .errors import DataSourceError, InsufficientReferencesError, MissingDependencyError
 from .http import get_bytes, get_json, write_bytes_atomic
 from .models import ReferencePhoto
 
@@ -119,7 +119,7 @@ def parse_reference_candidates(payload: object, count: int) -> list[ReferenceCan
             break
 
     if len(selected) < count:
-        raise DataSourceError(
+        raise InsufficientReferencesError(
             f"Only {len(selected)} suitable licensed reference photos were found; {count} required"
         )
     return selected

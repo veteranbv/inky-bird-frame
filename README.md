@@ -1,68 +1,106 @@
 # Inky Bird Frame
 
-Inky Bird Frame turns nearby public bird observations into reusable scientific
-field-journal plates and rotates approved plates on a Pimoroni Inky Impression
-Spectra 13.3 display.
+Turn birds observed near you into a rotating collection of illustrated,
+scientific field-journal plates on a color e-paper display.
 
-The system has two roles:
+<table>
+  <tr>
+    <td width="50%" align="center">
+      <img src="catalog/species/12942-eastern-bluebird/portrait.png" alt="Eastern Bluebird scientific field-journal plate" width="100%">
+      <br><strong>Eastern Bluebird</strong> · <em>Sialia sialis</em>
+    </td>
+    <td width="50%" align="center">
+      <img src="catalog/species/9083-northern-cardinal/portrait.png" alt="Northern Cardinal scientific field-journal plate" width="100%">
+      <br><strong>Northern Cardinal</strong> · <em>Cardinalis cardinalis</em>
+    </td>
+  </tr>
+</table>
 
-- The **controller** discovers species, downloads licensed reference photos,
-  researches species facts, generates a candidate through Codex, runs visual
-  quality review, and serves the approved catalog.
-- The **display node** pulls approved assets, verifies their checksums, and
-  rotates them on the Inky panel.
+The frame follows public bird observations within a configurable distance and
+rolling time window. When a new species appears, a controller researches it,
+collects licensed reference photographs, creates a plate through Codex, and
+subjects the result to an independent factual and visual review. Passing plates
+join an immutable, reusable catalog; a lightweight Raspberry Pi rotates that
+catalog on the display.
 
-Discovery location is private controller configuration. Approved images and
-manifests contain no ZIP code, coordinates, observation dates, or local place
-names, so the catalog can be reused and published.
+## How it works
 
-## Pipeline
+```mermaid
+flowchart LR
+    A["Local observations"] --> B["Species queue"]
+    B --> C["Facts + licensed references"]
+    C --> D["Field-journal plate"]
+    D --> E{"Independent AI review"}
+    E -->|pass| F["Immutable public catalog"]
+    E -->|revise| D
+    F --> G["E-paper display"]
+```
 
-1. Resolve a configured US ZIP code with Zippopotam.us.
-2. Query iNaturalist for bird species within the configured radius and rolling
-   observation window.
-3. Skip taxa already approved, pending, rejected, or failed.
-4. Download multiple research-grade iNaturalist reference photos from distinct
-   observers. Only CC0 and CC BY photos are accepted.
-5. Use the ChatGPT-authenticated Codex CLI to research a cited species profile.
-6. Attach every reference photo and the species-specific profile to the
-   versioned image prompt in
-   [`src/inky_bird_frame/prompts.py`](src/inky_bird_frame/prompts.py).
-7. Run a separate structured visual review against the profile and references.
-8. Stage passing work as `pending`. A human must explicitly approve it.
-9. Publish approved images to the immutable catalog and serve them to displays.
+The system has two deliberately small roles:
 
-An approved taxon is never regenerated implicitly. Rejected or failed work is
-also terminal until an operator runs `retry`.
+- The **controller** discovers species, downloads references, researches facts,
+  generates and reviews candidates, and serves the approved catalog.
+- The **display node** downloads approved assets, verifies their checksums, and
+  rotates them on the Inky panel. It does no AI or discovery work.
 
-## Requirements
+Discovery location is private controller configuration. Approved plates and
+manifests contain no ZIP code, coordinates, observation dates, local place
+names, network details, or machine paths. A plate generated for one installation
+can therefore be reused by every installation.
+
+## Trust model
+
+Generation is not treated as approval. For every candidate, a separate Codex
+run:
+
+1. independently verifies the profile against at least two authoritative
+   sources;
+2. compares anatomy, plumage, proportions, and field marks with every reference
+   photograph;
+3. checks scientific and common names, measurements, labels, and location
+   neutrality; and
+4. returns structured scores and concrete findings.
+
+A failed review becomes corrective input for the next attempt. Attempts are
+bounded by configuration, and exhausted work stops for inspection rather than
+publishing. Once a taxon passes, it is never regenerated implicitly.
+
+Deterministic code owns selection, licensing rules, checksums, dimensions,
+rotation, publication, serving, and display state. Codex is limited to sourced
+fact synthesis, illustration, and independent review.
+
+## Hardware
 
 Controller:
 
-- macOS or Linux with Python 3.11 or newer
-- A Codex CLI session authenticated with a ChatGPT subscription
-- Network access to Codex, iNaturalist, Zippopotam.us, and cited research sites
+- macOS or Linux host with Python 3.11 or newer
+- Codex CLI authenticated with a ChatGPT subscription
+- network access to Codex, iNaturalist, Zippopotam.us, and research sources
 
 Display node:
 
-- Raspberry Pi with a Pimoroni Inky Impression Spectra 13.3
-- Python 3.11 or newer
-- Network access to the controller HTTP service
+- Raspberry Pi capable of driving a Pimoroni Inky Impression Spectra 13.3
+- storage, power supply, and network adapter appropriate for the chosen Pi
+- Python 3.11 or newer with Pimoroni's Inky package available
+- network access to the controller HTTP service
 
-The display reports a `1600x1200` landscape canvas. Plates are authored at
-`1200x1600` and rotated left for portrait mounting.
+The panel reports a `1600x1200` landscape canvas. Plates are authored at
+`1200x1600` and rotated left for a portrait-mounted frame.
 
-## Install
+## Quick start
 
 ```bash
 uv sync --extra dev --locked
 cp config.example.toml config.toml
+uv run inky-bird-frame discover --config config.toml
 ```
 
 Set the private discovery ZIP, radius, rolling window, local paths, and
-controller URL in `config.toml`. Do not commit that file.
+controller URL in `config.toml`. The file is ignored by Git and must remain
+private.
 
-On the Pi, install the hardware extra into the Pimoroni environment:
+On the Pi, install the hardware extra into the Python environment that contains
+the Pimoroni drivers:
 
 ```bash
 python -m pip install -e '.[inky]'
@@ -71,42 +109,34 @@ python -m pip install -e '.[inky]'
 ## Operate
 
 ```bash
-# Confirm local discovery without generating anything.
-uv run inky-bird-frame discover --config config.toml
-
-# Generate at most generations_per_cycle missing candidates.
+# Generate and AI-review a bounded number of missing species.
 uv run inky-bird-frame controller-cycle --config config.toml
 
 # Inspect approved, pending, and failed work.
 uv run inky-bird-frame status --config config.toml
 
-# Publish a reviewed candidate. This is the only normal publish path.
-uv run inky-bird-frame approve --config config.toml TAXON_ID
-
-# Reject or explicitly make a terminal candidate eligible again.
-uv run inky-bird-frame reject --config config.toml TAXON_ID --reason "..."
-uv run inky-bird-frame retry --config config.toml TAXON_ID
-
-# Controller and display-node service entry points.
+# Serve the catalog and rotate the next approved plate.
 uv run inky-bird-frame serve --config config.toml
 uv run inky-bird-frame display-cycle --config config.toml
 ```
 
 Observation windows are `last-day`, `last-week`, `last-30-days`, and
-`all-time`. Distance is configured as `radius_km`; 8 km is approximately 5
-miles.
+`all-time`. Discovery distance is configured in kilometers with `radius_km`.
+Recovery and operator-override commands are documented in
+[`docs/operations.md`](docs/operations.md).
 
-## Catalog
+## Reusable catalog
 
-Approved plates live under `catalog/species/<taxon-id>-<slug>/` with:
+Every approved species lives under `catalog/species/<taxon-id>-<slug>/`:
 
 - `portrait.png`: location-neutral `1200x1600` source plate
 - `display.png`: hardware-ready `1600x1200` image
-- `manifest.json`: facts, factual sources, reference provenance, quality scores,
-  generation metadata, and SHA-256 checksums
+- `manifest.json`: facts, research and review sources, reference provenance,
+  quality scores, generation metadata, and SHA-256 checksums
 
-Downloaded reference photos, run logs, pending work, rejected work, and display
-state live under `var/` and are ignored by Git.
+Downloaded source photographs, run logs, pending work, rejected work, and
+display state stay under ignored runtime storage. Reference licenses and source
+URLs remain recorded without redistributing the source bitmaps.
 
 ## Development
 

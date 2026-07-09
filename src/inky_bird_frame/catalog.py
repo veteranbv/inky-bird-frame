@@ -8,6 +8,7 @@ import shutil
 from dataclasses import dataclass
 from datetime import UTC, datetime
 from pathlib import Path
+from tempfile import NamedTemporaryFile
 from typing import cast
 
 from .birds import BirdSpecies
@@ -58,9 +59,20 @@ def sha256_file(path: Path) -> str:
 
 def write_json_atomic(path: Path, value: object) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
-    temporary = path.with_name(f".{path.name}.tmp")
-    temporary.write_text(json.dumps(value, indent=2, sort_keys=True) + "\n")
-    temporary.replace(path)
+    with NamedTemporaryFile(
+        "w",
+        encoding="utf-8",
+        dir=path.parent,
+        prefix=f".{path.name}.",
+        suffix=".tmp",
+        delete=False,
+    ) as handle:
+        handle.write(json.dumps(value, indent=2, sort_keys=True) + "\n")
+        temporary = Path(handle.name)
+    try:
+        temporary.replace(path)
+    finally:
+        temporary.unlink(missing_ok=True)
 
 
 def read_json(path: Path) -> object:
@@ -96,6 +108,8 @@ def write_candidate_manifest(
     *,
     generator: str,
     prompt_version: str,
+    attempt: int = 1,
+    max_attempts: int = 1,
 ) -> Path:
     portrait_path = destination / "portrait.png"
     display_path = destination / "display.png"
@@ -114,6 +128,8 @@ def write_candidate_manifest(
             "generator": generator,
             "prompt_version": prompt_version,
             "generated_at": utc_now(),
+            "attempt": attempt,
+            "max_attempts": max_attempts,
         },
         "quality_review": review.as_dict(),
         "assets": {

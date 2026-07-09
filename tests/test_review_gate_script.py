@@ -30,8 +30,20 @@ class ReviewGateModule(Protocol):
         self, state: dict[str, object], head_sha: str, head_time: datetime | None
     ) -> datetime | None: ...
 
+    def _codex_setup_required(
+        self,
+        state: dict[str, object],
+        head_time: datetime | None,
+        head_sha: str | None = None,
+    ) -> bool: ...
+
     def engaged_bots(
-        self, state: dict[str, object], repo: str, head_sha: str, head_time: datetime | None
+        self,
+        state: dict[str, object],
+        repo: str,
+        head_sha: str,
+        head_time: datetime | None,
+        owner_login: str | None = None,
     ) -> set[str]: ...
 
     def collect_findings(
@@ -108,6 +120,149 @@ def test_codex_reaction_can_engage_when_newer_than_pushed_date(
     }
 
 
+def test_codex_engagement_requires_owner_request_for_exact_head() -> None:
+    review_gate = _load_review_gate()
+    state = _state_with_commit(pushed="2026-06-15T11:59:00Z", committed="2026-06-01T12:00:00Z")
+    head_time = review_gate._head_time(state, "abc123")
+
+    assert (
+        review_gate.engaged_bots(
+            state,
+            "owner/repo",
+            "abc123",
+            head_time,
+            owner_login="owner",
+        )
+        == set()
+    )
+
+    state["comments"] = {
+        "nodes": [
+            {
+                "body": "@codex review\n\nhead: abc123",
+                "createdAt": "2026-06-15T11:59:30Z",
+                "author": {"login": "owner"},
+            }
+        ]
+    }
+
+    assert review_gate.engaged_bots(
+        state,
+        "owner/repo",
+        "abc123",
+        head_time,
+        owner_login="owner",
+    ) == {review_gate.CODEX_LOGIN}
+
+
+def test_codex_engagement_must_follow_latest_owner_request() -> None:
+    review_gate = _load_review_gate()
+    state = _state_with_commit(pushed="2026-06-15T11:59:00Z", committed="2026-06-01T12:00:00Z")
+    state["reviews"] = {
+        "nodes": [
+            {
+                "databaseId": 10,
+                "submittedAt": "2026-06-15T12:01:00Z",
+                "author": {"login": "chatgpt-codex-connector"},
+                "commit": {"oid": "abc123"},
+            }
+        ]
+    }
+    state["comments"] = {
+        "nodes": [
+            {
+                "body": "Codex Review: Didn't find any major issues.\n\nReviewed commit: abc123",
+                "createdAt": "2026-06-15T12:02:00Z",
+                "author": {"login": "chatgpt-codex-connector"},
+            },
+            {
+                "body": "@codex review\n\nhead: abc123",
+                "createdAt": "2026-06-15T12:03:00Z",
+                "author": {"login": "owner"},
+            },
+        ]
+    }
+    head_time = review_gate._head_time(state, "abc123")
+
+    assert (
+        review_gate.engaged_bots(
+            state,
+            "owner/repo",
+            "abc123",
+            head_time,
+            owner_login="owner",
+        )
+        == set()
+    )
+
+    state["reactions"] = {
+        "nodes": [
+            {
+                "createdAt": "2026-06-15T12:04:00Z",
+                "user": {"login": "chatgpt-codex-connector"},
+            }
+        ]
+    }
+    assert review_gate.engaged_bots(
+        state,
+        "owner/repo",
+        "abc123",
+        head_time,
+        owner_login="owner",
+    ) == {review_gate.CODEX_LOGIN}
+
+
+def test_codex_setup_comment_blocks_reaction_engagement() -> None:
+    review_gate = _load_review_gate()
+    state = _state_with_commit(pushed="2026-06-15T11:59:00Z", committed="2026-06-01T12:00:00Z")
+    state["comments"] = {
+        "nodes": [
+            {
+                "body": "To use Codex here, create a Codex account and connect to github.",
+                "createdAt": "2026-06-15T12:00:01Z",
+                "author": {"login": "chatgpt-codex-connector"},
+            }
+        ]
+    }
+
+    head_time = review_gate._head_time(state, "abc123")
+
+    assert review_gate._codex_setup_required(state, head_time)
+
+
+def test_codex_setup_inline_comment_blocks_latest_head_review() -> None:
+    review_gate = _load_review_gate()
+    state = _state_with_commit(pushed="2026-06-15T11:59:00Z", committed="2026-06-01T12:00:00Z")
+    state["reviews"] = {
+        "nodes": [
+            {
+                "databaseId": 10,
+                "submittedAt": "2026-06-15T12:00:00Z",
+                "author": {"login": "chatgpt-codex-connector"},
+                "commit": {"oid": "abc123"},
+            }
+        ]
+    }
+    state["reviewThreads"] = {
+        "nodes": [
+            {
+                "comments": {
+                    "nodes": [
+                        {
+                            "author": {"login": "chatgpt-codex-connector"},
+                            "body": "To use Codex here, create an environment for this repo.",
+                            "pullRequestReview": {"databaseId": 10},
+                        }
+                    ]
+                }
+            }
+        ]
+    }
+    head_time = review_gate._head_time(state, "abc123")
+
+    assert review_gate._codex_setup_required(state, head_time, "abc123")
+
+
 def test_codex_reaction_can_engage_when_newer_than_codex_request_comment(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
@@ -118,7 +273,7 @@ def test_codex_reaction_can_engage_when_newer_than_codex_request_comment(
             {
                 "body": "@codex review\n\nhead: abc123",
                 "createdAt": "2026-06-15T11:59:00Z",
-                "author": {"login": "github-actions"},
+                "author": {"login": "owner"},
             }
         ]
     }
@@ -426,7 +581,7 @@ def test_engagement_poll_refreshes_head_time_from_updated_pr_state(
             {
                 "body": "@codex review\n\nhead: abc123",
                 "createdAt": "2026-06-15T11:59:00Z",
-                "author": {"login": "github-actions"},
+                "author": {"login": "owner"},
             }
         ]
     }

@@ -18,7 +18,7 @@ concurrency:
 
 jobs:
   deploy:
-    if: github.actor == 'veteranbv' && github.ref == 'refs/heads/main'
+    if: github.actor == github.repository_owner && github.ref == 'refs/heads/main'
     runs-on: [self-hosted, macOS, ARM64, inky-bird-controller]
     timeout-minutes: 30
     steps:
@@ -32,4 +32,13 @@ jobs:
 
       - name: Deploy display node
         if: inputs.deploy_display_node
-        run: ./deploy/install-display-node.sh
+        run: |
+          set -euo pipefail
+          deployment_env="$HOME/Library/Application Support/Inky Bird Frame/deployment.env"
+          test -f "$deployment_env"
+          set -a
+          # Deployment details are intentionally machine-local.
+          # shellcheck disable=SC1090
+          source "$deployment_env"
+          set +a
+          ./deploy/install-display-node.sh

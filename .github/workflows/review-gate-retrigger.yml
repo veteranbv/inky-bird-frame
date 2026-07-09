@@ -31,9 +31,9 @@ permissions:
 
 jobs:
   retrigger:
-    # Only bot reviews and Codex clean issue comments can change the gate's
-    # verdict. Skip fork PRs too: their GITHUB_TOKEN is read-only, so the
-    # re-run API call would fail.
+    # Bot reviews, Codex clean comments, and exact-head owner review requests
+    # can change the gate's verdict. Skip fork PRs too: their GITHUB_TOKEN is
+    # read-only, so the re-run API call would fail.
     if: >-
       (
         github.event_name == 'pull_request_review'
@@ -46,6 +46,12 @@ jobs:
         && github.event.comment.user.login == 'chatgpt-codex-connector[bot]'
         && contains(github.event.comment.body, 'Codex Review:')
       )
+      || (
+        github.event_name == 'issue_comment'
+        && github.event.issue.pull_request
+        && github.event.comment.user.login == github.repository_owner
+        && contains(github.event.comment.body, '@codex review')
+      )
     runs-on: ubuntu-latest
     steps:
       - name: Re-run the review-gate job for this head SHA
@@ -54,6 +60,9 @@ jobs:
           REPO: ${{ github.repository }}
           PR_NUMBER: ${{ github.event.pull_request.number || github.event.issue.number }}
           HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          COMMENT_AUTHOR: ${{ github.event.comment.user.login }}
+          COMMENT_BODY: ${{ github.event.comment.body }}
+          REPO_OWNER: ${{ github.repository_owner }}
         # Decision table for the gate run's status at event time:
         #   completed   -> re-run: its verdict may predate this review.
         #   queued      -> skip: it hasn't fetched PR state yet, so its run
@@ -76,6 +85,11 @@ jobs:
               exit 0
             fi
             HEAD_SHA=$(jq -r '.head.sha' <<<"${pr_json}")
+            if [ "${COMMENT_AUTHOR}" = "${REPO_OWNER}" ] \
+              && [[ "${COMMENT_BODY}" != *"${HEAD_SHA}"* ]]; then
+              echo "Owner review request does not name the exact current head; skipping."
+              exit 0
+            fi
           fi
 
           deadline=$(( SECONDS + 150 ))

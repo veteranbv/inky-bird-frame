@@ -3,12 +3,12 @@ set -euo pipefail
 
 root=$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)
 display_host=${INKY_BIRD_DISPLAY_HOST:?Set INKY_BIRD_DISPLAY_HOST to the display node address}
-display_user=${INKY_BIRD_DISPLAY_USER:-serveradmin}
-ssh_key=${INKY_BIRD_DISPLAY_SSH_KEY:-"${HOME}/.ssh/inky-bird-frame-display"}
+display_user=${INKY_BIRD_DISPLAY_USER:?Set INKY_BIRD_DISPLAY_USER to the SSH user}
+ssh_key=${INKY_BIRD_DISPLAY_SSH_KEY:?Set INKY_BIRD_DISPLAY_SSH_KEY to the SSH private key path}
+remote_app=${INKY_BIRD_DISPLAY_APP_DIR:?Set INKY_BIRD_DISPLAY_APP_DIR to the remote application directory}
+remote_config=${INKY_BIRD_DISPLAY_CONFIG_PATH:?Set INKY_BIRD_DISPLAY_CONFIG_PATH to the remote config path}
+remote_venv=${INKY_BIRD_DISPLAY_VENV:?Set INKY_BIRD_DISPLAY_VENV to the remote Python environment}
 remote="${display_user}@${display_host}"
-remote_app="/home/${display_user}/Services/inky-bird-frame"
-remote_config="/home/${display_user}/.config/inky-bird-frame/config.toml"
-remote_venv="/home/${display_user}/.virtualenvs/pimoroni"
 ssh_options=(-i "${ssh_key}" -o BatchMode=yes -o IdentitiesOnly=yes)
 
 if [ ! -f "${ssh_key}" ]; then
