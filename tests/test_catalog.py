@@ -51,15 +51,16 @@ class CatalogTests(unittest.TestCase):
 
         entries = rebuild_catalog_index(catalog)
 
-        self.assertEqual(len(entries), 1)
+        self.assertEqual(len(entries), 2)
         self.assertEqual(entries[0].taxon_id, 12942)
+        self.assertEqual(entries[1].taxon_id, 9083)
         first_index = (catalog / "index.json").read_bytes()
 
         rebuild_catalog_index(catalog)
 
         self.assertEqual((catalog / "index.json").read_bytes(), first_index)
         payload = json.loads(first_index)
-        self.assertEqual(payload["generated_at"], entries[0].approved_at)
+        self.assertEqual(payload["generated_at"], max(entry.approved_at for entry in entries))
 
     def test_approval_is_explicit_and_cannot_overwrite(self) -> None:
         species = BirdSpecies(7513, "Carolina Wren", "Thryothorus ludovicianus", 5, "test")

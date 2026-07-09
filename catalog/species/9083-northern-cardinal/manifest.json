@@ -1,0 +1,135 @@
+{
+  "approved_at": "2026-07-09T19:05:59+00:00",
+  "assets": {
+    "display": {
+      "filename": "display.png",
+      "sha256": "ce4408e21b11027c5e51165de814de992c198ffcd53e35533e16c80af8113798"
+    },
+    "portrait": {
+      "filename": "portrait.png",
+      "sha256": "e2f6b72c23b00737b909183f4bcafd5e9127062423de7857cba8597ed8759667"
+    }
+  },
+  "common_name": "Northern Cardinal",
+  "generation": {
+    "generated_at": "2026-07-09T18:28:28+00:00",
+    "generator": "Codex subscription / built-in gpt-image-2",
+    "prompt_version": "field-journal-v1"
+  },
+  "profile": {
+    "behavior": "Diurnal, nonmigratory songbird that forages on or near the ground and in low shrubs, often in pairs; eats mostly seeds and fruit, adds insects, and feeds nestlings mainly insects. Both sexes sing clear whistles; breeding birds defend territories, while winter birds may gather in loose flocks.",
+    "common_name": "Northern Cardinal",
+    "family": "Cardinalidae",
+    "field_marks": [
+      "Prominent pointed crest on the crown",
+      "Short, very thick cone-shaped orange-red bill",
+      "Adult male bright scarlet red overall with black mask and throat",
+      "Adult female warm tan to olive-brown with reddish wings, tail, and crest",
+      "Long tail and compact, heavy-bodied songbird proportions",
+      "Dark eye set in the contrasting face pattern"
+    ],
+    "habitat": "Dense shrubby cover in forest edges, hedgerows, overgrown fields, marshy thickets, parks, gardens, backyards, woodlots, and ornamental plantings; nests are usually hidden in dense foliage, shrubs, vines, or thickets.",
+    "measurements": {
+      "length": "8.3-9.1 in (21-23 cm)",
+      "weight": "1.5-1.7 oz (42-48 g)",
+      "wingspan": "9.8-12.2 in (25-31 cm)"
+    },
+    "palette": [
+      "scarlet red",
+      "warm tan-brown",
+      "red-orange",
+      "black",
+      "soft gray-brown"
+    ],
+    "scientific_name": "Cardinalis cardinalis",
+    "sources": [
+      {
+        "title": "Northern Cardinal Identification, All About Birds, Cornell Lab of Ornithology",
+        "url": "https://www.allaboutbirds.org/guide/Northern_Cardinal/id"
+      },
+      {
+        "title": "Northern Cardinal Life History, All About Birds, Cornell Lab of Ornithology",
+        "url": "https://www.allaboutbirds.org/guide/Northern_Cardinal/lifehistory"
+      },
+      {
+        "title": "Cardinalis cardinalis, Animal Diversity Web, University of Michigan Museum of Zoology",
+        "url": "https://animaldiversity.org/accounts/Cardinalis_cardinalis/"
+      }
+    ],
+    "taxon_id": 9083
+  },
+  "quality_review": {
+    "anatomy_accuracy": 4,
+    "composition_quality": 5,
+    "findings": [
+      "Main male cardinal has correct one head, one beak, two legs, one tail, and no duplicated or malformed major body parts; the far wing is not separately visible in the side-view pose but no extra wing is present.",
+      "Plumage and field marks are strong: pointed crest, orange-red cone bill, black face/throat mask, scarlet male body, dark eye, long tail, and compact songbird proportions are represented.",
+      "Minor anatomy issue: the tail appears slightly long and narrow relative to the body, and the feet/toes are somewhat stylized, but not materially wrong for the species.",
+      "Visible text matches the expected common name, scientific name, family, measurements, habitat, behavior, field marks, and palette with no material factual errors observed.",
+      "No place name, ZIP code, coordinates, map, or local-observation detail appears."
+    ],
+    "location_free": true,
+    "passed": true,
+    "species_accuracy": 5,
+    "text_accuracy": 5
+  },
+  "references": [
+    {
+      "attribution": "(c) Daughter Dad, some rights reserved (CC BY)",
+      "filename": "01-517002723.jpg",
+      "height": 1152,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/517002723/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 287527828,
+      "observer": "daughterdad",
+      "photo_id": 517002723,
+      "sha256": "3493bd3a9d6bfb9a5068677abc87743964ade68c9b8e1084bfbef9ee4908ec07",
+      "source_url": "https://www.inaturalist.org/observations/287527828",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) Violet T., some rights reserved (CC BY)",
+      "filename": "02-173444344.jpeg",
+      "height": 1181,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/173444344/large.jpeg",
+      "license_code": "cc-by",
+      "observation_id": 103607618,
+      "observer": "nflicker101",
+      "photo_id": 173444344,
+      "sha256": "2cf58e5ef35d8f53104f052758698ffbfff931fe41e9e2e4c8feac67320b1918",
+      "source_url": "https://www.inaturalist.org/observations/103607618",
+      "width": 1284
+    },
+    {
+      "attribution": "(c) Michael, some rights reserved (CC BY)",
+      "filename": "03-618572036.jpg",
+      "height": 2048,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/618572036/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 339972251,
+      "observer": "mikeymacro",
+      "photo_id": 618572036,
+      "sha256": "7af43f5943191003638daabbb885af5838aa9b4bf1731255e6de375aa6b16ce0",
+      "source_url": "https://www.inaturalist.org/observations/339972251",
+      "width": 2048
+    },
+    {
+      "attribution": "no rights reserved",
+      "filename": "04-181847755.jpeg",
+      "height": 1234,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/181847755/large.jpeg",
+      "license_code": "cc0",
+      "observation_id": 108052676,
+      "observer": "vijaybarve",
+      "photo_id": 181847755,
+      "sha256": "8cd1fa938b3008171b67c166800800ac02b42fabba6bec89f79fd73322df29fa",
+      "source_url": "https://www.inaturalist.org/observations/108052676",
+      "width": 1600
+    }
+  ],
+  "schema_version": 1,
+  "scientific_name": "Cardinalis cardinalis",
+  "slug": "northern-cardinal",
+  "status": "approved",
+  "taxon_id": 9083
+}

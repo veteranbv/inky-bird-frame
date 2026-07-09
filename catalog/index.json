@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-09T00:00:00+00:00",
+  "generated_at": "2026-07-09T19:05:59+00:00",
   "schema_version": 1,
   "species": [
     {
@@ -12,6 +12,17 @@
       "scientific_name": "Sialia sialis",
       "slug": "eastern-bluebird",
       "taxon_id": 12942
+    },
+    {
+      "approved_at": "2026-07-09T19:05:59+00:00",
+      "common_name": "Northern Cardinal",
+      "display_path": "species/9083-northern-cardinal/display.png",
+      "display_sha256": "ce4408e21b11027c5e51165de814de992c198ffcd53e35533e16c80af8113798",
+      "portrait_path": "species/9083-northern-cardinal/portrait.png",
+      "portrait_sha256": "e2f6b72c23b00737b909183f4bcafd5e9127062423de7857cba8597ed8759667",
+      "scientific_name": "Cardinalis cardinalis",
+      "slug": "northern-cardinal",
+      "taxon_id": 9083
     }
   ]
 }
