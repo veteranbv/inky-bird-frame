@@ -70,6 +70,7 @@ CODEX_SETUP_REQUIRED = re.compile(r"To use Codex here,", re.IGNORECASE)
 CODEX_REVIEWED_COMMIT = re.compile(
     r"(?:\*\*)?Reviewed commit:(?:\*\*)?\s*`?([0-9a-f]{7,40})`?", re.IGNORECASE
 )
+CODEX_FULL_REVIEW = re.compile(r"###\s+💡\s+Codex Review", re.IGNORECASE)
 
 POLL_INTERVAL_SECONDS: Final = 15
 # Codex's re-review latency is not stable. It has been ~8.5 min in PR #71
@@ -94,6 +95,7 @@ query($owner: String!, $repo: String!, $pr: Int!) {
         nodes {
           databaseId
           submittedAt
+          body
           author { login }
           commit { oid }
         }
@@ -364,7 +366,13 @@ def _codex_setup_required(
 
     if head_sha is None or head_time is None:
         return False
-    latest_review_id = _latest_review_id_on_head(state, CODEX_LOGIN, head_sha, not_before=head_time)
+    latest_review_id = _latest_review_id_on_head(
+        state,
+        CODEX_LOGIN,
+        head_sha,
+        not_before=head_time,
+        require_full_review=False,
+    )
     if latest_review_id is None:
         return False
     threads_obj = state.get("reviewThreads")
@@ -424,6 +432,7 @@ def engaged_bots(
             if (
                 login in BOT_LABELS
                 and commit_sha == head_sha
+                and (login != CODEX_LOGIN or _is_full_codex_review(r, head_sha))
                 and submitted is not None
                 and (freshness_time is None or submitted >= freshness_time)
             ):
@@ -443,6 +452,7 @@ def _latest_review_id_on_head(
     bot_login: str,
     head_sha: str,
     not_before: datetime | None = None,
+    require_full_review: bool = True,
 ) -> int | None:
     """Return the databaseId of the bot's most recent review on `head_sha`,
     or None if it hasn't done a fresh review on this commit. Used to scope
@@ -456,6 +466,12 @@ def _latest_review_id_on_head(
             continue
         if _author_login(r) != bot_login:
             continue
+        if (
+            require_full_review
+            and bot_login == CODEX_LOGIN
+            and not _is_full_codex_review(r, head_sha)
+        ):
+            continue
         commit = r.get("commit")
         commit_sha = commit.get("oid") if isinstance(commit, dict) else None
         if commit_sha != head_sha:
@@ -468,6 +484,14 @@ def _latest_review_id_on_head(
         return None
     candidates.sort()
     return candidates[-1][1]
+
+
+def _is_full_codex_review(review: dict[str, object], head_sha: str) -> bool:
+    body = review.get("body")
+    if not isinstance(body, str) or not CODEX_FULL_REVIEW.search(body):
+        return False
+    match = CODEX_REVIEWED_COMMIT.search(body)
+    return match is not None and head_sha.lower().startswith(match.group(1).lower())
 
 
 def _codex_thumbed_up_head(state: dict[str, object], head_time: datetime | None) -> bool:
@@ -556,6 +580,8 @@ def _latest_review_time_on_head(
         if not isinstance(r, dict):
             continue
         if _author_login(r) != bot_login:
+            continue
+        if bot_login == CODEX_LOGIN and not _is_full_codex_review(r, head_sha):
             continue
         commit = r.get("commit")
         commit_sha = commit.get("oid") if isinstance(commit, dict) else None

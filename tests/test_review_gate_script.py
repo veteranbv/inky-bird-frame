@@ -92,6 +92,14 @@ def _state_with_commit(*, pushed: str | None, committed: str) -> dict[str, objec
     }
 
 
+def _full_codex_review_body(head_sha: str) -> str:
+    return (
+        "\n### 💡 Codex Review\n\n"
+        "Here are some automated review suggestions.\n\n"
+        f"**Reviewed commit:** `{head_sha[:10]}`"
+    )
+
+
 def test_codex_reaction_does_not_engage_when_pushed_date_missing(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
@@ -163,6 +171,7 @@ def test_codex_engagement_must_follow_latest_owner_request() -> None:
             {
                 "databaseId": 10,
                 "submittedAt": "2026-06-15T12:01:00Z",
+                "body": _full_codex_review_body("abc123"),
                 "author": {"login": "chatgpt-codex-connector"},
                 "commit": {"oid": "abc123"},
             }
@@ -210,6 +219,44 @@ def test_codex_engagement_must_follow_latest_owner_request() -> None:
         head_time,
         owner_login="owner",
     ) == {review_gate.CODEX_LOGIN}
+
+
+def test_empty_codex_task_review_does_not_satisfy_full_review_request() -> None:
+    review_gate = _load_review_gate()
+    state = _state_with_commit(pushed="2026-06-15T11:59:00Z", committed="2026-06-01T12:00:00Z")
+    state["comments"] = {
+        "nodes": [
+            {
+                "body": "@codex review\n\nhead: abc123",
+                "createdAt": "2026-06-15T12:00:00Z",
+                "author": {"login": "owner"},
+            }
+        ]
+    }
+    state["reactions"] = {"nodes": []}
+    state["reviews"] = {
+        "nodes": [
+            {
+                "databaseId": 10,
+                "submittedAt": "2026-06-15T12:01:00Z",
+                "body": "",
+                "author": {"login": "chatgpt-codex-connector"},
+                "commit": {"oid": "abc123"},
+            }
+        ]
+    }
+    head_time = review_gate._head_time(state, "abc123")
+
+    assert (
+        review_gate.engaged_bots(
+            state,
+            "owner/repo",
+            "abc123",
+            head_time,
+            owner_login="owner",
+        )
+        == set()
+    )
 
 
 def test_codex_setup_comment_blocks_reaction_engagement() -> None:
@@ -494,6 +541,7 @@ def test_newer_codex_review_overrides_older_clean_comment() -> None:
             {
                 "databaseId": 10,
                 "submittedAt": "2026-06-15T12:03:00Z",
+                "body": _full_codex_review_body("abc1234"),
                 "author": {"login": "chatgpt-codex-connector"},
                 "commit": {"oid": "abc1234"},
             }
@@ -521,6 +569,64 @@ def test_newer_codex_review_overrides_older_clean_comment() -> None:
     head_time = review_gate._head_time(state, "abc1234")
 
     assert review_gate._codex_clean_comment_time_on_head(state, "abc1234", head_time) is not None
+    assert len(review_gate.collect_findings(state, "abc1234", head_time)) == 1
+
+
+def test_empty_codex_task_review_does_not_supersede_full_review_findings() -> None:
+    review_gate = _load_review_gate()
+    state = _state_with_commit(pushed="2026-06-15T12:01:00Z", committed="2026-06-01T12:00:00Z")
+    state["headRefOid"] = "abc1234"
+    state["commits"] = {
+        "nodes": [
+            {
+                "commit": {
+                    "oid": "abc1234",
+                    "pushedDate": "2026-06-15T12:01:00Z",
+                    "committedDate": "2026-06-01T12:00:00Z",
+                }
+            }
+        ]
+    }
+    state["reactions"] = {"nodes": []}
+    state["reviews"] = {
+        "nodes": [
+            {
+                "databaseId": 10,
+                "submittedAt": "2026-06-15T12:02:00Z",
+                "body": _full_codex_review_body("abc1234"),
+                "author": {"login": "chatgpt-codex-connector"},
+                "commit": {"oid": "abc1234"},
+            },
+            {
+                "databaseId": 11,
+                "submittedAt": "2026-06-15T12:03:00Z",
+                "body": "",
+                "author": {"login": "chatgpt-codex-connector"},
+                "commit": {"oid": "abc1234"},
+            },
+        ]
+    }
+    state["reviewThreads"] = {
+        "nodes": [
+            {
+                "isResolved": False,
+                "comments": {
+                    "nodes": [
+                        {
+                            "databaseId": 1,
+                            "author": {"login": "chatgpt-codex-connector"},
+                            "body": "![P1 Badge](https://example.invalid/badge/P1-red.svg)\nissue",
+                            "path": "example.py",
+                            "line": 1,
+                            "pullRequestReview": {"databaseId": 10},
+                        }
+                    ]
+                },
+            }
+        ]
+    }
+    head_time = review_gate._head_time(state, "abc1234")
+
     assert len(review_gate.collect_findings(state, "abc1234", head_time)) == 1
 
 
