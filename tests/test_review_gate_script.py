@@ -155,6 +155,63 @@ def test_codex_engagement_requires_owner_request_for_exact_head() -> None:
     ) == {review_gate.CODEX_LOGIN}
 
 
+def test_codex_engagement_must_follow_latest_owner_request() -> None:
+    review_gate = _load_review_gate()
+    state = _state_with_commit(pushed="2026-06-15T11:59:00Z", committed="2026-06-01T12:00:00Z")
+    state["reviews"] = {
+        "nodes": [
+            {
+                "databaseId": 10,
+                "submittedAt": "2026-06-15T12:01:00Z",
+                "author": {"login": "chatgpt-codex-connector"},
+                "commit": {"oid": "abc123"},
+            }
+        ]
+    }
+    state["comments"] = {
+        "nodes": [
+            {
+                "body": "Codex Review: Didn't find any major issues.\n\nReviewed commit: abc123",
+                "createdAt": "2026-06-15T12:02:00Z",
+                "author": {"login": "chatgpt-codex-connector"},
+            },
+            {
+                "body": "@codex review\n\nhead: abc123",
+                "createdAt": "2026-06-15T12:03:00Z",
+                "author": {"login": "owner"},
+            },
+        ]
+    }
+    head_time = review_gate._head_time(state, "abc123")
+
+    assert (
+        review_gate.engaged_bots(
+            state,
+            "owner/repo",
+            "abc123",
+            head_time,
+            owner_login="owner",
+        )
+        == set()
+    )
+
+    state["reactions"] = {
+        "nodes": [
+            {
+                "createdAt": "2026-06-15T12:04:00Z",
+                "user": {"login": "chatgpt-codex-connector"},
+            }
+        ]
+    }
+    assert review_gate.engaged_bots(
+        state,
+        "owner/repo",
+        "abc123",
+        head_time,
+        owner_login="owner",
+    ) == {review_gate.CODEX_LOGIN}
+
+
 def test_codex_setup_comment_blocks_reaction_engagement() -> None:
     review_gate = _load_review_gate()
     state = _state_with_commit(pushed="2026-06-15T11:59:00Z", committed="2026-06-01T12:00:00Z")

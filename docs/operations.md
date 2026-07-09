@@ -19,22 +19,28 @@ Recommended schedule:
 The cycle limit and `max_generation_attempts` keep subscription use bounded.
 Only a candidate that passes the independent AI review is published.
 
-The trusted deployment runner reads display connection details from
+## Maintainer deployment on macOS
+
+The optional owner-only deployment workflow uses the included macOS controller
+installer. Its trusted runner reads display connection details from
 `~/Library/Application Support/Inky Bird Frame/deployment.env`:
 
 ```bash
 INKY_BIRD_DISPLAY_HOST=display-node-address
-INKY_BIRD_DISPLAY_USER=serveradmin
+INKY_BIRD_DISPLAY_USER=display-user
 INKY_BIRD_DISPLAY_SSH_KEY="$HOME/.ssh/inky-bird-frame-display"
+INKY_BIRD_DISPLAY_APP_DIR=/home/display-user/Services/inky-bird-frame
+INKY_BIRD_DISPLAY_CONFIG_PATH=/home/display-user/.config/inky-bird-frame/config.toml
+INKY_BIRD_DISPLAY_VENV=/home/display-user/.virtualenvs/inky-bird-frame
 ```
 
-Keep this file on the controller. It is not part of the repository.
+All six values are deployment-specific and required. Keep this file on the
+controller. It is not part of the repository.
 
 ## Inspect or override a candidate
 
 ```bash
 inky-bird-frame status --config /path/to/config.toml
-open /path/to/state/pending/TAXON_ID-SLUG/portrait.png
 ```
 
 Normal operation does not require a human approval. The commands below are
@@ -62,21 +68,3 @@ generation quota on it.
 - Controller unavailable: the current e-paper image remains visible. Display
   state is not advanced.
 - Checksum mismatch: the display refuses the asset and preserves current state.
-
-## Ethernet to Wi-Fi transition
-
-The display node requires only outbound HTTP access to the controller. Its own
-address is used for administration and monitoring, not by the application.
-
-When moving to Wi-Fi:
-
-1. connect the supported Wi-Fi adapter and configure the SSID locally;
-2. verify the Wi-Fi interface has a DHCP lease and reaches `/health` on the
-   controller;
-3. create the desired UniFi reservation for the Wi-Fi adapter's MAC address;
-4. update inventory, SSH deployment host, and monitoring to the reserved Wi-Fi
-   address;
-5. run `display-cycle --force`; and
-6. disconnect Ethernet only after the display and monitoring checks pass.
-
-No catalog or image needs to be regenerated.

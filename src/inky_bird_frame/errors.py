@@ -9,6 +9,10 @@ class DataSourceError(InkyBirdFrameError):
     """Raised when a remote data source cannot be used."""
 
 
+class InsufficientReferencesError(DataSourceError):
+    """Raised when a valid source response cannot satisfy reference policy."""
+
+
 class UnsupportedSpeciesError(InkyBirdFrameError):
     """Raised when no renderer exists for the requested species."""
 

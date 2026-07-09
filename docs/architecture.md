@@ -35,9 +35,8 @@ The display node does not discover birds or generate art. Each timer cycle:
 5. writes it to a local cache atomically; and
 6. updates the Inky panel before advancing state.
 
-This pull model avoids embedding the display node's address in controller
-state. Moving the Pi from temporary Ethernet to Wi-Fi does not change catalog
-or generation configuration.
+This pull model keeps display addressing out of controller state and limits the
+node to a read-only catalog relationship.
 
 ## State model
 

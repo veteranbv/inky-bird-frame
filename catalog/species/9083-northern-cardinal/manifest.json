@@ -59,19 +59,33 @@
     "taxon_id": 9083
   },
   "quality_review": {
-    "anatomy_accuracy": 4,
+    "anatomy_accuracy": 5,
     "composition_quality": 5,
     "findings": [
-      "Main male cardinal has correct one head, one beak, two legs, one tail, and no duplicated or malformed major body parts; the far wing is not separately visible in the side-view pose but no extra wing is present.",
-      "Plumage and field marks are strong: pointed crest, orange-red cone bill, black face/throat mask, scarlet male body, dark eye, long tail, and compact songbird proportions are represented.",
-      "Minor anatomy issue: the tail appears slightly long and narrow relative to the body, and the feet/toes are somewhat stylized, but not materially wrong for the species.",
-      "Visible text matches the expected common name, scientific name, family, measurements, habitat, behavior, field marks, and palette with no material factual errors observed.",
+      "Verified identity: the plate depicts an adult male Northern Cardinal (Cardinalis cardinalis) with one head, one thick orange-red conical bill, two legs, two wings (one shown in profile and both represented in the wing study), and one long tail.",
+      "Plumage and field marks are accurate: scarlet-red male, black facial mask and throat, pointed crest, dark eye, heavy cone-shaped bill, compact body, and long tail agree with the supplied references and independent sources.",
+      "All visible taxonomic and measurement claims are accurate: family Cardinalidae; length 8.3\u20139.1 in (21\u201323 cm); wingspan 9.8\u201312.2 in (25\u201331 cm); weight 1.5\u20131.7 oz (42\u201348 g).",
+      "Habitat, behavior, and field-mark text is consistent with independent Cornell, NPS, and university references. No material factual or species errors found.",
       "No place name, ZIP code, coordinates, map, or local-observation detail appears."
     ],
     "location_free": true,
     "passed": true,
     "species_accuracy": 5,
-    "text_accuracy": 5
+    "text_accuracy": 5,
+    "verification_sources": [
+      {
+        "title": "Northern Cardinal Identification, All About Birds, Cornell Lab of Ornithology",
+        "url": "https://www.allaboutbirds.org/guide/Northern_cardinal/id"
+      },
+      {
+        "title": "Northern Cardinal, Chattahoochee River National Recreation Area, U.S. National Park Service",
+        "url": "https://www.nps.gov/chat/learn/nature/northern-cardinal.htm"
+      },
+      {
+        "title": "Cardinalis cardinalis, Animal Diversity Web, University of Michigan Museum of Zoology",
+        "url": "https://animaldiversity.org/accounts/Cardinalis_cardinalis/"
+      }
+    ]
   },
   "references": [
     {

@@ -18,7 +18,7 @@ concurrency:
 
 jobs:
   deploy:
-    if: github.actor == 'veteranbv' && github.ref == 'refs/heads/main'
+    if: github.actor == github.repository_owner && github.ref == 'refs/heads/main'
     runs-on: [self-hosted, macOS, ARM64, inky-bird-controller]
     timeout-minutes: 30
     steps:

@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import unittest
 
-from inky_bird_frame.errors import DataSourceError
+from inky_bird_frame.errors import InsufficientReferencesError
 from inky_bird_frame.references import parse_reference_candidates, photo_url_for_size
 
 
@@ -47,7 +47,7 @@ class ReferenceTests(unittest.TestCase):
         self.assertEqual(references[0].image_url, "https://static.example/photos/11/large.jpg")
 
     def test_rejects_insufficient_licensed_references(self) -> None:
-        with self.assertRaises(DataSourceError):
+        with self.assertRaises(InsufficientReferencesError):
             parse_reference_candidates({"results": [observation(1, "alice", 11, "cc-by-nc")]}, 1)
 
     def test_photo_url_size_is_validated(self) -> None:

@@ -46,6 +46,26 @@ class CodexRunnerTests(unittest.TestCase):
         self.assertTrue(review.passed)
         self.assertEqual(len(review.verification_sources), 2)
 
+    def test_review_requires_two_distinct_verification_urls(self) -> None:
+        review = _parse_review(
+            {
+                "passed": True,
+                "species_accuracy": 5,
+                "anatomy_accuracy": 5,
+                "text_accuracy": 5,
+                "composition_quality": 5,
+                "location_free": True,
+                "findings": [],
+                "verification_sources": [
+                    {"title": "Cornell identification", "url": "https://example.test/bird"},
+                    {"title": "Cornell life history", "url": "https://example.test/bird"},
+                ],
+            }
+        )
+
+        self.assertFalse(review.passed)
+        self.assertEqual(len(review.verification_sources), 1)
+
     def test_noninteractive_command_allows_deployment_workspace(self) -> None:
         with TemporaryDirectory() as temporary:
             root = Path(temporary)

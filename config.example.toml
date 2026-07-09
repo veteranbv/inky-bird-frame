@@ -9,7 +9,8 @@ window = "last-week"
 workspace_dir = "."
 catalog_dir = "catalog"
 state_dir = "var/controller"
-codex_path = "/Applications/Codex.app/Contents/Resources/codex"
+# Use an absolute path when a service manager does not inherit your shell PATH.
+codex_path = "codex"
 bind_host = "0.0.0.0"
 port = 8793
 references_per_species = 4

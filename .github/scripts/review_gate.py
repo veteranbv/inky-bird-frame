@@ -27,7 +27,7 @@ automatic review alone cannot satisfy the gate.
 
 Run locally for debugging:
     GH_TOKEN=$(gh auth token) \\
-    GITHUB_REPOSITORY=veteranbv/homelab \\
+    GITHUB_REPOSITORY=owner/repository \\
     PR_NUMBER=71 \\
     python .github/scripts/review_gate.py
 
@@ -314,19 +314,34 @@ def _latest_codex_request_time(state: dict[str, object], head_sha: str) -> datet
     return candidates[-1]
 
 
-def _owner_requested_codex_review(
+def _owner_codex_request_time(
     state: dict[str, object], owner_login: str, head_sha: str
-) -> bool:
+) -> datetime | None:
     comments_obj = state.get("comments")
     if not isinstance(comments_obj, dict):
-        return False
+        return None
+    requests: list[datetime] = []
     for comment in comments_obj.get("nodes") or []:
         if not isinstance(comment, dict) or _author_login(comment) != owner_login:
             continue
         body = comment.get("body")
         if isinstance(body, str) and "@codex review" in body.lower() and head_sha in body:
-            return True
-    return False
+            created = _parse_iso(comment.get("createdAt") or "")
+            if created is not None:
+                requests.append(created)
+    return max(requests) if requests else None
+
+
+def _owner_review_cutoff(
+    state: dict[str, object],
+    owner_login: str,
+    head_sha: str,
+    head_time: datetime | None,
+) -> datetime | None:
+    request_time = _owner_codex_request_time(state, owner_login, head_sha)
+    if request_time is None:
+        return None
+    return max(request_time, head_time) if head_time is not None else request_time
 
 
 def _codex_setup_required(
@@ -347,9 +362,9 @@ def _codex_setup_required(
             ):
                 return True
 
-    if head_sha is None:
+    if head_sha is None or head_time is None:
         return False
-    latest_review_id = _latest_review_id_on_head(state, CODEX_LOGIN, head_sha)
+    latest_review_id = _latest_review_id_on_head(state, CODEX_LOGIN, head_sha, not_before=head_time)
     if latest_review_id is None:
         return False
     threads_obj = state.get("reviewThreads")
@@ -386,11 +401,14 @@ def engaged_bots(
     """Return bot logins that have engaged with the PR on the current head.
 
     - Codex: after an exact-head owner request, review with commit.oid ==
-      head_sha, clean issue comment for the head SHA, OR thumbs-up reaction
-      whose createdAt is at/after the head commit time.
+      head_sha, clean issue comment for the head SHA, OR thumbs-up reaction.
+      Every signal must be at or after the latest exact-head owner request.
     """
-    if owner_login is not None and not _owner_requested_codex_review(state, owner_login, head_sha):
-        return set()
+    freshness_time = head_time
+    if owner_login is not None:
+        freshness_time = _owner_review_cutoff(state, owner_login, head_sha, head_time)
+        if freshness_time is None:
+            return set()
 
     engaged: set[str] = set()
 
@@ -402,34 +420,29 @@ def engaged_bots(
             login = _author_login(r)
             commit = r.get("commit")
             commit_sha = commit.get("oid") if isinstance(commit, dict) else None
-            if login in BOT_LABELS and commit_sha == head_sha:
+            submitted = _parse_iso(r.get("submittedAt") or "")
+            if (
+                login in BOT_LABELS
+                and commit_sha == head_sha
+                and submitted is not None
+                and (freshness_time is None or submitted >= freshness_time)
+            ):
                 engaged.add(login)
 
-    if head_time is not None and CODEX_LOGIN not in engaged:
-        reactions_obj = state.get("reactions")
-        if isinstance(reactions_obj, dict):
-            for r in reactions_obj.get("nodes") or []:
-                if not isinstance(r, dict):
-                    continue
-                user = r.get("user")
-                user_login = user.get("login") if isinstance(user, dict) else None
-                if not isinstance(user_login, str):
-                    continue
-                if user_login.removesuffix("[bot]") != CODEX_LOGIN:
-                    continue
-                created = _parse_iso(r.get("createdAt") or "")
-                if created is not None and created >= head_time:
-                    engaged.add(CODEX_LOGIN)
-                    break
+    if CODEX_LOGIN not in engaged and _codex_thumbed_up_head(state, freshness_time):
+        engaged.add(CODEX_LOGIN)
 
-    if CODEX_LOGIN not in engaged and _codex_clean_comment_on_head(state, head_sha, head_time):
+    if CODEX_LOGIN not in engaged and _codex_clean_comment_on_head(state, head_sha, freshness_time):
         engaged.add(CODEX_LOGIN)
 
     return engaged
 
 
 def _latest_review_id_on_head(
-    state: dict[str, object], bot_login: str, head_sha: str
+    state: dict[str, object],
+    bot_login: str,
+    head_sha: str,
+    not_before: datetime | None = None,
 ) -> int | None:
     """Return the databaseId of the bot's most recent review on `head_sha`,
     or None if it hasn't done a fresh review on this commit. Used to scope
@@ -449,7 +462,7 @@ def _latest_review_id_on_head(
             continue
         when = _parse_iso(r.get("submittedAt") or "")
         rid = r.get("databaseId")
-        if when is not None and isinstance(rid, int):
+        if when is not None and isinstance(rid, int) and (not_before is None or when >= not_before):
             candidates.append((when, rid))
     if not candidates:
         return None
@@ -708,7 +721,8 @@ def main() -> int:
     deadline = time.monotonic() + POLL_BUDGET_SECONDS
     engaged: set[str] = set()
     while True:
-        if _codex_setup_required(state, head_time, head_sha):
+        review_cutoff = _owner_review_cutoff(state, owner_login, head_sha, head_time)
+        if _codex_setup_required(state, review_cutoff, head_sha):
             print(
                 "Codex review is unavailable because this repository is not connected. ",
                 "Connect it in Codex settings, then push a new head to rerun the gate.",
@@ -755,7 +769,8 @@ def main() -> int:
             return 0
         head_time = _head_time(state, head_sha)
 
-    findings = collect_findings(state, head_sha, head_time)
+    review_cutoff = _owner_review_cutoff(state, owner_login, head_sha, head_time)
+    findings = collect_findings(state, head_sha, review_cutoff)
     timed_out = bool(set(BOT_LABELS) - engaged)
     write_summary(findings, engaged, timed_out)
 

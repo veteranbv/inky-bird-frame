@@ -315,12 +315,16 @@ def _parse_review(raw: object) -> QualityReview:
     if not isinstance(sources, list):
         raise GenerationError("Codex review verification_sources must be a list")
     verification_sources: list[SourceLink] = []
+    source_urls: set[str] = set()
     for source in sources:
         if not isinstance(source, dict):
             raise GenerationError("Codex review verification source must be an object")
         url = _non_empty_string(source.get("url"), "verification_sources.url")
         if not url.startswith("https://"):
             raise GenerationError("Codex review source URLs must use HTTPS")
+        if url in source_urls:
+            continue
+        source_urls.add(url)
         verification_sources.append(
             SourceLink(
                 title=_non_empty_string(source.get("title"), "verification_sources.title"),

@@ -23,7 +23,13 @@ from .catalog import (
 )
 from .codex_runner import CodexRunner
 from .config import AppConfig
-from .errors import CatalogError, DataSourceError, GenerationError, InkyBirdFrameError
+from .errors import (
+    CatalogError,
+    DataSourceError,
+    GenerationError,
+    InkyBirdFrameError,
+    InsufficientReferencesError,
+)
 from .geo import ZipLocation, lookup_us_zip
 from .images import prepare_generated_plate
 from .models import ReferencePhoto
@@ -260,7 +266,12 @@ def approve_passing_candidates(config: AppConfig) -> list[dict[str, object]]:
         if not isinstance(manifest, dict) or not isinstance(manifest.get("taxon_id"), int):
             raise CatalogError(f"Pending manifest has no taxon ID: {manifest_path}")
         review = manifest.get("quality_review")
-        if not isinstance(review, dict) or review.get("passed") is not True:
+        generation = manifest.get("generation")
+        if (
+            not isinstance(review, dict)
+            or not _has_passing_sourced_review(review)
+            or not _is_bounded_generation(generation)
+        ):
             continue
         entry = approve_candidate(
             config.controller.state_dir,
@@ -269,6 +280,53 @@ def approve_passing_candidates(config: AppConfig) -> list[dict[str, object]]:
         )
         published.append(entry.as_dict())
     return published
+
+
+def _has_passing_sourced_review(review: dict[str, object]) -> bool:
+    score_fields = (
+        "species_accuracy",
+        "anatomy_accuracy",
+        "text_accuracy",
+        "composition_quality",
+    )
+    if (
+        review.get("passed") is not True
+        or review.get("location_free") is not True
+        or any(
+            not isinstance(review.get(field), int)
+            or isinstance(review.get(field), bool)
+            or cast(int, review[field]) < 4
+            for field in score_fields
+        )
+    ):
+        return False
+    sources = review.get("verification_sources")
+    if not isinstance(sources, list):
+        return False
+    urls = {
+        source.get("url")
+        for source in sources
+        if isinstance(source, dict)
+        and isinstance(source.get("title"), str)
+        and bool(source["title"].strip())
+        and isinstance(source.get("url"), str)
+        and source["url"].startswith("https://")
+    }
+    return len(urls) >= 2
+
+
+def _is_bounded_generation(generation: object) -> bool:
+    if not isinstance(generation, dict):
+        return False
+    attempt = generation.get("attempt")
+    max_attempts = generation.get("max_attempts")
+    return (
+        isinstance(attempt, int)
+        and not isinstance(attempt, bool)
+        and isinstance(max_attempts, int)
+        and not isinstance(max_attempts, bool)
+        and 1 <= attempt <= max_attempts
+    )
 
 
 def run_controller_cycle(config: AppConfig) -> dict[str, object]:
@@ -297,6 +355,17 @@ def run_controller_cycle(config: AppConfig) -> dict[str, object]:
                         "taxon_id": species.taxon_id,
                         "common_name": species.common_name,
                         "published": entry.as_dict(),
+                    }
+                )
+            except InsufficientReferencesError as exc:
+                failure_path = record_failure(config.controller.state_dir, species, exc)
+                failures.append(
+                    {
+                        "taxon_id": species.taxon_id,
+                        "common_name": species.common_name,
+                        "error": str(exc),
+                        "failure": str(failure_path),
+                        "terminal": True,
                     }
                 )
             except DataSourceError as exc:

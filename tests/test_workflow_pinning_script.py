@@ -113,3 +113,12 @@ def test_current_workflows_are_sha_pinned() -> None:
     workflows_dir = Path(__file__).resolve().parents[1] / ".github" / "workflows"
 
     assert workflow_pinning.scan_workflows(workflows_dir) == []
+
+
+def test_review_gate_retrigger_accepts_only_exact_head_owner_requests() -> None:
+    workflow = (
+        Path(__file__).resolve().parents[1] / ".github/workflows/review-gate-retrigger.yml"
+    ).read_text(encoding="utf-8")
+
+    assert "github.event.comment.user.login == github.repository_owner" in workflow
+    assert '[[ "${COMMENT_BODY}" != *"${HEAD_SHA}"* ]]' in workflow

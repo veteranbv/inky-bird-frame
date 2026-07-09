@@ -10,9 +10,10 @@ from inky_bird_frame.birds import BirdSpecies
 from inky_bird_frame.catalog import candidate_directory, write_candidate_manifest
 from inky_bird_frame.config import load_config
 from inky_bird_frame.controller import generate_candidate, run_controller_cycle
-from inky_bird_frame.errors import DataSourceError, GenerationError
+from inky_bird_frame.errors import DataSourceError, GenerationError, InsufficientReferencesError
 from inky_bird_frame.geo import ZipLocation
 from inky_bird_frame.models import QualityReview, SpeciesProfileData
+from inky_bird_frame.prompts import PROMPT_VERSION
 
 PROFILE = SpeciesProfileData(
     taxon_id=9083,
@@ -82,7 +83,19 @@ class ControllerTests(unittest.TestCase):
     def test_cycle_publishes_a_previously_reviewed_pending_candidate(self) -> None:
         species = BirdSpecies(9083, "Northern Cardinal", "Cardinalis cardinalis", 2, "test")
         location = ZipLocation("12345", "Exampleville", "XY", 1.0, 2.0)
-        review = QualityReview(True, 5, 4, 5, 5, True, ())
+        review = QualityReview(
+            True,
+            5,
+            4,
+            5,
+            5,
+            True,
+            (),
+            (
+                {"title": "Cornell", "url": "https://example.test/cornell"},
+                {"title": "ADW", "url": "https://example.test/adw"},
+            ),
+        )
         with TemporaryDirectory() as temporary:
             config_path = Path(temporary) / "config.toml"
             config_path.write_text(CONFIG)
@@ -98,7 +111,9 @@ class ControllerTests(unittest.TestCase):
                 [],
                 review,
                 generator="test",
-                prompt_version="field-journal-v1",
+                prompt_version=PROMPT_VERSION,
+                attempt=2,
+                max_attempts=3,
             )
             with patch(
                 "inky_bird_frame.controller.discover_species",
@@ -114,6 +129,63 @@ class ControllerTests(unittest.TestCase):
         self.assertIsInstance(published_pending, list)
         if isinstance(published_pending, list):
             self.assertEqual(len(published_pending), 1)
+
+    def test_cycle_does_not_auto_publish_a_legacy_pending_candidate(self) -> None:
+        species = BirdSpecies(9083, "Northern Cardinal", "Cardinalis cardinalis", 2, "test")
+        location = ZipLocation("12345", "Exampleville", "XY", 1.0, 2.0)
+        review = QualityReview(True, 5, 4, 5, 5, True, ())
+        with TemporaryDirectory() as temporary:
+            config_path = Path(temporary) / "config.toml"
+            config_path.write_text(CONFIG)
+            config = load_config(config_path)
+            candidate = candidate_directory(config.controller.state_dir, species)
+            candidate.mkdir(parents=True)
+            (candidate / "portrait.png").write_bytes(b"portrait")
+            (candidate / "display.png").write_bytes(b"display")
+            write_candidate_manifest(
+                candidate,
+                species,
+                PROFILE,
+                [],
+                review,
+                generator="legacy",
+                prompt_version="field-journal-v1",
+            )
+            with patch(
+                "inky_bird_frame.controller.discover_species",
+                return_value=(location, []),
+            ):
+                result = run_controller_cycle(config)
+
+            published = (config.controller.catalog_dir / "species/9083-northern-cardinal").is_dir()
+
+        self.assertFalse(published)
+        self.assertEqual(result["approved_count"], 0)
+        self.assertEqual(result["published_pending"], [])
+
+    def test_insufficient_references_become_terminal(self) -> None:
+        species = BirdSpecies(9083, "Northern Cardinal", "Cardinalis cardinalis", 2, "test")
+        location = ZipLocation("12345", "Exampleville", "XY", 1.0, 2.0)
+        with TemporaryDirectory() as temporary:
+            config_path = Path(temporary) / "config.toml"
+            config_path.write_text(CONFIG)
+            config = load_config(config_path)
+            with (
+                patch(
+                    "inky_bird_frame.controller.discover_species",
+                    return_value=(location, [species]),
+                ),
+                patch("inky_bird_frame.controller.generate_candidate") as generate,
+            ):
+                generate.side_effect = InsufficientReferencesError("only 1 of 4 references")
+                result = run_controller_cycle(config)
+            terminal_failures = list((config.controller.state_dir / "failed").glob("9083-*"))
+
+        self.assertEqual(len(terminal_failures), 1)
+        failures = result["failures"]
+        self.assertIsInstance(failures, list)
+        if isinstance(failures, list):
+            self.assertTrue(failures[0]["terminal"])
 
     def test_failed_review_is_corrected_and_passing_attempt_is_staged(self) -> None:
         species = BirdSpecies(9083, "Northern Cardinal", "Cardinalis cardinalis", 2, "test")
