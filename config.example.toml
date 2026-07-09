@@ -25,13 +25,6 @@ state_dir = "var/display-node"
 # repeating, and weighted uses local observation counts as selection weights.
 rotation_mode = "shuffle"
 
-[display]
-portrait_width = 1200
-portrait_height = 1600
-hardware_width = 1600
-hardware_height = 1200
-rotation_degrees = 90
-
 [schedule]
 refresh_minutes = 15
 # Generation can consume substantial Codex usage. Start conservatively.

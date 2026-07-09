@@ -7,13 +7,9 @@ from dataclasses import dataclass
 from enum import StrEnum
 from pathlib import Path
 from shutil import which
-from typing import Final
 
 from .birds import ObservationWindow, parse_observation_window
 from .errors import ConfigurationError
-
-PORTRAIT_SIZE: Final = (1200, 1600)
-HARDWARE_SIZE: Final = (1600, 1200)
 
 
 class RotationMode(StrEnum):
@@ -28,13 +24,6 @@ def parse_rotation_mode(value: str) -> RotationMode:
     except ValueError as exc:
         allowed = ", ".join(item.value for item in RotationMode)
         raise ValueError(f"rotation_mode must be one of: {allowed}") from exc
-
-
-@dataclass(frozen=True)
-class DisplayConfig:
-    portrait_size: tuple[int, int] = PORTRAIT_SIZE
-    hardware_size: tuple[int, int] = HARDWARE_SIZE
-    rotation_degrees: int = 90
 
 
 @dataclass(frozen=True)
@@ -79,7 +68,6 @@ class AppConfig:
     discovery: DiscoveryConfig
     controller: ControllerConfig
     display_node: DisplayNodeConfig
-    display: DisplayConfig = DisplayConfig()
     schedule: ScheduleConfig = ScheduleConfig()
 
 
@@ -153,7 +141,6 @@ def load_config(path: Path) -> AppConfig:
     discovery = _section(raw, "discovery")
     controller = _section(raw, "controller")
     display_node = _section(raw, "display_node")
-    display = _optional_section(raw, "display")
     schedule = _optional_section(raw, "schedule")
     base_dir = path.parent.resolve()
 
@@ -179,10 +166,6 @@ def load_config(path: Path) -> AppConfig:
     except ValueError as exc:
         raise ConfigurationError(str(exc)) from exc
 
-    rotation_degrees = _optional_integer(display, "rotation_degrees", default=90, minimum=0)
-    if rotation_degrees not in (0, 90, 180, 270):
-        raise ConfigurationError("rotation_degrees must be one of: 0, 90, 180, 270")
-
     return AppConfig(
         discovery=DiscoveryConfig(
             zip_code=zip_code,
@@ -207,17 +190,6 @@ def load_config(path: Path) -> AppConfig:
             controller_url=controller_url,
             state_dir=_path(_string(display_node, "state_dir"), base_dir),
             rotation_mode=rotation_mode,
-        ),
-        display=DisplayConfig(
-            portrait_size=(
-                _optional_integer(display, "portrait_width", default=PORTRAIT_SIZE[0]),
-                _optional_integer(display, "portrait_height", default=PORTRAIT_SIZE[1]),
-            ),
-            hardware_size=(
-                _optional_integer(display, "hardware_width", default=HARDWARE_SIZE[0]),
-                _optional_integer(display, "hardware_height", default=HARDWARE_SIZE[1]),
-            ),
-            rotation_degrees=rotation_degrees,
         ),
         schedule=ScheduleConfig(
             refresh_minutes=_optional_integer(schedule, "refresh_minutes", default=15),

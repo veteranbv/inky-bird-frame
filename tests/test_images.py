@@ -2,8 +2,7 @@ from __future__ import annotations
 
 import unittest
 
-from inky_bird_frame.config import DisplayConfig
-from inky_bird_frame.images import slugify
+from inky_bird_frame.images import HARDWARE_SIZE, PORTRAIT_SIZE, ROTATION_DEGREES, slugify
 
 
 class ImageHelperTests(unittest.TestCase):
@@ -11,12 +10,10 @@ class ImageHelperTests(unittest.TestCase):
         self.assertEqual(slugify("Eastern Bluebird"), "eastern-bluebird")
         self.assertEqual(slugify("Sialia sialis!"), "sialia-sialis")
 
-    def test_display_config_matches_inky_panel(self) -> None:
-        config = DisplayConfig()
-
-        self.assertEqual(config.portrait_size, (1200, 1600))
-        self.assertEqual(config.hardware_size, (1600, 1200))
-        self.assertEqual(config.rotation_degrees, 90)
+    def test_canonical_assets_match_inky_panel(self) -> None:
+        self.assertEqual(PORTRAIT_SIZE, (1200, 1600))
+        self.assertEqual(HARDWARE_SIZE, (1600, 1200))
+        self.assertEqual(ROTATION_DEGREES, 90)
 
 
 if __name__ == "__main__":

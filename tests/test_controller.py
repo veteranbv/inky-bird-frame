@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import unittest
+from datetime import UTC, datetime
 from pathlib import Path
 from tempfile import TemporaryDirectory
 from unittest.mock import patch
@@ -10,6 +11,7 @@ from inky_bird_frame.birds import BirdSpecies
 from inky_bird_frame.catalog import CatalogEntry, candidate_directory, write_candidate_manifest
 from inky_bird_frame.config import load_config
 from inky_bird_frame.controller import (
+    DiscoverySnapshot,
     generate_candidate,
     run_controller_cycle,
     run_generation_cycle,
@@ -67,6 +69,62 @@ state_dir = "display"
 
 
 class ControllerTests(unittest.TestCase):
+    def test_generation_recovers_pending_before_requiring_discovery(self) -> None:
+        with TemporaryDirectory() as temporary:
+            config_path = Path(temporary) / "config.toml"
+            config_path.write_text(CONFIG)
+            config = load_config(config_path)
+            recovered: list[str] = []
+
+            def approve(_config: object) -> list[dict[str, object]]:
+                recovered.append("approved")
+                return []
+
+            with (
+                patch(
+                    "inky_bird_frame.controller.approve_passing_candidates",
+                    side_effect=approve,
+                ),
+                patch(
+                    "inky_bird_frame.controller._read_discovery_snapshot",
+                    side_effect=DataSourceError("missing"),
+                ),
+                self.assertRaisesRegex(DataSourceError, "missing"),
+            ):
+                run_generation_cycle(config)
+
+        self.assertEqual(recovered, ["approved"])
+
+    def test_generation_rebuilds_active_catalog_from_latest_snapshot(self) -> None:
+        initial = DiscoverySnapshot(
+            datetime.now(UTC),
+            "Exampleville",
+            "XY",
+            [BirdSpecies(1, "Alpha Bird", "Alpha avis", 1, "iNaturalist")],
+        )
+        latest = DiscoverySnapshot(
+            datetime.now(UTC),
+            "Exampleville",
+            "XY",
+            [BirdSpecies(2, "Beta Bird", "Beta avis", 4, "iNaturalist")],
+        )
+        with TemporaryDirectory() as temporary:
+            config_path = Path(temporary) / "config.toml"
+            config_path.write_text(CONFIG)
+            config = load_config(config_path)
+            with (
+                patch("inky_bird_frame.controller.approve_passing_candidates", return_value=[]),
+                patch(
+                    "inky_bird_frame.controller._read_discovery_snapshot",
+                    side_effect=[initial, latest],
+                ),
+                patch("inky_bird_frame.controller._has_terminal_state", return_value=True),
+                patch("inky_bird_frame.controller._write_active_catalog", return_value=0) as write,
+            ):
+                run_generation_cycle(config)
+
+        write.assert_called_once_with(config, latest.species)
+
     def test_generation_rejects_a_stale_discovery_snapshot(self) -> None:
         with TemporaryDirectory() as temporary:
             config_path = Path(temporary) / "config.toml"
@@ -345,7 +403,7 @@ class ControllerTests(unittest.TestCase):
             def review_plate(self, *_args: object) -> QualityReview:
                 return next(self.reviews)
 
-        def prepare(_source: Path, portrait: Path, display: Path, *, config: object) -> None:
+        def prepare(_source: Path, portrait: Path, display: Path) -> None:
             portrait.write_bytes(b"portrait")
             display.write_bytes(b"display")
 

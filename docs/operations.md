@@ -31,7 +31,9 @@ published.
 - `weighted`: random selection weighted by current observation count, without
   immediate repeats when another species is active.
 
-Display dimensions and orientation live in `[display]`. Controller and display
+Approved plates use the project's canonical 1200x1600 portrait and 1600x1200
+display assets. This geometry is a catalog contract so committed plates remain
+portable across installations using the supported panel. Controller and display
 state paths remain TOML configuration. Installer bootstrap paths, including the
 TOML path itself, remain environment variables because the installer must find
 the configuration before it can load it.

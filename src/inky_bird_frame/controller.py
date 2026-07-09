@@ -63,6 +63,17 @@ def exclusive_cycle_lock(state_dir: Path) -> Iterator[None]:
             fcntl.flock(handle.fileno(), fcntl.LOCK_UN)
 
 
+@contextmanager
+def catalog_state_lock(state_dir: Path) -> Iterator[None]:
+    state_dir.mkdir(parents=True, exist_ok=True)
+    with (state_dir / "catalog-state.lock").open("a+") as handle:
+        fcntl.flock(handle.fileno(), fcntl.LOCK_EX)
+        try:
+            yield
+        finally:
+            fcntl.flock(handle.fileno(), fcntl.LOCK_UN)
+
+
 def discover_species(config: AppConfig) -> tuple[ZipLocation, list[BirdSpecies]]:
     location = lookup_us_zip(config.discovery.zip_code)
     species = fetch_inaturalist_birds(
@@ -117,18 +128,19 @@ def _write_active_catalog(config: AppConfig, species_list: list[BirdSpecies]) ->
 
 def run_refresh_cycle(config: AppConfig) -> dict[str, object]:
     location, species_list = discover_species(config)
-    refreshed_at = datetime.now(UTC).replace(microsecond=0)
-    write_json_atomic(
-        _snapshot_path(config),
-        {
-            "schema_version": 1,
-            "refreshed_at": refreshed_at.isoformat(),
-            "place_name": location.place_name,
-            "state": location.state,
-            "species": [_species_payload(species) for species in species_list],
-        },
-    )
-    active_count = _write_active_catalog(config, species_list)
+    with catalog_state_lock(config.controller.state_dir):
+        refreshed_at = datetime.now(UTC).replace(microsecond=0)
+        write_json_atomic(
+            _snapshot_path(config),
+            {
+                "schema_version": 1,
+                "refreshed_at": refreshed_at.isoformat(),
+                "place_name": location.place_name,
+                "state": location.state,
+                "species": [_species_payload(species) for species in species_list],
+            },
+        )
+        active_count = _write_active_catalog(config, species_list)
     return {
         "refreshed_at": refreshed_at.isoformat(),
         "place_name": location.place_name,
@@ -312,12 +324,7 @@ def generate_candidate(config: AppConfig, species: BirdSpecies, workspace: Path)
             )
             portrait_path = attempt_dir / "portrait.png"
             display_path = attempt_dir / "display.png"
-            prepare_generated_plate(
-                generated_path,
-                portrait_path,
-                display_path,
-                config=config.display,
-            )
+            prepare_generated_plate(generated_path, portrait_path, display_path)
             generated_path.unlink()
 
             review = runner.review_plate(
@@ -468,13 +475,13 @@ def _is_bounded_generation(generation: object) -> bool:
 
 def run_generation_cycle(config: AppConfig) -> dict[str, object]:
     with exclusive_cycle_lock(config.controller.state_dir):
+        published = approve_passing_candidates(config)
         snapshot = _read_discovery_snapshot(config)
         maximum_age = timedelta(minutes=config.schedule.refresh_minutes * 2)
         if datetime.now(UTC) - snapshot.refreshed_at.astimezone(UTC) > maximum_age:
             raise DataSourceError(
                 "Discovery state is stale; a successful refresh is required before generation"
             )
-        published = approve_passing_candidates(config)
         species_list = snapshot.species
         approved = approved_taxon_ids(config.controller.catalog_dir)
         eligible = [
@@ -543,7 +550,9 @@ def run_generation_cycle(config: AppConfig) -> dict[str, object]:
                     }
                 )
 
-        active_count = _write_active_catalog(config, species_list)
+        with catalog_state_lock(config.controller.state_dir):
+            latest_snapshot = _read_discovery_snapshot(config)
+            active_count = _write_active_catalog(config, latest_snapshot.species)
         return {
             "discovery": {
                 "refreshed_at": snapshot.refreshed_at.isoformat(),

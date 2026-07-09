@@ -32,13 +32,6 @@ controller_url = "http://controller.test:8793/"
 state_dir = "var/display"
 rotation_mode = "weighted"
 
-[display]
-portrait_width = 1000
-portrait_height = 1400
-hardware_width = 1400
-hardware_height = 1000
-rotation_degrees = 270
-
 [schedule]
 refresh_minutes = 15
 generation_minutes = 5
@@ -62,9 +55,6 @@ class ConfigTests(unittest.TestCase):
         self.assertEqual(config.controller.max_generation_attempts, 3)
         self.assertEqual(config.display_node.controller_url, "http://controller.test:8793")
         self.assertEqual(config.display_node.rotation_mode, RotationMode.WEIGHTED)
-        self.assertEqual(config.display.portrait_size, (1000, 1400))
-        self.assertEqual(config.display.hardware_size, (1400, 1000))
-        self.assertEqual(config.display.rotation_degrees, 270)
         self.assertEqual(config.schedule.refresh_minutes, 15)
         self.assertEqual(config.schedule.generation_minutes, 5)
         self.assertEqual(config.schedule.rotation_minutes, 3)
@@ -107,8 +97,8 @@ class ConfigTests(unittest.TestCase):
 
         self.assertEqual(config.controller.codex_path, (Path(temporary) / "codex").resolve())
 
-    def test_uses_backward_compatible_schedule_and_display_defaults(self) -> None:
-        legacy = CONFIG.split("\n[display]\n", maxsplit=1)[0].replace(
+    def test_uses_backward_compatible_schedule_defaults(self) -> None:
+        legacy = CONFIG.split("\n[schedule]\n", maxsplit=1)[0].replace(
             'rotation_mode = "weighted"\n', ""
         )
         with TemporaryDirectory() as temporary:
@@ -118,8 +108,6 @@ class ConfigTests(unittest.TestCase):
             config = load_config(path)
 
         self.assertEqual(config.display_node.rotation_mode, RotationMode.SEQUENTIAL)
-        self.assertEqual(config.display.portrait_size, (1200, 1600))
-        self.assertEqual(config.display.hardware_size, (1600, 1200))
         self.assertEqual(config.schedule.refresh_minutes, 15)
         self.assertEqual(config.schedule.generation_minutes, 360)
         self.assertEqual(config.schedule.rotation_minutes, 30)
