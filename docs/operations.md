@@ -19,6 +19,17 @@ Recommended schedule:
 The rate limit keeps subscription use bounded and leaves every candidate at a
 human approval gate.
 
+The trusted deployment runner reads display connection details from
+`~/Library/Application Support/Inky Bird Frame/deployment.env`:
+
+```bash
+INKY_BIRD_DISPLAY_HOST=display-node-address
+INKY_BIRD_DISPLAY_USER=serveradmin
+INKY_BIRD_DISPLAY_SSH_KEY="$HOME/.ssh/inky-bird-frame-display"
+```
+
+Keep this file on the controller. It is not part of the repository.
+
 ## Review a candidate
 
 ```bash

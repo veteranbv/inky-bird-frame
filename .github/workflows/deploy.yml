@@ -32,4 +32,13 @@ jobs:
 
       - name: Deploy display node
         if: inputs.deploy_display_node
-        run: ./deploy/install-display-node.sh
+        run: |
+          set -euo pipefail
+          deployment_env="$HOME/Library/Application Support/Inky Bird Frame/deployment.env"
+          test -f "$deployment_env"
+          set -a
+          # Deployment details are intentionally machine-local.
+          # shellcheck disable=SC1090
+          source "$deployment_env"
+          set +a
+          ./deploy/install-display-node.sh
