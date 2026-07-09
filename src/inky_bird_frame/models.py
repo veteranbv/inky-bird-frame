@@ -69,6 +69,7 @@ class QualityReview:
     composition_quality: int
     location_free: bool
     findings: tuple[str, ...]
+    verification_sources: tuple[SourceLink, ...] = ()
 
     def as_dict(self) -> dict[str, object]:
         return {
@@ -79,4 +80,5 @@ class QualityReview:
             "composition_quality": self.composition_quality,
             "location_free": self.location_free,
             "findings": list(self.findings),
+            "verification_sources": list(self.verification_sources),
         }

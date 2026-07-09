@@ -9,7 +9,7 @@ from pathlib import Path
 from .birds import BirdSpecies, TaxonContext
 from .models import ReferencePhoto, SpeciesProfileData
 
-PROMPT_VERSION = "field-journal-v1"
+PROMPT_VERSION = "field-journal-v2"
 
 
 class _TextExtractor(HTMLParser):
@@ -76,10 +76,21 @@ def plate_prompt(
     profile: SpeciesProfileData,
     references: list[ReferencePhoto],
     output_path: Path,
+    correction_findings: tuple[str, ...] = (),
 ) -> str:
     measurements = profile["measurements"]
     field_marks = "\n".join(f"  - {mark}" for mark in profile["field_marks"])
     palette = ", ".join(profile["palette"])
+    correction = ""
+    if correction_findings:
+        issues = "\n".join(f"- {finding}" for finding in correction_findings)
+        correction = f"""
+Correction required after an independent review of the previous attempt:
+{issues}
+
+Create a new image that corrects every issue above. Do not copy or lightly edit the previous
+attempt.
+"""
     return f"""$imagegen
 
 Use case: scientific-educational
@@ -107,6 +118,7 @@ Reference images, in attachment order:
 Treat every attached image as a species-accuracy reference. Synthesize the consistent anatomy,
 proportions, posture, plumage pattern, and colors across them. Do not reproduce any photograph's
 background, pose, crop, or composition.
+{correction}
 
 Style and composition:
 - Portrait 3:4 page on warm aged cream naturalist-notebook paper.
@@ -138,13 +150,16 @@ def review_prompt(
 {species.common_name} ({species.scientific_name}). Images 2 onward are licensed field-reference
 photos of the same species.
 
-Expected facts:
+Facts proposed by the research pass:
 {json.dumps(profile, indent=2, sort_keys=True)}
 
-Score each category from 1 (failed) to 5 (excellent). Inspect the candidate for correct plumage,
-proportions, bill, eye, wings, tail, legs, feet, and species field marks. Compare visible text to
-the expected facts. Confirm that no place name, ZIP code, coordinates, map, or local-observation
-detail appears. Record every concrete issue.
+Independently verify the species identity, measurements, and field marks with web search against
+at least two authoritative ornithology, museum, government, or university sources. Do not assume
+the proposed facts are correct. Inspect the candidate for correct plumage, proportions, bill, eye,
+wings, tail, legs, feet, and species field marks against the attached field-reference photos.
+Compare every visible factual claim to the independently verified facts. Confirm that no place
+name, ZIP code, coordinates, map, or local-observation detail appears. Record every concrete issue
+and return the direct HTTPS pages used for verification.
 
 Set passed=true only when all four scores are at least 4, location_free is true, the bird has
 exactly one head, one beak, two wings, two legs, and one tail, and there are no material species or

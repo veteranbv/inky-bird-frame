@@ -108,6 +108,8 @@ def write_candidate_manifest(
     *,
     generator: str,
     prompt_version: str,
+    attempt: int = 1,
+    max_attempts: int = 1,
 ) -> Path:
     portrait_path = destination / "portrait.png"
     display_path = destination / "display.png"
@@ -126,6 +128,8 @@ def write_candidate_manifest(
             "generator": generator,
             "prompt_version": prompt_version,
             "generated_at": utc_now(),
+            "attempt": attempt,
+            "max_attempts": max_attempts,
         },
         "quality_review": review.as_dict(),
         "assets": {

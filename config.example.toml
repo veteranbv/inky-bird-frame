@@ -14,6 +14,8 @@ bind_host = "0.0.0.0"
 port = 8793
 references_per_species = 4
 generations_per_cycle = 1
+# Failed visual reviews are regenerated with their findings as corrective input.
+max_generation_attempts = 3
 
 [display_node]
 controller_url = "http://controller.example:8793"

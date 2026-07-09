@@ -1,15 +1,34 @@
 from __future__ import annotations
 
+import json
 import unittest
 from pathlib import Path
 from tempfile import TemporaryDirectory
 from unittest.mock import patch
 
 from inky_bird_frame.birds import BirdSpecies
+from inky_bird_frame.catalog import candidate_directory, write_candidate_manifest
 from inky_bird_frame.config import load_config
-from inky_bird_frame.controller import run_controller_cycle
+from inky_bird_frame.controller import generate_candidate, run_controller_cycle
 from inky_bird_frame.errors import GenerationError
 from inky_bird_frame.geo import ZipLocation
+from inky_bird_frame.models import QualityReview, SpeciesProfileData
+
+PROFILE = SpeciesProfileData(
+    taxon_id=9083,
+    common_name="Northern Cardinal",
+    scientific_name="Cardinalis cardinalis",
+    family="Cardinalidae",
+    measurements={"length": "8.3 in", "wingspan": "10 in", "weight": "1.5 oz"},
+    field_marks=["crest", "red plumage", "black mask", "orange bill"],
+    habitat="Woodland edges",
+    behavior="Forages near cover",
+    palette=["red", "black", "orange"],
+    sources=[
+        {"title": "Source one", "url": "https://example.test/one"},
+        {"title": "Source two", "url": "https://example.test/two"},
+    ],
+)
 
 CONFIG = """
 [discovery]
@@ -27,6 +46,7 @@ bind_host = "127.0.0.1"
 port = 8793
 references_per_species = 4
 generations_per_cycle = 1
+max_generation_attempts = 3
 
 [display_node]
 controller_url = "http://controller.test:8793"
@@ -35,6 +55,105 @@ state_dir = "display"
 
 
 class ControllerTests(unittest.TestCase):
+    def test_cycle_publishes_a_previously_reviewed_pending_candidate(self) -> None:
+        species = BirdSpecies(9083, "Northern Cardinal", "Cardinalis cardinalis", 2, "test")
+        location = ZipLocation("12345", "Exampleville", "XY", 1.0, 2.0)
+        review = QualityReview(True, 5, 4, 5, 5, True, ())
+        with TemporaryDirectory() as temporary:
+            config_path = Path(temporary) / "config.toml"
+            config_path.write_text(CONFIG)
+            config = load_config(config_path)
+            candidate = candidate_directory(config.controller.state_dir, species)
+            candidate.mkdir(parents=True)
+            (candidate / "portrait.png").write_bytes(b"portrait")
+            (candidate / "display.png").write_bytes(b"display")
+            write_candidate_manifest(
+                candidate,
+                species,
+                PROFILE,
+                [],
+                review,
+                generator="test",
+                prompt_version="field-journal-v1",
+            )
+            with patch(
+                "inky_bird_frame.controller.discover_species",
+                return_value=(location, []),
+            ):
+                result = run_controller_cycle(config)
+
+            published = (config.controller.catalog_dir / "species/9083-northern-cardinal").is_dir()
+
+        self.assertTrue(published)
+        self.assertEqual(result["approved_count"], 1)
+        published_pending = result["published_pending"]
+        self.assertIsInstance(published_pending, list)
+        if isinstance(published_pending, list):
+            self.assertEqual(len(published_pending), 1)
+
+    def test_failed_review_is_corrected_and_passing_attempt_is_staged(self) -> None:
+        species = BirdSpecies(9083, "Northern Cardinal", "Cardinalis cardinalis", 2, "test")
+        failed_review = QualityReview(False, 3, 4, 5, 5, True, ("Crest is too short",))
+        passed_review = QualityReview(
+            True,
+            5,
+            4,
+            5,
+            5,
+            True,
+            (),
+            (
+                {"title": "Cornell", "url": "https://www.allaboutbirds.org/example"},
+                {"title": "Audubon", "url": "https://www.audubon.org/example"},
+            ),
+        )
+
+        class FakeRunner:
+            corrections: list[tuple[str, ...]] = []
+            reviews = iter((failed_review, passed_review))
+
+            def __init__(self, _executable: Path, _workspace: Path) -> None:
+                pass
+
+            def create_profile(self, *_args: object) -> SpeciesProfileData:
+                output_path = _args[-2]
+                assert isinstance(output_path, Path)
+                output_path.write_text(json.dumps(PROFILE))
+                return PROFILE
+
+            def generate_plate(self, *_args: object) -> Path:
+                output_path = _args[-3]
+                correction = _args[-1]
+                assert isinstance(output_path, Path)
+                assert isinstance(correction, tuple)
+                self.corrections.append(correction)
+                output_path.write_bytes(b"generated")
+                return output_path
+
+            def review_plate(self, *_args: object) -> QualityReview:
+                return next(self.reviews)
+
+        def prepare(_source: Path, portrait: Path, display: Path) -> None:
+            portrait.write_bytes(b"portrait")
+            display.write_bytes(b"display")
+
+        with TemporaryDirectory() as temporary:
+            config_path = Path(temporary) / "config.toml"
+            config_path.write_text(CONFIG)
+            config = load_config(config_path)
+            with (
+                patch("inky_bird_frame.controller.load_or_fetch_references", return_value=[]),
+                patch("inky_bird_frame.controller.fetch_taxon_context"),
+                patch("inky_bird_frame.controller.CodexRunner", FakeRunner),
+                patch("inky_bird_frame.controller.prepare_generated_plate", side_effect=prepare),
+            ):
+                candidate = generate_candidate(config, species, config.controller.workspace_dir)
+            manifest = json.loads((candidate / "manifest.json").read_text())
+
+        self.assertEqual(FakeRunner.corrections, [(), ("Crest is too short",)])
+        self.assertEqual(manifest["generation"]["attempt"], 2)
+        self.assertEqual(manifest["status"], "pending")
+
     def test_expected_generation_failure_becomes_terminal(self) -> None:
         species = BirdSpecies(9083, "Northern Cardinal", "Cardinalis cardinalis", 2, "test")
         location = ZipLocation("12345", "Exampleville", "XY", 1.0, 2.0)

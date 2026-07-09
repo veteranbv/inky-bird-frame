@@ -48,6 +48,35 @@ class PromptTests(unittest.TestCase):
         self.assertNotIn("12345", prompt)
         self.assertNotIn("Exampleville", prompt)
 
+    def test_plate_prompt_includes_review_corrections(self) -> None:
+        species = BirdSpecies(12942, "Eastern Bluebird", "Sialia sialis", 26, "iNaturalist")
+        profile = SpeciesProfileData(
+            taxon_id=12942,
+            common_name="Eastern Bluebird",
+            scientific_name="Sialia sialis",
+            family="Turdidae",
+            measurements={"length": "7 in", "wingspan": "12 in", "weight": "1 oz"},
+            field_marks=["blue head", "blue back", "rufous breast", "white belly"],
+            habitat="Open woodland",
+            behavior="Drops from perches to forage",
+            palette=["blue", "rufous", "white"],
+            sources=[
+                {"title": "A", "url": "https://example.test/a"},
+                {"title": "B", "url": "https://example.test/b"},
+            ],
+        )
+
+        prompt = plate_prompt(
+            species,
+            profile,
+            [],
+            Path("candidate.png"),
+            ("Correct the wing bars",),
+        )
+
+        self.assertIn("Correct the wing bars", prompt)
+        self.assertIn("Create a new image", prompt)
+
 
 if __name__ == "__main__":
     unittest.main()

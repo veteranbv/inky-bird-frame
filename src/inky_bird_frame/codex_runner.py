@@ -69,6 +69,15 @@ REVIEW_SCHEMA: Final[dict[str, object]] = {
         "composition_quality": {"type": "integer", "minimum": 1, "maximum": 5},
         "location_free": {"type": "boolean"},
         "findings": {"type": "array", "items": {"type": "string"}},
+        "verification_sources": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {"title": {"type": "string"}, "url": {"type": "string"}},
+                "required": ["title", "url"],
+                "additionalProperties": False,
+            },
+        },
     },
     "required": [
         "passed",
@@ -78,6 +87,7 @@ REVIEW_SCHEMA: Final[dict[str, object]] = {
         "composition_quality",
         "location_free",
         "findings",
+        "verification_sources",
     ],
     "additionalProperties": False,
 }
@@ -192,13 +202,18 @@ class CodexRunner:
         reference_paths: list[Path],
         output_path: Path,
         log_path: Path,
+        correction_findings: tuple[str, ...] = (),
     ) -> Path:
         output_path.parent.mkdir(parents=True, exist_ok=True)
         command = self._base_command(writable=True)
         for image in reference_paths:
             command.extend(["--image", str(image.resolve())])
         command.extend(["-"])
-        self._run(command, plate_prompt(species, profile, references, output_path), log_path)
+        self._run(
+            command,
+            plate_prompt(species, profile, references, output_path, correction_findings),
+            log_path,
+        )
         if not output_path.is_file() or output_path.stat().st_size == 0:
             raise GenerationError(f"Codex did not create the requested plate: {output_path}")
         return output_path
@@ -219,7 +234,7 @@ class CodexRunner:
             [plate_path, *reference_paths],
             output_path,
             log_path,
-            search=False,
+            search=True,
         )
         return _parse_review(raw)
 
@@ -296,9 +311,26 @@ def _parse_review(raw: object) -> QualityReview:
     text_accuracy = _score(raw, "text_accuracy")
     composition_quality = _score(raw, "composition_quality")
     findings = tuple(_string_list(raw.get("findings"), "findings", 0))
+    sources = raw.get("verification_sources")
+    if not isinstance(sources, list):
+        raise GenerationError("Codex review verification_sources must be a list")
+    verification_sources: list[SourceLink] = []
+    for source in sources:
+        if not isinstance(source, dict):
+            raise GenerationError("Codex review verification source must be an object")
+        url = _non_empty_string(source.get("url"), "verification_sources.url")
+        if not url.startswith("https://"):
+            raise GenerationError("Codex review source URLs must use HTTPS")
+        verification_sources.append(
+            SourceLink(
+                title=_non_empty_string(source.get("title"), "verification_sources.title"),
+                url=url,
+            )
+        )
     passed = (
         reported_pass
         and location_free
+        and len(verification_sources) >= 2
         and min(
             species_accuracy,
             anatomy_accuracy,
@@ -315,4 +347,5 @@ def _parse_review(raw: object) -> QualityReview:
         composition_quality=composition_quality,
         location_free=location_free,
         findings=findings,
+        verification_sources=tuple(verification_sources),
     )

@@ -14,6 +14,7 @@ from typing import cast
 
 from .birds import BirdSpecies, fetch_inaturalist_birds, fetch_taxon_context
 from .catalog import (
+    approve_candidate,
     approved_taxon_ids,
     candidate_directory,
     find_taxon_directory,
@@ -156,53 +157,68 @@ def generate_candidate(config: AppConfig, species: BirdSpecies, workspace: Path)
             profile_path,
             logs / "01-profile.log",
         )
-        generated_path = work / "generated.png"
-        runner.generate_plate(
-            species,
-            profile,
-            references,
-            reference_paths,
-            generated_path,
-            logs / "02-generation.log",
-        )
-        portrait_path = work / "portrait.png"
-        display_path = work / "display.png"
-        prepare_generated_plate(generated_path, portrait_path, display_path)
-        generated_path.unlink()
+        correction_findings: tuple[str, ...] = ()
+        history: list[dict[str, object]] = []
+        for attempt in range(1, config.controller.max_generation_attempts + 1):
+            attempt_dir = work / f"attempt-{attempt:02d}"
+            attempt_dir.mkdir()
+            generated_path = attempt_dir / "generated.png"
+            runner.generate_plate(
+                species,
+                profile,
+                references,
+                reference_paths,
+                generated_path,
+                logs / f"02-generation-attempt-{attempt:02d}.log",
+                correction_findings,
+            )
+            portrait_path = attempt_dir / "portrait.png"
+            display_path = attempt_dir / "display.png"
+            prepare_generated_plate(generated_path, portrait_path, display_path)
+            generated_path.unlink()
 
-        review = runner.review_plate(
-            species,
-            profile,
-            references,
-            portrait_path,
-            reference_paths,
-            work / "quality-review.json",
-            logs / "03-quality-review.log",
-        )
-        if not review.passed:
-            failed = state_dir / "failed" / f"{species.taxon_id}-{_timestamp()}"
-            failed.parent.mkdir(parents=True, exist_ok=True)
-            write_json_atomic(work / "quality-review.json", review.as_dict())
-            shutil.copytree(work, failed)
-            raise GenerationError(
-                f"Generated plate failed automated quality review; candidate retained at {failed}"
+            review = runner.review_plate(
+                species,
+                profile,
+                references,
+                portrait_path,
+                reference_paths,
+                attempt_dir / "quality-review.json",
+                logs / f"03-quality-review-attempt-{attempt:02d}.log",
+            )
+            write_json_atomic(attempt_dir / "quality-review.json", review.as_dict())
+            history.append({"attempt": attempt, "quality_review": review.as_dict()})
+            if review.passed:
+                shutil.copy2(profile_path, attempt_dir / "profile.json")
+                write_json_atomic(attempt_dir / "attempt-history.json", history)
+                write_candidate_manifest(
+                    attempt_dir,
+                    species,
+                    profile,
+                    references,
+                    review,
+                    generator="Codex subscription / built-in gpt-image-2",
+                    prompt_version=PROMPT_VERSION,
+                    attempt=attempt,
+                    max_attempts=config.controller.max_generation_attempts,
+                )
+                destination = candidate_directory(state_dir, species)
+                destination.parent.mkdir(parents=True, exist_ok=True)
+                if destination.exists():
+                    raise CatalogError(f"Pending destination already exists: {destination}")
+                shutil.copytree(attempt_dir, destination)
+                return destination
+            correction_findings = review.findings or (
+                "The previous attempt did not meet every automated review threshold.",
             )
 
-        write_candidate_manifest(
-            work,
-            species,
-            profile,
-            references,
-            review,
-            generator="Codex subscription / built-in gpt-image-2",
-            prompt_version=PROMPT_VERSION,
+        failed = state_dir / "failed" / f"{species.taxon_id}-{_timestamp()}"
+        failed.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copytree(work, failed)
+        raise GenerationError(
+            "Generated plate failed automated quality review after "
+            f"{config.controller.max_generation_attempts} attempts; artifacts retained at {failed}"
         )
-        destination = candidate_directory(state_dir, species)
-        destination.parent.mkdir(parents=True, exist_ok=True)
-        if destination.exists():
-            raise CatalogError(f"Pending destination already exists: {destination}")
-        shutil.copytree(work, destination)
-        return destination
 
 
 def _has_terminal_state(state_dir: Path, taxon_id: int) -> bool:
@@ -233,8 +249,31 @@ def record_failure(state_dir: Path, species: BirdSpecies, error: InkyBirdFrameEr
     return destination
 
 
+def approve_passing_candidates(config: AppConfig) -> list[dict[str, object]]:
+    published: list[dict[str, object]] = []
+    pending_root = config.controller.state_dir / "pending"
+    for manifest_path in sorted(pending_root.glob("*/manifest.json")):
+        try:
+            manifest = json.loads(manifest_path.read_text())
+        except json.JSONDecodeError as exc:
+            raise CatalogError(f"Invalid pending manifest: {manifest_path}") from exc
+        if not isinstance(manifest, dict) or not isinstance(manifest.get("taxon_id"), int):
+            raise CatalogError(f"Pending manifest has no taxon ID: {manifest_path}")
+        review = manifest.get("quality_review")
+        if not isinstance(review, dict) or review.get("passed") is not True:
+            continue
+        entry = approve_candidate(
+            config.controller.state_dir,
+            config.controller.catalog_dir,
+            cast(int, manifest["taxon_id"]),
+        )
+        published.append(entry.as_dict())
+    return published
+
+
 def run_controller_cycle(config: AppConfig) -> dict[str, object]:
     with exclusive_cycle_lock(config.controller.state_dir):
+        published = approve_passing_candidates(config)
         location, species_list = discover_species(config)
         approved = approved_taxon_ids(config.controller.catalog_dir)
         eligible = [
@@ -247,12 +286,17 @@ def run_controller_cycle(config: AppConfig) -> dict[str, object]:
         failures: list[dict[str, object]] = []
         for species in eligible[: config.controller.generations_per_cycle]:
             try:
-                destination = generate_candidate(config, species, config.controller.workspace_dir)
+                generate_candidate(config, species, config.controller.workspace_dir)
+                entry = approve_candidate(
+                    config.controller.state_dir,
+                    config.controller.catalog_dir,
+                    species.taxon_id,
+                )
                 generated.append(
                     {
                         "taxon_id": species.taxon_id,
                         "common_name": species.common_name,
-                        "candidate": str(destination),
+                        "published": entry.as_dict(),
                     }
                 )
             except InkyBirdFrameError as exc:
@@ -274,7 +318,8 @@ def run_controller_cycle(config: AppConfig) -> dict[str, object]:
                 "radius_km": config.discovery.radius_km,
                 "species_count": len(species_list),
             },
-            "approved_count": len(approved),
+            "approved_count": len(approved_taxon_ids(config.controller.catalog_dir)),
+            "published_pending": published,
             "eligible_count": len(eligible),
             "generated": generated,
             "failures": failures,

@@ -28,12 +28,15 @@ names, so the catalog can be reused and published.
 6. Attach every reference photo and the species-specific profile to the
    versioned image prompt in
    [`src/inky_bird_frame/prompts.py`](src/inky_bird_frame/prompts.py).
-7. Run a separate structured visual review against the profile and references.
-8. Stage passing work as `pending`. A human must explicitly approve it.
-9. Publish approved images to the immutable catalog and serve them to displays.
+7. Run a separate Codex review that independently verifies facts with current
+   authoritative sources and checks the plate against every reference photo.
+8. Regenerate failed reviews with the concrete findings as corrective input,
+   up to the configured attempt limit.
+9. Automatically publish a passing plate to the immutable catalog and serve it
+   to displays.
 
-An approved taxon is never regenerated implicitly. Rejected or failed work is
-also terminal until an operator runs `retry`.
+An approved taxon is never regenerated implicitly. Work that exhausts its
+bounded attempts is terminal until an operator runs `retry`.
 
 ## Requirements
 
@@ -74,16 +77,14 @@ python -m pip install -e '.[inky]'
 # Confirm local discovery without generating anything.
 uv run inky-bird-frame discover --config config.toml
 
-# Generate at most generations_per_cycle missing candidates.
+# Generate and AI-review at most generations_per_cycle missing species.
 uv run inky-bird-frame controller-cycle --config config.toml
 
 # Inspect approved, pending, and failed work.
 uv run inky-bird-frame status --config config.toml
 
-# Publish a reviewed candidate. This is the only normal publish path.
+# Recovery controls for an interrupted cycle or an operator override.
 uv run inky-bird-frame approve --config config.toml TAXON_ID
-
-# Reject or explicitly make a terminal candidate eligible again.
 uv run inky-bird-frame reject --config config.toml TAXON_ID --reason "..."
 uv run inky-bird-frame retry --config config.toml TAXON_ID
 
@@ -102,8 +103,8 @@ Approved plates live under `catalog/species/<taxon-id>-<slug>/` with:
 
 - `portrait.png`: location-neutral `1200x1600` source plate
 - `display.png`: hardware-ready `1600x1200` image
-- `manifest.json`: facts, factual sources, reference provenance, quality scores,
-  generation metadata, and SHA-256 checksums
+- `manifest.json`: facts, research and review sources, reference provenance,
+  quality scores, generation metadata, and SHA-256 checksums
 
 Downloaded reference photos, run logs, pending work, rejected work, and display
 state live under `var/` and are ignored by Git.
