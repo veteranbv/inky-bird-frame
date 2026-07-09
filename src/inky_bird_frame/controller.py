@@ -543,6 +543,7 @@ def run_generation_cycle(config: AppConfig) -> dict[str, object]:
                     }
                 )
 
+        active_count = _write_active_catalog(config, species_list)
         return {
             "discovery": {
                 "refreshed_at": snapshot.refreshed_at.isoformat(),
@@ -553,6 +554,7 @@ def run_generation_cycle(config: AppConfig) -> dict[str, object]:
                 "species_count": len(species_list),
             },
             "approved_count": len(approved_taxon_ids(config.controller.catalog_dir)),
+            "active_approved_count": active_count,
             "published_pending": published,
             "eligible_count": len(eligible),
             "generated": generated,

@@ -230,14 +230,17 @@ class ControllerTests(unittest.TestCase):
             )
             with patch(
                 "inky_bird_frame.controller.discover_species",
-                return_value=(location, []),
+                return_value=(location, [species]),
             ):
                 result = run_controller_cycle(config)
 
             published = (config.controller.catalog_dir / "species/9083-northern-cardinal").is_dir()
+            active = json.loads((config.controller.state_dir / "active-catalog.json").read_text())
 
         self.assertTrue(published)
         self.assertEqual(result["approved_count"], 1)
+        self.assertEqual(result["active_approved_count"], 1)
+        self.assertEqual([item["taxon_id"] for item in active["species"]], [9083])
         published_pending = result["published_pending"]
         self.assertIsInstance(published_pending, list)
         if isinstance(published_pending, list):
