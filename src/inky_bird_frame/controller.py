@@ -29,6 +29,7 @@ from .errors import (
     GenerationError,
     InkyBirdFrameError,
     InsufficientReferencesError,
+    QualityReviewError,
 )
 from .geo import ZipLocation, lookup_us_zip
 from .images import prepare_generated_plate
@@ -196,7 +197,7 @@ def generate_candidate(config: AppConfig, species: BirdSpecies, workspace: Path)
             history.append({"attempt": attempt, "quality_review": review.as_dict()})
             if review.passed:
                 shutil.copy2(profile_path, attempt_dir / "profile.json")
-                write_json_atomic(attempt_dir / "attempt-history.json", history)
+                write_json_atomic(logs / "attempt-history.json", history)
                 write_candidate_manifest(
                     attempt_dir,
                     species,
@@ -221,7 +222,7 @@ def generate_candidate(config: AppConfig, species: BirdSpecies, workspace: Path)
         failed = state_dir / "failed" / f"{species.taxon_id}-{_timestamp()}"
         failed.parent.mkdir(parents=True, exist_ok=True)
         shutil.copytree(work, failed)
-        raise GenerationError(
+        raise QualityReviewError(
             "Generated plate failed automated quality review after "
             f"{config.controller.max_generation_attempts} attempts; artifacts retained at {failed}"
         )
@@ -377,7 +378,7 @@ def run_controller_cycle(config: AppConfig) -> dict[str, object]:
                         "terminal": False,
                     }
                 )
-            except InkyBirdFrameError as exc:
+            except QualityReviewError as exc:
                 failure_path = record_failure(config.controller.state_dir, species, exc)
                 failures.append(
                     {
@@ -386,6 +387,17 @@ def run_controller_cycle(config: AppConfig) -> dict[str, object]:
                         "error": str(exc),
                         "failure": str(failure_path),
                         "terminal": True,
+                    }
+                )
+            except CatalogError:
+                raise
+            except InkyBirdFrameError as exc:
+                failures.append(
+                    {
+                        "taxon_id": species.taxon_id,
+                        "common_name": species.common_name,
+                        "error": str(exc),
+                        "terminal": False,
                     }
                 )
 

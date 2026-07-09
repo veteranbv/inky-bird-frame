@@ -70,6 +70,7 @@ CODEX_SETUP_REQUIRED = re.compile(r"To use Codex here,", re.IGNORECASE)
 CODEX_REVIEWED_COMMIT = re.compile(
     r"(?:\*\*)?Reviewed commit:(?:\*\*)?\s*`?([0-9a-f]{7,40})`?", re.IGNORECASE
 )
+CODEX_FULL_REVIEW = re.compile(r"###\s+(?:💡\s+)?Codex Review\b", re.IGNORECASE)
 
 POLL_INTERVAL_SECONDS: Final = 15
 # Codex's re-review latency is not stable. It has been ~8.5 min in PR #71
@@ -94,6 +95,7 @@ query($owner: String!, $repo: String!, $pr: Int!) {
         nodes {
           databaseId
           submittedAt
+          body
           author { login }
           commit { oid }
         }
@@ -121,6 +123,7 @@ query($owner: String!, $repo: String!, $pr: Int!) {
         nodes {
           body
           createdAt
+          updatedAt
           author { login }
         }
       }
@@ -263,6 +266,17 @@ def _parse_iso(s: str) -> datetime | None:
         return None
 
 
+def _comment_request_time(comment: dict[str, object]) -> datetime | None:
+    """Return when the comment most recently authorized its current body."""
+    updated = comment.get("updatedAt")
+    if isinstance(updated, str):
+        parsed = _parse_iso(updated)
+        if parsed is not None:
+            return parsed
+    created = comment.get("createdAt")
+    return _parse_iso(created) if isinstance(created, str) else None
+
+
 def _head_time(state: dict[str, object], head_sha: str) -> datetime | None:
     """Return the timestamp for when the head commit became reviewable.
 
@@ -305,9 +319,9 @@ def _latest_codex_request_time(state: dict[str, object], head_sha: str) -> datet
             continue
         if head_sha not in body:
             continue
-        created = _parse_iso(c.get("createdAt") or "")
-        if created is not None:
-            candidates.append(created)
+        request_time = _comment_request_time(c)
+        if request_time is not None:
+            candidates.append(request_time)
     if not candidates:
         return None
     candidates.sort()
@@ -326,9 +340,9 @@ def _owner_codex_request_time(
             continue
         body = comment.get("body")
         if isinstance(body, str) and "@codex review" in body.lower() and head_sha in body:
-            created = _parse_iso(comment.get("createdAt") or "")
-            if created is not None:
-                requests.append(created)
+            request_time = _comment_request_time(comment)
+            if request_time is not None:
+                requests.append(request_time)
     return max(requests) if requests else None
 
 
@@ -364,7 +378,13 @@ def _codex_setup_required(
 
     if head_sha is None or head_time is None:
         return False
-    latest_review_id = _latest_review_id_on_head(state, CODEX_LOGIN, head_sha, not_before=head_time)
+    latest_review_id = _latest_review_id_on_head(
+        state,
+        CODEX_LOGIN,
+        head_sha,
+        not_before=head_time,
+        require_full_review=False,
+    )
     if latest_review_id is None:
         return False
     threads_obj = state.get("reviewThreads")
@@ -411,6 +431,7 @@ def engaged_bots(
             return set()
 
     engaged: set[str] = set()
+    codex_blocking_review_ids = _blocking_review_ids(state, CODEX_LOGIN)
 
     reviews_obj = state.get("reviews")
     if isinstance(reviews_obj, dict):
@@ -418,12 +439,17 @@ def engaged_bots(
             if not isinstance(r, dict):
                 continue
             login = _author_login(r)
+            review_id = r.get("databaseId")
+            codex_review_is_substantive = _is_full_codex_review(r, head_sha) or (
+                isinstance(review_id, int) and review_id in codex_blocking_review_ids
+            )
             commit = r.get("commit")
             commit_sha = commit.get("oid") if isinstance(commit, dict) else None
             submitted = _parse_iso(r.get("submittedAt") or "")
             if (
                 login in BOT_LABELS
                 and commit_sha == head_sha
+                and (login != CODEX_LOGIN or codex_review_is_substantive)
                 and submitted is not None
                 and (freshness_time is None or submitted >= freshness_time)
             ):
@@ -443,31 +469,74 @@ def _latest_review_id_on_head(
     bot_login: str,
     head_sha: str,
     not_before: datetime | None = None,
+    require_full_review: bool = True,
 ) -> int | None:
-    """Return the databaseId of the bot's most recent review on `head_sha`,
-    or None if it hasn't done a fresh review on this commit. Used to scope
-    findings to the bot's latest assessment, ignoring re-anchored stale ones."""
+    """Return the bot's latest substantive review ID on ``head_sha``.
+
+    A Codex review is substantive when it is a stamped full review or carries
+    a blocking inline finding. Empty task reviews do not supersede findings.
+    """
     reviews_obj = state.get("reviews")
     if not isinstance(reviews_obj, dict):
         return None
+    blocking_review_ids = _blocking_review_ids(state, bot_login)
     candidates: list[tuple[datetime, int]] = []
     for r in reviews_obj.get("nodes") or []:
         if not isinstance(r, dict):
             continue
         if _author_login(r) != bot_login:
             continue
+        rid = r.get("databaseId")
+        has_blocking_findings = isinstance(rid, int) and rid in blocking_review_ids
+        if (
+            require_full_review
+            and bot_login == CODEX_LOGIN
+            and not _is_full_codex_review(r, head_sha)
+            and not has_blocking_findings
+        ):
+            continue
         commit = r.get("commit")
         commit_sha = commit.get("oid") if isinstance(commit, dict) else None
         if commit_sha != head_sha:
             continue
         when = _parse_iso(r.get("submittedAt") or "")
-        rid = r.get("databaseId")
         if when is not None and isinstance(rid, int) and (not_before is None or when >= not_before):
             candidates.append((when, rid))
     if not candidates:
         return None
     candidates.sort()
     return candidates[-1][1]
+
+
+def _is_full_codex_review(review: dict[str, object], head_sha: str) -> bool:
+    body = review.get("body")
+    if not isinstance(body, str) or not CODEX_FULL_REVIEW.search(body):
+        return False
+    match = CODEX_REVIEWED_COMMIT.search(body)
+    return match is not None and head_sha.lower().startswith(match.group(1).lower())
+
+
+def _blocking_review_ids(state: dict[str, object], bot_login: str) -> set[int]:
+    """Return review IDs containing blocking inline findings from this bot."""
+    review_ids: set[int] = set()
+    threads_obj = state.get("reviewThreads")
+    if not isinstance(threads_obj, dict):
+        return review_ids
+    for thread in threads_obj.get("nodes") or []:
+        if not isinstance(thread, dict):
+            continue
+        comments_obj = thread.get("comments")
+        if not isinstance(comments_obj, dict):
+            continue
+        for comment in comments_obj.get("nodes") or []:
+            if not isinstance(comment, dict) or _author_login(comment) != bot_login:
+                continue
+            body = comment.get("body")
+            review = comment.get("pullRequestReview")
+            review_id = review.get("databaseId") if isinstance(review, dict) else None
+            if isinstance(body, str) and CODEX_BLOCKING.search(body) and isinstance(review_id, int):
+                review_ids.add(review_id)
+    return review_ids
 
 
 def _codex_thumbed_up_head(state: dict[str, object], head_time: datetime | None) -> bool:
@@ -483,26 +552,31 @@ def _codex_thumbed_up_head(state: dict[str, object], head_time: datetime | None)
     the secondary check; rely solely on head_time. If head_time is null, we
     conservatively don't infer cleanliness.
     """
+    return _codex_thumbed_up_time(state, head_time) is not None
+
+
+def _codex_thumbed_up_time(state: dict[str, object], head_time: datetime | None) -> datetime | None:
     if head_time is None:
-        return False
+        return None
+    candidates: list[datetime] = []
     reactions_obj = state.get("reactions")
     if not isinstance(reactions_obj, dict):
-        return False
-    for r in reactions_obj.get("nodes") or []:
-        if not isinstance(r, dict):
+        return None
+    for reaction in reactions_obj.get("nodes") or []:
+        if not isinstance(reaction, dict):
             continue
-        user = r.get("user")
+        user = reaction.get("user")
         if not isinstance(user, dict):
             continue
         login = user.get("login")
-        if not isinstance(login, str):
+        if not isinstance(login, str) or login.removesuffix("[bot]") != CODEX_LOGIN:
             continue
-        if login.removesuffix("[bot]") != CODEX_LOGIN:
-            continue
-        created = _parse_iso(r.get("createdAt") or "")
+        created = _parse_iso(reaction.get("createdAt") or "")
         if created is not None and created >= head_time:
-            return True
-    return False
+            candidates.append(created)
+    if not candidates:
+        return None
+    return max(candidates)
 
 
 def _codex_clean_comment_time_on_head(
@@ -551,11 +625,20 @@ def _latest_review_time_on_head(
     reviews_obj = state.get("reviews")
     if not isinstance(reviews_obj, dict):
         return None
+    blocking_review_ids = _blocking_review_ids(state, bot_login)
     candidates: list[datetime] = []
     for r in reviews_obj.get("nodes") or []:
         if not isinstance(r, dict):
             continue
         if _author_login(r) != bot_login:
+            continue
+        review_id = r.get("databaseId")
+        has_blocking_findings = isinstance(review_id, int) and review_id in blocking_review_ids
+        if (
+            bot_login == CODEX_LOGIN
+            and not _is_full_codex_review(r, head_sha)
+            and not has_blocking_findings
+        ):
             continue
         commit = r.get("commit")
         commit_sha = commit.get("oid") if isinstance(commit, dict) else None
@@ -595,7 +678,11 @@ def collect_findings(
     codex_clean_comment_latest = codex_clean_comment_time is not None and (
         latest_codex_review_time is None or codex_clean_comment_time >= latest_codex_review_time
     )
-    codex_clean = _codex_thumbed_up_head(state, head_time) or codex_clean_comment_latest
+    codex_reaction_time = _codex_thumbed_up_time(state, head_time)
+    codex_reaction_latest = codex_reaction_time is not None and (
+        latest_codex_review_time is None or codex_reaction_time >= latest_codex_review_time
+    )
+    codex_clean = codex_reaction_latest or codex_clean_comment_latest
     latest_per_bot: dict[str, int | None] = {
         login: _latest_review_id_on_head(state, login, head_sha) for login in BOT_LABELS
     }

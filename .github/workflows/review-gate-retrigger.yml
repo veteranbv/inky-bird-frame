@@ -32,8 +32,8 @@ permissions:
 jobs:
   retrigger:
     # Bot reviews, Codex clean comments, and exact-head owner review requests
-    # can change the gate's verdict. Skip fork PRs too: their GITHUB_TOKEN is
-    # read-only, so the re-run API call would fail.
+    # can change the gate's verdict. Owner issue comments run in the base
+    # repository, so they can re-run the base workflow for fork PR heads.
     if: >-
       (
         github.event_name == 'pull_request_review'
@@ -79,11 +79,6 @@ jobs:
 
           if [ "${GITHUB_EVENT_NAME}" = "issue_comment" ]; then
             pr_json=$(gh api "repos/${REPO}/pulls/${PR_NUMBER}")
-            head_repo=$(jq -r '.head.repo.full_name' <<<"${pr_json}")
-            if [ "${head_repo}" != "${REPO}" ]; then
-              echo "Skipping fork PR from ${head_repo}."
-              exit 0
-            fi
             HEAD_SHA=$(jq -r '.head.sha' <<<"${pr_json}")
             if [ "${COMMENT_AUTHOR}" = "${REPO_OWNER}" ] \
               && [[ "${COMMENT_BODY}" != *"${HEAD_SHA}"* ]]; then
