@@ -65,6 +65,7 @@ CODEX_BLOCKING = re.compile(r"!\[P[01]\s*Badge\]|badge/P[01]-", re.IGNORECASE)
 CODEX_CLEAN_COMMENT = re.compile(
     r"Codex Review:\s*Did(?:n't| not) find any major issues", re.IGNORECASE
 )
+CODEX_SETUP_REQUIRED = re.compile(r"To use Codex here,", re.IGNORECASE)
 CODEX_REVIEWED_COMMIT = re.compile(
     r"(?:\*\*)?Reviewed commit:(?:\*\*)?\s*`?([0-9a-f]{7,40})`?", re.IGNORECASE
 )
@@ -310,6 +311,27 @@ def _latest_codex_request_time(state: dict[str, object], head_sha: str) -> datet
         return None
     candidates.sort()
     return candidates[-1]
+
+
+def _codex_setup_required(state: dict[str, object], head_time: datetime | None) -> bool:
+    if head_time is None:
+        return False
+    comments_obj = state.get("comments")
+    if not isinstance(comments_obj, dict):
+        return False
+    for comment in comments_obj.get("nodes") or []:
+        if not isinstance(comment, dict) or _author_login(comment) != CODEX_LOGIN:
+            continue
+        body = comment.get("body")
+        created = _parse_iso(comment.get("createdAt") or "")
+        if (
+            isinstance(body, str)
+            and CODEX_SETUP_REQUIRED.search(body)
+            and created is not None
+            and created >= head_time
+        ):
+            return True
+    return False
 
 
 def engaged_bots(
@@ -639,6 +661,13 @@ def main() -> int:
     deadline = time.monotonic() + POLL_BUDGET_SECONDS
     engaged: set[str] = set()
     while True:
+        if _codex_setup_required(state, head_time):
+            print(
+                "Codex review is unavailable because this repository is not connected. ",
+                "Connect it in Codex settings, then push a new head to rerun the gate.",
+                file=sys.stderr,
+            )
+            return 1
         engaged = engaged_bots(state, repo, head_sha, head_time)
         missing = set(BOT_LABELS) - engaged
         if not missing:
