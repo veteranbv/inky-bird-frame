@@ -70,7 +70,7 @@ CODEX_SETUP_REQUIRED = re.compile(r"To use Codex here,", re.IGNORECASE)
 CODEX_REVIEWED_COMMIT = re.compile(
     r"(?:\*\*)?Reviewed commit:(?:\*\*)?\s*`?([0-9a-f]{7,40})`?", re.IGNORECASE
 )
-CODEX_FULL_REVIEW = re.compile(r"###\s+💡\s+Codex Review", re.IGNORECASE)
+CODEX_FULL_REVIEW = re.compile(r"###\s+(?:💡\s+)?Codex Review\b", re.IGNORECASE)
 
 POLL_INTERVAL_SECONDS: Final = 15
 # Codex's re-review latency is not stable. It has been ~8.5 min in PR #71

@@ -100,6 +100,10 @@ def _full_codex_review_body(head_sha: str) -> str:
     )
 
 
+def _plain_codex_review_body(head_sha: str) -> str:
+    return f"### Codex Review\n\n**Reviewed commit:** `{head_sha[:10]}`"
+
+
 def test_codex_reaction_does_not_engage_when_pushed_date_missing(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
@@ -257,6 +261,53 @@ def test_empty_codex_task_review_does_not_satisfy_full_review_request() -> None:
         )
         == set()
     )
+
+
+def test_plain_codex_review_header_satisfies_full_review_request() -> None:
+    review_gate = _load_review_gate()
+    state = _state_with_commit(pushed="2026-06-15T11:59:00Z", committed="2026-06-01T12:00:00Z")
+    state["headRefOid"] = "abc1234"
+    state["commits"] = {
+        "nodes": [
+            {
+                "commit": {
+                    "oid": "abc1234",
+                    "pushedDate": "2026-06-15T11:59:00Z",
+                    "committedDate": "2026-06-01T12:00:00Z",
+                }
+            }
+        ]
+    }
+    state["comments"] = {
+        "nodes": [
+            {
+                "body": "@codex review\n\nhead: abc1234",
+                "createdAt": "2026-06-15T12:00:00Z",
+                "author": {"login": "owner"},
+            }
+        ]
+    }
+    state["reactions"] = {"nodes": []}
+    state["reviews"] = {
+        "nodes": [
+            {
+                "databaseId": 10,
+                "submittedAt": "2026-06-15T12:01:00Z",
+                "body": _plain_codex_review_body("abc1234"),
+                "author": {"login": "chatgpt-codex-connector"},
+                "commit": {"oid": "abc1234"},
+            }
+        ]
+    }
+    head_time = review_gate._head_time(state, "abc1234")
+
+    assert review_gate.engaged_bots(
+        state,
+        "owner/repo",
+        "abc1234",
+        head_time,
+        owner_login="owner",
+    ) == {review_gate.CODEX_LOGIN}
 
 
 def test_codex_setup_comment_blocks_reaction_engagement() -> None:
