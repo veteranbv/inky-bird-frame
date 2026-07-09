@@ -329,24 +329,50 @@ def _owner_requested_codex_review(
     return False
 
 
-def _codex_setup_required(state: dict[str, object], head_time: datetime | None) -> bool:
-    if head_time is None:
-        return False
+def _codex_setup_required(
+    state: dict[str, object], head_time: datetime | None, head_sha: str | None = None
+) -> bool:
     comments_obj = state.get("comments")
-    if not isinstance(comments_obj, dict):
+    if head_time is not None and isinstance(comments_obj, dict):
+        for comment in comments_obj.get("nodes") or []:
+            if not isinstance(comment, dict) or _author_login(comment) != CODEX_LOGIN:
+                continue
+            body = comment.get("body")
+            created = _parse_iso(comment.get("createdAt") or "")
+            if (
+                isinstance(body, str)
+                and CODEX_SETUP_REQUIRED.search(body)
+                and created is not None
+                and created >= head_time
+            ):
+                return True
+
+    if head_sha is None:
         return False
-    for comment in comments_obj.get("nodes") or []:
-        if not isinstance(comment, dict) or _author_login(comment) != CODEX_LOGIN:
+    latest_review_id = _latest_review_id_on_head(state, CODEX_LOGIN, head_sha)
+    if latest_review_id is None:
+        return False
+    threads_obj = state.get("reviewThreads")
+    if not isinstance(threads_obj, dict):
+        return False
+    for thread in threads_obj.get("nodes") or []:
+        if not isinstance(thread, dict):
             continue
-        body = comment.get("body")
-        created = _parse_iso(comment.get("createdAt") or "")
-        if (
-            isinstance(body, str)
-            and CODEX_SETUP_REQUIRED.search(body)
-            and created is not None
-            and created >= head_time
-        ):
-            return True
+        thread_comments = thread.get("comments")
+        if not isinstance(thread_comments, dict):
+            continue
+        for comment in thread_comments.get("nodes") or []:
+            if not isinstance(comment, dict) or _author_login(comment) != CODEX_LOGIN:
+                continue
+            review = comment.get("pullRequestReview")
+            review_id = review.get("databaseId") if isinstance(review, dict) else None
+            body = comment.get("body")
+            if (
+                review_id == latest_review_id
+                and isinstance(body, str)
+                and CODEX_SETUP_REQUIRED.search(body)
+            ):
+                return True
     return False
 
 
@@ -682,7 +708,7 @@ def main() -> int:
     deadline = time.monotonic() + POLL_BUDGET_SECONDS
     engaged: set[str] = set()
     while True:
-        if _codex_setup_required(state, head_time):
+        if _codex_setup_required(state, head_time, head_sha):
             print(
                 "Codex review is unavailable because this repository is not connected. ",
                 "Connect it in Codex settings, then push a new head to rerun the gate.",

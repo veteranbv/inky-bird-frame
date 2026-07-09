@@ -31,7 +31,10 @@ class ReviewGateModule(Protocol):
     ) -> datetime | None: ...
 
     def _codex_setup_required(
-        self, state: dict[str, object], head_time: datetime | None
+        self,
+        state: dict[str, object],
+        head_time: datetime | None,
+        head_sha: str | None = None,
     ) -> bool: ...
 
     def engaged_bots(
@@ -168,6 +171,39 @@ def test_codex_setup_comment_blocks_reaction_engagement() -> None:
     head_time = review_gate._head_time(state, "abc123")
 
     assert review_gate._codex_setup_required(state, head_time)
+
+
+def test_codex_setup_inline_comment_blocks_latest_head_review() -> None:
+    review_gate = _load_review_gate()
+    state = _state_with_commit(pushed="2026-06-15T11:59:00Z", committed="2026-06-01T12:00:00Z")
+    state["reviews"] = {
+        "nodes": [
+            {
+                "databaseId": 10,
+                "submittedAt": "2026-06-15T12:00:00Z",
+                "author": {"login": "chatgpt-codex-connector"},
+                "commit": {"oid": "abc123"},
+            }
+        ]
+    }
+    state["reviewThreads"] = {
+        "nodes": [
+            {
+                "comments": {
+                    "nodes": [
+                        {
+                            "author": {"login": "chatgpt-codex-connector"},
+                            "body": "To use Codex here, create an environment for this repo.",
+                            "pullRequestReview": {"databaseId": 10},
+                        }
+                    ]
+                }
+            }
+        ]
+    }
+    head_time = review_gate._head_time(state, "abc123")
+
+    assert review_gate._codex_setup_required(state, head_time, "abc123")
 
 
 def test_codex_reaction_can_engage_when_newer_than_codex_request_comment(
