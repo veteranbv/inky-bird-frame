@@ -53,7 +53,7 @@ generation quota on it.
 ## Failure recovery
 
 - Network or source failure: inspect `var/controller/runs/` and the JSON command
-  result. Failed taxa stay terminal.
+  result. The taxon remains eligible for the next scheduled cycle.
 - Unsuitable licensed references: inspect the reference manifest and source
   pages. Retry only after deciding the source set can be improved.
 - Generated image or text defect: the controller feeds review findings into a

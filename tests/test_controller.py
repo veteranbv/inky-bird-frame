@@ -10,7 +10,7 @@ from inky_bird_frame.birds import BirdSpecies
 from inky_bird_frame.catalog import candidate_directory, write_candidate_manifest
 from inky_bird_frame.config import load_config
 from inky_bird_frame.controller import generate_candidate, run_controller_cycle
-from inky_bird_frame.errors import GenerationError
+from inky_bird_frame.errors import DataSourceError, GenerationError
 from inky_bird_frame.geo import ZipLocation
 from inky_bird_frame.models import QualityReview, SpeciesProfileData
 
@@ -55,6 +55,30 @@ state_dir = "display"
 
 
 class ControllerTests(unittest.TestCase):
+    def test_transient_source_failure_remains_eligible(self) -> None:
+        species = BirdSpecies(9083, "Northern Cardinal", "Cardinalis cardinalis", 2, "test")
+        location = ZipLocation("12345", "Exampleville", "XY", 1.0, 2.0)
+        with TemporaryDirectory() as temporary:
+            config_path = Path(temporary) / "config.toml"
+            config_path.write_text(CONFIG)
+            config = load_config(config_path)
+            with (
+                patch(
+                    "inky_bird_frame.controller.discover_species",
+                    return_value=(location, [species]),
+                ),
+                patch("inky_bird_frame.controller.generate_candidate") as generate,
+            ):
+                generate.side_effect = DataSourceError("iNaturalist timed out")
+                result = run_controller_cycle(config)
+            terminal_failures = list((config.controller.state_dir / "failed").glob("9083-*"))
+
+        failures = result["failures"]
+        self.assertEqual(terminal_failures, [])
+        self.assertIsInstance(failures, list)
+        if isinstance(failures, list):
+            self.assertFalse(failures[0]["terminal"])
+
     def test_cycle_publishes_a_previously_reviewed_pending_candidate(self) -> None:
         species = BirdSpecies(9083, "Northern Cardinal", "Cardinalis cardinalis", 2, "test")
         location = ZipLocation("12345", "Exampleville", "XY", 1.0, 2.0)

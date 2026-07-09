@@ -20,9 +20,10 @@ Gating model (hybrid; see PR #71 discussion):
   Either signal alone clears the finding. This matches how human code review
   actually works: either the bot reconsiders, or you say "I've handled it."
 
-Engagement (polling): the script waits up to POLL_BUDGET_SECONDS for Codex to
-engage with the PR via review, clean comment, or reaction, so the gate doesn't
-pass before Codex has had a chance to weigh in on PR open.
+Engagement (polling): after the repository owner requests Codex review and
+names the exact head SHA, the script waits up to POLL_BUDGET_SECONDS for Codex
+to engage via review, clean comment, or reaction. Contributor activity and
+automatic review alone cannot satisfy the gate.
 
 Run locally for debugging:
     GH_TOKEN=$(gh auth token) \\
@@ -313,6 +314,21 @@ def _latest_codex_request_time(state: dict[str, object], head_sha: str) -> datet
     return candidates[-1]
 
 
+def _owner_requested_codex_review(
+    state: dict[str, object], owner_login: str, head_sha: str
+) -> bool:
+    comments_obj = state.get("comments")
+    if not isinstance(comments_obj, dict):
+        return False
+    for comment in comments_obj.get("nodes") or []:
+        if not isinstance(comment, dict) or _author_login(comment) != owner_login:
+            continue
+        body = comment.get("body")
+        if isinstance(body, str) and "@codex review" in body.lower() and head_sha in body:
+            return True
+    return False
+
+
 def _codex_setup_required(state: dict[str, object], head_time: datetime | None) -> bool:
     if head_time is None:
         return False
@@ -339,13 +355,17 @@ def engaged_bots(
     repo: str,
     head_sha: str,
     head_time: datetime | None,
+    owner_login: str | None = None,
 ) -> set[str]:
     """Return bot logins that have engaged with the PR on the current head.
 
-    - Codex: review with commit.oid == head_sha, clean issue comment for the
-      head SHA, OR thumbs-up reaction whose createdAt is at/after the head
-      commit time.
+    - Codex: after an exact-head owner request, review with commit.oid ==
+      head_sha, clean issue comment for the head SHA, OR thumbs-up reaction
+      whose createdAt is at/after the head commit time.
     """
+    if owner_login is not None and not _owner_requested_codex_review(state, owner_login, head_sha):
+        return set()
+
     engaged: set[str] = set()
 
     reviews_obj = state.get("reviews")
@@ -638,6 +658,7 @@ def main() -> int:
         return 2
 
     state = fetch_pr_state(repo, pr)
+    owner_login = repo.split("/", 1)[0]
     head_sha = state.get("headRefOid")
     if not isinstance(head_sha, str):
         print("PR state missing headRefOid", file=sys.stderr)
@@ -668,7 +689,7 @@ def main() -> int:
                 file=sys.stderr,
             )
             return 1
-        engaged = engaged_bots(state, repo, head_sha, head_time)
+        engaged = engaged_bots(state, repo, head_sha, head_time, owner_login)
         missing = set(BOT_LABELS) - engaged
         if not missing:
             print(f"All bots engaged on {head_sha[:10]}: {sorted(engaged)}", flush=True)

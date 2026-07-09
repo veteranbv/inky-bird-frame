@@ -50,8 +50,9 @@ permissions:
 
 # The gate intentionally does not post `@codex review`. GitHub Actions comments
 # are authored by a bot account that cannot authorize Codex. A maintainer must
-# request review on the current head, which also keeps contributor PRs from
-# advancing through the full lifecycle without owner action.
+# request review with the exact current head SHA. The gate verifies both the
+# owner identity and SHA, keeping contributor PRs from advancing through the
+# full lifecycle without owner action.
 jobs:
   review-gate:
     runs-on: ubuntu-latest

@@ -23,7 +23,7 @@ from .catalog import (
 )
 from .codex_runner import CodexRunner
 from .config import AppConfig
-from .errors import CatalogError, GenerationError, InkyBirdFrameError
+from .errors import CatalogError, DataSourceError, GenerationError, InkyBirdFrameError
 from .geo import ZipLocation, lookup_us_zip
 from .images import prepare_generated_plate
 from .models import ReferencePhoto
@@ -299,6 +299,15 @@ def run_controller_cycle(config: AppConfig) -> dict[str, object]:
                         "published": entry.as_dict(),
                     }
                 )
+            except DataSourceError as exc:
+                failures.append(
+                    {
+                        "taxon_id": species.taxon_id,
+                        "common_name": species.common_name,
+                        "error": str(exc),
+                        "terminal": False,
+                    }
+                )
             except InkyBirdFrameError as exc:
                 failure_path = record_failure(config.controller.state_dir, species, exc)
                 failures.append(
@@ -307,6 +316,7 @@ def run_controller_cycle(config: AppConfig) -> dict[str, object]:
                         "common_name": species.common_name,
                         "error": str(exc),
                         "failure": str(failure_path),
+                        "terminal": True,
                     }
                 )
 
