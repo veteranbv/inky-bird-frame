@@ -431,6 +431,7 @@ def engaged_bots(
             return set()
 
     engaged: set[str] = set()
+    codex_blocking_review_ids = _blocking_review_ids(state, CODEX_LOGIN)
 
     reviews_obj = state.get("reviews")
     if isinstance(reviews_obj, dict):
@@ -438,13 +439,17 @@ def engaged_bots(
             if not isinstance(r, dict):
                 continue
             login = _author_login(r)
+            review_id = r.get("databaseId")
+            codex_review_is_substantive = _is_full_codex_review(r, head_sha) or (
+                isinstance(review_id, int) and review_id in codex_blocking_review_ids
+            )
             commit = r.get("commit")
             commit_sha = commit.get("oid") if isinstance(commit, dict) else None
             submitted = _parse_iso(r.get("submittedAt") or "")
             if (
                 login in BOT_LABELS
                 and commit_sha == head_sha
-                and (login != CODEX_LOGIN or _is_full_codex_review(r, head_sha))
+                and (login != CODEX_LOGIN or codex_review_is_substantive)
                 and submitted is not None
                 and (freshness_time is None or submitted >= freshness_time)
             ):
