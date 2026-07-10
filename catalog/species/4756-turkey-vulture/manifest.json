@@ -1,0 +1,153 @@
+{
+  "approved_at": "2026-07-10T03:53:15+00:00",
+  "assets": {
+    "display": {
+      "filename": "display.png",
+      "sha256": "b1502bbc1572eb47cbac9ca505568faa0a0de5c27ca6074eb772b40e172d7f35"
+    },
+    "portrait": {
+      "filename": "portrait.png",
+      "sha256": "ce7568772b8ab4e31ee1df76df9518c9bf1341eeb8d0ba5fbaee98210f1ada23"
+    }
+  },
+  "common_name": "Turkey Vulture",
+  "generation": {
+    "attempt": 2,
+    "generated_at": "2026-07-10T03:53:15+00:00",
+    "generator": "Codex subscription / built-in gpt-image-2",
+    "max_attempts": 3,
+    "prompt_version": "field-journal-v2"
+  },
+  "profile": {
+    "behavior": "Soars with wings held in a shallow V, often rocking side to side; rides thermals with few wingbeats and searches for carrion chiefly by smell.",
+    "common_name": "Turkey Vulture",
+    "family": "Cathartidae",
+    "field_marks": [
+      "Large, dark brown-black vulture with a small, bare head.",
+      "Adults show a red, wrinkled head and a pale hooked bill.",
+      "Long, broad wings have conspicuously fingered tips.",
+      "In flight, the wings are held in a shallow V (dihedral).",
+      "Underwings are two-toned: dark leading edge and paler silvery trailing flight feathers.",
+      "Long tail extends beyond the toe tips in flight."
+    ],
+    "habitat": "Open and semi-open country, including mixed farmland, rangeland, forest edges, and other landscapes with carrion; roosts in secluded trees, cliffs, rocks, and similar elevated sites.",
+    "measurements": {
+      "length": "64\u201381 cm (25.2\u201331.9 in)",
+      "weight": "0.85\u20132.0 kg (1.9\u20134.4 lb)",
+      "wingspan": "170\u2013183 cm (66.9\u201372.1 in)"
+    },
+    "palette": [
+      "dark brown-black",
+      "bare red",
+      "pale ivory",
+      "silvery gray",
+      "flesh pink"
+    ],
+    "scientific_name": "Cathartes aura",
+    "sources": [
+      {
+        "title": "Turkey Vulture Identification \u2014 Cornell Lab of Ornithology",
+        "url": "https://www.allaboutbirds.org/guide/Turkey_Vulture/id"
+      },
+      {
+        "title": "Turkey Vulture Life History \u2014 Cornell Lab of Ornithology",
+        "url": "https://www.allaboutbirds.org/guide/Turkey_Vulture/lifehistory"
+      },
+      {
+        "title": "Vultures \u2014 U.S. National Park Service",
+        "url": "https://www.nps.gov/bibe/learn/nature/vultures.htm"
+      },
+      {
+        "title": "Turkey Vulture \u2014 University of Michigan BioKIDS",
+        "url": "https://www.biokids.umich.edu/critters/Cathartes_aura/"
+      }
+    ],
+    "taxon_id": 4756
+  },
+  "quality_review": {
+    "anatomy_accuracy": 5,
+    "composition_quality": 5,
+    "findings": [
+      "No material anatomical, species, text, or location-detail errors found. The illustration depicts one head, one hooked bill, two wings, two legs, and one long tail; adult bare red head, pale bill, dark-brown plumage, pinkish legs, broad fingered wings, and two-toned underwing presentation agree with the supplied references and verification sources.",
+      "All visible factual claims are supported: Turkey Vulture / Cathartes aura / Cathartidae; 64\u201381 cm length, 0.85\u20132.0 kg weight, and 170\u2013183 cm wingspan; shallow-V soaring, side-to-side rocking, thermal use, carrion detection chiefly by smell, broad open-to-semi-open habitat, and elevated secluded roosting sites.",
+      "No place name, ZIP code, coordinates, map, or local-observation detail appears on the candidate plate."
+    ],
+    "location_free": true,
+    "passed": true,
+    "species_accuracy": 5,
+    "text_accuracy": 5,
+    "verification_sources": [
+      {
+        "title": "Turkey Vulture Identification \u2014 Cornell Lab of Ornithology",
+        "url": "https://www.allaboutbirds.org/guide/Turkey_Vulture/id"
+      },
+      {
+        "title": "Cathartes aura (Turkey Vulture) \u2014 Animal Diversity Web, University of Michigan",
+        "url": "https://animaldiversity.org/accounts/Cathartes_aura/"
+      },
+      {
+        "title": "New World Vultures \u2014 U.S. National Park Service",
+        "url": "https://www.nps.gov/hafe/learn/nature/new-world-vultures.htm"
+      }
+    ]
+  },
+  "references": [
+    {
+      "attribution": "(c) Andrew Murray, some rights reserved (CC BY)",
+      "filename": "01-263981348.jpg",
+      "height": 1237,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/263981348/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 152886402,
+      "observer": "andrewmurray1",
+      "photo_id": 263981348,
+      "sha256": "b1b480343a6c44e787600180a1e0042d84baf7111fd96a0fae1b4d899e7f02d9",
+      "source_url": "https://www.inaturalist.org/observations/152886402",
+      "width": 2048
+    },
+    {
+      "attribution": "no rights reserved",
+      "filename": "02-390787388.jpg",
+      "height": 2048,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/390787388/large.jpg",
+      "license_code": "cc0",
+      "observation_id": 220708656,
+      "observer": "airakalanr",
+      "photo_id": 390787388,
+      "sha256": "a035ad33ae4b1646077bf6b52bc31435db29e45e66c19b0101298f3011dfc345",
+      "source_url": "https://www.inaturalist.org/observations/220708656",
+      "width": 1768
+    },
+    {
+      "attribution": "(c) Seig, some rights reserved (CC BY)",
+      "filename": "03-52277010.jpg",
+      "height": 1579,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/52277010/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 33290971,
+      "observer": "seigmond",
+      "photo_id": 52277010,
+      "sha256": "4854eaaaaf468c0488fc5f3287bcbcfdd67355436bb525ab143d083938e3e99c",
+      "source_url": "https://www.inaturalist.org/observations/33290971",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) Lauren McLaurin, some rights reserved (CC BY)",
+      "filename": "04-349683482.jpg",
+      "height": 1365,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/349683482/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 198402430,
+      "observer": "mcferny",
+      "photo_id": 349683482,
+      "sha256": "c63e3fbc839c44070c83b918da1dd64e0e4b68fd88cb317dcb7656133d46b766",
+      "source_url": "https://www.inaturalist.org/observations/198402430",
+      "width": 2048
+    }
+  ],
+  "schema_version": 1,
+  "scientific_name": "Cathartes aura",
+  "slug": "turkey-vulture",
+  "status": "approved",
+  "taxon_id": 4756
+}
