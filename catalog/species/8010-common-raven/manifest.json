@@ -1,0 +1,143 @@
+{
+  "approved_at": "2026-07-10T13:46:39+00:00",
+  "assets": {
+    "display": {
+      "filename": "display.png",
+      "sha256": "dd77a2df8adc01c8ef407b92ab04c82d6d53b4c72d6b6eada0e217ca0350918f"
+    },
+    "portrait": {
+      "filename": "portrait.png",
+      "sha256": "1a3f04e31dcf18e7698474168a2f86b27e45203a0023ce8fc3b96abf45d1888b"
+    }
+  },
+  "common_name": "Common Raven",
+  "generation": {
+    "attempt": 1,
+    "generated_at": "2026-07-10T13:46:39+00:00",
+    "generator": "Codex subscription / built-in gpt-image-2",
+    "max_attempts": 3,
+    "prompt_version": "field-journal-v2"
+  },
+  "profile": {
+    "behavior": "Omnivorous, bold and inquisitive; commonly forages on the ground alone or in pairs, and flies with slow wingbeats, glides, and soaring.",
+    "common_name": "Common Raven",
+    "family": "Corvidae",
+    "field_marks": [
+      "Very large, thick-necked corvid with a heavy, straight bill",
+      "Entirely black plumage, including bill, eyes, and legs",
+      "Shaggy, elongated throat feathers (hackles)",
+      "Long, wedge- or diamond-shaped tail in flight",
+      "Long, narrow wings with distinct fingered wingtips"
+    ],
+    "habitat": "Highly adaptable across open and forested landscapes, including woodland, cliffs and coasts, mountains, tundra, grassland, scrub, desert, and human-modified areas.",
+    "measurements": {
+      "length": "56\u201369 cm",
+      "weight": "689\u20131,625 g",
+      "wingspan": "116\u2013118 cm"
+    },
+    "palette": [
+      "sooty black",
+      "blue-black sheen",
+      "charcoal gray",
+      "dark brown-black"
+    ],
+    "scientific_name": "Corvus corax",
+    "sources": [
+      {
+        "title": "Common Raven Identification \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Common_Raven/id"
+      },
+      {
+        "title": "Common Raven Life History \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/common_raven/lifehistory"
+      },
+      {
+        "title": "Common Raven \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/common-raven"
+      }
+    ],
+    "taxon_id": 8010
+  },
+  "quality_review": {
+    "anatomy_accuracy": 5,
+    "composition_quality": 5,
+    "findings": [
+      "Live verification confirms the title, scientific name, family, all listed measurements, habitat/behavior summary, and field marks. The illustration matches an adult Common Raven: entirely black plumage, very heavy bill, thick neck with shaggy hackles, black eye/legs/feet, long narrow fingered wing, and wedge-shaped tail.",
+      "The plate shows one head, one beak, two anatomically consistent folded wings, two legs, and one tail; no anomalous or duplicated parts are visible.",
+      "No place name, ZIP code, coordinates, map, or local-observation detail appears."
+    ],
+    "location_free": true,
+    "passed": true,
+    "species_accuracy": 5,
+    "text_accuracy": 5,
+    "verification_sources": [
+      {
+        "title": "Common Raven Identification \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Common_Raven/id"
+      },
+      {
+        "title": "Common Raven \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/common-raven"
+      }
+    ]
+  },
+  "references": [
+    {
+      "attribution": "(c) cello caruso-turiello, some rights reserved (CC BY)",
+      "filename": "01-462471314.jpg",
+      "height": 1365,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/462471314/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 257775413,
+      "observer": "celllo",
+      "photo_id": 462471314,
+      "sha256": "c1ec4b7e225c30340cef9376f2e10570772c7cf5b4ee87b7b3d3177cd144e25f",
+      "source_url": "https://www.inaturalist.org/observations/257775413",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) Mila C., some rights reserved (CC BY)",
+      "filename": "02-381522855.jpeg",
+      "height": 2048,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/381522855/large.jpeg",
+      "license_code": "cc-by",
+      "observation_id": 215780666,
+      "observer": "pinefrog",
+      "photo_id": 381522855,
+      "sha256": "7eacfc838c40ce10408c7f98f30ed74e7916f6728a263cf01a06cc1d4e71d7fe",
+      "source_url": "https://www.inaturalist.org/observations/215780666",
+      "width": 1536
+    },
+    {
+      "attribution": "(c) Suzanne Carriere, some rights reserved (CC BY)",
+      "filename": "03-8256075.jpeg",
+      "height": 1365,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/8256075/large.jpeg",
+      "license_code": "cc-by",
+      "observation_id": 6518547,
+      "observer": "scarriere",
+      "photo_id": 8256075,
+      "sha256": "9f6c35bd6f5aae8daf7883c714fb6a7637cff476d0bd39373ba513065a09c6ac",
+      "source_url": "http://inaturalist.ca/observations/6518547",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) Matt Muir, some rights reserved (CC BY)",
+      "filename": "04-338614954.jpeg",
+      "height": 1536,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/338614954/large.jpeg",
+      "license_code": "cc-by",
+      "observation_id": 191984643,
+      "observer": "muir",
+      "photo_id": 338614954,
+      "sha256": "9a8c3dadc47425f24fd5ce40beea87b6827cf9f7aa5e338b493e74ed83347116",
+      "source_url": "https://www.inaturalist.org/observations/191984643",
+      "width": 2048
+    }
+  ],
+  "schema_version": 1,
+  "scientific_name": "Corvus corax",
+  "slug": "common-raven",
+  "status": "approved",
+  "taxon_id": 8010
+}
