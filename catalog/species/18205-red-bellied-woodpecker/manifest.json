@@ -1,0 +1,141 @@
+{
+  "approved_at": "2026-07-10T17:20:07+00:00",
+  "assets": {
+    "display": {
+      "filename": "display.png",
+      "sha256": "9df1a63414d82c69bb068f86981363689718cf8114e626958e49340092330379"
+    },
+    "portrait": {
+      "filename": "portrait.png",
+      "sha256": "3034eee67082b220d7f975f58e780ade8802d11638c869ee7df0b95a610af8fb"
+    }
+  },
+  "common_name": "Red-bellied Woodpecker",
+  "generation": {
+    "attempt": 2,
+    "generated_at": "2026-07-10T17:20:07+00:00",
+    "generator": "Codex subscription / built-in gpt-image-2",
+    "max_attempts": 3,
+    "prompt_version": "field-journal-v2"
+  },
+  "profile": {
+    "behavior": "Hitches along trunks and main branches, probing and picking at bark for insects; uses a characteristic undulating flight and may cache food in crevices.",
+    "common_name": "Red-bellied Woodpecker",
+    "family": "Picidae",
+    "field_marks": [
+      "Medium-sized, sleek woodpecker with a rounded head and straight, chisel-like gray-black bill.",
+      "Bold black-and-white barring across the back and wings; white patches flash near the wingtips in flight.",
+      "Pale grayish-white face, throat, and underparts, often with a subtle pinkish-red wash on the lower belly.",
+      "Adult male has red from crown to nape; adult female has red mainly on the nape.",
+      "Dark eye and strong gray climbing feet; stiff pointed tail supports the bird against tree trunks."
+    ],
+    "habitat": "Deciduous or mixed woodlands and forests, including mature hardwoods, woodland edges, parks, and wooded suburban areas.",
+    "measurements": {
+      "length": "9.4 in (24 cm)",
+      "weight": "2.0\u20133.2 oz (56\u201391 g)",
+      "wingspan": "13.0\u201316.5 in (33\u201342 cm)"
+    },
+    "palette": [
+      "scarlet red",
+      "pale gray-white",
+      "soft buff",
+      "black",
+      "white"
+    ],
+    "scientific_name": "Melanerpes carolinus",
+    "sources": [
+      {
+        "title": "Red-bellied Woodpecker Identification \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/rebwoo/id"
+      },
+      {
+        "title": "Red-bellied Woodpecker \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/red-bellied-woodpecker?nid=5286&site=ny"
+      }
+    ],
+    "taxon_id": 18205
+  },
+  "quality_review": {
+    "anatomy_accuracy": 4,
+    "composition_quality": 5,
+    "findings": [
+      "Passed. The plate depicts an adult male Red-bellied Woodpecker: one head, one straight gray-black bill, two wings, two legs with climbing feet, and one stiff pointed tail are represented without visible anatomical duplication.",
+      "Species identification is supported by the red crown and nape, pale buff-gray face and underparts, narrow black-and-white barring on the back and wings, subtle pink-red lower belly, and the trunk-clinging pose. These agree with the supplied field-reference photos and both live sources.",
+      "All visible factual text is accurate: Melanerpes carolinus, Picidae, length 9.4 in (24 cm), wingspan 13.0\u201316.5 in (33\u201342 cm), weight 2.0\u20133.2 oz (56\u201391 g), habitat, behavior, sex-specific head pattern, flight wing flashes, and food caching are supported.",
+      "No place name, ZIP code, coordinates, map, or local-observation detail appears on the candidate plate."
+    ],
+    "location_free": true,
+    "passed": true,
+    "species_accuracy": 5,
+    "text_accuracy": 5,
+    "verification_sources": [
+      {
+        "title": "Red-bellied Woodpecker Identification \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Red-bellied_Woodpecker/id"
+      },
+      {
+        "title": "Red-bellied Woodpecker \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/red-bellied-woodpecker"
+      }
+    ]
+  },
+  "references": [
+    {
+      "attribution": "(c) froggymum, some rights reserved (CC BY)",
+      "filename": "01-515446864.jpg",
+      "height": 2048,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/515446864/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 286702812,
+      "observer": "froggymum",
+      "photo_id": 515446864,
+      "sha256": "a9815eeb4e53d80ca8132896b25b9e365f6c3055875c21a4d45d8b11de033658",
+      "source_url": "https://www.inaturalist.org/observations/286702812",
+      "width": 1684
+    },
+    {
+      "attribution": "(c) Christina Moresi, some rights reserved (CC BY)",
+      "filename": "02-21924254.jpeg",
+      "height": 1927,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/21924254/large.jpeg",
+      "license_code": "cc-by",
+      "observation_id": 14702909,
+      "observer": "phillynaturehoods",
+      "photo_id": 21924254,
+      "sha256": "1dc4bcdc9e7f52c58d101192d6233c3dff87dd549886625454bf546044b52661",
+      "source_url": "https://www.inaturalist.org/observations/14702909",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) Michael, some rights reserved (CC BY)",
+      "filename": "03-618572118.jpg",
+      "height": 1638,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/618572118/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 339972264,
+      "observer": "mikeymacro",
+      "photo_id": 618572118,
+      "sha256": "41814ea19a968799984ead4b5a32c751a73dbf1a48b867ec447a73815e1e0efc",
+      "source_url": "https://www.inaturalist.org/observations/339972264",
+      "width": 2048
+    },
+    {
+      "attribution": "no rights reserved",
+      "filename": "04-258148165.jpg",
+      "height": 1365,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/258148165/large.jpg",
+      "license_code": "cc0",
+      "observation_id": 149781312,
+      "observer": "outdoormatt",
+      "photo_id": 258148165,
+      "sha256": "1ae8889cd825b7fb6cf16e19bdded901c20fcec98a50dbda8b70385e84f838b9",
+      "source_url": "https://www.inaturalist.org/observations/149781312",
+      "width": 2048
+    }
+  ],
+  "schema_version": 1,
+  "scientific_name": "Melanerpes carolinus",
+  "slug": "red-bellied-woodpecker",
+  "status": "approved",
+  "taxon_id": 18205
+}
