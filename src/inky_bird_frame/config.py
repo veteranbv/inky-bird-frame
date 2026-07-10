@@ -215,7 +215,9 @@ def _string_tuple(
     return tuple(parsed)
 
 
-def _notification_destinations(raw: object) -> tuple[NotificationDestination, ...]:
+def _notification_destinations(
+    raw: object, *, resolve_environment: bool
+) -> tuple[NotificationDestination, ...]:
     if raw is None:
         return ()
     if not isinstance(raw, list):
@@ -239,11 +241,14 @@ def _notification_destinations(raw: object) -> tuple[NotificationDestination, ..
             url = _string(item, "url")
         else:
             variable = _string(item, "url_env")
-            url = environ.get(variable, "").strip()
-            if not url:
-                raise ConfigurationError(
-                    f"Notification destination {name} requires environment variable {variable}"
-                )
+            if resolve_environment:
+                url = environ.get(variable, "").strip()
+                if not url:
+                    raise ConfigurationError(
+                        f"Notification destination {name} requires environment variable {variable}"
+                    )
+            else:
+                url = f"env://{variable}"
         if not urlsplit(url).scheme:
             raise ConfigurationError(f"Notification destination {name} URL has no scheme")
         event_values = _string_tuple(
@@ -346,8 +351,10 @@ def load_config(path: Path) -> AppConfig:
         raise ConfigurationError("research.allowed_domains must contain bare DNS domains")
     if not allowed_domains:
         raise ConfigurationError("research.allowed_domains must not be empty")
-    destinations = _notification_destinations(notifications.get("destinations"))
     notifications_enabled = _optional_boolean(notifications, "enabled", default=False)
+    destinations = _notification_destinations(
+        notifications.get("destinations"), resolve_environment=notifications_enabled
+    )
     if notifications_enabled and not destinations:
         raise ConfigurationError(
             "At least one notifications destination is required when notifications are enabled"

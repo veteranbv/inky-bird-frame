@@ -37,7 +37,7 @@ for file in pyproject.toml uv.lock README.md LICENSE; do
   install -m 0644 "${root}/${file}" "${app_dir}/${file}"
 done
 
-"${uv_bin}" sync --project "${app_dir}" --python "${python_version}" --locked
+"${uv_bin}" sync --project "${app_dir}" --python "${python_version}" --extra controller --locked
 
 "${app_dir}/.venv/bin/python" - \
   "${serve_plist}" "${refresh_plist}" "${generation_plist}" "${catalog_publish_plist}" \

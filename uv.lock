@@ -249,12 +249,15 @@ name = "inky-bird-frame"
 version = "0.1.0"
 source = { editable = "." }
 dependencies = [
-    { name = "apprise" },
     { name = "pillow" },
 ]
 
 [package.optional-dependencies]
+controller = [
+    { name = "apprise" },
+]
 dev = [
+    { name = "apprise" },
     { name = "mypy" },
     { name = "pytest" },
     { name = "ruff" },
@@ -265,7 +268,8 @@ inky = [
 
 [package.metadata]
 requires-dist = [
-    { name = "apprise", specifier = ">=1.12.0,<2" },
+    { name = "apprise", marker = "extra == 'controller'", specifier = ">=1.12.0,<2" },
+    { name = "apprise", marker = "extra == 'dev'", specifier = ">=1.12.0,<2" },
     { name = "inky", marker = "extra == 'inky'", specifier = ">=2.4" },
     { name = "mypy", marker = "extra == 'dev'", specifier = ">=1.8.0" },
     { name = "pillow", specifier = ">=10.0" },

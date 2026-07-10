@@ -3,9 +3,11 @@ from __future__ import annotations
 import io
 import json
 import unittest
+from argparse import Namespace
 from contextlib import redirect_stdout
+from unittest.mock import patch
 
-from inky_bird_frame.cli import build_parser, main
+from inky_bird_frame.cli import build_parser, generate_command, main
 
 
 class CliTests(unittest.TestCase):
@@ -69,6 +71,43 @@ class CliTests(unittest.TestCase):
         self.assertFalse(payload["ok"])
         self.assertEqual(payload["schema_version"], 1)
         self.assertEqual(payload["error"]["type"], "ConfigurationError")
+
+    def test_generate_notifies_for_approved_pending_candidate(self) -> None:
+        result = {
+            "published_pending": [{"taxon_id": 1, "common_name": "Recovered Bird"}],
+            "generated": [],
+            "failures": [],
+            "deferred_count": 0,
+        }
+        with (
+            patch("inky_bird_frame.cli._config"),
+            patch("inky_bird_frame.cli.run_generation_cycle", return_value=result),
+            patch("inky_bird_frame.cli.safe_notify") as notify,
+            patch("inky_bird_frame.cli.safe_record_recovery"),
+            redirect_stdout(io.StringIO()),
+        ):
+            generate_command(Namespace())
+
+        self.assertEqual(notify.call_count, 1)
+        self.assertEqual(notify.call_args.kwargs["dedupe_key"], "1")
+
+    def test_generate_does_not_recover_while_species_remain_deferred(self) -> None:
+        result = {
+            "published_pending": [],
+            "generated": [],
+            "failures": [],
+            "deferred_count": 1,
+        }
+        with (
+            patch("inky_bird_frame.cli._config"),
+            patch("inky_bird_frame.cli.run_generation_cycle", return_value=result),
+            patch("inky_bird_frame.cli.safe_record_recovery") as recover,
+            redirect_stdout(io.StringIO()),
+        ):
+            generate_command(Namespace())
+
+        recovered_keys = [call.kwargs["key"] for call in recover.call_args_list]
+        self.assertEqual(recovered_keys, ["generation-cycle"])
 
 
 if __name__ == "__main__":

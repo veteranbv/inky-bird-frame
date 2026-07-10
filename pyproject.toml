@@ -7,15 +7,18 @@ requires-python = ">=3.11"
 license = "MIT"
 authors = [{ name = "Henry Sowell" }]
 dependencies = [
-    "apprise>=1.12.0,<2",
     "pillow>=10.0",
 ]
 
 [project.optional-dependencies]
+controller = [
+    "apprise>=1.12.0,<2",
+]
 inky = [
     "inky>=2.4",
 ]
 dev = [
+    "apprise>=1.12.0,<2",
     "mypy>=1.8.0",
     "pytest>=8.0.0",
     "ruff>=0.4.0",

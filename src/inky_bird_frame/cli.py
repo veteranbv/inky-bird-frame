@@ -153,14 +153,22 @@ def generate_command(args: argparse.Namespace) -> int:
             body=f"Generation cycle failed: {type(exc).__name__}: {exc}",
         )
         raise
-    generated = result.get("generated")
-    if isinstance(generated, list):
-        for item in generated:
+    notified_taxa: set[int] = set()
+    for result_key in ("published_pending", "generated"):
+        approved = result.get(result_key)
+        if not isinstance(approved, list):
+            continue
+        for item in approved:
             if not isinstance(item, dict):
                 continue
             taxon_id = item.get("taxon_id")
             common_name = item.get("common_name")
-            if isinstance(taxon_id, int) and isinstance(common_name, str):
+            if (
+                isinstance(taxon_id, int)
+                and taxon_id not in notified_taxa
+                and isinstance(common_name, str)
+            ):
+                notified_taxa.add(taxon_id)
                 safe_notify(
                     config,
                     NotificationEvent.GENERATION_APPROVED,
@@ -194,7 +202,7 @@ def generate_command(args: argparse.Namespace) -> int:
                 "blocking the queue."
             ),
         )
-    else:
+    elif result.get("deferred_count") == 0:
         safe_record_recovery(
             config,
             key="generation-items",

@@ -10,14 +10,16 @@ from contextlib import contextmanager
 from dataclasses import dataclass
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
+from typing import TYPE_CHECKING
 from urllib.parse import urlsplit
 from uuid import uuid4
 
-import apprise
-
 from .catalog import write_json_atomic
 from .config import AppConfig, NotificationDestination, NotificationEvent
-from .errors import CatalogError, ConfigurationError
+from .errors import CatalogError, ConfigurationError, MissingDependencyError
+
+if TYPE_CHECKING:
+    import apprise
 
 
 @dataclass(frozen=True)
@@ -57,6 +59,16 @@ def notification_state_path(config: AppConfig) -> Path:
     return config.controller.state_dir / "notifications.json"
 
 
+def _new_notifier() -> apprise.Apprise:
+    try:
+        import apprise
+    except ModuleNotFoundError as exc:
+        raise MissingDependencyError(
+            "Notifications require the controller extra: install inky-bird-frame[controller]"
+        ) from exc
+    return apprise.Apprise()
+
+
 @contextmanager
 def _notification_lock(state_dir: Path) -> Iterator[None]:
     state_dir.mkdir(parents=True, exist_ok=True)
@@ -71,11 +83,12 @@ def _notification_lock(state_dir: Path) -> Iterator[None]:
 def validate_notification_destinations(config: AppConfig) -> list[dict[str, object]]:
     results: list[dict[str, object]] = []
     for destination in config.notifications.destinations:
-        notifier = apprise.Apprise()
-        if not notifier.add(destination.url) or len(notifier) != 1:
-            raise ConfigurationError(
-                f"Notification destination {destination.name} is not a valid Apprise URL"
-            )
+        if config.notifications.enabled:
+            notifier = _new_notifier()
+            if not notifier.add(destination.url) or len(notifier) != 1:
+                raise ConfigurationError(
+                    f"Notification destination {destination.name} is not a valid Apprise URL"
+                )
         results.append(
             {
                 "name": destination.name,
@@ -476,7 +489,7 @@ def record_recovery(
 
 
 def _deliver(destination: NotificationDestination, item: NotificationItem) -> None:
-    notifier = apprise.Apprise()
+    notifier = _new_notifier()
     if not notifier.add(destination.url) or len(notifier) != 1:
         raise ValueError("invalid Apprise service URL")
     result = notifier.notify(title=item.title, body=item.body)

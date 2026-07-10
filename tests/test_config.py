@@ -220,6 +220,29 @@ insufficient_references_retry_minutes = 1440""",
             with self.assertRaisesRegex(ConfigurationError, "destination"):
                 load_config(path)
 
+    def test_disabled_notifications_do_not_require_url_environment(self) -> None:
+        configured = (
+            CONFIG
+            + """
+
+[notifications]
+enabled = false
+
+[[notifications.destinations]]
+name = "pushover"
+url_env = "MISSING_NOTIFICATION_URL"
+events = ["terminal_error"]
+"""
+        )
+        with TemporaryDirectory() as temporary:
+            path = Path(temporary) / "config.toml"
+            path.write_text(configured)
+            with patch.dict("os.environ", {}, clear=True):
+                config = load_config(path)
+
+        self.assertFalse(config.notifications.enabled)
+        self.assertEqual(config.notifications.destinations[0].url, "env://MISSING_NOTIFICATION_URL")
+
 
 if __name__ == "__main__":
     unittest.main()
