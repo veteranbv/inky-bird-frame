@@ -1,0 +1,41 @@
+{
+  "behavior": "Forages deliberately along branches, bark, needles, and pine cones; also takes insects, spiders, fruits, and seeds, and may visit elevated feeders for seeds or suet.",
+  "common_name": "Pine Warbler",
+  "family": "Parulidae",
+  "field_marks": [
+    "Hefty, long-tailed warbler with a relatively stout, pointed bill.",
+    "Yellow to yellow-olive head, throat, and breast; females and immatures may be much duller or grayish.",
+    "Olive-green upperparts with grayer, darker wings.",
+    "Two pale white wingbars are usually visible on the folded wing.",
+    "Pale, often broken eyering gives the face a weakly spectacled look; tail tip may show a slight central notch."
+  ],
+  "habitat": "Primarily pine woodland and mixed pine\u2013deciduous forest; usually forages in pines, from the ground to the canopy, and also uses wooded edges and similar tree cover outside the breeding season.",
+  "measurements": {
+    "length": "13\u201314 cm (5.1\u20135.5 in)",
+    "weight": "9\u201315 g (0.3\u20130.5 oz)",
+    "wingspan": "19\u201323 cm (7.5\u20139.1 in)"
+  },
+  "palette": [
+    "yellow",
+    "yellow-olive",
+    "olive green",
+    "soft gray",
+    "white"
+  ],
+  "scientific_name": "Setophaga pinus",
+  "sources": [
+    {
+      "title": "Pine Warbler Identification \u2014 All About Birds, Cornell Lab of Ornithology",
+      "url": "https://www.allaboutbirds.org/guide/Pine_Warbler/id"
+    },
+    {
+      "title": "Pine Warbler Life History \u2014 All About Birds, Cornell Lab of Ornithology",
+      "url": "https://www.allaboutbirds.org/guide/Pine_Warbler/lifehistory"
+    },
+    {
+      "title": "Pine Warbler \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/pine-warbler?nid=5001&site=sc"
+    }
+  ],
+  "taxon_id": 145244
+}
