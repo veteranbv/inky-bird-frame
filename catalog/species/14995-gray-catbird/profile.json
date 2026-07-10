@@ -1,0 +1,38 @@
+{
+  "behavior": "Secretive but energetic; forages on the ground and in shrubs, often flipping leaf litter with its bill. Its voice includes varied phrases and a characteristic catlike mew.",
+  "common_name": "Gray Catbird",
+  "family": "Mimidae",
+  "field_marks": [
+    "Smooth slate-gray plumage overall",
+    "Small dark to blackish cap",
+    "Long, rounded blackish tail",
+    "Narrow, straight dark bill",
+    "Rich rufous/chestnut undertail coverts",
+    "Broad, rounded wings and relatively long dark legs"
+  ],
+  "habitat": "Dense, low-growing cover: shrub and vine tangles, thickets, hedges, brushy field edges, and streamside or woodland-edge vegetation.",
+  "measurements": {
+    "length": "21\u201324 cm (8.3\u20139.4 in)",
+    "weight": "23\u201357 g (0.8\u20132.0 oz)",
+    "wingspan": "22\u201330 cm (8.7\u201311.8 in)"
+  },
+  "palette": [
+    "slate gray",
+    "charcoal black",
+    "rufous chestnut",
+    "dark brown",
+    "blue-gray"
+  ],
+  "scientific_name": "Dumetella carolinensis",
+  "sources": [
+    {
+      "title": "Gray Catbird Identification \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Gray_Catbird/id"
+    },
+    {
+      "title": "Gray Catbird \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/gray-catbird"
+    }
+  ],
+  "taxon_id": 14995
+}

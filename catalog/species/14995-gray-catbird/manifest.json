@@ -1,0 +1,142 @@
+{
+  "approved_at": "2026-07-10T17:46:57+00:00",
+  "assets": {
+    "display": {
+      "filename": "display.png",
+      "sha256": "8c673a0f66aaeaf475e0d0b8af7a8ed0566f598810fba06c97dd83c5dc52248a"
+    },
+    "portrait": {
+      "filename": "portrait.png",
+      "sha256": "1af36cb02983f763692ae457a04d47b916060b8c7c7472b07c8f87f949264ce5"
+    }
+  },
+  "common_name": "Gray Catbird",
+  "generation": {
+    "attempt": 2,
+    "generated_at": "2026-07-10T17:46:57+00:00",
+    "generator": "Codex subscription / built-in gpt-image-2",
+    "max_attempts": 3,
+    "prompt_version": "field-journal-v2"
+  },
+  "profile": {
+    "behavior": "Secretive but energetic; forages on the ground and in shrubs, often flipping leaf litter with its bill. Its voice includes varied phrases and a characteristic catlike mew.",
+    "common_name": "Gray Catbird",
+    "family": "Mimidae",
+    "field_marks": [
+      "Smooth slate-gray plumage overall",
+      "Small dark to blackish cap",
+      "Long, rounded blackish tail",
+      "Narrow, straight dark bill",
+      "Rich rufous/chestnut undertail coverts",
+      "Broad, rounded wings and relatively long dark legs"
+    ],
+    "habitat": "Dense, low-growing cover: shrub and vine tangles, thickets, hedges, brushy field edges, and streamside or woodland-edge vegetation.",
+    "measurements": {
+      "length": "21\u201324 cm (8.3\u20139.4 in)",
+      "weight": "23\u201357 g (0.8\u20132.0 oz)",
+      "wingspan": "22\u201330 cm (8.7\u201311.8 in)"
+    },
+    "palette": [
+      "slate gray",
+      "charcoal black",
+      "rufous chestnut",
+      "dark brown",
+      "blue-gray"
+    ],
+    "scientific_name": "Dumetella carolinensis",
+    "sources": [
+      {
+        "title": "Gray Catbird Identification \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Gray_Catbird/id"
+      },
+      {
+        "title": "Gray Catbird \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/gray-catbird"
+      }
+    ],
+    "taxon_id": 14995
+  },
+  "quality_review": {
+    "anatomy_accuracy": 5,
+    "composition_quality": 4,
+    "findings": [
+      "Identity, scientific name, family, measurements, habitat, behavior, and field-mark text agree with the verified sources. The main specimen correctly shows one head, one bill, two legs with feet, one long rounded dark tail, and a side-view wing; the separate head and wing are intentional study details, not duplicate anatomy.",
+      "Plumage and proportions match the supplied references: slate-gray body, darker cap, narrow straight dark bill, dark eye, broad rounded wing, long dark legs, blackish rounded tail, and rufous/chestnut undertail patch.",
+      "No place name, ZIP code, coordinates, map, or local-observation detail appears.",
+      "Concrete issue: the labeled 0\u201324 cm ruler implies the main bird is only about 15 cm from bill tip to tail tip, conflicting with the printed and verified 21\u201324 cm length. Treat the ruler as decorative or rescale/remove it for scientific precision."
+    ],
+    "location_free": true,
+    "passed": true,
+    "species_accuracy": 5,
+    "text_accuracy": 5,
+    "verification_sources": [
+      {
+        "title": "Gray Catbird Identification \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Gray_Catbird/id"
+      },
+      {
+        "title": "Gray Catbird \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/gray-catbird"
+      }
+    ]
+  },
+  "references": [
+    {
+      "attribution": "(c) Kristy Morley, some rights reserved (CC BY)",
+      "filename": "01-338912304.jpg",
+      "height": 1639,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/338912304/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 192986343,
+      "observer": "kristym",
+      "photo_id": 338912304,
+      "sha256": "fc1950dcfc1015e2f4536a1c5d56ececcca728fe4eda3c0ef5a4d68489b5f443",
+      "source_url": "https://www.inaturalist.org/observations/192986343",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) Kalvin Chan, some rights reserved (CC BY)",
+      "filename": "02-148386723.jpg",
+      "height": 1365,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/148386723/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 89832445,
+      "observer": "kalvinchan",
+      "photo_id": 148386723,
+      "sha256": "42c39f57f45e44c9ad1acd600c9b9f1906180f0740c96c5400eecf9fc7727f86",
+      "source_url": "https://www.inaturalist.org/observations/89832445",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) Donald Davesne, some rights reserved (CC BY)",
+      "filename": "03-401092706.jpg",
+      "height": 1362,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/401092706/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 226177962,
+      "observer": "donalddavesne",
+      "photo_id": 401092706,
+      "sha256": "095811ac84fb63db6fac6a759dfd87c6277a04a1def6ad1217d39ce0ba738d07",
+      "source_url": "https://www.inaturalist.org/observations/226177962",
+      "width": 2048
+    },
+    {
+      "attribution": "no rights reserved",
+      "filename": "04-116349792.jpg",
+      "height": 1757,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/116349792/large.jpg",
+      "license_code": "cc0",
+      "observation_id": 71461357,
+      "observer": "melaniegaddy",
+      "photo_id": 116349792,
+      "sha256": "d14d9ab5584f62b5064864338cb7cf606938c38904604fd23b9d33b3a141af87",
+      "source_url": "https://www.inaturalist.org/observations/71461357",
+      "width": 2048
+    }
+  ],
+  "schema_version": 1,
+  "scientific_name": "Dumetella carolinensis",
+  "slug": "gray-catbird",
+  "status": "approved",
+  "taxon_id": 14995
+}
