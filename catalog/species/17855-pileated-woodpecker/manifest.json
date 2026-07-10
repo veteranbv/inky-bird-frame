@@ -1,0 +1,156 @@
+{
+  "approved_at": "2026-07-10T03:24:09+00:00",
+  "assets": {
+    "display": {
+      "filename": "display.png",
+      "sha256": "0adab99caa63b126c582deb456a5edb3853e02e4f6def90123525402b4b0bb4a"
+    },
+    "portrait": {
+      "filename": "portrait.png",
+      "sha256": "5896e1d515226222f0f39fd9f3643856832e546055c1f793088162fef423b156"
+    }
+  },
+  "common_name": "Pileated Woodpecker",
+  "generation": {
+    "attempt": 2,
+    "generated_at": "2026-07-10T03:24:09+00:00",
+    "generator": "Codex subscription / built-in gpt-image-2",
+    "max_attempts": 3,
+    "prompt_version": "field-journal-v2"
+  },
+  "profile": {
+    "behavior": "Forages deliberately on trunks, stumps, and fallen wood; uses its heavy bill to excavate large rectangular holes for carpenter ants and other insects. Also drums on dead wood and gives loud, whinnying calls.",
+    "common_name": "Pileated Woodpecker",
+    "family": "Picidae",
+    "field_marks": [
+      "Very large, crow-sized woodpecker with a long neck and broad wings",
+      "Prominent swept-back, flaming-red crest",
+      "Mostly black body with bold white facial and neck stripes",
+      "Long, straight, chisel-like dark bill about head length",
+      "Stiff, pointed black tail braced against trunks while climbing",
+      "Male has a red cheek/malar stripe; female lacks it"
+    ],
+    "habitat": "Mature deciduous, coniferous, or mixed forests with large standing dead trees, stumps, and downed decaying wood; also uses wooded areas retaining these features.",
+    "measurements": {
+      "length": "40\u201349 cm (15.8\u201319.3 in)",
+      "weight": "250\u2013350 g (8.8\u201312.3 oz)",
+      "wingspan": "66\u201375 cm (26.0\u201329.5 in)"
+    },
+    "palette": [
+      "black",
+      "flaming red",
+      "white",
+      "slate gray",
+      "pale yellow"
+    ],
+    "scientific_name": "Dryocopus pileatus",
+    "sources": [
+      {
+        "title": "Cornell Lab of Ornithology \u2014 Pileated Woodpecker Identification",
+        "url": "https://www.allaboutbirds.org/guide/Pileated_Woodpecker/id"
+      },
+      {
+        "title": "Cornell Lab of Ornithology \u2014 Pileated Woodpecker Life History",
+        "url": "https://www.allaboutbirds.org/guide/Pileated_Woodpecker/lifehistory"
+      },
+      {
+        "title": "U.S. National Park Service \u2014 Pileated Woodpecker",
+        "url": "https://www.nps.gov/articles/pileated-woodpecker.htm"
+      }
+    ],
+    "taxon_id": 17855
+  },
+  "quality_review": {
+    "anatomy_accuracy": 4,
+    "composition_quality": 5,
+    "findings": [
+      "Independent verification confirms the plate\u2019s identity as Pileated Woodpecker (Dryocopus pileatus), family Picidae; the shown male red malar stripe, swept-back red crest, mostly black body, white face/neck stripes, long chisel-like bill, broad wings, and trunk-clinging stance agree with the references and authoritative descriptions.",
+      "All visible measurements exactly match Cornell and Audubon: length 40\u201349 cm (15.8\u201319.3 in), wingspan 66\u201375 cm (26.0\u201329.5 in), and weight 250\u2013350 g (8.8\u201312.3 oz).",
+      "The habitat and behavior text is supported: it uses mature/mixed forests with dead or decaying wood, excavates rectangular holes for carpenter ants and other insects, drums, and gives whinnying/loud calls.",
+      "The primary perched bird has one head, one beak, two legs, one tail, and anatomically coherent feet and claws. Its visible body proportions, eye placement, bill, wing, tail, and zygodactyl climbing posture are credible. The detached head and wing are clearly supplementary field-plate studies, not additional bodies.",
+      "Minor illustration issue: the detached wing study gives the upperwing white markings a somewhat broad, continuous-looking band. Authoritative descriptions characterize the upperwing white as small crescents at the bases of the primaries, while extensive white is most conspicuous on the underwing in flight. This is diagrammatically imprecise but not a material species-identification error.",
+      "No place name, ZIP code, coordinates, map, or local-observation detail appears on the candidate plate."
+    ],
+    "location_free": true,
+    "passed": true,
+    "species_accuracy": 4,
+    "text_accuracy": 5,
+    "verification_sources": [
+      {
+        "title": "Cornell Lab of Ornithology \u2014 Pileated Woodpecker Identification",
+        "url": "https://www.allaboutbirds.org/guide/Pileated_Woodpecker/id"
+      },
+      {
+        "title": "Cornell Lab of Ornithology \u2014 Pileated Woodpecker Life History",
+        "url": "https://www.allaboutbirds.org/guide/Pileated_Woodpecker/lifehistory"
+      },
+      {
+        "title": "National Audubon Society \u2014 Pileated Woodpecker Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/pileated-woodpecker"
+      },
+      {
+        "title": "U.S. National Park Service \u2014 Pileated Woodpecker",
+        "url": "https://www.nps.gov/articles/pileated-woodpecker.htm"
+      }
+    ]
+  },
+  "references": [
+    {
+      "attribution": "(c) Thomas Koffel, some rights reserved (CC BY)",
+      "filename": "01-27954303.jpeg",
+      "height": 2048,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/27954303/large.jpeg",
+      "license_code": "cc-by",
+      "observation_id": 18297196,
+      "observer": "tkoffel",
+      "photo_id": 27954303,
+      "sha256": "2a3992aa49238678e8cd2c460b8b2606402efbbfe30c6f66bee253c91b39992e",
+      "source_url": "https://www.inaturalist.org/observations/18297196",
+      "width": 1534
+    },
+    {
+      "attribution": "(c) froggymum, some rights reserved (CC BY)",
+      "filename": "02-598503687.jpg",
+      "height": 1149,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/598503687/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 330098558,
+      "observer": "froggymum",
+      "photo_id": 598503687,
+      "sha256": "8623b16ef735369d447d5a3fcff9ac70eca80dd1bdf231c7c573ff7c630d53b3",
+      "source_url": "https://www.inaturalist.org/observations/330098558",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) Shirley Zundell, some rights reserved (CC BY)",
+      "filename": "03-6835541.jpeg",
+      "height": 1831,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/6835541/large.jpeg",
+      "license_code": "cc-by",
+      "observation_id": 5538145,
+      "observer": "sdz456",
+      "photo_id": 6835541,
+      "sha256": "16686988d2a7b963d35e29e009a77b26524005ef57f9fd341ed3a53a3bd284d1",
+      "source_url": "https://www.inaturalist.org/observations/5538145",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) Joe Brewer, some rights reserved (CC BY)",
+      "filename": "04-502174715.jpeg",
+      "height": 1365,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/502174715/large.jpeg",
+      "license_code": "cc-by",
+      "observation_id": 279638557,
+      "observer": "joecoolbrew",
+      "photo_id": 502174715,
+      "sha256": "a08d1f8d28ece305579faa4caa0b3128cbf30a6cdfcda1515ee6aaf1fa8e19fa",
+      "source_url": "https://www.inaturalist.org/observations/279638557",
+      "width": 2048
+    }
+  ],
+  "schema_version": 1,
+  "scientific_name": "Dryocopus pileatus",
+  "slug": "pileated-woodpecker",
+  "status": "approved",
+  "taxon_id": 17855
+}

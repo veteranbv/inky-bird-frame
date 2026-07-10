@@ -1,0 +1,34 @@
+{
+  "anatomy_accuracy": 4,
+  "composition_quality": 5,
+  "findings": [
+    "Independent verification confirms the plate\u2019s identity as Pileated Woodpecker (Dryocopus pileatus), family Picidae; the shown male red malar stripe, swept-back red crest, mostly black body, white face/neck stripes, long chisel-like bill, broad wings, and trunk-clinging stance agree with the references and authoritative descriptions.",
+    "All visible measurements exactly match Cornell and Audubon: length 40\u201349 cm (15.8\u201319.3 in), wingspan 66\u201375 cm (26.0\u201329.5 in), and weight 250\u2013350 g (8.8\u201312.3 oz).",
+    "The habitat and behavior text is supported: it uses mature/mixed forests with dead or decaying wood, excavates rectangular holes for carpenter ants and other insects, drums, and gives whinnying/loud calls.",
+    "The primary perched bird has one head, one beak, two legs, one tail, and anatomically coherent feet and claws. Its visible body proportions, eye placement, bill, wing, tail, and zygodactyl climbing posture are credible. The detached head and wing are clearly supplementary field-plate studies, not additional bodies.",
+    "Minor illustration issue: the detached wing study gives the upperwing white markings a somewhat broad, continuous-looking band. Authoritative descriptions characterize the upperwing white as small crescents at the bases of the primaries, while extensive white is most conspicuous on the underwing in flight. This is diagrammatically imprecise but not a material species-identification error.",
+    "No place name, ZIP code, coordinates, map, or local-observation detail appears on the candidate plate."
+  ],
+  "location_free": true,
+  "passed": true,
+  "species_accuracy": 4,
+  "text_accuracy": 5,
+  "verification_sources": [
+    {
+      "title": "Cornell Lab of Ornithology \u2014 Pileated Woodpecker Identification",
+      "url": "https://www.allaboutbirds.org/guide/Pileated_Woodpecker/id"
+    },
+    {
+      "title": "Cornell Lab of Ornithology \u2014 Pileated Woodpecker Life History",
+      "url": "https://www.allaboutbirds.org/guide/Pileated_Woodpecker/lifehistory"
+    },
+    {
+      "title": "National Audubon Society \u2014 Pileated Woodpecker Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/pileated-woodpecker"
+    },
+    {
+      "title": "U.S. National Park Service \u2014 Pileated Woodpecker",
+      "url": "https://www.nps.gov/articles/pileated-woodpecker.htm"
+    }
+  ]
+}
