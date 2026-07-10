@@ -20,6 +20,7 @@ from .config import AppConfig, NotificationEvent, load_config
 from .controller import (
     discover_species,
     enqueue_seed_species,
+    exclusive_cycle_lock,
     read_generation_queue,
     run_controller_cycle,
     run_generation_cycle,
@@ -256,36 +257,42 @@ def reject_command(args: argparse.Namespace) -> int:
 
 def retry_command(args: argparse.Namespace) -> int:
     config = _config(args)
-    if find_taxon_directory(config.controller.state_dir / "pending", args.taxon_id):
-        raise ValueError("Pending candidates must be approved or rejected before retrying")
-    sources = list((config.controller.state_dir / "failed").glob(f"{args.taxon_id}-*"))
-    rejected = find_taxon_directory(config.controller.state_dir / "rejected", args.taxon_id)
-    if rejected is not None:
-        sources.append(rejected)
-    retry_store = RetryStore(config.controller.state_dir / "generation-retries.json")
-    deferred = retry_store.get(args.taxon_id) is not None
-    if not sources and not deferred:
-        raise ValueError(
-            f"No failed, rejected, or deferred candidate exists for taxon {args.taxon_id}"
-        )
-    archive = config.controller.state_dir / "archive"
-    archive.mkdir(parents=True, exist_ok=True)
-    moved: list[str] = []
-    for source in sources:
-        destination = archive / source.name
-        counter = 1
-        while destination.exists():
-            destination = archive / f"{source.name}-{counter}"
-            counter += 1
-        shutil.move(str(source), destination)
-        moved.append(str(destination))
-    retry_store.clear(args.taxon_id)
+    with exclusive_cycle_lock(config.controller.state_dir):
+        if find_taxon_directory(config.controller.state_dir / "pending", args.taxon_id):
+            raise ValueError("Pending candidates must be approved or rejected before retrying")
+        sources = list((config.controller.state_dir / "failed").glob(f"{args.taxon_id}-*"))
+        rejected = find_taxon_directory(config.controller.state_dir / "rejected", args.taxon_id)
+        if rejected is not None:
+            sources.append(rejected)
+        retry_store = RetryStore(config.controller.state_dir / "generation-retries.json")
+        deferred = retry_store.get(args.taxon_id) is not None
+        if not sources and not deferred:
+            raise ValueError(
+                f"No failed, rejected, or deferred candidate exists for taxon {args.taxon_id}"
+            )
+        profile_cache = config.controller.state_dir / "profiles" / str(args.taxon_id)
+        cleared_cached_profile = profile_cache.exists()
+        if cleared_cached_profile:
+            sources.append(profile_cache)
+        archive = config.controller.state_dir / "archive"
+        archive.mkdir(parents=True, exist_ok=True)
+        moved: list[str] = []
+        for source in sources:
+            destination = archive / source.name
+            counter = 1
+            while destination.exists():
+                destination = archive / f"{source.name}-{counter}"
+                counter += 1
+            shutil.move(str(source), destination)
+            moved.append(str(destination))
+        retry_store.clear(args.taxon_id)
     print_result(
         {
             "taxon_id": args.taxon_id,
             "status": "eligible",
             "archived": moved,
             "cleared_deferred_retry": deferred,
+            "cleared_cached_profile": cleared_cached_profile,
         }
     )
     return 0

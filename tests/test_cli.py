@@ -5,10 +5,14 @@ import json
 import unittest
 from argparse import Namespace
 from contextlib import redirect_stdout
+from pathlib import Path
+from tempfile import TemporaryDirectory
+from types import SimpleNamespace
 from unittest.mock import patch
 
-from inky_bird_frame.cli import build_parser, generate_command, main
-from inky_bird_frame.errors import DataSourceError
+from inky_bird_frame.cli import build_parser, generate_command, main, retry_command
+from inky_bird_frame.controller import exclusive_cycle_lock
+from inky_bird_frame.errors import DataSourceError, GenerationError
 
 
 class CliTests(unittest.TestCase):
@@ -111,6 +115,39 @@ class CliTests(unittest.TestCase):
 
         recovered_keys = [call.kwargs["key"] for call in recover.call_args_list]
         self.assertEqual(recovered_keys, ["generation-cycle"])
+
+    def test_retry_archives_cached_profile(self) -> None:
+        with TemporaryDirectory() as temporary:
+            state_dir = Path(temporary)
+            failed = state_dir / "failed/42-example-bird"
+            failed.mkdir(parents=True)
+            profile = state_dir / "profiles/42/profile.json"
+            profile.parent.mkdir(parents=True)
+            profile.write_text("{}")
+            config = SimpleNamespace(controller=SimpleNamespace(state_dir=state_dir))
+            output = io.StringIO()
+
+            with patch("inky_bird_frame.cli._config", return_value=config), redirect_stdout(output):
+                retry_command(Namespace(taxon_id=42))
+
+            result = json.loads(output.getvalue())["data"]
+            profile_exists = profile.exists()
+            archived_profile_exists = (state_dir / "archive/42/profile.json").exists()
+
+        self.assertTrue(result["cleared_cached_profile"])
+        self.assertFalse(profile_exists)
+        self.assertTrue(archived_profile_exists)
+
+    def test_retry_is_excluded_by_running_generation_cycle(self) -> None:
+        with TemporaryDirectory() as temporary:
+            state_dir = Path(temporary)
+            config = SimpleNamespace(controller=SimpleNamespace(state_dir=state_dir))
+            with (
+                patch("inky_bird_frame.cli._config", return_value=config),
+                exclusive_cycle_lock(state_dir),
+                self.assertRaisesRegex(GenerationError, "already running"),
+            ):
+                retry_command(Namespace(taxon_id=42))
 
     def test_refresh_failure_notification_redacts_exception_details(self) -> None:
         secret = "private ZIP and coordinates"

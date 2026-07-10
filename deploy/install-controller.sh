@@ -68,7 +68,7 @@ config = load_config(config_path)
 environment_destinations = [
     destination.name
     for destination in config.notifications.destinations
-    if destination.url_env is not None
+    if config.notifications.enabled and destination.url_env is not None
 ]
 if environment_destinations:
     names = ", ".join(environment_destinations)

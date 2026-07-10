@@ -446,19 +446,28 @@ def record_degradation(
             "count": count,
             "first_failure": first_failure.isoformat(),
             "last_failure": current.isoformat(),
-            "last_notice": current.isoformat() if should_notify else item.get("last_notice"),
-            "notified": bool(item.get("notified")) or should_notify,
+            "last_notice": item.get("last_notice"),
+            "notified": bool(item.get("notified")),
         }
         _write_health(path, state)
     if not should_notify:
         return {"queued": False, "failure_count": count}
-    return safe_notify(
+    result = safe_notify(
         config,
         event,
         dedupe_key=f"{key}:{current.isoformat()}",
         title=title,
         body=body,
     )
+    if result.get("queued") is True:
+        with _notification_lock(config.controller.state_dir):
+            state = _read_health(path)
+            latest = state.get(key)
+            if latest is not None and latest.get("incident_id") == incident_id:
+                latest["last_notice"] = current.isoformat()
+                latest["notified"] = True
+                _write_health(path, state)
+    return result
 
 
 def record_recovery(

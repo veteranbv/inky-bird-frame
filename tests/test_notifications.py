@@ -210,7 +210,10 @@ class NotificationTests(unittest.TestCase):
         now = datetime(2026, 7, 10, tzinfo=UTC)
         with TemporaryDirectory() as temporary:
             config = self._config(temporary)
-            with patch("inky_bird_frame.notifications.safe_notify") as notify:
+            with patch(
+                "inky_bird_frame.notifications.safe_notify",
+                return_value={"queued": True},
+            ) as notify:
                 first = record_degradation(
                     config, key="refresh", title="down", body="down", now=now
                 )
@@ -229,11 +232,45 @@ class NotificationTests(unittest.TestCase):
         self.assertEqual(notify.call_count, 2)
         self.assertFalse(repeated["queued"])
 
+    def test_failed_degradation_enqueue_remains_eligible_for_notice(self) -> None:
+        now = datetime(2026, 7, 10, tzinfo=UTC)
+        with TemporaryDirectory() as temporary:
+            config = self._config(temporary)
+            with patch(
+                "inky_bird_frame.notifications.safe_notify",
+                return_value={"queued": False, "failed": 1},
+            ) as notify:
+                record_degradation(config, key="refresh", title="down", body="down", now=now)
+                record_degradation(
+                    config,
+                    key="refresh",
+                    title="down",
+                    body="down",
+                    now=now + timedelta(minutes=5),
+                )
+                record_degradation(
+                    config,
+                    key="refresh",
+                    title="down",
+                    body="down",
+                    now=now + timedelta(minutes=10),
+                )
+            health = json.loads(
+                (config.controller.state_dir / "notification-health.json").read_text()
+            )["services"]["refresh"]
+
+        self.assertEqual(notify.call_count, 2)
+        self.assertFalse(health["notified"])
+        self.assertIsNone(health["last_notice"])
+
     def test_distinct_incidents_send_distinct_recovery_notifications(self) -> None:
         now = datetime(2026, 7, 10, tzinfo=UTC)
         with TemporaryDirectory() as temporary:
             config = self._config(temporary)
-            with patch("inky_bird_frame.notifications.safe_notify") as notify:
+            with patch(
+                "inky_bird_frame.notifications.safe_notify",
+                return_value={"queued": True},
+            ) as notify:
                 for incident in range(2):
                     record_degradation(
                         config,
