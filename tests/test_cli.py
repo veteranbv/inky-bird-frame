@@ -29,6 +29,35 @@ class CliTests(unittest.TestCase):
         self.assertEqual(str(args.config), "instance.toml")
         self.assertTrue(args.dry_run)
 
+    def test_catalog_contribution_commands_use_explicit_catalog_paths(self) -> None:
+        prepare = build_parser().parse_args(
+            [
+                "catalog",
+                "prepare",
+                "42",
+                "--source-catalog",
+                "approved",
+                "--catalog",
+                "catalog",
+            ]
+        )
+        validate = build_parser().parse_args(
+            [
+                "catalog",
+                "validate",
+                "--catalog",
+                "catalog",
+                "--base-catalog",
+                "base-catalog",
+            ]
+        )
+
+        self.assertEqual(prepare.taxon_id, 42)
+        self.assertEqual(str(prepare.source_catalog), "approved")
+        self.assertEqual(str(prepare.catalog), "catalog")
+        self.assertEqual(str(validate.catalog), "catalog")
+        self.assertEqual(str(validate.base_catalog), "base-catalog")
+
     def test_seed_supports_year_window_and_overrides(self) -> None:
         args = build_parser().parse_args(
             [

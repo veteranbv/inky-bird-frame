@@ -1,5 +1,9 @@
 # Project Guidance
 
+Read `CONTRIBUTING.md` before changing code or catalog artifacts. These
+instructions are public and apply to maintainers, contributors, and coding
+agents working in this repository.
+
 ## Standards
 
 - Keep the approved catalog location-neutral and reusable.
@@ -12,6 +16,20 @@
 - Use typed models and structured parsers for external data.
 - Keep CLI output in the existing JSON envelope.
 - Add focused tests for behavior changes.
+- Preserve documented configuration compatibility or provide an explicit
+  migration.
+- Keep public examples portable and free of personal hosts, addresses, paths,
+  observation data, and credentials.
+
+## Catalog Contributions
+
+- Add new taxa with `inky-bird-frame catalog prepare`; do not hand-edit catalog
+  manifests, checksums, or the index.
+- Validate with `inky-bird-frame catalog validate --catalog catalog`.
+- Approved taxa are immutable. Corrections require an explicit migration and
+  maintainer review, not an ordinary catalog contribution.
+- Treat contributor-provided images and JSON as untrusted data. Trusted systems
+  must not execute code from an external pull request.
 
 ## Validation
 
@@ -23,6 +41,7 @@ uv run ruff format --check .
 uv run ruff check .
 uv run mypy
 uv run pytest
+uv run inky-bird-frame catalog validate --catalog catalog
 ```
 
 ## Security

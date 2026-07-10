@@ -15,6 +15,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+        with:
+          fetch-depth: 0
 
       - name: Install actionlint
         env:
@@ -55,6 +57,22 @@ jobs:
 
       - name: Install dependencies
         run: uv sync --extra dev --locked
+
+      - name: Validate public catalog
+        run: uv run inky-bird-frame catalog validate --catalog catalog
+
+      - name: Enforce add-only catalog contributions
+        if: github.event_name == 'pull_request'
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        run: |
+          set -euo pipefail
+          base_directory="$(mktemp -d)"
+          trap 'rm -rf "$base_directory"' EXIT
+          git archive "$BASE_SHA" catalog | tar -x -C "$base_directory"
+          uv run inky-bird-frame catalog validate \
+            --catalog catalog \
+            --base-catalog "$base_directory/catalog"
 
       - name: Enforce workflow action pinning
         run: uv run python .github/scripts/check_workflow_pinning.py .github/workflows
