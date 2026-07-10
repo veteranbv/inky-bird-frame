@@ -1,0 +1,28 @@
+{
+  "anatomy_accuracy": 4,
+  "composition_quality": 4,
+  "findings": [
+    "Verified the identity as Carolina Chickadee (Poecile carolinensis), family Paridae. The plate\u2019s stated length, wingspan, and weight exactly match both independent sources.",
+    "The depicted bird has one head, one short dark beak, two legs with appropriately grasping feet, one long narrow tail, and two wings (the far wing is naturally occluded in the side view). Plumage and proportions agree with the reference photos: black cap and bib, stark white cheeks, soft-gray back/wings/tail, pale underparts, and a round-bodied, large-headed silhouette.",
+    "All visible factual text is supported: habitat, acrobatic foliage-gleaning, upside-down feeding, winter/social flocking, and carrying food to a perch are consistent with the Cornell and Audubon accounts. The plate contains no place name, ZIP code, coordinates, map, or local-observation information.",
+    "Minor non-material limitation: Carolina and Black-capped Chickadees can be difficult to separate visually; the plate does not state Carolina\u2019s relatively more restricted bib and reduced white wing edging. Its illustrated bib and gray wing edging nevertheless remain consistent with Carolina Chickadee."
+  ],
+  "location_free": true,
+  "passed": true,
+  "species_accuracy": 4,
+  "text_accuracy": 4,
+  "verification_sources": [
+    {
+      "title": "Carolina Chickadee Identification \u2014 Cornell Lab of Ornithology",
+      "url": "https://www.allaboutbirds.org/guide/Carolina_Chickadee/id"
+    },
+    {
+      "title": "Carolina Chickadee Life History \u2014 Cornell Lab of Ornithology",
+      "url": "https://www.allaboutbirds.org/guide/Carolina_Chickadee/lifehistory"
+    },
+    {
+      "title": "Carolina Chickadee \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/carolina-chickadee"
+    }
+  ]
+}

@@ -1,0 +1,28 @@
+{
+  "anatomy_accuracy": 4,
+  "composition_quality": 5,
+  "findings": [
+    "Independent verification confirms the common name, scientific name, family, all three measurement ranges, and the stated core field marks. The plate correctly depicts an adult male American Robin: round-bodied thrush proportions; dark head; broken pale eye arcs; yellow bill with darker tip; rusty-orange underparts; slate-gray wings; white lower belly/undertail; long legs; and a fairly long, rounded tail.",
+    "The anatomy is coherent: one head, one beak, two legs, one tail, and a normal paired-wing anatomy are represented without malformed or extra body parts. Feet and toes are somewhat stylized but remain plausible for a passerine.",
+    "Visible factual claims match the verified sources, including ground-foraging behavior, upright pauses, tail flicking, berry feeding/flocking, and use of wooded, open, and human-altered habitats. No place name, ZIP code, coordinates, map, or local-observation detail appears.",
+    "Minor non-material limitation: the side-view main specimen visibly shows only the near wing; the separate lower wing study usefully documents wing structure but does not show a second attached wing. The vertical centimeter ruler is decorative/illustrative rather than a clearly stated specimen scale."
+  ],
+  "location_free": true,
+  "passed": true,
+  "species_accuracy": 5,
+  "text_accuracy": 5,
+  "verification_sources": [
+    {
+      "title": "American Robin Identification \u2014 Cornell Lab of Ornithology",
+      "url": "https://www.allaboutbirds.org/guide/american_robin/id"
+    },
+    {
+      "title": "American Robin \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/american-robin"
+    },
+    {
+      "title": "American Robin Fact Sheet \u2014 University of Maine Cooperative Extension",
+      "url": "https://extension.umaine.edu/signs-of-the-seasons/indicator-species/robin-fact-sheet/"
+    }
+  ]
+}

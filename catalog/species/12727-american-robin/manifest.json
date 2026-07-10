@@ -1,0 +1,149 @@
+{
+  "approved_at": "2026-07-09T22:38:07+00:00",
+  "assets": {
+    "display": {
+      "filename": "display.png",
+      "sha256": "05284256e996fc7291c0748741c6012893da00720b66e0c2ac4246fcfe6a53f5"
+    },
+    "portrait": {
+      "filename": "portrait.png",
+      "sha256": "2707395b4698c3d09d5f63d612d9451cc8da815d110fc8095b28a5aae3835f16"
+    }
+  },
+  "common_name": "American Robin",
+  "generation": {
+    "attempt": 1,
+    "generated_at": "2026-07-09T22:38:07+00:00",
+    "generator": "Codex subscription / built-in gpt-image-2",
+    "max_attempts": 3,
+    "prompt_version": "field-journal-v2"
+  },
+  "profile": {
+    "behavior": "Ground forager that runs or pauses upright while searching for invertebrates; often flicks its tail after landing. Feeds on fruit as well as animal prey, and may gather in flocks around berry-bearing trees outside the breeding season.",
+    "common_name": "American Robin",
+    "family": "Turdidae",
+    "field_marks": [
+      "Large, round-bodied thrush with long legs and a fairly long tail",
+      "Warm rusty-orange breast and belly, usually contrasting with darker upperparts",
+      "Dark gray to blackish head; females and immatures are generally paler",
+      "Yellow bill, often with a darker tip",
+      "Pale eye arcs or broken white eye ring; white lower belly and undertail coverts can show clearly"
+    ],
+    "habitat": "Open woodlands and forest edges, shrublands, fields and pastures, and human-altered green spaces such as gardens and parks; uses trees or shrubs for nesting and fruiting vegetation for seasonal food.",
+    "measurements": {
+      "length": "20\u201328 cm (7.9\u201311.0 in)",
+      "weight": "77\u201385 g (2.7\u20133.0 oz)",
+      "wingspan": "31\u201340 cm (12.2\u201315.8 in)"
+    },
+    "palette": [
+      "rusty orange breast",
+      "charcoal-gray to black head",
+      "slate-gray back and wings",
+      "yellow bill",
+      "white lower belly and undertail"
+    ],
+    "scientific_name": "Turdus migratorius",
+    "sources": [
+      {
+        "title": "American Robin Identification \u2014 Cornell Lab of Ornithology",
+        "url": "https://www.allaboutbirds.org/guide/american_robin/id"
+      },
+      {
+        "title": "American Robin \u2014 Smithsonian's National Zoo and Conservation Biology Institute",
+        "url": "https://nationalzoo.si.edu/animals/american-robin"
+      },
+      {
+        "title": "American Robin \u2014 U.S. National Park Service",
+        "url": "https://www.nps.gov/miss/learn/nature/birdsrobi.htm"
+      }
+    ],
+    "taxon_id": 12727
+  },
+  "quality_review": {
+    "anatomy_accuracy": 4,
+    "composition_quality": 5,
+    "findings": [
+      "Independent verification confirms the common name, scientific name, family, all three measurement ranges, and the stated core field marks. The plate correctly depicts an adult male American Robin: round-bodied thrush proportions; dark head; broken pale eye arcs; yellow bill with darker tip; rusty-orange underparts; slate-gray wings; white lower belly/undertail; long legs; and a fairly long, rounded tail.",
+      "The anatomy is coherent: one head, one beak, two legs, one tail, and a normal paired-wing anatomy are represented without malformed or extra body parts. Feet and toes are somewhat stylized but remain plausible for a passerine.",
+      "Visible factual claims match the verified sources, including ground-foraging behavior, upright pauses, tail flicking, berry feeding/flocking, and use of wooded, open, and human-altered habitats. No place name, ZIP code, coordinates, map, or local-observation detail appears.",
+      "Minor non-material limitation: the side-view main specimen visibly shows only the near wing; the separate lower wing study usefully documents wing structure but does not show a second attached wing. The vertical centimeter ruler is decorative/illustrative rather than a clearly stated specimen scale."
+    ],
+    "location_free": true,
+    "passed": true,
+    "species_accuracy": 5,
+    "text_accuracy": 5,
+    "verification_sources": [
+      {
+        "title": "American Robin Identification \u2014 Cornell Lab of Ornithology",
+        "url": "https://www.allaboutbirds.org/guide/american_robin/id"
+      },
+      {
+        "title": "American Robin \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/american-robin"
+      },
+      {
+        "title": "American Robin Fact Sheet \u2014 University of Maine Cooperative Extension",
+        "url": "https://extension.umaine.edu/signs-of-the-seasons/indicator-species/robin-fact-sheet/"
+      }
+    ]
+  },
+  "references": [
+    {
+      "attribution": "(c) Mila Turov, some rights reserved (CC BY)",
+      "filename": "01-370528121.jpg",
+      "height": 1280,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/370528121/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 209375487,
+      "observer": "milaturov",
+      "photo_id": 370528121,
+      "sha256": "89f5924b540def741e777d11ed3762dfe0b133131643b8033a949d850145d657",
+      "source_url": "https://www.inaturalist.org/observations/209375487",
+      "width": 1280
+    },
+    {
+      "attribution": "(c) Kathy Richardson, some rights reserved (CC BY)",
+      "filename": "02-190120595.jpeg",
+      "height": 1096,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/190120595/large.jpeg",
+      "license_code": "cc-by",
+      "observation_id": 112558925,
+      "observer": "kbeza31979",
+      "photo_id": 190120595,
+      "sha256": "4291c501fb52041e61a8aa2784288287b209c2bce1e470c13d6772414dad8f39",
+      "source_url": "https://www.inaturalist.org/observations/112558925",
+      "width": 1643
+    },
+    {
+      "attribution": "(c) Kevin Anderson, some rights reserved (CC BY)",
+      "filename": "03-465521426.jpg",
+      "height": 1539,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/465521426/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 259340397,
+      "observer": "kevin-anderson",
+      "photo_id": 465521426,
+      "sha256": "aa5bcf5b2965ccd73c7b7ed58889f98e03e7e5b574e975891997eca0b396c91f",
+      "source_url": "https://www.inaturalist.org/observations/259340397",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) Sandy Wolkenberg, some rights reserved (CC BY)",
+      "filename": "04-190992952.jpg",
+      "height": 2048,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/190992952/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 113043531,
+      "observer": "sadawolk",
+      "photo_id": 190992952,
+      "sha256": "21b5fda724eb1b4a7b539167eee0cd2afc4f5e76975289728edde2ec74a59b2b",
+      "source_url": "https://www.inaturalist.org/observations/113043531",
+      "width": 1546
+    }
+  ],
+  "schema_version": 1,
+  "scientific_name": "Turdus migratorius",
+  "slug": "american-robin",
+  "status": "approved",
+  "taxon_id": 12727
+}

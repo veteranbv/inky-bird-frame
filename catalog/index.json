@@ -1,7 +1,29 @@
 {
-  "generated_at": "2026-07-09T22:29:46+00:00",
+  "generated_at": "2026-07-09T22:46:35+00:00",
   "schema_version": 1,
   "species": [
+    {
+      "approved_at": "2026-07-09T22:38:07+00:00",
+      "common_name": "American Robin",
+      "display_path": "species/12727-american-robin/display.png",
+      "display_sha256": "05284256e996fc7291c0748741c6012893da00720b66e0c2ac4246fcfe6a53f5",
+      "portrait_path": "species/12727-american-robin/portrait.png",
+      "portrait_sha256": "2707395b4698c3d09d5f63d612d9451cc8da815d110fc8095b28a5aae3835f16",
+      "scientific_name": "Turdus migratorius",
+      "slug": "american-robin",
+      "taxon_id": 12727
+    },
+    {
+      "approved_at": "2026-07-09T22:46:35+00:00",
+      "common_name": "Carolina Chickadee",
+      "display_path": "species/144814-carolina-chickadee/display.png",
+      "display_sha256": "79bfe90ecfafad3e9fdd2565511c6eab5a3a13eee7181bfc53f64d1cedc733ea",
+      "portrait_path": "species/144814-carolina-chickadee/portrait.png",
+      "portrait_sha256": "d91b9ac1f780943758c32dc1e25973101cc2343dc3fbd3a45b67e16d56d205b4",
+      "scientific_name": "Poecile carolinensis",
+      "slug": "carolina-chickadee",
+      "taxon_id": 144814
+    },
     {
       "approved_at": "2026-07-09T00:00:00+00:00",
       "common_name": "Eastern Bluebird",
