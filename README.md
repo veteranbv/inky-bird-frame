@@ -53,6 +53,11 @@ The system has two deliberately small roles:
 - The **display node** downloads approved assets, verifies their checksums, and
   rotates them on the Inky panel. It does no AI or discovery work.
 
+<p align="center">
+  <img src="docs/images/installation-architecture.png" alt="Inky Bird Frame architecture showing a Mac or Raspberry Pi controller serving approved bird plates over a private home network to a Raspberry Pi Zero 2 W display node" width="900">
+  <br><em>The controller performs discovery and generation; the display node only pulls approved plates over the local network.</em>
+</p>
+
 Discovery location is private controller configuration. Approved plates and
 manifests contain no ZIP code, coordinates, observation dates, local place
 names, network details, or machine paths. A plate generated for one installation
