@@ -1,0 +1,141 @@
+{
+  "approved_at": "2026-07-10T18:43:08+00:00",
+  "assets": {
+    "display": {
+      "filename": "display.png",
+      "sha256": "c87c983b11165a656af224ee6ce07af8bff2c6017658554c680b846c4644ee84"
+    },
+    "portrait": {
+      "filename": "portrait.png",
+      "sha256": "70e73bb1478525bd21fe445d27cdb5ed26736ad066f64c2d5ecc7e459becaf98"
+    }
+  },
+  "common_name": "House Finch",
+  "generation": {
+    "attempt": 1,
+    "generated_at": "2026-07-10T18:43:08+00:00",
+    "generator": "Codex subscription / built-in gpt-image-2",
+    "max_attempts": 3,
+    "prompt_version": "field-journal-v2"
+  },
+  "profile": {
+    "behavior": "Gregarious, often foraging in flocks; feeds chiefly on seeds, buds, berries, and small fruits, crushing seeds with rapid bites. Flight is bouncy and undulating.",
+    "common_name": "House Finch",
+    "family": "Fringillidae",
+    "field_marks": [
+      "Small, slender-bodied finch with a fairly large, stout conical bill.",
+      "Adult male typically rosy red on the forehead, eyebrow, throat, and upper breast; the intensity can vary toward orange or yellow.",
+      "Brown, streaked back, wings, flanks, and tail; females and immatures are grayish-brown with diffuse streaking and no red.",
+      "Short, rounded wings make the relatively long, shallowly notched tail conspicuous.",
+      "Dark eye and fine dark legs; bill is pale gray to horn-colored with a curved upper profile."
+    ],
+    "habitat": "Semi-open habitats including woodland edges, shrublands, grasslands, dry brushy country, farms, and human-altered areas with trees, weeds, and buildings; generally avoids unbroken forest and grassland.",
+    "measurements": {
+      "length": "13\u201314 cm (5.1\u20135.5 in)",
+      "weight": "16\u201327 g (0.6\u20130.9 oz)",
+      "wingspan": "20\u201325 cm (7.9\u20139.8 in)"
+    },
+    "palette": [
+      "rosy red",
+      "warm brown",
+      "grayish brown",
+      "buff-white",
+      "charcoal gray"
+    ],
+    "scientific_name": "Haemorhous mexicanus",
+    "sources": [
+      {
+        "title": "House Finch Identification \u2014 All About Birds, Cornell Lab of Ornithology",
+        "url": "https://www.allaboutbirds.org/guide/House_Finch/id"
+      },
+      {
+        "title": "House Finch \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/house-finch"
+      }
+    ],
+    "taxon_id": 199840
+  },
+  "quality_review": {
+    "anatomy_accuracy": 4,
+    "composition_quality": 5,
+    "findings": [
+      "Independent verification supports House Finch (Haemorhous mexicanus), family Fringillidae, and the printed length, weight, and wingspan values.",
+      "The depicted adult male correctly shows a stout, curved-profile conical bill; dark eye; fine dark legs and feet; rosy-red forehead, eyebrow, throat, and upper breast; and streaky brown back, wings, flanks, and tail. The female/immature head study is appropriately gray-brown and unstreaked red.",
+      "The illustrated bird has one head, one beak, two wings (one is occluded by the near wing), two legs, and one long, shallowly notched tail. Its bill is slightly stylized/oversized but remains within an acceptable House Finch depiction.",
+      "All visible factual text is consistent with the verified identification, measurements, field marks, behavior, diet, and habitat. No place name, ZIP code, coordinates, map, or local-observation detail appears."
+    ],
+    "location_free": true,
+    "passed": true,
+    "species_accuracy": 5,
+    "text_accuracy": 5,
+    "verification_sources": [
+      {
+        "title": "House Finch Identification \u2014 All About Birds, Cornell Lab of Ornithology",
+        "url": "https://www.allaboutbirds.org/guide/House_Finch/id"
+      },
+      {
+        "title": "House Finch \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/house-finch"
+      }
+    ]
+  },
+  "references": [
+    {
+      "attribution": "(c) dennisvo, some rights reserved (CC BY)",
+      "filename": "01-77680959.jpg",
+      "height": 1365,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/77680959/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 48944342,
+      "observer": "dennisvo",
+      "photo_id": 77680959,
+      "sha256": "a839f5190b38229937b84e046081b5672a975f7b09ce708aaa0b7b0fdf16ce12",
+      "source_url": "https://www.inaturalist.org/observations/48944342",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) bungelina, some rights reserved (CC BY)",
+      "filename": "02-133962880.jpg",
+      "height": 2048,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/133962880/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 81664989,
+      "observer": "bungelina",
+      "photo_id": 133962880,
+      "sha256": "d28da7c879b4e88908b0604eb898986586bd9f494f68de50fd55a2c3ef49a24d",
+      "source_url": "https://www.inaturalist.org/observations/81664989",
+      "width": 1536
+    },
+    {
+      "attribution": "(c) MarvalPhotography19, some rights reserved (CC BY)",
+      "filename": "03-243934694.jpg",
+      "height": 1365,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/243934694/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 142298096,
+      "observer": "fernandoarvizu19",
+      "photo_id": 243934694,
+      "sha256": "00c831e5f8eb6a5e069fe12e1ba41cc9055c20c12f97fcf0c73ff575bc2714b8",
+      "source_url": "https://www.inaturalist.org/observations/142298096",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) Bill Levine, some rights reserved (CC BY)",
+      "filename": "04-332569998.jpeg",
+      "height": 1365,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/332569998/large.jpeg",
+      "license_code": "cc-by",
+      "observation_id": 189791563,
+      "observer": "blevine",
+      "photo_id": 332569998,
+      "sha256": "38815da12959b5cd52586e19fb4b21b374d1eb4f346140a120822987b03e6899",
+      "source_url": "https://www.inaturalist.org/observations/189791563",
+      "width": 2048
+    }
+  ],
+  "schema_version": 1,
+  "scientific_name": "Haemorhous mexicanus",
+  "slug": "house-finch",
+  "status": "approved",
+  "taxon_id": 199840
+}

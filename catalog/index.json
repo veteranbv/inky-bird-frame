@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-10T18:34:41+00:00",
+  "generated_at": "2026-07-10T18:43:08+00:00",
   "schema_version": 1,
   "species": [
     {
@@ -188,6 +188,17 @@
       "scientific_name": "Butorides virescens",
       "slug": "green-heron",
       "taxon_id": 5020
+    },
+    {
+      "approved_at": "2026-07-10T18:43:08+00:00",
+      "common_name": "House Finch",
+      "display_path": "species/199840-house-finch/display.png",
+      "display_sha256": "c87c983b11165a656af224ee6ce07af8bff2c6017658554c680b846c4644ee84",
+      "portrait_path": "species/199840-house-finch/portrait.png",
+      "portrait_sha256": "70e73bb1478525bd21fe445d27cdb5ed26736ad066f64c2d5ecc7e459becaf98",
+      "scientific_name": "Haemorhous mexicanus",
+      "slug": "house-finch",
+      "taxon_id": 199840
     },
     {
       "approved_at": "2026-07-10T17:29:07+00:00",

@@ -1,0 +1,37 @@
+{
+  "behavior": "Gregarious, often foraging in flocks; feeds chiefly on seeds, buds, berries, and small fruits, crushing seeds with rapid bites. Flight is bouncy and undulating.",
+  "common_name": "House Finch",
+  "family": "Fringillidae",
+  "field_marks": [
+    "Small, slender-bodied finch with a fairly large, stout conical bill.",
+    "Adult male typically rosy red on the forehead, eyebrow, throat, and upper breast; the intensity can vary toward orange or yellow.",
+    "Brown, streaked back, wings, flanks, and tail; females and immatures are grayish-brown with diffuse streaking and no red.",
+    "Short, rounded wings make the relatively long, shallowly notched tail conspicuous.",
+    "Dark eye and fine dark legs; bill is pale gray to horn-colored with a curved upper profile."
+  ],
+  "habitat": "Semi-open habitats including woodland edges, shrublands, grasslands, dry brushy country, farms, and human-altered areas with trees, weeds, and buildings; generally avoids unbroken forest and grassland.",
+  "measurements": {
+    "length": "13\u201314 cm (5.1\u20135.5 in)",
+    "weight": "16\u201327 g (0.6\u20130.9 oz)",
+    "wingspan": "20\u201325 cm (7.9\u20139.8 in)"
+  },
+  "palette": [
+    "rosy red",
+    "warm brown",
+    "grayish brown",
+    "buff-white",
+    "charcoal gray"
+  ],
+  "scientific_name": "Haemorhous mexicanus",
+  "sources": [
+    {
+      "title": "House Finch Identification \u2014 All About Birds, Cornell Lab of Ornithology",
+      "url": "https://www.allaboutbirds.org/guide/House_Finch/id"
+    },
+    {
+      "title": "House Finch \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/house-finch"
+    }
+  ],
+  "taxon_id": 199840
+}
