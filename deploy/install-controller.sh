@@ -21,6 +21,30 @@ catalog_publish_plist="${agents_dir}/com.inky-bird-frame.catalog-publish.plist"
 notifications_plist="${agents_dir}/com.inky-bird-frame.notifications.plist"
 legacy_cycle_plist="${agents_dir}/com.inky-bird-frame.controller-cycle.plist"
 
+restore_catalog_publisher_schedule() {
+  local uid=$1
+  local recovery_dir
+  local recovery_plist
+  recovery_dir=$(mktemp -d "${support_dir}/catalog-publish-recovery.XXXXXX")
+  recovery_plist="${recovery_dir}/catalog-publish.plist"
+  if ! cp "${catalog_publish_plist}" "${recovery_plist}"; then
+    rmdir "${recovery_dir}"
+    return 1
+  fi
+  if ! /usr/bin/plutil -replace RunAtLoad -bool false "${recovery_plist}"; then
+    rm -f "${recovery_plist}"
+    rmdir "${recovery_dir}"
+    return 1
+  fi
+  if ! launchctl bootstrap "gui/${uid}" "${recovery_plist}"; then
+    rm -f "${recovery_plist}"
+    rmdir "${recovery_dir}"
+    return 1
+  fi
+  rm -f "${recovery_plist}"
+  rmdir "${recovery_dir}"
+}
+
 if [ ! -f "${config_path}" ]; then
   echo "Controller configuration is missing: ${config_path}" >&2
   exit 1
@@ -163,10 +187,16 @@ PY
 
 uid=$(id -u)
 if [ -f "${catalog_publish_plist}" ]; then
-  launchctl bootout "gui/${uid}/com.inky-bird-frame.catalog-publish" 2>/dev/null || true
+  publisher_was_loaded=false
+  if launchctl print "gui/${uid}/com.inky-bird-frame.catalog-publish" >/dev/null 2>&1; then
+    launchctl bootout "gui/${uid}/com.inky-bird-frame.catalog-publish"
+    publisher_was_loaded=true
+  fi
   if ! "${app_dir}/.venv/bin/inky-bird-frame" catalog-publish \
     --config "${config_path}" --dry-run; then
-    echo "Catalog publication validation failed; publisher remains unloaded." >&2
+    if [ "${publisher_was_loaded}" = true ]; then
+      restore_catalog_publisher_schedule "${uid}"
+    fi
     exit 1
   fi
 fi
