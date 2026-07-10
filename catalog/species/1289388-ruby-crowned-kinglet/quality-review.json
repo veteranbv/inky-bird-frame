@@ -1,0 +1,26 @@
+{
+  "anatomy_accuracy": 5,
+  "composition_quality": 5,
+  "findings": [
+    "Verified identity: Ruby-crowned Kinglet, Corthylio calendula, family Regulidae. The plate\u2019s title, scientific name, and family are correct.",
+    "All printed measurements match Cornell: length 3.5\u20134.3 in (9\u201311 cm), weight 0.2\u20130.3 oz (5\u201310 g), wingspan 6.3\u20137.1 in (16\u201318 cm).",
+    "All visible field-mark and behavior claims are supported: tiny short-tailed thin-billed bird; olive/gray-green coloration; bold white eye-ring; white wingbar with adjacent blackish bar; male ruby crown usually concealed; restless wing-flicking foliage foraging, including hovering.",
+    "The illustration agrees with the reference photos: compact large-headed proportions, one small straight dark bill, prominent eye-ring, folded wing pattern, pale underparts, short tail, slender legs, and grasping feet. It depicts one head, one beak, two wings, two legs, and one tail without anatomical defects.",
+    "No place name, ZIP code, coordinates, map, or local-observation detail appears on the plate.",
+    "No material species, anatomy, composition, or text errors found."
+  ],
+  "location_free": true,
+  "passed": true,
+  "species_accuracy": 5,
+  "text_accuracy": 5,
+  "verification_sources": [
+    {
+      "title": "Ruby-crowned Kinglet Identification \u2014 All About Birds, Cornell Lab of Ornithology",
+      "url": "https://www.allaboutbirds.org/guide/Ruby-crowned_Kinglet/id"
+    },
+    {
+      "title": "Ruby-crowned Kinglet \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/ruby-crowned-kinglet"
+    }
+  ]
+}

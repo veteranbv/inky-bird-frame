@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-10T18:43:08+00:00",
+  "generated_at": "2026-07-10T18:51:24+00:00",
   "schema_version": 1,
   "species": [
     {
@@ -386,6 +386,17 @@
       "scientific_name": "Pheucticus ludovicianus",
       "slug": "rose-breasted-grosbeak",
       "taxon_id": 10271
+    },
+    {
+      "approved_at": "2026-07-10T18:51:24+00:00",
+      "common_name": "Ruby-crowned Kinglet",
+      "display_path": "species/1289388-ruby-crowned-kinglet/display.png",
+      "display_sha256": "b2de55262a1739f7073cc4f3085ff4c3b3a144bf5b79df00163f7444f6ed73ca",
+      "portrait_path": "species/1289388-ruby-crowned-kinglet/portrait.png",
+      "portrait_sha256": "b6a3a715d2645b5bef20897a2a8b5affb9c9c721c516c7acdbd24eb2a34a2759",
+      "scientific_name": "Corthylio calendula",
+      "slug": "ruby-crowned-kinglet",
+      "taxon_id": 1289388
     },
     {
       "approved_at": "2026-07-09T22:29:46+00:00",

@@ -1,0 +1,144 @@
+{
+  "approved_at": "2026-07-10T18:51:24+00:00",
+  "assets": {
+    "display": {
+      "filename": "display.png",
+      "sha256": "b2de55262a1739f7073cc4f3085ff4c3b3a144bf5b79df00163f7444f6ed73ca"
+    },
+    "portrait": {
+      "filename": "portrait.png",
+      "sha256": "b6a3a715d2645b5bef20897a2a8b5affb9c9c721c516c7acdbd24eb2a34a2759"
+    }
+  },
+  "common_name": "Ruby-crowned Kinglet",
+  "generation": {
+    "attempt": 1,
+    "generated_at": "2026-07-10T18:51:24+00:00",
+    "generator": "Codex subscription / built-in gpt-image-2",
+    "max_attempts": 3,
+    "prompt_version": "field-journal-v2"
+  },
+  "profile": {
+    "behavior": "Restless foliage gleaner; moves quickly through branches and shrubs, frequently flicking its wings and sometimes hovering to take small prey.",
+    "common_name": "Ruby-crowned Kinglet",
+    "family": "Regulidae",
+    "field_marks": [
+      "Tiny, compact songbird with a relatively large head and very short tail",
+      "Olive-green to gray-green upperparts with pale underparts",
+      "Bold white eye-ring on an otherwise plain face",
+      "White wing bar set against a darker, blackish wing bar",
+      "Very small, thin, straight dark bill",
+      "Male may show a bright ruby-red crown patch when excited; it is usually concealed"
+    ],
+    "habitat": "Tall, dense conifer forest for breeding; also uses mixed or deciduous woodland, shrubs, thickets, and other tree-and-brush cover outside the breeding season.",
+    "measurements": {
+      "length": "3.5\u20134.3 in (9\u201311 cm)",
+      "weight": "0.2\u20130.3 oz (5\u201310 g)",
+      "wingspan": "6.3\u20137.1 in (16\u201318 cm)"
+    },
+    "palette": [
+      "olive green",
+      "gray-green",
+      "white",
+      "blackish",
+      "ruby red"
+    ],
+    "scientific_name": "Corthylio calendula",
+    "sources": [
+      {
+        "title": "Ruby-crowned Kinglet Identification \u2014 All About Birds, Cornell Lab of Ornithology",
+        "url": "https://www.allaboutbirds.org/guide/Ruby-crowned_Kinglet/id"
+      },
+      {
+        "title": "Ruby-crowned Kinglet \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/ruby-crowned-kinglet"
+      }
+    ],
+    "taxon_id": 1289388
+  },
+  "quality_review": {
+    "anatomy_accuracy": 5,
+    "composition_quality": 5,
+    "findings": [
+      "Verified identity: Ruby-crowned Kinglet, Corthylio calendula, family Regulidae. The plate\u2019s title, scientific name, and family are correct.",
+      "All printed measurements match Cornell: length 3.5\u20134.3 in (9\u201311 cm), weight 0.2\u20130.3 oz (5\u201310 g), wingspan 6.3\u20137.1 in (16\u201318 cm).",
+      "All visible field-mark and behavior claims are supported: tiny short-tailed thin-billed bird; olive/gray-green coloration; bold white eye-ring; white wingbar with adjacent blackish bar; male ruby crown usually concealed; restless wing-flicking foliage foraging, including hovering.",
+      "The illustration agrees with the reference photos: compact large-headed proportions, one small straight dark bill, prominent eye-ring, folded wing pattern, pale underparts, short tail, slender legs, and grasping feet. It depicts one head, one beak, two wings, two legs, and one tail without anatomical defects.",
+      "No place name, ZIP code, coordinates, map, or local-observation detail appears on the plate.",
+      "No material species, anatomy, composition, or text errors found."
+    ],
+    "location_free": true,
+    "passed": true,
+    "species_accuracy": 5,
+    "text_accuracy": 5,
+    "verification_sources": [
+      {
+        "title": "Ruby-crowned Kinglet Identification \u2014 All About Birds, Cornell Lab of Ornithology",
+        "url": "https://www.allaboutbirds.org/guide/Ruby-crowned_Kinglet/id"
+      },
+      {
+        "title": "Ruby-crowned Kinglet \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/ruby-crowned-kinglet"
+      }
+    ]
+  },
+  "references": [
+    {
+      "attribution": "(c) Jonathan Eisen, some rights reserved (CC BY)",
+      "filename": "01-60807214.jpg",
+      "height": 1366,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/60807214/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 38275521,
+      "observer": "phylogenomics",
+      "photo_id": 60807214,
+      "sha256": "6f7a6871780b56db0f46a0fb5ced0840fb96f285a139fb44d88751880f67ca17",
+      "source_url": "https://www.inaturalist.org/observations/38275521",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) Nell Cant, some rights reserved (CC BY)",
+      "filename": "02-176519083.jpg",
+      "height": 1221,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/176519083/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 105233491,
+      "observer": "nellcant23",
+      "photo_id": 176519083,
+      "sha256": "92437d8764c39e92714889c2353a5bb7569a74063c01ab892e62844d3e9b1318",
+      "source_url": "https://www.inaturalist.org/observations/105233491",
+      "width": 1224
+    },
+    {
+      "attribution": "(c) Bill Levine, some rights reserved (CC BY)",
+      "filename": "03-261887162.jpeg",
+      "height": 2048,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/261887162/large.jpeg",
+      "license_code": "cc-by",
+      "observation_id": 151754862,
+      "observer": "blevine",
+      "photo_id": 261887162,
+      "sha256": "0e7d370bc4e90e78f235526041965d94d9a0d266fa408d37256aab945b601dd1",
+      "source_url": "https://www.inaturalist.org/observations/151754862",
+      "width": 2048
+    },
+    {
+      "attribution": "no rights reserved",
+      "filename": "04-195111046.jpeg",
+      "height": 1536,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/195111046/large.jpeg",
+      "license_code": "cc0",
+      "observation_id": 115607231,
+      "observer": "dziakj1",
+      "photo_id": 195111046,
+      "sha256": "9473ff8d91682ab30658c2114529dead670ebefb03e8a480b4bafab9caabf28b",
+      "source_url": "https://www.inaturalist.org/observations/115607231",
+      "width": 2048
+    }
+  ],
+  "schema_version": 1,
+  "scientific_name": "Corthylio calendula",
+  "slug": "ruby-crowned-kinglet",
+  "status": "approved",
+  "taxon_id": 1289388
+}

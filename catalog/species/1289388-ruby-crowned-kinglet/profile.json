@@ -1,0 +1,38 @@
+{
+  "behavior": "Restless foliage gleaner; moves quickly through branches and shrubs, frequently flicking its wings and sometimes hovering to take small prey.",
+  "common_name": "Ruby-crowned Kinglet",
+  "family": "Regulidae",
+  "field_marks": [
+    "Tiny, compact songbird with a relatively large head and very short tail",
+    "Olive-green to gray-green upperparts with pale underparts",
+    "Bold white eye-ring on an otherwise plain face",
+    "White wing bar set against a darker, blackish wing bar",
+    "Very small, thin, straight dark bill",
+    "Male may show a bright ruby-red crown patch when excited; it is usually concealed"
+  ],
+  "habitat": "Tall, dense conifer forest for breeding; also uses mixed or deciduous woodland, shrubs, thickets, and other tree-and-brush cover outside the breeding season.",
+  "measurements": {
+    "length": "3.5\u20134.3 in (9\u201311 cm)",
+    "weight": "0.2\u20130.3 oz (5\u201310 g)",
+    "wingspan": "6.3\u20137.1 in (16\u201318 cm)"
+  },
+  "palette": [
+    "olive green",
+    "gray-green",
+    "white",
+    "blackish",
+    "ruby red"
+  ],
+  "scientific_name": "Corthylio calendula",
+  "sources": [
+    {
+      "title": "Ruby-crowned Kinglet Identification \u2014 All About Birds, Cornell Lab of Ornithology",
+      "url": "https://www.allaboutbirds.org/guide/Ruby-crowned_Kinglet/id"
+    },
+    {
+      "title": "Ruby-crowned Kinglet \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/ruby-crowned-kinglet"
+    }
+  ],
+  "taxon_id": 1289388
+}
