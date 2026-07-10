@@ -1,0 +1,147 @@
+{
+  "approved_at": "2026-07-10T13:38:02+00:00",
+  "assets": {
+    "display": {
+      "filename": "display.png",
+      "sha256": "5840ab03e85c40347cc8a28a1cff6d25fa38ddcfec123d602efafb9709dac260"
+    },
+    "portrait": {
+      "filename": "portrait.png",
+      "sha256": "f046c871bf36779528abd39773ce778d3281e6c7d35eab73b7a90ea4babe0955"
+    }
+  },
+  "common_name": "Green Heron",
+  "generation": {
+    "attempt": 1,
+    "generated_at": "2026-07-10T13:38:02+00:00",
+    "generator": "Codex subscription / built-in gpt-image-2",
+    "max_attempts": 3,
+    "prompt_version": "field-journal-v2"
+  },
+  "profile": {
+    "behavior": "Solitary, patient stalker of small aquatic prey; typically stands motionless or moves slowly at the water\u2019s edge, with the neck drawn in, then strikes with its bill.",
+    "common_name": "Green Heron",
+    "family": "Ardeidae",
+    "field_marks": [
+      "Small, compact, stocky heron with a thick neck often held tightly retracted.",
+      "Long, straight, daggerlike bill.",
+      "Deep green to blue-green gloss on the back and crown; may look nearly black in dull light.",
+      "Rich chestnut neck and breast, with a dark cap that may form a short crest.",
+      "Dark gray rounded wings; juvenile birds are browner with pale neck streaking and pale wing spots.",
+      "Orange-yellow legs and a short, square-tipped tail."
+    ],
+    "habitat": "Vegetated wetland edges, including ponds, marshes, swamps, streams, rivers, reservoirs, and estuaries; especially where trees, shrubs, or tall emergent vegetation provide cover.",
+    "measurements": {
+      "length": "41\u201346 cm (16.1\u201318.1 in)",
+      "weight": "240 g (8.5 oz)",
+      "wingspan": "64\u201368 cm (25.2\u201326.8 in)"
+    },
+    "palette": [
+      "deep green",
+      "chestnut brown",
+      "charcoal gray",
+      "black",
+      "orange-yellow"
+    ],
+    "scientific_name": "Butorides virescens",
+    "sources": [
+      {
+        "title": "Green Heron Identification \u2014 All About Birds, Cornell Lab of Ornithology",
+        "url": "https://www.allaboutbirds.org/guide/Green_Heron/id"
+      },
+      {
+        "title": "Green Heron \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/green-heron"
+      },
+      {
+        "title": "Butorides virescens \u2014 Animal Diversity Web",
+        "url": "https://animaldiversity.org/accounts/Butorides_virescens/"
+      }
+    ],
+    "taxon_id": 5020
+  },
+  "quality_review": {
+    "anatomy_accuracy": 5,
+    "composition_quality": 5,
+    "findings": [
+      "Verified identity: adult Green Heron (Butorides virescens), family Ardeidae.",
+      "All visible plate text matches the verified measurements, behavior, habitat, and adult/juvenile field marks. The candidate\u2019s chestnut neck and breast, dark crested crown, deep green-blue back, dark rounded wings, long straight bill, orange-yellow legs, and short tail agree with the supplied photos and sources.",
+      "The primary full-body illustration has one head, one beak, two wings, two legs, and one tail; the separate head and wing are clearly labeled anatomical studies, not extra anatomy on the bird.",
+      "No place name, ZIP code, coordinates, map, or local-observation detail appears on the plate.",
+      "No material species, anatomy, composition, or text errors found."
+    ],
+    "location_free": true,
+    "passed": true,
+    "species_accuracy": 5,
+    "text_accuracy": 5,
+    "verification_sources": [
+      {
+        "title": "Green Heron Identification \u2014 All About Birds, Cornell Lab of Ornithology",
+        "url": "https://www.allaboutbirds.org/guide/Green_Heron/id"
+      },
+      {
+        "title": "Green Heron \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/green-heron"
+      }
+    ]
+  },
+  "references": [
+    {
+      "attribution": "(c) cesar stastny, some rights reserved (CC BY)",
+      "filename": "01-411484540.jpeg",
+      "height": 2048,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/411484540/large.jpeg",
+      "license_code": "cc-by",
+      "observation_id": 231664023,
+      "observer": "cesar_stastny",
+      "photo_id": 411484540,
+      "sha256": "46d69b7afddb08eae8b185bf8d7af6f3594c1d5da7e1521f4dcd9e893040a50e",
+      "source_url": "https://www.inaturalist.org/observations/231664023",
+      "width": 1536
+    },
+    {
+      "attribution": "(c) Jonathan Eisen, some rights reserved (CC BY)",
+      "filename": "02-96387577.jpg",
+      "height": 1365,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/96387577/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 60287207,
+      "observer": "phylogenomics",
+      "photo_id": 96387577,
+      "sha256": "40e53a54d8b5b20a658b6351b7f96cdb27d9afd92e311be6cfc76f841740e2f8",
+      "source_url": "https://www.inaturalist.org/observations/60287207",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) Josiah Londer\u00e9e, some rights reserved (CC BY)",
+      "filename": "03-222740594.jpeg",
+      "height": 1356,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/222740594/large.jpeg",
+      "license_code": "cc-by",
+      "observation_id": 130934799,
+      "observer": "gatorhawk",
+      "photo_id": 222740594,
+      "sha256": "28df90edee0d19813e4f67d4583b858764bfea3dee2cee8681fb8b8d610bd84e",
+      "source_url": "https://www.inaturalist.org/observations/130934799",
+      "width": 2048
+    },
+    {
+      "attribution": "no rights reserved",
+      "filename": "04-249743480.jpg",
+      "height": 1859,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/249743480/large.jpg",
+      "license_code": "cc0",
+      "observation_id": 145401475,
+      "observer": "aparrot1",
+      "photo_id": 249743480,
+      "sha256": "1a9e5029ef40f358f0168b9a0095811f64d7d598a1432efd9493160589b597be",
+      "source_url": "https://www.inaturalist.org/observations/145401475",
+      "width": 2048
+    }
+  ],
+  "schema_version": 1,
+  "scientific_name": "Butorides virescens",
+  "slug": "green-heron",
+  "status": "approved",
+  "taxon_id": 5020
+}

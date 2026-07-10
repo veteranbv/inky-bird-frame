@@ -1,0 +1,25 @@
+{
+  "anatomy_accuracy": 5,
+  "composition_quality": 5,
+  "findings": [
+    "Verified identity: adult Green Heron (Butorides virescens), family Ardeidae.",
+    "All visible plate text matches the verified measurements, behavior, habitat, and adult/juvenile field marks. The candidate\u2019s chestnut neck and breast, dark crested crown, deep green-blue back, dark rounded wings, long straight bill, orange-yellow legs, and short tail agree with the supplied photos and sources.",
+    "The primary full-body illustration has one head, one beak, two wings, two legs, and one tail; the separate head and wing are clearly labeled anatomical studies, not extra anatomy on the bird.",
+    "No place name, ZIP code, coordinates, map, or local-observation detail appears on the plate.",
+    "No material species, anatomy, composition, or text errors found."
+  ],
+  "location_free": true,
+  "passed": true,
+  "species_accuracy": 5,
+  "text_accuracy": 5,
+  "verification_sources": [
+    {
+      "title": "Green Heron Identification \u2014 All About Birds, Cornell Lab of Ornithology",
+      "url": "https://www.allaboutbirds.org/guide/Green_Heron/id"
+    },
+    {
+      "title": "Green Heron \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/green-heron"
+    }
+  ]
+}

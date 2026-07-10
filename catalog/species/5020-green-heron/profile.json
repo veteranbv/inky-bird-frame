@@ -1,0 +1,42 @@
+{
+  "behavior": "Solitary, patient stalker of small aquatic prey; typically stands motionless or moves slowly at the water\u2019s edge, with the neck drawn in, then strikes with its bill.",
+  "common_name": "Green Heron",
+  "family": "Ardeidae",
+  "field_marks": [
+    "Small, compact, stocky heron with a thick neck often held tightly retracted.",
+    "Long, straight, daggerlike bill.",
+    "Deep green to blue-green gloss on the back and crown; may look nearly black in dull light.",
+    "Rich chestnut neck and breast, with a dark cap that may form a short crest.",
+    "Dark gray rounded wings; juvenile birds are browner with pale neck streaking and pale wing spots.",
+    "Orange-yellow legs and a short, square-tipped tail."
+  ],
+  "habitat": "Vegetated wetland edges, including ponds, marshes, swamps, streams, rivers, reservoirs, and estuaries; especially where trees, shrubs, or tall emergent vegetation provide cover.",
+  "measurements": {
+    "length": "41\u201346 cm (16.1\u201318.1 in)",
+    "weight": "240 g (8.5 oz)",
+    "wingspan": "64\u201368 cm (25.2\u201326.8 in)"
+  },
+  "palette": [
+    "deep green",
+    "chestnut brown",
+    "charcoal gray",
+    "black",
+    "orange-yellow"
+  ],
+  "scientific_name": "Butorides virescens",
+  "sources": [
+    {
+      "title": "Green Heron Identification \u2014 All About Birds, Cornell Lab of Ornithology",
+      "url": "https://www.allaboutbirds.org/guide/Green_Heron/id"
+    },
+    {
+      "title": "Green Heron \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/green-heron"
+    },
+    {
+      "title": "Butorides virescens \u2014 Animal Diversity Web",
+      "url": "https://animaldiversity.org/accounts/Butorides_virescens/"
+    }
+  ],
+  "taxon_id": 5020
+}
