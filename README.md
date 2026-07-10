@@ -18,7 +18,7 @@ scientific field-journal plates on a color e-paper display.
 
 <p align="center">
   <img src="docs/images/framed-installation.jpg" alt="Inky Bird Frame displaying an Eastern Bluebird field-journal plate in a bronze portrait frame" width="560">
-  <br><em>A finished portrait installation using the recommended 12 x 16 inch frame and its included mat.</em>
+  <br><em>A finished portrait installation using the recommended 12 x 16 inch frame with a panel-fitted mat opening.</em>
 </p>
 
 The frame follows public bird observations within a configurable distance and
