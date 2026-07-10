@@ -1,0 +1,26 @@
+{
+  "anatomy_accuracy": 4,
+  "composition_quality": 5,
+  "findings": [
+    "Identity is consistent with Louisiana Waterthrush: olive-brown upperparts, a bold white supercilium, mostly plain white throat, heavy dark breast-and-flank streaking, pink legs, and no wingbars match the supplied field photos and field-guide descriptions.",
+    "The bird is anatomically coherent: one head, one beak, two legs, one tail, and a normal paired-wing body plan are depicted. The visible wing and separate wing study are plausible; feet/toes are somewhat oversized and sharply rendered but not malformed.",
+    "The main bird\u2019s bill is drawn rather long and fine, and its tail reads slightly longer and more tapered than the compact, short square-tipped-to-rounded tail typically emphasized for this species. These are minor proportional departures, not an identification-breaking error.",
+    "Common name, scientific name (Parkesia motacilla), and family (Parulidae) are correct. Habitat and foraging/bobbing behavior are supported by both sources.",
+    "Length and weight match Audubon\u2019s published range. The printed 20\u201325 cm (8\u201310 in) wingspan matches Audubon, but differs from All About Birds\u2019 24\u201327 cm (9.4\u201310.6 in) range; retain a source-specific citation or broaden the stated range to avoid an apparent cross-source discrepancy.",
+    "No place name, ZIP code, coordinates, map, or local-observation detail appears on the plate."
+  ],
+  "location_free": true,
+  "passed": true,
+  "species_accuracy": 4,
+  "text_accuracy": 4,
+  "verification_sources": [
+    {
+      "title": "Louisiana Waterthrush \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/louisiana-waterthrush"
+    },
+    {
+      "title": "Louisiana Waterthrush Identification \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Louisiana_Waterthrush/id"
+    }
+  ]
+}

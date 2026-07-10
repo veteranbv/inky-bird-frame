@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-10T17:46:57+00:00",
+  "generated_at": "2026-07-10T17:55:25+00:00",
   "schema_version": 1,
   "species": [
     {
@@ -221,6 +221,17 @@
       "scientific_name": "Charadrius vociferus",
       "slug": "killdeer",
       "taxon_id": 4793
+    },
+    {
+      "approved_at": "2026-07-10T17:55:25+00:00",
+      "common_name": "Louisiana Waterthrush",
+      "display_path": "species/73148-louisiana-waterthrush/display.png",
+      "display_sha256": "126eaa71dda59ccc9a2abbf847fc5062021b3d0a3d14e2871a40e0fbdcd0245f",
+      "portrait_path": "species/73148-louisiana-waterthrush/portrait.png",
+      "portrait_sha256": "2b935a4596ac79d654e584e5476555853d68c45cc05e938b175acb62a864777a",
+      "scientific_name": "Parkesia motacilla",
+      "slug": "louisiana-waterthrush",
+      "taxon_id": 73148
     },
     {
       "approved_at": "2026-07-10T16:52:07+00:00",

@@ -1,0 +1,38 @@
+{
+  "behavior": "Walks and forages at the water\u2019s edge, often bobbing the rear of its body; commonly feeds among wet leaves, moss, stones, and shallow running water.",
+  "common_name": "Louisiana Waterthrush",
+  "family": "Parulidae",
+  "field_marks": [
+    "Plain olive-brown upperparts with no wingbars",
+    "Bold, bright white eyebrow stripe",
+    "White underparts with heavy dark streaking on breast and sides",
+    "Usually plain white throat and warm buff wash on flanks and undertail",
+    "Relatively long, sturdy pointed bill",
+    "Pinkish legs and a short, square-tipped to rounded tail"
+  ],
+  "habitat": "Forested streams, creeks, brooks, ravines, and other shaded freshwater edges; favors flowing water and nearby wet ground.",
+  "measurements": {
+    "length": "13\u201315 cm (5\u20136 in)",
+    "weight": "18\u201323 g (0.6\u20130.8 oz)",
+    "wingspan": "20\u201325 cm (8\u201310 in)"
+  },
+  "palette": [
+    "olive-brown",
+    "bright white",
+    "charcoal black",
+    "warm buff",
+    "pinkish flesh"
+  ],
+  "scientific_name": "Parkesia motacilla",
+  "sources": [
+    {
+      "title": "Louisiana Waterthrush Overview \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Louisiana_Waterthrush/overview"
+    },
+    {
+      "title": "Louisiana Waterthrush \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/louisiana-waterthrush"
+    }
+  ],
+  "taxon_id": 73148
+}
