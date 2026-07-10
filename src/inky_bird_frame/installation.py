@@ -172,10 +172,16 @@ WantedBy=multi-user.target
             if name == "notifications"
             else (name, "--config", str(config_path))
         )
+        unit_dependencies = (
+            "After=network-online.target inky-bird-frame-refresh.service\n"
+            "Wants=network-online.target\n"
+            "Requires=inky-bird-frame-refresh.service"
+            if name == "generate"
+            else "After=network-online.target\nWants=network-online.target"
+        )
         units[f"inky-bird-frame-{name}.service"] = f"""[Unit]
 Description=Run the Inky Bird Frame {name} cycle
-After=network-online.target
-Wants=network-online.target
+{unit_dependencies}
 
 [Service]
 Type=oneshot

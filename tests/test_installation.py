@@ -89,6 +89,18 @@ class InstallationTests(unittest.TestCase):
         self.assertIn("OnUnitActiveSec=360min", units["inky-bird-frame-generate.timer"])
         self.assertIn("OnActiveSec=2min", units["inky-bird-frame-generate.timer"])
         self.assertNotIn("OnBootSec=", units["inky-bird-frame-generate.timer"])
+        self.assertIn(
+            "After=network-online.target inky-bird-frame-refresh.service",
+            units["inky-bird-frame-generate.service"],
+        )
+        self.assertIn(
+            "Requires=inky-bird-frame-refresh.service",
+            units["inky-bird-frame-generate.service"],
+        )
+        self.assertNotIn(
+            "Requires=inky-bird-frame-refresh.service",
+            units["inky-bird-frame-refresh.service"],
+        )
         self.assertNotIn("inky-bird-frame-notifications.timer", units)
         self.assertNotIn("inky-bird-frame-catalog-publish.timer", units)
 
