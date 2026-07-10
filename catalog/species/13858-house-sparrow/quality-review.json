@@ -1,0 +1,23 @@
+{
+  "anatomy_accuracy": 5,
+  "composition_quality": 5,
+  "findings": [
+    "No concrete species, anatomy, or text error found. The profile rendering is consistent with one head, one bill, two wings (far wing occluded), two legs, and one short, slightly notched tail.",
+    "The male plumage accurately shows gray crown, chestnut nape, white cheeks, black bib, patterned brown-and-buff wings, dark eye, stout conical bill, and pinkish-brown legs; the inset wing and head studies support the identification.",
+    "All visible claims match the live field-guide verification, including Passer domesticus, Passeridae, the stated 15\u201317 cm length, 27\u201330 g weight, 19\u201325 cm wingspan, habitat, behavior, and field marks. No place name, ZIP code, coordinates, map, or local-observation detail appears."
+  ],
+  "location_free": true,
+  "passed": true,
+  "species_accuracy": 5,
+  "text_accuracy": 5,
+  "verification_sources": [
+    {
+      "title": "House Sparrow Identification \u2014 All About Birds, Cornell Lab of Ornithology",
+      "url": "https://www.allaboutbirds.org/guide/House_Sparrow/id"
+    },
+    {
+      "title": "House Sparrow \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/house-sparrow"
+    }
+  ]
+}

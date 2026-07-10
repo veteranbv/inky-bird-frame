@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-10T17:20:07+00:00",
+  "generated_at": "2026-07-10T17:29:07+00:00",
   "schema_version": 1,
   "species": [
     {
@@ -166,6 +166,17 @@
       "scientific_name": "Butorides virescens",
       "slug": "green-heron",
       "taxon_id": 5020
+    },
+    {
+      "approved_at": "2026-07-10T17:29:07+00:00",
+      "common_name": "House Sparrow",
+      "display_path": "species/13858-house-sparrow/display.png",
+      "display_sha256": "5d948194f515c54d01b75b5145d378e42b8ad179b28e4152df32577136793642",
+      "portrait_path": "species/13858-house-sparrow/portrait.png",
+      "portrait_sha256": "831aee6ac97c77843f4b5dc5cebfe543c3442524909889536139ce5824e0dd58",
+      "scientific_name": "Passer domesticus",
+      "slug": "house-sparrow",
+      "taxon_id": 13858
     },
     {
       "approved_at": "2026-07-10T16:43:04+00:00",
