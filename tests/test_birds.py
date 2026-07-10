@@ -62,6 +62,10 @@ class InaturalistParsingTests(unittest.TestCase):
             {"d1": "2026-06-09", "d2": "2026-07-09"},
         )
         self.assertEqual(
+            date_range_for_window(ObservationWindow.LAST_YEAR, today).as_query_params(),
+            {"d1": "2025-07-09", "d2": "2026-07-09"},
+        )
+        self.assertEqual(
             date_range_for_window(ObservationWindow.ALL_TIME, today).as_query_params(),
             {},
         )

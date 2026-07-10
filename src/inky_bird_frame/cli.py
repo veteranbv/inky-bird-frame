@@ -8,7 +8,7 @@ import shutil
 import sys
 from pathlib import Path
 
-from .birds import BirdSpecies
+from .birds import BirdSpecies, ObservationWindow, parse_observation_window
 from .catalog import (
     approve_candidate,
     find_taxon_directory,
@@ -19,6 +19,8 @@ from .catalog import (
 from .config import AppConfig, load_config
 from .controller import (
     discover_species,
+    enqueue_seed_species,
+    read_generation_queue,
     run_controller_cycle,
     run_generation_cycle,
     run_refresh_cycle,
@@ -27,6 +29,7 @@ from .display import show_on_inky
 from .display_node import run_display_cycle
 from .errors import InkyBirdFrameError
 from .images import prepare_uploaded_image
+from .publisher import run_catalog_publish
 from .server import serve_catalog
 
 
@@ -95,6 +98,19 @@ def generate_command(args: argparse.Namespace) -> int:
     return 0
 
 
+def seed_command(args: argparse.Namespace) -> int:
+    print_result(
+        enqueue_seed_species(
+            _config(args),
+            window=parse_observation_window(args.window),
+            radius_km=args.radius_km,
+            species_limit=args.species_limit,
+            dry_run=args.dry_run,
+        )
+    )
+    return 0
+
+
 def approve_command(args: argparse.Namespace) -> int:
     config = _config(args)
     entry = approve_candidate(
@@ -157,6 +173,7 @@ def status_command(args: argparse.Namespace) -> int:
         {
             "approved": [entry.as_dict() for entry in entries],
             "pending": pending,
+            "queued": [species_to_dict(item) for item in read_generation_queue(config)],
             "failed": [
                 str(path) for path in sorted((config.controller.state_dir / "failed").glob("*"))
             ],
@@ -173,6 +190,11 @@ def serve_command(args: argparse.Namespace) -> int:
 def display_cycle_command(args: argparse.Namespace) -> int:
     result = run_display_cycle(_config(args).display_node, force=args.force)
     print_result(result)
+    return 0
+
+
+def catalog_publish_command(args: argparse.Namespace) -> int:
+    print_result(run_catalog_publish(_config(args), dry_run=args.dry_run))
     return 0
 
 
@@ -238,6 +260,21 @@ def build_parser() -> argparse.ArgumentParser:
     add_config_argument(generate_parser)
     generate_parser.set_defaults(func=generate_command)
 
+    seed_parser = subparsers.add_parser(
+        "seed",
+        help="Queue distinct species from a broader observation window for generation",
+    )
+    add_config_argument(seed_parser)
+    seed_parser.add_argument(
+        "--window",
+        required=True,
+        choices=[window.value for window in ObservationWindow],
+    )
+    seed_parser.add_argument("--radius-km", type=int)
+    seed_parser.add_argument("--species-limit", type=int)
+    seed_parser.add_argument("--dry-run", action="store_true")
+    seed_parser.set_defaults(func=seed_command)
+
     approve_parser = subparsers.add_parser("approve", help="Publish a pending candidate")
     add_config_argument(approve_parser)
     approve_parser.add_argument("taxon_id", type=int)
@@ -272,6 +309,14 @@ def build_parser() -> argparse.ArgumentParser:
     add_config_argument(display_cycle_parser)
     display_cycle_parser.add_argument("--force", action="store_true")
     display_cycle_parser.set_defaults(func=display_cycle_command)
+
+    catalog_publish_parser = subparsers.add_parser(
+        "catalog-publish",
+        help="Validate and owner-merge approved plates into this repository's catalog",
+    )
+    add_config_argument(catalog_publish_parser)
+    catalog_publish_parser.add_argument("--dry-run", action="store_true")
+    catalog_publish_parser.set_defaults(func=catalog_publish_command)
 
     prepare_parser = subparsers.add_parser(
         "prepare-image", help="Prepare a portrait image for Inky"

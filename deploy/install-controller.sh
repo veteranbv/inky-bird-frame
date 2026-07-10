@@ -17,6 +17,7 @@ agents_dir="${HOME}/Library/LaunchAgents"
 serve_plist="${agents_dir}/com.inky-bird-frame.serve.plist"
 refresh_plist="${agents_dir}/com.inky-bird-frame.refresh.plist"
 generation_plist="${agents_dir}/com.inky-bird-frame.generate.plist"
+catalog_publish_plist="${agents_dir}/com.inky-bird-frame.catalog-publish.plist"
 legacy_cycle_plist="${agents_dir}/com.inky-bird-frame.controller-cycle.plist"
 
 if [ ! -f "${config_path}" ]; then
@@ -38,7 +39,7 @@ done
 "${uv_bin}" sync --project "${app_dir}" --python "${python_version}" --locked
 
 "${app_dir}/.venv/bin/python" - \
-  "${serve_plist}" "${refresh_plist}" "${generation_plist}" \
+  "${serve_plist}" "${refresh_plist}" "${generation_plist}" "${catalog_publish_plist}" \
   "${app_dir}" "${config_path}" "${log_dir}" <<'PY'
 import plistlib
 import sys
@@ -46,11 +47,12 @@ from pathlib import Path
 
 from inky_bird_frame.config import load_config
 
-serve_path, refresh_path, generation_path, app_dir, config_path, log_dir = map(
+serve_path, refresh_path, generation_path, catalog_publish_path, app_dir, config_path, log_dir = map(
     Path, sys.argv[1:]
 )
 executable = app_dir / ".venv/bin/inky-bird-frame"
-schedule = load_config(config_path).schedule
+config = load_config(config_path)
+schedule = config.schedule
 
 common = {
     "WorkingDirectory": str(app_dir),
@@ -84,6 +86,20 @@ generation = {
     "StandardOutPath": str(log_dir / "generate.log"),
     "StandardErrorPath": str(log_dir / "generate.error.log"),
 }
+catalog_publish = {
+    **common,
+    "Label": "com.inky-bird-frame.catalog-publish",
+    "ProgramArguments": [
+        str(executable),
+        "catalog-publish",
+        "--config",
+        str(config_path),
+    ],
+    "RunAtLoad": True,
+    "StartInterval": schedule.catalog_publish_minutes * 60,
+    "StandardOutPath": str(log_dir / "catalog-publish.log"),
+    "StandardErrorPath": str(log_dir / "catalog-publish.error.log"),
+}
 for path, payload in (
     (serve_path, serve),
     (refresh_path, refresh),
@@ -91,20 +107,37 @@ for path, payload in (
 ):
     with path.open("wb") as handle:
         plistlib.dump(payload, handle, sort_keys=True)
+if config.public_catalog.enabled:
+    with catalog_publish_path.open("wb") as handle:
+        plistlib.dump(catalog_publish, handle, sort_keys=True)
+else:
+    catalog_publish_path.unlink(missing_ok=True)
 PY
+
+if [ -f "${catalog_publish_plist}" ]; then
+  "${app_dir}/.venv/bin/inky-bird-frame" catalog-publish \
+    --config "${config_path}" --dry-run >/dev/null
+fi
 
 uid=$(id -u)
 launchctl bootout "gui/${uid}/com.inky-bird-frame.serve" 2>/dev/null || true
 launchctl bootout "gui/${uid}/com.inky-bird-frame.controller-cycle" 2>/dev/null || true
 launchctl bootout "gui/${uid}/com.inky-bird-frame.refresh" 2>/dev/null || true
 launchctl bootout "gui/${uid}/com.inky-bird-frame.generate" 2>/dev/null || true
+launchctl bootout "gui/${uid}/com.inky-bird-frame.catalog-publish" 2>/dev/null || true
 rm -f "${legacy_cycle_plist}"
 launchctl bootstrap "gui/${uid}" "${serve_plist}"
 launchctl bootstrap "gui/${uid}" "${refresh_plist}"
 launchctl bootstrap "gui/${uid}" "${generation_plist}"
+if [ -f "${catalog_publish_plist}" ]; then
+  launchctl bootstrap "gui/${uid}" "${catalog_publish_plist}"
+fi
 launchctl print "gui/${uid}/com.inky-bird-frame.serve" >/dev/null
 launchctl print "gui/${uid}/com.inky-bird-frame.refresh" >/dev/null
 launchctl print "gui/${uid}/com.inky-bird-frame.generate" >/dev/null
+if [ -f "${catalog_publish_plist}" ]; then
+  launchctl print "gui/${uid}/com.inky-bird-frame.catalog-publish" >/dev/null
+fi
 
 echo "Controller installed from ${root} into ${app_dir}."
 echo "Configuration: ${config_path}"
