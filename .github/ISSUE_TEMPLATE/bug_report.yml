@@ -1,0 +1,77 @@
+name: Bug report
+description: Report reproducible incorrect behavior or a regression.
+title: "[Bug]: "
+labels:
+  - bug
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for helping improve Inky Bird Frame. Remove locations, credentials,
+        notification URLs, and other private values before submitting.
+  - type: dropdown
+    id: area
+    attributes:
+      label: Affected area
+      options:
+        - Controller and discovery
+        - Generation and review
+        - Catalog and publishing
+        - Display node and Inky hardware
+        - Notifications
+        - Installation and deployment
+        - Documentation
+        - Other
+    validations:
+      required: true
+  - type: textarea
+    id: description
+    attributes:
+      label: What happened?
+      description: Describe the failure and its impact.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Reproduction steps
+      description: Provide the smallest reliable sequence that demonstrates the problem.
+      placeholder: |
+        1. Run ...
+        2. Configure ...
+        3. Observe ...
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: Include OS, Python version, hardware model, and project revision when relevant.
+      placeholder: |
+        OS:
+        Python:
+        Hardware:
+        Commit or release:
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Sanitized logs
+      description: Include useful output after removing locations, tokens, URLs with credentials, and local paths.
+      render: shell
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Checks
+      options:
+        - label: I searched existing issues for the same problem.
+          required: true
+        - label: I removed secrets, precise locations, and other private deployment details.
+          required: true

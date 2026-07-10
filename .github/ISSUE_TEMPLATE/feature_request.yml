@@ -1,0 +1,49 @@
+name: Feature request
+description: Propose a useful, maintainable improvement.
+title: "[Feature]: "
+labels:
+  - enhancement
+body:
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - Controller and discovery
+        - Generation and review
+        - Catalog and publishing
+        - Display node and Inky hardware
+        - Notifications
+        - Installation and deployment
+        - Documentation and contributor experience
+        - Other
+    validations:
+      required: true
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem to solve
+      description: Explain the user need or limitation before describing a solution.
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed behavior
+      description: Describe the smallest complete behavior that would solve the problem.
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      description: Include workarounds or simpler approaches you considered.
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Checks
+      options:
+        - label: I searched existing issues and discussions for this request.
+          required: true
+        - label: This request does not include secrets or private deployment details.
+          required: true

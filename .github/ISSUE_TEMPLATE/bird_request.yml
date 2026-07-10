@@ -1,0 +1,50 @@
+name: Request a bird
+description: Suggest a species for a future catalog contribution.
+title: "[Bird]: "
+labels:
+  - catalog
+body:
+  - type: input
+    id: common_name
+    attributes:
+      label: Common name
+      placeholder: Eastern Bluebird
+    validations:
+      required: true
+  - type: input
+    id: scientific_name
+    attributes:
+      label: Scientific name
+      placeholder: Sialia sialis
+    validations:
+      required: true
+  - type: input
+    id: taxon_id
+    attributes:
+      label: eBird taxon ID
+      description: Include the numeric eBird taxon ID when known so contributors do not duplicate work.
+  - type: textarea
+    id: sources
+    attributes:
+      label: Reputable species sources
+      description: Link authoritative field-guide or institutional sources. Do not upload copyrighted reference photos.
+  - type: textarea
+    id: notes
+    attributes:
+      label: Notes
+      description: Explain why this species would be a useful addition. Do not include a sighting location.
+  - type: checkboxes
+    id: contribution
+    attributes:
+      label: Contribution
+      options:
+        - label: I would like to generate and submit this plate.
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Checks
+      options:
+        - label: I searched the catalog and open issues for this species.
+          required: true
+        - label: This request contains no precise sighting or discovery location.
+          required: true

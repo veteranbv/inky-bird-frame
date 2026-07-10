@@ -249,6 +249,14 @@ def _validate_species_directory(directory: Path) -> tuple[int, str]:
 
 def validate_public_catalog(catalog_dir: Path) -> list[CatalogEntry]:
     _validate_catalog_root(catalog_dir, allow_create=False)
+    root_entries = {path.name for path in catalog_dir.iterdir()}
+    unexpected_root_entries = root_entries - {"index.json", "species"}
+    if unexpected_root_entries:
+        unexpected = ", ".join(sorted(unexpected_root_entries))
+        raise CatalogPublishError(f"Unexpected catalog root entries in {catalog_dir}: {unexpected}")
+    index_path = catalog_dir / "index.json"
+    if index_path.is_symlink() or not index_path.is_file():
+        raise CatalogPublishError(f"Catalog index must be a regular file: {index_path}")
     species_root = catalog_dir / "species"
     directories = sorted(path for path in species_root.iterdir() if path.name != ".DS_Store")
     seen_taxa: set[int] = set()
@@ -260,8 +268,8 @@ def validate_public_catalog(catalog_dir: Path) -> list[CatalogEntry]:
     entries = read_catalog_entries(catalog_dir)
     if len(entries) != len(directories):
         raise CatalogPublishError(f"Every species directory needs one manifest: {species_root}")
-    index = read_json(catalog_dir / "index.json")
-    _check_json_privacy(index, catalog_dir / "index.json")
+    index = read_json(index_path)
+    _check_json_privacy(index, index_path)
     if index != catalog_index_data(entries):
         raise CatalogPublishError(f"Catalog index does not match species manifests: {catalog_dir}")
     return entries
@@ -275,15 +283,58 @@ def _trees_match(left: Path, right: Path) -> bool:
     )
 
 
-def sync_public_catalog(source_catalog: Path, destination_catalog: Path) -> dict[str, object]:
+def validate_catalog_additions(
+    base_catalog: Path,
+    candidate_catalog: Path,
+) -> list[CatalogEntry]:
+    base_entries = validate_public_catalog(base_catalog)
+    candidate_entries = validate_public_catalog(candidate_catalog)
+    candidate_by_taxon = {entry.taxon_id: entry for entry in candidate_entries}
+
+    for base_entry in base_entries:
+        candidate_entry = candidate_by_taxon.get(base_entry.taxon_id)
+        if candidate_entry is None:
+            raise CatalogPublishError(
+                f"Catalog contribution removed immutable taxon {base_entry.taxon_id}"
+            )
+        base_directory = base_catalog / "species" / f"{base_entry.taxon_id}-{base_entry.slug}"
+        candidate_directory = (
+            candidate_catalog / "species" / f"{candidate_entry.taxon_id}-{candidate_entry.slug}"
+        )
+        if base_directory.name != candidate_directory.name or not _trees_match(
+            base_directory, candidate_directory
+        ):
+            raise CatalogPublishError(
+                f"Catalog contribution changed immutable taxon {base_entry.taxon_id}"
+            )
+
+    base_taxa = {entry.taxon_id for entry in base_entries}
+    return [entry for entry in candidate_entries if entry.taxon_id not in base_taxa]
+
+
+def sync_public_catalog(
+    source_catalog: Path,
+    destination_catalog: Path,
+    *,
+    taxon_ids: set[int] | None = None,
+) -> dict[str, object]:
     source_entries = validate_public_catalog(source_catalog)
+    all_source_taxa = {entry.taxon_id for entry in source_entries}
+    requested_taxa = all_source_taxa if taxon_ids is None else taxon_ids
+    missing_taxa = requested_taxa - all_source_taxa
+    if missing_taxa:
+        missing = ", ".join(str(taxon_id) for taxon_id in sorted(missing_taxa))
+        raise CatalogPublishError(f"Source catalog does not contain taxon {missing}")
+    source_by_taxon = {
+        entry.taxon_id: entry for entry in source_entries if entry.taxon_id in requested_taxa
+    }
+
     _validate_catalog_root(destination_catalog, allow_create=True)
     if (destination_catalog / "index.json").exists():
         validate_public_catalog(destination_catalog)
     elif any((destination_catalog / "species").iterdir()):
         raise CatalogPublishError("Catalog with species entries must include index.json")
 
-    source_by_taxon = {entry.taxon_id: entry for entry in source_entries}
     destination_species = destination_catalog / "species"
     published: list[dict[str, object]] = []
     existing: list[int] = []

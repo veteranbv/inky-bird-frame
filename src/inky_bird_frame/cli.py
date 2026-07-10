@@ -40,7 +40,12 @@ from .notifications import (
     send_notification_test,
     validate_notification_destinations,
 )
-from .publisher import run_catalog_publish
+from .publisher import (
+    run_catalog_publish,
+    sync_public_catalog,
+    validate_catalog_additions,
+    validate_public_catalog,
+)
 from .retry import RetryStore
 from .server import serve_catalog
 
@@ -366,6 +371,38 @@ def catalog_publish_command(args: argparse.Namespace) -> int:
     return 0
 
 
+def catalog_prepare_command(args: argparse.Namespace) -> int:
+    result = sync_public_catalog(
+        args.source_catalog,
+        args.catalog,
+        taxon_ids={args.taxon_id},
+    )
+    print_result(
+        {
+            **result,
+            "catalog": str(args.catalog),
+            "source_catalog": str(args.source_catalog),
+            "taxon_id": args.taxon_id,
+        }
+    )
+    return 0
+
+
+def catalog_validate_command(args: argparse.Namespace) -> int:
+    entries = validate_public_catalog(args.catalog)
+    result: dict[str, object] = {
+        "catalog": str(args.catalog),
+        "valid": True,
+        "species_count": len(entries),
+    }
+    if args.base_catalog is not None:
+        additions = validate_catalog_additions(args.base_catalog, args.catalog)
+        result["base_catalog"] = str(args.base_catalog)
+        result["additions"] = [entry.as_dict() for entry in additions]
+    print_result(result)
+    return 0
+
+
 def config_validate_command(args: argparse.Namespace) -> int:
     config = _config(args)
     destinations = validate_notification_destinations(config)
@@ -527,6 +564,43 @@ def build_parser() -> argparse.ArgumentParser:
     add_config_argument(catalog_publish_parser)
     catalog_publish_parser.add_argument("--dry-run", action="store_true")
     catalog_publish_parser.set_defaults(func=catalog_publish_command)
+
+    catalog_parser = subparsers.add_parser(
+        "catalog", help="Prepare and validate public catalog contributions"
+    )
+    catalog_subparsers = catalog_parser.add_subparsers(dest="catalog_command", required=True)
+    catalog_prepare_parser = catalog_subparsers.add_parser(
+        "prepare", help="Copy one approved taxon into a repository catalog"
+    )
+    catalog_prepare_parser.add_argument("taxon_id", type=int)
+    catalog_prepare_parser.add_argument(
+        "--source-catalog",
+        type=Path,
+        required=True,
+        help="Approved local catalog containing the taxon",
+    )
+    catalog_prepare_parser.add_argument(
+        "--catalog",
+        type=Path,
+        default=Path("catalog"),
+        help="Repository catalog to update (default: catalog)",
+    )
+    catalog_prepare_parser.set_defaults(func=catalog_prepare_command)
+    catalog_validate_parser = catalog_subparsers.add_parser(
+        "validate", help="Validate catalog files, privacy, and immutability"
+    )
+    catalog_validate_parser.add_argument(
+        "--catalog",
+        type=Path,
+        default=Path("catalog"),
+        help="Catalog to validate (default: catalog)",
+    )
+    catalog_validate_parser.add_argument(
+        "--base-catalog",
+        type=Path,
+        help="Optional base catalog used to enforce add-only changes",
+    )
+    catalog_validate_parser.set_defaults(func=catalog_validate_command)
 
     config_parser = subparsers.add_parser("config", help="Validate application configuration")
     config_subparsers = config_parser.add_subparsers(dest="config_command", required=True)

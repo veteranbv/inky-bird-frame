@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import shutil
 import subprocess
 import unittest
 from pathlib import Path
@@ -17,6 +18,7 @@ from inky_bird_frame.publisher import (
     _validate_checkout,
     run_catalog_publish,
     sync_public_catalog,
+    validate_catalog_additions,
     validate_public_catalog,
 )
 
@@ -239,6 +241,85 @@ class PublisherTests(unittest.TestCase):
             self.assertEqual(repeated["published"], [])
             self.assertEqual(repeated["already_present"], [1])
 
+    def test_syncs_only_requested_taxa_for_a_contribution(self) -> None:
+        with TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            source = root / "source"
+            destination = root / "destination"
+            _create_species(source, 1, "First Bird")
+            _create_species(source, 2, "Second Bird")
+
+            result = sync_public_catalog(source, destination, taxon_ids={2})
+
+            self.assertEqual(
+                result["published"],
+                [
+                    {
+                        "taxon_id": 2,
+                        "common_name": "Second Bird",
+                        "scientific_name": "Avis exemplaris",
+                        "slug": "second-bird",
+                    }
+                ],
+            )
+            self.assertEqual(
+                [entry.taxon_id for entry in validate_public_catalog(destination)],
+                [2],
+            )
+
+    def test_rejects_a_requested_taxon_missing_from_the_source_catalog(self) -> None:
+        with TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            source = root / "source"
+            destination = root / "destination"
+            _create_species(source, 1, "Example Bird")
+
+            with self.assertRaisesRegex(CatalogPublishError, "does not contain taxon 2"):
+                sync_public_catalog(source, destination, taxon_ids={2})
+            self.assertFalse(destination.exists())
+
+    def test_validates_add_only_catalog_contributions(self) -> None:
+        with TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            base = root / "base"
+            candidate = root / "candidate"
+            _create_species(base, 1, "Existing Bird")
+            shutil.copytree(base, candidate)
+            _create_species(candidate, 2, "New Bird")
+
+            additions = validate_catalog_additions(base, candidate)
+
+            self.assertEqual([entry.taxon_id for entry in additions], [2])
+
+    def test_rejects_changes_to_base_catalog_taxa(self) -> None:
+        with TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            base = root / "base"
+            candidate = root / "candidate"
+            _create_species(base, 1, "Existing Bird")
+            shutil.copytree(base, candidate)
+            portrait = candidate / "species/1-existing-bird/portrait.png"
+            Image.new("RGB", (1200, 1600), "black").save(portrait)
+            manifest_path = candidate / "species/1-existing-bird/manifest.json"
+            manifest = json.loads(manifest_path.read_text())
+            manifest["assets"]["portrait"]["sha256"] = sha256_file(portrait)
+            write_json_atomic(manifest_path, manifest)
+            rebuild_catalog_index(candidate)
+
+            with self.assertRaisesRegex(CatalogPublishError, "changed immutable taxon 1"):
+                validate_catalog_additions(base, candidate)
+
+    def test_rejects_removing_a_base_catalog_taxon(self) -> None:
+        with TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            base = root / "base"
+            candidate = root / "candidate"
+            _create_species(base, 1, "Existing Bird")
+            _create_species(candidate, 2, "Different Bird")
+
+            with self.assertRaisesRegex(CatalogPublishError, "removed immutable taxon 1"):
+                validate_catalog_additions(base, candidate)
+
     def test_rejects_private_manifest_fields(self) -> None:
         with TemporaryDirectory() as temporary:
             catalog = Path(temporary) / "catalog"
@@ -249,6 +330,15 @@ class PublisherTests(unittest.TestCase):
             write_json_atomic(manifest_path, manifest)
 
             with self.assertRaisesRegex(CatalogPublishError, "Private field"):
+                validate_public_catalog(catalog)
+
+    def test_rejects_unexpected_catalog_root_files(self) -> None:
+        with TemporaryDirectory() as temporary:
+            catalog = Path(temporary) / "catalog"
+            _create_species(catalog, 1, "Example Bird")
+            (catalog / "notes.txt").write_text("not part of the catalog contract")
+
+            with self.assertRaisesRegex(CatalogPublishError, "Unexpected catalog root entries"):
                 validate_public_catalog(catalog)
 
     def test_rejects_windows_unc_paths(self) -> None:
