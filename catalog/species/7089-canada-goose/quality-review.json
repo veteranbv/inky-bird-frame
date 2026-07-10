@@ -1,0 +1,25 @@
+{
+  "anatomy_accuracy": 5,
+  "composition_quality": 5,
+  "findings": [
+    "Passed visual anatomy check: the principal bird has one head, one broad black bill, two legs, two webbed feet, two wings (one visible, one occluded), and one tail; eye, bill profile, neck, breast, wing feathering, legs, and feet are consistent with Canada Goose.",
+    "The black head and long neck, white cheek patches joined below the chin, tan-gray breast, brown back/wings, black legs/feet, and dark tail with contrasting pale rump/undertail treatment agree with the field-reference photos and verified descriptions.",
+    "All visible text is correct: Canada Goose; Branta canadensis; Anatidae; length 76\u2013110 cm (29.9\u201343.3 in); wingspan 127\u2013170 cm (50.0\u201366.9 in); and weight 3.0\u20139.0 kg (105.8\u2013317.5 oz). Habitat, behavior, and field-mark text are supported by the verified guide pages.",
+    "No place name, ZIP code, coordinates, map, or local-observation detail appears on the candidate plate.",
+    "No concrete material species, anatomy, or text issues found."
+  ],
+  "location_free": true,
+  "passed": true,
+  "species_accuracy": 5,
+  "text_accuracy": 5,
+  "verification_sources": [
+    {
+      "title": "Canada Goose Identification \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Canada_Goose/id"
+    },
+    {
+      "title": "Canada Goose \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/canada-goose"
+    }
+  ]
+}
