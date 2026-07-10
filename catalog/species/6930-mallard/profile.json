@@ -1,0 +1,38 @@
+{
+  "behavior": "Dabbling duck; feeds by tipping forward in shallow water and grazing, and only rarely dives.",
+  "common_name": "Mallard",
+  "family": "Anatidae",
+  "field_marks": [
+    "Large, hefty duck with a rounded head and broad, flat bill.",
+    "Breeding male: iridescent green head, yellow bill, narrow white neck ring, chestnut-brown breast, and gray body.",
+    "Female and juvenile: mottled brown overall with an orange bill marked in black.",
+    "Both sexes show a metallic blue wing speculum bordered in white.",
+    "Tail is short and blunt; males show a black rear and curled black central tail feathers in breeding plumage.",
+    "Orange legs and webbed feet."
+  ],
+  "habitat": "Almost any natural or artificial wetland, including marshes, ponds, lakes, rivers, estuaries, and sheltered coastal waters; also uses nearby open fields and grassland.",
+  "measurements": {
+    "length": "50\u201365 cm (19.7\u201325.6 in)",
+    "weight": "1.0\u20131.3 kg (35.3\u201345.9 oz)",
+    "wingspan": "82\u201395 cm (32.3\u201337.4 in)"
+  },
+  "palette": [
+    "iridescent green",
+    "chestnut brown",
+    "mottled tan-brown",
+    "slate gray",
+    "speculum blue"
+  ],
+  "scientific_name": "Anas platyrhynchos",
+  "sources": [
+    {
+      "title": "Mallard Identification \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Mallard/id"
+    },
+    {
+      "title": "Mallard \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/mallard"
+    }
+  ],
+  "taxon_id": 6930
+}

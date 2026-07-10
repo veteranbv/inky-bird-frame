@@ -1,0 +1,142 @@
+{
+  "approved_at": "2026-07-10T16:52:07+00:00",
+  "assets": {
+    "display": {
+      "filename": "display.png",
+      "sha256": "0d03cc6113802bc58bead745f494f1347cdfe139535d3d41048110dadc7b2f13"
+    },
+    "portrait": {
+      "filename": "portrait.png",
+      "sha256": "e19000e6bc974e70945a70bd6f439c7f2ddc94f6f9f25e6e25d33ef4b1e0dad0"
+    }
+  },
+  "common_name": "Mallard",
+  "generation": {
+    "attempt": 1,
+    "generated_at": "2026-07-10T16:52:07+00:00",
+    "generator": "Codex subscription / built-in gpt-image-2",
+    "max_attempts": 3,
+    "prompt_version": "field-journal-v2"
+  },
+  "profile": {
+    "behavior": "Dabbling duck; feeds by tipping forward in shallow water and grazing, and only rarely dives.",
+    "common_name": "Mallard",
+    "family": "Anatidae",
+    "field_marks": [
+      "Large, hefty duck with a rounded head and broad, flat bill.",
+      "Breeding male: iridescent green head, yellow bill, narrow white neck ring, chestnut-brown breast, and gray body.",
+      "Female and juvenile: mottled brown overall with an orange bill marked in black.",
+      "Both sexes show a metallic blue wing speculum bordered in white.",
+      "Tail is short and blunt; males show a black rear and curled black central tail feathers in breeding plumage.",
+      "Orange legs and webbed feet."
+    ],
+    "habitat": "Almost any natural or artificial wetland, including marshes, ponds, lakes, rivers, estuaries, and sheltered coastal waters; also uses nearby open fields and grassland.",
+    "measurements": {
+      "length": "50\u201365 cm (19.7\u201325.6 in)",
+      "weight": "1.0\u20131.3 kg (35.3\u201345.9 oz)",
+      "wingspan": "82\u201395 cm (32.3\u201337.4 in)"
+    },
+    "palette": [
+      "iridescent green",
+      "chestnut brown",
+      "mottled tan-brown",
+      "slate gray",
+      "speculum blue"
+    ],
+    "scientific_name": "Anas platyrhynchos",
+    "sources": [
+      {
+        "title": "Mallard Identification \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Mallard/id"
+      },
+      {
+        "title": "Mallard \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/mallard"
+      }
+    ],
+    "taxon_id": 6930
+  },
+  "quality_review": {
+    "anatomy_accuracy": 5,
+    "composition_quality": 5,
+    "findings": [
+      "Identity is correct: the plate depicts a breeding male Mallard with one head, one broad yellow bill, two legs with orange webbed feet, one short tail with curled black central feathers, and two wings (the far wing is occluded in the lateral view).",
+      "Plumage and structure match the supplied Mallard references and live identification pages: iridescent green head, narrow white neck ring, chestnut breast, gray body, black rear, and blue speculum with white borders.",
+      "All visible text is accurate. Cornell lists Mallard as Anas platyrhynchos in Anatidae and gives the plate\u2019s exact 50\u201365 cm length, 82\u201395 cm wingspan, and 1.0\u20131.3 kg weight ranges. Audubon independently corroborates the species, major field marks, habitat, and broadly overlapping size ranges.",
+      "No place name, ZIP code, coordinates, map, or local-observation detail appears. No material species, anatomy, or text error found."
+    ],
+    "location_free": true,
+    "passed": true,
+    "species_accuracy": 5,
+    "text_accuracy": 5,
+    "verification_sources": [
+      {
+        "title": "Mallard Identification \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Mallard/id"
+      },
+      {
+        "title": "Mallard \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/mallard"
+      }
+    ]
+  },
+  "references": [
+    {
+      "attribution": "no rights reserved",
+      "filename": "01-32774133.jpeg",
+      "height": 1536,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/32774133/large.jpeg",
+      "license_code": "cc0",
+      "observation_id": 21203884,
+      "observer": "diegocarau",
+      "photo_id": 32774133,
+      "sha256": "bbd0597e2dd7d19c95a8c9b63f22267f2b99260ea7e001cde5771b29bd2f2df4",
+      "source_url": "https://www.inaturalist.org/observations/21203884",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) Michel Langeveld, some rights reserved (CC BY)",
+      "filename": "02-116793572.jpeg",
+      "height": 1365,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/116793572/large.jpeg",
+      "license_code": "cc-by",
+      "observation_id": 71710579,
+      "observer": "rudolphous",
+      "photo_id": 116793572,
+      "sha256": "30699941eb2f7c520b5610b8b636291527756df3ec3bffec93d34c3d18336eb5",
+      "source_url": "https://www.inaturalist.org/observations/71710579",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) Codrin Bucur, some rights reserved (CC BY)",
+      "filename": "03-177479326.jpeg",
+      "height": 1365,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/177479326/large.jpeg",
+      "license_code": "cc-by",
+      "observation_id": 105737491,
+      "observer": "codrin_bucur",
+      "photo_id": 177479326,
+      "sha256": "d988d0fedd953565fe3a845da8202d5013a02ad4cd8511fed2c7845f5ccc0204",
+      "source_url": "https://www.inaturalist.org/observations/105737491",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) euqirneto, some rights reserved (CC BY)",
+      "filename": "04-105367306.jpg",
+      "height": 1305,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/105367306/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 65460972,
+      "observer": "euqirneto",
+      "photo_id": 105367306,
+      "sha256": "e7fedfe54c4b6746e5a0f1b0640675d929bf92c3c2a90e3a0ee9b81cb61dfb60",
+      "source_url": "https://www.inaturalist.org/observations/65460972",
+      "width": 2048
+    }
+  ],
+  "schema_version": 1,
+  "scientific_name": "Anas platyrhynchos",
+  "slug": "mallard",
+  "status": "approved",
+  "taxon_id": 6930
+}
