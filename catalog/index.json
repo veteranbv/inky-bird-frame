@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-10T04:29:43+00:00",
+  "generated_at": "2026-07-10T04:38:31+00:00",
   "schema_version": 1,
   "species": [
     {
@@ -56,6 +56,17 @@
       "scientific_name": "Bombycilla cedrorum",
       "slug": "cedar-waxwing",
       "taxon_id": 7428
+    },
+    {
+      "approved_at": "2026-07-10T04:38:31+00:00",
+      "common_name": "Chipping Sparrow",
+      "display_path": "species/9135-chipping-sparrow/display.png",
+      "display_sha256": "a73d21a1e730501658c22eac35ed17f03ce018a6ed981470a3f71d5a3ab778bc",
+      "portrait_path": "species/9135-chipping-sparrow/portrait.png",
+      "portrait_sha256": "022c94be5c90f995630361b2ddd023edefb3819490d7cc221ce94f53ead94a1d",
+      "scientific_name": "Spizella passerina",
+      "slug": "chipping-sparrow",
+      "taxon_id": 9135
     },
     {
       "approved_at": "2026-07-10T03:40:16+00:00",
