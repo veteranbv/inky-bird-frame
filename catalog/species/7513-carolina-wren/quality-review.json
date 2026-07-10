@@ -1,0 +1,24 @@
+{
+  "anatomy_accuracy": 4,
+  "composition_quality": 5,
+  "findings": [
+    "Independent verification confirms the identity, scientific name, family, stated measurements, plumage, long white eyebrow, white throat/chin, dark slender downcurved bill, barred wings and tail, cocked tail posture, behavior, and habitat are consistent with Carolina Wren.",
+    "The bird has one head, one beak, two wings, two legs, and one tail. The far wing is partly occluded but anatomically implied; no duplicated or missing structures are present.",
+    "Minor illustration issue: the visible tarsi, toes, and claws are slightly oversized and more elongated than in the supplied reference photos; this is stylistic rather than a material species or anatomy error.",
+    "No place name, ZIP code, coordinates, map, or local-observation detail appears on the candidate plate."
+  ],
+  "location_free": true,
+  "passed": true,
+  "species_accuracy": 5,
+  "text_accuracy": 5,
+  "verification_sources": [
+    {
+      "title": "Carolina Wren Identification \u2014 Cornell Lab of Ornithology",
+      "url": "https://www.allaboutbirds.org/guide/Carolina_Wren/id"
+    },
+    {
+      "title": "Carolina Wren \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/carolina-wren"
+    }
+  ]
+}

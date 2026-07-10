@@ -1,0 +1,146 @@
+{
+  "approved_at": "2026-07-10T04:20:46+00:00",
+  "assets": {
+    "display": {
+      "filename": "display.png",
+      "sha256": "728fe57fdbdcbda8824710a13c26161802c942f5d294583feb1c451dc1385576"
+    },
+    "portrait": {
+      "filename": "portrait.png",
+      "sha256": "f5721839a075dc1e6d329544aab8a73b226a742ea64cd17230cfc718679645ef"
+    }
+  },
+  "common_name": "Carolina Wren",
+  "generation": {
+    "attempt": 1,
+    "generated_at": "2026-07-10T04:20:46+00:00",
+    "generator": "Codex subscription / built-in gpt-image-2",
+    "max_attempts": 3,
+    "prompt_version": "field-journal-v2"
+  },
+  "profile": {
+    "behavior": "Usually moves alone or in pairs through low, tangled cover, hopping, creeping, and probing bark, leaf litter, and crevices for invertebrates; often holds the tail cocked while foraging and gives loud, repeated whistled songs.",
+    "common_name": "Carolina Wren",
+    "family": "Troglodytidae",
+    "field_marks": [
+      "Small, compact wren with a round body and large-headed look",
+      "Rich reddish-brown to chestnut upperparts",
+      "Warm buffy-orange underparts with a clean white throat and chin",
+      "Long, bold white eyebrow stripe above a dark eye",
+      "Long, slender, slightly downcurved dark bill",
+      "Long tail, often cocked upward; wings and tail show dark barring"
+    ],
+    "habitat": "Dense, brushy cover in open woodland, forest understory and edges, thickets, ravines, overgrown farmland, gardens, and shrubby residential areas.",
+    "measurements": {
+      "length": "4.7\u20135.5 in (12\u201314 cm)",
+      "weight": "0.6\u20130.8 oz (18\u201322 g)",
+      "wingspan": "11.4 in (29 cm)"
+    },
+    "palette": [
+      "reddish-brown",
+      "chestnut",
+      "buffy orange",
+      "white",
+      "dark brown"
+    ],
+    "scientific_name": "Thryothorus ludovicianus",
+    "sources": [
+      {
+        "title": "Carolina Wren Identification \u2014 Cornell Lab of Ornithology",
+        "url": "https://www.allaboutbirds.org/guide/Carolina_Wren/id"
+      },
+      {
+        "title": "Carolina Wren Life History \u2014 Cornell Lab of Ornithology",
+        "url": "https://www.allaboutbirds.org/guide/Carolina_Wren/lifehistory"
+      },
+      {
+        "title": "Carolina Wren \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/carolina-wren"
+      }
+    ],
+    "taxon_id": 7513
+  },
+  "quality_review": {
+    "anatomy_accuracy": 4,
+    "composition_quality": 5,
+    "findings": [
+      "Independent verification confirms the identity, scientific name, family, stated measurements, plumage, long white eyebrow, white throat/chin, dark slender downcurved bill, barred wings and tail, cocked tail posture, behavior, and habitat are consistent with Carolina Wren.",
+      "The bird has one head, one beak, two wings, two legs, and one tail. The far wing is partly occluded but anatomically implied; no duplicated or missing structures are present.",
+      "Minor illustration issue: the visible tarsi, toes, and claws are slightly oversized and more elongated than in the supplied reference photos; this is stylistic rather than a material species or anatomy error.",
+      "No place name, ZIP code, coordinates, map, or local-observation detail appears on the candidate plate."
+    ],
+    "location_free": true,
+    "passed": true,
+    "species_accuracy": 5,
+    "text_accuracy": 5,
+    "verification_sources": [
+      {
+        "title": "Carolina Wren Identification \u2014 Cornell Lab of Ornithology",
+        "url": "https://www.allaboutbirds.org/guide/Carolina_Wren/id"
+      },
+      {
+        "title": "Carolina Wren \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/carolina-wren"
+      }
+    ]
+  },
+  "references": [
+    {
+      "attribution": "(c) Mark Apgar, some rights reserved (CC BY)",
+      "filename": "01-68118703.jpg",
+      "height": 1881,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/68118703/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 42898609,
+      "observer": "apgarm",
+      "photo_id": 68118703,
+      "sha256": "5d3283d65a2a5a5e4f135057c124deab3ffefb5c3b9abcea9d412fec9f8f5512",
+      "source_url": "https://www.inaturalist.org/observations/42898609",
+      "width": 1881
+    },
+    {
+      "attribution": "no rights reserved",
+      "filename": "02-95382849.jpeg",
+      "height": 1460,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/95382849/large.jpeg",
+      "license_code": "cc0",
+      "observation_id": 59685114,
+      "observer": "wildreturn",
+      "photo_id": 95382849,
+      "sha256": "7c069b2cd257ef5d1901e5fa4ca26f0f1dee36e71ee7241b3d93eab97c541961",
+      "source_url": "https://www.inaturalist.org/observations/59685114",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) diana schwartz, some rights reserved (CC BY)",
+      "filename": "03-451942870.jpeg",
+      "height": 2048,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/451942870/large.jpeg",
+      "license_code": "cc-by",
+      "observation_id": 252447587,
+      "observer": "diana1947",
+      "photo_id": 451942870,
+      "sha256": "f09226b9abc8652e807d32af63ef7a0828fe611fee8a92b87e3a065a042ee9dd",
+      "source_url": "https://www.inaturalist.org/observations/252447587",
+      "width": 1152
+    },
+    {
+      "attribution": "(c) Dani Alba, some rights reserved (CC BY)",
+      "filename": "04-588745837.jpg",
+      "height": 1536,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/588745837/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 325198590,
+      "observer": "tyrannidae",
+      "photo_id": 588745837,
+      "sha256": "69601e33ba236c450f2478a8923d45fac48c09d18ca772f36ccda17cf1dc2864",
+      "source_url": "https://www.inaturalist.org/observations/325198590",
+      "width": 2048
+    }
+  ],
+  "schema_version": 1,
+  "scientific_name": "Thryothorus ludovicianus",
+  "slug": "carolina-wren",
+  "status": "approved",
+  "taxon_id": 7513
+}
