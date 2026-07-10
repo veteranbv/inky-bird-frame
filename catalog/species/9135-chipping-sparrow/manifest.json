@@ -1,0 +1,145 @@
+{
+  "approved_at": "2026-07-10T04:38:31+00:00",
+  "assets": {
+    "display": {
+      "filename": "display.png",
+      "sha256": "a73d21a1e730501658c22eac35ed17f03ce018a6ed981470a3f71d5a3ab778bc"
+    },
+    "portrait": {
+      "filename": "portrait.png",
+      "sha256": "022c94be5c90f995630361b2ddd023edefb3819490d7cc221ce94f53ead94a1d"
+    }
+  },
+  "common_name": "Chipping Sparrow",
+  "generation": {
+    "attempt": 1,
+    "generated_at": "2026-07-10T04:38:31+00:00",
+    "generator": "Codex subscription / built-in gpt-image-2",
+    "max_attempts": 3,
+    "prompt_version": "field-journal-v2"
+  },
+  "profile": {
+    "behavior": "Ground-forages for seeds, taking cover in shrubs; often forms loose flocks outside breeding season and gives a long, dry trill from elevated perches.",
+    "common_name": "Chipping Sparrow",
+    "family": "Passerellidae",
+    "field_marks": [
+      "Small, slender sparrow with a fairly long tail and a small conical bill.",
+      "Bright rufous to chestnut crown in breeding adults; browner and subdued outside breeding season.",
+      "Crisp dark line through the eye, set against a pale gray face.",
+      "Clean, unstreaked pale gray underparts in adults.",
+      "Brown-and-black streaked back and wings; gray rump is visible in flight.",
+      "Bill is dark in breeding plumage and often pinkish in nonbreeding plumage."
+    ],
+    "habitat": "Open woodlands and forest edges with grassy clearings; also park-like tree-and-grass settings, shrubby borders, and gardens with trees.",
+    "measurements": {
+      "length": "4.7\u20135.9 in (12\u201315 cm)",
+      "weight": "0.4\u20130.6 oz (11\u201316 g)",
+      "wingspan": "8.3 in (21 cm)"
+    },
+    "palette": [
+      "rufous chestnut",
+      "pale gray",
+      "black",
+      "warm brown",
+      "buff white"
+    ],
+    "scientific_name": "Spizella passerina",
+    "sources": [
+      {
+        "title": "Chipping Sparrow Identification \u2014 Cornell Lab of Ornithology",
+        "url": "https://www.allaboutbirds.org/guide/Chipping_Sparrow/id"
+      },
+      {
+        "title": "Chipping Sparrow Life History \u2014 Cornell Lab of Ornithology",
+        "url": "https://www.allaboutbirds.org/guide/Chipping_Sparrow/lifehistory"
+      },
+      {
+        "title": "Chipping Sparrow \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/chipping-sparrow"
+      }
+    ],
+    "taxon_id": 9135
+  },
+  "quality_review": {
+    "anatomy_accuracy": 5,
+    "composition_quality": 5,
+    "findings": [],
+    "location_free": true,
+    "passed": true,
+    "species_accuracy": 5,
+    "text_accuracy": 5,
+    "verification_sources": [
+      {
+        "title": "Chipping Sparrow Identification \u2014 Cornell Lab of Ornithology",
+        "url": "https://www.allaboutbirds.org/guide/Chipping_Sparrow/id"
+      },
+      {
+        "title": "Chipping Sparrow \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/chipping-sparrow"
+      },
+      {
+        "title": "Chipping Sparrow \u2014 eBird",
+        "url": "https://ebird.org/species/chispa/US-SD-033"
+      }
+    ]
+  },
+  "references": [
+    {
+      "attribution": "(c) Shirley Zundell, some rights reserved (CC BY)",
+      "filename": "01-8717084.jpeg",
+      "height": 1257,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/8717084/large.jpeg",
+      "license_code": "cc-by",
+      "observation_id": 6843333,
+      "observer": "sdz456",
+      "photo_id": 8717084,
+      "sha256": "89857087b1ff6671442b147d34bcad94b4b4a0a4c869936e9e2af07719c51f69",
+      "source_url": "https://www.inaturalist.org/observations/6843333",
+      "width": 2048
+    },
+    {
+      "attribution": "no rights reserved",
+      "filename": "02-198992636.jpg",
+      "height": 1536,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/198992636/large.jpg",
+      "license_code": "cc0",
+      "observation_id": 117809422,
+      "observer": "k-simpkins",
+      "photo_id": 198992636,
+      "sha256": "6d803343e68262fd6d85d9d0ffb94a3c00477f8ac7f84f25e01965d91aa26867",
+      "source_url": "https://www.inaturalist.org/observations/117809422",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) Brent Cox, some rights reserved (CC BY)",
+      "filename": "03-354562309.jpg",
+      "height": 1280,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/354562309/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 200912489,
+      "observer": "brent329",
+      "photo_id": 354562309,
+      "sha256": "1566d68dab78d40d58f592502eee7615d1717ceda00f2f2a73ec2a4963389202",
+      "source_url": "https://www.inaturalist.org/observations/200912489",
+      "width": 2048
+    },
+    {
+      "attribution": "no rights reserved",
+      "filename": "04-248210057.jpg",
+      "height": 1609,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/248210057/large.jpg",
+      "license_code": "cc0",
+      "observation_id": 144599194,
+      "observer": "w_mark_c",
+      "photo_id": 248210057,
+      "sha256": "5673e3dfc0f5d524bef817ad5f4ee55813f3c7ef3d891c37a410d381687fb9ae",
+      "source_url": "https://www.inaturalist.org/observations/144599194",
+      "width": 2048
+    }
+  ],
+  "schema_version": 1,
+  "scientific_name": "Spizella passerina",
+  "slug": "chipping-sparrow",
+  "status": "approved",
+  "taxon_id": 9135
+}
