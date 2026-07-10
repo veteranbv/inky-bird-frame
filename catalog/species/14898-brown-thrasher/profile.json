@@ -1,0 +1,38 @@
+{
+  "behavior": "Secretive ground forager that works leaf litter with quick sideways bill sweeps; also sings from exposed shrubs or treetops.",
+  "common_name": "Brown Thrasher",
+  "family": "Mimidae",
+  "field_marks": [
+    "Large, slender songbird with a long rounded tail",
+    "Rufous-brown upperparts and gray-brown face",
+    "Bright yellow eye",
+    "Long, dark bill with a slight downward curve",
+    "Whitish underparts marked with bold dark streaks",
+    "Two crisp black-and-white wing bars"
+  ],
+  "habitat": "Dense brush and low cover: thickets, hedgerows, scrubby fields, forest edges, regenerating woods, and shrubby undergrowth.",
+  "measurements": {
+    "length": "23\u201330 cm (9.1\u201311.8 in)",
+    "weight": "61\u201389 g (2.1\u20133.1 oz)",
+    "wingspan": "29\u201332 cm (11.4\u201312.6 in)"
+  },
+  "palette": [
+    "rufous brown",
+    "gray-brown",
+    "whitish cream",
+    "black",
+    "bright yellow"
+  ],
+  "scientific_name": "Toxostoma rufum",
+  "sources": [
+    {
+      "title": "Brown Thrasher Identification \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Brown_Thrasher/id"
+    },
+    {
+      "title": "Brown Thrasher \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/brown-thrasher"
+    }
+  ],
+  "taxon_id": 14898
+}
