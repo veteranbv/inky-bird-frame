@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-10T05:12:49+00:00",
+  "generated_at": "2026-07-10T13:38:02+00:00",
   "schema_version": 1,
   "species": [
     {
@@ -100,6 +100,17 @@
       "scientific_name": "Ardea herodias",
       "slug": "great-blue-heron",
       "taxon_id": 4956
+    },
+    {
+      "approved_at": "2026-07-10T13:38:02+00:00",
+      "common_name": "Green Heron",
+      "display_path": "species/5020-green-heron/display.png",
+      "display_sha256": "5840ab03e85c40347cc8a28a1cff6d25fa38ddcfec123d602efafb9709dac260",
+      "portrait_path": "species/5020-green-heron/portrait.png",
+      "portrait_sha256": "f046c871bf36779528abd39773ce778d3281e6c7d35eab73b7a90ea4babe0955",
+      "scientific_name": "Butorides virescens",
+      "slug": "green-heron",
+      "taxon_id": 5020
     },
     {
       "approved_at": "2026-07-10T05:12:49+00:00",
