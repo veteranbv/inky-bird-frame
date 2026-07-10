@@ -1,0 +1,149 @@
+{
+  "approved_at": "2026-07-10T03:40:16+00:00",
+  "assets": {
+    "display": {
+      "filename": "display.png",
+      "sha256": "5975544180ea088f4f92d0524856aaf490bd6e189930582dce34630c91a2267b"
+    },
+    "portrait": {
+      "filename": "portrait.png",
+      "sha256": "0c71cc524b6d7f1cbe50459ff753f38bcc36db1bf8bc970fa9b8bd68b0bf1894"
+    }
+  },
+  "common_name": "Downy Woodpecker",
+  "generation": {
+    "attempt": 2,
+    "generated_at": "2026-07-10T03:40:16+00:00",
+    "generator": "Codex subscription / built-in gpt-image-2",
+    "max_attempts": 3,
+    "prompt_version": "field-journal-v2"
+  },
+  "profile": {
+    "behavior": "Active bark forager that moves over trunks, limbs, and weed stems, bracing with stiff tail feathers; often excavates or probes for insects and flies in an undulating, rising-and-falling pattern.",
+    "common_name": "Downy Woodpecker",
+    "family": "Picidae",
+    "field_marks": [
+      "Small, compact woodpecker with a blocky head and a notably short, straight chisel-like bill.",
+      "Bold black-and-white head stripes frame a dark eye.",
+      "Broad white stripe runs down the center of the black back.",
+      "Black wings are conspicuously checkered and spotted white.",
+      "White outer tail feathers usually show small black spots; males have a small red patch on the nape, while females lack it."
+    ],
+    "habitat": "Open deciduous woodland and wooded edges; also uses orchards, parks, gardens, and other tree-rich areas, especially where dead limbs or trunks provide foraging and nest-cavity sites.",
+    "measurements": {
+      "length": "5.5\u20136.7 in (14\u201317 cm)",
+      "weight": "0.7\u20131.0 oz (21\u201328 g)",
+      "wingspan": "9.8\u201311.8 in (25\u201330 cm)"
+    },
+    "palette": [
+      "black",
+      "white",
+      "soft gray",
+      "charcoal gray",
+      "red (male nape)"
+    ],
+    "scientific_name": "Dryobates pubescens",
+    "sources": [
+      {
+        "title": "Cornell Lab of Ornithology \u2014 Downy Woodpecker Identification",
+        "url": "https://www.allaboutbirds.org/guide/Downy_Woodpecker/id"
+      },
+      {
+        "title": "Cornell Lab of Ornithology \u2014 Downy Woodpecker Life History",
+        "url": "https://www.allaboutbirds.org/guide/Downy_Woodpecker/lifehistory"
+      },
+      {
+        "title": "Missouri Department of Conservation \u2014 Downy Woodpecker Field Guide",
+        "url": "https://mdc.mo.gov/discover-nature/field-guide/downy-woodpecker"
+      }
+    ],
+    "taxon_id": 792988
+  },
+  "quality_review": {
+    "anatomy_accuracy": 4,
+    "composition_quality": 5,
+    "findings": [
+      "Independent verification confirms the species, current scientific name, family, all three measurements, short chisel-like bill, striped head, white back stripe, spotted wings, black-spotted white outer tail feathers, and male red nape.",
+      "The illustration agrees closely with the reference photos: compact body, short bill, dark eye, male nape patch, checkered wing, stiff pointed tail, and zygodactyl feet are all plausibly rendered. One wing is visible in profile; the second is naturally occluded. The bird otherwise has one head, one beak, two legs, and one tail.",
+      "All visible plate text is factually supported. No place name, ZIP code, coordinates, map, or local-observation detail appears.",
+      "No material species, anatomy, or text errors found. Minor stylization in feather/leg detail does not compromise identification or scientific readability."
+    ],
+    "location_free": true,
+    "passed": true,
+    "species_accuracy": 5,
+    "text_accuracy": 5,
+    "verification_sources": [
+      {
+        "title": "Cornell Lab of Ornithology \u2014 Downy Woodpecker Identification",
+        "url": "https://www.allaboutbirds.org/guide/Downy_Woodpecker/id"
+      },
+      {
+        "title": "National Audubon Society \u2014 Downy Woodpecker Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/downy-woodpecker"
+      },
+      {
+        "title": "U.S. National Park Service \u2014 Downy Woodpecker",
+        "url": "https://www.nps.gov/shen/learn/nature/downy-woodpecker.htm"
+      }
+    ]
+  },
+  "references": [
+    {
+      "attribution": "(c) Alexis Williams, some rights reserved (CC BY)",
+      "filename": "01-177108982.jpeg",
+      "height": 1077,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/177108982/large.jpeg",
+      "license_code": "cc-by",
+      "observation_id": 105542582,
+      "observer": "ayatana_biophilium",
+      "photo_id": 177108982,
+      "sha256": "a09a5aaa65634bc2b2b22fb407054a1e5997ee4b13440778dffa1714271c5ec6",
+      "source_url": "https://www.inaturalist.org/observations/105542582",
+      "width": 1079
+    },
+    {
+      "attribution": "(c) Mila C., some rights reserved (CC BY)",
+      "filename": "02-169943089.jpeg",
+      "height": 1536,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/169943089/large.jpeg",
+      "license_code": "cc-by",
+      "observation_id": 101740561,
+      "observer": "pinefrog",
+      "photo_id": 169943089,
+      "sha256": "442f25e778ccef98ee27d962131ddb0b452b5ee3ae51e83c720c4aa687095013",
+      "source_url": "https://www.inaturalist.org/observations/101740561",
+      "width": 2048
+    },
+    {
+      "attribution": "no rights reserved",
+      "filename": "03-31579590.jpg",
+      "height": 2048,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/31579590/large.jpg",
+      "license_code": "cc0",
+      "observation_id": 20452544,
+      "observer": "schoenitz",
+      "photo_id": 31579590,
+      "sha256": "cf20f691c2e9d590168f97d898a28fa0fc9c582734aee43f9bf139bfdc30a4d0",
+      "source_url": "https://www.inaturalist.org/observations/20452544",
+      "width": 2048
+    },
+    {
+      "attribution": "no rights reserved",
+      "filename": "04-635214136.jpg",
+      "height": 1536,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/635214136/large.jpg",
+      "license_code": "cc0",
+      "observation_id": 348306970,
+      "observer": "joy4birds",
+      "photo_id": 635214136,
+      "sha256": "e1dfb11ca8b8c5db5b1c098bd06dd214a452638d3dcf124b16dd54379db10c42",
+      "source_url": "https://www.inaturalist.org/observations/348306970",
+      "width": 2048
+    }
+  ],
+  "schema_version": 1,
+  "scientific_name": "Dryobates pubescens",
+  "slug": "downy-woodpecker",
+  "status": "approved",
+  "taxon_id": 792988
+}
