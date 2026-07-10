@@ -1,0 +1,24 @@
+{
+  "anatomy_accuracy": 4,
+  "composition_quality": 5,
+  "findings": [
+    "Independent verification supports House Finch (Haemorhous mexicanus), family Fringillidae, and the printed length, weight, and wingspan values.",
+    "The depicted adult male correctly shows a stout, curved-profile conical bill; dark eye; fine dark legs and feet; rosy-red forehead, eyebrow, throat, and upper breast; and streaky brown back, wings, flanks, and tail. The female/immature head study is appropriately gray-brown and unstreaked red.",
+    "The illustrated bird has one head, one beak, two wings (one is occluded by the near wing), two legs, and one long, shallowly notched tail. Its bill is slightly stylized/oversized but remains within an acceptable House Finch depiction.",
+    "All visible factual text is consistent with the verified identification, measurements, field marks, behavior, diet, and habitat. No place name, ZIP code, coordinates, map, or local-observation detail appears."
+  ],
+  "location_free": true,
+  "passed": true,
+  "species_accuracy": 5,
+  "text_accuracy": 5,
+  "verification_sources": [
+    {
+      "title": "House Finch Identification \u2014 All About Birds, Cornell Lab of Ornithology",
+      "url": "https://www.allaboutbirds.org/guide/House_Finch/id"
+    },
+    {
+      "title": "House Finch \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/house-finch"
+    }
+  ]
+}
