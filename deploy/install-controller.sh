@@ -10,7 +10,10 @@ root=$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)
 app_dir=${INKY_BIRD_APP_DIR:-"${HOME}/Services/inky-bird-frame"}
 support_dir=${INKY_BIRD_SUPPORT_DIR:-"${HOME}/Library/Application Support/Inky Bird Frame"}
 config_path=${INKY_BIRD_CONFIG_PATH:-"${support_dir}/config.toml"}
-uv_bin=${UV_BIN:-/opt/homebrew/bin/uv}
+uv_bin=${UV_BIN:-}
+if [ -z "${uv_bin}" ]; then
+  uv_bin=$(command -v uv || true)
+fi
 python_version=${INKY_BIRD_PYTHON_VERSION:-3.11}
 log_dir="${support_dir}/logs"
 agents_dir="${HOME}/Library/LaunchAgents"
@@ -50,16 +53,20 @@ if [ ! -f "${config_path}" ]; then
   exit 1
 fi
 chmod 600 "${config_path}"
-if [ ! -x "${uv_bin}" ]; then
-  echo "uv is not executable: ${uv_bin}" >&2
+if [ -z "${uv_bin}" ] || [ ! -x "${uv_bin}" ]; then
+  echo "uv is not executable. Install uv or set UV_BIN." >&2
   exit 1
 fi
 
-mkdir -p "${app_dir}" "${support_dir}" "${log_dir}" "${agents_dir}"
-rsync -a --delete "${root}/src/" "${app_dir}/src/"
-for file in pyproject.toml uv.lock README.md LICENSE; do
-  install -m 0644 "${root}/${file}" "${app_dir}/${file}"
-done
+mkdir -p "${app_dir}/catalog" "${app_dir}/deploy" "${support_dir}" "${log_dir}" "${agents_dir}"
+if [ "${root}" != "${app_dir}" ]; then
+  rsync -a --delete "${root}/src/" "${app_dir}/src/"
+  rsync -a "${root}/catalog/" "${app_dir}/catalog/"
+  install -m 0755 "${root}/deploy/install-controller.sh" "${app_dir}/deploy/"
+  for file in pyproject.toml uv.lock README.md LICENSE; do
+    install -m 0644 "${root}/${file}" "${app_dir}/${file}"
+  done
+fi
 
 "${uv_bin}" sync --project "${app_dir}" --python "${python_version}" --extra controller --locked
 
@@ -71,7 +78,7 @@ import plistlib
 import sys
 from pathlib import Path
 
-from inky_bird_frame.catalog import catalog_state_lock, rebuild_catalog_index
+from inky_bird_frame.catalog import catalog_state_lock
 from inky_bird_frame.config import load_config
 from inky_bird_frame.errors import ConfigurationError
 from inky_bird_frame.publisher import sync_public_catalog
@@ -101,8 +108,9 @@ if environment_destinations:
         f"private config file; replace url_env for: {names}"
     )
 schedule = config.schedule
+config.controller.workspace_dir.mkdir(parents=True, exist_ok=True)
+config.controller.catalog_dir.parent.mkdir(parents=True, exist_ok=True)
 with catalog_state_lock(config.controller.state_dir):
-    rebuild_catalog_index(config.controller.catalog_dir)
     sync_public_catalog(root / "catalog", config.controller.catalog_dir)
 
 common = {

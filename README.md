@@ -137,23 +137,37 @@ controller HTTP service.
 The panel reports a `1600x1200` landscape canvas. Plates are authored at
 `1200x1600` and rotated left for a portrait-mounted frame.
 
-## Quick start
+## Install
+
+The [complete installation guide](docs/installation.md) starts with blank
+macOS, Ubuntu, Raspberry Pi OS, and Raspberry Pi display-node systems. It covers
+the support matrix, Wi-Fi and SSH prerequisites, Codex authentication, hardware
+assembly, private TOML configuration, native startup services, reboot recovery,
+updates, uninstall, and focused troubleshooting.
+
+The commissioning flow is intentionally staged:
+
+1. prepare and diagnose the controller;
+2. flash the display Pi and attach PIM774;
+3. show the included Eastern Bluebird without AI or a controller;
+4. prove the Pi can reach the controller; and
+5. enable live rotation and automatic generation.
+
+Setup always previews first. Apply the same command with `--yes`, then require a
+clean doctor result:
 
 ```bash
-uv sync --extra dev --locked
-cp config.example.toml config.toml
-uv run inky-bird-frame discover --config config.toml
-```
+inky-bird-frame setup controller --config /path/to/config.toml
+inky-bird-frame setup controller --config /path/to/config.toml --yes
+inky-bird-frame doctor controller --config /path/to/config.toml
 
-Set the private discovery ZIP, radius, rolling window, local paths, controller
-URL, schedules, display geometry, and rotation policy in `config.toml`. The file
-is ignored by Git and must remain private.
-
-On the Pi, install the hardware extra into the Python environment that contains
-the Pimoroni drivers:
-
-```bash
-python -m pip install -e '.[inky]'
+inky-bird-frame setup display --config /path/to/config.toml \
+  --source-dir /path/to/inky-bird-frame \
+  --venv "$HOME/.virtualenvs/pimoroni"
+inky-bird-frame setup display --config /path/to/config.toml \
+  --source-dir /path/to/inky-bird-frame \
+  --venv "$HOME/.virtualenvs/pimoroni" --yes
+inky-bird-frame doctor display --config /path/to/config.toml
 ```
 
 ## Operate
@@ -262,7 +276,9 @@ uv run mypy
 uv run pytest
 ```
 
-See [`docs/architecture.md`](docs/architecture.md),
+See [`docs/installation.md`](docs/installation.md),
+[`docs/troubleshooting.md`](docs/troubleshooting.md),
+[`docs/architecture.md`](docs/architecture.md),
 [`docs/operations.md`](docs/operations.md),
 [`docs/notifications.md`](docs/notifications.md), and
 [`CONTRIBUTING.md`](CONTRIBUTING.md) for design, deployment, and contribution
