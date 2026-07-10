@@ -102,9 +102,9 @@ display_startup_delay_seconds = 30
             config = load_config(path)
             units = display_systemd_units(
                 config,
-                executable=Path("/home/frame/Pimoroni Env/bin/inky-bird-frame"),
+                executable=Path("/home/frame/Pimoroni $Env/bin/inky-bird-frame"),
                 app_dir=Path("/home/frame/Inky Bird Frame"),
-                config_path=Path("/home/frame/config.toml"),
+                config_path=Path("/home/frame/$config.toml"),
                 user="frame",
             )
 
@@ -112,7 +112,8 @@ display_startup_delay_seconds = 30
         timer = units["inky-bird-frame-display.timer"]
         self.assertEqual(len(units), 2)
         self.assertIn("WorkingDirectory=/home/frame/Inky Bird Frame", service)
-        self.assertIn('"/home/frame/Pimoroni Env/bin/inky-bird-frame"', service)
+        self.assertIn('"/home/frame/Pimoroni $$Env/bin/inky-bird-frame"', service)
+        self.assertIn('"/home/frame/$$config.toml"', service)
         self.assertIn("OnActiveSec=30s", timer)
         self.assertIn("OnUnitActiveSec=180s", timer)
         self.assertIn("RandomizedDelaySec=7s", timer)
@@ -132,6 +133,35 @@ display_startup_delay_seconds = 30
         self.assertFalse(result["applied"])
         self.assertIn("--yes", str(result["confirmation"]))
         run.assert_not_called()
+
+    def test_setup_uses_explicit_source_checkout(self) -> None:
+        with TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            codex = root / "codex"
+            codex.touch(mode=0o700)
+            config = write_config(root, codex)
+            source = root / "source"
+            script = source / "deploy/install-controller.sh"
+            script.parent.mkdir(parents=True)
+            script.touch(mode=0o700)
+            resolved_source = source.resolve()
+            resolved_script = script.resolve()
+            with (
+                patch("inky_bird_frame.installation.platform.system", return_value="Darwin"),
+                patch(
+                    "inky_bird_frame.installation.subprocess.run",
+                    return_value=subprocess.CompletedProcess([], 0, "installed", ""),
+                ) as run,
+            ):
+                result = setup(
+                    InstallationRole.CONTROLLER,
+                    config,
+                    apply=True,
+                    source_dir=source,
+                )
+
+        self.assertEqual(run.call_args.args[0], [str(resolved_script)])
+        self.assertEqual(result["source"], str(resolved_source))
 
     def test_setup_apply_passes_only_explicit_overrides(self) -> None:
         with TemporaryDirectory() as temporary:
@@ -203,6 +233,36 @@ display_startup_delay_seconds = 30
 
         self.assertTrue(report.ready)
         self.assertTrue(all(check.status is not CheckStatus.FAIL for check in report.checks))
+
+    def test_controller_doctor_reports_failed_scheduled_job(self) -> None:
+        passing = DiagnosticCheck("mock", CheckStatus.PASS, "ready")
+
+        def job_state(command: list[str], *, timeout_seconds: int = 15) -> CommandResult:
+            del timeout_seconds
+            if command[-1] == "inky-bird-frame-generate.service":
+                return CommandResult(0, "failed", "")
+            return CommandResult(1, "inactive", "")
+
+        with TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            codex = root / "codex"
+            codex.touch(mode=0o700)
+            config = write_config(root, codex)
+            with (
+                patch("inky_bird_frame.installation.platform.system", return_value="Linux"),
+                patch("inky_bird_frame.installation.shutil.which", return_value="/bin/systemctl"),
+                patch("inky_bird_frame.installation._codex_auth_check", return_value=passing),
+                patch("inky_bird_frame.installation._systemd_unit_check", return_value=passing),
+                patch("inky_bird_frame.installation._run", side_effect=job_state),
+                patch(
+                    "inky_bird_frame.installation._controller_health_check", return_value=passing
+                ),
+            ):
+                report = doctor(InstallationRole.CONTROLLER, config)
+
+        check = next(item for item in report.checks if item.check_id == "job_generate")
+        self.assertEqual(check.status, CheckStatus.FAIL)
+        self.assertFalse(report.ready)
 
     def test_display_doctor_keeps_collecting_after_hardware_failure(self) -> None:
         passing = DiagnosticCheck("mock", CheckStatus.PASS, "ready")

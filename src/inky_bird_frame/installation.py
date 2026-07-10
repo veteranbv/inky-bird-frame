@@ -193,8 +193,8 @@ def display_systemd_units(
 ) -> dict[str, str]:
     """Render the display service and timer from validated configuration."""
     exec_start = (
-        f"{_systemd_quote(str(executable))} display-cycle "
-        f"--config {_systemd_quote(str(config_path))}"
+        f"{_systemd_quote(str(executable), escape_dollars=True)} display-cycle "
+        f"--config {_systemd_quote(str(config_path), escape_dollars=True)}"
     )
     service = f"""[Unit]
 Description=Rotate the next approved Inky Bird Frame plate
@@ -406,14 +406,44 @@ def _systemd_unit_check(unit: str) -> DiagnosticCheck:
     )
 
 
+def _systemd_last_run_check(
+    unit: str,
+    *,
+    check_id: str,
+    description: str,
+) -> DiagnosticCheck:
+    result = _run(["systemctl", "is-failed", unit])
+    if result.returncode == 0:
+        return _fail(
+            check_id,
+            f"The most recent {description} failed",
+            remediation=f"Inspect: journalctl -u {unit}",
+        )
+    if result.returncode == 1 and result.stdout:
+        return _pass(check_id, f"The {description} service is not failed")
+    detail = "\n".join(part for part in (result.stdout, result.stderr) if part)
+    return _fail(
+        check_id,
+        f"The {description} service state could not be determined",
+        detail=detail or f"systemctl exited with status {result.returncode}",
+        remediation=f"Inspect: systemctl status {unit}",
+    )
+
+
 def _systemd_controller_checks(config: AppConfig) -> Iterable[DiagnosticCheck]:
     yield _systemd_unit_check("inky-bird-frame-controller.service")
-    yield _systemd_unit_check("inky-bird-frame-refresh.timer")
-    yield _systemd_unit_check("inky-bird-frame-generate.timer")
+    jobs = [("refresh", "observation refresh"), ("generate", "generation cycle")]
     if config.public_catalog.enabled:
-        yield _systemd_unit_check("inky-bird-frame-catalog-publish.timer")
+        jobs.append(("catalog-publish", "catalog publication"))
     if config.notifications.enabled:
-        yield _systemd_unit_check("inky-bird-frame-notifications.timer")
+        jobs.append(("notifications", "notification dispatch"))
+    for name, description in jobs:
+        yield _systemd_unit_check(f"inky-bird-frame-{name}.timer")
+        yield _systemd_last_run_check(
+            f"inky-bird-frame-{name}.service",
+            check_id=f"job_{name.replace('-', '_')}",
+            description=description,
+        )
 
 
 def _display_hardware_check() -> DiagnosticCheck:
@@ -513,36 +543,20 @@ def doctor(role: InstallationRole, config_path: Path) -> DoctorReport:
         checks.append(_display_hardware_check())
         if platform.system() == "Linux" and shutil.which("systemctl") is not None:
             checks.append(_systemd_unit_check("inky-bird-frame-display.timer"))
-            failed = _run(["systemctl", "is-failed", "inky-bird-frame-display.service"])
-            if failed.returncode == 0:
-                checks.append(
-                    _fail(
-                        "display_last_run",
-                        "The most recent display refresh failed",
-                        remediation="Inspect: journalctl -u inky-bird-frame-display.service",
-                    )
+            checks.append(
+                _systemd_last_run_check(
+                    "inky-bird-frame-display.service",
+                    check_id="display_last_run",
+                    description="display refresh",
                 )
-            elif failed.returncode == 1 and failed.stdout:
-                checks.append(
-                    _pass("display_last_run", "The display refresh service is not failed")
-                )
-            else:
-                detail = "\n".join(part for part in (failed.stdout, failed.stderr) if part)
-                checks.append(
-                    _fail(
-                        "display_last_run",
-                        "The display refresh service state could not be determined",
-                        detail=detail or f"systemctl exited with status {failed.returncode}",
-                        remediation="Inspect: systemctl status inky-bird-frame-display.service",
-                    )
-                )
+            )
         checks.append(_controller_health_check(config, role))
     return DoctorReport(role, tuple(checks))
 
 
-def _setup_script(role: InstallationRole) -> Path:
+def _setup_script(role: InstallationRole, source_dir: Path | None) -> Path:
     system = platform.system()
-    root = _repository_root()
+    root = source_dir.expanduser().resolve() if source_dir is not None else _repository_root()
     if role is InstallationRole.CONTROLLER and system == "Darwin":
         return root / "deploy/install-controller.sh"
     if role is InstallationRole.CONTROLLER and system == "Linux":
@@ -557,6 +571,7 @@ def setup(
     config_path: Path,
     *,
     apply: bool,
+    source_dir: Path | None = None,
     app_dir: Path | None = None,
     support_dir: Path | None = None,
     uv_bin: Path | None = None,
@@ -565,7 +580,7 @@ def setup(
 ) -> dict[str, object]:
     config_path = config_path.expanduser().resolve()
     load_config(config_path)
-    script = _setup_script(role)
+    script = _setup_script(role, source_dir)
     if not script.is_file():
         raise InstallationError(f"Installer is missing: {script}")
     changes = [
@@ -576,6 +591,7 @@ def setup(
     ]
     result: dict[str, object] = {
         "role": role.value,
+        "source": str(script.parent.parent),
         "config": str(config_path),
         "applied": False,
         "changes": changes,

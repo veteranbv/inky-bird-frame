@@ -101,6 +101,8 @@ class CliTests(unittest.TestCase):
                 "display",
                 "--config",
                 "instance.toml",
+                "--source-dir",
+                "/srv/inky-bird-frame",
                 "--venv",
                 "/opt/inky",
                 "--yes",
@@ -109,6 +111,7 @@ class CliTests(unittest.TestCase):
         doctor = build_parser().parse_args(["doctor", "controller", "--config", "instance.toml"])
 
         self.assertEqual(setup.role, "display")
+        self.assertEqual(str(setup.source_dir), "/srv/inky-bird-frame")
         self.assertEqual(str(setup.venv), "/opt/inky")
         self.assertTrue(setup.yes)
         self.assertEqual(doctor.role, "controller")

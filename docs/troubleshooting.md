@@ -184,6 +184,7 @@ converge an existing installation rather than create duplicate services.
 ```bash
 inky-bird-frame setup controller --config /path/to/config.toml --yes
 inky-bird-frame setup display --config /path/to/config.toml \
+  --source-dir /path/to/inky-bird-frame \
   --venv "$HOME/.virtualenvs/pimoroni" --yes
 ```
 

@@ -339,8 +339,10 @@ Then validate, preview, install, and diagnose:
 CONFIG="$HOME/.config/inky-bird-frame/config.toml"
 INKY="$HOME/.virtualenvs/pimoroni/bin/inky-bird-frame"
 "$INKY" config validate --config "$CONFIG"
-"$INKY" setup display --config "$CONFIG" --venv "$HOME/.virtualenvs/pimoroni"
-"$INKY" setup display --config "$CONFIG" --venv "$HOME/.virtualenvs/pimoroni" --yes
+"$INKY" setup display --config "$CONFIG" --source-dir "$PWD" \
+  --venv "$HOME/.virtualenvs/pimoroni"
+"$INKY" setup display --config "$CONFIG" --source-dir "$PWD" \
+  --venv "$HOME/.virtualenvs/pimoroni" --yes
 "$INKY" doctor display --config "$CONFIG"
 ```
 
@@ -434,9 +436,15 @@ On the display:
 
 ```bash
 git pull --ff-only
-"$INKY" setup display --config "$CONFIG" --venv "$HOME/.virtualenvs/pimoroni" --yes
+"$INKY" setup display --config "$CONFIG" --source-dir "$PWD" \
+  --venv "$HOME/.virtualenvs/pimoroni" --yes
 "$INKY" doctor display --config "$CONFIG"
 ```
+
+`--source-dir "$PWD"` is required in the display update path because setup
+deliberately repoints the Pimoroni environment at the managed runtime. The
+explicit source directory ensures each update installs the checkout that was
+just pulled rather than the previous managed copy.
 
 ## Uninstall
 

@@ -162,8 +162,10 @@ inky-bird-frame setup controller --config /path/to/config.toml --yes
 inky-bird-frame doctor controller --config /path/to/config.toml
 
 inky-bird-frame setup display --config /path/to/config.toml \
+  --source-dir /path/to/inky-bird-frame \
   --venv "$HOME/.virtualenvs/pimoroni"
 inky-bird-frame setup display --config /path/to/config.toml \
+  --source-dir /path/to/inky-bird-frame \
   --venv "$HOME/.virtualenvs/pimoroni" --yes
 inky-bird-frame doctor display --config /path/to/config.toml
 ```

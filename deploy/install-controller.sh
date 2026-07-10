@@ -58,11 +58,15 @@ if [ -z "${uv_bin}" ] || [ ! -x "${uv_bin}" ]; then
   exit 1
 fi
 
-mkdir -p "${app_dir}" "${support_dir}" "${log_dir}" "${agents_dir}"
-rsync -a --delete "${root}/src/" "${app_dir}/src/"
-for file in pyproject.toml uv.lock README.md LICENSE; do
-  install -m 0644 "${root}/${file}" "${app_dir}/${file}"
-done
+mkdir -p "${app_dir}/catalog" "${app_dir}/deploy" "${support_dir}" "${log_dir}" "${agents_dir}"
+if [ "${root}" != "${app_dir}" ]; then
+  rsync -a --delete "${root}/src/" "${app_dir}/src/"
+  rsync -a "${root}/catalog/" "${app_dir}/catalog/"
+  install -m 0755 "${root}/deploy/install-controller.sh" "${app_dir}/deploy/"
+  for file in pyproject.toml uv.lock README.md LICENSE; do
+    install -m 0644 "${root}/${file}" "${app_dir}/${file}"
+  done
+fi
 
 "${uv_bin}" sync --project "${app_dir}" --python "${python_version}" --extra controller --locked
 

@@ -473,6 +473,7 @@ def setup_command(args: argparse.Namespace) -> int:
             InstallationRole(args.role),
             args.config,
             apply=args.yes,
+            source_dir=args.source_dir,
             app_dir=args.app_dir,
             support_dir=args.support_dir,
             uv_bin=args.uv_bin,
@@ -513,6 +514,11 @@ def build_parser() -> argparse.ArgumentParser:
         role_parser = setup_subparsers.add_parser(role.value, help=f"Set up the {role.value} role")
         add_config_argument(role_parser)
         role_parser.add_argument("--yes", action="store_true", help="Apply the described changes")
+        role_parser.add_argument(
+            "--source-dir",
+            type=Path,
+            help="Source checkout containing the deployment scripts",
+        )
         role_parser.add_argument("--app-dir", type=Path, help="Managed application directory")
         if role is InstallationRole.CONTROLLER:
             role_parser.add_argument("--support-dir", type=Path, help="Managed support directory")

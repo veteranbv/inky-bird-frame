@@ -30,12 +30,15 @@ if ! sudo -v; then
 fi
 
 chmod 600 "${config_path}"
-mkdir -p "${app_dir}/src" "${app_dir}/catalog" "${support_dir}"
-rsync -a --delete "${root}/src/" "${app_dir}/src/"
-rsync -a "${root}/catalog/" "${app_dir}/catalog/"
-for file in pyproject.toml uv.lock README.md LICENSE; do
-  install -m 0644 "${root}/${file}" "${app_dir}/${file}"
-done
+mkdir -p "${app_dir}/src" "${app_dir}/catalog" "${app_dir}/deploy" "${support_dir}"
+if [ "${root}" != "${app_dir}" ]; then
+  rsync -a --delete "${root}/src/" "${app_dir}/src/"
+  rsync -a "${root}/catalog/" "${app_dir}/catalog/"
+  install -m 0755 "${root}/deploy/install-controller-systemd.sh" "${app_dir}/deploy/"
+  for file in pyproject.toml uv.lock README.md LICENSE; do
+    install -m 0644 "${root}/${file}" "${app_dir}/${file}"
+  done
+fi
 
 "${uv_bin}" sync --project "${app_dir}" --python "${python_version}" --extra controller --locked
 
@@ -102,14 +105,23 @@ for optional in catalog-publish notifications; do
 done
 
 sudo systemctl daemon-reload
-sudo systemctl enable --now inky-bird-frame-controller.service
-sudo systemctl enable --now inky-bird-frame-refresh.timer
-sudo systemctl enable --now inky-bird-frame-generate.timer
+sudo systemctl enable inky-bird-frame-controller.service
+sudo systemctl enable inky-bird-frame-refresh.timer
+sudo systemctl enable inky-bird-frame-generate.timer
 if [ -f "${unit_dir}/inky-bird-frame-catalog-publish.timer" ]; then
-  sudo systemctl enable --now inky-bird-frame-catalog-publish.timer
+  sudo systemctl enable inky-bird-frame-catalog-publish.timer
 fi
 if [ -f "${unit_dir}/inky-bird-frame-notifications.timer" ]; then
-  sudo systemctl enable --now inky-bird-frame-notifications.timer
+  sudo systemctl enable inky-bird-frame-notifications.timer
+fi
+sudo systemctl restart inky-bird-frame-controller.service
+sudo systemctl restart inky-bird-frame-refresh.timer
+sudo systemctl restart inky-bird-frame-generate.timer
+if [ -f "${unit_dir}/inky-bird-frame-catalog-publish.timer" ]; then
+  sudo systemctl restart inky-bird-frame-catalog-publish.timer
+fi
+if [ -f "${unit_dir}/inky-bird-frame-notifications.timer" ]; then
+  sudo systemctl restart inky-bird-frame-notifications.timer
 fi
 
 systemctl is-enabled --quiet inky-bird-frame-controller.service
