@@ -1,0 +1,151 @@
+{
+  "approved_at": "2026-07-10T05:04:19+00:00",
+  "assets": {
+    "display": {
+      "filename": "display.png",
+      "sha256": "86cab19f0c3defb643e8237f9f7c3b3884438780a45357e2416828ac8cd3d2e4"
+    },
+    "portrait": {
+      "filename": "portrait.png",
+      "sha256": "1970af50670f3f78a1a91e82ab926f13b49b98d2d274f9d66cd8a09e2ef06764"
+    }
+  },
+  "common_name": "Mourning Dove",
+  "generation": {
+    "attempt": 1,
+    "generated_at": "2026-07-10T05:04:19+00:00",
+    "generator": "Codex subscription / built-in gpt-image-2",
+    "max_attempts": 3,
+    "prompt_version": "field-journal-v2"
+  },
+  "profile": {
+    "behavior": "Forages mainly for seeds on open ground; fast, direct flight with a distinctive wing whistle at takeoff; soft, drawn-out cooing from perches.",
+    "common_name": "Mourning Dove",
+    "family": "Columbidae",
+    "field_marks": [
+      "Slender, small-headed dove with a long, pointed, wedge-shaped tail.",
+      "Delicate buffy-tan to gray-brown body, often with a softly pinkish breast.",
+      "Small black bill and dark, round eye.",
+      "Black spots on the upperwing coverts.",
+      "Outer tail feathers show white tips edged in black, especially visible in flight or from below.",
+      "Pointed wings and a streamlined, graceful profile."
+    ],
+    "habitat": "Open and semi-open country: fields, grasslands, woodland edges, farms, gardens, and built-up areas with open ground for feeding and nearby trees, shrubs, or wires for perching.",
+    "measurements": {
+      "length": "23\u201334 cm (9.1\u201313.4 in)",
+      "weight": "86\u2013170 g (3.0\u20136.0 oz)",
+      "wingspan": "45 cm (17.7 in)"
+    },
+    "palette": [
+      "buffy tan",
+      "warm gray-brown",
+      "soft rose pink",
+      "blue-gray",
+      "black and white"
+    ],
+    "scientific_name": "Zenaida macroura",
+    "sources": [
+      {
+        "title": "Mourning Dove Identification \u2014 Cornell Lab of Ornithology",
+        "url": "https://www.allaboutbirds.org/guide/Mourning_Dove/id/"
+      },
+      {
+        "title": "Mourning Dove Overview \u2014 Cornell Lab of Ornithology",
+        "url": "https://www.allaboutbirds.org/guide/Mourning_Dove/overview"
+      },
+      {
+        "title": "Mourning Dove \u2014 National Park Service",
+        "url": "https://www.nps.gov/miss/learn/nature/birdsmour.htm"
+      }
+    ],
+    "taxon_id": 3454
+  },
+  "quality_review": {
+    "anatomy_accuracy": 4,
+    "composition_quality": 5,
+    "findings": [
+      "Independent verification supports the identity: Zenaida macroura is a Columbidae dove with a small head, short thin black bill, pinkish legs, pointed wings, long pointed tail, black wing-coverts spots, and black-bordered white outer-tail tips.",
+      "All visible plate text is substantively correct. Cornell gives length 23\u201334 cm and wingspan 45 cm; its sex-specific weight values support the displayed combined 86\u2013170 g (3.0\u20136.0 oz) range. Audubon independently gives approximately 23\u201333 cm, 43 cm, and 85\u2013170 g.",
+      "The illustrated bird has a single main head and beak, two wings (one folded and one obscured), two legs, and one long pointed tail. Plumage, pinkish breast/legs, dark eye, black bill, spotted coverts, and tail pattern studies align well with the references.",
+      "Minor illustration limitations: the bill is somewhat heavy/long and the eye is slightly oversized; the main perched tail does not make the diagnostic white-edged outer feathers as clear as the separate tail study does. These are not material species errors.",
+      "No place name, ZIP code, coordinates, map, or local-observation detail appears on the candidate plate."
+    ],
+    "location_free": true,
+    "passed": true,
+    "species_accuracy": 4,
+    "text_accuracy": 5,
+    "verification_sources": [
+      {
+        "title": "Mourning Dove Identification \u2014 Cornell Lab of Ornithology",
+        "url": "https://www.allaboutbirds.org/guide/Mourning_Dove/id/"
+      },
+      {
+        "title": "Mourning Dove \u2014 Cabrillo National Monument, National Park Service",
+        "url": "https://www.nps.gov/cabr/learn/nature/mourning-dove.htm"
+      },
+      {
+        "title": "Mourning Dove \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/mourning-dove"
+      }
+    ]
+  },
+  "references": [
+    {
+      "attribution": "(c) froggymum, some rights reserved (CC BY)",
+      "filename": "01-598891594.jpg",
+      "height": 1714,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/598891594/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 330289532,
+      "observer": "froggymum",
+      "photo_id": 598891594,
+      "sha256": "0c985b14ade0b6206c1e5b9be26640a159ac73f6d9701cf6115db403edf214e8",
+      "source_url": "https://www.inaturalist.org/observations/330289532",
+      "width": 1462
+    },
+    {
+      "attribution": "no rights reserved",
+      "filename": "02-348847357.jpg",
+      "height": 2048,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/348847357/large.jpg",
+      "license_code": "cc0",
+      "observation_id": 197984758,
+      "observer": "sheilsun",
+      "photo_id": 348847357,
+      "sha256": "b884b2f2afbf6e2ba3deed3e24c2bb56df0b48f08617f1c728d38c48ac9427cb",
+      "source_url": "https://www.inaturalist.org/observations/197984758",
+      "width": 1536
+    },
+    {
+      "attribution": "(c) Dani Alba, some rights reserved (CC BY)",
+      "filename": "03-263531470.jpg",
+      "height": 2048,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/263531470/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 152643461,
+      "observer": "tyrannidae",
+      "photo_id": 263531470,
+      "sha256": "0cf5c2bd7b4cdb55877720d3cca0fc37f449d50f7172afef0c9cb3c26f47ce3f",
+      "source_url": "https://www.inaturalist.org/observations/152643461",
+      "width": 1536
+    },
+    {
+      "attribution": "(c) aleconinaturalist, some rights reserved (CC BY)",
+      "filename": "04-330413696.jpg",
+      "height": 2048,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/330413696/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 188733227,
+      "observer": "aleconinaturalist",
+      "photo_id": 330413696,
+      "sha256": "47e248b0a24cb2372be76ea3dfdf0fea7617c720887dab11873758743c32f139",
+      "source_url": "https://www.inaturalist.org/observations/188733227",
+      "width": 1536
+    }
+  ],
+  "schema_version": 1,
+  "scientific_name": "Zenaida macroura",
+  "slug": "mourning-dove",
+  "status": "approved",
+  "taxon_id": 3454
+}

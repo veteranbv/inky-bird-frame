@@ -1,0 +1,29 @@
+{
+  "anatomy_accuracy": 4,
+  "composition_quality": 5,
+  "findings": [
+    "Independent verification supports the identity: Zenaida macroura is a Columbidae dove with a small head, short thin black bill, pinkish legs, pointed wings, long pointed tail, black wing-coverts spots, and black-bordered white outer-tail tips.",
+    "All visible plate text is substantively correct. Cornell gives length 23\u201334 cm and wingspan 45 cm; its sex-specific weight values support the displayed combined 86\u2013170 g (3.0\u20136.0 oz) range. Audubon independently gives approximately 23\u201333 cm, 43 cm, and 85\u2013170 g.",
+    "The illustrated bird has a single main head and beak, two wings (one folded and one obscured), two legs, and one long pointed tail. Plumage, pinkish breast/legs, dark eye, black bill, spotted coverts, and tail pattern studies align well with the references.",
+    "Minor illustration limitations: the bill is somewhat heavy/long and the eye is slightly oversized; the main perched tail does not make the diagnostic white-edged outer feathers as clear as the separate tail study does. These are not material species errors.",
+    "No place name, ZIP code, coordinates, map, or local-observation detail appears on the candidate plate."
+  ],
+  "location_free": true,
+  "passed": true,
+  "species_accuracy": 4,
+  "text_accuracy": 5,
+  "verification_sources": [
+    {
+      "title": "Mourning Dove Identification \u2014 Cornell Lab of Ornithology",
+      "url": "https://www.allaboutbirds.org/guide/Mourning_Dove/id/"
+    },
+    {
+      "title": "Mourning Dove \u2014 Cabrillo National Monument, National Park Service",
+      "url": "https://www.nps.gov/cabr/learn/nature/mourning-dove.htm"
+    },
+    {
+      "title": "Mourning Dove \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/mourning-dove"
+    }
+  ]
+}

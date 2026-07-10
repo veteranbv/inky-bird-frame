@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-10T04:56:30+00:00",
+  "generated_at": "2026-07-10T05:04:19+00:00",
   "schema_version": 1,
   "species": [
     {
@@ -100,6 +100,17 @@
       "scientific_name": "Ardea herodias",
       "slug": "great-blue-heron",
       "taxon_id": 4956
+    },
+    {
+      "approved_at": "2026-07-10T05:04:19+00:00",
+      "common_name": "Mourning Dove",
+      "display_path": "species/3454-mourning-dove/display.png",
+      "display_sha256": "86cab19f0c3defb643e8237f9f7c3b3884438780a45357e2416828ac8cd3d2e4",
+      "portrait_path": "species/3454-mourning-dove/portrait.png",
+      "portrait_sha256": "1970af50670f3f78a1a91e82ab926f13b49b98d2d274f9d66cd8a09e2ef06764",
+      "scientific_name": "Zenaida macroura",
+      "slug": "mourning-dove",
+      "taxon_id": 3454
     },
     {
       "approved_at": "2026-07-09T19:05:59+00:00",
