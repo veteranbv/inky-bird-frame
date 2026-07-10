@@ -1,0 +1,145 @@
+{
+  "approved_at": "2026-07-10T17:08:36+00:00",
+  "assets": {
+    "display": {
+      "filename": "display.png",
+      "sha256": "78b0ba03469c29f1c9d8215c3539a2168761596e08dbc45b0e4a0cfd02f10a54"
+    },
+    "portrait": {
+      "filename": "portrait.png",
+      "sha256": "9075e8cde20d060e6f3154d3f7fe6f1a219fed0507dac793ce8d4323cc636c5f"
+    }
+  },
+  "common_name": "Tufted Titmouse",
+  "generation": {
+    "attempt": 1,
+    "generated_at": "2026-07-10T17:08:36+00:00",
+    "generator": "Codex subscription / built-in gpt-image-2",
+    "max_attempts": 3,
+    "prompt_version": "field-journal-v2"
+  },
+  "profile": {
+    "behavior": "Active, acrobatic foliage gleaner; hops and hangs among twigs, and may carry large seeds to a perch to open them.",
+    "common_name": "Tufted Titmouse",
+    "family": "Paridae",
+    "field_marks": [
+      "Prominent pointed gray crest",
+      "Soft silvery-gray upperparts and wings",
+      "Pale whitish face and underparts",
+      "Large dark eyes and a short, stout dark bill",
+      "Small black patch immediately above the bill",
+      "Warm rusty-peach wash along the flanks"
+    ],
+    "habitat": "Mature deciduous and mixed woodlands, wooded parks, orchards, and tree-rich gardens.",
+    "measurements": {
+      "length": "5.5\u20136.3 in (14\u201316 cm)",
+      "weight": "0.6\u20130.9 oz (18\u201326 g)",
+      "wingspan": "7.9\u201310.2 in (20\u201326 cm)"
+    },
+    "palette": [
+      "silvery gray",
+      "white",
+      "charcoal black",
+      "rusty peach",
+      "slate blue-gray"
+    ],
+    "scientific_name": "Baeolophus bicolor",
+    "sources": [
+      {
+        "title": "Tufted Titmouse Identification \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Tufted_Titmouse/id"
+      },
+      {
+        "title": "Tufted Titmouse \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/tufted-titmouse"
+      }
+    ],
+    "taxon_id": 13632
+  },
+  "quality_review": {
+    "anatomy_accuracy": 4,
+    "composition_quality": 5,
+    "findings": [
+      "Live verification confirms the identity and taxonomy: Tufted Titmouse (Baeolophus bicolor), family Paridae.",
+      "The stated length (5.5\u20136.3 in / 14\u201316 cm), wingspan (7.9\u201310.2 in / 20\u201326 cm), and weight (0.6\u20130.9 oz / 18\u201326 g) match All About Birds.",
+      "The habitat and behavior claims are supported: woodland/park/orchard habitats; active, acrobatic foraging among twigs; and carrying seeds to a perch to open them.",
+      "All listed field marks are supported and shown: gray crest and upperparts, pale face/underparts, large dark eye, short stout dark bill, black forehead patch above the bill, and peachy/rusty flanks.",
+      "The bird has one head, one beak, two legs, one tail, and no extra anatomical structures. One wing is visible in side view; the second is naturally occluded. Proportions are slightly stylized, especially the very tall crest and long-looking tail, but remain recognizable and non-material.",
+      "No place name, ZIP code, coordinates, map, or local-observation detail appears.",
+      "The printed plate text contains no material factual errors. The adjacent 0\u201315 cm ruler is decorative/ambiguous rather than an explicitly stated specimen scale; if intended as a true scale, the illustrated bird does not visibly span its stated 14\u201316 cm body length."
+    ],
+    "location_free": true,
+    "passed": true,
+    "species_accuracy": 5,
+    "text_accuracy": 5,
+    "verification_sources": [
+      {
+        "title": "Tufted Titmouse Identification \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Tufted_Titmouse/id/"
+      },
+      {
+        "title": "Tufted Titmouse \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/tufted-titmouse"
+      }
+    ]
+  },
+  "references": [
+    {
+      "attribution": "(c) froggymum, some rights reserved (CC BY)",
+      "filename": "01-660441686.jpg",
+      "height": 2048,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/660441686/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 361868671,
+      "observer": "froggymum",
+      "photo_id": 660441686,
+      "sha256": "cbf6c6afd85fdc854759de53a5290f1ce79a8a5ba7723a10ef49ba8a00c9dd64",
+      "source_url": "https://www.inaturalist.org/observations/361868671",
+      "width": 1506
+    },
+    {
+      "attribution": "(c) Cricket Raspet, some rights reserved (CC BY)",
+      "filename": "02-347073181.jpeg",
+      "height": 1513,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/347073181/large.jpeg",
+      "license_code": "cc-by",
+      "observation_id": 197107161,
+      "observer": "chilipossum",
+      "photo_id": 347073181,
+      "sha256": "b821ff08b9590a6673455edb876922b9258c9dfff8a3e9614cd68482ab744797",
+      "source_url": "https://www.inaturalist.org/observations/197107161",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) oksanaetal, some rights reserved (CC BY)",
+      "filename": "03-456336922.jpeg",
+      "height": 1365,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/456336922/large.jpeg",
+      "license_code": "cc-by",
+      "observation_id": 254730683,
+      "observer": "oksanaetal",
+      "photo_id": 456336922,
+      "sha256": "3cd76c8b8aae26aeea3936252110c0d31a491f4fa96ea1d9096ce64610c5d0bd",
+      "source_url": "https://www.inaturalist.org/observations/254730683",
+      "width": 2048
+    },
+    {
+      "attribution": "no rights reserved",
+      "filename": "04-11998344.jpeg",
+      "height": 1670,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/11998344/large.jpeg",
+      "license_code": "cc0",
+      "observation_id": 8910462,
+      "observer": "hannawacker",
+      "photo_id": 11998344,
+      "sha256": "9b477c5312ab2474d401e698a555cefe40b40a21f08c8a3a960163faa976276a",
+      "source_url": "https://www.inaturalist.org/observations/8910462",
+      "width": 2048
+    }
+  ],
+  "schema_version": 1,
+  "scientific_name": "Baeolophus bicolor",
+  "slug": "tufted-titmouse",
+  "status": "approved",
+  "taxon_id": 13632
+}
