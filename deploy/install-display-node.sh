@@ -18,7 +18,7 @@ fi
 
 ssh "${ssh_options[@]}" "${remote}" bash -s -- "${remote_app}" <<'REMOTE'
 set -euo pipefail
-mkdir -p "$1/src" "$1/catalog"
+mkdir -p "$1/src" "$1/catalog" "$1/deploy"
 REMOTE
 rsync -a --delete -e "ssh -i '${ssh_key}' -o BatchMode=yes -o IdentitiesOnly=yes" \
   "${root}/src/" "${remote}:${remote_app}/src/"
@@ -28,6 +28,8 @@ for file in pyproject.toml uv.lock README.md LICENSE; do
   rsync -a -e "ssh -i '${ssh_key}' -o BatchMode=yes -o IdentitiesOnly=yes" \
     "${root}/${file}" "${remote}:${remote_app}/${file}"
 done
+rsync -a -e "ssh -i '${ssh_key}' -o BatchMode=yes -o IdentitiesOnly=yes" \
+  "${root}/deploy/install-display-local.sh" "${remote}:${remote_app}/deploy/"
 
 ssh "${ssh_options[@]}" "${remote}" bash -s -- \
   "${remote_app}" "${remote_config}" "${remote_venv}" <<'REMOTE'
@@ -35,71 +37,15 @@ set -euo pipefail
 app_dir=$1
 config_path=$2
 venv=$3
-
-if [ ! -f "${config_path}" ]; then
-  echo "Display-node configuration is missing: ${config_path}" >&2
-  exit 1
-fi
-if [ ! -x "${venv}/bin/python" ]; then
-  echo "Pimoroni Python environment is missing: ${venv}" >&2
-  exit 1
-fi
 if ! sudo -n true; then
-  echo "Passwordless sudo is required to install the display service." >&2
+  echo "Passwordless sudo is required for remote display deployment." >&2
   exit 1
 fi
-
-"${venv}/bin/python" -m pip install --disable-pip-version-check -e "${app_dir}"
-
-read -r startup_delay_seconds rotation_seconds rotation_jitter_seconds < <(
-  "${venv}/bin/python" - "${config_path}" <<'PY'
-import sys
-from pathlib import Path
-
-from inky_bird_frame.config import load_config
-
-schedule = load_config(Path(sys.argv[1])).schedule
-print(
-    schedule.display_startup_delay_seconds,
-    schedule.rotation_minutes * 60,
-    schedule.rotation_jitter_seconds,
-)
-PY
-)
-
-sudo tee /etc/systemd/system/inky-bird-frame-display.service >/dev/null <<UNIT
-[Unit]
-Description=Rotate the next approved Inky Bird Frame plate
-After=network-online.target
-Wants=network-online.target
-
-[Service]
-Type=oneshot
-User=$(id -un)
-WorkingDirectory=${app_dir}
-Environment=PYTHONUNBUFFERED=1
-ExecStart=${venv}/bin/inky-bird-frame display-cycle --config ${config_path}
-TimeoutStartSec=15min
-UNIT
-
-sudo tee /etc/systemd/system/inky-bird-frame-display.timer >/dev/null <<UNIT
-[Unit]
-Description=Rotate the Inky Bird Frame on its configured schedule
-
-[Timer]
-OnBootSec=${startup_delay_seconds}s
-OnUnitActiveSec=${rotation_seconds}s
-RandomizedDelaySec=${rotation_jitter_seconds}s
-Persistent=true
-Unit=inky-bird-frame-display.service
-
-[Install]
-WantedBy=timers.target
-UNIT
-
-sudo systemctl daemon-reload
-sudo systemctl enable --now inky-bird-frame-display.timer
-sudo systemctl start inky-bird-frame-display.service
+INKY_BIRD_APP_DIR="${app_dir}" \
+INKY_BIRD_CONFIG_PATH="${config_path}" \
+INKY_BIRD_DISPLAY_VENV="${venv}" \
+INKY_BIRD_RUN_INITIAL_DISPLAY=true \
+  "${app_dir}/deploy/install-display-local.sh"
 REMOTE
 
 echo "Display node deployed to ${remote}."

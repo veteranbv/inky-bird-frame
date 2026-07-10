@@ -94,6 +94,25 @@ class CliTests(unittest.TestCase):
         self.assertEqual(str(dispatch.config), "instance.toml")
         self.assertEqual(str(retry.config), "instance.toml")
 
+    def test_setup_and_doctor_have_role_specific_commands(self) -> None:
+        setup = build_parser().parse_args(
+            [
+                "setup",
+                "display",
+                "--config",
+                "instance.toml",
+                "--venv",
+                "/opt/inky",
+                "--yes",
+            ]
+        )
+        doctor = build_parser().parse_args(["doctor", "controller", "--config", "instance.toml"])
+
+        self.assertEqual(setup.role, "display")
+        self.assertEqual(str(setup.venv), "/opt/inky")
+        self.assertTrue(setup.yes)
+        self.assertEqual(doctor.role, "controller")
+
     def test_expected_error_uses_json_envelope(self) -> None:
         output = io.StringIO()
 

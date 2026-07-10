@@ -10,7 +10,10 @@ root=$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)
 app_dir=${INKY_BIRD_APP_DIR:-"${HOME}/Services/inky-bird-frame"}
 support_dir=${INKY_BIRD_SUPPORT_DIR:-"${HOME}/Library/Application Support/Inky Bird Frame"}
 config_path=${INKY_BIRD_CONFIG_PATH:-"${support_dir}/config.toml"}
-uv_bin=${UV_BIN:-/opt/homebrew/bin/uv}
+uv_bin=${UV_BIN:-}
+if [ -z "${uv_bin}" ]; then
+  uv_bin=$(command -v uv || true)
+fi
 python_version=${INKY_BIRD_PYTHON_VERSION:-3.11}
 log_dir="${support_dir}/logs"
 agents_dir="${HOME}/Library/LaunchAgents"
@@ -50,8 +53,8 @@ if [ ! -f "${config_path}" ]; then
   exit 1
 fi
 chmod 600 "${config_path}"
-if [ ! -x "${uv_bin}" ]; then
-  echo "uv is not executable: ${uv_bin}" >&2
+if [ -z "${uv_bin}" ] || [ ! -x "${uv_bin}" ]; then
+  echo "uv is not executable. Install uv or set UV_BIN." >&2
   exit 1
 fi
 

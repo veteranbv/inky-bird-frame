@@ -20,3 +20,30 @@ def test_controller_installer_restores_schedule_without_run_at_load_on_failure()
     assert "publisher_was_loaded=false" in script[unload - 250 : unload]
     assert "publisher_was_loaded=true" in script[unload:validation]
     assert "/usr/bin/plutil -replace RunAtLoad -bool false" in script
+
+
+def test_systemd_controller_installer_enables_boot_persistent_services() -> None:
+    script = (
+        Path(__file__).resolve().parents[1] / "deploy" / "install-controller-systemd.sh"
+    ).read_text()
+
+    assert "controller_systemd_units" in script
+    assert "systemctl enable --now inky-bird-frame-controller.service" in script
+    assert "systemctl enable --now inky-bird-frame-refresh.timer" in script
+    assert "systemctl enable --now inky-bird-frame-generate.timer" in script
+    validation = script.index('"${app_dir}/.venv/bin/inky-bird-frame" catalog-publish')
+    unit_install = script.index('sudo install -m 0644 "${unit}"')
+    assert validation < unit_install
+    assert "systemctl is-enabled --quiet inky-bird-frame-catalog-publish.timer" in script
+    assert "systemctl is-active --quiet inky-bird-frame-notifications.timer" in script
+
+
+def test_local_display_installer_uses_configured_schedule_and_verifies_timer() -> None:
+    script = (
+        Path(__file__).resolve().parents[1] / "deploy" / "install-display-local.sh"
+    ).read_text()
+
+    assert "display_systemd_units" in script
+    assert "run_initial_display=${INKY_BIRD_RUN_INITIAL_DISPLAY:-false}" in script
+    assert "systemctl is-enabled --quiet inky-bird-frame-display.timer" in script
+    assert "systemctl is-active --quiet inky-bird-frame-display.timer" in script

@@ -30,6 +30,7 @@ from .display import show_on_inky
 from .display_node import run_display_cycle
 from .errors import InkyBirdFrameError
 from .images import prepare_uploaded_image
+from .installation import InstallationRole, doctor, setup
 from .notifications import (
     dispatch_notifications,
     notification_status,
@@ -466,6 +467,28 @@ def display_image_command(args: argparse.Namespace) -> int:
     return 0
 
 
+def setup_command(args: argparse.Namespace) -> int:
+    print_result(
+        setup(
+            InstallationRole(args.role),
+            args.config,
+            apply=args.yes,
+            app_dir=args.app_dir,
+            support_dir=args.support_dir,
+            uv_bin=args.uv_bin,
+            python_version=args.python_version,
+            venv=args.venv,
+        )
+    )
+    return 0
+
+
+def doctor_command(args: argparse.Namespace) -> int:
+    report = doctor(InstallationRole(args.role), args.config)
+    print_result(report.as_dict())
+    return 0 if report.ready else 1
+
+
 def add_config_argument(parser: argparse.ArgumentParser) -> None:
     parser.add_argument(
         "--config",
@@ -481,6 +504,38 @@ def build_parser() -> argparse.ArgumentParser:
         description="Generate, approve, serve, and display bird field-journal plates.",
     )
     subparsers = parser.add_subparsers(dest="command", required=True)
+
+    setup_parser = subparsers.add_parser(
+        "setup", help="Preview or install a controller or display-node service"
+    )
+    setup_subparsers = setup_parser.add_subparsers(dest="role", required=True)
+    for role in InstallationRole:
+        role_parser = setup_subparsers.add_parser(role.value, help=f"Set up the {role.value} role")
+        add_config_argument(role_parser)
+        role_parser.add_argument("--yes", action="store_true", help="Apply the described changes")
+        role_parser.add_argument("--app-dir", type=Path, help="Managed application directory")
+        if role is InstallationRole.CONTROLLER:
+            role_parser.add_argument("--support-dir", type=Path, help="Managed support directory")
+            role_parser.add_argument("--uv-bin", type=Path, help="Path to the uv executable")
+            role_parser.add_argument("--python-version", help="Python version for the controller")
+            role_parser.set_defaults(venv=None)
+        else:
+            role_parser.add_argument(
+                "--venv", type=Path, help="Pimoroni Python environment for the display node"
+            )
+            role_parser.set_defaults(support_dir=None, uv_bin=None, python_version=None)
+        role_parser.set_defaults(func=setup_command)
+
+    doctor_parser = subparsers.add_parser(
+        "doctor", help="Run read-only controller or display-node diagnostics"
+    )
+    doctor_subparsers = doctor_parser.add_subparsers(dest="role", required=True)
+    for role in InstallationRole:
+        role_parser = doctor_subparsers.add_parser(
+            role.value, help=f"Diagnose the {role.value} role"
+        )
+        add_config_argument(role_parser)
+        role_parser.set_defaults(func=doctor_command)
 
     discover_parser = subparsers.add_parser("discover", help="List species in the configured area")
     add_config_argument(discover_parser)

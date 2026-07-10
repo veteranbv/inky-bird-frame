@@ -25,6 +25,10 @@ class ConfigurationError(InkyBirdFrameError):
     """Raised when application configuration is missing or invalid."""
 
 
+class InstallationError(InkyBirdFrameError):
+    """Raised when role setup cannot complete safely."""
+
+
 class CatalogError(InkyBirdFrameError):
     """Raised when catalog data is missing, invalid, or inconsistent."""
 
