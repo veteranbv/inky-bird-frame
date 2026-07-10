@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-10T18:12:40+00:00",
+  "generated_at": "2026-07-10T18:19:56+00:00",
   "schema_version": 1,
   "species": [
     {
@@ -309,6 +309,17 @@
       "scientific_name": "Setophaga americana",
       "slug": "northern-parula",
       "taxon_id": 145233
+    },
+    {
+      "approved_at": "2026-07-10T18:19:56+00:00",
+      "common_name": "Palm Warbler",
+      "display_path": "species/145242-palm-warbler/display.png",
+      "display_sha256": "6cacd4176e46ee8a4ca9c2b55dc6268e137964a06351e1203c9098ef82f85f24",
+      "portrait_path": "species/145242-palm-warbler/portrait.png",
+      "portrait_sha256": "ac3d8f5374cf31b23907a517b2fe83a712fff02f02d67a9ad5f054f6120b3608",
+      "scientific_name": "Setophaga palmarum",
+      "slug": "palm-warbler",
+      "taxon_id": 145242
     },
     {
       "approved_at": "2026-07-10T03:24:09+00:00",

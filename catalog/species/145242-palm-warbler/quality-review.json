@@ -1,0 +1,25 @@
+{
+  "anatomy_accuracy": 4,
+  "composition_quality": 5,
+  "findings": [
+    "Identity, common and scientific names, and family are correct for Palm Warbler (Setophaga palmarum; Parulidae).",
+    "The illustrated bird has one head, one pointed bill, two legs with plausible passerine feet, a single tail, and two wings (one displayed in profile); no duplicated or missing anatomy is visible.",
+    "Plumage is a credible Palm Warbler, especially a breeding Western-type/intergrade presentation: chestnut cap, pale eyebrow and dark eye line, brownish-olive upperparts, yellow throat/undertail area, pale streaked belly, long legs and tail. The bill is slightly heavy-looking for the species but remains acceptably slender and pointed.",
+    "All visible plate text is substantively supported by the sources, including size, habitat, tail-wagging/ground-foraging behavior, and field marks. Cornell gives the plate\u2019s stated 7\u201313 g weight range; Audubon instead gives 8\u201313 g, a minor source discrepancy rather than a plate error.",
+    "The plate contains no place name, ZIP code, coordinates, map, or local-observation detail."
+  ],
+  "location_free": true,
+  "passed": true,
+  "species_accuracy": 4,
+  "text_accuracy": 4,
+  "verification_sources": [
+    {
+      "title": "Palm Warbler Identification \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Palm_Warbler/id"
+    },
+    {
+      "title": "Palm Warbler \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/palm-warbler"
+    }
+  ]
+}
