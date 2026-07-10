@@ -105,10 +105,8 @@ def _systemd_literal(value: str) -> str:
     return value.replace("%", "%%")
 
 
-def _systemd_quote(value: str, *, escape_dollars: bool = False) -> str:
+def _systemd_quote(value: str) -> str:
     escaped = _systemd_literal(value).replace("\\", "\\\\").replace('"', '\\"')
-    if escape_dollars:
-        escaped = escaped.replace("$", "$$")
     return f'"{escaped}"'
 
 
@@ -137,10 +135,7 @@ def controller_systemd_units(
     )
 
     def command(*arguments: str) -> str:
-        return " ".join(
-            _systemd_quote(argument, escape_dollars=True)
-            for argument in (str(executable), *arguments)
-        )
+        return " ".join(_systemd_quote(argument) for argument in (str(executable), *arguments))
 
     units = {
         "inky-bird-frame-controller.service": f"""[Unit]
@@ -210,8 +205,8 @@ def display_systemd_units(
 ) -> dict[str, str]:
     """Render the display service and timer from validated configuration."""
     exec_start = (
-        f"{_systemd_quote(str(executable), escape_dollars=True)} display-cycle "
-        f"--config {_systemd_quote(str(config_path), escape_dollars=True)}"
+        f"{_systemd_quote(str(executable))} display-cycle "
+        f"--config {_systemd_quote(str(config_path))}"
     )
     service = f"""[Unit]
 Description=Rotate the next approved Inky Bird Frame plate
@@ -360,7 +355,8 @@ def _health_url(config: AppConfig, role: InstallationRole) -> str:
             host = f"[{host}]"
         return f"http://{host}:{config.controller.port}/health"
     parsed = urlsplit(config.display_node.controller_url)
-    return urlunsplit((parsed.scheme, parsed.netloc, "/health", "", ""))
+    health_path = f"{parsed.path.rstrip('/')}/health"
+    return urlunsplit((parsed.scheme, parsed.netloc, health_path, "", ""))
 
 
 def _controller_health_check(config: AppConfig, role: InstallationRole) -> DiagnosticCheck:

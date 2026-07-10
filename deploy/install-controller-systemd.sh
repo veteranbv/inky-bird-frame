@@ -11,6 +11,7 @@ app_dir=${INKY_BIRD_APP_DIR:-"${HOME}/Services/inky-bird-frame"}
 support_dir=${INKY_BIRD_SUPPORT_DIR:-"${HOME}/.config/inky-bird-frame"}
 config_path=${INKY_BIRD_CONFIG_PATH:-"${support_dir}/config.toml"}
 python_version=${INKY_BIRD_PYTHON_VERSION:-3.11}
+quiesce_timeout_seconds=1800
 uv_bin=${UV_BIN:-}
 if [ -z "${uv_bin}" ]; then
   uv_bin=$(command -v uv || true)
@@ -43,7 +44,20 @@ fi
 "${uv_bin}" sync --project "${app_dir}" --python "${python_version}" --extra controller --locked
 
 unit_dir=$(mktemp -d)
-trap 'rm -rf "${unit_dir}"' EXIT
+installation_complete=false
+active_timers=()
+cleanup() {
+  status=$?
+  trap - EXIT
+  if [ "${installation_complete}" != true ]; then
+    for timer in "${active_timers[@]}"; do
+      sudo systemctl start "${timer}" || true
+    done
+  fi
+  rm -rf "${unit_dir}"
+  exit "${status}"
+}
+trap cleanup EXIT
 "${app_dir}/.venv/bin/python" - \
   "${unit_dir}" "${root}" "${app_dir}" "${config_path}" "${HOME}" "$(id -un)" <<'PY'
 import sys
@@ -86,6 +100,25 @@ units = controller_systemd_units(
 for name, content in units.items():
     (unit_dir / name).write_text(content)
 PY
+
+for name in refresh generate catalog-publish notifications; do
+  timer="inky-bird-frame-${name}.timer"
+  if systemctl is-active --quiet "${timer}"; then
+    active_timers+=("${timer}")
+  fi
+  sudo systemctl stop "${timer}" 2>/dev/null || true
+done
+for name in refresh generate catalog-publish notifications; do
+  service="inky-bird-frame-${name}.service"
+  deadline=$((SECONDS + quiesce_timeout_seconds))
+  while systemctl is-active --quiet "${service}"; do
+    if ((SECONDS >= deadline)); then
+      echo "Timed out waiting for ${service} to finish." >&2
+      exit 1
+    fi
+    sleep 2
+  done
+done
 
 "${app_dir}/.venv/bin/inky-bird-frame" refresh --config "${config_path}"
 
@@ -141,5 +174,6 @@ if [ -f "${unit_dir}/inky-bird-frame-notifications.timer" ]; then
   systemctl is-active --quiet inky-bird-frame-notifications.timer
 fi
 
+installation_complete=true
 echo "Controller installed from ${root} into ${app_dir}."
 echo "Configuration: ${config_path}"

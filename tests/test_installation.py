@@ -15,6 +15,7 @@ from inky_bird_frame.installation import (
     CommandResult,
     DiagnosticCheck,
     InstallationRole,
+    _health_url,
     controller_systemd_units,
     display_systemd_units,
     doctor,
@@ -75,7 +76,7 @@ class InstallationTests(unittest.TestCase):
             units["inky-bird-frame-controller.service"],
         )
         self.assertIn(
-            '"/opt/inky bird/$$bin/inky-bird-frame"',
+            '"/opt/inky bird/$bin/inky-bird-frame"',
             units["inky-bird-frame-controller.service"],
         )
         self.assertIn(
@@ -119,11 +120,30 @@ display_startup_delay_seconds = 30
         timer = units["inky-bird-frame-display.timer"]
         self.assertEqual(len(units), 2)
         self.assertIn("WorkingDirectory=/home/frame/Inky Bird Frame", service)
-        self.assertIn('"/home/frame/Pimoroni $$Env/bin/inky-bird-frame"', service)
-        self.assertIn('"/home/frame/$$config.toml"', service)
+        self.assertIn('"/home/frame/Pimoroni $Env/bin/inky-bird-frame"', service)
+        self.assertIn('"/home/frame/$config.toml"', service)
         self.assertIn("OnActiveSec=30s", timer)
         self.assertIn("OnUnitActiveSec=180s", timer)
         self.assertIn("RandomizedDelaySec=7s", timer)
+
+    def test_display_health_url_preserves_controller_path_prefix(self) -> None:
+        with TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            codex = root / "codex"
+            codex.touch(mode=0o700)
+            path = write_config(root, codex)
+            path.write_text(
+                path.read_text().replace(
+                    'controller_url = "http://controller.test:8793"',
+                    'controller_url = "https://frame.example/inky/"',
+                )
+            )
+            config = load_config(path)
+
+        self.assertEqual(
+            _health_url(config, InstallationRole.DISPLAY),
+            "https://frame.example/inky/health",
+        )
 
     def test_setup_preview_does_not_run_installer(self) -> None:
         with TemporaryDirectory() as temporary:
