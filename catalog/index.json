@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-10T16:43:04+00:00",
+  "generated_at": "2026-07-10T16:52:07+00:00",
   "schema_version": 1,
   "species": [
     {
@@ -177,6 +177,17 @@
       "scientific_name": "Charadrius vociferus",
       "slug": "killdeer",
       "taxon_id": 4793
+    },
+    {
+      "approved_at": "2026-07-10T16:52:07+00:00",
+      "common_name": "Mallard",
+      "display_path": "species/6930-mallard/display.png",
+      "display_sha256": "0d03cc6113802bc58bead745f494f1347cdfe139535d3d41048110dadc7b2f13",
+      "portrait_path": "species/6930-mallard/portrait.png",
+      "portrait_sha256": "e19000e6bc974e70945a70bd6f439c7f2ddc94f6f9f25e6e25d33ef4b1e0dad0",
+      "scientific_name": "Anas platyrhynchos",
+      "slug": "mallard",
+      "taxon_id": 6930
     },
     {
       "approved_at": "2026-07-10T05:04:19+00:00",
