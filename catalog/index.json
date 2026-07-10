@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-10T18:03:54+00:00",
+  "generated_at": "2026-07-10T18:12:40+00:00",
   "schema_version": 1,
   "species": [
     {
@@ -232,6 +232,17 @@
       "scientific_name": "Parkesia motacilla",
       "slug": "louisiana-waterthrush",
       "taxon_id": 73148
+    },
+    {
+      "approved_at": "2026-07-10T18:12:40+00:00",
+      "common_name": "Magnolia Warbler",
+      "display_path": "species/145235-magnolia-warbler/display.png",
+      "display_sha256": "beea1ec46cd6233ac5d082feb18123d16648cc7387fd1a7048fd13ae03091e48",
+      "portrait_path": "species/145235-magnolia-warbler/portrait.png",
+      "portrait_sha256": "3cc75f66d9b297a083161e00fac479a3f53a3906381a8cccebb63f3dca2c488d",
+      "scientific_name": "Setophaga magnolia",
+      "slug": "magnolia-warbler",
+      "taxon_id": 145235
     },
     {
       "approved_at": "2026-07-10T16:52:07+00:00",

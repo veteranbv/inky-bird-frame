@@ -1,0 +1,146 @@
+{
+  "approved_at": "2026-07-10T18:12:40+00:00",
+  "assets": {
+    "display": {
+      "filename": "display.png",
+      "sha256": "beea1ec46cd6233ac5d082feb18123d16648cc7387fd1a7048fd13ae03091e48"
+    },
+    "portrait": {
+      "filename": "portrait.png",
+      "sha256": "3cc75f66d9b297a083161e00fac479a3f53a3906381a8cccebb63f3dca2c488d"
+    }
+  },
+  "common_name": "Magnolia Warbler",
+  "generation": {
+    "attempt": 1,
+    "generated_at": "2026-07-10T18:12:40+00:00",
+    "generator": "Codex subscription / built-in gpt-image-2",
+    "max_attempts": 3,
+    "prompt_version": "field-journal-v2"
+  },
+  "profile": {
+    "behavior": "Active foliage gleaner; hops along branches and takes insects from the undersides of needles and leaves, sometimes flashing white tail spots.",
+    "common_name": "Magnolia Warbler",
+    "family": "Parulidae",
+    "field_marks": [
+      "Small, slim warbler with a fine bill and long, narrow tail.",
+      "Adult male shows a black face mask and black neck band with radiating streaks.",
+      "Bright yellow throat, breast, and belly; males have bold black flank streaking.",
+      "Gray-and-black upperparts with a conspicuous white wing patch or two narrow white wingbars.",
+      "Gray-headed females and immatures show a pale white eyering and softer streaking.",
+      "Undertail is white at the base with a broad black tail tip, visible in all plumages."
+    ],
+    "habitat": "Dense young conifers, especially spruce and hemlock, in coniferous or mixed forest; also uses dense forest edges, shrubs, and low trees outside the breeding season.",
+    "measurements": {
+      "length": "11\u201313 cm (4.3\u20135.1 in)",
+      "weight": "6\u201315 g (0.2\u20130.5 oz)",
+      "wingspan": "16\u201320 cm (6.3\u20137.9 in)"
+    },
+    "palette": [
+      "bright yellow",
+      "charcoal black",
+      "slate gray",
+      "crisp white",
+      "olive green"
+    ],
+    "scientific_name": "Setophaga magnolia",
+    "sources": [
+      {
+        "title": "Magnolia Warbler Identification \u2014 All About Birds, Cornell Lab of Ornithology",
+        "url": "https://www.allaboutbirds.org/guide/Magnolia_Warbler/id"
+      },
+      {
+        "title": "Magnolia Warbler Life History \u2014 All About Birds, Cornell Lab of Ornithology",
+        "url": "https://www.allaboutbirds.org/guide/Magnolia_Warbler/lifehistory"
+      },
+      {
+        "title": "Magnolia Warbler \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/magnolia-warbler"
+      }
+    ],
+    "taxon_id": 145235
+  },
+  "quality_review": {
+    "anatomy_accuracy": 5,
+    "composition_quality": 5,
+    "findings": [
+      "No material anatomical issue: the plate depicts one head, one fine pointed bill, two wings, two legs with grasping feet, and one long narrow tail.",
+      "The illustrated adult male matches the supplied references and live ID sources: black facial mask and neck band, yellow underparts with radiating black streaks, gray-and-black upperparts, and a broad white wing patch.",
+      "All visible text claims verify: Magnolia Warbler / Setophaga magnolia / Parulidae; 11\u201313 cm length, 16\u201320 cm wingspan, and 6\u201315 g weight; habitat, foliage-gleaning behavior, sex/age field marks, and white-based black-tipped tail pattern.",
+      "No place name, ZIP code, coordinates, map, or local-observation detail appears on the candidate plate."
+    ],
+    "location_free": true,
+    "passed": true,
+    "species_accuracy": 5,
+    "text_accuracy": 5,
+    "verification_sources": [
+      {
+        "title": "Magnolia Warbler Identification \u2014 All About Birds, Cornell Lab of Ornithology",
+        "url": "https://www.allaboutbirds.org/guide/Magnolia_Warbler/id"
+      },
+      {
+        "title": "Magnolia Warbler \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/magnolia-warbler"
+      }
+    ]
+  },
+  "references": [
+    {
+      "attribution": "(c) Matt Felperin, some rights reserved (CC BY)",
+      "filename": "01-135286764.jpg",
+      "height": 1366,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/135286764/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 82429997,
+      "observer": "mattyfelp",
+      "photo_id": 135286764,
+      "sha256": "c38d4c81c7c5f65cdeb5167ca2ab22429de15f6fa2a9547b95e6b40633bb1dc3",
+      "source_url": "https://www.inaturalist.org/observations/82429997",
+      "width": 2048
+    },
+    {
+      "attribution": "no rights reserved",
+      "filename": "02-526677287.jpg",
+      "height": 1495,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/526677287/large.jpg",
+      "license_code": "cc0",
+      "observation_id": 292661109,
+      "observer": "wildreturn",
+      "photo_id": 526677287,
+      "sha256": "7d49816a07edef8c1ca3dc275df1febce7fe878f200ef6549d00d6f70cc176d8",
+      "source_url": "https://www.inaturalist.org/observations/292661109",
+      "width": 2048
+    },
+    {
+      "attribution": "no rights reserved",
+      "filename": "03-379183691.jpg",
+      "height": 1365,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/379183691/large.jpg",
+      "license_code": "cc0",
+      "observation_id": 214518758,
+      "observer": "radrat",
+      "photo_id": 379183691,
+      "sha256": "c92e2121796ae8b8817d3bd83486df6939b86f9ad8ff5634583932a1c5eed201",
+      "source_url": "https://www.inaturalist.org/observations/214518758",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) Dan Vickers, some rights reserved (CC BY)",
+      "filename": "04-540965624.jpg",
+      "height": 1800,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/540965624/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 300247097,
+      "observer": "kodiakgarden",
+      "photo_id": 540965624,
+      "sha256": "107871071c251d3bcc502f2d0e864babd9456ee2d03d79c760b146c4b1cf2358",
+      "source_url": "https://www.inaturalist.org/observations/300247097",
+      "width": 1800
+    }
+  ],
+  "schema_version": 1,
+  "scientific_name": "Setophaga magnolia",
+  "slug": "magnolia-warbler",
+  "status": "approved",
+  "taxon_id": 145235
+}
