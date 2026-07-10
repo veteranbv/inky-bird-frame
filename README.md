@@ -182,10 +182,13 @@ uv run inky-bird-frame catalog-publish --config config.toml
 
 Observation windows are `last-day`, `last-week`, `last-30-days`, `last-year`,
 and `all-time`. Discovery distance is configured in kilometers with `radius_km`.
-Rotation modes are `sequential`, `shuffle`, and `weighted`. Shuffle visits every
-active bird before repeating; weighted selection uses local observation counts
-and avoids displaying the same bird twice in succession when alternatives are
-available.
+Rotation modes are `sequential`, `shuffle`, `shuffle_bag`, and `weighted`.
+`shuffle` keeps its existing shuffled-round behavior. `shuffle_bag` persists a
+separate bag: it displays each currently active bird at most once before a
+refill, adds newly active birds to the current bag immediately, prunes inactive
+birds, and avoids a repeat at the refill boundary when alternatives exist.
+`weighted` uses local observation counts and avoids displaying the same bird
+twice in succession when alternatives are available.
 Recovery and operator-override commands are documented in
 [`docs/operations.md`](docs/operations.md).
 

@@ -6,7 +6,11 @@ import unittest
 from inky_bird_frame.birds import BirdSpecies
 from inky_bird_frame.catalog import CatalogEntry
 from inky_bird_frame.config import RotationMode
-from inky_bird_frame.selection import select_catalog_entry, select_rotating_species
+from inky_bird_frame.selection import (
+    select_catalog_entry,
+    select_rotating_species,
+    select_shuffle_bag_entry,
+)
 
 
 def catalog_entry(taxon_id: int, count: int) -> CatalogEntry:
@@ -98,6 +102,95 @@ class SelectionTests(unittest.TestCase):
         )
 
         self.assertEqual(selected.taxon_id, 2)
+
+    def test_shuffle_bag_visits_each_entry_without_replacement_before_refill(self) -> None:
+        entries = [catalog_entry(1, 10), catalog_entry(2, 5), catalog_entry(3, 1)]
+        rng = random.Random(7)
+        remaining: list[int] = []
+        seen: list[int] = []
+        last_taxon_id: int | None = None
+        selected_ids: list[int] = []
+
+        for _ in range(len(entries) * 2):
+            selected, remaining, seen = select_shuffle_bag_entry(
+                entries,
+                last_taxon_id=last_taxon_id,
+                shuffle_bag_remaining=remaining,
+                shuffle_bag_seen=seen,
+                rng=rng,
+            )
+            selected_ids.append(selected.taxon_id)
+            last_taxon_id = selected.taxon_id
+
+        self.assertEqual(set(selected_ids[:3]), {1, 2, 3})
+        self.assertEqual(set(selected_ids[3:]), {1, 2, 3})
+        self.assertTrue(
+            all(left != right for left, right in zip(selected_ids, selected_ids[1:], strict=False))
+        )
+
+    def test_shuffle_bag_adds_new_entries_and_prunes_removed_entries_mid_bag(self) -> None:
+        entries = [catalog_entry(1, 10), catalog_entry(2, 5), catalog_entry(3, 1)]
+        rng = random.Random(7)
+        first, remaining, seen = select_shuffle_bag_entry(
+            entries,
+            last_taxon_id=None,
+            shuffle_bag_remaining=[],
+            shuffle_bag_seen=[],
+            rng=rng,
+        )
+        removed_taxon_id = remaining[0]
+        updated_entries = [entry for entry in entries if entry.taxon_id != removed_taxon_id] + [
+            catalog_entry(4, 2)
+        ]
+        selected_ids = [first.taxon_id]
+
+        while remaining:
+            selected, remaining, seen = select_shuffle_bag_entry(
+                updated_entries,
+                last_taxon_id=selected_ids[-1],
+                shuffle_bag_remaining=remaining,
+                shuffle_bag_seen=seen,
+                rng=rng,
+            )
+            selected_ids.append(selected.taxon_id)
+
+        self.assertNotIn(removed_taxon_id, selected_ids)
+        self.assertEqual(len(selected_ids), len(set(selected_ids)))
+        self.assertIn(4, selected_ids)
+
+    def test_shuffle_bag_selects_an_addition_before_refilling_shown_entries(self) -> None:
+        entries = [catalog_entry(1, 10), catalog_entry(3, 1)]
+
+        selected, remaining, seen = select_shuffle_bag_entry(
+            entries,
+            last_taxon_id=1,
+            shuffle_bag_remaining=[2],
+            shuffle_bag_seen=[1],
+            rng=random.Random(7),
+        )
+
+        self.assertEqual(selected.taxon_id, 3)
+        self.assertEqual(remaining, [])
+        self.assertEqual(seen, [1, 3])
+
+    def test_shuffle_bag_allows_a_singleton_catalog(self) -> None:
+        entries = [catalog_entry(1, 1)]
+        first, remaining, seen = select_shuffle_bag_entry(
+            entries,
+            last_taxon_id=None,
+            shuffle_bag_remaining=[],
+            shuffle_bag_seen=[],
+            rng=random.Random(1),
+        )
+        second, _, _ = select_shuffle_bag_entry(
+            entries,
+            last_taxon_id=first.taxon_id,
+            shuffle_bag_remaining=remaining,
+            shuffle_bag_seen=seen,
+            rng=random.Random(2),
+        )
+
+        self.assertEqual((first.taxon_id, second.taxon_id), (1, 1))
 
 
 if __name__ == "__main__":

@@ -44,8 +44,9 @@ allowed_domains = [
 [display_node]
 controller_url = "http://controller.example:8793"
 state_dir = "var/display-node"
-# sequential visits the sorted active catalog, shuffle visits every active bird before
-# repeating, and weighted uses local observation counts as selection weights.
+# sequential visits the sorted active catalog. shuffle preserves its existing shuffled
+# round behavior. shuffle_bag immediately adds new active birds to its durable bag and
+# visits each active bird at most once before refill. weighted uses observation counts.
 rotation_mode = "shuffle"
 
 [public_catalog]

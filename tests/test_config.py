@@ -164,6 +164,17 @@ class ConfigTests(unittest.TestCase):
             with self.assertRaises(ConfigurationError):
                 load_config(path)
 
+    def test_loads_shuffle_bag_rotation_policy(self) -> None:
+        with TemporaryDirectory() as temporary:
+            path = Path(temporary) / "config.toml"
+            path.write_text(
+                CONFIG.replace('rotation_mode = "weighted"', 'rotation_mode = "shuffle_bag"')
+            )
+
+            config = load_config(path)
+
+        self.assertEqual(config.display_node.rotation_mode, RotationMode.SHUFFLE_BAG)
+
     def test_loads_research_queue_and_notification_settings(self) -> None:
         configured = (
             CONFIG
