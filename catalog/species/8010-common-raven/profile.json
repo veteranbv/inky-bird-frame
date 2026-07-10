@@ -1,0 +1,40 @@
+{
+  "behavior": "Omnivorous, bold and inquisitive; commonly forages on the ground alone or in pairs, and flies with slow wingbeats, glides, and soaring.",
+  "common_name": "Common Raven",
+  "family": "Corvidae",
+  "field_marks": [
+    "Very large, thick-necked corvid with a heavy, straight bill",
+    "Entirely black plumage, including bill, eyes, and legs",
+    "Shaggy, elongated throat feathers (hackles)",
+    "Long, wedge- or diamond-shaped tail in flight",
+    "Long, narrow wings with distinct fingered wingtips"
+  ],
+  "habitat": "Highly adaptable across open and forested landscapes, including woodland, cliffs and coasts, mountains, tundra, grassland, scrub, desert, and human-modified areas.",
+  "measurements": {
+    "length": "56\u201369 cm",
+    "weight": "689\u20131,625 g",
+    "wingspan": "116\u2013118 cm"
+  },
+  "palette": [
+    "sooty black",
+    "blue-black sheen",
+    "charcoal gray",
+    "dark brown-black"
+  ],
+  "scientific_name": "Corvus corax",
+  "sources": [
+    {
+      "title": "Common Raven Identification \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Common_Raven/id"
+    },
+    {
+      "title": "Common Raven Life History \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/common_raven/lifehistory"
+    },
+    {
+      "title": "Common Raven \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/common-raven"
+    }
+  ],
+  "taxon_id": 8010
+}

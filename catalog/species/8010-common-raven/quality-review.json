@@ -1,0 +1,23 @@
+{
+  "anatomy_accuracy": 5,
+  "composition_quality": 5,
+  "findings": [
+    "Live verification confirms the title, scientific name, family, all listed measurements, habitat/behavior summary, and field marks. The illustration matches an adult Common Raven: entirely black plumage, very heavy bill, thick neck with shaggy hackles, black eye/legs/feet, long narrow fingered wing, and wedge-shaped tail.",
+    "The plate shows one head, one beak, two anatomically consistent folded wings, two legs, and one tail; no anomalous or duplicated parts are visible.",
+    "No place name, ZIP code, coordinates, map, or local-observation detail appears."
+  ],
+  "location_free": true,
+  "passed": true,
+  "species_accuracy": 5,
+  "text_accuracy": 5,
+  "verification_sources": [
+    {
+      "title": "Common Raven Identification \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Common_Raven/id"
+    },
+    {
+      "title": "Common Raven \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/common-raven"
+    }
+  ]
+}

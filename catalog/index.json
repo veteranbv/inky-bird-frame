@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-10T13:38:02+00:00",
+  "generated_at": "2026-07-10T13:46:39+00:00",
   "schema_version": 1,
   "species": [
     {
@@ -67,6 +67,17 @@
       "scientific_name": "Spizella passerina",
       "slug": "chipping-sparrow",
       "taxon_id": 9135
+    },
+    {
+      "approved_at": "2026-07-10T13:46:39+00:00",
+      "common_name": "Common Raven",
+      "display_path": "species/8010-common-raven/display.png",
+      "display_sha256": "dd77a2df8adc01c8ef407b92ab04c82d6d53b4c72d6b6eada0e217ca0350918f",
+      "portrait_path": "species/8010-common-raven/portrait.png",
+      "portrait_sha256": "1a3f04e31dcf18e7698474168a2f86b27e45203a0023ce8fc3b96abf45d1888b",
+      "scientific_name": "Corvus corax",
+      "slug": "common-raven",
+      "taxon_id": 8010
     },
     {
       "approved_at": "2026-07-10T03:40:16+00:00",
