@@ -1,0 +1,153 @@
+{
+  "approved_at": "2026-07-10T04:56:30+00:00",
+  "assets": {
+    "display": {
+      "filename": "display.png",
+      "sha256": "904c5a9025d701c744c881aa0e88f0b546cd5df894c6f6695943e649b452c116"
+    },
+    "portrait": {
+      "filename": "portrait.png",
+      "sha256": "6ce877e3671c1b22e72d1d7cef895ba8a9150440301699a32f95226a4f3ae166"
+    }
+  },
+  "common_name": "Northern Flicker",
+  "generation": {
+    "attempt": 2,
+    "generated_at": "2026-07-10T04:56:30+00:00",
+    "generator": "Codex subscription / built-in gpt-image-2",
+    "max_attempts": 3,
+    "prompt_version": "field-journal-v2"
+  },
+  "profile": {
+    "behavior": "Often forages on the ground for ants and beetles; flies with deep flaps and glides, flashing the white rump and colored wing linings; excavates and uses tree cavities.",
+    "common_name": "Northern Flicker",
+    "family": "Picidae",
+    "field_marks": [
+      "Large, slim woodpecker with a rounded head, slightly downcurved pointed bill, and long tapered tail.",
+      "Brownish-gray upperparts finely barred black; pale underparts densely marked with round black spots.",
+      "Bold black crescent-shaped bib across the upper breast.",
+      "Bright white rump patch conspicuous in flight.",
+      "Underwings and underside of tail flash yellow or red, depending on form; males may show a black or red facial whisker."
+    ],
+    "habitat": "Open woodlands, forest edges, scattered-tree fields, burned or disturbed woodland, parks, and other open habitats near trees; also uses wet woodland edges.",
+    "measurements": {
+      "length": "11.0\u201312.2 in (28\u201331 cm)",
+      "weight": "3.9\u20135.6 oz (110\u2013160 g)",
+      "wingspan": "16.5\u201320.1 in (42\u201351 cm)"
+    },
+    "palette": [
+      "brownish gray",
+      "buff tan",
+      "black",
+      "white",
+      "yellow or red-orange"
+    ],
+    "scientific_name": "Colaptes auratus",
+    "sources": [
+      {
+        "title": "Northern Flicker Identification \u2014 Cornell Lab of Ornithology",
+        "url": "https://www.allaboutbirds.org/guide/Northern_Flicker/id"
+      },
+      {
+        "title": "Northern Flicker Life History \u2014 Cornell Lab of Ornithology",
+        "url": "https://www.allaboutbirds.org/guide/Northern_Flicker/lifehistory"
+      },
+      {
+        "title": "Northern Flicker \u2014 U.S. National Park Service",
+        "url": "https://www.nps.gov/miss/learn/nature/birdsflic.htm"
+      }
+    ],
+    "taxon_id": 18236
+  },
+  "quality_review": {
+    "anatomy_accuracy": 4,
+    "composition_quality": 5,
+    "findings": [
+      "No material factual, species, or text errors found. The perched bird is a yellow-shafted adult male: black facial whisker, red nape crescent, barred brown-gray upperparts, black breast crescent, spotted pale underparts, and yellow underwing/tail coloration agree with the verified species accounts and the supplied references.",
+      "The plate depicts one complete bird with one head, one bill, two legs, one tail, and two wings (one largely occluded in the perched view); the isolated head and wing are clearly supplementary field-study details.",
+      "The white rump patch is described accurately but is not prominently exposed in the perched illustration; this is a minor presentation limitation, not a factual error.",
+      "All visible text claims match the verified identity, family, measurements, shape, plumage, behavior, and habitat. No place name, ZIP code, coordinates, map, or local-observation detail appears."
+    ],
+    "location_free": true,
+    "passed": true,
+    "species_accuracy": 5,
+    "text_accuracy": 5,
+    "verification_sources": [
+      {
+        "title": "Northern Flicker Identification \u2014 Cornell Lab of Ornithology",
+        "url": "https://www.allaboutbirds.org/guide/Northern_Flicker/id"
+      },
+      {
+        "title": "Northern Flicker Overview \u2014 Cornell Lab of Ornithology",
+        "url": "https://www.allaboutbirds.org/guide/Northern_Flicker"
+      },
+      {
+        "title": "Northern Flicker \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/northern-flicker?nid=4716&site=nm"
+      },
+      {
+        "title": "Northern Flicker \u2014 U.S. National Park Service",
+        "url": "https://www.nps.gov/miss/learn/nature/birdsflic.htm"
+      }
+    ]
+  },
+  "references": [
+    {
+      "attribution": "(c) Jonathan Eisen, some rights reserved (CC BY)",
+      "filename": "01-595035685.jpg",
+      "height": 1365,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/595035685/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 328381906,
+      "observer": "phylogenomics",
+      "photo_id": 595035685,
+      "sha256": "e02e4a926d432ae63a1342456b7ed4f7b8a765654dba8575e61cf0562e48ef28",
+      "source_url": "https://www.inaturalist.org/observations/328381906",
+      "width": 2048
+    },
+    {
+      "attribution": "no rights reserved",
+      "filename": "02-194749425.jpeg",
+      "height": 2048,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/194749425/large.jpeg",
+      "license_code": "cc0",
+      "observation_id": 115385719,
+      "observer": "wildreturn",
+      "photo_id": 194749425,
+      "sha256": "5c2d0ff452f7033dc698ef70ef3fca983f820c7d60bd465ba8ce8474cf240e0d",
+      "source_url": "https://www.inaturalist.org/observations/115385719",
+      "width": 1770
+    },
+    {
+      "attribution": "no rights reserved",
+      "filename": "03-655993367.jpg",
+      "height": 2048,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/655993367/large.jpg",
+      "license_code": "cc0",
+      "observation_id": 359518188,
+      "observer": "benfh",
+      "photo_id": 655993367,
+      "sha256": "28bb9364be51f422a82e30b2d0427eb5389985fcf8937c289dc2977084f25bc3",
+      "source_url": "https://www.inaturalist.org/observations/359518188",
+      "width": 1536
+    },
+    {
+      "attribution": "(c) Kristy Morley, some rights reserved (CC BY)",
+      "filename": "04-326421846.jpg",
+      "height": 1470,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/326421846/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 186748973,
+      "observer": "kristym",
+      "photo_id": 326421846,
+      "sha256": "a52994f797146569b994a68023d7afa36c4a665d26814e3e7529e08d9384757e",
+      "source_url": "https://www.inaturalist.org/observations/186748973",
+      "width": 1838
+    }
+  ],
+  "schema_version": 1,
+  "scientific_name": "Colaptes auratus",
+  "slug": "northern-flicker",
+  "status": "approved",
+  "taxon_id": 18236
+}

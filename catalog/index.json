@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-10T04:45:42+00:00",
+  "generated_at": "2026-07-10T04:56:30+00:00",
   "schema_version": 1,
   "species": [
     {
@@ -111,6 +111,17 @@
       "scientific_name": "Cardinalis cardinalis",
       "slug": "northern-cardinal",
       "taxon_id": 9083
+    },
+    {
+      "approved_at": "2026-07-10T04:56:30+00:00",
+      "common_name": "Northern Flicker",
+      "display_path": "species/18236-northern-flicker/display.png",
+      "display_sha256": "904c5a9025d701c744c881aa0e88f0b546cd5df894c6f6695943e649b452c116",
+      "portrait_path": "species/18236-northern-flicker/portrait.png",
+      "portrait_sha256": "6ce877e3671c1b22e72d1d7cef895ba8a9150440301699a32f95226a4f3ae166",
+      "scientific_name": "Colaptes auratus",
+      "slug": "northern-flicker",
+      "taxon_id": 18236
     },
     {
       "approved_at": "2026-07-09T22:19:32+00:00",
