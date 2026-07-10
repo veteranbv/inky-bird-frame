@@ -119,11 +119,17 @@ class InaturalistParsingTests(unittest.TestCase):
             "descriptions": {"en": "A small North American heron."},
             "wikipedia_urls": {"en": "https://en.wikipedia.org/wiki/Green_heron"},
         }
-        with patch("inky_bird_frame.birds.get_json", side_effect=[inaturalist, birdnet]):
+        with patch(
+            "inky_bird_frame.birds.get_json", side_effect=[inaturalist, birdnet]
+        ) as get_json:
             context = fetch_taxon_context(5020)
 
         self.assertEqual(context.family, "Ardeidae")
         self.assertEqual(context.summary, "A small North American heron.")
+        self.assertEqual(
+            get_json.call_args_list[1].args[0],
+            "https://birdnet.cornell.edu/taxonomy/api/species/Butorides%20virescens",
+        )
 
     def test_birdnet_fallback_rejects_identity_mismatch(self) -> None:
         expected = parse_inaturalist_taxon(

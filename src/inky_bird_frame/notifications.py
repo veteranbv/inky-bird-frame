@@ -324,8 +324,12 @@ def safe_notify(
             title=title,
             body=body,
         )
-        result = dispatch_notifications(config)
-        return {"queued": queued, **result}
+        return {
+            "queued": queued,
+            "attempted": 0,
+            "delivered": 0,
+            "failed": 0,
+        }
     except Exception as exc:
         return {
             "queued": False,

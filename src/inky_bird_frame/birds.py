@@ -5,7 +5,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from datetime import date, timedelta
 from enum import StrEnum
-from urllib.parse import urlencode
+from urllib.parse import quote, urlencode
 
 from .errors import DataSourceError
 from .http import get_json
@@ -231,7 +231,8 @@ def fetch_taxon_context(taxon_id: int, timeout_seconds: float = 10.0) -> TaxonCo
     context = parse_inaturalist_taxon(payload)
     if context.summary.strip():
         return context
+    species_key = quote(context.scientific_name, safe="")
     birdnet = get_json(
-        f"https://birdnet.cornell.edu/taxonomy/api/species/{taxon_id}", timeout_seconds
+        f"https://birdnet.cornell.edu/taxonomy/api/species/{species_key}", timeout_seconds
     )
     return parse_birdnet_taxon(birdnet, context)

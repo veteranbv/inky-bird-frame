@@ -343,17 +343,20 @@ def load_config(path: Path) -> AppConfig:
         if len(parts) != 2 or any(not part or part in {".", ".."} for part in parts):
             raise ConfigurationError("repository must use the owner/name format")
 
-    allowed_domains = _string_tuple(
-        research,
-        "allowed_domains",
-        default=ResearchConfig().allowed_domains,
+    allowed_domains = tuple(
+        domain.casefold()
+        for domain in _string_tuple(
+            research,
+            "allowed_domains",
+            default=ResearchConfig().allowed_domains,
+        )
     )
     if any(
         not domain or "://" in domain or "/" in domain or domain.startswith(".")
         for domain in allowed_domains
     ):
         raise ConfigurationError("research.allowed_domains must contain bare DNS domains")
-    if len({domain.casefold() for domain in allowed_domains}) < 2:
+    if len(set(allowed_domains)) < 2:
         raise ConfigurationError(
             "research.allowed_domains must contain at least two distinct domains"
         )

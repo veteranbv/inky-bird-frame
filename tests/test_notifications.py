@@ -16,6 +16,7 @@ from inky_bird_frame.notifications import (
     record_degradation,
     record_recovery,
     requeue_dead_letters,
+    safe_notify,
     send_notification_test,
     validate_notification_destinations,
 )
@@ -95,6 +96,24 @@ class NotificationTests(unittest.TestCase):
 
             with self.assertRaisesRegex(ConfigurationError, "disabled"):
                 send_notification_test(config)
+
+    def test_safe_notify_enqueues_without_provider_delivery(self) -> None:
+        with TemporaryDirectory() as temporary:
+            config = self._config(temporary)
+            with patch("inky_bird_frame.notifications._deliver") as deliver:
+                result = safe_notify(
+                    config,
+                    NotificationEvent.TERMINAL_ERROR,
+                    dedupe_key="queued-only",
+                    title="Failure",
+                    body="Something failed",
+                )
+            status = notification_status(config)
+
+        deliver.assert_not_called()
+        self.assertTrue(result["queued"])
+        self.assertEqual(result["attempted"], 0)
+        self.assertEqual(status["pending"], 1)
 
     def test_partial_delivery_retries_only_failed_destination(self) -> None:
         now = datetime(2026, 7, 10, tzinfo=UTC)

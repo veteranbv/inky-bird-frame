@@ -228,6 +228,25 @@ allowed_domains = ["allaboutbirds.org", "ALLABOUTBIRDS.ORG"]
             with self.assertRaisesRegex(ConfigurationError, "two distinct domains"):
                 load_config(path)
 
+    def test_research_domains_are_normalized_for_dns_matching(self) -> None:
+        configured = (
+            CONFIG
+            + """
+
+[research]
+allowed_domains = ["ALLABOUTBIRDS.ORG", "Audubon.org"]
+"""
+        )
+        with TemporaryDirectory() as temporary:
+            path = Path(temporary) / "config.toml"
+            path.write_text(configured)
+            config = load_config(path)
+
+        self.assertEqual(
+            config.research.allowed_domains,
+            ("allaboutbirds.org", "audubon.org"),
+        )
+
     def test_enabled_notifications_require_a_destination(self) -> None:
         with TemporaryDirectory() as temporary:
             path = Path(temporary) / "config.toml"
