@@ -29,9 +29,8 @@ if [ ! -x "${uv_bin}" ]; then
   exit 1
 fi
 
-mkdir -p "${app_dir}" "${app_dir}/catalog" "${support_dir}" "${log_dir}" "${agents_dir}"
+mkdir -p "${app_dir}" "${support_dir}" "${log_dir}" "${agents_dir}"
 rsync -a --delete "${root}/src/" "${app_dir}/src/"
-rsync -a "${root}/catalog/" "${app_dir}/catalog/"
 for file in pyproject.toml uv.lock README.md LICENSE; do
   install -m 0644 "${root}/${file}" "${app_dir}/${file}"
 done
@@ -40,19 +39,31 @@ done
 
 "${app_dir}/.venv/bin/python" - \
   "${serve_plist}" "${refresh_plist}" "${generation_plist}" "${catalog_publish_plist}" \
-  "${app_dir}" "${config_path}" "${log_dir}" <<'PY'
+  "${root}" "${app_dir}" "${config_path}" "${log_dir}" <<'PY'
 import plistlib
 import sys
 from pathlib import Path
 
+from inky_bird_frame.catalog import catalog_state_lock, rebuild_catalog_index
 from inky_bird_frame.config import load_config
+from inky_bird_frame.publisher import sync_public_catalog
 
-serve_path, refresh_path, generation_path, catalog_publish_path, app_dir, config_path, log_dir = map(
-    Path, sys.argv[1:]
-)
+(
+    serve_path,
+    refresh_path,
+    generation_path,
+    catalog_publish_path,
+    root,
+    app_dir,
+    config_path,
+    log_dir,
+) = map(Path, sys.argv[1:])
 executable = app_dir / ".venv/bin/inky-bird-frame"
 config = load_config(config_path)
 schedule = config.schedule
+with catalog_state_lock(config.controller.state_dir):
+    rebuild_catalog_index(config.controller.catalog_dir)
+    sync_public_catalog(root / "catalog", config.controller.catalog_dir)
 
 common = {
     "WorkingDirectory": str(app_dir),
@@ -116,7 +127,7 @@ PY
 
 if [ -f "${catalog_publish_plist}" ]; then
   "${app_dir}/.venv/bin/inky-bird-frame" catalog-publish \
-    --config "${config_path}" --dry-run >/dev/null
+    --config "${config_path}" --dry-run
 fi
 
 uid=$(id -u)
