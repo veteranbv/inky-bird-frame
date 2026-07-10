@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-10T03:29:00+00:00",
+  "generated_at": "2026-07-10T03:40:16+00:00",
   "schema_version": 1,
   "species": [
     {
@@ -23,6 +23,17 @@
       "scientific_name": "Poecile carolinensis",
       "slug": "carolina-chickadee",
       "taxon_id": 144814
+    },
+    {
+      "approved_at": "2026-07-10T03:40:16+00:00",
+      "common_name": "Downy Woodpecker",
+      "display_path": "species/792988-downy-woodpecker/display.png",
+      "display_sha256": "5975544180ea088f4f92d0524856aaf490bd6e189930582dce34630c91a2267b",
+      "portrait_path": "species/792988-downy-woodpecker/portrait.png",
+      "portrait_sha256": "0c71cc524b6d7f1cbe50459ff753f38bcc36db1bf8bc970fa9b8bd68b0bf1894",
+      "scientific_name": "Dryobates pubescens",
+      "slug": "downy-woodpecker",
+      "taxon_id": 792988
     },
     {
       "approved_at": "2026-07-09T00:00:00+00:00",
