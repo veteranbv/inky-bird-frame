@@ -1,0 +1,24 @@
+{
+  "anatomy_accuracy": 4,
+  "composition_quality": 5,
+  "findings": [
+    "Independent verification confirms the identity: White-throated Sparrow (Zonotrichia albicollis), family Passerellidae. The plate's length, weight, and wingspan match Cornell exactly.",
+    "All visible factual text is supported: ground scratching/foraging, flocking, whistled song, woodland-edge/thicket/bog-edge habitat, white throat with dark malar border, yellow lores, striped head morphs, gray bill, pinkish legs, brown streaked upperparts, gray underparts, and pale wing bars.",
+    "The primary bird has one head, one beak, two legs, one tail, and an anatomically implied pair of wings; no extra or missing body parts are depicted. Its illustrated bill is somewhat long and pointed, and the feet/claws are slightly oversized and stylized versus the reference photos, but these are minor non-material deviations.",
+    "No place name, ZIP code, coordinates, map, or local-observation detail appears on the plate."
+  ],
+  "location_free": true,
+  "passed": true,
+  "species_accuracy": 5,
+  "text_accuracy": 5,
+  "verification_sources": [
+    {
+      "title": "Cornell Lab of Ornithology \u2014 White-throated Sparrow Identification",
+      "url": "https://www.allaboutbirds.org/guide/White-throated_Sparrow/id"
+    },
+    {
+      "title": "Smithsonian's National Zoo and Conservation Biology Institute \u2014 White-throated Sparrow",
+      "url": "https://nationalzoo.si.edu/animals/white-throated-sparrow"
+    }
+  ]
+}
