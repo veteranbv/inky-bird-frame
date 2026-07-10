@@ -94,14 +94,16 @@ This is everything required to build the part that hangs on the wall.
 | [Raspberry Pi Zero 2 W with pre-soldered header](https://www.pishop.us/product/raspberry-pi-zero-2w-with-headers/) | 1 | $20.75 | $20.75 | Compact Wi-Fi display node; no soldering required |
 | [5V 2.5A Micro-USB power supply](https://www.adafruit.com/product/1995) | 1 | $8.25 | $8.25 | Powers the display node with a standard straight cable |
 | [Official Raspberry Pi 64GB A2 microSD card](https://www.pishop.us/product/raspberry-pi-sd-card-64gb/) | 1 | $29.95 | $29.95 | Operating system and local image cache |
-| [Golden State Art 12 x 16 inch bronze frame](https://www.amazon.com/gp/aw/d/B0C1Q5MYG9) | 1 | $24.99 | $24.99 | Portrait frame and 8 x 10.5 inch mat |
+| [Golden State Art 12 x 16 inch bronze frame](https://www.amazon.com/gp/aw/d/B0C1Q5MYG9) | 1 | $24.99 | $24.99 | Portrait frame; the included 8 x 10.5 inch mat must be enlarged or replaced |
 | **Framed display subtotal** |  |  | **$358.94** | Before tax and shipping |
 
-The display's usable area is approximately 7.98 x 10.65 inches, so the frame's
-8 x 10.5 inch mat opening is a close fit. Before final assembly, test-fit the
-display and Pi, trace their position on the supplied rear backing board, and
-cut an opening that leaves the Pi, microSD card, and power connector accessible.
-The Pi connects directly to the display and does not need a separate case. A
+The display's active area is approximately 7.98 x 10.65 inches. The included
+8 x 10.5 inch mat masks part of that area and must not be used unchanged. Enlarge
+it or order a custom mat with an opening of at least 8.1 x 10.75 inches, then
+verify the opening against the physical panel before cutting. Test-fit the
+display and Pi, trace their position on the supplied rear backing board, and cut
+an opening that leaves the Pi, microSD card, and power connector accessible. The
+Pi connects directly to the display and does not need a separate case. A
 right-angle power cable is not required.
 
 ### Dedicated controller
