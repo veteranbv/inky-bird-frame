@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-09T22:46:35+00:00",
+  "generated_at": "2026-07-10T03:24:09+00:00",
   "schema_version": 1,
   "species": [
     {
@@ -56,6 +56,17 @@
       "scientific_name": "Troglodytes aedon",
       "slug": "northern-house-wren",
       "taxon_id": 7562
+    },
+    {
+      "approved_at": "2026-07-10T03:24:09+00:00",
+      "common_name": "Pileated Woodpecker",
+      "display_path": "species/17855-pileated-woodpecker/display.png",
+      "display_sha256": "0adab99caa63b126c582deb456a5edb3853e02e4f6def90123525402b4b0bb4a",
+      "portrait_path": "species/17855-pileated-woodpecker/portrait.png",
+      "portrait_sha256": "5896e1d515226222f0f39fd9f3643856832e546055c1f793088162fef423b156",
+      "scientific_name": "Dryocopus pileatus",
+      "slug": "pileated-woodpecker",
+      "taxon_id": 17855
     },
     {
       "approved_at": "2026-07-09T22:29:46+00:00",
