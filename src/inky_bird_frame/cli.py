@@ -206,7 +206,7 @@ def generate_command(args: argparse.Namespace) -> int:
                 "blocking the queue."
             ),
         )
-    elif result.get("deferred_count") == 0:
+    elif result.get("outstanding_retry_count") == 0:
         safe_record_recovery(
             config,
             key="generation-items",

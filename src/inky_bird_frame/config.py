@@ -353,8 +353,10 @@ def load_config(path: Path) -> AppConfig:
         for domain in allowed_domains
     ):
         raise ConfigurationError("research.allowed_domains must contain bare DNS domains")
-    if not allowed_domains:
-        raise ConfigurationError("research.allowed_domains must not be empty")
+    if len({domain.casefold() for domain in allowed_domains}) < 2:
+        raise ConfigurationError(
+            "research.allowed_domains must contain at least two distinct domains"
+        )
     notifications_enabled = _optional_boolean(notifications, "enabled", default=False)
     destinations = _notification_destinations(
         notifications.get("destinations"), resolve_environment=notifications_enabled

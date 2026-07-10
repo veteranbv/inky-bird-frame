@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import json
 import unittest
-from datetime import UTC, datetime
+from datetime import UTC, datetime, timedelta
 from pathlib import Path
 from tempfile import TemporaryDirectory
 from typing import cast
@@ -291,6 +291,65 @@ class ControllerTests(unittest.TestCase):
         self.assertEqual(attempted, [later.taxon_id])
         self.assertEqual(result["attempted_count"], 1)
         self.assertEqual(result["deferred_count"], 2)
+        self.assertEqual(result["outstanding_retry_count"], 2)
+
+    def test_due_unattempted_retry_remains_outstanding(self) -> None:
+        first = BirdSpecies(1, "First Bird", "Avis first", 4, "iNaturalist")
+        retrying = BirdSpecies(2, "Retrying Bird", "Avis retrying", 3, "iNaturalist")
+        entry = CatalogEntry(
+            taxon_id=first.taxon_id,
+            common_name=first.common_name,
+            scientific_name=first.scientific_name,
+            slug="first-bird",
+            portrait_path="species/1-first-bird/portrait.png",
+            portrait_sha256="portrait",
+            display_path="species/1-first-bird/display.png",
+            display_sha256="display",
+            approved_at=datetime.now(UTC).isoformat(),
+        )
+        with TemporaryDirectory() as temporary:
+            config_path = Path(temporary) / "config.toml"
+            config_path.write_text(CONFIG)
+            config = load_config(config_path)
+            config.controller.state_dir.mkdir(parents=True)
+            (config.controller.state_dir / "discovery.json").write_text(
+                json.dumps(
+                    {
+                        "schema_version": 1,
+                        "refreshed_at": datetime.now(UTC).isoformat(),
+                        "place_name": "Exampleville",
+                        "state": "XY",
+                        "species": [
+                            {
+                                "taxon_id": species.taxon_id,
+                                "common_name": species.common_name,
+                                "scientific_name": species.scientific_name,
+                                "observation_count": species.observation_count,
+                                "source": species.source,
+                            }
+                            for species in (first, retrying)
+                        ],
+                    }
+                )
+            )
+            RetryStore(config.controller.state_dir / "generation-retries.json").record_failure(
+                retrying.taxon_id,
+                DataSourceError("temporary"),
+                now=datetime.now(UTC) - timedelta(minutes=31),
+                initial_minutes=30,
+                maximum_minutes=60,
+            )
+            with (
+                patch("inky_bird_frame.controller.approved_taxon_ids", return_value=set()),
+                patch("inky_bird_frame.controller.generate_candidate"),
+                patch("inky_bird_frame.controller.approve_candidate", return_value=entry),
+                patch("inky_bird_frame.controller._write_active_catalog", return_value=0),
+            ):
+                result = run_generation_cycle(config)
+
+        self.assertEqual(result["attempted_count"], 1)
+        self.assertEqual(result["deferred_count"], 0)
+        self.assertEqual(result["outstanding_retry_count"], 1)
 
     def test_overlapping_refresh_is_rejected_before_discovery(self) -> None:
         with TemporaryDirectory() as temporary:

@@ -212,6 +212,22 @@ insufficient_references_retry_minutes = 1440""",
             (NotificationEvent.GENERATION_APPROVED, NotificationEvent.TERMINAL_ERROR),
         )
 
+    def test_research_requires_two_distinct_allowed_domains(self) -> None:
+        configured = (
+            CONFIG
+            + """
+
+[research]
+allowed_domains = ["allaboutbirds.org", "ALLABOUTBIRDS.ORG"]
+"""
+        )
+        with TemporaryDirectory() as temporary:
+            path = Path(temporary) / "config.toml"
+            path.write_text(configured)
+
+            with self.assertRaisesRegex(ConfigurationError, "two distinct domains"):
+                load_config(path)
+
     def test_enabled_notifications_require_a_destination(self) -> None:
         with TemporaryDirectory() as temporary:
             path = Path(temporary) / "config.toml"

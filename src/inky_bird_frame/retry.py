@@ -109,6 +109,12 @@ class RetryStore:
             key=lambda record: record.next_attempt_at,
         )
 
+    def outstanding(self, taxon_ids: set[int]) -> list[RetryRecord]:
+        return sorted(
+            (record for taxon_id, record in self._records.items() if taxon_id in taxon_ids),
+            key=lambda record: record.next_attempt_at,
+        )
+
     def records(self) -> list[RetryRecord]:
         return sorted(self._records.values(), key=lambda record: record.next_attempt_at)
 

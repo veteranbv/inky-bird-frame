@@ -719,9 +719,9 @@ def run_generation_cycle(config: AppConfig) -> dict[str, object]:
                 species for species in queued_species if species.taxon_id not in approved_after
             ]
             _write_generation_queue(config, remaining_queue)
-        deferred = retry_store.deferred(
-            {species.taxon_id for species in eligible}, datetime.now(UTC)
-        )
+        eligible_taxa = {species.taxon_id for species in eligible}
+        deferred = retry_store.deferred(eligible_taxa, datetime.now(UTC))
+        outstanding_retries = retry_store.outstanding(eligible_taxa)
         return {
             "discovery": {
                 "refreshed_at": snapshot.refreshed_at.isoformat(),
@@ -738,6 +738,7 @@ def run_generation_cycle(config: AppConfig) -> dict[str, object]:
             "attempted_count": attempted_count,
             "deferred_count": len(deferred),
             "deferred": [record.as_dict() for record in deferred],
+            "outstanding_retry_count": len(outstanding_retries),
             "queued_count": len(remaining_queue),
             "generated": generated,
             "failures": failures,

@@ -79,6 +79,7 @@ class CliTests(unittest.TestCase):
             "generated": [],
             "failures": [],
             "deferred_count": 0,
+            "outstanding_retry_count": 0,
         }
         with (
             patch("inky_bird_frame.cli._config"),
@@ -97,7 +98,8 @@ class CliTests(unittest.TestCase):
             "published_pending": [],
             "generated": [],
             "failures": [],
-            "deferred_count": 1,
+            "deferred_count": 0,
+            "outstanding_retry_count": 1,
         }
         with (
             patch("inky_bird_frame.cli._config"),
