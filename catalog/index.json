@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-10T03:40:16+00:00",
+  "generated_at": "2026-07-10T03:53:15+00:00",
   "schema_version": 1,
   "species": [
     {
@@ -89,6 +89,17 @@
       "scientific_name": "Tachycineta bicolor",
       "slug": "tree-swallow",
       "taxon_id": 11935
+    },
+    {
+      "approved_at": "2026-07-10T03:53:15+00:00",
+      "common_name": "Turkey Vulture",
+      "display_path": "species/4756-turkey-vulture/display.png",
+      "display_sha256": "b1502bbc1572eb47cbac9ca505568faa0a0de5c27ca6074eb772b40e172d7f35",
+      "portrait_path": "species/4756-turkey-vulture/portrait.png",
+      "portrait_sha256": "ce7568772b8ab4e31ee1df76df9518c9bf1341eeb8d0ba5fbaee98210f1ada23",
+      "scientific_name": "Cathartes aura",
+      "slug": "turkey-vulture",
+      "taxon_id": 4756
     },
     {
       "approved_at": "2026-07-10T03:29:00+00:00",
