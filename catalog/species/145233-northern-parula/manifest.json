@@ -1,0 +1,143 @@
+{
+  "approved_at": "2026-07-10T18:03:54+00:00",
+  "assets": {
+    "display": {
+      "filename": "display.png",
+      "sha256": "ce79a025214b4a8359db7b12bb27075deeca287a42b5ea89499b82c118b21395"
+    },
+    "portrait": {
+      "filename": "portrait.png",
+      "sha256": "187b38605eb3b245add1796e9f8d9650a82a428086598a6c16c2f089a697fa65"
+    }
+  },
+  "common_name": "Northern Parula",
+  "generation": {
+    "attempt": 1,
+    "generated_at": "2026-07-10T18:03:54+00:00",
+    "generator": "Codex subscription / built-in gpt-image-2",
+    "max_attempts": 3,
+    "prompt_version": "field-journal-v2"
+  },
+  "profile": {
+    "behavior": "Active foliage gleaner; rapidly hops and flits through branches, taking insects and spiders from leaves and twig tips.",
+    "common_name": "Northern Parula",
+    "family": "Parulidae",
+    "field_marks": [
+      "Tiny, compact warbler with a short tail and thin, pointed bill.",
+      "Blue-gray head and upperparts with a yellow-green patch centered on the back.",
+      "Two crisp white wingbars on dark wings.",
+      "Bright yellow throat and upper breast contrasting with a whitish belly.",
+      "Pale white eye crescents are conspicuous.",
+      "Adult male typically shows a dark and chestnut breast band; females and immature birds are paler and usually lack it."
+    ],
+    "habitat": "Mature, humid deciduous or coniferous forest, especially along streams, swamps, and other wet lowlands with hanging mosses or lichens; also uses wooded and scrubby habitats outside the breeding season.",
+    "measurements": {
+      "length": "4.3\u20134.7 in (11\u201312 cm)",
+      "weight": "0.2\u20130.4 oz (6\u201311 g)",
+      "wingspan": "6.3\u20137.1 in (16\u201318 cm)"
+    },
+    "palette": [
+      "blue-gray",
+      "yellow-green",
+      "bright yellow",
+      "white",
+      "chestnut-rust"
+    ],
+    "scientific_name": "Setophaga americana",
+    "sources": [
+      {
+        "title": "Northern Parula | Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/northern-parula"
+      },
+      {
+        "title": "Northern Parula Life History | All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Northern_Parula/lifehistory"
+      }
+    ],
+    "taxon_id": 145233
+  },
+  "quality_review": {
+    "anatomy_accuracy": 4,
+    "composition_quality": 5,
+    "findings": [
+      "Identity is supported: the plate shows Northern Parula\u2019s blue-gray upperparts, yellow-green back patch, paired white wingbars, yellow throat/breast, white eye crescents, pale belly, and male chestnut breast marking.",
+      "Measurements, scientific name, family, habitat, and behavior text agree with the live Audubon and Cornell Lab species pages. Cornell gives weight as 5\u201311 g while Audubon gives 6\u201311 g; the plate\u2019s 6\u201311 g follows Audubon.",
+      "Minor illustration limitations: the male\u2019s dark breast band is understated relative to field-reference photos, and the body/tail read slightly fuller and longer than typical. These are not material identification errors.",
+      "The visible profile is anatomically coherent: one head, one beak, two legs, one tail, and a normal paired-wing body plan; no extra or missing body parts are depicted.",
+      "No place name, ZIP code, coordinates, map, or local-observation detail appears."
+    ],
+    "location_free": true,
+    "passed": true,
+    "species_accuracy": 4,
+    "text_accuracy": 5,
+    "verification_sources": [
+      {
+        "title": "Northern Parula | Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/northern-parula"
+      },
+      {
+        "title": "Northern Parula Identification | All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Northern_Parula/id/ac"
+      }
+    ]
+  },
+  "references": [
+    {
+      "attribution": "(c) Blake Ross, some rights reserved (CC BY)",
+      "filename": "01-140095176.jpg",
+      "height": 1566,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/140095176/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 85173528,
+      "observer": "blakemross",
+      "photo_id": 140095176,
+      "sha256": "06e5ec5171e91e9876bc201c4c21ca017261c996f6097364e403196ba3739ca8",
+      "source_url": "https://www.inaturalist.org/observations/85173528",
+      "width": 2048
+    },
+    {
+      "attribution": "no rights reserved",
+      "filename": "02-670703669.jpg",
+      "height": 1365,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/670703669/large.jpg",
+      "license_code": "cc0",
+      "observation_id": 367275618,
+      "observer": "radrat",
+      "photo_id": 670703669,
+      "sha256": "846366b7add8c028bf9f883ea4cbb2219b8c3fb021f9c9ec3a8e8a69d0927637",
+      "source_url": "https://www.inaturalist.org/observations/367275618",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) Joao Quental, some rights reserved (CC BY)",
+      "filename": "03-625524480.jpg",
+      "height": 1365,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/625524480/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 343398031,
+      "observer": "joaoquental",
+      "photo_id": 625524480,
+      "sha256": "61d8b6e732c32c3af38d3805e6797b9ed3ca70953e70f2c629bad5566aa9f7e3",
+      "source_url": "https://www.inaturalist.org/observations/343398031",
+      "width": 2048
+    },
+    {
+      "attribution": "no rights reserved",
+      "filename": "04-195790621.jpeg",
+      "height": 1652,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/195790621/large.jpeg",
+      "license_code": "cc0",
+      "observation_id": 116006627,
+      "observer": "kcthetc1",
+      "photo_id": 195790621,
+      "sha256": "4191e4987c593ce9531e620c29586649e0e4f98586ff3fdedd250eec8ee86499",
+      "source_url": "https://www.inaturalist.org/observations/116006627",
+      "width": 2048
+    }
+  ],
+  "schema_version": 1,
+  "scientific_name": "Setophaga americana",
+  "slug": "northern-parula",
+  "status": "approved",
+  "taxon_id": 145233
+}

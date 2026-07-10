@@ -1,0 +1,38 @@
+{
+  "behavior": "Active foliage gleaner; rapidly hops and flits through branches, taking insects and spiders from leaves and twig tips.",
+  "common_name": "Northern Parula",
+  "family": "Parulidae",
+  "field_marks": [
+    "Tiny, compact warbler with a short tail and thin, pointed bill.",
+    "Blue-gray head and upperparts with a yellow-green patch centered on the back.",
+    "Two crisp white wingbars on dark wings.",
+    "Bright yellow throat and upper breast contrasting with a whitish belly.",
+    "Pale white eye crescents are conspicuous.",
+    "Adult male typically shows a dark and chestnut breast band; females and immature birds are paler and usually lack it."
+  ],
+  "habitat": "Mature, humid deciduous or coniferous forest, especially along streams, swamps, and other wet lowlands with hanging mosses or lichens; also uses wooded and scrubby habitats outside the breeding season.",
+  "measurements": {
+    "length": "4.3\u20134.7 in (11\u201312 cm)",
+    "weight": "0.2\u20130.4 oz (6\u201311 g)",
+    "wingspan": "6.3\u20137.1 in (16\u201318 cm)"
+  },
+  "palette": [
+    "blue-gray",
+    "yellow-green",
+    "bright yellow",
+    "white",
+    "chestnut-rust"
+  ],
+  "scientific_name": "Setophaga americana",
+  "sources": [
+    {
+      "title": "Northern Parula | Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/northern-parula"
+    },
+    {
+      "title": "Northern Parula Life History | All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Northern_Parula/lifehistory"
+    }
+  ],
+  "taxon_id": 145233
+}

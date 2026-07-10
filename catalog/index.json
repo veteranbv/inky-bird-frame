@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-10T17:55:25+00:00",
+  "generated_at": "2026-07-10T18:03:54+00:00",
   "schema_version": 1,
   "species": [
     {
@@ -287,6 +287,17 @@
       "scientific_name": "Troglodytes aedon",
       "slug": "northern-house-wren",
       "taxon_id": 7562
+    },
+    {
+      "approved_at": "2026-07-10T18:03:54+00:00",
+      "common_name": "Northern Parula",
+      "display_path": "species/145233-northern-parula/display.png",
+      "display_sha256": "ce79a025214b4a8359db7b12bb27075deeca287a42b5ea89499b82c118b21395",
+      "portrait_path": "species/145233-northern-parula/portrait.png",
+      "portrait_sha256": "187b38605eb3b245add1796e9f8d9650a82a428086598a6c16c2f089a697fa65",
+      "scientific_name": "Setophaga americana",
+      "slug": "northern-parula",
+      "taxon_id": 145233
     },
     {
       "approved_at": "2026-07-10T03:24:09+00:00",
