@@ -35,8 +35,10 @@ rotation_mode = "weighted"
 [public_catalog]
 enabled = true
 checkout_dir = "var/public-catalog"
+repository = "example/inky-bird-frame"
+gh_path = "/opt/homebrew/bin/gh"
 remote = "public"
-branch = "catalog"
+base_branch = "main"
 commit_name = "Catalog Publisher"
 commit_email = "catalog@example.test"
 
@@ -70,7 +72,9 @@ class ConfigTests(unittest.TestCase):
             (Path(temporary) / "var/public-catalog").resolve(),
         )
         self.assertEqual(config.public_catalog.remote, "public")
-        self.assertEqual(config.public_catalog.branch, "catalog")
+        self.assertEqual(config.public_catalog.repository, "example/inky-bird-frame")
+        self.assertEqual(config.public_catalog.gh_path, Path("/opt/homebrew/bin/gh"))
+        self.assertEqual(config.public_catalog.base_branch, "main")
         self.assertEqual(config.public_catalog.commit_name, "Catalog Publisher")
         self.assertEqual(config.public_catalog.commit_email, "catalog@example.test")
         self.assertEqual(config.schedule.refresh_minutes, 15)
@@ -141,6 +145,15 @@ class ConfigTests(unittest.TestCase):
             path.write_text(invalid)
 
             with self.assertRaisesRegex(ConfigurationError, "checkout_dir is required"):
+                load_config(path)
+
+    def test_enabled_public_catalog_requires_repository(self) -> None:
+        invalid = CONFIG.replace('repository = "example/inky-bird-frame"\n', "")
+        with TemporaryDirectory() as temporary:
+            path = Path(temporary) / "config.toml"
+            path.write_text(invalid)
+
+            with self.assertRaisesRegex(ConfigurationError, "repository is required"):
                 load_config(path)
 
     def test_rejects_invalid_rotation_policy(self) -> None:

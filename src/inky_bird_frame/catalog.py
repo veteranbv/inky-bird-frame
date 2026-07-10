@@ -209,25 +209,34 @@ def _manifest_entry(manifest_path: Path, catalog_dir: Path) -> CatalogEntry:
     )
 
 
-def rebuild_catalog_index(catalog_dir: Path) -> list[CatalogEntry]:
+def read_catalog_entries(catalog_dir: Path) -> list[CatalogEntry]:
     species_dir = catalog_dir / "species"
     entries = [
         _manifest_entry(path, catalog_dir) for path in sorted(species_dir.glob("*/manifest.json"))
     ]
     entries.sort(key=lambda item: (item.common_name.casefold(), item.taxon_id))
+    return entries
+
+
+def catalog_index_data(entries: list[CatalogEntry]) -> dict[str, object]:
+    return {
+        "schema_version": SCHEMA_VERSION,
+        "generated_at": max((entry.approved_at for entry in entries), default=None),
+        "species": [entry.as_dict() for entry in entries],
+    }
+
+
+def rebuild_catalog_index(catalog_dir: Path) -> list[CatalogEntry]:
+    entries = read_catalog_entries(catalog_dir)
     write_json_atomic(
         catalog_dir / "index.json",
-        {
-            "schema_version": SCHEMA_VERSION,
-            "generated_at": max((entry.approved_at for entry in entries), default=None),
-            "species": [entry.as_dict() for entry in entries],
-        },
+        catalog_index_data(entries),
     )
     return entries
 
 
 def approved_taxon_ids(catalog_dir: Path) -> set[int]:
-    entries = rebuild_catalog_index(catalog_dir)
+    entries = read_catalog_entries(catalog_dir)
     return {entry.taxon_id for entry in entries}
 
 

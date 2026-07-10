@@ -26,12 +26,15 @@ state_dir = "var/display-node"
 rotation_mode = "shuffle"
 
 [public_catalog]
+# The trusted controller opens and owner-merges catalog-only PRs in this repository.
 # Publishing is independent of generation and never delays the display.
 enabled = false
-# Clone a dedicated public catalog repository here, then enable publishing.
-# checkout_dir = "var/public-catalog"
+# Clone this project repository into a writable controller-only checkout.
+# checkout_dir = "var/source-repository"
+# repository = "owner/inky-bird-frame"
+gh_path = "gh"
 remote = "origin"
-branch = "main"
+base_branch = "main"
 # Git commit identity only; authentication belongs in the checkout's Git configuration.
 commit_name = "Inky Bird Frame Catalog"
 commit_email = "inky-bird-frame@users.noreply.github.com"

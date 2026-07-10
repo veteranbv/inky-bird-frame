@@ -58,8 +58,10 @@ class DisplayNodeConfig:
 class PublicCatalogConfig:
     enabled: bool = False
     checkout_dir: Path | None = None
+    repository: str | None = None
+    gh_path: Path = Path("gh")
     remote: str = "origin"
-    branch: str = "main"
+    base_branch: str = "main"
     commit_name: str = "Inky Bird Frame Catalog"
     commit_email: str = "inky-bird-frame@users.noreply.github.com"
 
@@ -195,9 +197,14 @@ def load_config(path: Path) -> AppConfig:
         else None
     )
     if public_catalog_enabled and checkout_dir is None:
-        raise ConfigurationError(
-            "checkout_dir is required when public catalog publishing is enabled"
-        )
+        raise ConfigurationError("checkout_dir is required when catalog publishing is enabled")
+    repository = _string(public_catalog, "repository") if "repository" in public_catalog else None
+    if public_catalog_enabled and repository is None:
+        raise ConfigurationError("repository is required when catalog publishing is enabled")
+    if repository is not None:
+        parts = repository.split("/")
+        if len(parts) != 2 or any(not part or part in {".", ".."} for part in parts):
+            raise ConfigurationError("repository must use the owner/name format")
 
     return AppConfig(
         discovery=DiscoveryConfig(
@@ -227,8 +234,12 @@ def load_config(path: Path) -> AppConfig:
         public_catalog=PublicCatalogConfig(
             enabled=public_catalog_enabled,
             checkout_dir=checkout_dir,
+            repository=repository,
+            gh_path=_executable_path(
+                _optional_string(public_catalog, "gh_path", default="gh"), base_dir
+            ),
             remote=_optional_string(public_catalog, "remote", default="origin"),
-            branch=_optional_string(public_catalog, "branch", default="main"),
+            base_branch=_optional_string(public_catalog, "base_branch", default="main"),
             commit_name=_optional_string(
                 public_catalog, "commit_name", default="Inky Bird Frame Catalog"
             ),

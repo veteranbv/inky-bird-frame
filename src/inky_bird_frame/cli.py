@@ -8,7 +8,7 @@ import shutil
 import sys
 from pathlib import Path
 
-from .birds import BirdSpecies
+from .birds import BirdSpecies, ObservationWindow, parse_observation_window
 from .catalog import (
     approve_candidate,
     find_taxon_directory,
@@ -19,6 +19,8 @@ from .catalog import (
 from .config import AppConfig, load_config
 from .controller import (
     discover_species,
+    enqueue_seed_species,
+    read_generation_queue,
     run_controller_cycle,
     run_generation_cycle,
     run_refresh_cycle,
@@ -96,6 +98,19 @@ def generate_command(args: argparse.Namespace) -> int:
     return 0
 
 
+def seed_command(args: argparse.Namespace) -> int:
+    print_result(
+        enqueue_seed_species(
+            _config(args),
+            window=parse_observation_window(args.window),
+            radius_km=args.radius_km,
+            species_limit=args.species_limit,
+            dry_run=args.dry_run,
+        )
+    )
+    return 0
+
+
 def approve_command(args: argparse.Namespace) -> int:
     config = _config(args)
     entry = approve_candidate(
@@ -158,6 +173,7 @@ def status_command(args: argparse.Namespace) -> int:
         {
             "approved": [entry.as_dict() for entry in entries],
             "pending": pending,
+            "queued": [species_to_dict(item) for item in read_generation_queue(config)],
             "failed": [
                 str(path) for path in sorted((config.controller.state_dir / "failed").glob("*"))
             ],
@@ -244,6 +260,21 @@ def build_parser() -> argparse.ArgumentParser:
     add_config_argument(generate_parser)
     generate_parser.set_defaults(func=generate_command)
 
+    seed_parser = subparsers.add_parser(
+        "seed",
+        help="Queue distinct species from a broader observation window for generation",
+    )
+    add_config_argument(seed_parser)
+    seed_parser.add_argument(
+        "--window",
+        required=True,
+        choices=[window.value for window in ObservationWindow],
+    )
+    seed_parser.add_argument("--radius-km", type=int)
+    seed_parser.add_argument("--species-limit", type=int)
+    seed_parser.add_argument("--dry-run", action="store_true")
+    seed_parser.set_defaults(func=seed_command)
+
     approve_parser = subparsers.add_parser("approve", help="Publish a pending candidate")
     add_config_argument(approve_parser)
     approve_parser.add_argument("taxon_id", type=int)
@@ -281,7 +312,7 @@ def build_parser() -> argparse.ArgumentParser:
 
     catalog_publish_parser = subparsers.add_parser(
         "catalog-publish",
-        help="Validate and publish newly approved plates to a dedicated catalog repository",
+        help="Validate and owner-merge approved plates into this repository's catalog",
     )
     add_config_argument(catalog_publish_parser)
     catalog_publish_parser.add_argument("--dry-run", action="store_true")

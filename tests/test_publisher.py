@@ -5,13 +5,16 @@ import subprocess
 import unittest
 from pathlib import Path
 from tempfile import TemporaryDirectory
+from unittest.mock import patch
 
 from PIL import Image, PngImagePlugin
 
 from inky_bird_frame.catalog import rebuild_catalog_index, sha256_file, write_json_atomic
-from inky_bird_frame.config import load_config
+from inky_bird_frame.config import PublicCatalogConfig, load_config
 from inky_bird_frame.errors import CatalogPublishError
 from inky_bird_frame.publisher import (
+    _remote_repository,
+    _validate_checkout,
     run_catalog_publish,
     sync_public_catalog,
     validate_public_catalog,
@@ -128,8 +131,10 @@ state_dir = "display"
 [public_catalog]
 enabled = true
 checkout_dir = "{checkout}"
+repository = "example/inky-bird-frame"
+gh_path = "/usr/bin/false"
 remote = "origin"
-branch = "main"
+base_branch = "main"
 commit_name = "Test Publisher"
 commit_email = "publisher@example.test"
 """
@@ -160,6 +165,45 @@ def _initialize_remote(root: Path) -> tuple[Path, Path]:
 
 
 class PublisherTests(unittest.TestCase):
+    def test_parses_only_supported_github_repository_remotes(self) -> None:
+        self.assertEqual(
+            _remote_repository("https://github.com/example/inky-bird-frame.git"),
+            "example/inky-bird-frame",
+        )
+        self.assertEqual(
+            _remote_repository("git@github.com:example/inky-bird-frame.git"),
+            "example/inky-bird-frame",
+        )
+        self.assertIsNone(_remote_repository("https://example.test/example/inky-bird-frame"))
+        self.assertIsNone(
+            _remote_repository("https://token@github.com/example/inky-bird-frame.git")
+        )
+
+    def test_checkout_requires_github_cli_owner_identity(self) -> None:
+        with TemporaryDirectory() as temporary:
+            checkout = Path(temporary) / "checkout"
+            subprocess.run(["git", "init", str(checkout)], check=True, capture_output=True)
+            _run_git(
+                checkout,
+                "remote",
+                "add",
+                "origin",
+                "https://github.com/example/inky-bird-frame.git",
+            )
+            publication = PublicCatalogConfig(
+                enabled=True,
+                checkout_dir=checkout,
+                repository="example/inky-bird-frame",
+                gh_path=Path("/usr/bin/false"),
+            )
+            gh_result = subprocess.CompletedProcess(["gh"], 0, "intruder\n", "")
+
+            with (
+                patch("inky_bird_frame.publisher._gh", return_value=gh_result),
+                self.assertRaisesRegex(CatalogPublishError, "repository owner 'example'"),
+            ):
+                _validate_checkout(checkout, publication)
+
     def test_repository_seed_catalog_is_publishable(self) -> None:
         catalog = Path(__file__).parents[1] / "catalog"
 
@@ -184,6 +228,7 @@ class PublisherTests(unittest.TestCase):
                         "taxon_id": 1,
                         "common_name": "Example Bird",
                         "scientific_name": "Avis exemplaris",
+                        "slug": "example-bird",
                     }
                 ],
             )
@@ -206,6 +251,51 @@ class PublisherTests(unittest.TestCase):
             with self.assertRaisesRegex(CatalogPublishError, "Private field"):
                 validate_public_catalog(catalog)
 
+    def test_rejects_windows_unc_paths(self) -> None:
+        with TemporaryDirectory() as temporary:
+            catalog = Path(temporary) / "catalog"
+            directory = _create_species(catalog, 1, "Example Bird")
+            manifest_path = directory / "manifest.json"
+            manifest = json.loads(manifest_path.read_text())
+            manifest["source_path"] = r"\\server\share\bird.png"
+            write_json_atomic(manifest_path, manifest)
+
+            with self.assertRaisesRegex(CatalogPublishError, "Local path"):
+                validate_public_catalog(catalog)
+
+    def test_rejects_duplicate_taxon_ids(self) -> None:
+        with TemporaryDirectory() as temporary:
+            catalog = Path(temporary) / "catalog"
+            _create_species(catalog, 1, "Example Bird")
+            _create_species(catalog, 1, "Second Bird")
+
+            with self.assertRaisesRegex(CatalogPublishError, "duplicate taxon ID 1"):
+                validate_public_catalog(catalog)
+
+    def test_rejects_symlinks_in_catalog_entries(self) -> None:
+        with TemporaryDirectory() as temporary:
+            catalog = Path(temporary) / "catalog"
+            directory = _create_species(catalog, 1, "Example Bird")
+            profile = directory / "profile.json"
+            profile.unlink()
+            profile.symlink_to(directory / "manifest.json")
+
+            with self.assertRaisesRegex(CatalogPublishError, "regular files"):
+                validate_public_catalog(catalog)
+
+    def test_rejects_symlinked_destination_root_before_writing(self) -> None:
+        with TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            source = root / "source"
+            target = root / "target"
+            target.mkdir()
+            destination = root / "destination"
+            destination.symlink_to(target, target_is_directory=True)
+            _create_species(source, 1, "Example Bird")
+
+            with self.assertRaisesRegex(CatalogPublishError, "Catalog root"):
+                sync_public_catalog(source, destination)
+
     def test_rejects_image_metadata(self) -> None:
         with TemporaryDirectory() as temporary:
             catalog = Path(temporary) / "catalog"
@@ -220,6 +310,30 @@ class PublisherTests(unittest.TestCase):
             write_json_atomic(manifest_path, manifest)
 
             with self.assertRaisesRegex(CatalogPublishError, "metadata is not allowed"):
+                validate_public_catalog(catalog)
+
+    def test_rejects_asset_checksum_mismatch(self) -> None:
+        with TemporaryDirectory() as temporary:
+            catalog = Path(temporary) / "catalog"
+            directory = _create_species(catalog, 1, "Example Bird")
+            manifest_path = directory / "manifest.json"
+            manifest = json.loads(manifest_path.read_text())
+            manifest["assets"]["portrait"]["sha256"] = "0" * 64
+            write_json_atomic(manifest_path, manifest)
+
+            with self.assertRaisesRegex(CatalogPublishError, "checksum does not match"):
+                validate_public_catalog(catalog)
+
+    def test_rejects_index_that_does_not_match_manifests(self) -> None:
+        with TemporaryDirectory() as temporary:
+            catalog = Path(temporary) / "catalog"
+            _create_species(catalog, 1, "Example Bird")
+            index_path = catalog / "index.json"
+            index = json.loads(index_path.read_text())
+            index["species"] = []
+            write_json_atomic(index_path, index)
+
+            with self.assertRaisesRegex(CatalogPublishError, "index does not match"):
                 validate_public_catalog(catalog)
 
     def test_rejects_an_automated_review_below_threshold(self) -> None:
@@ -256,7 +370,7 @@ class PublisherTests(unittest.TestCase):
             public_portrait = destination / "species/1-example-bird/portrait.png"
             public_portrait.write_bytes(b"changed")
 
-            with self.assertRaisesRegex(CatalogPublishError, "conflicts with immutable"):
+            with self.assertRaisesRegex(CatalogPublishError, "checksum does not match"):
                 sync_public_catalog(source, destination)
 
     def test_publishes_through_a_real_git_remote_and_supports_dry_run(self) -> None:
@@ -266,9 +380,45 @@ class PublisherTests(unittest.TestCase):
             config = load_config(_write_config(root, checkout))
             _create_species(config.controller.catalog_dir, 1, "Example Bird")
 
-            first = run_catalog_publish(config)
+            def fake_gh(
+                _publication: object,
+                *arguments: str,
+                input_text: str | None = None,
+            ) -> subprocess.CompletedProcess[str]:
+                del input_text
+                if arguments[:2] == ("pr", "list"):
+                    stdout = "[]\n"
+                elif arguments[:2] == ("pr", "create"):
+                    stdout = "https://github.com/example/inky-bird-frame/pull/1\n"
+                elif arguments[:2] == ("pr", "merge"):
+                    refs = _run_git(
+                        remote,
+                        "for-each-ref",
+                        "--format=%(refname)",
+                        "refs/heads/catalog/publish-*",
+                    ).splitlines()
+                    self.assertEqual(len(refs), 1)
+                    commit = _run_git(remote, "rev-parse", refs[0])
+                    _run_git(remote, "update-ref", "refs/heads/main", commit)
+                    _run_git(remote, "update-ref", "-d", refs[0])
+                    stdout = ""
+                elif arguments[:2] == ("pr", "view"):
+                    stdout = "MERGED\n"
+                else:
+                    self.fail(f"Unexpected gh call: {arguments}")
+                return subprocess.CompletedProcess(["gh", *arguments], 0, stdout, "")
+
+            with (
+                patch(
+                    "inky_bird_frame.publisher._validate_checkout",
+                    return_value="example/inky-bird-frame",
+                ),
+                patch("inky_bird_frame.publisher._gh", side_effect=fake_gh),
+            ):
+                first = run_catalog_publish(config)
 
             self.assertTrue(first["pushed"])
+            self.assertTrue(first["merged"])
             self.assertTrue(first["changed"])
             self.assertIsInstance(first["commit"], str)
             self.assertIn(
@@ -276,13 +426,21 @@ class PublisherTests(unittest.TestCase):
                 _run_git(remote, "ls-tree", "-r", "--name-only", "main"),
             )
 
-            second = run_catalog_publish(config)
+            with patch(
+                "inky_bird_frame.publisher._validate_checkout",
+                return_value="example/inky-bird-frame",
+            ):
+                second = run_catalog_publish(config)
 
             self.assertFalse(second["pushed"])
             self.assertFalse(second["changed"])
 
             _create_species(config.controller.catalog_dir, 2, "Second Bird")
-            dry_run = run_catalog_publish(config, dry_run=True)
+            with patch(
+                "inky_bird_frame.publisher._validate_checkout",
+                return_value="example/inky-bird-frame",
+            ):
+                dry_run = run_catalog_publish(config, dry_run=True)
 
             self.assertTrue(dry_run["changed"])
             self.assertFalse(dry_run["pushed"])
@@ -290,7 +448,14 @@ class PublisherTests(unittest.TestCase):
                 "2-second-bird", _run_git(remote, "ls-tree", "-r", "--name-only", "main")
             )
 
-            final = run_catalog_publish(config)
+            with (
+                patch(
+                    "inky_bird_frame.publisher._validate_checkout",
+                    return_value="example/inky-bird-frame",
+                ),
+                patch("inky_bird_frame.publisher._gh", side_effect=fake_gh),
+            ):
+                final = run_catalog_publish(config)
 
             self.assertTrue(final["pushed"])
             self.assertIn(

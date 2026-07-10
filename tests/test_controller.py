@@ -7,11 +7,12 @@ from pathlib import Path
 from tempfile import TemporaryDirectory
 from unittest.mock import patch
 
-from inky_bird_frame.birds import BirdSpecies
+from inky_bird_frame.birds import BirdSpecies, ObservationWindow
 from inky_bird_frame.catalog import CatalogEntry, candidate_directory, write_candidate_manifest
 from inky_bird_frame.config import load_config
 from inky_bird_frame.controller import (
     DiscoverySnapshot,
+    enqueue_seed_species,
     exclusive_refresh_lock,
     generate_candidate,
     run_controller_cycle,
@@ -70,6 +71,97 @@ state_dir = "display"
 
 
 class ControllerTests(unittest.TestCase):
+    def test_seed_queues_distinct_unapproved_species_without_changing_discovery(self) -> None:
+        approved = BirdSpecies(1, "Approved Bird", "Avis approved", 4, "iNaturalist")
+        queued = BirdSpecies(2, "Queued Bird", "Avis queued", 3, "iNaturalist")
+        location = ZipLocation("12345", "Exampleville", "XY", 1.0, 2.0)
+        with TemporaryDirectory() as temporary:
+            config_path = Path(temporary) / "config.toml"
+            config_path.write_text(CONFIG)
+            config = load_config(config_path)
+            with (
+                patch("inky_bird_frame.controller.lookup_us_zip", return_value=location),
+                patch(
+                    "inky_bird_frame.controller.fetch_inaturalist_birds",
+                    return_value=[approved, queued],
+                ),
+                patch("inky_bird_frame.controller.approved_taxon_ids", return_value={1}),
+            ):
+                result = enqueue_seed_species(
+                    config,
+                    window=ObservationWindow.LAST_YEAR,
+                    species_limit=500,
+                )
+
+            queue = json.loads((config.controller.state_dir / "generation-queue.json").read_text())
+
+        self.assertEqual(result["discovered_count"], 2)
+        self.assertEqual(result["already_approved_count"], 1)
+        self.assertEqual(result["added_count"], 1)
+        self.assertEqual(queue["species"][0]["taxon_id"], 2)
+        self.assertNotIn("zip_code", queue)
+
+    def test_generation_prioritizes_current_species_before_seed_queue(self) -> None:
+        current = BirdSpecies(1, "Current Bird", "Avis current", 4, "iNaturalist")
+        queued = BirdSpecies(2, "Queued Bird", "Avis queued", 3, "iNaturalist")
+        with TemporaryDirectory() as temporary:
+            config_path = Path(temporary) / "config.toml"
+            config_path.write_text(CONFIG)
+            config = load_config(config_path)
+            config.controller.state_dir.mkdir(parents=True)
+            (config.controller.state_dir / "discovery.json").write_text(
+                json.dumps(
+                    {
+                        "schema_version": 1,
+                        "refreshed_at": datetime.now(UTC).isoformat(),
+                        "place_name": "Exampleville",
+                        "state": "XY",
+                        "species": [
+                            {
+                                "taxon_id": current.taxon_id,
+                                "common_name": current.common_name,
+                                "scientific_name": current.scientific_name,
+                                "observation_count": current.observation_count,
+                                "source": current.source,
+                            }
+                        ],
+                    }
+                )
+            )
+            (config.controller.state_dir / "generation-queue.json").write_text(
+                json.dumps(
+                    {
+                        "schema_version": 1,
+                        "updated_at": datetime.now(UTC).isoformat(),
+                        "species": [
+                            {
+                                "taxon_id": queued.taxon_id,
+                                "common_name": queued.common_name,
+                                "scientific_name": queued.scientific_name,
+                                "observation_count": queued.observation_count,
+                                "source": queued.source,
+                            }
+                        ],
+                    }
+                )
+            )
+            attempted: list[int] = []
+
+            def fail_generation(_config: object, species: BirdSpecies, _workspace: object) -> Path:
+                attempted.append(species.taxon_id)
+                raise DataSourceError("temporary")
+
+            with (
+                patch("inky_bird_frame.controller.approved_taxon_ids", return_value=set()),
+                patch("inky_bird_frame.controller.generate_candidate", side_effect=fail_generation),
+                patch("inky_bird_frame.controller.rebuild_catalog_index", return_value=[]),
+            ):
+                result = run_generation_cycle(config)
+
+        self.assertEqual(attempted, [current.taxon_id])
+        self.assertEqual(result["eligible_count"], 2)
+        self.assertEqual(result["queued_count"], 1)
+
     def test_overlapping_refresh_is_rejected_before_discovery(self) -> None:
         with TemporaryDirectory() as temporary:
             config_path = Path(temporary) / "config.toml"

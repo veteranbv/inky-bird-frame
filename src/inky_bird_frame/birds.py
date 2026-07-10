@@ -34,6 +34,7 @@ class ObservationWindow(StrEnum):
     LAST_DAY = "last-day"
     LAST_WEEK = "last-week"
     LAST_30_DAYS = "last-30-days"
+    LAST_YEAR = "last-year"
     ALL_TIME = "all-time"
 
 
@@ -61,6 +62,8 @@ def date_range_for_window(window: ObservationWindow, today: date | None = None) 
         return DateRange(start=current - timedelta(days=7), end=current)
     if window is ObservationWindow.LAST_30_DAYS:
         return DateRange(start=current - timedelta(days=30), end=current)
+    if window is ObservationWindow.LAST_YEAR:
+        return DateRange(start=current - timedelta(days=365), end=current)
     raise ValueError(f"Unsupported observation window: {window}")
 
 

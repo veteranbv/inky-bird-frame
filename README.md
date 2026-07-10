@@ -36,8 +36,8 @@ flowchart LR
     E -->|revise| D
     F --> G["Active local rotation"]
     G --> H["E-paper display"]
-    F --> I["Validated asynchronous publish"]
-    I --> J["Reusable public catalog"]
+    F --> I["Validated catalog-only PR"]
+    I --> J["Reusable project catalog"]
 ```
 
 The system has two deliberately small roles:
@@ -120,6 +120,9 @@ uv run inky-bird-frame refresh --config config.toml
 # Generate and AI-review missing plates from the latest refresh.
 uv run inky-bird-frame generate --config config.toml
 
+# Queue a broader one-time set without changing the active display window.
+uv run inky-bird-frame seed --config config.toml --window last-year --species-limit 500
+
 # Inspect approved, pending, and failed work.
 uv run inky-bird-frame status --config config.toml
 
@@ -127,13 +130,13 @@ uv run inky-bird-frame status --config config.toml
 uv run inky-bird-frame serve --config config.toml
 uv run inky-bird-frame display-cycle --config config.toml
 
-# Preview or run asynchronous publication to a dedicated public catalog.
+# Preview or run owner-only publication into this repository's catalog.
 uv run inky-bird-frame catalog-publish --config config.toml --dry-run
 uv run inky-bird-frame catalog-publish --config config.toml
 ```
 
-Observation windows are `last-day`, `last-week`, `last-30-days`, and
-`all-time`. Discovery distance is configured in kilometers with `radius_km`.
+Observation windows are `last-day`, `last-week`, `last-30-days`, `last-year`,
+and `all-time`. Discovery distance is configured in kilometers with `radius_km`.
 Rotation modes are `sequential`, `shuffle`, and `weighted`. Shuffle visits every
 active bird before repeating; weighted selection uses local observation counts
 and avoids displaying the same bird twice in succession when alternatives are
@@ -154,11 +157,12 @@ Downloaded source photographs, run logs, pending work, rejected work, and
 display state stay under ignored runtime storage. Reference licenses and source
 URLs remain recorded without redistributing the source bitmaps.
 
-Public catalog publication is optional and independent of the live display.
-The publisher accepts only new immutable taxa whose manifests, reviews,
-checksums, image dimensions, and privacy constraints validate. It pushes them
-to a separately configured Git repository without routing generated content
-through the application's code-review gates.
+Catalog publication is optional and independent of the live display. The
+publisher accepts only new immutable taxa whose manifests, reviews, checksums,
+image dimensions, and privacy constraints validate. A trusted controller opens
+a catalog-only PR in this repository, verifies the exact staged paths, and uses
+the authenticated repository owner's ruleset bypass to merge it. External PRs
+and GitHub-hosted workflows never receive that credential.
 
 ## Development
 

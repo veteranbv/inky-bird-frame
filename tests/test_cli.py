@@ -22,6 +22,27 @@ class CliTests(unittest.TestCase):
         self.assertEqual(str(args.config), "instance.toml")
         self.assertTrue(args.dry_run)
 
+    def test_seed_supports_year_window_and_overrides(self) -> None:
+        args = build_parser().parse_args(
+            [
+                "seed",
+                "--config",
+                "instance.toml",
+                "--window",
+                "last-year",
+                "--radius-km",
+                "16",
+                "--species-limit",
+                "500",
+                "--dry-run",
+            ]
+        )
+
+        self.assertEqual(args.window, "last-year")
+        self.assertEqual(args.radius_km, 16)
+        self.assertEqual(args.species_limit, 500)
+        self.assertTrue(args.dry_run)
+
     def test_expected_error_uses_json_envelope(self) -> None:
         output = io.StringIO()
 

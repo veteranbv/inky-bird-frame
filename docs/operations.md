@@ -15,7 +15,7 @@ Schedules are configured in `[schedule]`. Conservative starting values are:
 - controller HTTP service: always running;
 - observation refresh: every 15 minutes;
 - generation cycle: every six hours, one candidate per cycle;
-- public catalog publication: every five minutes when enabled; and
+- catalog publication: every five minutes when enabled; and
 - display cycle: every 30 minutes.
 
 The refresh command does not invoke Codex. `generation_minutes`,
@@ -39,20 +39,39 @@ state paths remain TOML configuration. Installer bootstrap paths, including the
 TOML path itself, remain environment variables because the installer must find
 the configuration before it can load it.
 
-## Public catalog publication
+## Seed a broader catalog
 
-Use a dedicated Git repository for generated catalog content. Initialize its
-default branch with a README and license, then clone it on the trusted
-controller. Configure unattended authentication on that checkout with a
-repository-scoped deploy key or credential helper. Credentials and remote URLs
-do not belong in application configuration.
+The active display window and the generation backlog are separate. Use `seed`
+to enqueue distinct taxa from a broader period without changing which birds are
+currently active on the display:
+
+```bash
+inky-bird-frame seed --config /path/to/config.toml \
+  --window last-year --species-limit 500 --dry-run
+inky-bird-frame seed --config /path/to/config.toml \
+  --window last-year --species-limit 500
+```
+
+The configured radius is used unless `--radius-km` is provided. Repeating a seed
+is idempotent: approved, terminal, and already queued taxa are not added again.
+Current observations remain ahead of seed-only taxa during generation.
+
+## Catalog publication
+
+Clone this project repository into a controller-only checkout. Install GitHub
+CLI and authenticate it as the repository owner. The owner must have pull
+request bypass permission on the base-branch ruleset. GitHub CLI stores its
+credential outside application configuration; do not use a deploy key because a
+deploy key cannot exercise the owner's pull request bypass.
 
 ```toml
 [public_catalog]
 enabled = true
-checkout_dir = "/path/to/public-catalog-checkout"
+checkout_dir = "/path/to/inky-bird-frame-source"
+repository = "owner/inky-bird-frame"
+gh_path = "/path/to/gh"
 remote = "origin"
-branch = "main"
+base_branch = "main"
 commit_name = "Inky Bird Frame Catalog"
 commit_email = "inky-bird-frame@users.noreply.github.com"
 
@@ -72,7 +91,7 @@ Run an immediate publication cycle:
 inky-bird-frame catalog-publish --config /path/to/config.toml
 ```
 
-The publisher copies only new approved taxa. Existing public taxa must be
+The publisher copies only new approved taxa. Existing repository taxa must be
 byte-for-byte identical to their local approved versions. It never publishes
 the private discovery snapshot, downloaded reference bitmaps, run logs, failed
 attempts, or display state. The macOS installer creates the publication
@@ -111,8 +130,9 @@ inky-bird-frame approve --config /path/to/config.toml TAXON_ID
 inky-bird-frame reject --config /path/to/config.toml TAXON_ID --reason "specific issue"
 ```
 
-Enable public catalog publication to preserve accepted plates for other
-installations without routing each generated image through an application PR.
+Enable catalog publication to preserve accepted plates for other installations.
+Each generated image receives an auditable catalog-only PR, while application
+code continues through the full review and CI policy.
 
 ## Failure recovery
 
@@ -127,7 +147,7 @@ installations without routing each generated image through an application PR.
 - Controller unavailable: the current e-paper image remains visible. Display
   state is not advanced.
 - Checksum mismatch: the display refuses the asset and preserves current state.
-- Public catalog failure: inspect `catalog-publish.error.log`. Fix repository
+- Catalog publication failure: inspect `catalog-publish.error.log`. Fix repository
   authentication, remote divergence, or the reported validation problem, then
   rerun `catalog-publish`. Local approval and display rotation continue while
   public publication is unavailable.

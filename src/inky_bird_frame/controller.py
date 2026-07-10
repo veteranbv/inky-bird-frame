@@ -13,7 +13,7 @@ from pathlib import Path
 from tempfile import TemporaryDirectory
 from typing import cast
 
-from .birds import BirdSpecies, fetch_inaturalist_birds, fetch_taxon_context
+from .birds import BirdSpecies, ObservationWindow, fetch_inaturalist_birds, fetch_taxon_context
 from .catalog import (
     approve_candidate,
     approved_taxon_ids,
@@ -100,6 +100,10 @@ def _active_catalog_path(config: AppConfig) -> Path:
     return config.controller.state_dir / "active-catalog.json"
 
 
+def _generation_queue_path(config: AppConfig) -> Path:
+    return config.controller.state_dir / "generation-queue.json"
+
+
 def _species_payload(species: BirdSpecies) -> dict[str, object]:
     return {
         "taxon_id": species.taxon_id,
@@ -107,6 +111,124 @@ def _species_payload(species: BirdSpecies) -> dict[str, object]:
         "scientific_name": species.scientific_name,
         "observation_count": species.observation_count,
         "source": species.source,
+    }
+
+
+def _parse_species_list(raw: object, source: Path) -> list[BirdSpecies]:
+    if not isinstance(raw, list):
+        raise CatalogError(f"Invalid species list in {source}")
+    species: list[BirdSpecies] = []
+    seen: set[int] = set()
+    for item in raw:
+        if not isinstance(item, dict):
+            raise CatalogError(f"Invalid species in {source}")
+        taxon_id = item.get("taxon_id")
+        observation_count = item.get("observation_count")
+        strings = [item.get(name) for name in ("common_name", "scientific_name", "source")]
+        if (
+            not isinstance(taxon_id, int)
+            or isinstance(taxon_id, bool)
+            or taxon_id <= 0
+            or taxon_id in seen
+            or not isinstance(observation_count, int)
+            or isinstance(observation_count, bool)
+            or observation_count < 0
+            or any(not isinstance(value, str) or not value for value in strings)
+        ):
+            raise CatalogError(f"Invalid species in {source}")
+        seen.add(taxon_id)
+        species.append(
+            BirdSpecies(
+                taxon_id=taxon_id,
+                common_name=cast(str, strings[0]),
+                scientific_name=cast(str, strings[1]),
+                observation_count=observation_count,
+                source=cast(str, strings[2]),
+            )
+        )
+    return species
+
+
+def read_generation_queue(config: AppConfig) -> list[BirdSpecies]:
+    path = _generation_queue_path(config)
+    if not path.exists():
+        return []
+    try:
+        raw = json.loads(path.read_text())
+    except json.JSONDecodeError as exc:
+        raise CatalogError(f"Invalid generation queue: {path}") from exc
+    if not isinstance(raw, dict) or raw.get("schema_version") != 1:
+        raise CatalogError(f"Unsupported generation queue: {path}")
+    return _parse_species_list(raw.get("species"), path)
+
+
+def _write_generation_queue(config: AppConfig, species: list[BirdSpecies]) -> None:
+    write_json_atomic(
+        _generation_queue_path(config),
+        {
+            "schema_version": 1,
+            "updated_at": datetime.now(UTC).replace(microsecond=0).isoformat(),
+            "species": [_species_payload(item) for item in species],
+        },
+    )
+
+
+def enqueue_seed_species(
+    config: AppConfig,
+    *,
+    window: ObservationWindow,
+    radius_km: int | None = None,
+    species_limit: int | None = None,
+    dry_run: bool = False,
+) -> dict[str, object]:
+    radius = radius_km if radius_km is not None else config.discovery.radius_km
+    limit = species_limit if species_limit is not None else config.discovery.species_limit
+    if radius <= 0:
+        raise ValueError("radius_km must be greater than zero")
+    if limit <= 0:
+        raise ValueError("species_limit must be greater than zero")
+
+    with exclusive_cycle_lock(config.controller.state_dir):
+        location = lookup_us_zip(config.discovery.zip_code)
+        discovered = fetch_inaturalist_birds(
+            latitude=location.latitude,
+            longitude=location.longitude,
+            radius_km=radius,
+            limit=limit,
+            window=window,
+        )
+        approved = approved_taxon_ids(config.controller.catalog_dir)
+        existing = [
+            species for species in read_generation_queue(config) if species.taxon_id not in approved
+        ]
+        eligible = [
+            species
+            for species in discovered
+            if species.taxon_id not in approved
+            and not _has_terminal_state(config.controller.state_dir, species.taxon_id)
+        ]
+        queued_by_taxon = {species.taxon_id: species for species in existing}
+        added: list[BirdSpecies] = []
+        for species in eligible:
+            if species.taxon_id in queued_by_taxon:
+                continue
+            queued_by_taxon[species.taxon_id] = species
+            added.append(species)
+        queued = list(queued_by_taxon.values())
+        if not dry_run:
+            _write_generation_queue(config, queued)
+
+    return {
+        "window": window.value,
+        "radius_km": radius,
+        "species_limit": limit,
+        "discovered_count": len(discovered),
+        "already_approved_count": sum(species.taxon_id in approved for species in discovered),
+        "eligible_count": len(eligible),
+        "added_count": len(added),
+        "queued_count": len(queued),
+        "dry_run": dry_run,
+        "added": [_species_payload(species) for species in added],
     }
 
 
@@ -187,31 +309,7 @@ def _read_discovery_snapshot(config: AppConfig) -> DiscoverySnapshot:
     if refreshed.tzinfo is None:
         raise CatalogError(f"Discovery timestamp has no timezone: {path}")
 
-    species: list[BirdSpecies] = []
-    for item in species_raw:
-        if not isinstance(item, dict):
-            raise CatalogError(f"Invalid species in discovery state: {path}")
-        taxon_id = item.get("taxon_id")
-        observation_count = item.get("observation_count")
-        strings = [item.get(name) for name in ("common_name", "scientific_name", "source")]
-        if (
-            not isinstance(taxon_id, int)
-            or isinstance(taxon_id, bool)
-            or not isinstance(observation_count, int)
-            or isinstance(observation_count, bool)
-            or observation_count < 0
-            or any(not isinstance(value, str) or not value for value in strings)
-        ):
-            raise CatalogError(f"Invalid species in discovery state: {path}")
-        species.append(
-            BirdSpecies(
-                taxon_id=taxon_id,
-                common_name=cast(str, strings[0]),
-                scientific_name=cast(str, strings[1]),
-                observation_count=observation_count,
-                source=cast(str, strings[2]),
-            )
-        )
+    species = _parse_species_list(species_raw, path)
     return DiscoverySnapshot(refreshed, place_name, state, species)
 
 
@@ -440,10 +538,16 @@ def run_generation_cycle(config: AppConfig) -> dict[str, object]:
                 "Discovery state is stale; a successful refresh is required before generation"
             )
         species_list = snapshot.species
+        queued_species = read_generation_queue(config)
+        generation_species = list(species_list)
+        observed_taxa = {species.taxon_id for species in species_list}
+        generation_species.extend(
+            species for species in queued_species if species.taxon_id not in observed_taxa
+        )
         approved = approved_taxon_ids(config.controller.catalog_dir)
         eligible = [
             species
-            for species in species_list
+            for species in generation_species
             if species.taxon_id not in approved
             and not _has_terminal_state(config.controller.state_dir, species.taxon_id)
         ]
@@ -511,6 +615,11 @@ def run_generation_cycle(config: AppConfig) -> dict[str, object]:
         with catalog_state_lock(config.controller.state_dir):
             latest_snapshot = _read_discovery_snapshot(config)
             active_count = _write_active_catalog(config, latest_snapshot.species)
+            approved_after = approved_taxon_ids(config.controller.catalog_dir)
+            remaining_queue = [
+                species for species in queued_species if species.taxon_id not in approved_after
+            ]
+            _write_generation_queue(config, remaining_queue)
         return {
             "discovery": {
                 "refreshed_at": snapshot.refreshed_at.isoformat(),
@@ -524,6 +633,7 @@ def run_generation_cycle(config: AppConfig) -> dict[str, object]:
             "active_approved_count": active_count,
             "published_pending": published,
             "eligible_count": len(eligible),
+            "queued_count": len(remaining_queue),
             "generated": generated,
             "failures": failures,
         }
