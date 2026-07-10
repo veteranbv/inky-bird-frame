@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-10T17:37:41+00:00",
+  "generated_at": "2026-07-10T17:46:57+00:00",
   "schema_version": 1,
   "species": [
     {
@@ -155,6 +155,17 @@
       "scientific_name": "Ammodramus savannarum",
       "slug": "grasshopper-sparrow",
       "taxon_id": 10139
+    },
+    {
+      "approved_at": "2026-07-10T17:46:57+00:00",
+      "common_name": "Gray Catbird",
+      "display_path": "species/14995-gray-catbird/display.png",
+      "display_sha256": "8c673a0f66aaeaf475e0d0b8af7a8ed0566f598810fba06c97dd83c5dc52248a",
+      "portrait_path": "species/14995-gray-catbird/portrait.png",
+      "portrait_sha256": "1af36cb02983f763692ae457a04d47b916060b8c7c7472b07c8f87f949264ce5",
+      "scientific_name": "Dumetella carolinensis",
+      "slug": "gray-catbird",
+      "taxon_id": 14995
     },
     {
       "approved_at": "2026-07-10T04:04:04+00:00",
