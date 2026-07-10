@@ -1,0 +1,23 @@
+{
+  "anatomy_accuracy": 4,
+  "composition_quality": 5,
+  "findings": [
+    "Verified as an adult male Rose-breasted Grosbeak: correct black head/back, pale heavy triangular bill, white underparts and wing/tail patches, and rose-red breast chevron. The illustration has one head, one beak, two legs, and one tail; the far wing is naturally occluded, while the lower wing is a separate anatomical study.",
+    "All visible text is factually consistent with the verification sources, including family, scientific name, behavior, habitat, and measurements. No place name, ZIP code, coordinates, map, or local-observation detail appears.",
+    "Minor visual stylization: the breast patch is broader and more vertically extended than in the supplied photos, and the tail is rendered a little less square-ended; neither is a material species-identification error."
+  ],
+  "location_free": true,
+  "passed": true,
+  "species_accuracy": 5,
+  "text_accuracy": 5,
+  "verification_sources": [
+    {
+      "title": "Rose-breasted Grosbeak Identification \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Rose-breasted_Grosbeak/id"
+    },
+    {
+      "title": "Pheucticus ludovicianus \u2014 Animal Diversity Web",
+      "url": "https://animaldiversity.org/accounts/Pheucticus_ludovicianus/"
+    }
+  ]
+}

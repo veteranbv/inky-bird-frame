@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-10T13:55:53+00:00",
+  "generated_at": "2026-07-10T14:06:59+00:00",
   "schema_version": 1,
   "species": [
     {
@@ -210,6 +210,17 @@
       "scientific_name": "Agelaius phoeniceus",
       "slug": "red-winged-blackbird",
       "taxon_id": 9744
+    },
+    {
+      "approved_at": "2026-07-10T14:06:59+00:00",
+      "common_name": "Rose-breasted Grosbeak",
+      "display_path": "species/10271-rose-breasted-grosbeak/display.png",
+      "display_sha256": "c91349f8a017757f041c0103df16b6aef12dea357234d93bf3d38966f411ff58",
+      "portrait_path": "species/10271-rose-breasted-grosbeak/portrait.png",
+      "portrait_sha256": "199102ff8d5d36411827f65caeb0861eee06f6efa111272e0143544a3075e7aa",
+      "scientific_name": "Pheucticus ludovicianus",
+      "slug": "rose-breasted-grosbeak",
+      "taxon_id": 10271
     },
     {
       "approved_at": "2026-07-09T22:29:46+00:00",

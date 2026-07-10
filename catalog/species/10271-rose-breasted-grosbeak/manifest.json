@@ -1,0 +1,145 @@
+{
+  "approved_at": "2026-07-10T14:06:59+00:00",
+  "assets": {
+    "display": {
+      "filename": "display.png",
+      "sha256": "c91349f8a017757f041c0103df16b6aef12dea357234d93bf3d38966f411ff58"
+    },
+    "portrait": {
+      "filename": "portrait.png",
+      "sha256": "199102ff8d5d36411827f65caeb0861eee06f6efa111272e0143544a3075e7aa"
+    }
+  },
+  "common_name": "Rose-breasted Grosbeak",
+  "generation": {
+    "attempt": 2,
+    "generated_at": "2026-07-10T14:06:59+00:00",
+    "generator": "Codex subscription / built-in gpt-image-2",
+    "max_attempts": 3,
+    "prompt_version": "field-journal-v2"
+  },
+  "profile": {
+    "behavior": "Primarily a foliage gleaner; uses its stout bill for seeds, fruit, and insects, and may hover or fly out to catch insects.",
+    "common_name": "Rose-breasted Grosbeak",
+    "family": "Cardinalidae",
+    "field_marks": [
+      "Stocky, broad-chested songbird with a short neck and medium-length squared tail.",
+      "Very large, thick triangular bill, pale horn-colored in the adult male.",
+      "Adult male black above with crisp white wing patches and white underparts.",
+      "Adult male has a vivid rose-red breast chevron below the black throat.",
+      "White patches show in the wings and tail; males show pink-red underwings in flight.",
+      "Female and immature are brown and heavily streaked, with a bold pale eyebrow and pale bill."
+    ],
+    "habitat": "Moist deciduous or mixed woodland, especially second-growth woods, thickets, and shrubby forest edges; also uses semiopen wooded habitats.",
+    "measurements": {
+      "length": "18\u201321 cm (7.1\u20138.3 in)",
+      "weight": "39\u201349 g (1.4\u20131.7 oz)",
+      "wingspan": "29\u201333 cm (11.4\u201313.0 in)"
+    },
+    "palette": [
+      "glossy black",
+      "bright rose-red",
+      "clean white",
+      "pale horn",
+      "warm brown"
+    ],
+    "scientific_name": "Pheucticus ludovicianus",
+    "sources": [
+      {
+        "title": "Rose-breasted Grosbeak Identification \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Rose-breasted_Grosbeak/id"
+      },
+      {
+        "title": "Rose-breasted Grosbeak Life History \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Rose-breasted_Grosbeak/lifehistory"
+      },
+      {
+        "title": "Pheucticus ludovicianus \u2014 Animal Diversity Web",
+        "url": "https://animaldiversity.org/accounts/Pheucticus_ludovicianus/"
+      }
+    ],
+    "taxon_id": 10271
+  },
+  "quality_review": {
+    "anatomy_accuracy": 4,
+    "composition_quality": 5,
+    "findings": [
+      "Verified as an adult male Rose-breasted Grosbeak: correct black head/back, pale heavy triangular bill, white underparts and wing/tail patches, and rose-red breast chevron. The illustration has one head, one beak, two legs, and one tail; the far wing is naturally occluded, while the lower wing is a separate anatomical study.",
+      "All visible text is factually consistent with the verification sources, including family, scientific name, behavior, habitat, and measurements. No place name, ZIP code, coordinates, map, or local-observation detail appears.",
+      "Minor visual stylization: the breast patch is broader and more vertically extended than in the supplied photos, and the tail is rendered a little less square-ended; neither is a material species-identification error."
+    ],
+    "location_free": true,
+    "passed": true,
+    "species_accuracy": 5,
+    "text_accuracy": 5,
+    "verification_sources": [
+      {
+        "title": "Rose-breasted Grosbeak Identification \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Rose-breasted_Grosbeak/id"
+      },
+      {
+        "title": "Pheucticus ludovicianus \u2014 Animal Diversity Web",
+        "url": "https://animaldiversity.org/accounts/Pheucticus_ludovicianus/"
+      }
+    ]
+  },
+  "references": [
+    {
+      "attribution": "no rights reserved",
+      "filename": "01-339455481.jpg",
+      "height": 1600,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/339455481/large.jpg",
+      "license_code": "cc0",
+      "observation_id": 193251980,
+      "observer": "rawcomposition",
+      "photo_id": 339455481,
+      "sha256": "10ac08394097ed1f5779ef40667ee8b6163cf09f265bf628db519696a10c85bd",
+      "source_url": "https://www.inaturalist.org/observations/193251980",
+      "width": 2000
+    },
+    {
+      "attribution": "no rights reserved",
+      "filename": "02-196293848.jpeg",
+      "height": 1292,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/196293848/large.jpeg",
+      "license_code": "cc0",
+      "observation_id": 116295061,
+      "observer": "wildreturn",
+      "photo_id": 196293848,
+      "sha256": "60e2677111b48ad1dff8e36d6ea55525437c898cb253e3730709bedb25406fc5",
+      "source_url": "https://www.inaturalist.org/observations/116295061",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) Sandy Wolkenberg, some rights reserved (CC BY)",
+      "filename": "03-378010040.jpg",
+      "height": 2048,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/378010040/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 213884299,
+      "observer": "sadawolk",
+      "photo_id": 378010040,
+      "sha256": "782bdc6e7489180f6d67dee5968c14bcf337baf0253bca712f5d88494601530a",
+      "source_url": "https://www.inaturalist.org/observations/213884299",
+      "width": 1507
+    },
+    {
+      "attribution": "(c) Donald Davesne, some rights reserved (CC BY)",
+      "filename": "04-509318946.jpg",
+      "height": 1365,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/509318946/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 283452169,
+      "observer": "donalddavesne",
+      "photo_id": 509318946,
+      "sha256": "9d4d3d35b183f113abd20123cbb6d5c0587adb1cc2b0cbc2245d6701d3b53a3f",
+      "source_url": "https://www.inaturalist.org/observations/283452169",
+      "width": 2048
+    }
+  ],
+  "schema_version": 1,
+  "scientific_name": "Pheucticus ludovicianus",
+  "slug": "rose-breasted-grosbeak",
+  "status": "approved",
+  "taxon_id": 10271
+}
