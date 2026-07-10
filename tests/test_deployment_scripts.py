@@ -21,6 +21,8 @@ def test_controller_installer_restores_schedule_without_run_at_load_on_failure()
     assert "publisher_was_loaded=true" in script[unload:validation]
     assert "/usr/bin/plutil -replace RunAtLoad -bool false" in script
     assert 'if [ "${root}" != "${app_dir}" ]; then' in script
+    assert 'sync_public_catalog(root / "catalog", config.controller.catalog_dir)' in script
+    assert "rebuild_catalog_index" not in script
 
 
 def test_systemd_controller_installer_restarts_boot_persistent_services() -> None:
@@ -49,6 +51,8 @@ def test_systemd_controller_installer_restarts_boot_persistent_services() -> Non
     assert "systemctl is-enabled --quiet inky-bird-frame-catalog-publish.timer" in script
     assert "systemctl is-active --quiet inky-bird-frame-notifications.timer" in script
     assert 'if [ "${root}" != "${app_dir}" ]; then' in script
+    assert 'sync_public_catalog(root / "catalog", config.controller.catalog_dir)' in script
+    assert "rebuild_catalog_index" not in script
 
 
 def test_local_display_installer_uses_configured_schedule_and_verifies_timer() -> None:

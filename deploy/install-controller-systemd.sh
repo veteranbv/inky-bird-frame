@@ -88,7 +88,7 @@ fi
 import sys
 from pathlib import Path
 
-from inky_bird_frame.catalog import catalog_state_lock, rebuild_catalog_index
+from inky_bird_frame.catalog import catalog_state_lock
 from inky_bird_frame.config import load_config
 from inky_bird_frame.errors import ConfigurationError
 from inky_bird_frame.installation import controller_systemd_units
@@ -110,7 +110,6 @@ if environment_destinations:
         f"config file; replace url_env for: {names}"
     )
 with catalog_state_lock(config.controller.state_dir):
-    rebuild_catalog_index(config.controller.catalog_dir)
     sync_public_catalog(root / "catalog", config.controller.catalog_dir)
 
 executable = app_dir / ".venv/bin/inky-bird-frame"

@@ -78,7 +78,7 @@ import plistlib
 import sys
 from pathlib import Path
 
-from inky_bird_frame.catalog import catalog_state_lock, rebuild_catalog_index
+from inky_bird_frame.catalog import catalog_state_lock
 from inky_bird_frame.config import load_config
 from inky_bird_frame.errors import ConfigurationError
 from inky_bird_frame.publisher import sync_public_catalog
@@ -109,7 +109,6 @@ if environment_destinations:
     )
 schedule = config.schedule
 with catalog_state_lock(config.controller.state_dir):
-    rebuild_catalog_index(config.controller.catalog_dir)
     sync_public_catalog(root / "catalog", config.controller.catalog_dir)
 
 common = {
