@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-10T04:04:04+00:00",
+  "generated_at": "2026-07-10T04:11:31+00:00",
   "schema_version": 1,
   "species": [
     {
@@ -23,6 +23,17 @@
       "scientific_name": "Poecile carolinensis",
       "slug": "carolina-chickadee",
       "taxon_id": 144814
+    },
+    {
+      "approved_at": "2026-07-10T04:11:31+00:00",
+      "common_name": "Cedar Waxwing",
+      "display_path": "species/7428-cedar-waxwing/display.png",
+      "display_sha256": "bbaeb4886231cb8916262db02e7f40204430f41f51c231d52897446dc9f1921c",
+      "portrait_path": "species/7428-cedar-waxwing/portrait.png",
+      "portrait_sha256": "089a6de388bfbcdee098266df0796cffea81e21b915ae4aaff21fb8dd4715b59",
+      "scientific_name": "Bombycilla cedrorum",
+      "slug": "cedar-waxwing",
+      "taxon_id": 7428
     },
     {
       "approved_at": "2026-07-10T03:40:16+00:00",
