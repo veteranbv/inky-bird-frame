@@ -1,0 +1,149 @@
+{
+  "approved_at": "2026-07-09T22:46:35+00:00",
+  "assets": {
+    "display": {
+      "filename": "display.png",
+      "sha256": "79bfe90ecfafad3e9fdd2565511c6eab5a3a13eee7181bfc53f64d1cedc733ea"
+    },
+    "portrait": {
+      "filename": "portrait.png",
+      "sha256": "d91b9ac1f780943758c32dc1e25973101cc2343dc3fbd3a45b67e16d56d205b4"
+    }
+  },
+  "common_name": "Carolina Chickadee",
+  "generation": {
+    "attempt": 1,
+    "generated_at": "2026-07-09T22:46:35+00:00",
+    "generator": "Codex subscription / built-in gpt-image-2",
+    "max_attempts": 3,
+    "prompt_version": "field-journal-v2"
+  },
+  "profile": {
+    "behavior": "Inquisitive, acrobatic foliage-gleaner; often hangs upside down while taking insects from leaves and bark. Typically forages in social flocks outside the breeding season and carries food to a perch to handle it.",
+    "common_name": "Carolina Chickadee",
+    "family": "Paridae",
+    "field_marks": [
+      "Tiny, round-bodied bird with a large head and short neck",
+      "Black cap and neat black throat bib",
+      "Stark white cheeks separating cap and bib",
+      "Soft gray back, wings, and long narrow tail",
+      "Short, pointed dark bill; dark eyes and gray legs"
+    ],
+    "habitat": "Deciduous and mixed woodlands, swamps and streamside woods, open woods, parks, and tree-rich suburban or urban settings.",
+    "measurements": {
+      "length": "3.9\u20134.7 in (10\u201312 cm)",
+      "weight": "0.3\u20130.4 oz (8\u201312 g)",
+      "wingspan": "5.9\u20137.9 in (15\u201320 cm)"
+    },
+    "palette": [
+      "black",
+      "white",
+      "soft gray",
+      "pale gray",
+      "buff-white"
+    ],
+    "scientific_name": "Poecile carolinensis",
+    "sources": [
+      {
+        "title": "Carolina Chickadee Identification \u2014 Cornell Lab of Ornithology",
+        "url": "https://www.allaboutbirds.org/guide/Carolina_Chickadee/id"
+      },
+      {
+        "title": "Carolina Chickadee Life History \u2014 Cornell Lab of Ornithology",
+        "url": "https://www.allaboutbirds.org/guide/Carolina_Chickadee/lifehistory"
+      },
+      {
+        "title": "Carolina Chickadee \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/carolina-chickadee?nid=4191&site=pa"
+      }
+    ],
+    "taxon_id": 144814
+  },
+  "quality_review": {
+    "anatomy_accuracy": 4,
+    "composition_quality": 4,
+    "findings": [
+      "Verified the identity as Carolina Chickadee (Poecile carolinensis), family Paridae. The plate\u2019s stated length, wingspan, and weight exactly match both independent sources.",
+      "The depicted bird has one head, one short dark beak, two legs with appropriately grasping feet, one long narrow tail, and two wings (the far wing is naturally occluded in the side view). Plumage and proportions agree with the reference photos: black cap and bib, stark white cheeks, soft-gray back/wings/tail, pale underparts, and a round-bodied, large-headed silhouette.",
+      "All visible factual text is supported: habitat, acrobatic foliage-gleaning, upside-down feeding, winter/social flocking, and carrying food to a perch are consistent with the Cornell and Audubon accounts. The plate contains no place name, ZIP code, coordinates, map, or local-observation information.",
+      "Minor non-material limitation: Carolina and Black-capped Chickadees can be difficult to separate visually; the plate does not state Carolina\u2019s relatively more restricted bib and reduced white wing edging. Its illustrated bib and gray wing edging nevertheless remain consistent with Carolina Chickadee."
+    ],
+    "location_free": true,
+    "passed": true,
+    "species_accuracy": 4,
+    "text_accuracy": 4,
+    "verification_sources": [
+      {
+        "title": "Carolina Chickadee Identification \u2014 Cornell Lab of Ornithology",
+        "url": "https://www.allaboutbirds.org/guide/Carolina_Chickadee/id"
+      },
+      {
+        "title": "Carolina Chickadee Life History \u2014 Cornell Lab of Ornithology",
+        "url": "https://www.allaboutbirds.org/guide/Carolina_Chickadee/lifehistory"
+      },
+      {
+        "title": "Carolina Chickadee \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/carolina-chickadee"
+      }
+    ]
+  },
+  "references": [
+    {
+      "attribution": "no rights reserved",
+      "filename": "01-276075078.jpg",
+      "height": 2048,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/276075078/large.jpg",
+      "license_code": "cc0",
+      "observation_id": 159777920,
+      "observer": "tmurphy",
+      "photo_id": 276075078,
+      "sha256": "7b8188b356d407d607e08904556b1caf78eedcb5c96ee841d2fab6e79780f407",
+      "source_url": "https://www.inaturalist.org/observations/159777920",
+      "width": 1536
+    },
+    {
+      "attribution": "(c) Derek Spencer, some rights reserved (CC BY)",
+      "filename": "02-432013559.jpeg",
+      "height": 1600,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/432013559/large.jpeg",
+      "license_code": "cc-by",
+      "observation_id": 242330162,
+      "observer": "djs39",
+      "photo_id": 432013559,
+      "sha256": "50f0fd7f2675f77202893a76490980148845697e92fd955b585c7c695540a853",
+      "source_url": "https://www.inaturalist.org/observations/242330162",
+      "width": 2000
+    },
+    {
+      "attribution": "(c) Linda Jo Conn, some rights reserved (CC BY)",
+      "filename": "03-452623993.jpeg",
+      "height": 1363,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/452623993/large.jpeg",
+      "license_code": "cc-by",
+      "observation_id": 252823628,
+      "observer": "connlindajo",
+      "photo_id": 452623993,
+      "sha256": "ed98cd3c95ee2851553223335a768468829487deb9fd56532a54c985f4447f24",
+      "source_url": "https://www.inaturalist.org/observations/252823628",
+      "width": 1417
+    },
+    {
+      "attribution": "(c) Matthew, some rights reserved (CC BY)",
+      "filename": "04-448751254.jpeg",
+      "height": 1536,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/448751254/large.jpeg",
+      "license_code": "cc-by",
+      "observation_id": 250863470,
+      "observer": "dark_l0rd2",
+      "photo_id": 448751254,
+      "sha256": "71766f24f6a437b1af3e1826b1a06fa9c4f48ce4331a55344397b4c4246abd48",
+      "source_url": "https://www.inaturalist.org/observations/250863470",
+      "width": 2048
+    }
+  ],
+  "schema_version": 1,
+  "scientific_name": "Poecile carolinensis",
+  "slug": "carolina-chickadee",
+  "status": "approved",
+  "taxon_id": 144814
+}
