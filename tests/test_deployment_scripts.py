@@ -33,9 +33,12 @@ def test_systemd_controller_installer_restarts_boot_persistent_services() -> Non
     assert "systemctl restart inky-bird-frame-controller.service" in script
     assert "systemctl restart inky-bird-frame-refresh.timer" in script
     assert "systemctl restart inky-bird-frame-generate.timer" in script
+    initial_refresh = script.index(
+        '"${app_dir}/.venv/bin/inky-bird-frame" refresh --config "${config_path}"'
+    )
     validation = script.index('"${app_dir}/.venv/bin/inky-bird-frame" catalog-publish')
     unit_install = script.index('sudo install -m 0644 "${unit}"')
-    assert validation < unit_install
+    assert initial_refresh < validation < unit_install
     assert "systemctl is-enabled --quiet inky-bird-frame-catalog-publish.timer" in script
     assert "systemctl is-active --quiet inky-bird-frame-notifications.timer" in script
     assert 'if [ "${root}" != "${app_dir}" ]; then' in script

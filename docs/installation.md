@@ -199,8 +199,10 @@ uv run inky-bird-frame doctor controller --config "$CONFIG"
 
 The installer creates a persistent `inky-bird-frame-controller.service` plus
 refresh, generation, and optional notification/publication timers. It enables
-them for boot and verifies their state through systemd. Each timer has a boot
-trigger, so scheduled work resumes after downtime. See the official
+them for boot and verifies their state through systemd. Setup performs one
+successful refresh before installing the units, then each timer schedules its
+first run relative to activation and continues at the configured interval.
+Installer progress and any `sudo` prompt remain visible. See the official
 [`systemd.timer` manual](https://www.freedesktop.org/software/systemd/man/latest/systemd.timer.html).
 
 ### Verify controller data

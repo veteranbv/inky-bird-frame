@@ -19,6 +19,14 @@ from .errors import ConfigurationError, InkyBirdFrameError, InstallationError
 from .http import get_json
 
 SUDO_AUTHORIZATION_TIMEOUT_SECONDS = 300
+SYSTEMD_DEFAULT_EXECUTABLE_PATH = (
+    "/usr/local/sbin",
+    "/usr/local/bin",
+    "/usr/sbin",
+    "/usr/bin",
+    "/sbin",
+    "/bin",
+)
 
 
 class InstallationRole(StrEnum):
@@ -114,10 +122,17 @@ def controller_systemd_units(
     user: str,
 ) -> dict[str, str]:
     """Render the complete systemd controller unit set for one installation."""
+    if not config.controller.codex_path.is_absolute():
+        raise InstallationError("Codex CLI must resolve to an absolute path for systemd")
+    executable_paths = dict.fromkeys(
+        (str(config.controller.codex_path.parent), *SYSTEMD_DEFAULT_EXECUTABLE_PATH)
+    )
+    service_path = ":".join(executable_paths)
     common = (
         f"User={user}\n"
         f"WorkingDirectory={_systemd_literal(str(app_dir))}\n"
         f"Environment={_systemd_quote(f'HOME={home}')}\n"
+        f"Environment={_systemd_quote(f'PATH={service_path}')}\n"
         "Environment=PYTHONUNBUFFERED=1\n"
     )
 
@@ -175,7 +190,7 @@ TimeoutStartSec=30min
 Description=Schedule the Inky Bird Frame {name} cycle
 
 [Timer]
-OnBootSec=2min
+OnActiveSec=2min
 OnUnitActiveSec={minutes}min
 Unit=inky-bird-frame-{name}.service
 
@@ -644,16 +659,16 @@ def setup(
         completed = subprocess.run(
             [str(script)],
             check=False,
-            capture_output=True,
-            text=True,
+            stdout=sys.stderr,
             timeout=1800,
             env=environment,
         )
     except (OSError, subprocess.TimeoutExpired) as exc:
         raise InstallationError(f"Installer could not run: {exc}") from exc
     if completed.returncode != 0:
-        detail = completed.stderr.strip() or completed.stdout.strip() or "unknown installer error"
-        raise InstallationError(detail)
+        raise InstallationError(
+            f"Installer exited with status {completed.returncode}; review the output above"
+        )
     result["applied"] = True
-    result["summary"] = completed.stdout.strip()
+    result["summary"] = "Installer completed successfully."
     return result

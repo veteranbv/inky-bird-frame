@@ -87,6 +87,8 @@ for name, content in units.items():
     (unit_dir / name).write_text(content)
 PY
 
+"${app_dir}/.venv/bin/inky-bird-frame" refresh --config "${config_path}"
+
 if [ -f "${unit_dir}/inky-bird-frame-catalog-publish.timer" ]; then
   "${app_dir}/.venv/bin/inky-bird-frame" catalog-publish \
     --config "${config_path}" --dry-run

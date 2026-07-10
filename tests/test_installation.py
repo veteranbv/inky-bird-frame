@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import os
 import subprocess
+import sys
 import unittest
 from pathlib import Path
 from tempfile import TemporaryDirectory
@@ -80,8 +81,13 @@ class InstallationTests(unittest.TestCase):
         self.assertIn(
             '"/etc/inky bird/100%% config.toml"', units["inky-bird-frame-refresh.service"]
         )
+        self.assertIn(
+            f'Environment="PATH={codex.parent}:', units["inky-bird-frame-generate.service"]
+        )
         self.assertIn("OnUnitActiveSec=15min", units["inky-bird-frame-refresh.timer"])
         self.assertIn("OnUnitActiveSec=360min", units["inky-bird-frame-generate.timer"])
+        self.assertIn("OnActiveSec=2min", units["inky-bird-frame-generate.timer"])
+        self.assertNotIn("OnBootSec=", units["inky-bird-frame-generate.timer"])
         self.assertNotIn("inky-bird-frame-notifications.timer", units)
         self.assertNotIn("inky-bird-frame-catalog-publish.timer", units)
 
@@ -205,7 +211,7 @@ display_startup_delay_seconds = 30
         self.assertNotIn("INKY_BIRD_DISPLAY_VENV", environment)
         self.assertNotIn("INKY_BIRD_RUN_INITIAL_DISPLAY", environment)
 
-    def test_linux_setup_authorizes_sudo_before_captured_installer(self) -> None:
+    def test_linux_setup_authorizes_sudo_before_streamed_installer(self) -> None:
         with TemporaryDirectory() as temporary:
             root = Path(temporary)
             codex = root / "codex"
@@ -221,7 +227,7 @@ display_startup_delay_seconds = 30
                     "inky_bird_frame.installation.subprocess.run",
                     side_effect=(
                         subprocess.CompletedProcess(["sudo", "-v"], 0),
-                        subprocess.CompletedProcess([], 0, "installed", ""),
+                        subprocess.CompletedProcess([], 0),
                     ),
                 ) as run,
             ):
@@ -236,8 +242,11 @@ display_startup_delay_seconds = 30
         self.assertEqual(authorization.args[0], ["sudo", "-v"])
         self.assertNotIn("capture_output", authorization.kwargs)
         self.assertEqual(installer.args[0], [str(script.resolve())])
-        self.assertTrue(installer.kwargs["capture_output"])
+        self.assertNotIn("capture_output", installer.kwargs)
+        self.assertIs(installer.kwargs["stdout"], sys.stderr)
+        self.assertNotIn("stderr", installer.kwargs)
         self.assertTrue(result["applied"])
+        self.assertEqual(result["summary"], "Installer completed successfully.")
 
     def test_linux_setup_stops_when_sudo_authorization_fails(self) -> None:
         with TemporaryDirectory() as temporary:
