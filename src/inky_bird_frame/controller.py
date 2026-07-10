@@ -411,7 +411,10 @@ def load_or_create_profile(
             raw = json.loads(cache_path.read_text())
         except json.JSONDecodeError as exc:
             raise CatalogError(f"Invalid cached species profile: {cache_path}") from exc
-        profile = parse_species_profile(raw, config.research.allowed_domains)
+        try:
+            profile = parse_species_profile(raw, config.research.allowed_domains)
+        except GenerationError as exc:
+            raise CatalogError(f"Invalid cached species profile: {cache_path}") from exc
     else:
         if not config.research.enabled:
             raise GenerationError(

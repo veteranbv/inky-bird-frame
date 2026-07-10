@@ -75,6 +75,27 @@ state_dir = "display"
 
 
 class ControllerTests(unittest.TestCase):
+    def test_invalid_cached_profile_fails_as_catalog_state(self) -> None:
+        species = BirdSpecies(9083, "Northern Cardinal", "Cardinalis cardinalis", 2, "test")
+        with TemporaryDirectory() as temporary:
+            config_path = Path(temporary) / "config.toml"
+            config_path.write_text(CONFIG)
+            config = load_config(config_path)
+            cache_path = config.controller.state_dir / "profiles/9083/profile.json"
+            cache_path.parent.mkdir(parents=True)
+            cache_path.write_text("{}")
+
+            with self.assertRaisesRegex(CatalogError, "Invalid cached species profile"):
+                load_or_create_profile(
+                    config,
+                    species,
+                    [],
+                    [],
+                    cast(CodexRunner, object()),
+                    Path(temporary) / "profile.json",
+                    Path(temporary) / "profile.log",
+                )
+
     def test_validated_species_profile_is_reused_without_new_research(self) -> None:
         species = BirdSpecies(9083, "Northern Cardinal", "Cardinalis cardinalis", 2, "test")
         profile = cast(

@@ -8,6 +8,7 @@ from contextlib import redirect_stdout
 from unittest.mock import patch
 
 from inky_bird_frame.cli import build_parser, generate_command, main
+from inky_bird_frame.errors import DataSourceError
 
 
 class CliTests(unittest.TestCase):
@@ -108,6 +109,25 @@ class CliTests(unittest.TestCase):
 
         recovered_keys = [call.kwargs["key"] for call in recover.call_args_list]
         self.assertEqual(recovered_keys, ["generation-cycle"])
+
+    def test_refresh_failure_notification_redacts_exception_details(self) -> None:
+        secret = "private ZIP and coordinates"
+        with (
+            patch("inky_bird_frame.cli._config"),
+            patch(
+                "inky_bird_frame.cli.run_refresh_cycle",
+                side_effect=DataSourceError(secret),
+            ),
+            patch("inky_bird_frame.cli.safe_record_degradation") as degradation,
+            self.assertRaises(DataSourceError),
+        ):
+            from inky_bird_frame.cli import refresh_command
+
+            refresh_command(Namespace())
+
+        body = degradation.call_args.kwargs["body"]
+        self.assertNotIn(secret, body)
+        self.assertIn("DataSourceError", body)
 
 
 if __name__ == "__main__":

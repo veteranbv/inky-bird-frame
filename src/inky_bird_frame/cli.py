@@ -76,6 +76,10 @@ def _config(args: argparse.Namespace) -> AppConfig:
     return load_config(args.config)
 
 
+def _failure_notification(operation: str, exc: Exception) -> str:
+    return f"{operation} failed ({type(exc).__name__}). Check controller logs for details."
+
+
 def discover_command(args: argparse.Namespace) -> int:
     config = _config(args)
     location, species = discover_species(config)
@@ -108,7 +112,7 @@ def refresh_command(args: argparse.Namespace) -> int:
             config,
             key="observation-refresh",
             title="Bird discovery is degraded",
-            body=f"Observation refresh failed: {type(exc).__name__}: {exc}",
+            body=_failure_notification("Observation refresh", exc),
         )
         raise
     safe_record_recovery(
@@ -150,7 +154,7 @@ def generate_command(args: argparse.Namespace) -> int:
             config,
             key="generation-cycle",
             title="Bird generation is degraded",
-            body=f"Generation cycle failed: {type(exc).__name__}: {exc}",
+            body=_failure_notification("Generation cycle", exc),
         )
         raise
     notified_taxa: set[int] = set()
@@ -186,9 +190,9 @@ def generate_command(args: argparse.Namespace) -> int:
                 safe_notify(
                     config,
                     NotificationEvent.TERMINAL_ERROR,
-                    dedupe_key=f"generation:{item.get('taxon_id')}:{item.get('error')}",
+                    dedupe_key=f"generation:{item.get('taxon_id')}:{item.get('failure')}",
                     title=f"Generation stopped for {item.get('common_name', 'a bird')}",
-                    body=str(item.get("error", "Unknown generation error")),
+                    body="Generation reached a terminal error. Check controller logs for details.",
                 )
             else:
                 transient_failures.append(item)
@@ -339,7 +343,7 @@ def catalog_publish_command(args: argparse.Namespace) -> int:
                 config,
                 key="catalog-publication",
                 title="Catalog publication is degraded",
-                body=f"Catalog publication failed: {type(exc).__name__}: {exc}",
+                body=_failure_notification("Catalog publication", exc),
                 event=NotificationEvent.PUBLICATION_ERROR,
             )
         raise
