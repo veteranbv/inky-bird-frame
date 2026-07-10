@@ -1,0 +1,42 @@
+{
+  "behavior": "Usually keeps low in grass, walking or running while foraging; males sing from low exposed stalks or fence wire. Flies short distances with rapid, fluttering wingbeats when flushed.",
+  "common_name": "Grasshopper Sparrow",
+  "family": "Passerellidae",
+  "field_marks": [
+    "Small, compact sparrow with a flat crown, thick neck, and very short tail.",
+    "Large, deep, conical bill for its size; bill is pale pinkish to horn-colored.",
+    "Plain buffy breast and white belly, typically without adult breast streaking.",
+    "Mottled brown, black, tan, and chestnut upperparts with pale-edged wing feathers.",
+    "Thin pale eye-ring and a distinct orange-yellow spot in front of the eye.",
+    "Pale pink legs and feet."
+  ],
+  "habitat": "Open grasslands, prairies, meadows, hayfields, and pastures, usually with sparse shrub cover and some bare ground.",
+  "measurements": {
+    "length": "4.3\u20134.5 in (10.8\u201311.5 cm)",
+    "weight": "0.5\u20130.7 oz (14\u201320 g)",
+    "wingspan": "7.9 in (20 cm)"
+  },
+  "palette": [
+    "buffy tan",
+    "mottled brown",
+    "chestnut",
+    "black",
+    "white"
+  ],
+  "scientific_name": "Ammodramus savannarum",
+  "sources": [
+    {
+      "title": "Grasshopper Sparrow Identification \u2014 All About Birds, Cornell Lab of Ornithology",
+      "url": "https://www.allaboutbirds.org/guide/Grasshopper_Sparrow/id"
+    },
+    {
+      "title": "Grasshopper Sparrow Life History \u2014 All About Birds, Cornell Lab of Ornithology",
+      "url": "https://www.allaboutbirds.org/guide/Grasshopper_Sparrow/lifehistory"
+    },
+    {
+      "title": "Grasshopper Sparrow \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/grasshopper-sparrow"
+    }
+  ],
+  "taxon_id": 10139
+}

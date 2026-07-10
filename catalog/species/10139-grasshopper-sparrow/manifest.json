@@ -1,0 +1,147 @@
+{
+  "approved_at": "2026-07-10T13:55:53+00:00",
+  "assets": {
+    "display": {
+      "filename": "display.png",
+      "sha256": "3b047764210f0dd8b67fa80996cd02f9909ac97b5814ebedea914ee13c8cf0ab"
+    },
+    "portrait": {
+      "filename": "portrait.png",
+      "sha256": "2a590ea4dc125fe2d8e1bf1684685cae6bdf623325ae9d95e6f5caf1ae153db4"
+    }
+  },
+  "common_name": "Grasshopper Sparrow",
+  "generation": {
+    "attempt": 2,
+    "generated_at": "2026-07-10T13:55:53+00:00",
+    "generator": "Codex subscription / built-in gpt-image-2",
+    "max_attempts": 3,
+    "prompt_version": "field-journal-v2"
+  },
+  "profile": {
+    "behavior": "Usually keeps low in grass, walking or running while foraging; males sing from low exposed stalks or fence wire. Flies short distances with rapid, fluttering wingbeats when flushed.",
+    "common_name": "Grasshopper Sparrow",
+    "family": "Passerellidae",
+    "field_marks": [
+      "Small, compact sparrow with a flat crown, thick neck, and very short tail.",
+      "Large, deep, conical bill for its size; bill is pale pinkish to horn-colored.",
+      "Plain buffy breast and white belly, typically without adult breast streaking.",
+      "Mottled brown, black, tan, and chestnut upperparts with pale-edged wing feathers.",
+      "Thin pale eye-ring and a distinct orange-yellow spot in front of the eye.",
+      "Pale pink legs and feet."
+    ],
+    "habitat": "Open grasslands, prairies, meadows, hayfields, and pastures, usually with sparse shrub cover and some bare ground.",
+    "measurements": {
+      "length": "4.3\u20134.5 in (10.8\u201311.5 cm)",
+      "weight": "0.5\u20130.7 oz (14\u201320 g)",
+      "wingspan": "7.9 in (20 cm)"
+    },
+    "palette": [
+      "buffy tan",
+      "mottled brown",
+      "chestnut",
+      "black",
+      "white"
+    ],
+    "scientific_name": "Ammodramus savannarum",
+    "sources": [
+      {
+        "title": "Grasshopper Sparrow Identification \u2014 All About Birds, Cornell Lab of Ornithology",
+        "url": "https://www.allaboutbirds.org/guide/Grasshopper_Sparrow/id"
+      },
+      {
+        "title": "Grasshopper Sparrow Life History \u2014 All About Birds, Cornell Lab of Ornithology",
+        "url": "https://www.allaboutbirds.org/guide/Grasshopper_Sparrow/lifehistory"
+      },
+      {
+        "title": "Grasshopper Sparrow \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/grasshopper-sparrow"
+      }
+    ],
+    "taxon_id": 10139
+  },
+  "quality_review": {
+    "anatomy_accuracy": 5,
+    "composition_quality": 5,
+    "findings": [
+      "Independent verification confirms Grasshopper Sparrow, Ammodramus savannarum, in Passerellidae.",
+      "All measurements printed on the plate match Cornell: length 4.3\u20134.5 in (10.8\u201311.5 cm), weight 0.5\u20130.7 oz (14\u201320 g), and wingspan 7.9 in (20 cm).",
+      "The plate accurately depicts and states the key adult marks: compact flat-crowned, thick-necked, short-tailed form; large pale conical bill; buffy unstreaked breast with white belly; mottled tan/black/chestnut upperparts; thin pale eye-ring and orange-yellow lore; and pale pink legs and feet. These agree with the supplied field photographs.",
+      "Habitat and behavior text agrees with the live Cornell and Audubon accounts. No place name, ZIP code, coordinates, map, or local-observation detail appears.",
+      "No concrete material anatomy, species, plumage, text, or composition issue found. The illustrated bird has one head, one beak, two wings, two legs, and one tail."
+    ],
+    "location_free": true,
+    "passed": true,
+    "species_accuracy": 5,
+    "text_accuracy": 5,
+    "verification_sources": [
+      {
+        "title": "Grasshopper Sparrow Identification \u2014 All About Birds, Cornell Lab of Ornithology",
+        "url": "https://www.allaboutbirds.org/guide/Grasshopper_Sparrow/id"
+      },
+      {
+        "title": "Grasshopper Sparrow \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/grasshopper-sparrow"
+      }
+    ]
+  },
+  "references": [
+    {
+      "attribution": "(c) Cole Wolf, some rights reserved (CC BY)",
+      "filename": "01-93897589.jpg",
+      "height": 2048,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/93897589/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 58798615,
+      "observer": "colejwolf",
+      "photo_id": 93897589,
+      "sha256": "aba2cdbbac08a3f02f739b3e28cb16d7a7c1ed6a25368d1cee3e650d887aa067",
+      "source_url": "https://www.inaturalist.org/observations/58798615",
+      "width": 1536
+    },
+    {
+      "attribution": "(c) scaup, some rights reserved (CC BY)",
+      "filename": "02-169901139.jpeg",
+      "height": 1365,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/169901139/large.jpeg",
+      "license_code": "cc-by",
+      "observation_id": 101720130,
+      "observer": "scaup",
+      "photo_id": 169901139,
+      "sha256": "dff9e56eeddd5daa7ed8981cc1bb206f8f5b7cbdee3a275f5b4c2a702c6c44d8",
+      "source_url": "https://www.inaturalist.org/observations/101720130",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) kirk gardner, some rights reserved (CC BY)",
+      "filename": "03-189126439.jpg",
+      "height": 1481,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/189126439/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 111992822,
+      "observer": "kirk_gardner",
+      "photo_id": 189126439,
+      "sha256": "f4307e0326ea00268e82f8e7769d07a9b353503e7d7fe7a2696db4fcb988b302",
+      "source_url": "https://www.inaturalist.org/observations/111992822",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) Jason Alexander, some rights reserved (CC BY)",
+      "filename": "04-588689445.jpg",
+      "height": 1536,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/588689445/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 325169428,
+      "observer": "jasonalexander",
+      "photo_id": 588689445,
+      "sha256": "d5def3c31c657bd9736d3e32c920b792cb4a2dff9bb428d6588eae8e61b9e491",
+      "source_url": "https://www.inaturalist.org/observations/325169428",
+      "width": 2048
+    }
+  ],
+  "schema_version": 1,
+  "scientific_name": "Ammodramus savannarum",
+  "slug": "grasshopper-sparrow",
+  "status": "approved",
+  "taxon_id": 10139
+}
