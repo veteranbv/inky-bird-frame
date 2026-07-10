@@ -1,0 +1,38 @@
+{
+  "behavior": "Grazes on land and dabbles or reaches into shallow water for vegetation; commonly travels in pairs or flocks and often flies in V-shaped formations.",
+  "common_name": "Canada Goose",
+  "family": "Anatidae",
+  "field_marks": [
+    "Large, long-necked goose with a substantial, rounded body",
+    "Black head and long black neck",
+    "Bold white cheek patches meeting beneath the chin as a white chinstrap",
+    "Brown back and wings with a paler tan-gray breast",
+    "Wide, flat black bill; black legs and large webbed feet",
+    "In flight, a white U-shaped rump/uppertail patch contrasts with the dark tail"
+  ],
+  "habitat": "A wide variety of habitats near water, including lakes, ponds, rivers, marshes, shorelines, and wetlands; also grazes in open grasslands, fields, and short lawns.",
+  "measurements": {
+    "length": "76\u2013110 cm (29.9\u201343.3 in)",
+    "weight": "3.0\u20139.0 kg (105.8\u2013317.5 oz)",
+    "wingspan": "127\u2013170 cm (50.0\u201366.9 in)"
+  },
+  "palette": [
+    "black",
+    "white",
+    "brown",
+    "tan-gray",
+    "pale yellow-green"
+  ],
+  "scientific_name": "Branta canadensis",
+  "sources": [
+    {
+      "title": "Canada Goose Identification \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Canada_Goose/id"
+    },
+    {
+      "title": "Canada Goose \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/canada-goose"
+    }
+  ],
+  "taxon_id": 7089
+}

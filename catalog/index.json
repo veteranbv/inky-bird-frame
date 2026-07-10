@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-10T16:52:07+00:00",
+  "generated_at": "2026-07-10T17:01:12+00:00",
   "schema_version": 1,
   "species": [
     {
@@ -45,6 +45,17 @@
       "scientific_name": "Cyanocitta cristata",
       "slug": "blue-jay",
       "taxon_id": 8229
+    },
+    {
+      "approved_at": "2026-07-10T17:01:12+00:00",
+      "common_name": "Canada Goose",
+      "display_path": "species/7089-canada-goose/display.png",
+      "display_sha256": "71486cbe0b9240d05e4cd0872815995599b9c1e8bbe26890c0f0a0ad8da4036f",
+      "portrait_path": "species/7089-canada-goose/portrait.png",
+      "portrait_sha256": "5d91fe7cbaa18db8b143b519ec95c34943b1c488475e05e652e2860c39200065",
+      "scientific_name": "Branta canadensis",
+      "slug": "canada-goose",
+      "taxon_id": 7089
     },
     {
       "approved_at": "2026-07-09T22:46:35+00:00",
