@@ -30,19 +30,6 @@ if ! sudo -v; then
   exit 1
 fi
 
-chmod 600 "${config_path}"
-mkdir -p "${app_dir}/src" "${app_dir}/catalog" "${app_dir}/deploy" "${support_dir}"
-if [ "${root}" != "${app_dir}" ]; then
-  rsync -a --delete "${root}/src/" "${app_dir}/src/"
-  rsync -a "${root}/catalog/" "${app_dir}/catalog/"
-  install -m 0755 "${root}/deploy/install-controller-systemd.sh" "${app_dir}/deploy/"
-  for file in pyproject.toml uv.lock README.md LICENSE; do
-    install -m 0644 "${root}/${file}" "${app_dir}/${file}"
-  done
-fi
-
-"${uv_bin}" sync --project "${app_dir}" --python "${python_version}" --extra controller --locked
-
 unit_dir=$(mktemp -d)
 installation_complete=false
 active_timers=()
@@ -58,6 +45,44 @@ cleanup() {
   exit "${status}"
 }
 trap cleanup EXIT
+
+for name in refresh generate catalog-publish notifications; do
+  timer="inky-bird-frame-${name}.timer"
+  if systemctl is-active --quiet "${timer}"; then
+    active_timers+=("${timer}")
+  fi
+  sudo systemctl stop "${timer}" 2>/dev/null || true
+done
+deadline=$((SECONDS + quiesce_timeout_seconds))
+for name in refresh generate catalog-publish notifications; do
+  service="inky-bird-frame-${name}.service"
+  while true; do
+    state=$(systemctl show --property=ActiveState --value "${service}" 2>/dev/null || true)
+    case "${state}" in
+      active | activating | deactivating | reloading) ;;
+      *) break ;;
+    esac
+    if ((SECONDS >= deadline)); then
+      echo "Timed out waiting for ${service} to finish." >&2
+      exit 1
+    fi
+    sleep 2
+  done
+done
+
+chmod 600 "${config_path}"
+mkdir -p "${app_dir}/src" "${app_dir}/catalog" "${app_dir}/deploy" "${support_dir}"
+if [ "${root}" != "${app_dir}" ]; then
+  rsync -a --delete "${root}/src/" "${app_dir}/src/"
+  rsync -a "${root}/catalog/" "${app_dir}/catalog/"
+  install -m 0755 "${root}/deploy/install-controller-systemd.sh" "${app_dir}/deploy/"
+  for file in pyproject.toml uv.lock README.md LICENSE; do
+    install -m 0644 "${root}/${file}" "${app_dir}/${file}"
+  done
+fi
+
+"${uv_bin}" sync --project "${app_dir}" --python "${python_version}" --extra controller --locked
+
 "${app_dir}/.venv/bin/python" - \
   "${unit_dir}" "${root}" "${app_dir}" "${config_path}" "${HOME}" "$(id -un)" <<'PY'
 import sys
@@ -100,25 +125,6 @@ units = controller_systemd_units(
 for name, content in units.items():
     (unit_dir / name).write_text(content)
 PY
-
-for name in refresh generate catalog-publish notifications; do
-  timer="inky-bird-frame-${name}.timer"
-  if systemctl is-active --quiet "${timer}"; then
-    active_timers+=("${timer}")
-  fi
-  sudo systemctl stop "${timer}" 2>/dev/null || true
-done
-for name in refresh generate catalog-publish notifications; do
-  service="inky-bird-frame-${name}.service"
-  deadline=$((SECONDS + quiesce_timeout_seconds))
-  while systemctl is-active --quiet "${service}"; do
-    if ((SECONDS >= deadline)); then
-      echo "Timed out waiting for ${service} to finish." >&2
-      exit 1
-    fi
-    sleep 2
-  done
-done
 
 "${app_dir}/.venv/bin/inky-bird-frame" refresh --config "${config_path}"
 

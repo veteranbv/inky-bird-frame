@@ -37,9 +37,13 @@ def test_systemd_controller_installer_restarts_boot_persistent_services() -> Non
         '"${app_dir}/.venv/bin/inky-bird-frame" refresh --config "${config_path}"'
     )
     quiesce = script.index('sudo systemctl stop "${timer}"')
+    runtime_update = script.index('rsync -a --delete "${root}/src/"')
     validation = script.index('"${app_dir}/.venv/bin/inky-bird-frame" catalog-publish')
     unit_install = script.index('sudo install -m 0644 "${unit}"')
-    assert quiesce < initial_refresh < validation < unit_install
+    assert quiesce < runtime_update < initial_refresh < validation < unit_install
+    assert "deadline=$((SECONDS + quiesce_timeout_seconds))" in script
+    assert 'systemctl show --property=ActiveState --value "${service}"' in script
+    assert "active | activating | deactivating | reloading" in script
     assert 'if [ "${installation_complete}" != true ]; then' in script
     assert 'sudo systemctl start "${timer}" || true' in script
     assert "systemctl is-enabled --quiet inky-bird-frame-catalog-publish.timer" in script

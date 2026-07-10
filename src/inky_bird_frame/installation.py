@@ -19,6 +19,7 @@ from .errors import ConfigurationError, InkyBirdFrameError, InstallationError
 from .http import get_json
 
 SUDO_AUTHORIZATION_TIMEOUT_SECONDS = 300
+INSTALLER_TIMEOUT_SECONDS = 3600
 SYSTEMD_DEFAULT_EXECUTABLE_PATH = (
     "/usr/local/sbin",
     "/usr/local/bin",
@@ -656,7 +657,7 @@ def setup(
             [str(script)],
             check=False,
             stdout=sys.stderr,
-            timeout=1800,
+            timeout=INSTALLER_TIMEOUT_SECONDS,
             env=environment,
         )
     except (OSError, subprocess.TimeoutExpired) as exc:
