@@ -1,0 +1,38 @@
+{
+  "behavior": "Frequently walks or hops on open ground or in low vegetation, with near-constant tail-wagging; also gleans insects from foliage.",
+  "common_name": "Palm Warbler",
+  "family": "Parulidae",
+  "field_marks": [
+    "Small, relatively upright and full-bellied warbler with long legs and tail",
+    "Dull brownish-olive upperparts and a slender, pointed dark bill",
+    "Bold pale eyebrow with a darker eye line",
+    "Yellow throat and yellow undertail coverts; belly varies from yellow to whitish",
+    "Rusty chestnut cap in breeding plumage; duller brown crown outside breeding season",
+    "Outer tail corners flash white in flight"
+  ],
+  "habitat": "Bogs and other open, wet woodland with scattered conifers and dense ground cover; outside breeding season also uses shrubby edges, weedy fields, hedgerows, and other open ground with low vegetation.",
+  "measurements": {
+    "length": "4.7\u20135.5 in (12\u201314 cm)",
+    "weight": "0.3\u20130.5 oz (7\u201313 g)",
+    "wingspan": "7.9\u20138.3 in (20\u201321 cm)"
+  },
+  "palette": [
+    "brownish olive",
+    "rusty chestnut",
+    "bright yellow",
+    "pale gray-white",
+    "dark charcoal"
+  ],
+  "scientific_name": "Setophaga palmarum",
+  "sources": [
+    {
+      "title": "Palm Warbler Identification \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/palwar/id"
+    },
+    {
+      "title": "Palm Warbler \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/palm-warbler?nid=4271&site=corkscrew"
+    }
+  ],
+  "taxon_id": 145242
+}

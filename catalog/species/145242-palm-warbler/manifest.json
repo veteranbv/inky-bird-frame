@@ -1,0 +1,143 @@
+{
+  "approved_at": "2026-07-10T18:19:56+00:00",
+  "assets": {
+    "display": {
+      "filename": "display.png",
+      "sha256": "6cacd4176e46ee8a4ca9c2b55dc6268e137964a06351e1203c9098ef82f85f24"
+    },
+    "portrait": {
+      "filename": "portrait.png",
+      "sha256": "ac3d8f5374cf31b23907a517b2fe83a712fff02f02d67a9ad5f054f6120b3608"
+    }
+  },
+  "common_name": "Palm Warbler",
+  "generation": {
+    "attempt": 1,
+    "generated_at": "2026-07-10T18:19:56+00:00",
+    "generator": "Codex subscription / built-in gpt-image-2",
+    "max_attempts": 3,
+    "prompt_version": "field-journal-v2"
+  },
+  "profile": {
+    "behavior": "Frequently walks or hops on open ground or in low vegetation, with near-constant tail-wagging; also gleans insects from foliage.",
+    "common_name": "Palm Warbler",
+    "family": "Parulidae",
+    "field_marks": [
+      "Small, relatively upright and full-bellied warbler with long legs and tail",
+      "Dull brownish-olive upperparts and a slender, pointed dark bill",
+      "Bold pale eyebrow with a darker eye line",
+      "Yellow throat and yellow undertail coverts; belly varies from yellow to whitish",
+      "Rusty chestnut cap in breeding plumage; duller brown crown outside breeding season",
+      "Outer tail corners flash white in flight"
+    ],
+    "habitat": "Bogs and other open, wet woodland with scattered conifers and dense ground cover; outside breeding season also uses shrubby edges, weedy fields, hedgerows, and other open ground with low vegetation.",
+    "measurements": {
+      "length": "4.7\u20135.5 in (12\u201314 cm)",
+      "weight": "0.3\u20130.5 oz (7\u201313 g)",
+      "wingspan": "7.9\u20138.3 in (20\u201321 cm)"
+    },
+    "palette": [
+      "brownish olive",
+      "rusty chestnut",
+      "bright yellow",
+      "pale gray-white",
+      "dark charcoal"
+    ],
+    "scientific_name": "Setophaga palmarum",
+    "sources": [
+      {
+        "title": "Palm Warbler Identification \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/palwar/id"
+      },
+      {
+        "title": "Palm Warbler \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/palm-warbler?nid=4271&site=corkscrew"
+      }
+    ],
+    "taxon_id": 145242
+  },
+  "quality_review": {
+    "anatomy_accuracy": 4,
+    "composition_quality": 5,
+    "findings": [
+      "Identity, common and scientific names, and family are correct for Palm Warbler (Setophaga palmarum; Parulidae).",
+      "The illustrated bird has one head, one pointed bill, two legs with plausible passerine feet, a single tail, and two wings (one displayed in profile); no duplicated or missing anatomy is visible.",
+      "Plumage is a credible Palm Warbler, especially a breeding Western-type/intergrade presentation: chestnut cap, pale eyebrow and dark eye line, brownish-olive upperparts, yellow throat/undertail area, pale streaked belly, long legs and tail. The bill is slightly heavy-looking for the species but remains acceptably slender and pointed.",
+      "All visible plate text is substantively supported by the sources, including size, habitat, tail-wagging/ground-foraging behavior, and field marks. Cornell gives the plate\u2019s stated 7\u201313 g weight range; Audubon instead gives 8\u201313 g, a minor source discrepancy rather than a plate error.",
+      "The plate contains no place name, ZIP code, coordinates, map, or local-observation detail."
+    ],
+    "location_free": true,
+    "passed": true,
+    "species_accuracy": 4,
+    "text_accuracy": 4,
+    "verification_sources": [
+      {
+        "title": "Palm Warbler Identification \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Palm_Warbler/id"
+      },
+      {
+        "title": "Palm Warbler \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/palm-warbler"
+      }
+    ]
+  },
+  "references": [
+    {
+      "attribution": "no rights reserved",
+      "filename": "01-186804205.jpeg",
+      "height": 1365,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/186804205/large.jpeg",
+      "license_code": "cc0",
+      "observation_id": 110709682,
+      "observer": "andywilson",
+      "photo_id": 186804205,
+      "sha256": "335cec7ff8113ef6e7a0c412999881809c3ebb169f44b936500a48c92cd0ff00",
+      "source_url": "https://www.inaturalist.org/observations/110709682",
+      "width": 2048
+    },
+    {
+      "attribution": "no rights reserved",
+      "filename": "02-190685912.jpeg",
+      "height": 1354,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/190685912/large.jpeg",
+      "license_code": "cc0",
+      "observation_id": 112873313,
+      "observer": "wildreturn",
+      "photo_id": 190685912,
+      "sha256": "c7c2d5fc645f29577b38fc7eb47fddeea181291e568181c817f9081d991be06d",
+      "source_url": "https://www.inaturalist.org/observations/112873313",
+      "width": 2048
+    },
+    {
+      "attribution": "no rights reserved",
+      "filename": "03-167653435.jpeg",
+      "height": 1366,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/167653435/large.jpeg",
+      "license_code": "cc0",
+      "observation_id": 100449152,
+      "observer": "radrat",
+      "photo_id": 167653435,
+      "sha256": "535be7a311d71a71a656f3febb48adb0322f1e2844b05726e3da7a92f3282f69",
+      "source_url": "https://www.inaturalist.org/observations/100449152",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) Brandon Johnson, some rights reserved (CC BY)",
+      "filename": "04-587745336.jpg",
+      "height": 1339,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/587745336/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 324697825,
+      "observer": "brandonjjohnson",
+      "photo_id": 587745336,
+      "sha256": "e7dcda82fbdbaca8678e1dae6a8594bab8ac6ab94108be697866cf933b7980e7",
+      "source_url": "https://www.inaturalist.org/observations/324697825",
+      "width": 2008
+    }
+  ],
+  "schema_version": 1,
+  "scientific_name": "Setophaga palmarum",
+  "slug": "palm-warbler",
+  "status": "approved",
+  "taxon_id": 145242
+}
