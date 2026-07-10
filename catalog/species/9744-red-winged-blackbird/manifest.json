@@ -1,0 +1,145 @@
+{
+  "approved_at": "2026-07-10T04:45:42+00:00",
+  "assets": {
+    "display": {
+      "filename": "display.png",
+      "sha256": "61c720ac716d6314c428f02ca55b33a28e7f6a5d42af61e2cbc677b8716e0cf8"
+    },
+    "portrait": {
+      "filename": "portrait.png",
+      "sha256": "156d0bec165b5878899f16368f3a94ca9e926dcbeae7b8694f76dd70f11bf25e"
+    }
+  },
+  "common_name": "Red-winged Blackbird",
+  "generation": {
+    "attempt": 1,
+    "generated_at": "2026-07-10T04:45:42+00:00",
+    "generator": "Codex subscription / built-in gpt-image-2",
+    "max_attempts": 3,
+    "prompt_version": "field-journal-v2"
+  },
+  "profile": {
+    "behavior": "Males perch conspicuously and display their shoulder patches while singing; females stay lower in dense vegetation. Forages mainly on the ground or among plants, and often forms large mixed flocks outside the breeding season.",
+    "common_name": "Red-winged Blackbird",
+    "family": "Icteridae",
+    "field_marks": [
+      "Stocky, broad-shouldered blackbird with a slender, pointed conical bill.",
+      "Adult male is glossy black with a vivid red shoulder patch usually edged yellow.",
+      "Male shoulder patch can be partly concealed or raised prominently in display.",
+      "Female and immature are dark brown and heavily streaked, with paler underparts and a pale eyebrow.",
+      "Medium-length, squared-to-rounded tail; dark legs and feet."
+    ],
+    "habitat": "Marshes and wetland edges, including fresh or saltwater marshes; also wet meadows, brushy swamps, fields, and waterside vegetation. Outside the breeding season, commonly uses open agricultural land, pastures, and grassland.",
+    "measurements": {
+      "length": "6.7\u20139.1 in (17\u201323 cm)",
+      "weight": "1.1\u20132.7 oz (32\u201377 g)",
+      "wingspan": "12.2\u201315.8 in (31\u201340 cm)"
+    },
+    "palette": [
+      "glossy black",
+      "scarlet red",
+      "golden yellow",
+      "dark brown",
+      "buff white"
+    ],
+    "scientific_name": "Agelaius phoeniceus",
+    "sources": [
+      {
+        "title": "Cornell Lab of Ornithology \u2014 Red-winged Blackbird Identification",
+        "url": "https://www.allaboutbirds.org/guide/Red-winged_Blackbird/id/"
+      },
+      {
+        "title": "Cornell Lab of Ornithology \u2014 Red-winged Blackbird Life History",
+        "url": "https://www.allaboutbirds.org/guide/Red-winged_Blackbird/lifehistory"
+      },
+      {
+        "title": "National Audubon Society \u2014 Red-winged Blackbird Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/red-winged-blackbird"
+      }
+    ],
+    "taxon_id": 9744
+  },
+  "quality_review": {
+    "anatomy_accuracy": 4,
+    "composition_quality": 5,
+    "findings": [
+      "Independent verification confirms the title, scientific name, family, measurements, behavior, habitat, and listed field marks. Cornell gives the exact displayed measurement ranges; Audubon gives closely matching rounded ranges.",
+      "The central bird is a plausible adult male Red-winged Blackbird: glossy black plumage, stocky broad-shouldered form, pointed conical bill, dark eye, medium squared-to-rounded tail, dark legs/feet, and a red epaulet with yellow lower border all agree with the supplied field references and verified descriptions.",
+      "No material text or species-identification error found. The bill and feet are somewhat stylized, and only the near wing is visible in the side-on central pose, but the anatomy is coherent: one head, one beak, two legs, one tail, and an implied far wing behind the body.",
+      "No place name, ZIP code, coordinates, map, or local-observation detail appears on the plate."
+    ],
+    "location_free": true,
+    "passed": true,
+    "species_accuracy": 5,
+    "text_accuracy": 5,
+    "verification_sources": [
+      {
+        "title": "Cornell Lab of Ornithology \u2014 Red-winged Blackbird Identification",
+        "url": "https://www.allaboutbirds.org/guide/Red-winged_Blackbird/id/"
+      },
+      {
+        "title": "National Audubon Society \u2014 Red-winged Blackbird Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/red-winged-blackbird"
+      }
+    ]
+  },
+  "references": [
+    {
+      "attribution": "(c) Jonathan Eisen, some rights reserved (CC BY)",
+      "filename": "01-173017753.jpg",
+      "height": 1366,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/173017753/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 103385972,
+      "observer": "phylogenomics",
+      "photo_id": 173017753,
+      "sha256": "0a9ba250da94b722bd0fe9fc62982310131622dd0153a1123b7555fcebd301bd",
+      "source_url": "https://www.inaturalist.org/observations/103385972",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) Matt Felperin, some rights reserved (CC BY)",
+      "filename": "02-354323482.jpg",
+      "height": 1366,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/354323482/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 200790626,
+      "observer": "mattyfelp",
+      "photo_id": 354323482,
+      "sha256": "576fa9cb3799137a556782c83d9ed82cafe550f81d7b73e090e313c0939fe133",
+      "source_url": "https://www.inaturalist.org/observations/200790626",
+      "width": 2048
+    },
+    {
+      "attribution": "no rights reserved",
+      "filename": "03-137233980.jpeg",
+      "height": 1933,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/137233980/large.jpeg",
+      "license_code": "cc0",
+      "observation_id": 83552302,
+      "observer": "chrismcv",
+      "photo_id": 137233980,
+      "sha256": "0c621637c6e7a69b73247d3f748aaf9b6872c3027e2d1a844434cd2c35bff168",
+      "source_url": "https://www.inaturalist.org/observations/83552302",
+      "width": 1933
+    },
+    {
+      "attribution": "no rights reserved",
+      "filename": "04-278246194.jpg",
+      "height": 2048,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/278246194/large.jpg",
+      "license_code": "cc0",
+      "observation_id": 160994943,
+      "observer": "infiniteuniverse",
+      "photo_id": 278246194,
+      "sha256": "6bc61c8660aeb55a307ed1f471b73cc4d0f1e77e525ad994dc0deca2368383b9",
+      "source_url": "https://www.inaturalist.org/observations/160994943",
+      "width": 1536
+    }
+  ],
+  "schema_version": 1,
+  "scientific_name": "Agelaius phoeniceus",
+  "slug": "red-winged-blackbird",
+  "status": "approved",
+  "taxon_id": 9744
+}

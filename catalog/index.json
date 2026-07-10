@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-10T04:38:31+00:00",
+  "generated_at": "2026-07-10T04:45:42+00:00",
   "schema_version": 1,
   "species": [
     {
@@ -133,6 +133,17 @@
       "scientific_name": "Dryocopus pileatus",
       "slug": "pileated-woodpecker",
       "taxon_id": 17855
+    },
+    {
+      "approved_at": "2026-07-10T04:45:42+00:00",
+      "common_name": "Red-winged Blackbird",
+      "display_path": "species/9744-red-winged-blackbird/display.png",
+      "display_sha256": "61c720ac716d6314c428f02ca55b33a28e7f6a5d42af61e2cbc677b8716e0cf8",
+      "portrait_path": "species/9744-red-winged-blackbird/portrait.png",
+      "portrait_sha256": "156d0bec165b5878899f16368f3a94ca9e926dcbeae7b8694f76dd70f11bf25e",
+      "scientific_name": "Agelaius phoeniceus",
+      "slug": "red-winged-blackbird",
+      "taxon_id": 9744
     },
     {
       "approved_at": "2026-07-09T22:29:46+00:00",
