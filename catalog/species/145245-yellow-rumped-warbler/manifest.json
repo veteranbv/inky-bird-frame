@@ -1,0 +1,151 @@
+{
+  "approved_at": "2026-07-10T18:34:41+00:00",
+  "assets": {
+    "display": {
+      "filename": "display.png",
+      "sha256": "d834e5a96cf09de85d153fe289409c41e4aed15f93fd382b42351aa7edea65a0"
+    },
+    "portrait": {
+      "filename": "portrait.png",
+      "sha256": "e42ded5678d0f60b33d21f1d89e5e85bb59b51ceb03814bea0742fbe01903788"
+    }
+  },
+  "common_name": "Yellow-rumped Warbler",
+  "generation": {
+    "attempt": 1,
+    "generated_at": "2026-07-10T18:34:41+00:00",
+    "generator": "Codex subscription / built-in gpt-image-2",
+    "max_attempts": 3,
+    "prompt_version": "field-journal-v2"
+  },
+  "profile": {
+    "behavior": "Active canopy and edge forager; gleans insects, sallies after flying prey, and shifts to berries in colder seasons.",
+    "common_name": "Yellow-rumped Warbler",
+    "family": "Parulidae",
+    "field_marks": [
+      "Bright yellow rump, conspicuous in flight",
+      "Small yellow patch on each side of the breast",
+      "Slim, pointed dark bill",
+      "Full-bodied warbler with a relatively large head and long, narrow tail",
+      "White wing bars or patches and white tail spots",
+      "Gray to brown-streaked plumage with brighter yellow in breeding birds; throat may be white or yellow among forms"
+    ],
+    "habitat": "Open coniferous and mixed woodland, forest edges, bogs, and other wooded openings; outside the breeding season also open woods, brushy thickets, and shrub-rich habitats.",
+    "measurements": {
+      "length": "4.7\u20135.5 in (12\u201314 cm)",
+      "weight": "0.4\u20130.5 oz (12\u201313 g)",
+      "wingspan": "7.5\u20139.1 in (19\u201323 cm)"
+    },
+    "palette": [
+      "charcoal gray",
+      "yellow",
+      "white",
+      "black",
+      "brown"
+    ],
+    "scientific_name": "Setophaga coronata",
+    "sources": [
+      {
+        "title": "Yellow-rumped Warbler Identification \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Yellow-rumped_Warbler/id"
+      },
+      {
+        "title": "Yellow-rumped Warbler \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/yellow-rumped-warbler"
+      },
+      {
+        "title": "Dendroica coronata (yellow-rumped warbler) \u2014 Animal Diversity Web",
+        "url": "https://animaldiversity.org/accounts/Dendroica_coronata/"
+      }
+    ],
+    "taxon_id": 145245
+  },
+  "quality_review": {
+    "anatomy_accuracy": 4,
+    "composition_quality": 5,
+    "findings": [
+      "Species identity is correct: the illustrated bird matches a Yellow-rumped Warbler, specifically a Myrtle-like white-throated form, with gray streaked plumage, dark facial mask, yellow side patch and rump, white wing bars, long narrow tail, and dark passerine bill.",
+      "The plate\u2019s common name, Setophaga coronata, Parulidae, exact length (4.7\u20135.5 in / 12\u201314 cm), wingspan (7.5\u20139.1 in / 19\u201323 cm), and weight (0.4\u20130.5 oz / 12\u201313 g) match the All About Birds identification page.",
+      "Habitat and behavior statements are supported by the live sources. The field-mark text is also supported, including yellow rump and side patches, white tail markings, large-headed full-bodied shape, long narrow tail, and white- versus yellow-throated forms.",
+      "Against the supplied photos, the plate correctly shows the small pointed dark bill, large dark eye, two yellow flank/rump regions, layered flight feathers with white wing bars, long tail, and anisodactyl feet. It depicts one head, one beak, two wings, two legs, and one tail; the far wing is naturally occluded in the perched profile.",
+      "No place name, ZIP code, coordinates, map, or local-observation detail appears in Image 1. No material species, anatomy, or text errors found."
+    ],
+    "location_free": true,
+    "passed": true,
+    "species_accuracy": 5,
+    "text_accuracy": 5,
+    "verification_sources": [
+      {
+        "title": "Yellow-rumped Warbler Identification \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Yellow-rumped_Warbler/id"
+      },
+      {
+        "title": "Yellow-rumped Warbler \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/yellow-rumped-warbler"
+      },
+      {
+        "title": "Dendroica coronata \u2014 Animal Diversity Web",
+        "url": "https://animaldiversity.org/accounts/Dendroica_coronata/"
+      }
+    ]
+  },
+  "references": [
+    {
+      "attribution": "(c) Jonathan Eisen, some rights reserved (CC BY)",
+      "filename": "01-252031775.jpg",
+      "height": 1224,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/252031775/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 146577032,
+      "observer": "phylogenomics",
+      "photo_id": 252031775,
+      "sha256": "7a35cb5f8bc7da6907427ecd2e7d904d05465a59c426e36e519d4b452df8ed01",
+      "source_url": "https://www.inaturalist.org/observations/146577032",
+      "width": 1757
+    },
+    {
+      "attribution": "(c) Brooke J., some rights reserved (CC BY)",
+      "filename": "02-668050487.jpg",
+      "height": 1828,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/668050487/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 365887212,
+      "observer": "inkasaur",
+      "photo_id": 668050487,
+      "sha256": "3ef44f69118c7680f09719cb239f49a496cd748f015d9b98dfb97d8959e5f350",
+      "source_url": "https://www.inaturalist.org/observations/365887212",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) Matt Felperin, some rights reserved (CC BY)",
+      "filename": "03-408742214.jpeg",
+      "height": 1366,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/408742214/large.jpeg",
+      "license_code": "cc-by",
+      "observation_id": 230214167,
+      "observer": "mattyfelp",
+      "photo_id": 408742214,
+      "sha256": "abf6683ebfcf0252f0f41cbef5e394d7c5a51aed80609e9892e497b82acc2068",
+      "source_url": "https://www.inaturalist.org/observations/230214167",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) Willem Span, some rights reserved (CC BY)",
+      "filename": "04-271210824.jpg",
+      "height": 1305,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/271210824/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 156824398,
+      "observer": "willemspan",
+      "photo_id": 271210824,
+      "sha256": "2b5448ab882e02104e715c569e844d98b8fcabcf7e1cea369d9dc70aa1c1369f",
+      "source_url": "https://www.inaturalist.org/observations/156824398",
+      "width": 1957
+    }
+  ],
+  "schema_version": 1,
+  "scientific_name": "Setophaga coronata",
+  "slug": "yellow-rumped-warbler",
+  "status": "approved",
+  "taxon_id": 145245
+}

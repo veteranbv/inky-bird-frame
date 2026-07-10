@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-10T18:27:17+00:00",
+  "generated_at": "2026-07-10T18:34:41+00:00",
   "schema_version": 1,
   "species": [
     {
@@ -419,6 +419,17 @@
       "scientific_name": "Zonotrichia albicollis",
       "slug": "white-throated-sparrow",
       "taxon_id": 9184
+    },
+    {
+      "approved_at": "2026-07-10T18:34:41+00:00",
+      "common_name": "Yellow-rumped Warbler",
+      "display_path": "species/145245-yellow-rumped-warbler/display.png",
+      "display_sha256": "d834e5a96cf09de85d153fe289409c41e4aed15f93fd382b42351aa7edea65a0",
+      "portrait_path": "species/145245-yellow-rumped-warbler/portrait.png",
+      "portrait_sha256": "e42ded5678d0f60b33d21f1d89e5e85bb59b51ceb03814bea0742fbe01903788",
+      "scientific_name": "Setophaga coronata",
+      "slug": "yellow-rumped-warbler",
+      "taxon_id": 145245
     }
   ]
 }
