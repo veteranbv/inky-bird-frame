@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-10T05:04:19+00:00",
+  "generated_at": "2026-07-10T05:12:49+00:00",
   "schema_version": 1,
   "species": [
     {
@@ -100,6 +100,17 @@
       "scientific_name": "Ardea herodias",
       "slug": "great-blue-heron",
       "taxon_id": 4956
+    },
+    {
+      "approved_at": "2026-07-10T05:12:49+00:00",
+      "common_name": "Killdeer",
+      "display_path": "species/4793-killdeer/display.png",
+      "display_sha256": "59e8823694e6c1c698d0ecf7a1040f59fb4fa9912c6f6bfd4d687dd5acd9782e",
+      "portrait_path": "species/4793-killdeer/portrait.png",
+      "portrait_sha256": "a2f828f56b7c600b161fe23174a52ae238dd020943c4edea388d87c4126dfc79",
+      "scientific_name": "Charadrius vociferus",
+      "slug": "killdeer",
+      "taxon_id": 4793
     },
     {
       "approved_at": "2026-07-10T05:04:19+00:00",

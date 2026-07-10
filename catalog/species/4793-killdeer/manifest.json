@@ -1,0 +1,150 @@
+{
+  "approved_at": "2026-07-10T05:12:49+00:00",
+  "assets": {
+    "display": {
+      "filename": "display.png",
+      "sha256": "59e8823694e6c1c698d0ecf7a1040f59fb4fa9912c6f6bfd4d687dd5acd9782e"
+    },
+    "portrait": {
+      "filename": "portrait.png",
+      "sha256": "a2f828f56b7c600b161fe23174a52ae238dd020943c4edea388d87c4126dfc79"
+    }
+  },
+  "common_name": "Killdeer",
+  "generation": {
+    "attempt": 1,
+    "generated_at": "2026-07-10T05:12:49+00:00",
+    "generator": "Codex subscription / built-in gpt-image-2",
+    "max_attempts": 3,
+    "prompt_version": "field-journal-v2"
+  },
+  "profile": {
+    "behavior": "Forages with a run-stop-peck rhythm on open ground; gives a loud, insistent kill-dee call and may perform a broken-wing distraction display near a nest.",
+    "common_name": "Killdeer",
+    "family": "Charadriidae",
+    "field_marks": [
+      "Slender plover with a large round head, large dark eye, short straight dark bill, and long legs.",
+      "Brownish-tan upperparts with warm rufous edging; clean white underparts.",
+      "Two bold black bands cross the white breast of adults.",
+      "Face is patterned in brown, black, and white, with a white forehead and eyebrow stripe.",
+      "Long pointed tail and long narrow wings; orange-buff rump and tail base show conspicuously in flight."
+    ],
+    "habitat": "Open ground with low or no vegetation: fields, pastures, lawns, gravel, bare soil, mudflats, shorelines, sandbars, and other sparsely vegetated open spaces.",
+    "measurements": {
+      "length": "20\u201328 cm (7.9\u201311.0 in)",
+      "weight": "75\u2013128 g (2.6\u20134.5 oz)",
+      "wingspan": "46\u201348 cm (18.1\u201318.9 in)"
+    },
+    "palette": [
+      "brownish tan",
+      "rufous orange-buff",
+      "white",
+      "black",
+      "slate gray"
+    ],
+    "scientific_name": "Charadrius vociferus",
+    "sources": [
+      {
+        "title": "Killdeer Identification \u2014 Cornell Lab of Ornithology",
+        "url": "https://www.allaboutbirds.org/guide/Killdeer/id"
+      },
+      {
+        "title": "Killdeer \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/killdeer"
+      },
+      {
+        "title": "Killdeer \u2014 U.S. National Park Service",
+        "url": "https://www.nps.gov/gate/learn/nature/killdeer.htm"
+      }
+    ],
+    "taxon_id": 4793
+  },
+  "quality_review": {
+    "anatomy_accuracy": 5,
+    "composition_quality": 5,
+    "findings": [
+      "Independent verification supports Killdeer (Charadrius vociferus), family Charadriidae, and all stated measurements: 20\u201328 cm length, 46\u201348 cm wingspan, and 75\u2013128 g weight.",
+      "The adult illustration matches the references and verified field marks: slender long-legged plover, short straight dark bill, large dark eye, brownish-tan upperparts with rufous edging, white underparts, patterned brown/black/white face, two black breast bands, and long pointed tail.",
+      "The wing study appropriately shows the conspicuous white wing stripe; the main bird is anatomically coherent with one head, one beak, two wings, two legs, and one tail. The additional wing and head studies are clearly separate anatomical details, not extra body parts.",
+      "The behavior, habitat, palette, scientific name, common name, family, and field-mark text are supported by Cornell, Audubon, and the U.S. National Park Service. No material factual or text errors found.",
+      "No place name, ZIP code, coordinates, map, or local-observation detail appears on the plate."
+    ],
+    "location_free": true,
+    "passed": true,
+    "species_accuracy": 5,
+    "text_accuracy": 5,
+    "verification_sources": [
+      {
+        "title": "Killdeer Identification \u2014 Cornell Lab of Ornithology",
+        "url": "https://www.allaboutbirds.org/guide/Killdeer/id"
+      },
+      {
+        "title": "Killdeer \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/killdeer"
+      },
+      {
+        "title": "Killdeer \u2014 U.S. National Park Service",
+        "url": "https://www.nps.gov/articles/killdeer.htm"
+      }
+    ]
+  },
+  "references": [
+    {
+      "attribution": "(c) Matt Felperin, some rights reserved (CC BY)",
+      "filename": "01-370022156.jpg",
+      "height": 1365,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/370022156/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 209101843,
+      "observer": "mattyfelp",
+      "photo_id": 370022156,
+      "sha256": "f4bdd2c000e3d121ed5e307cabeaf20016a35f5e44827211d858e473a2eaa454",
+      "source_url": "https://www.inaturalist.org/observations/209101843",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) Troy B, some rights reserved (CC BY)",
+      "filename": "02-133500791.jpeg",
+      "height": 1413,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/133500791/large.jpeg",
+      "license_code": "cc-by",
+      "observation_id": 81393294,
+      "observer": "tb_wildlife_photography",
+      "photo_id": 133500791,
+      "sha256": "1f4ac05e247f42aea33577680568450c40b08a659cace88bdbc9a1d915dc552d",
+      "source_url": "https://www.inaturalist.org/observations/81393294",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) Sam Kieschnick, some rights reserved (CC BY)",
+      "filename": "03-67100327.jpeg",
+      "height": 1536,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/67100327/large.jpeg",
+      "license_code": "cc-by",
+      "observation_id": 42265463,
+      "observer": "sambiology",
+      "photo_id": 67100327,
+      "sha256": "21d237dfbc09c7da325e15286c5e47f3473b15cf68850bc18b08ab5d7cad0885",
+      "source_url": "https://www.inaturalist.org/observations/42265463",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) Jonathan Eisen, some rights reserved (CC BY)",
+      "filename": "04-456136056.jpg",
+      "height": 1366,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/456136056/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 254632909,
+      "observer": "phylogenomics",
+      "photo_id": 456136056,
+      "sha256": "5d4cd33294d5f467368085e4299623626ee9e92e533a94974fe1f166549b5dd5",
+      "source_url": "https://www.inaturalist.org/observations/254632909",
+      "width": 2048
+    }
+  ],
+  "schema_version": 1,
+  "scientific_name": "Charadrius vociferus",
+  "slug": "killdeer",
+  "status": "approved",
+  "taxon_id": 4793
+}
