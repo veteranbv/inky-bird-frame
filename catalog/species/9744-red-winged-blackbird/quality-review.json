@@ -1,0 +1,24 @@
+{
+  "anatomy_accuracy": 4,
+  "composition_quality": 5,
+  "findings": [
+    "Independent verification confirms the title, scientific name, family, measurements, behavior, habitat, and listed field marks. Cornell gives the exact displayed measurement ranges; Audubon gives closely matching rounded ranges.",
+    "The central bird is a plausible adult male Red-winged Blackbird: glossy black plumage, stocky broad-shouldered form, pointed conical bill, dark eye, medium squared-to-rounded tail, dark legs/feet, and a red epaulet with yellow lower border all agree with the supplied field references and verified descriptions.",
+    "No material text or species-identification error found. The bill and feet are somewhat stylized, and only the near wing is visible in the side-on central pose, but the anatomy is coherent: one head, one beak, two legs, one tail, and an implied far wing behind the body.",
+    "No place name, ZIP code, coordinates, map, or local-observation detail appears on the plate."
+  ],
+  "location_free": true,
+  "passed": true,
+  "species_accuracy": 5,
+  "text_accuracy": 5,
+  "verification_sources": [
+    {
+      "title": "Cornell Lab of Ornithology \u2014 Red-winged Blackbird Identification",
+      "url": "https://www.allaboutbirds.org/guide/Red-winged_Blackbird/id/"
+    },
+    {
+      "title": "National Audubon Society \u2014 Red-winged Blackbird Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/red-winged-blackbird"
+    }
+  ]
+}
