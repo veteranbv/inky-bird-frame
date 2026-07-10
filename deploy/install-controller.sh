@@ -108,6 +108,8 @@ if environment_destinations:
         f"private config file; replace url_env for: {names}"
     )
 schedule = config.schedule
+config.controller.workspace_dir.mkdir(parents=True, exist_ok=True)
+config.controller.catalog_dir.parent.mkdir(parents=True, exist_ok=True)
 with catalog_state_lock(config.controller.state_dir):
     sync_public_catalog(root / "catalog", config.controller.catalog_dir)
 

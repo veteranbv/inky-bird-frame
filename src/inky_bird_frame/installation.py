@@ -323,6 +323,16 @@ def _writable_directory(check_id: str, path: Path) -> DiagnosticCheck:
     )
 
 
+def _existing_writable_directory(check_id: str, path: Path) -> DiagnosticCheck:
+    if not path.is_dir():
+        return _fail(
+            check_id,
+            f"Required runtime directory does not exist: {path}",
+            remediation=f"Create the directory and grant the service user access: {path}",
+        )
+    return _writable_directory(check_id, path)
+
+
 def _executable_check(path: Path) -> DiagnosticCheck:
     if path.is_file() and os.access(path, os.X_OK):
         return _pass("codex_executable", f"Codex CLI is executable: {path}")
@@ -544,7 +554,7 @@ def doctor(role: InstallationRole, config_path: Path) -> DoctorReport:
     if role is InstallationRole.CONTROLLER:
         checks.extend(
             (
-                _writable_directory("workspace", config.controller.workspace_dir),
+                _existing_writable_directory("workspace", config.controller.workspace_dir),
                 _writable_directory("catalog", config.controller.catalog_dir),
                 _writable_directory("controller_state", config.controller.state_dir),
                 _executable_check(config.controller.codex_path),

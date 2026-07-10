@@ -324,6 +324,7 @@ display_startup_delay_seconds = 30
             codex = root / "codex"
             codex.touch(mode=0o700)
             config = write_config(root, codex)
+            (root / "workspace").mkdir()
             with (
                 patch("inky_bird_frame.installation.platform.system", return_value="Darwin"),
                 patch("inky_bird_frame.installation._codex_auth_check", return_value=passing),
@@ -336,6 +337,28 @@ display_startup_delay_seconds = 30
 
         self.assertTrue(report.ready)
         self.assertTrue(all(check.status is not CheckStatus.FAIL for check in report.checks))
+
+    def test_controller_doctor_fails_when_workspace_is_missing(self) -> None:
+        passing = DiagnosticCheck("mock", CheckStatus.PASS, "ready")
+        with TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            codex = root / "codex"
+            codex.touch(mode=0o700)
+            config = write_config(root, codex)
+            with (
+                patch("inky_bird_frame.installation.platform.system", return_value="Darwin"),
+                patch("inky_bird_frame.installation._codex_auth_check", return_value=passing),
+                patch("inky_bird_frame.installation._launchd_checks", return_value=[passing]),
+                patch(
+                    "inky_bird_frame.installation._controller_health_check", return_value=passing
+                ),
+            ):
+                report = doctor(InstallationRole.CONTROLLER, config)
+
+        check = next(item for item in report.checks if item.check_id == "workspace")
+        self.assertEqual(check.status, CheckStatus.FAIL)
+        self.assertIn("does not exist", check.summary)
+        self.assertFalse(report.ready)
 
     def test_controller_doctor_reports_failed_scheduled_job(self) -> None:
         passing = DiagnosticCheck("mock", CheckStatus.PASS, "ready")
