@@ -1,0 +1,42 @@
+{
+  "behavior": "Primarily a foliage gleaner; uses its stout bill for seeds, fruit, and insects, and may hover or fly out to catch insects.",
+  "common_name": "Rose-breasted Grosbeak",
+  "family": "Cardinalidae",
+  "field_marks": [
+    "Stocky, broad-chested songbird with a short neck and medium-length squared tail.",
+    "Very large, thick triangular bill, pale horn-colored in the adult male.",
+    "Adult male black above with crisp white wing patches and white underparts.",
+    "Adult male has a vivid rose-red breast chevron below the black throat.",
+    "White patches show in the wings and tail; males show pink-red underwings in flight.",
+    "Female and immature are brown and heavily streaked, with a bold pale eyebrow and pale bill."
+  ],
+  "habitat": "Moist deciduous or mixed woodland, especially second-growth woods, thickets, and shrubby forest edges; also uses semiopen wooded habitats.",
+  "measurements": {
+    "length": "18\u201321 cm (7.1\u20138.3 in)",
+    "weight": "39\u201349 g (1.4\u20131.7 oz)",
+    "wingspan": "29\u201333 cm (11.4\u201313.0 in)"
+  },
+  "palette": [
+    "glossy black",
+    "bright rose-red",
+    "clean white",
+    "pale horn",
+    "warm brown"
+  ],
+  "scientific_name": "Pheucticus ludovicianus",
+  "sources": [
+    {
+      "title": "Rose-breasted Grosbeak Identification \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Rose-breasted_Grosbeak/id"
+    },
+    {
+      "title": "Rose-breasted Grosbeak Life History \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Rose-breasted_Grosbeak/lifehistory"
+    },
+    {
+      "title": "Pheucticus ludovicianus \u2014 Animal Diversity Web",
+      "url": "https://animaldiversity.org/accounts/Pheucticus_ludovicianus/"
+    }
+  ],
+  "taxon_id": 10271
+}
