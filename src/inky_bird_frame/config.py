@@ -18,6 +18,7 @@ from .errors import ConfigurationError
 class RotationMode(StrEnum):
     SEQUENTIAL = "sequential"
     SHUFFLE = "shuffle"
+    SHUFFLE_BAG = "shuffle_bag"
     WEIGHTED = "weighted"
 
 

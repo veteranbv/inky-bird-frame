@@ -2,13 +2,44 @@ from __future__ import annotations
 
 import hashlib
 import json
+import random
 import unittest
+from collections.abc import Callable
 from pathlib import Path
 from tempfile import TemporaryDirectory
 from unittest.mock import patch
 
-from inky_bird_frame.config import DisplayNodeConfig
-from inky_bird_frame.display_node import run_display_cycle
+from inky_bird_frame.config import DisplayNodeConfig, RotationMode
+from inky_bird_frame.display_node import _read_state, parse_catalog_entries, run_display_cycle
+from inky_bird_frame.errors import CatalogError
+
+
+def catalog_payload(images: dict[int, bytes]) -> dict[str, object]:
+    species: list[dict[str, object]] = []
+    for taxon_id, image in images.items():
+        species.append(
+            {
+                "taxon_id": taxon_id,
+                "common_name": f"Bird {taxon_id}",
+                "scientific_name": f"Species {taxon_id}",
+                "slug": f"bird-{taxon_id}",
+                "portrait_path": f"species/{taxon_id}/portrait.png",
+                "portrait_sha256": "b" * 64,
+                "display_path": f"{taxon_id}.png",
+                "display_sha256": hashlib.sha256(image).hexdigest(),
+                "approved_at": "2026-07-09T00:00:00+00:00",
+            }
+        )
+    return {"schema_version": 1, "species": species}
+
+
+def asset_response(images: dict[int, bytes]) -> Callable[[str, float], bytes]:
+    def get_asset(url: str, timeout: float) -> bytes:
+        del timeout
+        taxon_id = int(url.rsplit("/", maxsplit=1)[-1].removesuffix(".png"))
+        return images[taxon_id]
+
+    return get_asset
 
 
 class DisplayNodeTests(unittest.TestCase):
@@ -93,10 +124,158 @@ class DisplayNodeTests(unittest.TestCase):
             ):
                 unchanged = run_display_cycle(config)
                 updated = run_display_cycle(config)
+                state = json.loads((state_dir / "state.json").read_text())
 
         self.assertEqual(unchanged["display_update"], "unchanged")
         self.assertEqual(updated["taxon_id"], 2)
+        self.assertEqual(state["schema_version"], 2)
         get_bytes.assert_called_once()
+
+    def test_shuffle_bag_persists_across_cycles_without_replacement(self) -> None:
+        images = {1: b"one", 2: b"two", 3: b"three"}
+        payload = catalog_payload(images)
+        with TemporaryDirectory() as temporary:
+            config = DisplayNodeConfig(
+                "http://controller.test",
+                Path(temporary),
+                RotationMode.SHUFFLE_BAG,
+            )
+            with (
+                patch("inky_bird_frame.display_node.get_json", return_value=payload),
+                patch("inky_bird_frame.display_node.get_bytes", side_effect=asset_response(images)),
+                patch("inky_bird_frame.display_node.show_on_inky", return_value=(1600, 1200)),
+            ):
+                first = run_display_cycle(config, rng=random.Random(7))
+                second = run_display_cycle(config, rng=random.Random(99))
+                state = json.loads((Path(temporary) / "state.json").read_text())
+
+        self.assertNotEqual(first["taxon_id"], second["taxon_id"])
+        self.assertEqual(state["schema_version"], 2)
+        self.assertEqual(len(state["shuffle_bag_seen"]), 2)
+        self.assertEqual(len(state["shuffle_bag_remaining"]), 1)
+
+    def test_shuffle_bag_state_is_independent_from_shuffle_on_mode_switch(self) -> None:
+        images = {1: b"one", 2: b"two", 3: b"three"}
+        payload = catalog_payload(images)
+        with TemporaryDirectory() as temporary:
+            state_path = Path(temporary) / "state.json"
+            state_path.write_text(
+                json.dumps(
+                    {
+                        "schema_version": 2,
+                        "next_index": 0,
+                        "last_sha256": "",
+                        "last_taxon_id": 1,
+                        "shuffle_remaining": [2],
+                        "shuffle_bag_remaining": [3],
+                        "shuffle_bag_seen": [1, 2],
+                    }
+                )
+            )
+            shuffle_bag_config = DisplayNodeConfig(
+                "http://controller.test", Path(temporary), RotationMode.SHUFFLE_BAG
+            )
+            shuffle_config = DisplayNodeConfig(
+                "http://controller.test", Path(temporary), RotationMode.SHUFFLE
+            )
+            with (
+                patch("inky_bird_frame.display_node.get_json", return_value=payload),
+                patch("inky_bird_frame.display_node.get_bytes", side_effect=asset_response(images)),
+                patch("inky_bird_frame.display_node.show_on_inky", return_value=(1600, 1200)),
+            ):
+                bag_result = run_display_cycle(shuffle_bag_config, rng=random.Random(1))
+                after_bag = json.loads(state_path.read_text())
+                shuffle_result = run_display_cycle(shuffle_config, rng=random.Random(1))
+
+        self.assertEqual(bag_result["taxon_id"], 3)
+        self.assertEqual(after_bag["shuffle_remaining"], [2])
+        self.assertEqual(shuffle_result["taxon_id"], 2)
+
+    def test_display_failure_does_not_advance_shuffle_bag_state(self) -> None:
+        images = {1: b"one", 2: b"two"}
+        payload = catalog_payload(images)
+        original_state = {
+            "schema_version": 2,
+            "next_index": 0,
+            "last_sha256": "",
+            "last_taxon_id": 1,
+            "shuffle_remaining": [],
+            "shuffle_bag_remaining": [2],
+            "shuffle_bag_seen": [1],
+        }
+        with TemporaryDirectory() as temporary:
+            state_path = Path(temporary) / "state.json"
+            state_path.write_text(json.dumps(original_state))
+            config = DisplayNodeConfig(
+                "http://controller.test", Path(temporary), RotationMode.SHUFFLE_BAG
+            )
+            with (
+                patch("inky_bird_frame.display_node.get_json", return_value=payload),
+                patch("inky_bird_frame.display_node.get_bytes", side_effect=asset_response(images)),
+                patch(
+                    "inky_bird_frame.display_node.show_on_inky", side_effect=OSError("panel failed")
+                ),
+                self.assertRaisesRegex(OSError, "panel failed"),
+            ):
+                run_display_cycle(config)
+            state_after_failure = json.loads(state_path.read_text())
+
+        self.assertEqual(state_after_failure, original_state)
+
+    def test_rejects_malformed_state_and_accepts_legacy_state(self) -> None:
+        with TemporaryDirectory() as temporary:
+            state_path = Path(temporary) / "state.json"
+            state_path.write_text(json.dumps({"next_index": 1, "shuffle_remaining": [2]}))
+            legacy = _read_state(state_path)
+
+            state_path.write_text(json.dumps({"schema_version": 3}))
+            with self.assertRaises(CatalogError):
+                _read_state(state_path)
+            state_path.write_text(json.dumps({"schema_version": 2}))
+            with self.assertRaises(CatalogError):
+                _read_state(state_path)
+            state_path.write_text(json.dumps({"shuffle_bag_remaining": [1, 1]}))
+            with self.assertRaises(CatalogError):
+                _read_state(state_path)
+            state_path.write_text(json.dumps({"shuffle_bag_remaining": [0]}))
+            with self.assertRaises(CatalogError):
+                _read_state(state_path)
+            state_path.write_bytes(b"\xff")
+            with self.assertRaises(CatalogError):
+                _read_state(state_path)
+
+        self.assertEqual(legacy.next_index, 1)
+        self.assertEqual(legacy.shuffle_remaining, (2,))
+
+    def test_rejects_duplicate_or_empty_catalogs(self) -> None:
+        payload = catalog_payload({1: b"one"})
+        cast_species = payload["species"]
+        assert isinstance(cast_species, list)
+        duplicate = dict(cast_species[0])
+        cast_species.append(duplicate)
+
+        with self.assertRaises(CatalogError):
+            parse_catalog_entries(payload)
+        invalid_taxon = catalog_payload({1: b"one"})
+        invalid_species = invalid_taxon["species"]
+        assert isinstance(invalid_species, list)
+        invalid_species[0]["taxon_id"] = True
+        with self.assertRaises(CatalogError):
+            parse_catalog_entries(invalid_taxon)
+        with self.assertRaises(CatalogError):
+            parse_catalog_entries({"schema_version": 1, "species": []})
+
+    def test_rejects_overlapping_display_cycles_before_fetching_catalog(self) -> None:
+        with TemporaryDirectory() as temporary:
+            config = DisplayNodeConfig("http://controller.test", Path(temporary))
+            with (
+                patch("inky_bird_frame.display_node.fcntl.flock", side_effect=BlockingIOError),
+                patch("inky_bird_frame.display_node.get_json") as get_json,
+                self.assertRaisesRegex(CatalogError, "already running"),
+            ):
+                run_display_cycle(config)
+
+        get_json.assert_not_called()
 
 
 if __name__ == "__main__":

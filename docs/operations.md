@@ -48,7 +48,12 @@ facts rather than trusting the profile's citations.
 `rotation_mode` is configured under `[display_node]`:
 
 - `sequential`: stable round-robin order;
-- `shuffle`: every active species once per shuffled round; or
+- `shuffle`: existing shuffled-round behavior; removed species are pruned, while
+  new species join on the next refill;
+- `shuffle_bag`: a separately persisted bag that shows each active species at
+  most once per refill, admits new active species immediately in randomized
+  order, prunes inactive species, and avoids repeating the prior species across
+  a refill when another species is active; or
 - `weighted`: random selection weighted by current observation count, without
   immediate repeats when another species is active.
 
