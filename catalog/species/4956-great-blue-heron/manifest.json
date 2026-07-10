@@ -1,0 +1,148 @@
+{
+  "approved_at": "2026-07-10T04:04:04+00:00",
+  "assets": {
+    "display": {
+      "filename": "display.png",
+      "sha256": "a6b249c3837b1cf2e1ae75eb0a83f2ce1dea127ea122d8357e0bb08b1d79f3c1"
+    },
+    "portrait": {
+      "filename": "portrait.png",
+      "sha256": "0220e38e22258e4429dc3afd038aa51ad2dad090819bc7292e3a2b47aa2036f5"
+    }
+  },
+  "common_name": "Great Blue Heron",
+  "generation": {
+    "attempt": 2,
+    "generated_at": "2026-07-10T04:04:04+00:00",
+    "generator": "Codex subscription / built-in gpt-image-2",
+    "max_attempts": 3,
+    "prompt_version": "field-journal-v2"
+  },
+  "profile": {
+    "behavior": "Typically hunts by standing still or walking slowly in shallow water, then striking prey rapidly with its bill; flies with the neck folded back and long legs extended behind.",
+    "common_name": "Great Blue Heron",
+    "family": "Ardeidae",
+    "field_marks": [
+      "Very large, long-legged wader with a long S-curved neck",
+      "Blue-gray body and broad gray wings, with darker flight feathers",
+      "Whitish head and neck marked by a bold black stripe extending into rear plumes",
+      "Long, heavy, straight yellowish bill",
+      "Pale yellow eye; long legs gray to yellowish-green",
+      "In flight, neck is tucked in while the long legs trail well beyond the short tail"
+    ],
+    "habitat": "Marshes, swamps, pond and lake edges, slow rivers, shorelines, tidal flats, and shallow coastal waters; nests commonly in trees or shrubs near water.",
+    "measurements": {
+      "length": "1.0\u20131.4 m",
+      "weight": "2.1\u20132.5 kg",
+      "wingspan": "1.7\u20132.0 m"
+    },
+    "palette": [
+      "blue-gray",
+      "slate gray",
+      "white",
+      "black",
+      "yellow"
+    ],
+    "scientific_name": "Ardea herodias",
+    "sources": [
+      {
+        "title": "Great Blue Heron | Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/great-blue-heron"
+      },
+      {
+        "title": "Great Blue Heron | All About Birds, Cornell Lab of Ornithology",
+        "url": "https://www.allaboutbirds.org/guide/Great_blue_heron"
+      },
+      {
+        "title": "Ardea herodias | Animal Diversity Web, University of Michigan",
+        "url": "https://animaldiversity.org/accounts/Ardea_herodias/"
+      }
+    ],
+    "taxon_id": 4956
+  },
+  "quality_review": {
+    "anatomy_accuracy": 5,
+    "composition_quality": 5,
+    "findings": [
+      "Independently verified identity: Great Blue Heron (Ardea herodias), family Ardeidae. The candidate\u2019s blue-gray plumage, whitish head and neck, broad black eye/crown stripe with rear plumes, long yellowish straight bill, yellow eye, gray-to-yellowish legs, broad folded wings with darker flight feathers, and short tail agree with the supplied references and authoritative descriptions.",
+      "All stated measurements are supported: length 1.0\u20131.4 m, wingspan 1.7\u20132.0 m, and weight 2.1\u20132.5 kg. Cornell gives 97\u2013137 cm, 167\u2013201 cm, and 2,100\u20132,500 g; Audubon gives the stated rounded ranges.",
+      "Visible habitat and behavior claims agree with the verified accounts, including slow/statue-like shallow-water hunting, rapid bill strikes, S-curved/tucked neck in flight, broad wings, and legs extending beyond the short tail.",
+      "The illustration has one head, one beak, two wings (a folded pair), two legs, and one short tail. No duplicate or malformed anatomy is visible.",
+      "No place name, ZIP code, coordinates, map, or local-observation detail appears. The scale is a generic metric ruler only.",
+      "No material species, anatomy, or text errors found."
+    ],
+    "location_free": true,
+    "passed": true,
+    "species_accuracy": 5,
+    "text_accuracy": 5,
+    "verification_sources": [
+      {
+        "title": "Great Blue Heron Identification | All About Birds, Cornell Lab of Ornithology",
+        "url": "https://www.allaboutbirds.org/guide/great_blue_heron/id"
+      },
+      {
+        "title": "Great Blue Heron | Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/great-blue-heron"
+      }
+    ]
+  },
+  "references": [
+    {
+      "attribution": "(c) mostbittern, some rights reserved (CC BY)",
+      "filename": "01-134213334.jpg",
+      "height": 1536,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/134213334/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 81811771,
+      "observer": "mostbittern",
+      "photo_id": 134213334,
+      "sha256": "50d83f731a1337a395798c7956d86c452d0c4d91fdc556125fc8fc04b847753c",
+      "source_url": "https://www.inaturalist.org/observations/81811771",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) Michael J. Papay, some rights reserved (CC BY)",
+      "filename": "02-507422703.jpg",
+      "height": 960,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/507422703/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 282433137,
+      "observer": "mjpapay",
+      "photo_id": 507422703,
+      "sha256": "aa3a9fb0926dd8ee02f5336abc24aaf371cddd4c8ffe0c8bcba5bda24d5f1869",
+      "source_url": "https://www.inaturalist.org/observations/282433137",
+      "width": 1280
+    },
+    {
+      "attribution": "no rights reserved",
+      "filename": "03-191194754.jpg",
+      "height": 1860,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/191194754/large.jpg",
+      "license_code": "cc0",
+      "observation_id": 113159870,
+      "observer": "w_mark_c",
+      "photo_id": 191194754,
+      "sha256": "ac6a60aca13ce37e4f49e6cea78bd737bab40c4c1dd6de441d1979e922129a02",
+      "source_url": "https://www.inaturalist.org/observations/113159870",
+      "width": 1810
+    },
+    {
+      "attribution": "(c) Morgan Hay, some rights reserved (CC BY)",
+      "filename": "04-20050031.jpeg",
+      "height": 1536,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/20050031/large.jpeg",
+      "license_code": "cc-by",
+      "observation_id": 13623306,
+      "observer": "honeymushroom",
+      "photo_id": 20050031,
+      "sha256": "ccc6a90ad7a1a7d455c43f2d6f494f7aa8338d4bb54b2440a90536b20b6eef2a",
+      "source_url": "https://www.inaturalist.org/observations/13623306",
+      "width": 2048
+    }
+  ],
+  "schema_version": 1,
+  "scientific_name": "Ardea herodias",
+  "slug": "great-blue-heron",
+  "status": "approved",
+  "taxon_id": 4956
+}

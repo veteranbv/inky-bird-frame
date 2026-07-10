@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-10T03:53:15+00:00",
+  "generated_at": "2026-07-10T04:04:04+00:00",
   "schema_version": 1,
   "species": [
     {
@@ -45,6 +45,17 @@
       "scientific_name": "Sialia sialis",
       "slug": "eastern-bluebird",
       "taxon_id": 12942
+    },
+    {
+      "approved_at": "2026-07-10T04:04:04+00:00",
+      "common_name": "Great Blue Heron",
+      "display_path": "species/4956-great-blue-heron/display.png",
+      "display_sha256": "a6b249c3837b1cf2e1ae75eb0a83f2ce1dea127ea122d8357e0bb08b1d79f3c1",
+      "portrait_path": "species/4956-great-blue-heron/portrait.png",
+      "portrait_sha256": "0220e38e22258e4429dc3afd038aa51ad2dad090819bc7292e3a2b47aa2036f5",
+      "scientific_name": "Ardea herodias",
+      "slug": "great-blue-heron",
+      "taxon_id": 4956
     },
     {
       "approved_at": "2026-07-09T19:05:59+00:00",
