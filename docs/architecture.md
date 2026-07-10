@@ -23,7 +23,9 @@ A locked generation cycle reads the latest non-stale snapshot, then:
 6. runs an independent, sourced Codex factual and visual review;
 7. regenerates failed reviews with corrective findings, within a configured
    attempt limit; and
-8. atomically publishes passing output through the pending queue.
+8. atomically publishes passing output through the pending queue; and
+9. immediately rebuilds the private active catalog from the latest observation
+   snapshot.
 
 The controller also exposes a read-only HTTP catalog:
 
@@ -46,6 +48,28 @@ The display node does not discover birds or generate art. Each timer cycle:
 This pull model keeps display addressing out of controller state and limits the
 node to a read-only catalog relationship. If refresh, generation, or controller
 access fails, the current e-paper image remains visible.
+
+### Public catalog publisher
+
+Public archival is an independent scheduled role. It never runs in the
+generation transaction and cannot delay local approval or display rotation. A
+publication cycle:
+
+1. fetches the configured branch of a dedicated catalog Git repository;
+2. creates a disposable detached worktree from that exact remote revision;
+3. validates every local and public species directory;
+4. copies only taxa that do not yet exist publicly;
+5. rebuilds and validates the public index;
+6. commits the new immutable directories; and
+7. pushes a fast-forward update to the configured branch.
+
+Validation fails closed on review scores, missing verification sources,
+unbounded current-generation output, unexpected files, image dimensions or
+metadata, checksums, private configuration fields, local paths, and any attempt
+to change an existing public taxon. Explicitly recognized seed and version-one
+catalog entries remain publishable for backward compatibility. A failed fetch,
+validation, commit, or push leaves the local catalog and active display
+unchanged. The next scheduled cycle retries from the current remote branch.
 
 ## State model
 
@@ -76,10 +100,17 @@ state and are not redistributed in the catalog.
 
 Deterministic code handles discovery parameters, terminal-state selection,
 license filtering, reference checksums, prompt assembly, image dimensions,
-rotation, catalog checksums, publication, serving, downloading, and display
-rotation.
+rotation, catalog checksums, local approval, public publication, serving,
+downloading, and display rotation.
 
 Codex handles factual synthesis, image generation, and independent factual and
 visual review. Those steps are bounded by structured schemas, attached
 references, sourced verification, versioned prompts, configurable attempts,
 and a terminal failure state. Human approval is not required for normal flow.
+
+Application code and documentation continue through protected pull requests.
+Generated species are content artifacts: after runtime review and deterministic
+validation, the trusted controller writes them directly to the dedicated public
+catalog. This keeps external contributors and untrusted GitHub-hosted workflows
+out of the publication credential path without making human review a content
+bottleneck.

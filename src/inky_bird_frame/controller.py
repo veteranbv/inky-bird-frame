@@ -18,7 +18,10 @@ from .catalog import (
     approve_candidate,
     approved_taxon_ids,
     candidate_directory,
+    catalog_state_lock,
     find_taxon_directory,
+    has_passing_sourced_review,
+    is_bounded_generation,
     rebuild_catalog_index,
     write_candidate_manifest,
     write_json_atomic,
@@ -57,17 +60,6 @@ def exclusive_cycle_lock(state_dir: Path) -> Iterator[None]:
             fcntl.flock(handle.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
         except BlockingIOError as exc:
             raise GenerationError("Another controller cycle is already running") from exc
-        try:
-            yield
-        finally:
-            fcntl.flock(handle.fileno(), fcntl.LOCK_UN)
-
-
-@contextmanager
-def catalog_state_lock(state_dir: Path) -> Iterator[None]:
-    state_dir.mkdir(parents=True, exist_ok=True)
-    with (state_dir / "catalog-state.lock").open("a+") as handle:
-        fcntl.flock(handle.fileno(), fcntl.LOCK_EX)
         try:
             yield
         finally:
@@ -426,11 +418,7 @@ def approve_passing_candidates(config: AppConfig) -> list[dict[str, object]]:
             raise CatalogError(f"Pending manifest has no taxon ID: {manifest_path}")
         review = manifest.get("quality_review")
         generation = manifest.get("generation")
-        if (
-            not isinstance(review, dict)
-            or not _has_passing_sourced_review(review)
-            or not _is_bounded_generation(generation)
-        ):
+        if not has_passing_sourced_review(review) or not is_bounded_generation(generation):
             continue
         entry = approve_candidate(
             config.controller.state_dir,
@@ -439,53 +427,6 @@ def approve_passing_candidates(config: AppConfig) -> list[dict[str, object]]:
         )
         published.append(entry.as_dict())
     return published
-
-
-def _has_passing_sourced_review(review: dict[str, object]) -> bool:
-    score_fields = (
-        "species_accuracy",
-        "anatomy_accuracy",
-        "text_accuracy",
-        "composition_quality",
-    )
-    if (
-        review.get("passed") is not True
-        or review.get("location_free") is not True
-        or any(
-            not isinstance(review.get(field), int)
-            or isinstance(review.get(field), bool)
-            or cast(int, review[field]) < 4
-            for field in score_fields
-        )
-    ):
-        return False
-    sources = review.get("verification_sources")
-    if not isinstance(sources, list):
-        return False
-    urls = {
-        source.get("url")
-        for source in sources
-        if isinstance(source, dict)
-        and isinstance(source.get("title"), str)
-        and bool(source["title"].strip())
-        and isinstance(source.get("url"), str)
-        and source["url"].startswith("https://")
-    }
-    return len(urls) >= 2
-
-
-def _is_bounded_generation(generation: object) -> bool:
-    if not isinstance(generation, dict):
-        return False
-    attempt = generation.get("attempt")
-    max_attempts = generation.get("max_attempts")
-    return (
-        isinstance(attempt, int)
-        and not isinstance(attempt, bool)
-        and isinstance(max_attempts, int)
-        and not isinstance(max_attempts, bool)
-        and 1 <= attempt <= max_attempts
-    )
 
 
 def run_generation_cycle(config: AppConfig) -> dict[str, object]:

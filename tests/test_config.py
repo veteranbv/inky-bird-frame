@@ -32,12 +32,21 @@ controller_url = "http://controller.test:8793/"
 state_dir = "var/display"
 rotation_mode = "weighted"
 
+[public_catalog]
+enabled = true
+checkout_dir = "var/public-catalog"
+remote = "public"
+branch = "catalog"
+commit_name = "Catalog Publisher"
+commit_email = "catalog@example.test"
+
 [schedule]
 refresh_minutes = 15
 generation_minutes = 5
 rotation_minutes = 3
 rotation_jitter_seconds = 7
 display_startup_delay_seconds = 30
+catalog_publish_minutes = 4
 """
 
 
@@ -55,11 +64,21 @@ class ConfigTests(unittest.TestCase):
         self.assertEqual(config.controller.max_generation_attempts, 3)
         self.assertEqual(config.display_node.controller_url, "http://controller.test:8793")
         self.assertEqual(config.display_node.rotation_mode, RotationMode.WEIGHTED)
+        self.assertTrue(config.public_catalog.enabled)
+        self.assertEqual(
+            config.public_catalog.checkout_dir,
+            (Path(temporary) / "var/public-catalog").resolve(),
+        )
+        self.assertEqual(config.public_catalog.remote, "public")
+        self.assertEqual(config.public_catalog.branch, "catalog")
+        self.assertEqual(config.public_catalog.commit_name, "Catalog Publisher")
+        self.assertEqual(config.public_catalog.commit_email, "catalog@example.test")
         self.assertEqual(config.schedule.refresh_minutes, 15)
         self.assertEqual(config.schedule.generation_minutes, 5)
         self.assertEqual(config.schedule.rotation_minutes, 3)
         self.assertEqual(config.schedule.rotation_jitter_seconds, 7)
         self.assertEqual(config.schedule.display_startup_delay_seconds, 30)
+        self.assertEqual(config.schedule.catalog_publish_minutes, 4)
 
     def test_rejects_invalid_zip(self) -> None:
         with TemporaryDirectory() as temporary:
@@ -98,7 +117,7 @@ class ConfigTests(unittest.TestCase):
         self.assertEqual(config.controller.codex_path, (Path(temporary) / "codex").resolve())
 
     def test_uses_backward_compatible_schedule_defaults(self) -> None:
-        legacy = CONFIG.split("\n[schedule]\n", maxsplit=1)[0].replace(
+        legacy = CONFIG.split("\n[public_catalog]\n", maxsplit=1)[0].replace(
             'rotation_mode = "weighted"\n', ""
         )
         with TemporaryDirectory() as temporary:
@@ -108,9 +127,21 @@ class ConfigTests(unittest.TestCase):
             config = load_config(path)
 
         self.assertEqual(config.display_node.rotation_mode, RotationMode.SEQUENTIAL)
+        self.assertFalse(config.public_catalog.enabled)
+        self.assertIsNone(config.public_catalog.checkout_dir)
         self.assertEqual(config.schedule.refresh_minutes, 15)
         self.assertEqual(config.schedule.generation_minutes, 360)
         self.assertEqual(config.schedule.rotation_minutes, 30)
+        self.assertEqual(config.schedule.catalog_publish_minutes, 5)
+
+    def test_enabled_public_catalog_requires_checkout(self) -> None:
+        invalid = CONFIG.replace('checkout_dir = "var/public-catalog"\n', "")
+        with TemporaryDirectory() as temporary:
+            path = Path(temporary) / "config.toml"
+            path.write_text(invalid)
+
+            with self.assertRaisesRegex(ConfigurationError, "checkout_dir is required"):
+                load_config(path)
 
     def test_rejects_invalid_rotation_policy(self) -> None:
         with TemporaryDirectory() as temporary:

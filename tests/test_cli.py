@@ -14,6 +14,14 @@ class CliTests(unittest.TestCase):
 
         self.assertEqual(str(args.config), "instance.toml")
 
+    def test_catalog_publish_supports_dry_run(self) -> None:
+        args = build_parser().parse_args(
+            ["catalog-publish", "--config", "instance.toml", "--dry-run"]
+        )
+
+        self.assertEqual(str(args.config), "instance.toml")
+        self.assertTrue(args.dry_run)
+
     def test_expected_error_uses_json_envelope(self) -> None:
         output = io.StringIO()
 

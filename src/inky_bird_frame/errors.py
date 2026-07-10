@@ -29,6 +29,10 @@ class CatalogError(InkyBirdFrameError):
     """Raised when catalog data is missing, invalid, or inconsistent."""
 
 
+class CatalogPublishError(InkyBirdFrameError):
+    """Raised when an approved catalog cannot be published safely."""
+
+
 class GenerationError(InkyBirdFrameError):
     """Raised when Codex cannot produce or validate an artifact."""
 

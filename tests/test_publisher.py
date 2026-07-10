@@ -1,0 +1,303 @@
+from __future__ import annotations
+
+import json
+import subprocess
+import unittest
+from pathlib import Path
+from tempfile import TemporaryDirectory
+
+from PIL import Image, PngImagePlugin
+
+from inky_bird_frame.catalog import rebuild_catalog_index, sha256_file, write_json_atomic
+from inky_bird_frame.config import load_config
+from inky_bird_frame.errors import CatalogPublishError
+from inky_bird_frame.publisher import (
+    run_catalog_publish,
+    sync_public_catalog,
+    validate_public_catalog,
+)
+
+
+def _run_git(repository: Path, *arguments: str) -> str:
+    result = subprocess.run(
+        ["git", "-C", str(repository), *arguments],
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+    return result.stdout.strip()
+
+
+def _create_species(catalog: Path, taxon_id: int, common_name: str) -> Path:
+    slug = common_name.casefold().replace(" ", "-")
+    directory = catalog / "species" / f"{taxon_id}-{slug}"
+    directory.mkdir(parents=True)
+    Image.new("RGB", (1200, 1600), "white").save(directory / "portrait.png")
+    Image.new("RGB", (1600, 1200), "white").save(directory / "display.png")
+    profile = {
+        "taxon_id": taxon_id,
+        "common_name": common_name,
+        "scientific_name": "Avis exemplaris",
+        "family": "Exemplaridae",
+        "measurements": {"length": "10 cm", "wingspan": "20 cm", "weight": "10 g"},
+        "field_marks": ["example field mark"],
+        "habitat": "Woodland",
+        "behavior": "Forages",
+        "palette": ["white"],
+        "sources": [
+            {"title": "Source one", "url": "https://example.test/one"},
+            {"title": "Source two", "url": "https://example.test/two"},
+        ],
+    }
+    review = {
+        "passed": True,
+        "species_accuracy": 5,
+        "anatomy_accuracy": 5,
+        "text_accuracy": 5,
+        "composition_quality": 5,
+        "location_free": True,
+        "findings": [],
+        "verification_sources": [
+            {"title": "Source one", "url": "https://example.test/one"},
+            {"title": "Source two", "url": "https://example.test/two"},
+        ],
+    }
+    write_json_atomic(directory / "profile.json", profile)
+    write_json_atomic(directory / "quality-review.json", review)
+    write_json_atomic(
+        directory / "manifest.json",
+        {
+            "schema_version": 1,
+            "status": "approved",
+            "taxon_id": taxon_id,
+            "common_name": common_name,
+            "scientific_name": "Avis exemplaris",
+            "slug": slug,
+            "approved_at": "2026-07-09T00:00:00+00:00",
+            "profile": profile,
+            "references": [],
+            "generation": {
+                "generator": "test",
+                "prompt_version": "test-v1",
+                "generated_at": "2026-07-09T00:00:00+00:00",
+                "attempt": 1,
+                "max_attempts": 3,
+            },
+            "quality_review": review,
+            "assets": {
+                "portrait": {
+                    "filename": "portrait.png",
+                    "sha256": sha256_file(directory / "portrait.png"),
+                },
+                "display": {
+                    "filename": "display.png",
+                    "sha256": sha256_file(directory / "display.png"),
+                },
+            },
+        },
+    )
+    rebuild_catalog_index(catalog)
+    return directory
+
+
+def _write_config(root: Path, checkout: Path) -> Path:
+    path = root / "config.toml"
+    path.write_text(
+        f"""
+[discovery]
+zip_code = "12345"
+radius_km = 8
+species_limit = 12
+window = "last-week"
+
+[controller]
+workspace_dir = "."
+catalog_dir = "catalog"
+state_dir = "state"
+codex_path = "/usr/bin/false"
+bind_host = "127.0.0.1"
+port = 8793
+references_per_species = 4
+generations_per_cycle = 1
+max_generation_attempts = 3
+
+[display_node]
+controller_url = "http://controller.test:8793"
+state_dir = "display"
+
+[public_catalog]
+enabled = true
+checkout_dir = "{checkout}"
+remote = "origin"
+branch = "main"
+commit_name = "Test Publisher"
+commit_email = "publisher@example.test"
+"""
+    )
+    return path
+
+
+def _initialize_remote(root: Path) -> tuple[Path, Path]:
+    remote = root / "remote.git"
+    checkout = root / "checkout"
+    subprocess.run(["git", "init", "--bare", str(remote)], check=True, capture_output=True)
+    subprocess.run(["git", "clone", str(remote), str(checkout)], check=True, capture_output=True)
+    _run_git(checkout, "switch", "-c", "main")
+    (checkout / "README.md").write_text("# Test catalog\n")
+    _run_git(checkout, "add", "README.md")
+    _run_git(
+        checkout,
+        "-c",
+        "user.name=Test",
+        "-c",
+        "user.email=test@example.test",
+        "commit",
+        "-m",
+        "Initialize catalog",
+    )
+    _run_git(checkout, "push", "-u", "origin", "main")
+    return remote, checkout
+
+
+class PublisherTests(unittest.TestCase):
+    def test_repository_seed_catalog_is_publishable(self) -> None:
+        catalog = Path(__file__).parents[1] / "catalog"
+
+        entries = validate_public_catalog(catalog)
+
+        self.assertEqual({entry.taxon_id for entry in entries}, {7562, 9083, 11935, 12942})
+
+    def test_validates_and_syncs_an_approved_catalog(self) -> None:
+        with TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            source = root / "source"
+            destination = root / "destination"
+            _create_species(source, 1, "Example Bird")
+
+            result = sync_public_catalog(source, destination)
+
+            self.assertEqual(result["already_present"], [])
+            self.assertEqual(
+                result["published"],
+                [
+                    {
+                        "taxon_id": 1,
+                        "common_name": "Example Bird",
+                        "scientific_name": "Avis exemplaris",
+                    }
+                ],
+            )
+            self.assertEqual(len(validate_public_catalog(destination)), 1)
+
+            repeated = sync_public_catalog(source, destination)
+
+            self.assertEqual(repeated["published"], [])
+            self.assertEqual(repeated["already_present"], [1])
+
+    def test_rejects_private_manifest_fields(self) -> None:
+        with TemporaryDirectory() as temporary:
+            catalog = Path(temporary) / "catalog"
+            directory = _create_species(catalog, 1, "Example Bird")
+            manifest_path = directory / "manifest.json"
+            manifest = json.loads(manifest_path.read_text())
+            manifest["zip_code"] = "12345"
+            write_json_atomic(manifest_path, manifest)
+
+            with self.assertRaisesRegex(CatalogPublishError, "Private field"):
+                validate_public_catalog(catalog)
+
+    def test_rejects_image_metadata(self) -> None:
+        with TemporaryDirectory() as temporary:
+            catalog = Path(temporary) / "catalog"
+            directory = _create_species(catalog, 1, "Example Bird")
+            portrait = directory / "portrait.png"
+            metadata = PngImagePlugin.PngInfo()
+            metadata.add_text("location", "private")
+            Image.new("RGB", (1200, 1600), "white").save(portrait, pnginfo=metadata)
+            manifest_path = directory / "manifest.json"
+            manifest = json.loads(manifest_path.read_text())
+            manifest["assets"]["portrait"]["sha256"] = sha256_file(portrait)
+            write_json_atomic(manifest_path, manifest)
+
+            with self.assertRaisesRegex(CatalogPublishError, "metadata is not allowed"):
+                validate_public_catalog(catalog)
+
+    def test_rejects_an_automated_review_below_threshold(self) -> None:
+        with TemporaryDirectory() as temporary:
+            catalog = Path(temporary) / "catalog"
+            directory = _create_species(catalog, 1, "Example Bird")
+            manifest_path = directory / "manifest.json"
+            manifest = json.loads(manifest_path.read_text())
+            manifest["quality_review"]["species_accuracy"] = 3
+            write_json_atomic(manifest_path, manifest)
+
+            with self.assertRaisesRegex(CatalogPublishError, "lacks a publishable quality review"):
+                validate_public_catalog(catalog)
+
+    def test_rejects_manifest_asset_path_traversal_before_reading_it(self) -> None:
+        with TemporaryDirectory() as temporary:
+            catalog = Path(temporary) / "catalog"
+            directory = _create_species(catalog, 1, "Example Bird")
+            manifest_path = directory / "manifest.json"
+            manifest = json.loads(manifest_path.read_text())
+            manifest["assets"]["portrait"]["filename"] = "../../private.png"
+            write_json_atomic(manifest_path, manifest)
+
+            with self.assertRaisesRegex(CatalogPublishError, "must use portrait.png"):
+                validate_public_catalog(catalog)
+
+    def test_rejects_changes_to_an_existing_public_taxon(self) -> None:
+        with TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            source = root / "source"
+            destination = root / "destination"
+            _create_species(source, 1, "Example Bird")
+            sync_public_catalog(source, destination)
+            public_portrait = destination / "species/1-example-bird/portrait.png"
+            public_portrait.write_bytes(b"changed")
+
+            with self.assertRaisesRegex(CatalogPublishError, "conflicts with immutable"):
+                sync_public_catalog(source, destination)
+
+    def test_publishes_through_a_real_git_remote_and_supports_dry_run(self) -> None:
+        with TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            remote, checkout = _initialize_remote(root)
+            config = load_config(_write_config(root, checkout))
+            _create_species(config.controller.catalog_dir, 1, "Example Bird")
+
+            first = run_catalog_publish(config)
+
+            self.assertTrue(first["pushed"])
+            self.assertTrue(first["changed"])
+            self.assertIsInstance(first["commit"], str)
+            self.assertIn(
+                "catalog/species/1-example-bird/manifest.json",
+                _run_git(remote, "ls-tree", "-r", "--name-only", "main"),
+            )
+
+            second = run_catalog_publish(config)
+
+            self.assertFalse(second["pushed"])
+            self.assertFalse(second["changed"])
+
+            _create_species(config.controller.catalog_dir, 2, "Second Bird")
+            dry_run = run_catalog_publish(config, dry_run=True)
+
+            self.assertTrue(dry_run["changed"])
+            self.assertFalse(dry_run["pushed"])
+            self.assertNotIn(
+                "2-second-bird", _run_git(remote, "ls-tree", "-r", "--name-only", "main")
+            )
+
+            final = run_catalog_publish(config)
+
+            self.assertTrue(final["pushed"])
+            self.assertIn(
+                "catalog/species/2-second-bird/manifest.json",
+                _run_git(remote, "ls-tree", "-r", "--name-only", "main"),
+            )
+
+
+if __name__ == "__main__":
+    unittest.main()

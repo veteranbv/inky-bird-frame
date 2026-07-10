@@ -15,6 +15,7 @@ Schedules are configured in `[schedule]`. Conservative starting values are:
 - controller HTTP service: always running;
 - observation refresh: every 15 minutes;
 - generation cycle: every six hours, one candidate per cycle;
+- public catalog publication: every five minutes when enabled; and
 - display cycle: every 30 minutes.
 
 The refresh command does not invoke Codex. `generation_minutes`,
@@ -37,6 +38,45 @@ portable across installations using the supported panel. Controller and display
 state paths remain TOML configuration. Installer bootstrap paths, including the
 TOML path itself, remain environment variables because the installer must find
 the configuration before it can load it.
+
+## Public catalog publication
+
+Use a dedicated Git repository for generated catalog content. Initialize its
+default branch with a README and license, then clone it on the trusted
+controller. Configure unattended authentication on that checkout with a
+repository-scoped deploy key or credential helper. Credentials and remote URLs
+do not belong in application configuration.
+
+```toml
+[public_catalog]
+enabled = true
+checkout_dir = "/path/to/public-catalog-checkout"
+remote = "origin"
+branch = "main"
+commit_name = "Inky Bird Frame Catalog"
+commit_email = "inky-bird-frame@users.noreply.github.com"
+
+[schedule]
+catalog_publish_minutes = 5
+```
+
+Validate the complete local and remote catalog without committing or pushing:
+
+```bash
+inky-bird-frame catalog-publish --config /path/to/config.toml --dry-run
+```
+
+Run an immediate publication cycle:
+
+```bash
+inky-bird-frame catalog-publish --config /path/to/config.toml
+```
+
+The publisher copies only new approved taxa. Existing public taxa must be
+byte-for-byte identical to their local approved versions. It never publishes
+the private discovery snapshot, downloaded reference bitmaps, run logs, failed
+attempts, or display state. The macOS installer creates the publication
+LaunchAgent only when `[public_catalog].enabled` is true.
 
 ## Maintainer deployment on macOS
 
@@ -71,9 +111,8 @@ inky-bird-frame approve --config /path/to/config.toml TAXON_ID
 inky-bird-frame reject --config /path/to/config.toml TAXON_ID --reason "specific issue"
 ```
 
-Commit the complete catalog directory for every published taxon. This preserves
-the accepted bitmap for other installations and prevents them from spending
-generation quota on it.
+Enable public catalog publication to preserve accepted plates for other
+installations without routing each generated image through an application PR.
 
 ## Failure recovery
 
@@ -88,3 +127,7 @@ generation quota on it.
 - Controller unavailable: the current e-paper image remains visible. Display
   state is not advanced.
 - Checksum mismatch: the display refuses the asset and preserves current state.
+- Public catalog failure: inspect `catalog-publish.error.log`. Fix repository
+  authentication, remote divergence, or the reported validation problem, then
+  rerun `catalog-publish`. Local approval and display rotation continue while
+  public publication is unavailable.

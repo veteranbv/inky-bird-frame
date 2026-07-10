@@ -27,6 +27,7 @@ from .display import show_on_inky
 from .display_node import run_display_cycle
 from .errors import InkyBirdFrameError
 from .images import prepare_uploaded_image
+from .publisher import run_catalog_publish
 from .server import serve_catalog
 
 
@@ -176,6 +177,11 @@ def display_cycle_command(args: argparse.Namespace) -> int:
     return 0
 
 
+def catalog_publish_command(args: argparse.Namespace) -> int:
+    print_result(run_catalog_publish(_config(args), dry_run=args.dry_run))
+    return 0
+
+
 def prepare_image_command(args: argparse.Namespace) -> int:
     portrait, display = prepare_uploaded_image(args.image, args.output_dir)
     if args.display:
@@ -272,6 +278,14 @@ def build_parser() -> argparse.ArgumentParser:
     add_config_argument(display_cycle_parser)
     display_cycle_parser.add_argument("--force", action="store_true")
     display_cycle_parser.set_defaults(func=display_cycle_command)
+
+    catalog_publish_parser = subparsers.add_parser(
+        "catalog-publish",
+        help="Validate and publish newly approved plates to a dedicated catalog repository",
+    )
+    add_config_argument(catalog_publish_parser)
+    catalog_publish_parser.add_argument("--dry-run", action="store_true")
+    catalog_publish_parser.set_defaults(func=catalog_publish_command)
 
     prepare_parser = subparsers.add_parser(
         "prepare-image", help="Prepare a portrait image for Inky"

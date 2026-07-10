@@ -32,10 +32,12 @@ flowchart LR
     B --> C["Facts + licensed references"]
     C --> D["Field-journal plate"]
     D --> E{"Independent AI review"}
-    E -->|pass| F["Immutable public catalog"]
+    E -->|pass| F["Approved local catalog"]
     E -->|revise| D
     F --> G["Active local rotation"]
     G --> H["E-paper display"]
+    F --> I["Validated asynchronous publish"]
+    I --> J["Reusable public catalog"]
 ```
 
 The system has two deliberately small roles:
@@ -124,6 +126,10 @@ uv run inky-bird-frame status --config config.toml
 # Serve the catalog and rotate the next approved plate.
 uv run inky-bird-frame serve --config config.toml
 uv run inky-bird-frame display-cycle --config config.toml
+
+# Preview or run asynchronous publication to a dedicated public catalog.
+uv run inky-bird-frame catalog-publish --config config.toml --dry-run
+uv run inky-bird-frame catalog-publish --config config.toml
 ```
 
 Observation windows are `last-day`, `last-week`, `last-30-days`, and
@@ -147,6 +153,12 @@ Every approved species lives under `catalog/species/<taxon-id>-<slug>/`:
 Downloaded source photographs, run logs, pending work, rejected work, and
 display state stay under ignored runtime storage. Reference licenses and source
 URLs remain recorded without redistributing the source bitmaps.
+
+Public catalog publication is optional and independent of the live display.
+The publisher accepts only new immutable taxa whose manifests, reviews,
+checksums, image dimensions, and privacy constraints validate. It pushes them
+to a separately configured Git repository without routing generated content
+through the application's code-review gates.
 
 ## Development
 

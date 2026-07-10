@@ -25,6 +25,17 @@ state_dir = "var/display-node"
 # repeating, and weighted uses local observation counts as selection weights.
 rotation_mode = "shuffle"
 
+[public_catalog]
+# Publishing is independent of generation and never delays the display.
+enabled = false
+# Clone a dedicated public catalog repository here, then enable publishing.
+# checkout_dir = "var/public-catalog"
+remote = "origin"
+branch = "main"
+# Git commit identity only; authentication belongs in the checkout's Git configuration.
+commit_name = "Inky Bird Frame Catalog"
+commit_email = "inky-bird-frame@users.noreply.github.com"
+
 [schedule]
 refresh_minutes = 15
 # Generation can consume substantial Codex usage. Start conservatively.
@@ -32,3 +43,4 @@ generation_minutes = 360
 rotation_minutes = 30
 rotation_jitter_seconds = 0
 display_startup_delay_seconds = 120
+catalog_publish_minutes = 5
