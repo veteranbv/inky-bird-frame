@@ -161,12 +161,16 @@ else:
     notifications_path.unlink(missing_ok=True)
 PY
 
+uid=$(id -u)
 if [ -f "${catalog_publish_plist}" ]; then
-  "${app_dir}/.venv/bin/inky-bird-frame" catalog-publish \
-    --config "${config_path}" --dry-run
+  launchctl bootout "gui/${uid}/com.inky-bird-frame.catalog-publish" 2>/dev/null || true
+  if ! "${app_dir}/.venv/bin/inky-bird-frame" catalog-publish \
+    --config "${config_path}" --dry-run; then
+    launchctl bootstrap "gui/${uid}" "${catalog_publish_plist}" 2>/dev/null || true
+    exit 1
+  fi
 fi
 
-uid=$(id -u)
 launchctl bootout "gui/${uid}/com.inky-bird-frame.serve" 2>/dev/null || true
 launchctl bootout "gui/${uid}/com.inky-bird-frame.controller-cycle" 2>/dev/null || true
 launchctl bootout "gui/${uid}/com.inky-bird-frame.refresh" 2>/dev/null || true
