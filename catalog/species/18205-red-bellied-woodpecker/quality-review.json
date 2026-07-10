@@ -1,0 +1,24 @@
+{
+  "anatomy_accuracy": 4,
+  "composition_quality": 5,
+  "findings": [
+    "Passed. The plate depicts an adult male Red-bellied Woodpecker: one head, one straight gray-black bill, two wings, two legs with climbing feet, and one stiff pointed tail are represented without visible anatomical duplication.",
+    "Species identification is supported by the red crown and nape, pale buff-gray face and underparts, narrow black-and-white barring on the back and wings, subtle pink-red lower belly, and the trunk-clinging pose. These agree with the supplied field-reference photos and both live sources.",
+    "All visible factual text is accurate: Melanerpes carolinus, Picidae, length 9.4 in (24 cm), wingspan 13.0\u201316.5 in (33\u201342 cm), weight 2.0\u20133.2 oz (56\u201391 g), habitat, behavior, sex-specific head pattern, flight wing flashes, and food caching are supported.",
+    "No place name, ZIP code, coordinates, map, or local-observation detail appears on the candidate plate."
+  ],
+  "location_free": true,
+  "passed": true,
+  "species_accuracy": 5,
+  "text_accuracy": 5,
+  "verification_sources": [
+    {
+      "title": "Red-bellied Woodpecker Identification \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Red-bellied_Woodpecker/id"
+    },
+    {
+      "title": "Red-bellied Woodpecker \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/red-bellied-woodpecker"
+    }
+  ]
+}

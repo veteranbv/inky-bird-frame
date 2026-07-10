@@ -1,0 +1,37 @@
+{
+  "behavior": "Hitches along trunks and main branches, probing and picking at bark for insects; uses a characteristic undulating flight and may cache food in crevices.",
+  "common_name": "Red-bellied Woodpecker",
+  "family": "Picidae",
+  "field_marks": [
+    "Medium-sized, sleek woodpecker with a rounded head and straight, chisel-like gray-black bill.",
+    "Bold black-and-white barring across the back and wings; white patches flash near the wingtips in flight.",
+    "Pale grayish-white face, throat, and underparts, often with a subtle pinkish-red wash on the lower belly.",
+    "Adult male has red from crown to nape; adult female has red mainly on the nape.",
+    "Dark eye and strong gray climbing feet; stiff pointed tail supports the bird against tree trunks."
+  ],
+  "habitat": "Deciduous or mixed woodlands and forests, including mature hardwoods, woodland edges, parks, and wooded suburban areas.",
+  "measurements": {
+    "length": "9.4 in (24 cm)",
+    "weight": "2.0\u20133.2 oz (56\u201391 g)",
+    "wingspan": "13.0\u201316.5 in (33\u201342 cm)"
+  },
+  "palette": [
+    "scarlet red",
+    "pale gray-white",
+    "soft buff",
+    "black",
+    "white"
+  ],
+  "scientific_name": "Melanerpes carolinus",
+  "sources": [
+    {
+      "title": "Red-bellied Woodpecker Identification \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/rebwoo/id"
+    },
+    {
+      "title": "Red-bellied Woodpecker \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/red-bellied-woodpecker?nid=5286&site=ny"
+    }
+  ],
+  "taxon_id": 18205
+}

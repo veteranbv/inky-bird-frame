@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-10T17:08:36+00:00",
+  "generated_at": "2026-07-10T17:20:07+00:00",
   "schema_version": 1,
   "species": [
     {
@@ -254,6 +254,17 @@
       "scientific_name": "Dryocopus pileatus",
       "slug": "pileated-woodpecker",
       "taxon_id": 17855
+    },
+    {
+      "approved_at": "2026-07-10T17:20:07+00:00",
+      "common_name": "Red-bellied Woodpecker",
+      "display_path": "species/18205-red-bellied-woodpecker/display.png",
+      "display_sha256": "9df1a63414d82c69bb068f86981363689718cf8114e626958e49340092330379",
+      "portrait_path": "species/18205-red-bellied-woodpecker/portrait.png",
+      "portrait_sha256": "3034eee67082b220d7f975f58e780ade8802d11638c869ee7df0b95a610af8fb",
+      "scientific_name": "Melanerpes carolinus",
+      "slug": "red-bellied-woodpecker",
+      "taxon_id": 18205
     },
     {
       "approved_at": "2026-07-10T04:45:42+00:00",
