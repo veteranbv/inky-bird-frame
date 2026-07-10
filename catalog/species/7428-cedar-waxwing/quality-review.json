@@ -1,0 +1,29 @@
+{
+  "anatomy_accuracy": 4,
+  "composition_quality": 5,
+  "findings": [
+    "Verified identity: Cedar Waxwing (Bombycilla cedrorum), family Bombycillidae. The listed length, weight, and wingspan exactly match Cornell\u2019s published measurements and Smithsonian independently supports approximately 6\u20137 in and 1.1 oz.",
+    "All visible factual text is supported: social flocking, fruit/berry feeding including brief hovering, summer aerial insect feeding, woodland/orchard/garden habitat, crest, narrow black-and-white mask, brown-to-gray plumage, pale yellow belly, short square-tipped dark tail with yellow terminal band, dark bill/eye/legs, and variable red waxy secondary tips.",
+    "The illustration shows one head, one beak, two legs with feet, one tail, and the expected two-wing anatomy (one wing shown fully, the far wing occluded). It matches the supplied reference photos in crest, mask, soft gray wings, yellow tail tip, and red secondary accents.",
+    "Minor illustration issue: the bill is rendered slightly longer and more sharply tapered than the characteristically short, wide Cedar Waxwing bill. This is not a material identification or text error.",
+    "No place name, ZIP code, coordinates, map, or local-observation detail appears."
+  ],
+  "location_free": true,
+  "passed": true,
+  "species_accuracy": 5,
+  "text_accuracy": 5,
+  "verification_sources": [
+    {
+      "title": "Cedar Waxwing Identification \u2014 Cornell Lab of Ornithology",
+      "url": "https://www.allaboutbirds.org/guide/cedar_waxwing/id"
+    },
+    {
+      "title": "Cedar Waxwing Life History \u2014 Cornell Lab of Ornithology",
+      "url": "https://www.allaboutbirds.org/guide/Cedar_Waxwing/lifehistory"
+    },
+    {
+      "title": "Cedar Waxwing \u2014 Smithsonian's National Zoo and Conservation Biology Institute",
+      "url": "https://nationalzoo.si.edu/animals/cedar-waxwing"
+    }
+  ]
+}

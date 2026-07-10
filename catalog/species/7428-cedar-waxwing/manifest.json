@@ -1,0 +1,152 @@
+{
+  "approved_at": "2026-07-10T04:11:31+00:00",
+  "assets": {
+    "display": {
+      "filename": "display.png",
+      "sha256": "bbaeb4886231cb8916262db02e7f40204430f41f51c231d52897446dc9f1921c"
+    },
+    "portrait": {
+      "filename": "portrait.png",
+      "sha256": "089a6de388bfbcdee098266df0796cffea81e21b915ae4aaff21fb8dd4715b59"
+    }
+  },
+  "common_name": "Cedar Waxwing",
+  "generation": {
+    "attempt": 1,
+    "generated_at": "2026-07-10T04:11:31+00:00",
+    "generator": "Codex subscription / built-in gpt-image-2",
+    "max_attempts": 3,
+    "prompt_version": "field-journal-v2"
+  },
+  "profile": {
+    "behavior": "Social and often seen in flocks year-round. Feeds mainly on fruit, swallowing berries whole or taking them during brief hovering flights; supplements its diet with flying insects in summer.",
+    "common_name": "Cedar Waxwing",
+    "family": "Bombycillidae",
+    "field_marks": [
+      "Sleek, silky-plumaged songbird with a pointed, often swept-back crest",
+      "Narrow black face mask crisply edged in white",
+      "Warm tan-brown head and breast grading into soft gray wings and back",
+      "Pale yellow belly; short, square-tipped dark tail with a bright yellow terminal band",
+      "Short, broad dark bill and dark eye; dark legs",
+      "Some adults show small red wax-like tips on the secondary wing feathers"
+    ],
+    "habitat": "Open deciduous, coniferous, or mixed woodlands; forest edges, old fields, orchards, parks, gardens, and other fruiting trees or shrubs, often near water.",
+    "measurements": {
+      "length": "5.5\u20136.7 in (14\u201317 cm)",
+      "weight": "about 1.1 oz (32 g)",
+      "wingspan": "8.7\u201311.8 in (22\u201330 cm)"
+    },
+    "palette": [
+      "warm tan-brown",
+      "soft blue-gray",
+      "pale yellow",
+      "black",
+      "white",
+      "wax red"
+    ],
+    "scientific_name": "Bombycilla cedrorum",
+    "sources": [
+      {
+        "title": "Cedar Waxwing Identification \u2014 Cornell Lab of Ornithology",
+        "url": "https://www.allaboutbirds.org/guide/cedar_waxwing/id"
+      },
+      {
+        "title": "Cedar Waxwing Life History \u2014 Cornell Lab of Ornithology",
+        "url": "https://www.allaboutbirds.org/guide/Cedar_Waxwing/lifehistory"
+      },
+      {
+        "title": "Cedar Waxwing \u2014 Smithsonian\u2019s National Zoo and Conservation Biology Institute",
+        "url": "https://nationalzoo.si.edu/animals/cedar-waxwing"
+      }
+    ],
+    "taxon_id": 7428
+  },
+  "quality_review": {
+    "anatomy_accuracy": 4,
+    "composition_quality": 5,
+    "findings": [
+      "Verified identity: Cedar Waxwing (Bombycilla cedrorum), family Bombycillidae. The listed length, weight, and wingspan exactly match Cornell\u2019s published measurements and Smithsonian independently supports approximately 6\u20137 in and 1.1 oz.",
+      "All visible factual text is supported: social flocking, fruit/berry feeding including brief hovering, summer aerial insect feeding, woodland/orchard/garden habitat, crest, narrow black-and-white mask, brown-to-gray plumage, pale yellow belly, short square-tipped dark tail with yellow terminal band, dark bill/eye/legs, and variable red waxy secondary tips.",
+      "The illustration shows one head, one beak, two legs with feet, one tail, and the expected two-wing anatomy (one wing shown fully, the far wing occluded). It matches the supplied reference photos in crest, mask, soft gray wings, yellow tail tip, and red secondary accents.",
+      "Minor illustration issue: the bill is rendered slightly longer and more sharply tapered than the characteristically short, wide Cedar Waxwing bill. This is not a material identification or text error.",
+      "No place name, ZIP code, coordinates, map, or local-observation detail appears."
+    ],
+    "location_free": true,
+    "passed": true,
+    "species_accuracy": 5,
+    "text_accuracy": 5,
+    "verification_sources": [
+      {
+        "title": "Cedar Waxwing Identification \u2014 Cornell Lab of Ornithology",
+        "url": "https://www.allaboutbirds.org/guide/cedar_waxwing/id"
+      },
+      {
+        "title": "Cedar Waxwing Life History \u2014 Cornell Lab of Ornithology",
+        "url": "https://www.allaboutbirds.org/guide/Cedar_Waxwing/lifehistory"
+      },
+      {
+        "title": "Cedar Waxwing \u2014 Smithsonian's National Zoo and Conservation Biology Institute",
+        "url": "https://nationalzoo.si.edu/animals/cedar-waxwing"
+      }
+    ]
+  },
+  "references": [
+    {
+      "attribution": "(c) Christian Back, some rights reserved (CC BY)",
+      "filename": "01-170848062.jpg",
+      "height": 1365,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/170848062/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 102232125,
+      "observer": "cback",
+      "photo_id": 170848062,
+      "sha256": "782f882510406c4cd1276ccb3098666813d5f8414a0aa20945d616b13f64afca",
+      "source_url": "https://www.inaturalist.org/observations/102232125",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) Shirley Zundell, some rights reserved (CC BY)",
+      "filename": "02-110812374.jpeg",
+      "height": 1536,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/110812374/large.jpeg",
+      "license_code": "cc-by",
+      "observation_id": 68436715,
+      "observer": "sdz456",
+      "photo_id": 110812374,
+      "sha256": "16dbb79350aafd98d7f2525a4c5f4aae5c01ccdc9232e0770ef14edb1649f84d",
+      "source_url": "https://www.inaturalist.org/observations/68436715",
+      "width": 2048
+    },
+    {
+      "attribution": "no rights reserved",
+      "filename": "03-154300663.jpeg",
+      "height": 1365,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/154300663/large.jpeg",
+      "license_code": "cc0",
+      "observation_id": 93124845,
+      "observer": "funvill",
+      "photo_id": 154300663,
+      "sha256": "771dec1e69987d2fa3a6fbced34124fa9e64705b7d8a2e4f106598fc3e714fac",
+      "source_url": "https://www.inaturalist.org/observations/93124845",
+      "width": 2048
+    },
+    {
+      "attribution": "no rights reserved",
+      "filename": "04-266706327.jpeg",
+      "height": 1365,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/266706327/large.jpeg",
+      "license_code": "cc0",
+      "observation_id": 154359639,
+      "observer": "radrat",
+      "photo_id": 266706327,
+      "sha256": "d578681e22e31af0e203f50db8ecaf64041695e170da8537e6937ed9abda806f",
+      "source_url": "https://www.inaturalist.org/observations/154359639",
+      "width": 2048
+    }
+  ],
+  "schema_version": 1,
+  "scientific_name": "Bombycilla cedrorum",
+  "slug": "cedar-waxwing",
+  "status": "approved",
+  "taxon_id": 7428
+}
