@@ -1,0 +1,26 @@
+{
+  "anatomy_accuracy": 5,
+  "composition_quality": 5,
+  "findings": [
+    "Independently verified identity: Great Blue Heron (Ardea herodias), family Ardeidae. The candidate\u2019s blue-gray plumage, whitish head and neck, broad black eye/crown stripe with rear plumes, long yellowish straight bill, yellow eye, gray-to-yellowish legs, broad folded wings with darker flight feathers, and short tail agree with the supplied references and authoritative descriptions.",
+    "All stated measurements are supported: length 1.0\u20131.4 m, wingspan 1.7\u20132.0 m, and weight 2.1\u20132.5 kg. Cornell gives 97\u2013137 cm, 167\u2013201 cm, and 2,100\u20132,500 g; Audubon gives the stated rounded ranges.",
+    "Visible habitat and behavior claims agree with the verified accounts, including slow/statue-like shallow-water hunting, rapid bill strikes, S-curved/tucked neck in flight, broad wings, and legs extending beyond the short tail.",
+    "The illustration has one head, one beak, two wings (a folded pair), two legs, and one short tail. No duplicate or malformed anatomy is visible.",
+    "No place name, ZIP code, coordinates, map, or local-observation detail appears. The scale is a generic metric ruler only.",
+    "No material species, anatomy, or text errors found."
+  ],
+  "location_free": true,
+  "passed": true,
+  "species_accuracy": 5,
+  "text_accuracy": 5,
+  "verification_sources": [
+    {
+      "title": "Great Blue Heron Identification | All About Birds, Cornell Lab of Ornithology",
+      "url": "https://www.allaboutbirds.org/guide/great_blue_heron/id"
+    },
+    {
+      "title": "Great Blue Heron | Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/great-blue-heron"
+    }
+  ]
+}
