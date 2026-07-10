@@ -234,12 +234,12 @@ class CodexRunner:
         allowed_domains: tuple[str, ...],
     ) -> QualityReview:
         raw = self._structured(
-            review_prompt(species, profile, references),
+            review_prompt(species, profile, references, allowed_domains),
             REVIEW_SCHEMA,
             [plate_path, *reference_paths],
             output_path,
             log_path,
-            search=False,
+            search=True,
         )
         return _parse_review(raw, allowed_domains)
 

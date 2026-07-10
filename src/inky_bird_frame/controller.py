@@ -619,14 +619,13 @@ def run_generation_cycle(config: AppConfig) -> dict[str, object]:
         generated: list[dict[str, object]] = []
         failures: list[dict[str, object]] = []
         retry_store = RetryStore(config.controller.state_dir / "generation-retries.json")
-        now = datetime.now(UTC).replace(microsecond=0)
         attempted_count = 0
         for species in eligible:
             if len(generated) >= config.controller.generations_per_cycle:
                 break
             if attempted_count >= config.controller.max_species_attempts_per_cycle:
                 break
-            if not retry_store.due(species.taxon_id, now):
+            if not retry_store.due(species.taxon_id, datetime.now(UTC)):
                 continue
             attempted_count += 1
             try:
@@ -649,7 +648,7 @@ def run_generation_cycle(config: AppConfig) -> dict[str, object]:
                 retry = retry_store.record_failure(
                     species.taxon_id,
                     exc,
-                    now=now,
+                    now=datetime.now(UTC),
                     initial_minutes=config.controller.retry_initial_minutes,
                     maximum_minutes=config.controller.retry_max_minutes,
                     fixed_minutes=config.controller.insufficient_references_retry_minutes,
@@ -667,7 +666,7 @@ def run_generation_cycle(config: AppConfig) -> dict[str, object]:
                 retry = retry_store.record_failure(
                     species.taxon_id,
                     exc,
-                    now=now,
+                    now=datetime.now(UTC),
                     initial_minutes=config.controller.retry_initial_minutes,
                     maximum_minutes=config.controller.retry_max_minutes,
                 )
@@ -698,7 +697,7 @@ def run_generation_cycle(config: AppConfig) -> dict[str, object]:
                 retry = retry_store.record_failure(
                     species.taxon_id,
                     exc,
-                    now=now,
+                    now=datetime.now(UTC),
                     initial_minutes=config.controller.retry_initial_minutes,
                     maximum_minutes=config.controller.retry_max_minutes,
                 )

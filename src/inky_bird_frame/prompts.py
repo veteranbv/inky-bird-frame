@@ -148,6 +148,7 @@ def review_prompt(
     species: BirdSpecies,
     profile: SpeciesProfileData,
     references: list[ReferencePhoto],
+    allowed_domains: tuple[str, ...],
 ) -> str:
     return f"""Review Image 1 as a candidate scientific field-journal plate for
 {species.common_name} ({species.scientific_name}). Images 2 onward are licensed field-reference
@@ -156,13 +157,14 @@ photos of the same species.
 Facts proposed by the research pass:
 {json.dumps(profile, indent=2, sort_keys=True)}
 
-Independently verify the species identity, measurements, and field marks against the cited profile
-sources and attached references. Do not browse the web during review and do not assume the
-proposed facts are correct. Inspect the candidate for correct plumage, proportions, bill, eye,
-wings, tail, legs, feet, and species field marks against the attached field-reference photos.
-Compare every visible factual claim to the independently verified facts. Confirm that no place
-name, ZIP code, coordinates, map, or local-observation detail appears. Record every concrete issue
-and return at least two distinct profile source URLs used for verification.
+Independently verify the species identity, measurements, and field marks against live source pages
+and the attached references. Do not assume the proposed facts are correct. Restrict browsing to
+these domains: {", ".join(allowed_domains)}. Do not rely on search snippets. Inspect the candidate
+for correct plumage, proportions, bill, eye, wings, tail, legs, feet, and species field marks
+against the attached field-reference photos. Compare every visible factual claim to the
+independently verified facts. Confirm that no place name, ZIP code, coordinates, map, or
+local-observation detail appears. Record every concrete issue and return at least two direct HTTPS
+source URLs from distinct configured domains used for verification.
 
 Set passed=true only when all four scores are at least 4, location_free is true, the bird has
 exactly one head, one beak, two wings, two legs, and one tail, and there are no material species or

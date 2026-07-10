@@ -49,6 +49,7 @@ from pathlib import Path
 
 from inky_bird_frame.catalog import catalog_state_lock, rebuild_catalog_index
 from inky_bird_frame.config import load_config
+from inky_bird_frame.errors import ConfigurationError
 from inky_bird_frame.publisher import sync_public_catalog
 
 (
@@ -64,6 +65,17 @@ from inky_bird_frame.publisher import sync_public_catalog
 ) = map(Path, sys.argv[1:])
 executable = app_dir / ".venv/bin/inky-bird-frame"
 config = load_config(config_path)
+environment_destinations = [
+    destination.name
+    for destination in config.notifications.destinations
+    if destination.url_env is not None
+]
+if environment_destinations:
+    names = ", ".join(environment_destinations)
+    raise ConfigurationError(
+        "The macOS LaunchAgent installer requires direct notification URLs in the "
+        f"private config file; replace url_env for: {names}"
+    )
 schedule = config.schedule
 with catalog_state_lock(config.controller.state_dir):
     rebuild_catalog_index(config.controller.catalog_dir)

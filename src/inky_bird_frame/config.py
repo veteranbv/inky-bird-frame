@@ -89,6 +89,7 @@ class NotificationDestination:
     name: str
     url: str = field(repr=False)
     events: tuple[NotificationEvent, ...]
+    url_env: str | None = field(default=None, repr=False)
 
 
 @dataclass(frozen=True)
@@ -239,6 +240,7 @@ def _notification_destinations(
             )
         if has_url:
             url = _string(item, "url")
+            variable = None
         else:
             variable = _string(item, "url_env")
             if resolve_environment:
@@ -267,7 +269,9 @@ def _notification_destinations(
             raise ConfigurationError(
                 f"Notification destination {name} must subscribe to at least one event"
             )
-        destinations.append(NotificationDestination(name=name, url=url, events=events))
+        destinations.append(
+            NotificationDestination(name=name, url=url, events=events, url_env=variable)
+        )
     return tuple(destinations)
 
 

@@ -242,6 +242,7 @@ events = ["terminal_error"]
 
         self.assertFalse(config.notifications.enabled)
         self.assertEqual(config.notifications.destinations[0].url, "env://MISSING_NOTIFICATION_URL")
+        self.assertEqual(config.notifications.destinations[0].url_env, "MISSING_NOTIFICATION_URL")
 
 
 if __name__ == "__main__":

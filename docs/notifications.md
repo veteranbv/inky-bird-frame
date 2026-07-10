@@ -149,8 +149,8 @@ events = ["terminal_error", "degraded", "recovered"]
 ```
 
 Use `url_env` instead of `url` only when your service manager injects that environment variable
-into every application process. The supported macOS installer intentionally does not copy its
-shell environment into LaunchAgents; use the private mode-0600 TOML file there.
+into every application process. The supported macOS installer rejects `url_env` because launchd
+does not inherit the installer's shell environment; use the private mode-0600 TOML file there.
 
 ### Home Assistant
 

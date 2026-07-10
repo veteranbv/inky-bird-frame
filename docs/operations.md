@@ -41,7 +41,9 @@ observers. The application does not substitute arbitrary web images.
 A new species profile may use one tightly bounded Codex web research pass after
 the structured context and image references are assembled. Research is limited
 by configured domains, per-species attempts, and a daily total. A validated
-profile is cached, so later image or review retries do not repeat web research.
+profile is cached, so image retries do not repeat profile research. Independent
+quality review may revisit configured source domains to verify the rendered
+facts rather than trusting the profile's citations.
 
 `rotation_mode` is configured under `[display_node]`:
 
