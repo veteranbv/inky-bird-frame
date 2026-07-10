@@ -1,0 +1,143 @@
+{
+  "approved_at": "2026-07-10T14:16:22+00:00",
+  "assets": {
+    "display": {
+      "filename": "display.png",
+      "sha256": "fb0345fa3180c97ebaf94af4316ddb3e4567d058cd03c917a22389394f6677ba"
+    },
+    "portrait": {
+      "filename": "portrait.png",
+      "sha256": "75c43f8d58843753b41b079994741ccb4ec9ccb2742343e0eb8a2167bb367637"
+    }
+  },
+  "common_name": "Black-and-white Warbler",
+  "generation": {
+    "attempt": 1,
+    "generated_at": "2026-07-10T14:16:22+00:00",
+    "generator": "Codex subscription / built-in gpt-image-2",
+    "max_attempts": 3,
+    "prompt_version": "field-journal-v2"
+  },
+  "profile": {
+    "behavior": "Creeps nuthatch-like over trunks and major branches while probing bark for insects.",
+    "common_name": "Black-and-white Warbler",
+    "family": "Parulidae",
+    "field_marks": [
+      "Bold black-and-white striping across the head, back, and underparts.",
+      "White central crown stripe and strong facial stripes; adult males show blacker cheek and throat.",
+      "Thin, fairly long, slightly downcurved dark bill.",
+      "Black wings crossed by two broad white wing bars.",
+      "Short dark tail with white spots on the outer feathers.",
+      "White undertail coverts marked with large black spots."
+    ],
+    "habitat": "Deciduous and mixed forests, especially stands with trunks and branches suitable for bark foraging; also uses woodlands, forest edges, and thickets.",
+    "measurements": {
+      "length": "4.3\u20135.1 in (11\u201313 cm)",
+      "weight": "0.3\u20130.5 oz (8\u201315 g)",
+      "wingspan": "7.1\u20138.7 in (18\u201322 cm)"
+    },
+    "palette": [
+      "black",
+      "white",
+      "charcoal gray",
+      "soft gray",
+      "pale buff"
+    ],
+    "scientific_name": "Mniotilta varia",
+    "sources": [
+      {
+        "title": "Black-and-white Warbler Identification \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/bawwar/id"
+      },
+      {
+        "title": "Black-and-white Warbler \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/black-and-white-warbler"
+      }
+    ],
+    "taxon_id": 10286
+  },
+  "quality_review": {
+    "anatomy_accuracy": 4,
+    "composition_quality": 5,
+    "findings": [
+      "Species identity is supported: the plate depicts a Black-and-white Warbler with bold black-and-white striping, a white crown stripe, strong facial pattern, a thin slightly downcurved bill, two broad white wing bars, and a short dark tail marked white on the outer feathers.",
+      "The displayed common name, scientific name, family, all three measurements, behavior statement, and habitat statement agree with the independently opened Cornell and Audubon species pages.",
+      "The side-profile bird is anatomically coherent: one head, one beak, two legs, one tail, and a visible near wing with the far wing naturally occluded. Its stance, longish slightly downcurved bill, short-necked/streamlined head, short tail, and bark-foraging perch are appropriate. Feet and toes are somewhat stylized and oversized but not materially incorrect.",
+      "The illustration reads as an adult male due to its strongly black cheek and heavily streaked underparts. The black-spotted undertail coverts are only partly visible, so that field mark is not especially clear in the main figure.",
+      "No place name, ZIP code, coordinates, map, or local-observation detail appears on the candidate plate."
+    ],
+    "location_free": true,
+    "passed": true,
+    "species_accuracy": 5,
+    "text_accuracy": 5,
+    "verification_sources": [
+      {
+        "title": "Black-and-white Warbler Identification \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/bawwar/id"
+      },
+      {
+        "title": "Black-and-white Warbler \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/black-and-white-warbler"
+      }
+    ]
+  },
+  "references": [
+    {
+      "attribution": "no rights reserved",
+      "filename": "01-190709984.jpeg",
+      "height": 1436,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/190709984/large.jpeg",
+      "license_code": "cc0",
+      "observation_id": 112887571,
+      "observer": "wildreturn",
+      "photo_id": 190709984,
+      "sha256": "d566f0be81b910543487a298c75eb92e065c2425ec101072d886bbd12065795d",
+      "source_url": "https://www.inaturalist.org/observations/112887571",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) MarvalPhotography19, some rights reserved (CC BY)",
+      "filename": "02-327263937.jpg",
+      "height": 1465,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/327263937/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 187170352,
+      "observer": "fernandoarvizu19",
+      "photo_id": 327263937,
+      "sha256": "fad239c2800fe13faaf03b5de13a1d71ff86c2e8b3c4eac8dfdaabee94b570a9",
+      "source_url": "https://www.inaturalist.org/observations/187170352",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) Arthur Windsor, some rights reserved (CC BY)",
+      "filename": "03-328298275.jpg",
+      "height": 1675,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/328298275/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 187693425,
+      "observer": "arthur-windsor",
+      "photo_id": 328298275,
+      "sha256": "06a0e0b8cab1981ff27ddb1014f585fdd30b532a85f17936f1fef7c5d35b079a",
+      "source_url": "https://www.inaturalist.org/observations/187693425",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) Blake Ross, some rights reserved (CC BY)",
+      "filename": "04-195794200.jpg",
+      "height": 1479,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/195794200/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 116009469,
+      "observer": "blakemross",
+      "photo_id": 195794200,
+      "sha256": "7eefdf86219d2e277536306f02e9851d8bf363ef60abc4fd93f0c508181cd7fe",
+      "source_url": "https://www.inaturalist.org/observations/116009469",
+      "width": 2048
+    }
+  ],
+  "schema_version": 1,
+  "scientific_name": "Mniotilta varia",
+  "slug": "black-and-white-warbler",
+  "status": "approved",
+  "taxon_id": 10286
+}

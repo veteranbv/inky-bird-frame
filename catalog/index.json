@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-10T14:06:59+00:00",
+  "generated_at": "2026-07-10T14:16:22+00:00",
   "schema_version": 1,
   "species": [
     {
@@ -12,6 +12,17 @@
       "scientific_name": "Turdus migratorius",
       "slug": "american-robin",
       "taxon_id": 12727
+    },
+    {
+      "approved_at": "2026-07-10T14:16:22+00:00",
+      "common_name": "Black-and-white Warbler",
+      "display_path": "species/10286-black-and-white-warbler/display.png",
+      "display_sha256": "fb0345fa3180c97ebaf94af4316ddb3e4567d058cd03c917a22389394f6677ba",
+      "portrait_path": "species/10286-black-and-white-warbler/portrait.png",
+      "portrait_sha256": "75c43f8d58843753b41b079994741ccb4ec9ccb2742343e0eb8a2167bb367637",
+      "scientific_name": "Mniotilta varia",
+      "slug": "black-and-white-warbler",
+      "taxon_id": 10286
     },
     {
       "approved_at": "2026-07-10T04:29:43+00:00",
