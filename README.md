@@ -16,6 +16,11 @@ scientific field-journal plates on a color e-paper display.
   </tr>
 </table>
 
+<p align="center">
+  <img src="docs/images/framed-installation.jpg" alt="Inky Bird Frame displaying an Eastern Bluebird field-journal plate in a bronze portrait frame" width="560">
+  <br><em>A finished portrait installation using the recommended 12 x 16 inch frame with a panel-fitted mat opening.</em>
+</p>
+
 The frame follows public bird observations within a configurable distance and
 rolling time window. When a new species appears, a controller researches it,
 collects licensed reference photographs, creates a plate through Codex, and
@@ -76,18 +81,58 @@ fact synthesis, illustration, and independent review.
 
 ## Hardware
 
-Controller:
+The reference build uses two computers with distinct jobs. A Raspberry Pi Zero
+2 W lives behind the frame and only displays approved images. A Raspberry Pi 4
+or an existing macOS/Linux computer runs discovery, Codex generation and
+review, catalog publication, and the HTTP service.
 
-- macOS or Linux host with Python 3.11 or newer
-- Codex CLI authenticated with a ChatGPT subscription
-- network access to Codex, iNaturalist, Zippopotam.us, and research sources
+### Framed display
 
-Display node:
+This is everything required to build the part that hangs on the wall.
 
-- Raspberry Pi capable of driving a Pimoroni Inky Impression Spectra 13.3
-- storage, power supply, and network adapter appropriate for the chosen Pi
-- Python 3.11 or newer with Pimoroni's Inky package available
-- network access to the controller HTTP service
+| Part | Qty | Unit price | Extended | Purpose |
+| --- | ---: | ---: | ---: | --- |
+| [Pimoroni Inky Impression 13.3 inch (PIM774)](https://www.adafruit.com/product/6472) | 1 | $275.00 | $275.00 | Six-color, 1600x1200 e-paper display; mounting hardware and GPIO extension header are included |
+| [Raspberry Pi Zero 2 W with pre-soldered header](https://www.pishop.us/product/raspberry-pi-zero-2w-with-headers/) | 1 | $20.75 | $20.75 | Compact Wi-Fi display node; no soldering required |
+| [5V 2.5A Micro-USB power supply](https://www.adafruit.com/product/1995) | 1 | $8.25 | $8.25 | Powers the display node with a standard straight cable |
+| [Official Raspberry Pi 64GB A2 microSD card](https://www.pishop.us/product/raspberry-pi-sd-card-64gb/) | 1 | $29.95 | $29.95 | Operating system and local image cache |
+| [Golden State Art 12 x 16 inch bronze frame](https://www.amazon.com/gp/aw/d/B0C1Q5MYG9) | 1 | $24.99 | $24.99 | Portrait frame; the included 8 x 10.5 inch mat must be enlarged or replaced |
+| **Framed display subtotal** |  |  | **$358.94** | Before tax and shipping |
+
+The display's active area is approximately 7.98 x 10.65 inches. The included
+8 x 10.5 inch mat masks part of that area and must not be used unchanged. Enlarge
+it or order a custom mat with an opening of at least 8.1 x 10.75 inches, then
+verify the opening against the physical panel before cutting. Test-fit the
+display and Pi, trace their position on the supplied rear backing board, and cut
+an opening that leaves the Pi, microSD card, and power connector accessible. The
+Pi connects directly to the display and does not need a separate case. A
+right-angle power cable is not required.
+
+### Dedicated controller
+
+An existing 64-bit macOS or Linux computer can run the controller at no
+additional hardware cost. For a self-contained installation, the reference
+controller is a Raspberry Pi 4 running 64-bit Ubuntu Server:
+
+| Part | Qty | Unit price | Extended | Purpose |
+| --- | ---: | ---: | ---: | --- |
+| [Raspberry Pi 4 Model B, 4GB](https://www.adafruit.com/product/4296) | 1 | $120.00 | $120.00 | Runs discovery, Codex, review, catalog, and HTTP services |
+| [Official Raspberry Pi 5.1V 3A USB-C power supply](https://www.adafruit.com/product/4298) | 1 | $8.74 | $8.74 | Controller power |
+| [Flirc passive aluminum Raspberry Pi 4 case](https://www.adafruit.com/product/4553) | 1 | $14.95 | $14.95 | Silent enclosure and passive cooling |
+| [Official Raspberry Pi 64GB A2 microSD card](https://www.pishop.us/product/raspberry-pi-sd-card-64gb/) | 1 | $29.95 | $29.95 | 64-bit OS, application, references, and generated assets |
+| **Dedicated controller subtotal** |  |  | **$173.64** | Before tax and shipping |
+| **Complete dedicated build** |  |  | **$532.58** | Framed display plus dedicated controller |
+
+Reference prices were checked on July 9, 2026. Retail prices and availability
+change; the totals exclude tax and shipping. A computer with a microSD reader
+is needed to flash the two cards. No HDMI cable, keyboard, mouse, right-angle
+cable, or display-node enclosure is required for normal operation.
+
+The controller requires Python 3.11 or newer, Codex CLI authenticated with a
+ChatGPT subscription, and network access to Codex, iNaturalist,
+Zippopotam.us, and configured research sources. The display node requires
+Python 3.11 or newer with Pimoroni's Inky package and network access to the
+controller HTTP service.
 
 The panel reports a `1600x1200` landscape canvas. Plates are authored at
 `1200x1600` and rotated left for a portrait-mounted frame.
