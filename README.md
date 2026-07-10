@@ -220,6 +220,7 @@ uv run pytest
 ```
 
 See [`docs/architecture.md`](docs/architecture.md),
-[`docs/operations.md`](docs/operations.md), and
+[`docs/operations.md`](docs/operations.md),
+[`docs/notifications.md`](docs/notifications.md), and
 [`CONTRIBUTING.md`](CONTRIBUTING.md) for design, deployment, and contribution
 details.

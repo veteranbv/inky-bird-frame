@@ -5,16 +5,19 @@ import unittest
 from datetime import UTC, datetime
 from pathlib import Path
 from tempfile import TemporaryDirectory
+from typing import cast
 from unittest.mock import patch
 
 from inky_bird_frame.birds import BirdSpecies, ObservationWindow
 from inky_bird_frame.catalog import CatalogEntry, candidate_directory, write_candidate_manifest
+from inky_bird_frame.codex_runner import CodexRunner
 from inky_bird_frame.config import load_config
 from inky_bird_frame.controller import (
     DiscoverySnapshot,
     enqueue_seed_species,
     exclusive_refresh_lock,
     generate_candidate,
+    load_or_create_profile,
     run_controller_cycle,
     run_generation_cycle,
     run_refresh_cycle,
@@ -29,6 +32,7 @@ from inky_bird_frame.errors import (
 from inky_bird_frame.geo import ZipLocation
 from inky_bird_frame.models import QualityReview, SpeciesProfileData
 from inky_bird_frame.prompts import PROMPT_VERSION
+from inky_bird_frame.retry import RetryStore
 
 PROFILE = SpeciesProfileData(
     taxon_id=9083,
@@ -71,6 +75,58 @@ state_dir = "display"
 
 
 class ControllerTests(unittest.TestCase):
+    def test_validated_species_profile_is_reused_without_new_research(self) -> None:
+        species = BirdSpecies(9083, "Northern Cardinal", "Cardinalis cardinalis", 2, "test")
+        profile = cast(
+            SpeciesProfileData,
+            {
+                **PROFILE,
+                "sources": [
+                    {"title": "Cornell", "url": "https://www.allaboutbirds.org/one"},
+                    {"title": "Audubon", "url": "https://www.audubon.org/two"},
+                ],
+            },
+        )
+
+        class FakeRunner:
+            calls = 0
+
+            def create_profile(self, *_args: object, **_kwargs: object) -> SpeciesProfileData:
+                self.calls += 1
+                output_path = _args[-2]
+                assert isinstance(output_path, Path)
+                output_path.write_text(json.dumps(profile))
+                return profile
+
+        with TemporaryDirectory() as temporary:
+            config_path = Path(temporary) / "config.toml"
+            config_path.write_text(CONFIG)
+            config = load_config(config_path)
+            runner = FakeRunner()
+            with patch("inky_bird_frame.controller.fetch_taxon_context"):
+                first, _ = load_or_create_profile(
+                    config,
+                    species,
+                    [],
+                    [],
+                    cast(CodexRunner, runner),
+                    Path(temporary) / "first.json",
+                    Path(temporary) / "first.log",
+                )
+            second, second_path = load_or_create_profile(
+                config,
+                species,
+                [],
+                [],
+                cast(CodexRunner, runner),
+                Path(temporary) / "second.json",
+                Path(temporary) / "second.log",
+            )
+
+        self.assertEqual(runner.calls, 1)
+        self.assertEqual(first, second)
+        self.assertEqual(second_path.name, "second.json")
+
     def test_seed_queues_distinct_unapproved_species_without_changing_discovery(self) -> None:
         approved = BirdSpecies(1, "Approved Bird", "Avis approved", 4, "iNaturalist")
         queued = BirdSpecies(2, "Queued Bird", "Avis queued", 3, "iNaturalist")
@@ -158,9 +214,62 @@ class ControllerTests(unittest.TestCase):
             ):
                 result = run_generation_cycle(config)
 
-        self.assertEqual(attempted, [current.taxon_id])
+        self.assertEqual(attempted, [current.taxon_id, queued.taxon_id])
         self.assertEqual(result["eligible_count"], 2)
+        self.assertEqual(result["attempted_count"], 2)
         self.assertEqual(result["queued_count"], 1)
+
+    def test_generation_skips_deferred_species_and_attempts_later_work(self) -> None:
+        deferred = BirdSpecies(1, "Deferred Bird", "Avis deferred", 4, "iNaturalist")
+        later = BirdSpecies(2, "Later Bird", "Avis later", 3, "iNaturalist")
+        with TemporaryDirectory() as temporary:
+            config_path = Path(temporary) / "config.toml"
+            config_path.write_text(CONFIG)
+            config = load_config(config_path)
+            config.controller.state_dir.mkdir(parents=True)
+            (config.controller.state_dir / "discovery.json").write_text(
+                json.dumps(
+                    {
+                        "schema_version": 1,
+                        "refreshed_at": datetime.now(UTC).isoformat(),
+                        "place_name": "Exampleville",
+                        "state": "XY",
+                        "species": [
+                            {
+                                "taxon_id": item.taxon_id,
+                                "common_name": item.common_name,
+                                "scientific_name": item.scientific_name,
+                                "observation_count": item.observation_count,
+                                "source": item.source,
+                            }
+                            for item in (deferred, later)
+                        ],
+                    }
+                )
+            )
+            RetryStore(config.controller.state_dir / "generation-retries.json").record_failure(
+                deferred.taxon_id,
+                DataSourceError("temporary"),
+                now=datetime.now(UTC),
+                initial_minutes=30,
+                maximum_minutes=60,
+            )
+            attempted: list[int] = []
+
+            def fail_generation(_config: object, species: BirdSpecies, _workspace: object) -> Path:
+                attempted.append(species.taxon_id)
+                raise DataSourceError("temporary")
+
+            with (
+                patch("inky_bird_frame.controller.approved_taxon_ids", return_value=set()),
+                patch("inky_bird_frame.controller.generate_candidate", side_effect=fail_generation),
+                patch("inky_bird_frame.controller.rebuild_catalog_index", return_value=[]),
+            ):
+                result = run_generation_cycle(config)
+
+        self.assertEqual(attempted, [later.taxon_id])
+        self.assertEqual(result["attempted_count"], 1)
+        self.assertEqual(result["deferred_count"], 2)
 
     def test_overlapping_refresh_is_rejected_before_discovery(self) -> None:
         with TemporaryDirectory() as temporary:
@@ -444,7 +553,7 @@ class ControllerTests(unittest.TestCase):
         self.assertEqual(result["approved_count"], 0)
         self.assertEqual(result["published_pending"], [])
 
-    def test_insufficient_references_become_terminal(self) -> None:
+    def test_insufficient_references_are_deferred_without_blocking_queue(self) -> None:
         species = BirdSpecies(9083, "Northern Cardinal", "Cardinalis cardinalis", 2, "test")
         location = ZipLocation("12345", "Exampleville", "XY", 1.0, 2.0)
         with TemporaryDirectory() as temporary:
@@ -462,11 +571,13 @@ class ControllerTests(unittest.TestCase):
                 result = run_controller_cycle(config)
             terminal_failures = list((config.controller.state_dir / "failed").glob("9083-*"))
 
-        self.assertEqual(len(terminal_failures), 1)
+        self.assertEqual(terminal_failures, [])
         failures = result["failures"]
         self.assertIsInstance(failures, list)
         if isinstance(failures, list):
-            self.assertTrue(failures[0]["terminal"])
+            self.assertFalse(failures[0]["terminal"])
+            self.assertIn("retry_at", failures[0])
+        self.assertEqual(result["deferred_count"], 1)
 
     def test_failed_review_is_corrected_and_passing_attempt_is_staged(self) -> None:
         species = BirdSpecies(9083, "Northern Cardinal", "Cardinalis cardinalis", 2, "test")
@@ -492,7 +603,7 @@ class ControllerTests(unittest.TestCase):
             def __init__(self, _executable: Path, _workspace: Path) -> None:
                 pass
 
-            def create_profile(self, *_args: object) -> SpeciesProfileData:
+            def create_profile(self, *_args: object, **_kwargs: object) -> SpeciesProfileData:
                 output_path = _args[-2]
                 assert isinstance(output_path, Path)
                 output_path.write_text(json.dumps(PROFILE))
@@ -507,7 +618,7 @@ class ControllerTests(unittest.TestCase):
                 output_path.write_bytes(b"generated")
                 return output_path
 
-            def review_plate(self, *_args: object) -> QualityReview:
+            def review_plate(self, *_args: object, **_kwargs: object) -> QualityReview:
                 return next(self.reviews)
 
         def prepare(_source: Path, portrait: Path, display: Path) -> None:

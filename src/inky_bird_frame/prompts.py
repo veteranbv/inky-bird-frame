@@ -41,6 +41,7 @@ def profile_prompt(
     species: BirdSpecies,
     context: TaxonContext,
     references: list[ReferencePhoto],
+    allowed_domains: tuple[str, ...],
 ) -> str:
     return f"""Create a factual, location-neutral species profile for a scientific
 field-journal plate.
@@ -56,10 +57,12 @@ Identity supplied by iNaturalist:
 Attached reference images:
 {reference_list(references)}
 
-Use web search to verify measurements, field marks, habitat, and behavior against at least two
-authoritative ornithology, museum, government, or university sources. Use the attached images to
-verify plumage colors, proportions, bill, eye, legs, wings, and tail. Return only the requested
-JSON.
+The structured iNaturalist context and BirdNET fallback have already been attempted. Research only
+facts still needed for the schema. Restrict browsing to these domains:
+{", ".join(allowed_domains)}
+Use at least two independent sources from that list and do not rely on search snippets. Use the
+attached images to verify plumage colors, proportions, bill, eye, legs, wings, and tail. Return
+only the requested JSON.
 
 Requirements:
 - Preserve the exact taxon ID and names supplied above.
@@ -153,13 +156,13 @@ photos of the same species.
 Facts proposed by the research pass:
 {json.dumps(profile, indent=2, sort_keys=True)}
 
-Independently verify the species identity, measurements, and field marks with web search against
-at least two authoritative ornithology, museum, government, or university sources. Do not assume
-the proposed facts are correct. Inspect the candidate for correct plumage, proportions, bill, eye,
+Independently verify the species identity, measurements, and field marks against the cited profile
+sources and attached references. Do not browse the web during review and do not assume the
+proposed facts are correct. Inspect the candidate for correct plumage, proportions, bill, eye,
 wings, tail, legs, feet, and species field marks against the attached field-reference photos.
 Compare every visible factual claim to the independently verified facts. Confirm that no place
 name, ZIP code, coordinates, map, or local-observation detail appears. Record every concrete issue
-and return the direct HTTPS pages used for verification.
+and return at least two distinct profile source URLs used for verification.
 
 Set passed=true only when all four scores are at least 4, location_free is true, the bird has
 exactly one head, one beak, two wings, two legs, and one tail, and there are no material species or

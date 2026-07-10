@@ -18,12 +18,14 @@ serve_plist="${agents_dir}/com.inky-bird-frame.serve.plist"
 refresh_plist="${agents_dir}/com.inky-bird-frame.refresh.plist"
 generation_plist="${agents_dir}/com.inky-bird-frame.generate.plist"
 catalog_publish_plist="${agents_dir}/com.inky-bird-frame.catalog-publish.plist"
+notifications_plist="${agents_dir}/com.inky-bird-frame.notifications.plist"
 legacy_cycle_plist="${agents_dir}/com.inky-bird-frame.controller-cycle.plist"
 
 if [ ! -f "${config_path}" ]; then
   echo "Controller configuration is missing: ${config_path}" >&2
   exit 1
 fi
+chmod 600 "${config_path}"
 if [ ! -x "${uv_bin}" ]; then
   echo "uv is not executable: ${uv_bin}" >&2
   exit 1
@@ -39,6 +41,7 @@ done
 
 "${app_dir}/.venv/bin/python" - \
   "${serve_plist}" "${refresh_plist}" "${generation_plist}" "${catalog_publish_plist}" \
+  "${notifications_plist}" \
   "${root}" "${app_dir}" "${config_path}" "${log_dir}" <<'PY'
 import plistlib
 import sys
@@ -53,6 +56,7 @@ from inky_bird_frame.publisher import sync_public_catalog
     refresh_path,
     generation_path,
     catalog_publish_path,
+    notifications_path,
     root,
     app_dir,
     config_path,
@@ -111,6 +115,21 @@ catalog_publish = {
     "StandardOutPath": str(log_dir / "catalog-publish.log"),
     "StandardErrorPath": str(log_dir / "catalog-publish.error.log"),
 }
+notifications = {
+    **common,
+    "Label": "com.inky-bird-frame.notifications",
+    "ProgramArguments": [
+        str(executable),
+        "notifications",
+        "dispatch",
+        "--config",
+        str(config_path),
+    ],
+    "RunAtLoad": True,
+    "StartInterval": config.notifications.delivery_retry_minutes * 60,
+    "StandardOutPath": str(log_dir / "notifications.log"),
+    "StandardErrorPath": str(log_dir / "notifications.error.log"),
+}
 for path, payload in (
     (serve_path, serve),
     (refresh_path, refresh),
@@ -123,6 +142,11 @@ if config.public_catalog.enabled:
         plistlib.dump(catalog_publish, handle, sort_keys=True)
 else:
     catalog_publish_path.unlink(missing_ok=True)
+if config.notifications.enabled:
+    with notifications_path.open("wb") as handle:
+        plistlib.dump(notifications, handle, sort_keys=True)
+else:
+    notifications_path.unlink(missing_ok=True)
 PY
 
 if [ -f "${catalog_publish_plist}" ]; then
@@ -136,6 +160,7 @@ launchctl bootout "gui/${uid}/com.inky-bird-frame.controller-cycle" 2>/dev/null 
 launchctl bootout "gui/${uid}/com.inky-bird-frame.refresh" 2>/dev/null || true
 launchctl bootout "gui/${uid}/com.inky-bird-frame.generate" 2>/dev/null || true
 launchctl bootout "gui/${uid}/com.inky-bird-frame.catalog-publish" 2>/dev/null || true
+launchctl bootout "gui/${uid}/com.inky-bird-frame.notifications" 2>/dev/null || true
 rm -f "${legacy_cycle_plist}"
 launchctl bootstrap "gui/${uid}" "${serve_plist}"
 launchctl bootstrap "gui/${uid}" "${refresh_plist}"
@@ -143,11 +168,17 @@ launchctl bootstrap "gui/${uid}" "${generation_plist}"
 if [ -f "${catalog_publish_plist}" ]; then
   launchctl bootstrap "gui/${uid}" "${catalog_publish_plist}"
 fi
+if [ -f "${notifications_plist}" ]; then
+  launchctl bootstrap "gui/${uid}" "${notifications_plist}"
+fi
 launchctl print "gui/${uid}/com.inky-bird-frame.serve" >/dev/null
 launchctl print "gui/${uid}/com.inky-bird-frame.refresh" >/dev/null
 launchctl print "gui/${uid}/com.inky-bird-frame.generate" >/dev/null
 if [ -f "${catalog_publish_plist}" ]; then
   launchctl print "gui/${uid}/com.inky-bird-frame.catalog-publish" >/dev/null
+fi
+if [ -f "${notifications_plist}" ]; then
+  launchctl print "gui/${uid}/com.inky-bird-frame.notifications" >/dev/null
 fi
 
 echo "Controller installed from ${root} into ${app_dir}."

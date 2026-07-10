@@ -159,15 +159,13 @@ def parse_inaturalist_taxon(payload: object) -> TaxonContext:
     taxon_id = taxon.get("id")
     common_name = taxon.get("preferred_common_name")
     scientific_name = taxon.get("name")
-    summary = taxon.get("wikipedia_summary")
-    source_url = taxon.get("wikipedia_url")
+    summary_value = taxon.get("wikipedia_summary")
+    source_url_value = taxon.get("wikipedia_url")
     ancestors = taxon.get("ancestors")
     if (
         not isinstance(taxon_id, int)
         or not isinstance(common_name, str)
         or not isinstance(scientific_name, str)
-        or not isinstance(summary, str)
-        or not isinstance(source_url, str)
         or not isinstance(ancestors, list)
     ):
         raise DataSourceError("iNaturalist taxon response was incomplete")
@@ -187,7 +185,41 @@ def parse_inaturalist_taxon(payload: object) -> TaxonContext:
         common_name=common_name,
         scientific_name=scientific_name,
         family=family,
-        summary=summary,
+        summary=summary_value if isinstance(summary_value, str) else "",
+        source_url=(
+            source_url_value
+            if isinstance(source_url_value, str)
+            else f"https://www.inaturalist.org/taxa/{taxon_id}"
+        ),
+    )
+
+
+def parse_birdnet_taxon(payload: object, expected: TaxonContext) -> TaxonContext:
+    if not isinstance(payload, dict):
+        raise DataSourceError("BirdNET Taxonomy response was not an object")
+    taxon_id = payload.get("inat_id")
+    scientific_name = payload.get("scientific_name")
+    common_name = payload.get("common_name")
+    descriptions = payload.get("descriptions")
+    wikipedia_urls = payload.get("wikipedia_urls")
+    if (
+        taxon_id != expected.taxon_id
+        or scientific_name != expected.scientific_name
+        or not isinstance(common_name, str)
+        or not isinstance(descriptions, dict)
+        or not isinstance(wikipedia_urls, dict)
+    ):
+        raise DataSourceError("BirdNET Taxonomy identity did not match the iNaturalist taxon")
+    summary = descriptions.get("en")
+    source_url = wikipedia_urls.get("en")
+    if not isinstance(summary, str) or not summary.strip() or not isinstance(source_url, str):
+        raise DataSourceError("BirdNET Taxonomy response did not include English context")
+    return TaxonContext(
+        taxon_id=expected.taxon_id,
+        common_name=expected.common_name,
+        scientific_name=expected.scientific_name,
+        family=expected.family,
+        summary=summary.strip(),
         source_url=source_url,
     )
 
@@ -196,4 +228,10 @@ def fetch_taxon_context(taxon_id: int, timeout_seconds: float = 10.0) -> TaxonCo
     if taxon_id <= 0:
         raise ValueError("taxon_id must be greater than zero")
     payload = get_json(f"https://api.inaturalist.org/v1/taxa/{taxon_id}", timeout_seconds)
-    return parse_inaturalist_taxon(payload)
+    context = parse_inaturalist_taxon(payload)
+    if context.summary.strip():
+        return context
+    birdnet = get_json(
+        f"https://birdnet.cornell.edu/taxonomy/api/species/{taxon_id}", timeout_seconds
+    )
+    return parse_birdnet_taxon(birdnet, context)

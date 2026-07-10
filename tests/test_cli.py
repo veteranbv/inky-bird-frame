@@ -43,6 +43,21 @@ class CliTests(unittest.TestCase):
         self.assertEqual(args.species_limit, 500)
         self.assertTrue(args.dry_run)
 
+    def test_config_validation_and_notification_commands_require_config(self) -> None:
+        validate = build_parser().parse_args(["config", "validate", "--config", "instance.toml"])
+        status = build_parser().parse_args(["notifications", "status", "--config", "instance.toml"])
+        test = build_parser().parse_args(["notifications", "test", "--config", "instance.toml"])
+        dispatch = build_parser().parse_args(
+            ["notifications", "dispatch", "--config", "instance.toml"]
+        )
+        retry = build_parser().parse_args(["notifications", "retry", "--config", "instance.toml"])
+
+        self.assertEqual(str(validate.config), "instance.toml")
+        self.assertEqual(str(status.config), "instance.toml")
+        self.assertEqual(str(test.config), "instance.toml")
+        self.assertEqual(str(dispatch.config), "instance.toml")
+        self.assertEqual(str(retry.config), "instance.toml")
+
     def test_expected_error_uses_json_envelope(self) -> None:
         output = io.StringIO()
 

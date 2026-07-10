@@ -25,6 +25,24 @@ manager does not start a second copy and the generation lock also rejects
 manual overlap. Only a candidate that passes the independent AI review is
 published.
 
+`max_species_attempts_per_cycle` is a separate queue scan cap. A transiently
+failing species receives durable exponential backoff and no longer consumes the
+successful-generation quota on every cycle. Insufficient licensed references
+use the longer `insufficient_references_retry_minutes` delay because source
+availability changes slowly. Later birds continue through the queue. Exhausted
+factual or visual review remains terminal and requires `retry TAXON_ID`.
+
+Species context uses iNaturalist first and the Cornell BirdNET Taxonomy API when
+iNaturalist omits its descriptive context. The fallback is accepted only when
+the iNaturalist taxon ID and scientific name match exactly. Licensed reference
+photos remain research-grade CC0 or CC BY iNaturalist observations from distinct
+observers. The application does not substitute arbitrary web images.
+
+A new species profile may use one tightly bounded Codex web research pass after
+the structured context and image references are assembled. Research is limited
+by configured domains, per-species attempts, and a daily total. A validated
+profile is cached, so later image or review retries do not repeat web research.
+
 `rotation_mode` is configured under `[display_node]`:
 
 - `sequential`: stable round-robin order;
@@ -140,7 +158,7 @@ code continues through the full review and CI policy.
   result. Generation refuses a discovery snapshot older than twice the
   configured refresh interval.
 - Unsuitable licensed references: inspect the reference manifest and source
-  pages. Retry only after deciding the source set can be improved.
+  pages. The taxon is deferred automatically and later queue items continue.
 - Generated image or text defect: the controller feeds review findings into a
   new attempt automatically. After all configured attempts fail, inspect the
   retained artifacts and use `retry` for a deliberate new cycle.
@@ -151,3 +169,6 @@ code continues through the full review and CI policy.
   authentication, remote divergence, or the reported validation problem, then
   rerun `catalog-publish`. Local approval and display rotation continue while
   public publication is unavailable.
+
+See [`notifications.md`](notifications.md) for provider setup, event filtering,
+durable delivery, noise controls, testing, and redacted status commands.
