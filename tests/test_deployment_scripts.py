@@ -16,6 +16,9 @@ def test_controller_installer_unloads_publisher_before_publish_validation() -> N
         'launchctl bootstrap "gui/${uid}" "${catalog_publish_plist}"',
         validation,
     )
+    restore_guard = script.index('if [ "${publisher_was_loaded}" = true ]; then', validation)
     runtime_update = script.index('rsync -a --delete "${root}/src/"')
 
-    assert runtime_update < unload < validation < restore
+    assert runtime_update < unload < validation < restore_guard < restore
+    assert "publisher_was_loaded=false" in script[unload - 250 : unload]
+    assert "publisher_was_loaded=true" in script[unload:validation]
