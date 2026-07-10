@@ -115,6 +115,21 @@ class NotificationTests(unittest.TestCase):
         self.assertEqual(result["attempted"], 0)
         self.assertEqual(status["pending"], 1)
 
+    def test_enqueue_ignores_events_without_a_subscribed_destination(self) -> None:
+        with TemporaryDirectory() as temporary:
+            config = self._config(temporary)
+            queued = enqueue_notification(
+                config,
+                NotificationEvent.DISCOVERY,
+                dedupe_key="unsubscribed",
+                title="Discovery",
+                body="A bird was discovered",
+            )
+            status = notification_status(config)
+
+        self.assertFalse(queued)
+        self.assertEqual(status["pending"], 0)
+
     def test_partial_delivery_retries_only_failed_destination(self) -> None:
         now = datetime(2026, 7, 10, tzinfo=UTC)
         with TemporaryDirectory() as temporary:
@@ -262,6 +277,44 @@ class NotificationTests(unittest.TestCase):
         self.assertEqual(notify.call_count, 2)
         self.assertFalse(health["notified"])
         self.assertIsNone(health["last_notice"])
+
+    def test_failed_recovery_enqueue_preserves_health_for_retry(self) -> None:
+        now = datetime(2026, 7, 10, tzinfo=UTC)
+        with TemporaryDirectory() as temporary:
+            config = self._config(temporary)
+            with patch(
+                "inky_bird_frame.notifications.safe_notify",
+                return_value={"queued": True, "failed": 0},
+            ):
+                record_degradation(config, key="refresh", title="down", body="down", now=now)
+                record_degradation(
+                    config,
+                    key="refresh",
+                    title="down",
+                    body="down",
+                    now=now + timedelta(minutes=5),
+                )
+            with patch(
+                "inky_bird_frame.notifications.safe_notify",
+                return_value={"queued": False, "failed": 1},
+            ):
+                failed = record_recovery(config, key="refresh", title="up", body="up")
+            retained = json.loads(
+                (config.controller.state_dir / "notification-health.json").read_text()
+            )["services"]
+            with patch(
+                "inky_bird_frame.notifications.safe_notify",
+                return_value={"queued": True, "failed": 0},
+            ):
+                retried = record_recovery(config, key="refresh", title="up", body="up")
+            cleared = json.loads(
+                (config.controller.state_dir / "notification-health.json").read_text()
+            )["services"]
+
+        self.assertEqual(failed["failed"], 1)
+        self.assertIn("refresh", retained)
+        self.assertTrue(retried["queued"])
+        self.assertNotIn("refresh", cleared)
 
     def test_distinct_incidents_send_distinct_recovery_notifications(self) -> None:
         now = datetime(2026, 7, 10, tzinfo=UTC)

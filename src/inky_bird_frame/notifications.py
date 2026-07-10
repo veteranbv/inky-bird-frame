@@ -110,6 +110,8 @@ def enqueue_notification(
 ) -> bool:
     if not config.notifications.enabled:
         return False
+    if not any(event in destination.events for destination in config.notifications.destinations):
+        return False
     current = (now or datetime.now(UTC)).astimezone(UTC).replace(microsecond=0)
     item_id = hashlib.sha256(f"{event.value}:{dedupe_key}".encode()).hexdigest()
     with _notification_lock(config.controller.state_dir):
@@ -483,22 +485,35 @@ def record_recovery(
     with _notification_lock(config.controller.state_dir):
         path = config.controller.state_dir / "notification-health.json"
         state = _read_health(path)
-        item = state.pop(key, None)
+        item = state.get(key)
         if item is None:
             return {"queued": False}
-        _write_health(path, state)
     if not item.get("notified"):
+        with _notification_lock(config.controller.state_dir):
+            state = _read_health(path)
+            if state.get(key) == item:
+                state.pop(key)
+                _write_health(path, state)
         return {"queued": False}
     incident_id = item.get("incident_id")
     if not isinstance(incident_id, str) or not incident_id:
         incident_id = str(item.get("first_failure", "unknown"))
-    return safe_notify(
+    result = safe_notify(
         config,
         event,
         dedupe_key=f"{key}:{incident_id}",
         title=title,
         body=body,
     )
+    failed = result.get("failed", 0)
+    if isinstance(failed, int) and not isinstance(failed, bool) and failed > 0:
+        return result
+    with _notification_lock(config.controller.state_dir):
+        state = _read_health(path)
+        if state.get(key) == item:
+            state.pop(key)
+            _write_health(path, state)
+    return result
 
 
 def _deliver(destination: NotificationDestination, item: NotificationItem) -> None:
