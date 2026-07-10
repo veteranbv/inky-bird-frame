@@ -1,0 +1,25 @@
+{
+  "anatomy_accuracy": 4,
+  "composition_quality": 5,
+  "findings": [
+    "Species identity is supported: the plate depicts a Black-and-white Warbler with bold black-and-white striping, a white crown stripe, strong facial pattern, a thin slightly downcurved bill, two broad white wing bars, and a short dark tail marked white on the outer feathers.",
+    "The displayed common name, scientific name, family, all three measurements, behavior statement, and habitat statement agree with the independently opened Cornell and Audubon species pages.",
+    "The side-profile bird is anatomically coherent: one head, one beak, two legs, one tail, and a visible near wing with the far wing naturally occluded. Its stance, longish slightly downcurved bill, short-necked/streamlined head, short tail, and bark-foraging perch are appropriate. Feet and toes are somewhat stylized and oversized but not materially incorrect.",
+    "The illustration reads as an adult male due to its strongly black cheek and heavily streaked underparts. The black-spotted undertail coverts are only partly visible, so that field mark is not especially clear in the main figure.",
+    "No place name, ZIP code, coordinates, map, or local-observation detail appears on the candidate plate."
+  ],
+  "location_free": true,
+  "passed": true,
+  "species_accuracy": 5,
+  "text_accuracy": 5,
+  "verification_sources": [
+    {
+      "title": "Black-and-white Warbler Identification \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/bawwar/id"
+    },
+    {
+      "title": "Black-and-white Warbler \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/black-and-white-warbler"
+    }
+  ]
+}

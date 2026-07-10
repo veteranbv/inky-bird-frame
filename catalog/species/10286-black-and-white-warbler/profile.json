@@ -1,0 +1,38 @@
+{
+  "behavior": "Creeps nuthatch-like over trunks and major branches while probing bark for insects.",
+  "common_name": "Black-and-white Warbler",
+  "family": "Parulidae",
+  "field_marks": [
+    "Bold black-and-white striping across the head, back, and underparts.",
+    "White central crown stripe and strong facial stripes; adult males show blacker cheek and throat.",
+    "Thin, fairly long, slightly downcurved dark bill.",
+    "Black wings crossed by two broad white wing bars.",
+    "Short dark tail with white spots on the outer feathers.",
+    "White undertail coverts marked with large black spots."
+  ],
+  "habitat": "Deciduous and mixed forests, especially stands with trunks and branches suitable for bark foraging; also uses woodlands, forest edges, and thickets.",
+  "measurements": {
+    "length": "4.3\u20135.1 in (11\u201313 cm)",
+    "weight": "0.3\u20130.5 oz (8\u201315 g)",
+    "wingspan": "7.1\u20138.7 in (18\u201322 cm)"
+  },
+  "palette": [
+    "black",
+    "white",
+    "charcoal gray",
+    "soft gray",
+    "pale buff"
+  ],
+  "scientific_name": "Mniotilta varia",
+  "sources": [
+    {
+      "title": "Black-and-white Warbler Identification \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/bawwar/id"
+    },
+    {
+      "title": "Black-and-white Warbler \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/black-and-white-warbler"
+    }
+  ],
+  "taxon_id": 10286
+}
