@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-10T03:24:09+00:00",
+  "generated_at": "2026-07-10T03:29:00+00:00",
   "schema_version": 1,
   "species": [
     {
@@ -78,6 +78,17 @@
       "scientific_name": "Tachycineta bicolor",
       "slug": "tree-swallow",
       "taxon_id": 11935
+    },
+    {
+      "approved_at": "2026-07-10T03:29:00+00:00",
+      "common_name": "White-throated Sparrow",
+      "display_path": "species/9184-white-throated-sparrow/display.png",
+      "display_sha256": "b7955fb564e154b6fd65758c1f6588fa8a8514084f33db6eb06f2eb98a3b738f",
+      "portrait_path": "species/9184-white-throated-sparrow/portrait.png",
+      "portrait_sha256": "a7a89681bee23e5eae4d9b72e4c9411c4a253b124e49c979a15ef642471e12d4",
+      "scientific_name": "Zonotrichia albicollis",
+      "slug": "white-throated-sparrow",
+      "taxon_id": 9184
     }
   ]
 }

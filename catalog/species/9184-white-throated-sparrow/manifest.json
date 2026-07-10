@@ -1,0 +1,142 @@
+{
+  "approved_at": "2026-07-10T03:29:00+00:00",
+  "assets": {
+    "display": {
+      "filename": "display.png",
+      "sha256": "b7955fb564e154b6fd65758c1f6588fa8a8514084f33db6eb06f2eb98a3b738f"
+    },
+    "portrait": {
+      "filename": "portrait.png",
+      "sha256": "a7a89681bee23e5eae4d9b72e4c9411c4a253b124e49c979a15ef642471e12d4"
+    }
+  },
+  "common_name": "White-throated Sparrow",
+  "generation": {
+    "attempt": 1,
+    "generated_at": "2026-07-10T03:29:00+00:00",
+    "generator": "Codex subscription / built-in gpt-image-2",
+    "max_attempts": 3,
+    "prompt_version": "field-journal-v2"
+  },
+  "profile": {
+    "behavior": "Ground-foraging sparrow that scratches through leaf litter for seeds, berries, and invertebrates; often feeds in flocks and sings a clear, whistled song.",
+    "common_name": "White-throated Sparrow",
+    "family": "Passerellidae",
+    "field_marks": [
+      "Large, full-bodied sparrow with a rounded head, fairly prominent conical bill, long legs, and a long narrow tail.",
+      "Crisp white throat, sharply bordered by dark malar (whisker) stripes.",
+      "Bold head pattern: black-and-white crown and eyebrow stripes, or a softer tan-and-brown striped form.",
+      "Bright yellow lores between the eye and bill.",
+      "Brown, streaked back and wings with pale wing bars; underparts gray to pale gray.",
+      "Gray bill and pinkish legs."
+    ],
+    "habitat": "Forests and woodland edges, brushy regrowth, thickets, and pond or bog margins; also uses low shrubby cover and open ground nearby for foraging.",
+    "measurements": {
+      "length": "6.3\u20137.1 in (16\u201318 cm)",
+      "weight": "0.8\u20131.1 oz (22\u201332 g)",
+      "wingspan": "7.9\u20139.1 in (20\u201323 cm)"
+    },
+    "palette": [
+      "white throat",
+      "charcoal gray",
+      "chestnut brown",
+      "black",
+      "bright yellow"
+    ],
+    "scientific_name": "Zonotrichia albicollis",
+    "sources": [
+      {
+        "title": "Cornell Lab of Ornithology \u2014 White-throated Sparrow Identification",
+        "url": "https://www.allaboutbirds.org/guide/White-throated_Sparrow/id"
+      },
+      {
+        "title": "Smithsonian's National Zoo and Conservation Biology Institute \u2014 White-throated Sparrow",
+        "url": "https://nationalzoo.si.edu/animals/white-throated-sparrow"
+      }
+    ],
+    "taxon_id": 9184
+  },
+  "quality_review": {
+    "anatomy_accuracy": 4,
+    "composition_quality": 5,
+    "findings": [
+      "Independent verification confirms the identity: White-throated Sparrow (Zonotrichia albicollis), family Passerellidae. The plate's length, weight, and wingspan match Cornell exactly.",
+      "All visible factual text is supported: ground scratching/foraging, flocking, whistled song, woodland-edge/thicket/bog-edge habitat, white throat with dark malar border, yellow lores, striped head morphs, gray bill, pinkish legs, brown streaked upperparts, gray underparts, and pale wing bars.",
+      "The primary bird has one head, one beak, two legs, one tail, and an anatomically implied pair of wings; no extra or missing body parts are depicted. Its illustrated bill is somewhat long and pointed, and the feet/claws are slightly oversized and stylized versus the reference photos, but these are minor non-material deviations.",
+      "No place name, ZIP code, coordinates, map, or local-observation detail appears on the plate."
+    ],
+    "location_free": true,
+    "passed": true,
+    "species_accuracy": 5,
+    "text_accuracy": 5,
+    "verification_sources": [
+      {
+        "title": "Cornell Lab of Ornithology \u2014 White-throated Sparrow Identification",
+        "url": "https://www.allaboutbirds.org/guide/White-throated_Sparrow/id"
+      },
+      {
+        "title": "Smithsonian's National Zoo and Conservation Biology Institute \u2014 White-throated Sparrow",
+        "url": "https://nationalzoo.si.edu/animals/white-throated-sparrow"
+      }
+    ]
+  },
+  "references": [
+    {
+      "attribution": "(c) Sandy Wolkenberg, some rights reserved (CC BY)",
+      "filename": "01-29454763.jpg",
+      "height": 1747,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/29454763/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 19178388,
+      "observer": "sadawolk",
+      "photo_id": 29454763,
+      "sha256": "94ae18fc7a57954130e2ef0df0c142243bb95c7e09c142a72354b95792efeb70",
+      "source_url": "https://www.inaturalist.org/observations/19178388",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) Julien Renoult, some rights reserved (CC BY)",
+      "filename": "02-203951161.jpeg",
+      "height": 1051,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/203951161/large.jpeg",
+      "license_code": "cc-by",
+      "observation_id": 120580948,
+      "observer": "jujurenoult",
+      "photo_id": 203951161,
+      "sha256": "210c6f7ffdd27e3963c70eba0d93bfc48b915b81b014b133119daaa09b574f47",
+      "source_url": "https://www.inaturalist.org/observations/120580948",
+      "width": 1492
+    },
+    {
+      "attribution": "no rights reserved",
+      "filename": "03-339621218.jpg",
+      "height": 1366,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/339621218/large.jpg",
+      "license_code": "cc0",
+      "observation_id": 193338380,
+      "observer": "rawcomposition",
+      "photo_id": 339621218,
+      "sha256": "e19726b739d9e55f39b8b3888ea50e31e8c64ca7ee92acca53bed0743376d90b",
+      "source_url": "https://www.inaturalist.org/observations/193338380",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) foxsu, some rights reserved (CC BY)",
+      "filename": "04-475369910.jpeg",
+      "height": 2048,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/475369910/large.jpeg",
+      "license_code": "cc-by",
+      "observation_id": 264717378,
+      "observer": "foxsu",
+      "photo_id": 475369910,
+      "sha256": "9fef10e7afbfc7a8ed516b27540e2331e1756a7e42720a3806eaddd3b0d06c1e",
+      "source_url": "https://www.inaturalist.org/observations/264717378",
+      "width": 2048
+    }
+  ],
+  "schema_version": 1,
+  "scientific_name": "Zonotrichia albicollis",
+  "slug": "white-throated-sparrow",
+  "status": "approved",
+  "taxon_id": 9184
+}
