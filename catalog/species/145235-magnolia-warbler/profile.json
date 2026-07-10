@@ -1,0 +1,42 @@
+{
+  "behavior": "Active foliage gleaner; hops along branches and takes insects from the undersides of needles and leaves, sometimes flashing white tail spots.",
+  "common_name": "Magnolia Warbler",
+  "family": "Parulidae",
+  "field_marks": [
+    "Small, slim warbler with a fine bill and long, narrow tail.",
+    "Adult male shows a black face mask and black neck band with radiating streaks.",
+    "Bright yellow throat, breast, and belly; males have bold black flank streaking.",
+    "Gray-and-black upperparts with a conspicuous white wing patch or two narrow white wingbars.",
+    "Gray-headed females and immatures show a pale white eyering and softer streaking.",
+    "Undertail is white at the base with a broad black tail tip, visible in all plumages."
+  ],
+  "habitat": "Dense young conifers, especially spruce and hemlock, in coniferous or mixed forest; also uses dense forest edges, shrubs, and low trees outside the breeding season.",
+  "measurements": {
+    "length": "11\u201313 cm (4.3\u20135.1 in)",
+    "weight": "6\u201315 g (0.2\u20130.5 oz)",
+    "wingspan": "16\u201320 cm (6.3\u20137.9 in)"
+  },
+  "palette": [
+    "bright yellow",
+    "charcoal black",
+    "slate gray",
+    "crisp white",
+    "olive green"
+  ],
+  "scientific_name": "Setophaga magnolia",
+  "sources": [
+    {
+      "title": "Magnolia Warbler Identification \u2014 All About Birds, Cornell Lab of Ornithology",
+      "url": "https://www.allaboutbirds.org/guide/Magnolia_Warbler/id"
+    },
+    {
+      "title": "Magnolia Warbler Life History \u2014 All About Birds, Cornell Lab of Ornithology",
+      "url": "https://www.allaboutbirds.org/guide/Magnolia_Warbler/lifehistory"
+    },
+    {
+      "title": "Magnolia Warbler \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/magnolia-warbler"
+    }
+  ],
+  "taxon_id": 145235
+}

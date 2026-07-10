@@ -1,0 +1,24 @@
+{
+  "anatomy_accuracy": 5,
+  "composition_quality": 5,
+  "findings": [
+    "No material anatomical issue: the plate depicts one head, one fine pointed bill, two wings, two legs with grasping feet, and one long narrow tail.",
+    "The illustrated adult male matches the supplied references and live ID sources: black facial mask and neck band, yellow underparts with radiating black streaks, gray-and-black upperparts, and a broad white wing patch.",
+    "All visible text claims verify: Magnolia Warbler / Setophaga magnolia / Parulidae; 11\u201313 cm length, 16\u201320 cm wingspan, and 6\u201315 g weight; habitat, foliage-gleaning behavior, sex/age field marks, and white-based black-tipped tail pattern.",
+    "No place name, ZIP code, coordinates, map, or local-observation detail appears on the candidate plate."
+  ],
+  "location_free": true,
+  "passed": true,
+  "species_accuracy": 5,
+  "text_accuracy": 5,
+  "verification_sources": [
+    {
+      "title": "Magnolia Warbler Identification \u2014 All About Birds, Cornell Lab of Ornithology",
+      "url": "https://www.allaboutbirds.org/guide/Magnolia_Warbler/id"
+    },
+    {
+      "title": "Magnolia Warbler \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/magnolia-warbler"
+    }
+  ]
+}
