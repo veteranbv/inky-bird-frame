@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-10T04:20:46+00:00",
+  "generated_at": "2026-07-10T04:29:43+00:00",
   "schema_version": 1,
   "species": [
     {
@@ -12,6 +12,17 @@
       "scientific_name": "Turdus migratorius",
       "slug": "american-robin",
       "taxon_id": 12727
+    },
+    {
+      "approved_at": "2026-07-10T04:29:43+00:00",
+      "common_name": "Blue Jay",
+      "display_path": "species/8229-blue-jay/display.png",
+      "display_sha256": "4ff021797cb56651c96f56252912ccbef92934a3e274b3b7c2e4aa1f053e76ce",
+      "portrait_path": "species/8229-blue-jay/portrait.png",
+      "portrait_sha256": "963a59d354f22360f34d79c68c540df94301ba2688f855e999a26d7ed186d1d1",
+      "scientific_name": "Cyanocitta cristata",
+      "slug": "blue-jay",
+      "taxon_id": 8229
     },
     {
       "approved_at": "2026-07-09T22:46:35+00:00",

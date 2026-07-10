@@ -1,0 +1,142 @@
+{
+  "approved_at": "2026-07-10T04:29:43+00:00",
+  "assets": {
+    "display": {
+      "filename": "display.png",
+      "sha256": "4ff021797cb56651c96f56252912ccbef92934a3e274b3b7c2e4aa1f053e76ce"
+    },
+    "portrait": {
+      "filename": "portrait.png",
+      "sha256": "963a59d354f22360f34d79c68c540df94301ba2688f855e999a26d7ed186d1d1"
+    }
+  },
+  "common_name": "Blue Jay",
+  "generation": {
+    "attempt": 1,
+    "generated_at": "2026-07-10T04:29:43+00:00",
+    "generator": "Codex subscription / built-in gpt-image-2",
+    "max_attempts": 3,
+    "prompt_version": "field-journal-v2"
+  },
+  "profile": {
+    "behavior": "Noisy, intelligent omnivore that forages on the ground and in trees; carries food to cache, holds seeds or nuts in its feet to peck them open, and may mimic hawk calls.",
+    "common_name": "Blue Jay",
+    "family": "Corvidae",
+    "field_marks": [
+      "Prominent blue crest that can be raised or lowered",
+      "Blue upperparts with pale gray to white underparts",
+      "Bold black facial markings and a black necklace across the throat",
+      "Strong, straight black bill and dark eyes",
+      "Blue wings and long, rounded tail barred with black, with white wingbars and tail corners"
+    ],
+    "habitat": "Forest edges, oak woods, mixed woodlands, woodlots, parks, and other tree-rich residential habitats.",
+    "measurements": {
+      "length": "25\u201330 cm (9.8\u201311.8 in)",
+      "weight": "70\u2013100 g (2.5\u20133.5 oz)",
+      "wingspan": "34\u201343 cm (13.4\u201316.9 in)"
+    },
+    "palette": [
+      "medium blue",
+      "pale blue",
+      "white",
+      "light gray",
+      "black"
+    ],
+    "scientific_name": "Cyanocitta cristata",
+    "sources": [
+      {
+        "title": "Blue Jay Identification \u2014 Cornell Lab of Ornithology",
+        "url": "https://www.allaboutbirds.org/guide/Blue_Jay/id"
+      },
+      {
+        "title": "Blue Jay (Cyanocitta cristata) \u2014 U.S. National Park Service",
+        "url": "https://www.nps.gov/miss/learn/nature/bluejay2.htm"
+      }
+    ],
+    "taxon_id": 8229
+  },
+  "quality_review": {
+    "anatomy_accuracy": 4,
+    "composition_quality": 5,
+    "findings": [
+      "Independent verification agrees with the plate: Cyanocitta cristata is a corvid with a prominent movable crest, blue upperparts, pale gray-white underparts, black facial markings and necklace, a strong straight dark bill, dark eyes, black-barred wings and tail, white wingbars, and white tail corners.",
+      "The stated length (25\u201330 cm), wingspan (34\u201343 cm), and weight (70\u2013100 g) exactly match Cornell\u2019s published ranges; Audubon independently corroborates the same metric ranges.",
+      "Visible anatomy is coherent for a Blue Jay: one main head and beak, two legs and grasping feet, a long rounded barred tail, and the pair of wings is represented by the folded wing plus the supplemental spread-wing study. The separate head and wing studies are clearly plate insets, not extra anatomy.",
+      "No place name, ZIP code, coordinates, map, or local-observation detail appears.",
+      "No material species-identity or text errors found."
+    ],
+    "location_free": true,
+    "passed": true,
+    "species_accuracy": 5,
+    "text_accuracy": 5,
+    "verification_sources": [
+      {
+        "title": "Blue Jay Identification \u2014 Cornell Lab of Ornithology",
+        "url": "https://www.allaboutbirds.org/guide/Blue_Jay/id"
+      },
+      {
+        "title": "Blue Jay \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/blue-jay"
+      }
+    ]
+  },
+  "references": [
+    {
+      "attribution": "(c) Texas Bird Family, some rights reserved (CC BY)",
+      "filename": "01-617105003.gif",
+      "height": 1440,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/617105003/large.gif",
+      "license_code": "cc-by",
+      "observation_id": 339251426,
+      "observer": "texas_nature_family",
+      "photo_id": 617105003,
+      "sha256": "c8fd704487d57338956f0837295bfb081a0080de122bec3bc8b334d789dd5c73",
+      "source_url": "https://www.inaturalist.org/observations/339251426",
+      "width": 1920
+    },
+    {
+      "attribution": "(c) Blake Ross, some rights reserved (CC BY)",
+      "filename": "02-248588410.jpg",
+      "height": 1285,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/248588410/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 144792423,
+      "observer": "blakemross",
+      "photo_id": 248588410,
+      "sha256": "b6332fe299cc231bbf987e75fb9dfb5942bc901bc80f066ede1a78027276719c",
+      "source_url": "https://www.inaturalist.org/observations/144792423",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) oksanaetal, some rights reserved (CC BY)",
+      "filename": "03-442644795.jpeg",
+      "height": 1365,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/442644795/large.jpeg",
+      "license_code": "cc-by",
+      "observation_id": 247799208,
+      "observer": "oksanaetal",
+      "photo_id": 442644795,
+      "sha256": "e51cebb70194dec6f94d8c7f787f2676391bbe9fcba233ce376b7b89fe9e14e0",
+      "source_url": "https://www.inaturalist.org/observations/247799208",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) Katja Schulz, some rights reserved (CC BY)",
+      "filename": "04-15579273.jpg",
+      "height": 1536,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/15579273/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 11041261,
+      "observer": "treegrow",
+      "photo_id": 15579273,
+      "sha256": "ddb87879082068df653e442e30bf130e468c24a2cf0e463f59dd5c3a0d0c3bdb",
+      "source_url": "https://www.inaturalist.org/observations/11041261",
+      "width": 2048
+    }
+  ],
+  "schema_version": 1,
+  "scientific_name": "Cyanocitta cristata",
+  "slug": "blue-jay",
+  "status": "approved",
+  "taxon_id": 8229
+}

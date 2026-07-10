@@ -1,0 +1,25 @@
+{
+  "anatomy_accuracy": 4,
+  "composition_quality": 5,
+  "findings": [
+    "Independent verification agrees with the plate: Cyanocitta cristata is a corvid with a prominent movable crest, blue upperparts, pale gray-white underparts, black facial markings and necklace, a strong straight dark bill, dark eyes, black-barred wings and tail, white wingbars, and white tail corners.",
+    "The stated length (25\u201330 cm), wingspan (34\u201343 cm), and weight (70\u2013100 g) exactly match Cornell\u2019s published ranges; Audubon independently corroborates the same metric ranges.",
+    "Visible anatomy is coherent for a Blue Jay: one main head and beak, two legs and grasping feet, a long rounded barred tail, and the pair of wings is represented by the folded wing plus the supplemental spread-wing study. The separate head and wing studies are clearly plate insets, not extra anatomy.",
+    "No place name, ZIP code, coordinates, map, or local-observation detail appears.",
+    "No material species-identity or text errors found."
+  ],
+  "location_free": true,
+  "passed": true,
+  "species_accuracy": 5,
+  "text_accuracy": 5,
+  "verification_sources": [
+    {
+      "title": "Blue Jay Identification \u2014 Cornell Lab of Ornithology",
+      "url": "https://www.allaboutbirds.org/guide/Blue_Jay/id"
+    },
+    {
+      "title": "Blue Jay \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/blue-jay"
+    }
+  ]
+}
