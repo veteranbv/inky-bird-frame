@@ -1,0 +1,144 @@
+{
+  "approved_at": "2026-07-10T17:55:25+00:00",
+  "assets": {
+    "display": {
+      "filename": "display.png",
+      "sha256": "126eaa71dda59ccc9a2abbf847fc5062021b3d0a3d14e2871a40e0fbdcd0245f"
+    },
+    "portrait": {
+      "filename": "portrait.png",
+      "sha256": "2b935a4596ac79d654e584e5476555853d68c45cc05e938b175acb62a864777a"
+    }
+  },
+  "common_name": "Louisiana Waterthrush",
+  "generation": {
+    "attempt": 1,
+    "generated_at": "2026-07-10T17:55:25+00:00",
+    "generator": "Codex subscription / built-in gpt-image-2",
+    "max_attempts": 3,
+    "prompt_version": "field-journal-v2"
+  },
+  "profile": {
+    "behavior": "Walks and forages at the water\u2019s edge, often bobbing the rear of its body; commonly feeds among wet leaves, moss, stones, and shallow running water.",
+    "common_name": "Louisiana Waterthrush",
+    "family": "Parulidae",
+    "field_marks": [
+      "Plain olive-brown upperparts with no wingbars",
+      "Bold, bright white eyebrow stripe",
+      "White underparts with heavy dark streaking on breast and sides",
+      "Usually plain white throat and warm buff wash on flanks and undertail",
+      "Relatively long, sturdy pointed bill",
+      "Pinkish legs and a short, square-tipped to rounded tail"
+    ],
+    "habitat": "Forested streams, creeks, brooks, ravines, and other shaded freshwater edges; favors flowing water and nearby wet ground.",
+    "measurements": {
+      "length": "13\u201315 cm (5\u20136 in)",
+      "weight": "18\u201323 g (0.6\u20130.8 oz)",
+      "wingspan": "20\u201325 cm (8\u201310 in)"
+    },
+    "palette": [
+      "olive-brown",
+      "bright white",
+      "charcoal black",
+      "warm buff",
+      "pinkish flesh"
+    ],
+    "scientific_name": "Parkesia motacilla",
+    "sources": [
+      {
+        "title": "Louisiana Waterthrush Overview \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Louisiana_Waterthrush/overview"
+      },
+      {
+        "title": "Louisiana Waterthrush \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/louisiana-waterthrush"
+      }
+    ],
+    "taxon_id": 73148
+  },
+  "quality_review": {
+    "anatomy_accuracy": 4,
+    "composition_quality": 5,
+    "findings": [
+      "Identity is consistent with Louisiana Waterthrush: olive-brown upperparts, a bold white supercilium, mostly plain white throat, heavy dark breast-and-flank streaking, pink legs, and no wingbars match the supplied field photos and field-guide descriptions.",
+      "The bird is anatomically coherent: one head, one beak, two legs, one tail, and a normal paired-wing body plan are depicted. The visible wing and separate wing study are plausible; feet/toes are somewhat oversized and sharply rendered but not malformed.",
+      "The main bird\u2019s bill is drawn rather long and fine, and its tail reads slightly longer and more tapered than the compact, short square-tipped-to-rounded tail typically emphasized for this species. These are minor proportional departures, not an identification-breaking error.",
+      "Common name, scientific name (Parkesia motacilla), and family (Parulidae) are correct. Habitat and foraging/bobbing behavior are supported by both sources.",
+      "Length and weight match Audubon\u2019s published range. The printed 20\u201325 cm (8\u201310 in) wingspan matches Audubon, but differs from All About Birds\u2019 24\u201327 cm (9.4\u201310.6 in) range; retain a source-specific citation or broaden the stated range to avoid an apparent cross-source discrepancy.",
+      "No place name, ZIP code, coordinates, map, or local-observation detail appears on the plate."
+    ],
+    "location_free": true,
+    "passed": true,
+    "species_accuracy": 4,
+    "text_accuracy": 4,
+    "verification_sources": [
+      {
+        "title": "Louisiana Waterthrush \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/louisiana-waterthrush"
+      },
+      {
+        "title": "Louisiana Waterthrush Identification \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Louisiana_Waterthrush/id"
+      }
+    ]
+  },
+  "references": [
+    {
+      "attribution": "(c) Matt Felperin, some rights reserved (CC BY)",
+      "filename": "01-363627147.jpg",
+      "height": 1365,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/363627147/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 205635143,
+      "observer": "mattyfelp",
+      "photo_id": 363627147,
+      "sha256": "a9013f6bbf6f467677a37d7da97285037ffd00732112bcfca091d856bd13834a",
+      "source_url": "https://www.inaturalist.org/observations/205635143",
+      "width": 2048
+    },
+    {
+      "attribution": "no rights reserved",
+      "filename": "02-339618568.jpg",
+      "height": 1369,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/339618568/large.jpg",
+      "license_code": "cc0",
+      "observation_id": 193337146,
+      "observer": "rawcomposition",
+      "photo_id": 339618568,
+      "sha256": "f62fb4e1afe981ba5448ae9ec0e3372c26d42164147735b82b98a7e141440593",
+      "source_url": "https://www.inaturalist.org/observations/193337146",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) botanygirl, some rights reserved (CC BY)",
+      "filename": "03-34243559.jpeg",
+      "height": 1365,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/34243559/large.jpeg",
+      "license_code": "cc-by",
+      "observation_id": 22120362,
+      "observer": "botanygirl",
+      "photo_id": 34243559,
+      "sha256": "84f3fea33af703f84f15bf66c9a062a2d3f81716186a53ce8c797aca4c2af50b",
+      "source_url": "https://www.inaturalist.org/observations/22120362",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) Robert Harris, some rights reserved (CC BY)",
+      "filename": "04-216128736.jpeg",
+      "height": 1218,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/216128736/large.jpeg",
+      "license_code": "cc-by",
+      "observation_id": 127313775,
+      "observer": "usmcfiremedic",
+      "photo_id": 216128736,
+      "sha256": "8dc2365dbdd1daaddea00f5a7ecd165900c01a96df9b335e117d9105d1379301",
+      "source_url": "https://www.inaturalist.org/observations/127313775",
+      "width": 1827
+    }
+  ],
+  "schema_version": 1,
+  "scientific_name": "Parkesia motacilla",
+  "slug": "louisiana-waterthrush",
+  "status": "approved",
+  "taxon_id": 73148
+}
