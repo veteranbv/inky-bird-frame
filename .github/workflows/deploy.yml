@@ -28,6 +28,9 @@ jobs:
           persist-credentials: false
 
       - name: Install controller revision and services
+        env:
+          # The launchd runner has a system-only PATH; uv is installed by Homebrew.
+          UV_BIN: /opt/homebrew/bin/uv
         run: ./deploy/install-controller.sh
 
       - name: Deploy display node
