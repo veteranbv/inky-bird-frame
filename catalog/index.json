@@ -1,7 +1,18 @@
 {
-  "generated_at": "2026-07-10T14:16:22+00:00",
+  "generated_at": "2026-07-10T16:35:59+00:00",
   "schema_version": 1,
   "species": [
+    {
+      "approved_at": "2026-07-10T16:35:59+00:00",
+      "common_name": "American Goldfinch",
+      "display_path": "species/145310-american-goldfinch/display.png",
+      "display_sha256": "1e1282bae939a3e27bc21df9bdb5d671dcfafdb25d2558c8cee065d1268569e6",
+      "portrait_path": "species/145310-american-goldfinch/portrait.png",
+      "portrait_sha256": "3edde103bba493324e563087f96a2ea4d1ecdc3b6677b30319deeb8113163123",
+      "scientific_name": "Spinus tristis",
+      "slug": "american-goldfinch",
+      "taxon_id": 145310
+    },
     {
       "approved_at": "2026-07-09T22:38:07+00:00",
       "common_name": "American Robin",
