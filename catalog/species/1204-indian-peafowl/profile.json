@@ -1,0 +1,38 @@
+{
+  "behavior": "Mostly ground-foraging and diurnal; typically runs into cover when disturbed and flies to trees to roost.",
+  "common_name": "Indian Peafowl",
+  "family": "Phasianidae",
+  "field_marks": [
+    "Adult male with an iridescent cobalt-blue head, neck, and breast",
+    "Upright fan-shaped crest of slender shafts tipped blue-green",
+    "White stripe above the eye and white crescent below it",
+    "Scaled bronze-green upperparts and black-and-white barred wing coverts",
+    "Very long green-bronze upper-tail covert train with prominent eyespots in adult males",
+    "Strong pale gray-brown legs; male commonly bears a spur"
+  ],
+  "habitat": "Open deciduous woodland, forest edge, scrub, grassland, cultivated land, and other terrestrial areas with cover, water, and suitable roost trees.",
+  "measurements": {
+    "length": "0.86\u20132.12 m",
+    "weight": "2.7\u20136 kg",
+    "wingspan": "1.4\u20131.6 m"
+  },
+  "palette": [
+    "iridescent cobalt blue",
+    "emerald green",
+    "bronze-gold",
+    "black",
+    "white"
+  ],
+  "scientific_name": "Pavo cristatus",
+  "sources": [
+    {
+      "title": "Animal Diversity Web \u2014 Pavo cristatus",
+      "url": "https://animaldiversity.org/accounts/Pavo_cristatus/"
+    },
+    {
+      "title": "Wikipedia \u2014 Indian peafowl",
+      "url": "https://en.wikipedia.org/wiki/Indian_peafowl"
+    }
+  ],
+  "taxon_id": 1204
+}
