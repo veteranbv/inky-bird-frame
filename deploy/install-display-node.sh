@@ -45,6 +45,7 @@ INKY_BIRD_APP_DIR="${app_dir}" \
 INKY_BIRD_CONFIG_PATH="${config_path}" \
 INKY_BIRD_DISPLAY_VENV="${venv}" \
 INKY_BIRD_RUN_INITIAL_DISPLAY=true \
+INKY_BIRD_NONINTERACTIVE_SUDO=true \
   "${app_dir}/deploy/install-display-local.sh"
 REMOTE
 

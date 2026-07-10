@@ -70,3 +70,14 @@ def test_local_display_installer_uses_configured_schedule_and_verifies_timer() -
     assert "systemctl restart inky-bird-frame-display.timer" in script
     assert "systemctl is-enabled --quiet inky-bird-frame-display.timer" in script
     assert "systemctl is-active --quiet inky-bird-frame-display.timer" in script
+    assert "noninteractive_sudo=${INKY_BIRD_NONINTERACTIVE_SUDO:-false}" in script
+    assert "sudo_command+=(-n)" in script
+    assert '"${sudo_command[@]}" systemctl daemon-reload' in script
+
+
+def test_remote_display_installer_selects_noninteractive_sudo() -> None:
+    script = (
+        Path(__file__).resolve().parents[1] / "deploy" / "install-display-node.sh"
+    ).read_text()
+
+    assert "INKY_BIRD_NONINTERACTIVE_SUDO=true" in script

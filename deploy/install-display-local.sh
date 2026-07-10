@@ -12,6 +12,7 @@ support_dir=${INKY_BIRD_SUPPORT_DIR:-"${HOME}/.config/inky-bird-frame"}
 config_path=${INKY_BIRD_CONFIG_PATH:-"${support_dir}/config.toml"}
 venv=${INKY_BIRD_DISPLAY_VENV:-"${HOME}/.virtualenvs/pimoroni"}
 run_initial_display=${INKY_BIRD_RUN_INITIAL_DISPLAY:-false}
+noninteractive_sudo=${INKY_BIRD_NONINTERACTIVE_SUDO:-false}
 
 if [ ! -f "${config_path}" ]; then
   echo "Display-node configuration is missing: ${config_path}" >&2
@@ -21,10 +22,22 @@ if [ ! -x "${venv}/bin/python" ]; then
   echo "Pimoroni Python environment is missing: ${venv}" >&2
   exit 1
 fi
-if ! sudo -v; then
-  echo "Administrator access is required to install the display service." >&2
-  exit 1
-fi
+sudo_command=(sudo)
+case "${noninteractive_sudo}" in
+  true)
+    sudo_command+=(-n)
+    ;;
+  false)
+    if ! sudo -v; then
+      echo "Administrator access is required to install the display service." >&2
+      exit 1
+    fi
+    ;;
+  *)
+    echo "INKY_BIRD_NONINTERACTIVE_SUDO must be true or false." >&2
+    exit 1
+    ;;
+esac
 
 chmod 600 "${config_path}"
 mkdir -p "${app_dir}/src" "${app_dir}/catalog" "${app_dir}/deploy" "${support_dir}"
@@ -64,17 +77,17 @@ for name, content in units.items():
     (unit_dir / name).write_text(content)
 PY
 
-sudo install -m 0644 \
+"${sudo_command[@]}" install -m 0644 \
   "${unit_dir}/inky-bird-frame-display.service" \
   /etc/systemd/system/inky-bird-frame-display.service
-sudo install -m 0644 \
+"${sudo_command[@]}" install -m 0644 \
   "${unit_dir}/inky-bird-frame-display.timer" \
   /etc/systemd/system/inky-bird-frame-display.timer
-sudo systemctl daemon-reload
-sudo systemctl enable inky-bird-frame-display.timer
-sudo systemctl restart inky-bird-frame-display.timer
+"${sudo_command[@]}" systemctl daemon-reload
+"${sudo_command[@]}" systemctl enable inky-bird-frame-display.timer
+"${sudo_command[@]}" systemctl restart inky-bird-frame-display.timer
 if [ "${run_initial_display}" = true ]; then
-  sudo systemctl start inky-bird-frame-display.service
+  "${sudo_command[@]}" systemctl start inky-bird-frame-display.service
 fi
 systemctl is-enabled --quiet inky-bird-frame-display.timer
 systemctl is-active --quiet inky-bird-frame-display.timer
