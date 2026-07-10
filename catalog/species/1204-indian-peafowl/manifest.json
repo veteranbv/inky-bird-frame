@@ -1,0 +1,141 @@
+{
+  "approved_at": "2026-07-10T16:43:04+00:00",
+  "assets": {
+    "display": {
+      "filename": "display.png",
+      "sha256": "9c4bcd7e7029a3a359664afea19eb5fa2711add9dbcea8b9f714b68fda0a9780"
+    },
+    "portrait": {
+      "filename": "portrait.png",
+      "sha256": "5025cfcdbef2ad1f32e93e1b6239ec158cc71764fd9f64e253d59310540aed4c"
+    }
+  },
+  "common_name": "Indian Peafowl",
+  "generation": {
+    "attempt": 1,
+    "generated_at": "2026-07-10T16:43:04+00:00",
+    "generator": "Codex subscription / built-in gpt-image-2",
+    "max_attempts": 3,
+    "prompt_version": "field-journal-v2"
+  },
+  "profile": {
+    "behavior": "Mostly ground-foraging and diurnal; typically runs into cover when disturbed and flies to trees to roost.",
+    "common_name": "Indian Peafowl",
+    "family": "Phasianidae",
+    "field_marks": [
+      "Adult male with an iridescent cobalt-blue head, neck, and breast",
+      "Upright fan-shaped crest of slender shafts tipped blue-green",
+      "White stripe above the eye and white crescent below it",
+      "Scaled bronze-green upperparts and black-and-white barred wing coverts",
+      "Very long green-bronze upper-tail covert train with prominent eyespots in adult males",
+      "Strong pale gray-brown legs; male commonly bears a spur"
+    ],
+    "habitat": "Open deciduous woodland, forest edge, scrub, grassland, cultivated land, and other terrestrial areas with cover, water, and suitable roost trees.",
+    "measurements": {
+      "length": "0.86\u20132.12 m",
+      "weight": "2.7\u20136 kg",
+      "wingspan": "1.4\u20131.6 m"
+    },
+    "palette": [
+      "iridescent cobalt blue",
+      "emerald green",
+      "bronze-gold",
+      "black",
+      "white"
+    ],
+    "scientific_name": "Pavo cristatus",
+    "sources": [
+      {
+        "title": "Animal Diversity Web \u2014 Pavo cristatus",
+        "url": "https://animaldiversity.org/accounts/Pavo_cristatus/"
+      },
+      {
+        "title": "Wikipedia \u2014 Indian peafowl",
+        "url": "https://en.wikipedia.org/wiki/Indian_peafowl"
+      }
+    ],
+    "taxon_id": 1204
+  },
+  "quality_review": {
+    "anatomy_accuracy": 4,
+    "composition_quality": 5,
+    "findings": [
+      "Verified Indian Peafowl (Pavo cristatus), Phasianidae. The adult male\u2019s cobalt-blue head, neck and breast; fan-tipped crest; white supraorbital stripe and lower white facial patch; bronze-green train with eyespots; barred/scalloped wing coverts; pale gray-brown legs and visible spur agree with the supplied field photos and verified descriptions.",
+      "All visible plate text is substantively correct: common/scientific name, family, measurements (0.86\u20132.12 m; 1.4\u20131.6 m wingspan; 2.7\u20136 kg), ground-foraging/diurnal behavior, escape into cover, tree roosting, habitat, and field marks. The plate contains no place name, ZIP code, coordinates, map, or local-observation detail.",
+      "The illustrated bird has exactly one head, one beak, two wings, two legs, and one tail/train. Minor non-material issue: the right-side 0\u20132 m ruler reads as standing height, whereas the stated maximum length includes the long train and can exceed that vertical measure."
+    ],
+    "location_free": true,
+    "passed": true,
+    "species_accuracy": 5,
+    "text_accuracy": 5,
+    "verification_sources": [
+      {
+        "title": "Animal Diversity Web \u2014 Pavo cristatus",
+        "url": "https://animaldiversity.org/accounts/Pavo_cristatus/"
+      },
+      {
+        "title": "Wikipedia \u2014 Indian peafowl",
+        "url": "https://en.wikipedia.org/wiki/Indian_peafowl"
+      }
+    ]
+  },
+  "references": [
+    {
+      "attribution": "(c) Parth Kansara, some rights reserved (CC BY)",
+      "filename": "01-307026691.jpg",
+      "height": 2048,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/307026691/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 176588709,
+      "observer": "parthkansara",
+      "photo_id": 307026691,
+      "sha256": "d3ea8658db9e05630c4d32ce75f429f0d512b7f086df9caaaaac6c7e32dcd5d3",
+      "source_url": "https://www.inaturalist.org/observations/176588709",
+      "width": 1638
+    },
+    {
+      "attribution": "(c) Afsar Nayakkan, some rights reserved (CC BY)",
+      "filename": "02-317280189.jpeg",
+      "height": 1811,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/317280189/large.jpeg",
+      "license_code": "cc-by",
+      "observation_id": 182017396,
+      "observer": "afsarnayakkan",
+      "photo_id": 317280189,
+      "sha256": "c3712576d376b06691e8c17f5d448009f53208e93ab4e43f5361d51dab5ef33c",
+      "source_url": "https://www.inaturalist.org/observations/182017396",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) Mitul and Vijul Singh, some rights reserved (CC BY)",
+      "filename": "03-344972179.jpeg",
+      "height": 1464,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/344972179/large.jpeg",
+      "license_code": "cc-by",
+      "observation_id": 196004756,
+      "observer": "mitvij",
+      "photo_id": 344972179,
+      "sha256": "848edb53ebca5a76b889727911e97a494e60e67cfb350d37b6a4ba8a1d210440",
+      "source_url": "https://www.inaturalist.org/observations/196004756",
+      "width": 2048
+    },
+    {
+      "attribution": "no rights reserved",
+      "filename": "04-81532360.jpg",
+      "height": 1152,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/81532360/large.jpg",
+      "license_code": "cc0",
+      "observation_id": 51322771,
+      "observer": "beesbirdsbugs",
+      "photo_id": 81532360,
+      "sha256": "36847757ebd16b541366d5825e86f11147436ed9764e7b698ab764c1a1f0e1f6",
+      "source_url": "https://www.inaturalist.org/observations/51322771",
+      "width": 2048
+    }
+  ],
+  "schema_version": 1,
+  "scientific_name": "Pavo cristatus",
+  "slug": "indian-peafowl",
+  "status": "approved",
+  "taxon_id": 1204
+}

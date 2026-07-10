@@ -1,0 +1,23 @@
+{
+  "anatomy_accuracy": 4,
+  "composition_quality": 5,
+  "findings": [
+    "Verified Indian Peafowl (Pavo cristatus), Phasianidae. The adult male\u2019s cobalt-blue head, neck and breast; fan-tipped crest; white supraorbital stripe and lower white facial patch; bronze-green train with eyespots; barred/scalloped wing coverts; pale gray-brown legs and visible spur agree with the supplied field photos and verified descriptions.",
+    "All visible plate text is substantively correct: common/scientific name, family, measurements (0.86\u20132.12 m; 1.4\u20131.6 m wingspan; 2.7\u20136 kg), ground-foraging/diurnal behavior, escape into cover, tree roosting, habitat, and field marks. The plate contains no place name, ZIP code, coordinates, map, or local-observation detail.",
+    "The illustrated bird has exactly one head, one beak, two wings, two legs, and one tail/train. Minor non-material issue: the right-side 0\u20132 m ruler reads as standing height, whereas the stated maximum length includes the long train and can exceed that vertical measure."
+  ],
+  "location_free": true,
+  "passed": true,
+  "species_accuracy": 5,
+  "text_accuracy": 5,
+  "verification_sources": [
+    {
+      "title": "Animal Diversity Web \u2014 Pavo cristatus",
+      "url": "https://animaldiversity.org/accounts/Pavo_cristatus/"
+    },
+    {
+      "title": "Wikipedia \u2014 Indian peafowl",
+      "url": "https://en.wikipedia.org/wiki/Indian_peafowl"
+    }
+  ]
+}

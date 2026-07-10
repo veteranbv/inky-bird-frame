@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-10T16:35:59+00:00",
+  "generated_at": "2026-07-10T16:43:04+00:00",
   "schema_version": 1,
   "species": [
     {
@@ -155,6 +155,17 @@
       "scientific_name": "Butorides virescens",
       "slug": "green-heron",
       "taxon_id": 5020
+    },
+    {
+      "approved_at": "2026-07-10T16:43:04+00:00",
+      "common_name": "Indian Peafowl",
+      "display_path": "species/1204-indian-peafowl/display.png",
+      "display_sha256": "9c4bcd7e7029a3a359664afea19eb5fa2711add9dbcea8b9f714b68fda0a9780",
+      "portrait_path": "species/1204-indian-peafowl/portrait.png",
+      "portrait_sha256": "5025cfcdbef2ad1f32e93e1b6239ec158cc71764fd9f64e253d59310540aed4c",
+      "scientific_name": "Pavo cristatus",
+      "slug": "indian-peafowl",
+      "taxon_id": 1204
     },
     {
       "approved_at": "2026-07-10T05:12:49+00:00",
