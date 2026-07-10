@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-10T04:11:31+00:00",
+  "generated_at": "2026-07-10T04:20:46+00:00",
   "schema_version": 1,
   "species": [
     {
@@ -23,6 +23,17 @@
       "scientific_name": "Poecile carolinensis",
       "slug": "carolina-chickadee",
       "taxon_id": 144814
+    },
+    {
+      "approved_at": "2026-07-10T04:20:46+00:00",
+      "common_name": "Carolina Wren",
+      "display_path": "species/7513-carolina-wren/display.png",
+      "display_sha256": "728fe57fdbdcbda8824710a13c26161802c942f5d294583feb1c451dc1385576",
+      "portrait_path": "species/7513-carolina-wren/portrait.png",
+      "portrait_sha256": "f5721839a075dc1e6d329544aab8a73b226a742ea64cd17230cfc718679645ef",
+      "scientific_name": "Thryothorus ludovicianus",
+      "slug": "carolina-wren",
+      "taxon_id": 7513
     },
     {
       "approved_at": "2026-07-10T04:11:31+00:00",
