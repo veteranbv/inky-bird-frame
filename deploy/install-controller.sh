@@ -163,16 +163,10 @@ PY
 
 uid=$(id -u)
 if [ -f "${catalog_publish_plist}" ]; then
-  publisher_was_loaded=false
-  if launchctl print "gui/${uid}/com.inky-bird-frame.catalog-publish" >/dev/null 2>&1; then
-    launchctl bootout "gui/${uid}/com.inky-bird-frame.catalog-publish"
-    publisher_was_loaded=true
-  fi
+  launchctl bootout "gui/${uid}/com.inky-bird-frame.catalog-publish" 2>/dev/null || true
   if ! "${app_dir}/.venv/bin/inky-bird-frame" catalog-publish \
     --config "${config_path}" --dry-run; then
-    if [ "${publisher_was_loaded}" = true ]; then
-      launchctl bootstrap "gui/${uid}" "${catalog_publish_plist}" 2>/dev/null || true
-    fi
+    echo "Catalog publication validation failed; publisher remains unloaded." >&2
     exit 1
   fi
 fi
