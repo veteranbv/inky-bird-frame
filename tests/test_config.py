@@ -6,7 +6,7 @@ from tempfile import TemporaryDirectory
 from unittest.mock import patch
 
 from inky_bird_frame.birds import ObservationWindow
-from inky_bird_frame.config import RotationMode, load_config
+from inky_bird_frame.config import NotificationEvent, RotationMode, load_config
 from inky_bird_frame.errors import ConfigurationError
 
 CONFIG = """
@@ -163,6 +163,121 @@ class ConfigTests(unittest.TestCase):
 
             with self.assertRaises(ConfigurationError):
                 load_config(path)
+
+    def test_loads_research_queue_and_notification_settings(self) -> None:
+        configured = (
+            CONFIG
+            + """
+
+[research]
+enabled = true
+max_searches_per_day = 4
+max_searches_per_species = 1
+allowed_domains = ["allaboutbirds.org", "audubon.org"]
+
+[notifications]
+enabled = true
+degradation_failure_threshold = 2
+degradation_window_minutes = 20
+cooldown_minutes = 120
+delivery_retry_minutes = 7
+max_delivery_attempts = 9
+
+[[notifications.destinations]]
+name = "pushover"
+url = "pover://user@token"
+events = ["generation_approved", "terminal_error"]
+"""
+        ).replace(
+            "max_generation_attempts = 3",
+            """max_generation_attempts = 3
+max_species_attempts_per_cycle = 8
+retry_initial_minutes = 10
+retry_max_minutes = 120
+insufficient_references_retry_minutes = 1440""",
+        )
+        with TemporaryDirectory() as temporary:
+            path = Path(temporary) / "config.toml"
+            path.write_text(configured)
+            config = load_config(path)
+
+        self.assertEqual(config.controller.max_species_attempts_per_cycle, 8)
+        self.assertEqual(config.controller.insufficient_references_retry_minutes, 1440)
+        self.assertEqual(config.research.max_searches_per_day, 4)
+        self.assertEqual(config.research.allowed_domains, ("allaboutbirds.org", "audubon.org"))
+        self.assertTrue(config.notifications.enabled)
+        self.assertEqual(config.notifications.destinations[0].name, "pushover")
+        self.assertEqual(
+            config.notifications.destinations[0].events,
+            (NotificationEvent.GENERATION_APPROVED, NotificationEvent.TERMINAL_ERROR),
+        )
+
+    def test_research_requires_two_distinct_allowed_domains(self) -> None:
+        configured = (
+            CONFIG
+            + """
+
+[research]
+allowed_domains = ["allaboutbirds.org", "ALLABOUTBIRDS.ORG"]
+"""
+        )
+        with TemporaryDirectory() as temporary:
+            path = Path(temporary) / "config.toml"
+            path.write_text(configured)
+
+            with self.assertRaisesRegex(ConfigurationError, "two distinct domains"):
+                load_config(path)
+
+    def test_research_domains_are_normalized_for_dns_matching(self) -> None:
+        configured = (
+            CONFIG
+            + """
+
+[research]
+allowed_domains = ["ALLABOUTBIRDS.ORG", "Audubon.org"]
+"""
+        )
+        with TemporaryDirectory() as temporary:
+            path = Path(temporary) / "config.toml"
+            path.write_text(configured)
+            config = load_config(path)
+
+        self.assertEqual(
+            config.research.allowed_domains,
+            ("allaboutbirds.org", "audubon.org"),
+        )
+
+    def test_enabled_notifications_require_a_destination(self) -> None:
+        with TemporaryDirectory() as temporary:
+            path = Path(temporary) / "config.toml"
+            path.write_text(CONFIG + "\n[notifications]\nenabled = true\n")
+
+            with self.assertRaisesRegex(ConfigurationError, "destination"):
+                load_config(path)
+
+    def test_disabled_notifications_do_not_require_url_environment(self) -> None:
+        configured = (
+            CONFIG
+            + """
+
+[notifications]
+enabled = false
+
+[[notifications.destinations]]
+name = "pushover"
+url_env = "MISSING_NOTIFICATION_URL"
+events = ["terminal_error"]
+"""
+        )
+        with TemporaryDirectory() as temporary:
+            path = Path(temporary) / "config.toml"
+            path.write_text(configured)
+            with patch.dict("os.environ", {}, clear=True):
+                config = load_config(path)
+
+        self.assertFalse(config.notifications.enabled)
+        self.assertEqual(config.notifications.destinations[0].url, "env://MISSING_NOTIFICATION_URL")
+        self.assertEqual(config.notifications.destinations[0].url_env, "MISSING_NOTIFICATION_URL")
 
 
 if __name__ == "__main__":

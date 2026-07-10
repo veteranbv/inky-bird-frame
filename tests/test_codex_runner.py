@@ -3,11 +3,63 @@ from __future__ import annotations
 import unittest
 from pathlib import Path
 from tempfile import TemporaryDirectory
+from unittest.mock import patch
 
-from inky_bird_frame.codex_runner import CodexRunner, _parse_review
+from inky_bird_frame.birds import BirdSpecies
+from inky_bird_frame.codex_runner import CodexRunner, _parse_review, parse_species_profile
+from inky_bird_frame.errors import GenerationError
+from inky_bird_frame.models import SpeciesProfileData
 
 
 class CodexRunnerTests(unittest.TestCase):
+    def test_review_uses_bounded_live_source_verification(self) -> None:
+        species = BirdSpecies(1, "Test Bird", "Avis test", 1, "test")
+        profile = SpeciesProfileData(
+            taxon_id=1,
+            common_name="Test Bird",
+            scientific_name="Avis test",
+            family="Testidae",
+            measurements={"length": "1 in", "wingspan": "2 in", "weight": "3 oz"},
+            field_marks=["one", "two", "three", "four"],
+            habitat="Woods",
+            behavior="Perches",
+            palette=["red", "green", "blue"],
+            sources=[
+                {"title": "One", "url": "https://birds.example/one"},
+                {"title": "Two", "url": "https://field.example/two"},
+            ],
+        )
+        raw_review = {
+            "passed": True,
+            "species_accuracy": 5,
+            "anatomy_accuracy": 5,
+            "text_accuracy": 5,
+            "composition_quality": 5,
+            "location_free": True,
+            "findings": [],
+            "verification_sources": profile["sources"],
+        }
+        with TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            executable = root / "codex"
+            executable.touch()
+            runner = CodexRunner(executable, root)
+            with patch.object(runner, "_structured", return_value=raw_review) as structured:
+                runner.review_plate(
+                    species,
+                    profile,
+                    [],
+                    Path("plate.png"),
+                    [],
+                    Path("review.json"),
+                    Path("review.log"),
+                    allowed_domains=("birds.example", "field.example"),
+                )
+
+        self.assertTrue(structured.call_args.kwargs["search"])
+        prompt = structured.call_args.args[0]
+        self.assertIn("birds.example, field.example", prompt)
+
     def test_review_requires_two_verification_sources(self) -> None:
         review = _parse_review(
             {
@@ -77,6 +129,45 @@ class CodexRunnerTests(unittest.TestCase):
 
         self.assertIn("--skip-git-repo-check", command)
         self.assertIn("read-only", command)
+
+    def test_profile_rejects_sources_outside_allowlist(self) -> None:
+        profile = {
+            "taxon_id": 1,
+            "common_name": "Test Bird",
+            "scientific_name": "Avis test",
+            "family": "Testidae",
+            "measurements": {"length": "1 in", "wingspan": "2 in", "weight": "3 oz"},
+            "field_marks": ["one", "two", "three", "four"],
+            "habitat": "Woods",
+            "behavior": "Perches",
+            "palette": ["red", "green", "blue"],
+            "sources": [
+                {"title": "Allowed", "url": "https://birds.example/one"},
+                {"title": "Not allowed", "url": "https://search.example/two"},
+            ],
+        }
+
+        with self.assertRaisesRegex(GenerationError, "allowlist"):
+            parse_species_profile(profile, ("birds.example",))
+
+    def test_review_requires_independent_source_domains(self) -> None:
+        review = _parse_review(
+            {
+                "passed": True,
+                "species_accuracy": 5,
+                "anatomy_accuracy": 5,
+                "text_accuracy": 5,
+                "composition_quality": 5,
+                "location_free": True,
+                "findings": [],
+                "verification_sources": [
+                    {"title": "One", "url": "https://birds.example/one"},
+                    {"title": "Two", "url": "https://birds.example/two"},
+                ],
+            }
+        )
+
+        self.assertFalse(review.passed)
 
 
 if __name__ == "__main__":

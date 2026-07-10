@@ -29,6 +29,15 @@ then:
 9. immediately rebuilds the private active catalog from the latest observation
    snapshot.
 
+Transient per-taxon failures are written to a durable retry schedule with capped
+exponential backoff. Deferred taxa are skipped without consuming the successful
+generation quota, and the cycle scans later work up to a separate configured
+attempt cap. Shared catalog or state corruption still fails closed.
+
+Notification delivery is an independent durable outbox. Application state is
+committed first, each destination is acknowledged separately, and provider
+failures never block controller or display work.
+
 The controller also exposes a read-only HTTP catalog:
 
 - `GET /health`

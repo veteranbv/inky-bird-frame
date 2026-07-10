@@ -26,7 +26,7 @@ from .catalog import (
     write_candidate_manifest,
     write_json_atomic,
 )
-from .codex_runner import CodexRunner
+from .codex_runner import CodexRunner, parse_species_profile
 from .config import AppConfig
 from .errors import (
     CatalogError,
@@ -34,13 +34,16 @@ from .errors import (
     GenerationError,
     InkyBirdFrameError,
     InsufficientReferencesError,
+    MissingDependencyError,
     QualityReviewError,
 )
 from .geo import ZipLocation, lookup_us_zip
 from .images import prepare_generated_plate
-from .models import ReferencePhoto
+from .models import ReferencePhoto, SpeciesProfileData
 from .prompts import PROMPT_VERSION
 from .references import download_references, fetch_reference_candidates
+from .research import ResearchBudget
+from .retry import RetryStore
 
 
 @dataclass(frozen=True)
@@ -256,7 +259,13 @@ def _write_active_catalog(config: AppConfig, species_list: list[BirdSpecies]) ->
 
 def run_refresh_cycle(config: AppConfig) -> dict[str, object]:
     with exclusive_refresh_lock(config.controller.state_dir):
+        previous_taxa: set[int] = set()
+        if _snapshot_path(config).exists():
+            previous_taxa = {
+                species.taxon_id for species in _read_discovery_snapshot(config).species
+            }
         location, species_list = discover_species(config)
+        new_species = [species for species in species_list if species.taxon_id not in previous_taxa]
         with catalog_state_lock(config.controller.state_dir):
             refreshed_at = datetime.now(UTC).replace(microsecond=0)
             write_json_atomic(
@@ -277,6 +286,7 @@ def run_refresh_cycle(config: AppConfig) -> dict[str, object]:
         "window": config.discovery.observation_window.value,
         "radius_km": config.discovery.radius_km,
         "species_count": len(species_list),
+        "new_species": [_species_payload(species) for species in new_species],
         "active_approved_count": active_count,
     }
 
@@ -385,6 +395,60 @@ def _timestamp() -> str:
     return datetime.now(UTC).strftime("%Y%m%dT%H%M%SZ")
 
 
+def load_or_create_profile(
+    config: AppConfig,
+    species: BirdSpecies,
+    references: list[ReferencePhoto],
+    reference_paths: list[Path],
+    runner: CodexRunner,
+    output_path: Path,
+    log_path: Path,
+) -> tuple[SpeciesProfileData, Path]:
+    cache_path = config.controller.state_dir / "profiles" / str(species.taxon_id) / "profile.json"
+    cached = cache_path.is_file()
+    if cached:
+        try:
+            raw = json.loads(cache_path.read_text())
+        except json.JSONDecodeError as exc:
+            raise CatalogError(f"Invalid cached species profile: {cache_path}") from exc
+        try:
+            profile = parse_species_profile(raw, config.research.allowed_domains)
+        except GenerationError as exc:
+            raise CatalogError(f"Invalid cached species profile: {cache_path}") from exc
+    else:
+        if not config.research.enabled:
+            raise GenerationError(
+                f"Taxon {species.taxon_id} has no cached profile and research is disabled"
+            )
+        context = fetch_taxon_context(species.taxon_id)
+        ResearchBudget(
+            config.controller.state_dir / "research-budget.json",
+            daily_limit=config.research.max_searches_per_day,
+            species_limit=config.research.max_searches_per_species,
+        ).consume(species.taxon_id)
+        profile = runner.create_profile(
+            species,
+            context,
+            references,
+            reference_paths,
+            output_path,
+            log_path,
+            allowed_domains=config.research.allowed_domains,
+        )
+    if (
+        profile["taxon_id"] != species.taxon_id
+        or profile["common_name"] != species.common_name
+        or profile["scientific_name"] != species.scientific_name
+    ):
+        raise CatalogError(
+            f"Cached species profile identity does not match taxon {species.taxon_id}"
+        )
+    write_json_atomic(output_path, profile)
+    if not cached:
+        write_json_atomic(cache_path, profile)
+    return profile, output_path
+
+
 def generate_candidate(config: AppConfig, species: BirdSpecies, workspace: Path) -> Path:
     state_dir = config.controller.state_dir
     if species.taxon_id in approved_taxon_ids(config.controller.catalog_dir):
@@ -395,7 +459,6 @@ def generate_candidate(config: AppConfig, species: BirdSpecies, workspace: Path)
     references = load_or_fetch_references(config, species)
     reference_root = state_dir / "references" / str(species.taxon_id)
     reference_paths = [reference_root / reference.filename for reference in references]
-    context = fetch_taxon_context(species.taxon_id)
     runner = CodexRunner(config.controller.codex_path, workspace)
     work_parent = state_dir / "work"
     work_parent.mkdir(parents=True, exist_ok=True)
@@ -403,13 +466,14 @@ def generate_candidate(config: AppConfig, species: BirdSpecies, workspace: Path)
     with TemporaryDirectory(prefix=f"{species.taxon_id}-", dir=work_parent) as temporary:
         work = Path(temporary)
         logs = state_dir / "runs" / f"{species.taxon_id}-{_timestamp()}"
-        profile_path = work / "profile.json"
-        profile = runner.create_profile(
+        profile_output_path = work / "profile.json"
+        profile, profile_path = load_or_create_profile(
+            config,
             species,
-            context,
             references,
             reference_paths,
-            profile_path,
+            runner,
+            profile_output_path,
             logs / "01-profile.log",
         )
         correction_findings: tuple[str, ...] = ()
@@ -440,6 +504,7 @@ def generate_candidate(config: AppConfig, species: BirdSpecies, workspace: Path)
                 reference_paths,
                 attempt_dir / "quality-review.json",
                 logs / f"03-quality-review-attempt-{attempt:02d}.log",
+                allowed_domains=config.research.allowed_domains,
             )
             write_json_atomic(attempt_dir / "quality-review.json", review.as_dict())
             history.append({"attempt": attempt, "quality_review": review.as_dict()})
@@ -553,7 +618,16 @@ def run_generation_cycle(config: AppConfig) -> dict[str, object]:
         ]
         generated: list[dict[str, object]] = []
         failures: list[dict[str, object]] = []
-        for species in eligible[: config.controller.generations_per_cycle]:
+        retry_store = RetryStore(config.controller.state_dir / "generation-retries.json")
+        attempted_count = 0
+        for species in eligible:
+            if len(generated) >= config.controller.generations_per_cycle:
+                break
+            if attempted_count >= config.controller.max_species_attempts_per_cycle:
+                break
+            if not retry_store.due(species.taxon_id, datetime.now(UTC)):
+                continue
+            attempted_count += 1
             try:
                 generate_candidate(config, species, config.controller.workspace_dir)
                 with catalog_state_lock(config.controller.state_dir):
@@ -569,27 +643,44 @@ def run_generation_cycle(config: AppConfig) -> dict[str, object]:
                         "published": entry.as_dict(),
                     }
                 )
+                retry_store.clear(species.taxon_id)
             except InsufficientReferencesError as exc:
-                failure_path = record_failure(config.controller.state_dir, species, exc)
+                retry = retry_store.record_failure(
+                    species.taxon_id,
+                    exc,
+                    now=datetime.now(UTC),
+                    initial_minutes=config.controller.retry_initial_minutes,
+                    maximum_minutes=config.controller.retry_max_minutes,
+                    fixed_minutes=config.controller.insufficient_references_retry_minutes,
+                )
                 failures.append(
                     {
                         "taxon_id": species.taxon_id,
                         "common_name": species.common_name,
                         "error": str(exc),
-                        "failure": str(failure_path),
-                        "terminal": True,
+                        "retry_at": retry.next_attempt_at.isoformat(),
+                        "terminal": False,
                     }
                 )
             except DataSourceError as exc:
+                retry = retry_store.record_failure(
+                    species.taxon_id,
+                    exc,
+                    now=datetime.now(UTC),
+                    initial_minutes=config.controller.retry_initial_minutes,
+                    maximum_minutes=config.controller.retry_max_minutes,
+                )
                 failures.append(
                     {
                         "taxon_id": species.taxon_id,
                         "common_name": species.common_name,
                         "error": str(exc),
+                        "retry_at": retry.next_attempt_at.isoformat(),
                         "terminal": False,
                     }
                 )
             except QualityReviewError as exc:
+                retry_store.clear(species.taxon_id)
                 failure_path = record_failure(config.controller.state_dir, species, exc)
                 failures.append(
                     {
@@ -600,14 +691,22 @@ def run_generation_cycle(config: AppConfig) -> dict[str, object]:
                         "terminal": True,
                     }
                 )
-            except CatalogError:
+            except (CatalogError, MissingDependencyError):
                 raise
             except InkyBirdFrameError as exc:
+                retry = retry_store.record_failure(
+                    species.taxon_id,
+                    exc,
+                    now=datetime.now(UTC),
+                    initial_minutes=config.controller.retry_initial_minutes,
+                    maximum_minutes=config.controller.retry_max_minutes,
+                )
                 failures.append(
                     {
                         "taxon_id": species.taxon_id,
                         "common_name": species.common_name,
                         "error": str(exc),
+                        "retry_at": retry.next_attempt_at.isoformat(),
                         "terminal": False,
                     }
                 )
@@ -620,6 +719,9 @@ def run_generation_cycle(config: AppConfig) -> dict[str, object]:
                 species for species in queued_species if species.taxon_id not in approved_after
             ]
             _write_generation_queue(config, remaining_queue)
+        eligible_taxa = {species.taxon_id for species in eligible}
+        deferred = retry_store.deferred(eligible_taxa, datetime.now(UTC))
+        outstanding_retries = retry_store.outstanding(eligible_taxa)
         return {
             "discovery": {
                 "refreshed_at": snapshot.refreshed_at.isoformat(),
@@ -633,6 +735,10 @@ def run_generation_cycle(config: AppConfig) -> dict[str, object]:
             "active_approved_count": active_count,
             "published_pending": published,
             "eligible_count": len(eligible),
+            "attempted_count": attempted_count,
+            "deferred_count": len(deferred),
+            "deferred": [record.as_dict() for record in deferred],
+            "outstanding_retry_count": len(outstanding_retries),
             "queued_count": len(remaining_queue),
             "generated": generated,
             "failures": failures,

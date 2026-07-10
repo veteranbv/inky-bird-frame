@@ -11,10 +11,14 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
+controller = [
+    "apprise>=1.12.0,<2",
+]
 inky = [
     "inky>=2.4",
 ]
 dev = [
+    "apprise>=1.12.0,<2",
     "mypy>=1.8.0",
     "pytest>=8.0.0",
     "ruff>=0.4.0",

@@ -2,10 +2,13 @@ from __future__ import annotations
 
 import unittest
 from datetime import date
+from unittest.mock import patch
 
 from inky_bird_frame.birds import (
     ObservationWindow,
     date_range_for_window,
+    fetch_taxon_context,
+    parse_birdnet_taxon,
     parse_inaturalist_species_counts,
     parse_inaturalist_taxon,
     parse_observation_window,
@@ -95,6 +98,63 @@ class InaturalistParsingTests(unittest.TestCase):
 
         self.assertEqual(context.family, "Turdidae")
         self.assertEqual(context.taxon_id, 12942)
+
+    def test_missing_inaturalist_summary_uses_validated_birdnet_context(self) -> None:
+        inaturalist = {
+            "results": [
+                {
+                    "id": 5020,
+                    "preferred_common_name": "Green Heron",
+                    "name": "Butorides virescens",
+                    "wikipedia_summary": None,
+                    "wikipedia_url": None,
+                    "ancestors": [{"rank": "family", "name": "Ardeidae"}],
+                }
+            ]
+        }
+        birdnet = {
+            "inat_id": 5020,
+            "scientific_name": "Butorides virescens",
+            "common_name": "Green Heron",
+            "descriptions": {"en": "A small North American heron."},
+            "wikipedia_urls": {"en": "https://en.wikipedia.org/wiki/Green_heron"},
+        }
+        with patch(
+            "inky_bird_frame.birds.get_json", side_effect=[inaturalist, birdnet]
+        ) as get_json:
+            context = fetch_taxon_context(5020)
+
+        self.assertEqual(context.family, "Ardeidae")
+        self.assertEqual(context.summary, "A small North American heron.")
+        self.assertEqual(
+            get_json.call_args_list[1].args[0],
+            "https://birdnet.cornell.edu/taxonomy/api/species/Butorides%20virescens",
+        )
+
+    def test_birdnet_fallback_rejects_identity_mismatch(self) -> None:
+        expected = parse_inaturalist_taxon(
+            {
+                "results": [
+                    {
+                        "id": 5020,
+                        "preferred_common_name": "Green Heron",
+                        "name": "Butorides virescens",
+                        "ancestors": [{"rank": "family", "name": "Ardeidae"}],
+                    }
+                ]
+            }
+        )
+        with self.assertRaisesRegex(DataSourceError, "identity"):
+            parse_birdnet_taxon(
+                {
+                    "inat_id": 5020,
+                    "scientific_name": "Different species",
+                    "common_name": "Green Heron",
+                    "descriptions": {"en": "Wrong"},
+                    "wikipedia_urls": {"en": "https://example.test"},
+                },
+                expected,
+            )
 
 
 if __name__ == "__main__":

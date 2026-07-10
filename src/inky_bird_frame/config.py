@@ -3,10 +3,13 @@
 from __future__ import annotations
 
 import tomllib
-from dataclasses import dataclass
+from collections.abc import Iterable
+from dataclasses import dataclass, field
 from enum import StrEnum
+from os import environ
 from pathlib import Path
 from shutil import which
+from urllib.parse import urlsplit
 
 from .birds import ObservationWindow, parse_observation_window
 from .errors import ConfigurationError
@@ -16,6 +19,19 @@ class RotationMode(StrEnum):
     SEQUENTIAL = "sequential"
     SHUFFLE = "shuffle"
     WEIGHTED = "weighted"
+
+
+class NotificationEvent(StrEnum):
+    DISCOVERY = "discovery"
+    GENERATION_APPROVED = "generation_approved"
+    TERMINAL_ERROR = "terminal_error"
+    DEGRADED = "degraded"
+    RECOVERED = "recovered"
+    PUBLICATION_ERROR = "publication_error"
+    PUBLICATION_RECOVERED = "publication_recovered"
+
+
+ALL_NOTIFICATION_EVENTS = tuple(NotificationEvent)
 
 
 def parse_rotation_mode(value: str) -> RotationMode:
@@ -45,6 +61,46 @@ class ControllerConfig:
     references_per_species: int
     generations_per_cycle: int
     max_generation_attempts: int
+    max_species_attempts_per_cycle: int = 5
+    retry_initial_minutes: int = 30
+    retry_max_minutes: int = 1440
+    insufficient_references_retry_minutes: int = 10080
+
+
+@dataclass(frozen=True)
+class ResearchConfig:
+    enabled: bool = True
+    max_searches_per_day: int = 5
+    max_searches_per_species: int = 2
+    allowed_domains: tuple[str, ...] = (
+        "allaboutbirds.org",
+        "audubon.org",
+        "birdsoftheworld.org",
+        "ebird.org",
+        "iucnredlist.org",
+        "nationalzoo.si.edu",
+        "animaldiversity.org",
+        "wikipedia.org",
+    )
+
+
+@dataclass(frozen=True)
+class NotificationDestination:
+    name: str
+    url: str = field(repr=False)
+    events: tuple[NotificationEvent, ...]
+    url_env: str | None = field(default=None, repr=False)
+
+
+@dataclass(frozen=True)
+class NotificationsConfig:
+    enabled: bool = False
+    destinations: tuple[NotificationDestination, ...] = ()
+    degradation_failure_threshold: int = 3
+    degradation_window_minutes: int = 30
+    cooldown_minutes: int = 360
+    delivery_retry_minutes: int = 5
+    max_delivery_attempts: int = 20
 
 
 @dataclass(frozen=True)
@@ -83,6 +139,8 @@ class AppConfig:
     display_node: DisplayNodeConfig
     public_catalog: PublicCatalogConfig = PublicCatalogConfig()
     schedule: ScheduleConfig = ScheduleConfig()
+    research: ResearchConfig = ResearchConfig()
+    notifications: NotificationsConfig = NotificationsConfig()
 
 
 def _section(data: object, name: str) -> dict[str, object]:
@@ -140,6 +198,83 @@ def _optional_boolean(section: dict[str, object], name: str, *, default: bool) -
     return value
 
 
+def _string_tuple(
+    section: dict[str, object], name: str, *, default: Iterable[str] = ()
+) -> tuple[str, ...]:
+    if name not in section:
+        return tuple(default)
+    value = section[name]
+    if not isinstance(value, list):
+        raise ConfigurationError(f"{name} must be an array of strings")
+    parsed: list[str] = []
+    for item in value:
+        if not isinstance(item, str) or not item.strip():
+            raise ConfigurationError(f"{name} must contain only non-empty strings")
+        parsed.append(item.strip())
+    if len(parsed) != len(set(parsed)):
+        raise ConfigurationError(f"{name} must not contain duplicates")
+    return tuple(parsed)
+
+
+def _notification_destinations(
+    raw: object, *, resolve_environment: bool
+) -> tuple[NotificationDestination, ...]:
+    if raw is None:
+        return ()
+    if not isinstance(raw, list):
+        raise ConfigurationError("notifications.destinations must be an array of tables")
+    destinations: list[NotificationDestination] = []
+    names: set[str] = set()
+    for item in raw:
+        if not isinstance(item, dict):
+            raise ConfigurationError("Each notifications destination must be a TOML table")
+        name = _string(item, "name")
+        if name in names:
+            raise ConfigurationError(f"Duplicate notification destination name: {name}")
+        names.add(name)
+        has_url = "url" in item
+        has_url_env = "url_env" in item
+        if has_url == has_url_env:
+            raise ConfigurationError(
+                f"Notification destination {name} must set exactly one of url or url_env"
+            )
+        if has_url:
+            url = _string(item, "url")
+            variable = None
+        else:
+            variable = _string(item, "url_env")
+            if resolve_environment:
+                url = environ.get(variable, "").strip()
+                if not url:
+                    raise ConfigurationError(
+                        f"Notification destination {name} requires environment variable {variable}"
+                    )
+            else:
+                url = f"env://{variable}"
+        if not urlsplit(url).scheme:
+            raise ConfigurationError(f"Notification destination {name} URL has no scheme")
+        event_values = _string_tuple(
+            item,
+            "events",
+            default=(event.value for event in ALL_NOTIFICATION_EVENTS),
+        )
+        try:
+            events = tuple(NotificationEvent(value) for value in event_values)
+        except ValueError as exc:
+            allowed = ", ".join(event.value for event in ALL_NOTIFICATION_EVENTS)
+            raise ConfigurationError(
+                f"Notification destination {name} has an unsupported event; use: {allowed}"
+            ) from exc
+        if not events:
+            raise ConfigurationError(
+                f"Notification destination {name} must subscribe to at least one event"
+            )
+        destinations.append(
+            NotificationDestination(name=name, url=url, events=events, url_env=variable)
+        )
+    return tuple(destinations)
+
+
 def _path(value: str, base_dir: Path) -> Path:
     path = Path(value).expanduser()
     return path if path.is_absolute() else (base_dir / path).resolve()
@@ -166,6 +301,8 @@ def load_config(path: Path) -> AppConfig:
     display_node = _section(raw, "display_node")
     public_catalog = _optional_section(raw, "public_catalog")
     schedule = _optional_section(raw, "schedule")
+    research = _optional_section(raw, "research")
+    notifications = _optional_section(raw, "notifications")
     base_dir = path.parent.resolve()
 
     zip_code = _string(discovery, "zip_code")
@@ -206,6 +343,38 @@ def load_config(path: Path) -> AppConfig:
         if len(parts) != 2 or any(not part or part in {".", ".."} for part in parts):
             raise ConfigurationError("repository must use the owner/name format")
 
+    allowed_domains = tuple(
+        domain.casefold()
+        for domain in _string_tuple(
+            research,
+            "allowed_domains",
+            default=ResearchConfig().allowed_domains,
+        )
+    )
+    if any(
+        not domain or "://" in domain or "/" in domain or domain.startswith(".")
+        for domain in allowed_domains
+    ):
+        raise ConfigurationError("research.allowed_domains must contain bare DNS domains")
+    if len(set(allowed_domains)) < 2:
+        raise ConfigurationError(
+            "research.allowed_domains must contain at least two distinct domains"
+        )
+    notifications_enabled = _optional_boolean(notifications, "enabled", default=False)
+    destinations = _notification_destinations(
+        notifications.get("destinations"), resolve_environment=notifications_enabled
+    )
+    if notifications_enabled and not destinations:
+        raise ConfigurationError(
+            "At least one notifications destination is required when notifications are enabled"
+        )
+    retry_initial_minutes = _optional_integer(controller, "retry_initial_minutes", default=30)
+    retry_max_minutes = _optional_integer(controller, "retry_max_minutes", default=1440)
+    if retry_max_minutes < retry_initial_minutes:
+        raise ConfigurationError(
+            "retry_max_minutes must be greater than or equal to retry_initial_minutes"
+        )
+
     return AppConfig(
         discovery=DiscoveryConfig(
             zip_code=zip_code,
@@ -224,6 +393,14 @@ def load_config(path: Path) -> AppConfig:
             generations_per_cycle=_integer(controller, "generations_per_cycle"),
             max_generation_attempts=_optional_integer(
                 controller, "max_generation_attempts", default=3
+            ),
+            max_species_attempts_per_cycle=_optional_integer(
+                controller, "max_species_attempts_per_cycle", default=5
+            ),
+            retry_initial_minutes=retry_initial_minutes,
+            retry_max_minutes=retry_max_minutes,
+            insufficient_references_retry_minutes=_optional_integer(
+                controller, "insufficient_references_retry_minutes", default=10080
             ),
         ),
         display_node=DisplayNodeConfig(
@@ -261,6 +438,31 @@ def load_config(path: Path) -> AppConfig:
             ),
             catalog_publish_minutes=_optional_integer(
                 schedule, "catalog_publish_minutes", default=5
+            ),
+        ),
+        research=ResearchConfig(
+            enabled=_optional_boolean(research, "enabled", default=True),
+            max_searches_per_day=_optional_integer(research, "max_searches_per_day", default=5),
+            max_searches_per_species=_optional_integer(
+                research, "max_searches_per_species", default=2
+            ),
+            allowed_domains=allowed_domains,
+        ),
+        notifications=NotificationsConfig(
+            enabled=notifications_enabled,
+            destinations=destinations,
+            degradation_failure_threshold=_optional_integer(
+                notifications, "degradation_failure_threshold", default=3
+            ),
+            degradation_window_minutes=_optional_integer(
+                notifications, "degradation_window_minutes", default=30
+            ),
+            cooldown_minutes=_optional_integer(notifications, "cooldown_minutes", default=360),
+            delivery_retry_minutes=_optional_integer(
+                notifications, "delivery_retry_minutes", default=5
+            ),
+            max_delivery_attempts=_optional_integer(
+                notifications, "max_delivery_attempts", default=20
             ),
         ),
     )

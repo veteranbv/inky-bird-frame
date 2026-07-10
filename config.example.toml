@@ -17,6 +17,29 @@ references_per_species = 4
 generations_per_cycle = 1
 # Failed visual reviews are regenerated with their findings as corrective input.
 max_generation_attempts = 3
+# A deferred species does not consume the success quota. This separate cap limits
+# how many species a cycle may inspect while looking for work that can proceed.
+max_species_attempts_per_cycle = 5
+retry_initial_minutes = 30
+retry_max_minutes = 1440
+# Licensed photos can appear later, so an insufficient set is deferred, not failed forever.
+insufficient_references_retry_minutes = 10080
+
+[research]
+# Successful profiles are cached by taxon. These limits apply only to new bounded searches.
+enabled = true
+max_searches_per_day = 5
+max_searches_per_species = 2
+allowed_domains = [
+    "allaboutbirds.org",
+    "audubon.org",
+    "birdsoftheworld.org",
+    "ebird.org",
+    "iucnredlist.org",
+    "nationalzoo.si.edu",
+    "animaldiversity.org",
+    "wikipedia.org",
+]
 
 [display_node]
 controller_url = "http://controller.example:8793"
@@ -47,3 +70,61 @@ rotation_minutes = 30
 rotation_jitter_seconds = 0
 display_startup_delay_seconds = 120
 catalog_publish_minutes = 5
+
+[notifications]
+# Apprise runs inside this application. No Apprise server or account is required.
+enabled = false
+degradation_failure_threshold = 3
+degradation_window_minutes = 30
+cooldown_minutes = 360
+delivery_retry_minutes = 5
+max_delivery_attempts = 20
+
+# Keep real service URLs only in your private config.toml. Choose url or url_env, not both.
+# Events: discovery, generation_approved, terminal_error, degraded, recovered,
+# publication_error, publication_recovered.
+
+# [[notifications.destinations]]
+# name = "pushover"
+# url = "pover://USER_KEY@APP_TOKEN"
+# events = ["discovery", "generation_approved", "terminal_error", "degraded", "recovered"]
+
+# [[notifications.destinations]]
+# name = "discord"
+# url = "discord://WEBHOOK_ID/WEBHOOK_TOKEN"
+# events = ["generation_approved", "terminal_error"]
+
+# [[notifications.destinations]]
+# name = "ntfy-cloud"
+# url = "ntfy://PRIVATE_TOPIC"
+# events = ["terminal_error", "degraded", "recovered"]
+
+# [[notifications.destinations]]
+# name = "ntfy-self-hosted"
+# url = "ntfys://ntfy.example.com/PRIVATE_TOPIC"
+# events = ["terminal_error", "degraded", "recovered"]
+
+# [[notifications.destinations]]
+# name = "gotify"
+# url = "gotifys://gotify.example.com/APP_TOKEN"
+# events = ["terminal_error", "degraded", "recovered"]
+
+# [[notifications.destinations]]
+# name = "slack"
+# url = "slack://TOKEN_A/TOKEN_B/TOKEN_C"
+# events = ["generation_approved", "terminal_error"]
+
+# [[notifications.destinations]]
+# name = "email"
+# url = "mailtos://USER:PASSWORD@mail.example.com/recipient@example.com"
+# events = ["terminal_error", "degraded", "recovered"]
+
+# [[notifications.destinations]]
+# name = "home-assistant"
+# url = "hassios://homeassistant.example.com/LONG_LIVED_ACCESS_TOKEN"
+# events = ["discovery", "generation_approved", "terminal_error"]
+
+# [[notifications.destinations]]
+# name = "webhook"
+# url = "jsons://webhook.example.com/inky-bird-frame"
+# events = ["terminal_error"]

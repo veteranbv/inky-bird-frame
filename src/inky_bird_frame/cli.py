@@ -16,10 +16,11 @@ from .catalog import (
     rebuild_catalog_index,
     reject_candidate,
 )
-from .config import AppConfig, load_config
+from .config import AppConfig, NotificationEvent, load_config
 from .controller import (
     discover_species,
     enqueue_seed_species,
+    exclusive_cycle_lock,
     read_generation_queue,
     run_controller_cycle,
     run_generation_cycle,
@@ -29,7 +30,18 @@ from .display import show_on_inky
 from .display_node import run_display_cycle
 from .errors import InkyBirdFrameError
 from .images import prepare_uploaded_image
+from .notifications import (
+    dispatch_notifications,
+    notification_status,
+    requeue_dead_letters,
+    safe_notify,
+    safe_record_degradation,
+    safe_record_recovery,
+    send_notification_test,
+    validate_notification_destinations,
+)
 from .publisher import run_catalog_publish
+from .retry import RetryStore
 from .server import serve_catalog
 
 
@@ -65,6 +77,10 @@ def _config(args: argparse.Namespace) -> AppConfig:
     return load_config(args.config)
 
 
+def _failure_notification(operation: str, exc: Exception) -> str:
+    return f"{operation} failed ({type(exc).__name__}). Check controller logs for details."
+
+
 def discover_command(args: argparse.Namespace) -> int:
     config = _config(args)
     location, species = discover_species(config)
@@ -89,12 +105,122 @@ def controller_cycle_command(args: argparse.Namespace) -> int:
 
 
 def refresh_command(args: argparse.Namespace) -> int:
-    print_result(run_refresh_cycle(_config(args)))
+    config = _config(args)
+    try:
+        result = run_refresh_cycle(config)
+    except (InkyBirdFrameError, OSError) as exc:
+        safe_record_degradation(
+            config,
+            key="observation-refresh",
+            title="Bird discovery is degraded",
+            body=_failure_notification("Observation refresh", exc),
+        )
+        raise
+    safe_record_recovery(
+        config,
+        key="observation-refresh",
+        title="Bird discovery recovered",
+        body="Observation refresh is succeeding again.",
+    )
+    new_species = result.get("new_species")
+    if isinstance(new_species, list) and new_species:
+        names: list[str] = []
+        taxon_ids: list[str] = []
+        for item in new_species:
+            if not isinstance(item, dict):
+                continue
+            common_name = item.get("common_name")
+            taxon_id = item.get("taxon_id")
+            if isinstance(common_name, str):
+                names.append(common_name)
+            if isinstance(taxon_id, int):
+                taxon_ids.append(str(taxon_id))
+        safe_notify(
+            config,
+            NotificationEvent.DISCOVERY,
+            dedupe_key=":".join(taxon_ids),
+            title=f"{len(names)} new bird species discovered",
+            body=", ".join(names),
+        )
+    print_result(result)
     return 0
 
 
 def generate_command(args: argparse.Namespace) -> int:
-    print_result(run_generation_cycle(_config(args)))
+    config = _config(args)
+    try:
+        result = run_generation_cycle(config)
+    except (InkyBirdFrameError, OSError) as exc:
+        safe_record_degradation(
+            config,
+            key="generation-cycle",
+            title="Bird generation is degraded",
+            body=_failure_notification("Generation cycle", exc),
+        )
+        raise
+    notified_taxa: set[int] = set()
+    for result_key in ("published_pending", "generated"):
+        approved = result.get(result_key)
+        if not isinstance(approved, list):
+            continue
+        for item in approved:
+            if not isinstance(item, dict):
+                continue
+            taxon_id = item.get("taxon_id")
+            common_name = item.get("common_name")
+            if (
+                isinstance(taxon_id, int)
+                and taxon_id not in notified_taxa
+                and isinstance(common_name, str)
+            ):
+                notified_taxa.add(taxon_id)
+                safe_notify(
+                    config,
+                    NotificationEvent.GENERATION_APPROVED,
+                    dedupe_key=str(taxon_id),
+                    title=f"{common_name} plate approved",
+                    body="The generated plate passed factual and visual review.",
+                )
+    failures = result.get("failures")
+    transient_failures = []
+    if isinstance(failures, list):
+        for item in failures:
+            if not isinstance(item, dict):
+                continue
+            if item.get("terminal") is True:
+                safe_notify(
+                    config,
+                    NotificationEvent.TERMINAL_ERROR,
+                    dedupe_key=f"generation:{item.get('taxon_id')}:{item.get('failure')}",
+                    title=f"Generation stopped for {item.get('common_name', 'a bird')}",
+                    body="Generation reached a terminal error. Check controller logs for details.",
+                )
+            else:
+                transient_failures.append(item)
+    if transient_failures:
+        safe_record_degradation(
+            config,
+            key="generation-items",
+            title="Some bird generations are retrying",
+            body=(
+                f"{len(transient_failures)} species failed and were deferred without "
+                "blocking the queue."
+            ),
+        )
+    elif result.get("outstanding_retry_count") == 0:
+        safe_record_recovery(
+            config,
+            key="generation-items",
+            title="Bird generation recovered",
+            body="Deferred generation errors have cleared.",
+        )
+    safe_record_recovery(
+        config,
+        key="generation-cycle",
+        title="Bird generation recovered",
+        body="Generation cycles are succeeding again.",
+    )
+    print_result(result)
     return 0
 
 
@@ -131,32 +257,52 @@ def reject_command(args: argparse.Namespace) -> int:
 
 def retry_command(args: argparse.Namespace) -> int:
     config = _config(args)
-    if find_taxon_directory(config.controller.state_dir / "pending", args.taxon_id):
-        raise ValueError("Pending candidates must be approved or rejected before retrying")
-    sources = list((config.controller.state_dir / "failed").glob(f"{args.taxon_id}-*"))
-    rejected = find_taxon_directory(config.controller.state_dir / "rejected", args.taxon_id)
-    if rejected is not None:
-        sources.append(rejected)
-    if not sources:
-        raise ValueError(f"No failed or rejected candidate exists for taxon {args.taxon_id}")
-    archive = config.controller.state_dir / "archive"
-    archive.mkdir(parents=True, exist_ok=True)
-    moved: list[str] = []
-    for source in sources:
-        destination = archive / source.name
-        counter = 1
-        while destination.exists():
-            destination = archive / f"{source.name}-{counter}"
-            counter += 1
-        shutil.move(str(source), destination)
-        moved.append(str(destination))
-    print_result({"taxon_id": args.taxon_id, "status": "eligible", "archived": moved})
+    with exclusive_cycle_lock(config.controller.state_dir):
+        if find_taxon_directory(config.controller.state_dir / "pending", args.taxon_id):
+            raise ValueError("Pending candidates must be approved or rejected before retrying")
+        sources = list((config.controller.state_dir / "failed").glob(f"{args.taxon_id}-*"))
+        rejected = find_taxon_directory(config.controller.state_dir / "rejected", args.taxon_id)
+        if rejected is not None:
+            sources.append(rejected)
+        retry_store = RetryStore(config.controller.state_dir / "generation-retries.json")
+        deferred = retry_store.get(args.taxon_id) is not None
+        if not sources and not deferred:
+            raise ValueError(
+                f"No failed, rejected, or deferred candidate exists for taxon {args.taxon_id}"
+            )
+        profile_cache = config.controller.state_dir / "profiles" / str(args.taxon_id)
+        cleared_cached_profile = profile_cache.exists()
+        if cleared_cached_profile:
+            sources.append(profile_cache)
+        archive = config.controller.state_dir / "archive"
+        archive.mkdir(parents=True, exist_ok=True)
+        moved: list[str] = []
+        for source in sources:
+            destination = archive / source.name
+            counter = 1
+            while destination.exists():
+                destination = archive / f"{source.name}-{counter}"
+                counter += 1
+            shutil.move(str(source), destination)
+            moved.append(str(destination))
+        retry_store.clear(args.taxon_id)
+    print_result(
+        {
+            "taxon_id": args.taxon_id,
+            "status": "eligible",
+            "archived": moved,
+            "cleared_deferred_retry": deferred,
+            "cleared_cached_profile": cleared_cached_profile,
+        }
+    )
     return 0
 
 
 def status_command(args: argparse.Namespace) -> int:
     config = _config(args)
     entries = rebuild_catalog_index(config.controller.catalog_dir)
+    queued = read_generation_queue(config)
+    retries = RetryStore(config.controller.state_dir / "generation-retries.json")
     pending = []
     for path in sorted((config.controller.state_dir / "pending").glob("*/manifest.json")):
         manifest = read_json(path)
@@ -173,7 +319,8 @@ def status_command(args: argparse.Namespace) -> int:
         {
             "approved": [entry.as_dict() for entry in entries],
             "pending": pending,
-            "queued": [species_to_dict(item) for item in read_generation_queue(config)],
+            "queued": [species_to_dict(item) for item in queued],
+            "deferred": [record.as_dict() for record in retries.records()],
             "failed": [
                 str(path) for path in sorted((config.controller.state_dir / "failed").glob("*"))
             ],
@@ -194,7 +341,70 @@ def display_cycle_command(args: argparse.Namespace) -> int:
 
 
 def catalog_publish_command(args: argparse.Namespace) -> int:
-    print_result(run_catalog_publish(_config(args), dry_run=args.dry_run))
+    config = _config(args)
+    try:
+        result = run_catalog_publish(config, dry_run=args.dry_run)
+    except (InkyBirdFrameError, OSError) as exc:
+        if not args.dry_run:
+            safe_record_degradation(
+                config,
+                key="catalog-publication",
+                title="Catalog publication is degraded",
+                body=_failure_notification("Catalog publication", exc),
+                event=NotificationEvent.PUBLICATION_ERROR,
+            )
+        raise
+    if not args.dry_run:
+        safe_record_recovery(
+            config,
+            key="catalog-publication",
+            title="Catalog publication recovered",
+            body="Catalog publication is succeeding again.",
+            event=NotificationEvent.PUBLICATION_RECOVERED,
+        )
+    print_result(result)
+    return 0
+
+
+def config_validate_command(args: argparse.Namespace) -> int:
+    config = _config(args)
+    destinations = validate_notification_destinations(config)
+    print_result(
+        {
+            "config": str(args.config),
+            "valid": True,
+            "notifications": {
+                "enabled": config.notifications.enabled,
+                "destinations": destinations,
+            },
+        }
+    )
+    return 0
+
+
+def notifications_status_command(args: argparse.Namespace) -> int:
+    print_result(notification_status(_config(args)))
+    return 0
+
+
+def notifications_test_command(args: argparse.Namespace) -> int:
+    config = _config(args)
+    result = send_notification_test(config)
+    if result["failures"]:
+        raise ValueError("Notification test was not delivered to every configured destination")
+    print_result(result)
+    return 0
+
+
+def notifications_dispatch_command(args: argparse.Namespace) -> int:
+    print_result(dispatch_notifications(_config(args)))
+    return 0
+
+
+def notifications_retry_command(args: argparse.Namespace) -> int:
+    config = _config(args)
+    requeued = requeue_dead_letters(config)
+    print_result({"requeued": requeued, "delivery": dispatch_notifications(config)})
     return 0
 
 
@@ -317,6 +527,39 @@ def build_parser() -> argparse.ArgumentParser:
     add_config_argument(catalog_publish_parser)
     catalog_publish_parser.add_argument("--dry-run", action="store_true")
     catalog_publish_parser.set_defaults(func=catalog_publish_command)
+
+    config_parser = subparsers.add_parser("config", help="Validate application configuration")
+    config_subparsers = config_parser.add_subparsers(dest="config_command", required=True)
+    config_validate_parser = config_subparsers.add_parser("validate", help="Validate TOML settings")
+    add_config_argument(config_validate_parser)
+    config_validate_parser.set_defaults(func=config_validate_command)
+
+    notifications_parser = subparsers.add_parser(
+        "notifications", help="Inspect and test notification delivery"
+    )
+    notifications_subparsers = notifications_parser.add_subparsers(
+        dest="notifications_command", required=True
+    )
+    notifications_status_parser = notifications_subparsers.add_parser(
+        "status", help="Show redacted notification state"
+    )
+    add_config_argument(notifications_status_parser)
+    notifications_status_parser.set_defaults(func=notifications_status_command)
+    notifications_test_parser = notifications_subparsers.add_parser(
+        "test", help="Send a notification through configured destinations"
+    )
+    add_config_argument(notifications_test_parser)
+    notifications_test_parser.set_defaults(func=notifications_test_command)
+    notifications_dispatch_parser = notifications_subparsers.add_parser(
+        "dispatch", help="Deliver due messages from the durable outbox"
+    )
+    add_config_argument(notifications_dispatch_parser)
+    notifications_dispatch_parser.set_defaults(func=notifications_dispatch_command)
+    notifications_retry_parser = notifications_subparsers.add_parser(
+        "retry", help="Requeue dead-letter notifications and attempt delivery"
+    )
+    add_config_argument(notifications_retry_parser)
+    notifications_retry_parser.set_defaults(func=notifications_retry_command)
 
     prepare_parser = subparsers.add_parser(
         "prepare-image", help="Prepare a portrait image for Inky"

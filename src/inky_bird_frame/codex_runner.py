@@ -7,6 +7,7 @@ import subprocess
 from pathlib import Path
 from tempfile import TemporaryDirectory
 from typing import Final, cast
+from urllib.parse import urlsplit
 
 from .birds import BirdSpecies, TaxonContext
 from .errors import GenerationError
@@ -176,16 +177,18 @@ class CodexRunner:
         reference_paths: list[Path],
         output_path: Path,
         log_path: Path,
+        *,
+        allowed_domains: tuple[str, ...],
     ) -> SpeciesProfileData:
         raw = self._structured(
-            profile_prompt(species, context, references),
+            profile_prompt(species, context, references, allowed_domains),
             PROFILE_SCHEMA,
             reference_paths,
             output_path,
             log_path,
             search=True,
         )
-        profile = _parse_profile(raw)
+        profile = parse_species_profile(raw, allowed_domains)
         if (
             profile["taxon_id"] != species.taxon_id
             or profile["common_name"] != species.common_name
@@ -227,16 +230,18 @@ class CodexRunner:
         reference_paths: list[Path],
         output_path: Path,
         log_path: Path,
+        *,
+        allowed_domains: tuple[str, ...],
     ) -> QualityReview:
         raw = self._structured(
-            review_prompt(species, profile, references),
+            review_prompt(species, profile, references, allowed_domains),
             REVIEW_SCHEMA,
             [plate_path, *reference_paths],
             output_path,
             log_path,
             search=True,
         )
-        return _parse_review(raw)
+        return _parse_review(raw, allowed_domains)
 
 
 def _non_empty_string(value: object, field: str) -> str:
@@ -254,7 +259,32 @@ def _string_list(value: object, field: str, minimum: int) -> list[str]:
     return items
 
 
-def _parse_profile(raw: object) -> SpeciesProfileData:
+def _allowed_source(url: str, allowed_domains: tuple[str, ...] | None) -> bool:
+    if allowed_domains is None:
+        return True
+    hostname = urlsplit(url).hostname
+    return hostname is not None and any(
+        hostname == domain or hostname.endswith(f".{domain}") for domain in allowed_domains
+    )
+
+
+def _source_identity(url: str, allowed_domains: tuple[str, ...] | None) -> str | None:
+    hostname = urlsplit(url).hostname
+    if hostname is None or allowed_domains is None:
+        return hostname
+    return next(
+        (
+            domain
+            for domain in allowed_domains
+            if hostname == domain or hostname.endswith(f".{domain}")
+        ),
+        None,
+    )
+
+
+def parse_species_profile(
+    raw: object, allowed_domains: tuple[str, ...] | None = None
+) -> SpeciesProfileData:
     if not isinstance(raw, dict):
         raise GenerationError("Codex profile output must be an object")
     taxon_id = raw.get("taxon_id")
@@ -265,17 +295,25 @@ def _parse_profile(raw: object) -> SpeciesProfileData:
     if not isinstance(sources, list):
         raise GenerationError("Codex profile sources must be a list")
     parsed_sources: list[SourceLink] = []
+    source_hosts: set[str] = set()
     for source in sources:
         if not isinstance(source, dict):
             raise GenerationError("Codex profile source must be an object")
         url = _non_empty_string(source.get("url"), "sources.url")
         if not url.startswith("https://"):
             raise GenerationError("Codex profile source URLs must use HTTPS")
+        if not _allowed_source(url, allowed_domains):
+            raise GenerationError("Codex profile cited a source outside the configured allowlist")
+        source_identity = _source_identity(url, allowed_domains)
+        if source_identity is not None:
+            source_hosts.add(source_identity)
         parsed_sources.append(
             SourceLink(title=_non_empty_string(source.get("title"), "sources.title"), url=url)
         )
     if len(parsed_sources) < 2:
         raise GenerationError("Codex profile must cite at least two sources")
+    if len(source_hosts) < 2:
+        raise GenerationError("Codex profile must cite at least two independent source domains")
     return SpeciesProfileData(
         taxon_id=taxon_id,
         common_name=_non_empty_string(raw.get("common_name"), "common_name"),
@@ -301,7 +339,7 @@ def _score(raw: dict[str, object], field: str) -> int:
     return value
 
 
-def _parse_review(raw: object) -> QualityReview:
+def _parse_review(raw: object, allowed_domains: tuple[str, ...] | None = None) -> QualityReview:
     if not isinstance(raw, dict):
         raise GenerationError("Codex review output must be an object")
     reported_pass = raw.get("passed") is True
@@ -316,15 +354,21 @@ def _parse_review(raw: object) -> QualityReview:
         raise GenerationError("Codex review verification_sources must be a list")
     verification_sources: list[SourceLink] = []
     source_urls: set[str] = set()
+    source_hosts: set[str] = set()
     for source in sources:
         if not isinstance(source, dict):
             raise GenerationError("Codex review verification source must be an object")
         url = _non_empty_string(source.get("url"), "verification_sources.url")
         if not url.startswith("https://"):
             raise GenerationError("Codex review source URLs must use HTTPS")
+        if not _allowed_source(url, allowed_domains):
+            raise GenerationError("Codex review cited a source outside the configured allowlist")
         if url in source_urls:
             continue
         source_urls.add(url)
+        source_identity = _source_identity(url, allowed_domains)
+        if source_identity is not None:
+            source_hosts.add(source_identity)
         verification_sources.append(
             SourceLink(
                 title=_non_empty_string(source.get("title"), "verification_sources.title"),
@@ -335,6 +379,7 @@ def _parse_review(raw: object) -> QualityReview:
         reported_pass
         and location_free
         and len(verification_sources) >= 2
+        and len(source_hosts) >= 2
         and min(
             species_accuracy,
             anatomy_accuracy,
