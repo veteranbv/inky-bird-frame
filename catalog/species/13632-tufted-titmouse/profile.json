@@ -1,0 +1,38 @@
+{
+  "behavior": "Active, acrobatic foliage gleaner; hops and hangs among twigs, and may carry large seeds to a perch to open them.",
+  "common_name": "Tufted Titmouse",
+  "family": "Paridae",
+  "field_marks": [
+    "Prominent pointed gray crest",
+    "Soft silvery-gray upperparts and wings",
+    "Pale whitish face and underparts",
+    "Large dark eyes and a short, stout dark bill",
+    "Small black patch immediately above the bill",
+    "Warm rusty-peach wash along the flanks"
+  ],
+  "habitat": "Mature deciduous and mixed woodlands, wooded parks, orchards, and tree-rich gardens.",
+  "measurements": {
+    "length": "5.5\u20136.3 in (14\u201316 cm)",
+    "weight": "0.6\u20130.9 oz (18\u201326 g)",
+    "wingspan": "7.9\u201310.2 in (20\u201326 cm)"
+  },
+  "palette": [
+    "silvery gray",
+    "white",
+    "charcoal black",
+    "rusty peach",
+    "slate blue-gray"
+  ],
+  "scientific_name": "Baeolophus bicolor",
+  "sources": [
+    {
+      "title": "Tufted Titmouse Identification \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Tufted_Titmouse/id"
+    },
+    {
+      "title": "Tufted Titmouse \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/tufted-titmouse"
+    }
+  ],
+  "taxon_id": 13632
+}

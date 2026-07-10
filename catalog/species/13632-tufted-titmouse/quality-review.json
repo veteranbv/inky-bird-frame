@@ -1,0 +1,27 @@
+{
+  "anatomy_accuracy": 4,
+  "composition_quality": 5,
+  "findings": [
+    "Live verification confirms the identity and taxonomy: Tufted Titmouse (Baeolophus bicolor), family Paridae.",
+    "The stated length (5.5\u20136.3 in / 14\u201316 cm), wingspan (7.9\u201310.2 in / 20\u201326 cm), and weight (0.6\u20130.9 oz / 18\u201326 g) match All About Birds.",
+    "The habitat and behavior claims are supported: woodland/park/orchard habitats; active, acrobatic foraging among twigs; and carrying seeds to a perch to open them.",
+    "All listed field marks are supported and shown: gray crest and upperparts, pale face/underparts, large dark eye, short stout dark bill, black forehead patch above the bill, and peachy/rusty flanks.",
+    "The bird has one head, one beak, two legs, one tail, and no extra anatomical structures. One wing is visible in side view; the second is naturally occluded. Proportions are slightly stylized, especially the very tall crest and long-looking tail, but remain recognizable and non-material.",
+    "No place name, ZIP code, coordinates, map, or local-observation detail appears.",
+    "The printed plate text contains no material factual errors. The adjacent 0\u201315 cm ruler is decorative/ambiguous rather than an explicitly stated specimen scale; if intended as a true scale, the illustrated bird does not visibly span its stated 14\u201316 cm body length."
+  ],
+  "location_free": true,
+  "passed": true,
+  "species_accuracy": 5,
+  "text_accuracy": 5,
+  "verification_sources": [
+    {
+      "title": "Tufted Titmouse Identification \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Tufted_Titmouse/id/"
+    },
+    {
+      "title": "Tufted Titmouse \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/tufted-titmouse"
+    }
+  ]
+}

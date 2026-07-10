@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-10T17:01:12+00:00",
+  "generated_at": "2026-07-10T17:08:36+00:00",
   "schema_version": 1,
   "species": [
     {
@@ -287,6 +287,17 @@
       "scientific_name": "Tachycineta bicolor",
       "slug": "tree-swallow",
       "taxon_id": 11935
+    },
+    {
+      "approved_at": "2026-07-10T17:08:36+00:00",
+      "common_name": "Tufted Titmouse",
+      "display_path": "species/13632-tufted-titmouse/display.png",
+      "display_sha256": "78b0ba03469c29f1c9d8215c3539a2168761596e08dbc45b0e4a0cfd02f10a54",
+      "portrait_path": "species/13632-tufted-titmouse/portrait.png",
+      "portrait_sha256": "9075e8cde20d060e6f3154d3f7fe6f1a219fed0507dac793ce8d4323cc636c5f",
+      "scientific_name": "Baeolophus bicolor",
+      "slug": "tufted-titmouse",
+      "taxon_id": 13632
     },
     {
       "approved_at": "2026-07-10T03:53:15+00:00",
