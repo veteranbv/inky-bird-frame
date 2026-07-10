@@ -1,0 +1,25 @@
+{
+  "anatomy_accuracy": 4,
+  "composition_quality": 5,
+  "findings": [
+    "Identity is supported: the plate shows Northern Parula\u2019s blue-gray upperparts, yellow-green back patch, paired white wingbars, yellow throat/breast, white eye crescents, pale belly, and male chestnut breast marking.",
+    "Measurements, scientific name, family, habitat, and behavior text agree with the live Audubon and Cornell Lab species pages. Cornell gives weight as 5\u201311 g while Audubon gives 6\u201311 g; the plate\u2019s 6\u201311 g follows Audubon.",
+    "Minor illustration limitations: the male\u2019s dark breast band is understated relative to field-reference photos, and the body/tail read slightly fuller and longer than typical. These are not material identification errors.",
+    "The visible profile is anatomically coherent: one head, one beak, two legs, one tail, and a normal paired-wing body plan; no extra or missing body parts are depicted.",
+    "No place name, ZIP code, coordinates, map, or local-observation detail appears."
+  ],
+  "location_free": true,
+  "passed": true,
+  "species_accuracy": 4,
+  "text_accuracy": 5,
+  "verification_sources": [
+    {
+      "title": "Northern Parula | Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/northern-parula"
+    },
+    {
+      "title": "Northern Parula Identification | All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Northern_Parula/id/ac"
+    }
+  ]
+}
