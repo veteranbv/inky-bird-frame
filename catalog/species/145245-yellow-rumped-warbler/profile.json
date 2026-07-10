@@ -1,0 +1,42 @@
+{
+  "behavior": "Active canopy and edge forager; gleans insects, sallies after flying prey, and shifts to berries in colder seasons.",
+  "common_name": "Yellow-rumped Warbler",
+  "family": "Parulidae",
+  "field_marks": [
+    "Bright yellow rump, conspicuous in flight",
+    "Small yellow patch on each side of the breast",
+    "Slim, pointed dark bill",
+    "Full-bodied warbler with a relatively large head and long, narrow tail",
+    "White wing bars or patches and white tail spots",
+    "Gray to brown-streaked plumage with brighter yellow in breeding birds; throat may be white or yellow among forms"
+  ],
+  "habitat": "Open coniferous and mixed woodland, forest edges, bogs, and other wooded openings; outside the breeding season also open woods, brushy thickets, and shrub-rich habitats.",
+  "measurements": {
+    "length": "4.7\u20135.5 in (12\u201314 cm)",
+    "weight": "0.4\u20130.5 oz (12\u201313 g)",
+    "wingspan": "7.5\u20139.1 in (19\u201323 cm)"
+  },
+  "palette": [
+    "charcoal gray",
+    "yellow",
+    "white",
+    "black",
+    "brown"
+  ],
+  "scientific_name": "Setophaga coronata",
+  "sources": [
+    {
+      "title": "Yellow-rumped Warbler Identification \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Yellow-rumped_Warbler/id"
+    },
+    {
+      "title": "Yellow-rumped Warbler \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/yellow-rumped-warbler"
+    },
+    {
+      "title": "Dendroica coronata (yellow-rumped warbler) \u2014 Animal Diversity Web",
+      "url": "https://animaldiversity.org/accounts/Dendroica_coronata/"
+    }
+  ],
+  "taxon_id": 145245
+}
