@@ -1,0 +1,142 @@
+{
+  "approved_at": "2026-07-10T16:35:59+00:00",
+  "assets": {
+    "display": {
+      "filename": "display.png",
+      "sha256": "1e1282bae939a3e27bc21df9bdb5d671dcfafdb25d2558c8cee065d1268569e6"
+    },
+    "portrait": {
+      "filename": "portrait.png",
+      "sha256": "3edde103bba493324e563087f96a2ea4d1ecdc3b6677b30319deeb8113163123"
+    }
+  },
+  "common_name": "American Goldfinch",
+  "generation": {
+    "attempt": 1,
+    "generated_at": "2026-07-10T16:35:59+00:00",
+    "generator": "Codex subscription / built-in gpt-image-2",
+    "max_attempts": 3,
+    "prompt_version": "field-journal-v2"
+  },
+  "profile": {
+    "behavior": "Active, acrobatic seed-forager that clings to thistles and other seedheads; flies in a bouncy, undulating pattern and often calls in flight.",
+    "common_name": "American Goldfinch",
+    "family": "Fringillidae",
+    "field_marks": [
+      "Small finch with a short, conical bill and compact head.",
+      "Breeding male is bright yellow with a sharply black forehead.",
+      "Black wings show bold white wingbars and pale markings.",
+      "Short, notched black tail has conspicuous white patches in flight.",
+      "Females are duller yellow below and olive above; winter birds are unstreaked brown-gray with pale wingbars."
+    ],
+    "habitat": "Weedy fields, open floodplains, forest edges, cultivated ground, orchards, and other semi-open places with thistles, asters, shrubs, or small trees.",
+    "measurements": {
+      "length": "4.3\u20135.1 in (11\u201313 cm)",
+      "weight": "0.4\u20130.7 oz (11\u201320 g)",
+      "wingspan": "7.5\u20138.7 in (19\u201322 cm)"
+    },
+    "palette": [
+      "bright yellow",
+      "glossy black",
+      "crisp white",
+      "olive green",
+      "buff brown"
+    ],
+    "scientific_name": "Spinus tristis",
+    "sources": [
+      {
+        "title": "American Goldfinch Identification \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/American_Goldfinch/id"
+      },
+      {
+        "title": "American Goldfinch \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/american-goldfinch"
+      }
+    ],
+    "taxon_id": 145310
+  },
+  "quality_review": {
+    "anatomy_accuracy": 5,
+    "composition_quality": 5,
+    "findings": [
+      "Verified as an American Goldfinch (Spinus tristis), breeding male: compact small-finch proportions, short conical bill, one head, one beak, two wings, two legs/feet, and one short notched tail are depicted correctly.",
+      "Plumage and field marks agree with the supplied reference photos and live sources: bright yellow body, black forehead/crown area, black wings with white markings, and white tail patches. The expanded-wing study is consistent with the species\u2019 black-and-white flight pattern.",
+      "All visible text is accurate: common and scientific names, Fringillidae family, measurements, habitat, behavior, sex/seasonal plumage descriptions, and palette. The measurement ranges match All About Birds exactly; Audubon independently corroborates the same overall size, weight, wingspan, and seasonal field marks.",
+      "No place name, ZIP code, coordinates, map, or local-observation detail appears on the candidate plate.",
+      "No material species, anatomy, or text errors found."
+    ],
+    "location_free": true,
+    "passed": true,
+    "species_accuracy": 5,
+    "text_accuracy": 5,
+    "verification_sources": [
+      {
+        "title": "American Goldfinch Identification \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/American_Goldfinch/id"
+      },
+      {
+        "title": "American Goldfinch \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/american-goldfinch"
+      }
+    ]
+  },
+  "references": [
+    {
+      "attribution": "no rights reserved",
+      "filename": "01-84579952.jpeg",
+      "height": 956,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/84579952/large.jpeg",
+      "license_code": "cc0",
+      "observation_id": 53187208,
+      "observer": "glennberry",
+      "photo_id": 84579952,
+      "sha256": "cbddabeb90b2a13686b069a47eaaaa5760e2e3a387953bbccaca0d9279edd225",
+      "source_url": "https://www.inaturalist.org/observations/53187208",
+      "width": 1119
+    },
+    {
+      "attribution": "(c) Alexis Williams, some rights reserved (CC BY)",
+      "filename": "02-177208169.jpeg",
+      "height": 1077,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/177208169/large.jpeg",
+      "license_code": "cc-by",
+      "observation_id": 105595215,
+      "observer": "ayatana_biophilium",
+      "photo_id": 177208169,
+      "sha256": "f8a2701d326cdcedc5de932be461c40fe411a3e3c58d46a951421c493d12bdc9",
+      "source_url": "https://www.inaturalist.org/observations/105595215",
+      "width": 1080
+    },
+    {
+      "attribution": "(c) froggymum, some rights reserved (CC BY)",
+      "filename": "03-658337088.jpg",
+      "height": 2048,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/658337088/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 360768440,
+      "observer": "froggymum",
+      "photo_id": 658337088,
+      "sha256": "0cb14a5b9cbd433b2a0785345ff1765bf3957868c240050440ecd3947be246d1",
+      "source_url": "https://www.inaturalist.org/observations/360768440",
+      "width": 1561
+    },
+    {
+      "attribution": "(c) Gavin Slater, some rights reserved (CC BY)",
+      "filename": "04-295117893.jpeg",
+      "height": 1536,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/295117893/large.jpeg",
+      "license_code": "cc-by",
+      "observation_id": 170174392,
+      "observer": "littlelegofan",
+      "photo_id": 295117893,
+      "sha256": "1eba3c0a3accaee9a25b314895a7e1d4452658e9cfb83cb4a61a127fbce0acb5",
+      "source_url": "https://www.inaturalist.org/observations/170174392",
+      "width": 2048
+    }
+  ],
+  "schema_version": 1,
+  "scientific_name": "Spinus tristis",
+  "slug": "american-goldfinch",
+  "status": "approved",
+  "taxon_id": 145310
+}

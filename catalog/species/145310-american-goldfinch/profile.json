@@ -1,0 +1,37 @@
+{
+  "behavior": "Active, acrobatic seed-forager that clings to thistles and other seedheads; flies in a bouncy, undulating pattern and often calls in flight.",
+  "common_name": "American Goldfinch",
+  "family": "Fringillidae",
+  "field_marks": [
+    "Small finch with a short, conical bill and compact head.",
+    "Breeding male is bright yellow with a sharply black forehead.",
+    "Black wings show bold white wingbars and pale markings.",
+    "Short, notched black tail has conspicuous white patches in flight.",
+    "Females are duller yellow below and olive above; winter birds are unstreaked brown-gray with pale wingbars."
+  ],
+  "habitat": "Weedy fields, open floodplains, forest edges, cultivated ground, orchards, and other semi-open places with thistles, asters, shrubs, or small trees.",
+  "measurements": {
+    "length": "4.3\u20135.1 in (11\u201313 cm)",
+    "weight": "0.4\u20130.7 oz (11\u201320 g)",
+    "wingspan": "7.5\u20138.7 in (19\u201322 cm)"
+  },
+  "palette": [
+    "bright yellow",
+    "glossy black",
+    "crisp white",
+    "olive green",
+    "buff brown"
+  ],
+  "scientific_name": "Spinus tristis",
+  "sources": [
+    {
+      "title": "American Goldfinch Identification \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/American_Goldfinch/id"
+    },
+    {
+      "title": "American Goldfinch \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/american-goldfinch"
+    }
+  ],
+  "taxon_id": 145310
+}
