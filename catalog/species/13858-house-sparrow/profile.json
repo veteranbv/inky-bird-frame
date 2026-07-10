@@ -1,0 +1,41 @@
+{
+  "behavior": "Social, noisy ground forager that hops and pecks for seeds, grains, insects, and discarded food; often feeds in flocks and nests in cavities or niches in buildings and other structures.",
+  "common_name": "House Sparrow",
+  "family": "Passeridae",
+  "field_marks": [
+    "Chunky, full-breasted sparrow with a round head, short tail, and stout conical bill.",
+    "Male: gray crown, white cheeks, chestnut nape, and a distinct black throat-and-breast bib.",
+    "Female and immature: plainer buffy brown and gray, with a pale eyebrow and gray-brown underparts.",
+    "Back and wings strongly streaked or patterned in brown, black, and buff; often shows a pale wingbar.",
+    "Dark eye; pinkish-brown legs and a short, squared-to-slightly-notched tail."
+  ],
+  "habitat": "Closely associated with human-built environments, including towns, suburbs, farms, parks, and buildings; generally absent from extensive undisturbed woodland, forest, and grassland.",
+  "measurements": {
+    "length": "15\u201317 cm (5.9\u20136.7 in)",
+    "weight": "27\u201330 g (0.9\u20131.1 oz)",
+    "wingspan": "19\u201325 cm (7.5\u20139.8 in)"
+  },
+  "palette": [
+    "gray",
+    "chestnut brown",
+    "buffy tan",
+    "black",
+    "white"
+  ],
+  "scientific_name": "Passer domesticus",
+  "sources": [
+    {
+      "title": "House Sparrow Identification \u2014 All About Birds, Cornell Lab of Ornithology",
+      "url": "https://www.allaboutbirds.org/guide/House_Sparrow/id"
+    },
+    {
+      "title": "House Sparrow Life History \u2014 All About Birds, Cornell Lab of Ornithology",
+      "url": "https://www.allaboutbirds.org/guide/House_Sparrow/lifehistory"
+    },
+    {
+      "title": "House Sparrow \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/house-sparrow"
+    }
+  ],
+  "taxon_id": 13858
+}

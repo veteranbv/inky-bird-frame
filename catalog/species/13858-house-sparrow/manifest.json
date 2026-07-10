@@ -1,0 +1,144 @@
+{
+  "approved_at": "2026-07-10T17:29:07+00:00",
+  "assets": {
+    "display": {
+      "filename": "display.png",
+      "sha256": "5d948194f515c54d01b75b5145d378e42b8ad179b28e4152df32577136793642"
+    },
+    "portrait": {
+      "filename": "portrait.png",
+      "sha256": "831aee6ac97c77843f4b5dc5cebfe543c3442524909889536139ce5824e0dd58"
+    }
+  },
+  "common_name": "House Sparrow",
+  "generation": {
+    "attempt": 1,
+    "generated_at": "2026-07-10T17:29:07+00:00",
+    "generator": "Codex subscription / built-in gpt-image-2",
+    "max_attempts": 3,
+    "prompt_version": "field-journal-v2"
+  },
+  "profile": {
+    "behavior": "Social, noisy ground forager that hops and pecks for seeds, grains, insects, and discarded food; often feeds in flocks and nests in cavities or niches in buildings and other structures.",
+    "common_name": "House Sparrow",
+    "family": "Passeridae",
+    "field_marks": [
+      "Chunky, full-breasted sparrow with a round head, short tail, and stout conical bill.",
+      "Male: gray crown, white cheeks, chestnut nape, and a distinct black throat-and-breast bib.",
+      "Female and immature: plainer buffy brown and gray, with a pale eyebrow and gray-brown underparts.",
+      "Back and wings strongly streaked or patterned in brown, black, and buff; often shows a pale wingbar.",
+      "Dark eye; pinkish-brown legs and a short, squared-to-slightly-notched tail."
+    ],
+    "habitat": "Closely associated with human-built environments, including towns, suburbs, farms, parks, and buildings; generally absent from extensive undisturbed woodland, forest, and grassland.",
+    "measurements": {
+      "length": "15\u201317 cm (5.9\u20136.7 in)",
+      "weight": "27\u201330 g (0.9\u20131.1 oz)",
+      "wingspan": "19\u201325 cm (7.5\u20139.8 in)"
+    },
+    "palette": [
+      "gray",
+      "chestnut brown",
+      "buffy tan",
+      "black",
+      "white"
+    ],
+    "scientific_name": "Passer domesticus",
+    "sources": [
+      {
+        "title": "House Sparrow Identification \u2014 All About Birds, Cornell Lab of Ornithology",
+        "url": "https://www.allaboutbirds.org/guide/House_Sparrow/id"
+      },
+      {
+        "title": "House Sparrow Life History \u2014 All About Birds, Cornell Lab of Ornithology",
+        "url": "https://www.allaboutbirds.org/guide/House_Sparrow/lifehistory"
+      },
+      {
+        "title": "House Sparrow \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/house-sparrow"
+      }
+    ],
+    "taxon_id": 13858
+  },
+  "quality_review": {
+    "anatomy_accuracy": 5,
+    "composition_quality": 5,
+    "findings": [
+      "No concrete species, anatomy, or text error found. The profile rendering is consistent with one head, one bill, two wings (far wing occluded), two legs, and one short, slightly notched tail.",
+      "The male plumage accurately shows gray crown, chestnut nape, white cheeks, black bib, patterned brown-and-buff wings, dark eye, stout conical bill, and pinkish-brown legs; the inset wing and head studies support the identification.",
+      "All visible claims match the live field-guide verification, including Passer domesticus, Passeridae, the stated 15\u201317 cm length, 27\u201330 g weight, 19\u201325 cm wingspan, habitat, behavior, and field marks. No place name, ZIP code, coordinates, map, or local-observation detail appears."
+    ],
+    "location_free": true,
+    "passed": true,
+    "species_accuracy": 5,
+    "text_accuracy": 5,
+    "verification_sources": [
+      {
+        "title": "House Sparrow Identification \u2014 All About Birds, Cornell Lab of Ornithology",
+        "url": "https://www.allaboutbirds.org/guide/House_Sparrow/id"
+      },
+      {
+        "title": "House Sparrow \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/house-sparrow"
+      }
+    ]
+  },
+  "references": [
+    {
+      "attribution": "(c) carnifex, some rights reserved (CC BY)",
+      "filename": "01-212832926.jpeg",
+      "height": 1074,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/212832926/large.jpeg",
+      "license_code": "cc-by",
+      "observation_id": 125500734,
+      "observer": "carnifex",
+      "photo_id": 212832926,
+      "sha256": "194124aecaa6c600b5be58b610454caa81391298938533c19b26e34d35ad8413",
+      "source_url": "https://www.inaturalist.org/observations/125500734",
+      "width": 893
+    },
+    {
+      "attribution": "(c) William Harland, some rights reserved (CC BY)",
+      "filename": "02-467543991.jpeg",
+      "height": 1377,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/467543991/large.jpeg",
+      "license_code": "cc-by",
+      "observation_id": 260356186,
+      "observer": "william-harland",
+      "photo_id": 467543991,
+      "sha256": "bd948664ad5fd1da6297ef19681e2f87306aebf45a266d09b6ef026fe950dcef",
+      "source_url": "https://www.inaturalist.org/observations/260356186",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) Sascha Nunheim, some rights reserved (CC BY)",
+      "filename": "03-177949148.jpg",
+      "height": 1692,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/177949148/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 105983364,
+      "observer": "sascha_n",
+      "photo_id": 177949148,
+      "sha256": "5d72e3a36630fdad2fe3f062d520e6faa36d62b760fc98ed0ef4a2f8b846d3b6",
+      "source_url": "https://www.inaturalist.org/observations/105983364",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) Esteban Poveda, some rights reserved (CC BY)",
+      "filename": "04-136543105.jpeg",
+      "height": 1537,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/136543105/large.jpeg",
+      "license_code": "cc-by",
+      "observation_id": 83153529,
+      "observer": "quilicotriste",
+      "photo_id": 136543105,
+      "sha256": "03772728f519b9e1237892c7ffd5bc20346acbbdfff25a7c3d118564c7c0edac",
+      "source_url": "https://www.inaturalist.org/observations/83153529",
+      "width": 2048
+    }
+  ],
+  "schema_version": 1,
+  "scientific_name": "Passer domesticus",
+  "slug": "house-sparrow",
+  "status": "approved",
+  "taxon_id": 13858
+}
