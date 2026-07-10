@@ -1,0 +1,26 @@
+{
+  "anatomy_accuracy": 5,
+  "composition_quality": 5,
+  "findings": [
+    "Identity, scientific name, and family are correct for Pine Warbler (Setophaga pinus, Parulidae).",
+    "The illustration correctly shows one head, one stout pointed bill, two legs, two wings (one folded/visible and one occluded by the side-on pose), and one long tail.",
+    "Plumage and structure match an adult male Pine Warbler: yellow throat/breast, yellow-olive upperparts, gray-dark folded wing with two pale wingbars, pale broken eyering, sturdy bill, and long tail.",
+    "All visible claims are supported by the live sources, including length and weight. Cornell matches the printed 19\u201323 cm wingspan; Audubon gives a slightly broader 20\u201324 cm range, so the printed range remains supported.",
+    "The habitat, behavior, feeder, palette, and field-mark text are consistent with the sources and supplied reference photos, including gray/duller female or immature plumages.",
+    "No place name, ZIP code, coordinates, map, or local-observation detail appears on the candidate plate."
+  ],
+  "location_free": true,
+  "passed": true,
+  "species_accuracy": 5,
+  "text_accuracy": 5,
+  "verification_sources": [
+    {
+      "title": "Pine Warbler Identification \u2014 All About Birds, Cornell Lab of Ornithology",
+      "url": "https://www.allaboutbirds.org/guide/Pine_Warbler/id"
+    },
+    {
+      "title": "Pine Warbler \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/pine-warbler?nid=5001&site=sc"
+    }
+  ]
+}

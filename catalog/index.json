@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-10T18:19:56+00:00",
+  "generated_at": "2026-07-10T18:27:17+00:00",
   "schema_version": 1,
   "species": [
     {
@@ -331,6 +331,17 @@
       "scientific_name": "Dryocopus pileatus",
       "slug": "pileated-woodpecker",
       "taxon_id": 17855
+    },
+    {
+      "approved_at": "2026-07-10T18:27:17+00:00",
+      "common_name": "Pine Warbler",
+      "display_path": "species/145244-pine-warbler/display.png",
+      "display_sha256": "1e3600ab4fc6485f4ccee741eb6cb7d751bd53556b8aea9782f7d0b3c9823e21",
+      "portrait_path": "species/145244-pine-warbler/portrait.png",
+      "portrait_sha256": "e255d7c37a4459098ab6f1bf2b71803ad3c41850773789844aac2316145b318e",
+      "scientific_name": "Setophaga pinus",
+      "slug": "pine-warbler",
+      "taxon_id": 145244
     },
     {
       "approved_at": "2026-07-10T17:20:07+00:00",

@@ -1,0 +1,147 @@
+{
+  "approved_at": "2026-07-10T18:27:17+00:00",
+  "assets": {
+    "display": {
+      "filename": "display.png",
+      "sha256": "1e3600ab4fc6485f4ccee741eb6cb7d751bd53556b8aea9782f7d0b3c9823e21"
+    },
+    "portrait": {
+      "filename": "portrait.png",
+      "sha256": "e255d7c37a4459098ab6f1bf2b71803ad3c41850773789844aac2316145b318e"
+    }
+  },
+  "common_name": "Pine Warbler",
+  "generation": {
+    "attempt": 1,
+    "generated_at": "2026-07-10T18:27:17+00:00",
+    "generator": "Codex subscription / built-in gpt-image-2",
+    "max_attempts": 3,
+    "prompt_version": "field-journal-v2"
+  },
+  "profile": {
+    "behavior": "Forages deliberately along branches, bark, needles, and pine cones; also takes insects, spiders, fruits, and seeds, and may visit elevated feeders for seeds or suet.",
+    "common_name": "Pine Warbler",
+    "family": "Parulidae",
+    "field_marks": [
+      "Hefty, long-tailed warbler with a relatively stout, pointed bill.",
+      "Yellow to yellow-olive head, throat, and breast; females and immatures may be much duller or grayish.",
+      "Olive-green upperparts with grayer, darker wings.",
+      "Two pale white wingbars are usually visible on the folded wing.",
+      "Pale, often broken eyering gives the face a weakly spectacled look; tail tip may show a slight central notch."
+    ],
+    "habitat": "Primarily pine woodland and mixed pine\u2013deciduous forest; usually forages in pines, from the ground to the canopy, and also uses wooded edges and similar tree cover outside the breeding season.",
+    "measurements": {
+      "length": "13\u201314 cm (5.1\u20135.5 in)",
+      "weight": "9\u201315 g (0.3\u20130.5 oz)",
+      "wingspan": "19\u201323 cm (7.5\u20139.1 in)"
+    },
+    "palette": [
+      "yellow",
+      "yellow-olive",
+      "olive green",
+      "soft gray",
+      "white"
+    ],
+    "scientific_name": "Setophaga pinus",
+    "sources": [
+      {
+        "title": "Pine Warbler Identification \u2014 All About Birds, Cornell Lab of Ornithology",
+        "url": "https://www.allaboutbirds.org/guide/Pine_Warbler/id"
+      },
+      {
+        "title": "Pine Warbler Life History \u2014 All About Birds, Cornell Lab of Ornithology",
+        "url": "https://www.allaboutbirds.org/guide/Pine_Warbler/lifehistory"
+      },
+      {
+        "title": "Pine Warbler \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/pine-warbler?nid=5001&site=sc"
+      }
+    ],
+    "taxon_id": 145244
+  },
+  "quality_review": {
+    "anatomy_accuracy": 5,
+    "composition_quality": 5,
+    "findings": [
+      "Identity, scientific name, and family are correct for Pine Warbler (Setophaga pinus, Parulidae).",
+      "The illustration correctly shows one head, one stout pointed bill, two legs, two wings (one folded/visible and one occluded by the side-on pose), and one long tail.",
+      "Plumage and structure match an adult male Pine Warbler: yellow throat/breast, yellow-olive upperparts, gray-dark folded wing with two pale wingbars, pale broken eyering, sturdy bill, and long tail.",
+      "All visible claims are supported by the live sources, including length and weight. Cornell matches the printed 19\u201323 cm wingspan; Audubon gives a slightly broader 20\u201324 cm range, so the printed range remains supported.",
+      "The habitat, behavior, feeder, palette, and field-mark text are consistent with the sources and supplied reference photos, including gray/duller female or immature plumages.",
+      "No place name, ZIP code, coordinates, map, or local-observation detail appears on the candidate plate."
+    ],
+    "location_free": true,
+    "passed": true,
+    "species_accuracy": 5,
+    "text_accuracy": 5,
+    "verification_sources": [
+      {
+        "title": "Pine Warbler Identification \u2014 All About Birds, Cornell Lab of Ornithology",
+        "url": "https://www.allaboutbirds.org/guide/Pine_Warbler/id"
+      },
+      {
+        "title": "Pine Warbler \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/pine-warbler?nid=5001&site=sc"
+      }
+    ]
+  },
+  "references": [
+    {
+      "attribution": "(c) ncb1221, some rights reserved (CC BY)",
+      "filename": "01-233232419.jpeg",
+      "height": 1536,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/233232419/large.jpeg",
+      "license_code": "cc-by",
+      "observation_id": 136639139,
+      "observer": "ncb1221",
+      "photo_id": 233232419,
+      "sha256": "2feed931f6d58bc0c6ec9a0b3bbeee62f90214fdcc2bc2c8af6ff0027e0b59e3",
+      "source_url": "https://www.inaturalist.org/observations/136639139",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) Dan Vickers, some rights reserved (CC BY)",
+      "filename": "02-16801887.jpeg",
+      "height": 1200,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/16801887/large.jpeg",
+      "license_code": "cc-by",
+      "observation_id": 11749155,
+      "observer": "kodiakgarden",
+      "photo_id": 16801887,
+      "sha256": "79cc5a633c55d6bc066ca5a1ba21e6071888fea26bccafa38e892ff315fdbaef",
+      "source_url": "https://www.inaturalist.org/observations/11749155",
+      "width": 1200
+    },
+    {
+      "attribution": "(c) Sage, some rights reserved (CC BY)",
+      "filename": "03-580819866.jpg",
+      "height": 1536,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/580819866/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 321179521,
+      "observer": "wildsagesprout",
+      "photo_id": 580819866,
+      "sha256": "45b1315dcf87c70441b5730fe5d1473846b72c2d232571f77e9373f418248944",
+      "source_url": "https://www.inaturalist.org/observations/321179521",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) northerly, some rights reserved (CC BY)",
+      "filename": "04-599616141.jpg",
+      "height": 1366,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/599616141/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 330640852,
+      "observer": "northerly",
+      "photo_id": 599616141,
+      "sha256": "adce15810bede52318a3845504335c3f3301fe2ee7dfd1c473bf9189c53d46a2",
+      "source_url": "https://www.inaturalist.org/observations/330640852",
+      "width": 2048
+    }
+  ],
+  "schema_version": 1,
+  "scientific_name": "Setophaga pinus",
+  "slug": "pine-warbler",
+  "status": "approved",
+  "taxon_id": 145244
+}
