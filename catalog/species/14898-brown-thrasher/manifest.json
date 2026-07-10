@@ -1,0 +1,141 @@
+{
+  "approved_at": "2026-07-10T17:37:41+00:00",
+  "assets": {
+    "display": {
+      "filename": "display.png",
+      "sha256": "72fda2caa58a52404af1317919a41d2ae667d186fd31228f97ae0d6ed81e4362"
+    },
+    "portrait": {
+      "filename": "portrait.png",
+      "sha256": "d7d1e570c4d02e5f78a5f037f58b31ed658ee4ccf49a5a90dbac485e0ad54b84"
+    }
+  },
+  "common_name": "Brown Thrasher",
+  "generation": {
+    "attempt": 1,
+    "generated_at": "2026-07-10T17:37:41+00:00",
+    "generator": "Codex subscription / built-in gpt-image-2",
+    "max_attempts": 3,
+    "prompt_version": "field-journal-v2"
+  },
+  "profile": {
+    "behavior": "Secretive ground forager that works leaf litter with quick sideways bill sweeps; also sings from exposed shrubs or treetops.",
+    "common_name": "Brown Thrasher",
+    "family": "Mimidae",
+    "field_marks": [
+      "Large, slender songbird with a long rounded tail",
+      "Rufous-brown upperparts and gray-brown face",
+      "Bright yellow eye",
+      "Long, dark bill with a slight downward curve",
+      "Whitish underparts marked with bold dark streaks",
+      "Two crisp black-and-white wing bars"
+    ],
+    "habitat": "Dense brush and low cover: thickets, hedgerows, scrubby fields, forest edges, regenerating woods, and shrubby undergrowth.",
+    "measurements": {
+      "length": "23\u201330 cm (9.1\u201311.8 in)",
+      "weight": "61\u201389 g (2.1\u20133.1 oz)",
+      "wingspan": "29\u201332 cm (11.4\u201312.6 in)"
+    },
+    "palette": [
+      "rufous brown",
+      "gray-brown",
+      "whitish cream",
+      "black",
+      "bright yellow"
+    ],
+    "scientific_name": "Toxostoma rufum",
+    "sources": [
+      {
+        "title": "Brown Thrasher Identification \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Brown_Thrasher/id"
+      },
+      {
+        "title": "Brown Thrasher \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/brown-thrasher"
+      }
+    ],
+    "taxon_id": 14898
+  },
+  "quality_review": {
+    "anatomy_accuracy": 5,
+    "composition_quality": 5,
+    "findings": [
+      "Species identity is correct: the illustration matches Brown Thrasher/Toxostoma rufum in its rufous-brown upperparts, gray-brown face, bright yellow eye, long slightly downcurved dark bill, boldly streaked whitish underparts, two wing bars, long sturdy legs, and long rounded tail. It depicts one head, one beak, two legs, two wings (one primarily visible in profile), and one tail.",
+      "All visible plate text is supported by the live sources, including scientific name, family, measurements, habitat, behavior, and field marks. The listed length, weight, and wingspan exactly match Cornell\u2019s published ranges.",
+      "No place name, ZIP code, coordinates, map, or local-observation detail appears on the candidate plate."
+    ],
+    "location_free": true,
+    "passed": true,
+    "species_accuracy": 5,
+    "text_accuracy": 5,
+    "verification_sources": [
+      {
+        "title": "Brown Thrasher Identification \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Brown_Thrasher/id"
+      },
+      {
+        "title": "Brown Thrasher \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/brown-thrasher"
+      }
+    ]
+  },
+  "references": [
+    {
+      "attribution": "no rights reserved",
+      "filename": "01-186561540.jpeg",
+      "height": 1242,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/186561540/large.jpeg",
+      "license_code": "cc0",
+      "observation_id": 110579205,
+      "observer": "wildreturn",
+      "photo_id": 186561540,
+      "sha256": "de45649de68dfdb35954e748bae9a3b16bf38bfe13a5f2f37009f4bcf2288249",
+      "source_url": "https://www.inaturalist.org/observations/110579205",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) Jake McCumber, some rights reserved (CC BY)",
+      "filename": "02-686599049.jpg",
+      "height": 1365,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/686599049/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 375570790,
+      "observer": "jakemccumber",
+      "photo_id": 686599049,
+      "sha256": "0badae37f662c869199184da851002263a9e06d9b97617ec949182af19fe13a9",
+      "source_url": "https://www.inaturalist.org/observations/375570790",
+      "width": 2048
+    },
+    {
+      "attribution": "no rights reserved",
+      "filename": "03-302099534.jpeg",
+      "height": 1536,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/302099534/large.jpeg",
+      "license_code": "cc0",
+      "observation_id": 173926256,
+      "observer": "matthias55",
+      "photo_id": 302099534,
+      "sha256": "e24c0d4fb5109600779096f2a94a396a3ee8e6f03be812a8b588230b8f05d210",
+      "source_url": "https://www.inaturalist.org/observations/173926256",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) Sydney Dragon, some rights reserved (CC BY)",
+      "filename": "04-116464522.jpg",
+      "height": 1365,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/116464522/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 71524835,
+      "observer": "sydneydragon",
+      "photo_id": 116464522,
+      "sha256": "9768828785def2567d110ed9d24f18e7923538277cc28acd339ef69719ce497e",
+      "source_url": "https://www.inaturalist.org/observations/71524835",
+      "width": 2048
+    }
+  ],
+  "schema_version": 1,
+  "scientific_name": "Toxostoma rufum",
+  "slug": "brown-thrasher",
+  "status": "approved",
+  "taxon_id": 14898
+}

@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-10T17:29:07+00:00",
+  "generated_at": "2026-07-10T17:37:41+00:00",
   "schema_version": 1,
   "species": [
     {
@@ -45,6 +45,17 @@
       "scientific_name": "Cyanocitta cristata",
       "slug": "blue-jay",
       "taxon_id": 8229
+    },
+    {
+      "approved_at": "2026-07-10T17:37:41+00:00",
+      "common_name": "Brown Thrasher",
+      "display_path": "species/14898-brown-thrasher/display.png",
+      "display_sha256": "72fda2caa58a52404af1317919a41d2ae667d186fd31228f97ae0d6ed81e4362",
+      "portrait_path": "species/14898-brown-thrasher/portrait.png",
+      "portrait_sha256": "d7d1e570c4d02e5f78a5f037f58b31ed658ee4ccf49a5a90dbac485e0ad54b84",
+      "scientific_name": "Toxostoma rufum",
+      "slug": "brown-thrasher",
+      "taxon_id": 14898
     },
     {
       "approved_at": "2026-07-10T17:01:12+00:00",

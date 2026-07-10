@@ -1,0 +1,23 @@
+{
+  "anatomy_accuracy": 5,
+  "composition_quality": 5,
+  "findings": [
+    "Species identity is correct: the illustration matches Brown Thrasher/Toxostoma rufum in its rufous-brown upperparts, gray-brown face, bright yellow eye, long slightly downcurved dark bill, boldly streaked whitish underparts, two wing bars, long sturdy legs, and long rounded tail. It depicts one head, one beak, two legs, two wings (one primarily visible in profile), and one tail.",
+    "All visible plate text is supported by the live sources, including scientific name, family, measurements, habitat, behavior, and field marks. The listed length, weight, and wingspan exactly match Cornell\u2019s published ranges.",
+    "No place name, ZIP code, coordinates, map, or local-observation detail appears on the candidate plate."
+  ],
+  "location_free": true,
+  "passed": true,
+  "species_accuracy": 5,
+  "text_accuracy": 5,
+  "verification_sources": [
+    {
+      "title": "Brown Thrasher Identification \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Brown_Thrasher/id"
+    },
+    {
+      "title": "Brown Thrasher \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/brown-thrasher"
+    }
+  ]
+}
