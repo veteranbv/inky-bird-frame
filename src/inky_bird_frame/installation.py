@@ -18,6 +18,8 @@ from .config import AppConfig, load_config
 from .errors import ConfigurationError, InkyBirdFrameError, InstallationError
 from .http import get_json
 
+SUDO_AUTHORIZATION_TIMEOUT_SECONDS = 300
+
 
 class InstallationRole(StrEnum):
     CONTROLLER = "controller"
@@ -566,6 +568,20 @@ def _setup_script(role: InstallationRole, source_dir: Path | None) -> Path:
     raise InstallationError(f"Setup does not support {role.value} on {system}")
 
 
+def _authorize_linux_setup() -> None:
+    """Acquire sudo credentials while the prompt can use the caller's terminal."""
+    try:
+        completed = subprocess.run(
+            ["sudo", "-v"],
+            check=False,
+            timeout=SUDO_AUTHORIZATION_TIMEOUT_SECONDS,
+        )
+    except (OSError, subprocess.TimeoutExpired) as exc:
+        raise InstallationError(f"Administrator authorization could not run: {exc}") from exc
+    if completed.returncode != 0:
+        raise InstallationError("Administrator authorization failed; run sudo -v and try again")
+
+
 def setup(
     role: InstallationRole,
     config_path: Path,
@@ -599,6 +615,9 @@ def setup(
     if not apply:
         result["confirmation"] = "Repeat the same command with --yes to apply these changes."
         return result
+
+    if platform.system() == "Linux":
+        _authorize_linux_setup()
 
     environment = os.environ.copy()
     for variable in (

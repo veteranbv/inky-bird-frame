@@ -8,6 +8,7 @@ from tempfile import TemporaryDirectory
 from unittest.mock import patch
 
 from inky_bird_frame.config import load_config
+from inky_bird_frame.errors import InstallationError
 from inky_bird_frame.installation import (
     CheckStatus,
     CommandResult,
@@ -203,6 +204,67 @@ display_startup_delay_seconds = 30
         self.assertNotIn("INKY_BIRD_SUPPORT_DIR", environment)
         self.assertNotIn("INKY_BIRD_DISPLAY_VENV", environment)
         self.assertNotIn("INKY_BIRD_RUN_INITIAL_DISPLAY", environment)
+
+    def test_linux_setup_authorizes_sudo_before_captured_installer(self) -> None:
+        with TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            codex = root / "codex"
+            codex.touch(mode=0o700)
+            config = write_config(root, codex)
+            source = root / "source"
+            script = source / "deploy/install-display-local.sh"
+            script.parent.mkdir(parents=True)
+            script.touch(mode=0o700)
+            with (
+                patch("inky_bird_frame.installation.platform.system", return_value="Linux"),
+                patch(
+                    "inky_bird_frame.installation.subprocess.run",
+                    side_effect=(
+                        subprocess.CompletedProcess(["sudo", "-v"], 0),
+                        subprocess.CompletedProcess([], 0, "installed", ""),
+                    ),
+                ) as run,
+            ):
+                result = setup(
+                    InstallationRole.DISPLAY,
+                    config,
+                    apply=True,
+                    source_dir=source,
+                )
+
+        authorization, installer = run.call_args_list
+        self.assertEqual(authorization.args[0], ["sudo", "-v"])
+        self.assertNotIn("capture_output", authorization.kwargs)
+        self.assertEqual(installer.args[0], [str(script.resolve())])
+        self.assertTrue(installer.kwargs["capture_output"])
+        self.assertTrue(result["applied"])
+
+    def test_linux_setup_stops_when_sudo_authorization_fails(self) -> None:
+        with TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            codex = root / "codex"
+            codex.touch(mode=0o700)
+            config = write_config(root, codex)
+            source = root / "source"
+            script = source / "deploy/install-controller-systemd.sh"
+            script.parent.mkdir(parents=True)
+            script.touch(mode=0o700)
+            with (
+                patch("inky_bird_frame.installation.platform.system", return_value="Linux"),
+                patch(
+                    "inky_bird_frame.installation.subprocess.run",
+                    return_value=subprocess.CompletedProcess(["sudo", "-v"], 1),
+                ) as run,
+                self.assertRaisesRegex(InstallationError, "Administrator authorization failed"),
+            ):
+                setup(
+                    InstallationRole.CONTROLLER,
+                    config,
+                    apply=True,
+                    source_dir=source,
+                )
+
+        run.assert_called_once()
 
     def test_doctor_reports_invalid_config_without_dependent_checks(self) -> None:
         with TemporaryDirectory() as temporary:
