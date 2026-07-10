@@ -182,6 +182,8 @@ uv run inky-bird-frame catalog-publish --config config.toml
 
 Observation windows are `last-day`, `last-week`, `last-30-days`, `last-year`,
 and `all-time`. Discovery distance is configured in kilometers with `radius_km`.
+Discovery admits only species-rank iNaturalist results, excluding unresolved
+genera, families, and other aggregate taxa from generation.
 Rotation modes are `sequential`, `shuffle`, `shuffle_bag`, and `weighted`.
 `shuffle` keeps its existing shuffled-round behavior. `shuffle_bag` persists a
 separate bag: it displays each currently active bird at most once before a
