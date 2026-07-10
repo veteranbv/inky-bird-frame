@@ -194,6 +194,21 @@ twice in succession when alternatives are available.
 Recovery and operator-override commands are documented in
 [`docs/operations.md`](docs/operations.md).
 
+## Notifications
+
+Optional notifications make a headless installation easier to trust without
+turning routine activity into noise. Events are selectable, deduplicated, and
+delivered through a durable retry queue, so an operator can receive useful
+signals such as a newly approved plate, a discovered species, a recovery, or a
+terminal error.
+
+![Pushover notifications for a recovered generation queue and an approved American Goldfinch plate](docs/images/pushover-notifications.png)
+
+This example uses Pushover, but it is not required. The same configuration can
+target Discord, ntfy, Gotify, Slack, email, Home Assistant, and other
+Apprise-supported services. See [`docs/notifications.md`](docs/notifications.md)
+for setup examples, event controls, retry behavior, and secret handling.
+
 ## Reusable catalog
 
 Every approved species lives under `catalog/species/<taxon-id>-<slug>/`:
