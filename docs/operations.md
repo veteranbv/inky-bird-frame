@@ -5,6 +5,27 @@
 Keep the deployment configuration outside the Git checkout. Required fields are
 documented in `config.example.toml`.
 
+Recommended starting values balance local relevance, seasonal variety, API use,
+and subscription-backed generation:
+
+| Setting | Recommended | Why |
+| --- | --- | --- |
+| `discovery.radius_km` | `8` | Approximately five miles; widen it in sparsely observed areas. |
+| `discovery.species_limit` | `50` | Avoids truncating normal local results without creating an unbounded active set. |
+| `discovery.window` | `"last-30-days"` | More reliable than a short window while remaining seasonally relevant. |
+| `schedule.refresh_minutes` | `15` | Keeps observations current at a modest API request rate. |
+| `schedule.generation_minutes` | `360` | Generates at most four new plates per day by default. |
+| `controller.generations_per_cycle` | `1` | Bounds work and recovery impact per invocation. |
+| `research.max_searches_per_day` | `5` | Covers the default generation rate plus one recovery. |
+| `research.max_searches_per_species` | `2` | Allows one normal attempt and one bounded recovery. |
+| `schedule.rotation_minutes` | `30` | A calm starting cadence for an e-paper display. |
+| `display_node.rotation_mode` | `"shuffle_bag"` | Shows every active bird once before repeating. |
+
+These are operating recommendations, not service limits. A controller configured
+to generate more frequently should raise `max_searches_per_day` intentionally;
+cached profiles do not consume the budget again. Use `seed` for a broad historical
+catalog instead of making the active observation window permanently broad.
+
 The controller's `workspace_dir` must be writable because the Codex image tool
 copies its final image there. `catalog_dir` and `state_dir` must persist across
 deployments. `codex_path` must point to a Codex CLI whose `login status` reports
@@ -32,7 +53,9 @@ use the longer `insufficient_references_retry_minutes` delay because source
 availability changes slowly. Later birds continue through the queue. Exhausted
 factual or visual review remains terminal and requires `retry TAXON_ID`.
 
-Species context uses iNaturalist first and the Cornell BirdNET Taxonomy API when
+Discovery requests and validates species-rank iNaturalist results so genera,
+families, and other aggregate taxa never enter generation. Species context uses
+iNaturalist first and the Cornell BirdNET Taxonomy API when
 iNaturalist omits its descriptive context. The fallback is accepted only when
 the iNaturalist taxon ID and scientific name match exactly. Licensed reference
 photos remain research-grade CC0 or CC BY iNaturalist observations from distinct

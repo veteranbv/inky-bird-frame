@@ -8,7 +8,8 @@ The controller owns discovery and generation through independent schedules.
 An observation refresh:
 
 1. resolves the private discovery location;
-2. queries iNaturalist species counts for the configured radius and window;
+2. queries iNaturalist species counts for the configured radius and window,
+   requiring species rank in both the request and response;
 3. atomically stores the private observation snapshot; and
 4. publishes a private active catalog containing only observed taxa that
    already have approved plates.

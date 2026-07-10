@@ -2,11 +2,13 @@ from __future__ import annotations
 
 import unittest
 from datetime import date
-from unittest.mock import patch
+from unittest.mock import MagicMock, patch
+from urllib.parse import parse_qs, urlsplit
 
 from inky_bird_frame.birds import (
     ObservationWindow,
     date_range_for_window,
+    fetch_inaturalist_birds,
     fetch_taxon_context,
     parse_birdnet_taxon,
     parse_inaturalist_species_counts,
@@ -26,6 +28,16 @@ class InaturalistParsingTests(unittest.TestCase):
                         "id": 12942,
                         "preferred_common_name": "Eastern Bluebird",
                         "name": "Sialia sialis",
+                        "rank": "species",
+                    },
+                },
+                {
+                    "count": 4,
+                    "taxon": {
+                        "id": 7846,
+                        "preferred_common_name": "Flycatcher-shrikes",
+                        "name": "Malaconotidae",
+                        "rank": "family",
                     },
                 },
                 {"count": 2, "taxon": {"name": "No common name"}},
@@ -48,6 +60,23 @@ class InaturalistParsingTests(unittest.TestCase):
 
     def test_parse_species_counts_accepts_an_empty_result_set(self) -> None:
         self.assertEqual(parse_inaturalist_species_counts({"results": []}), [])
+
+    @patch("inky_bird_frame.birds.get_json", return_value={"results": []})
+    def test_fetch_species_counts_requests_species_rank(self, get_json: MagicMock) -> None:
+        species = fetch_inaturalist_birds(
+            latitude=38.0,
+            longitude=-77.0,
+            radius_km=8,
+            limit=50,
+            window=ObservationWindow.LAST_30_DAYS,
+            today=date(2026, 7, 9),
+        )
+
+        self.assertEqual(species, [])
+        url = get_json.call_args.args[0]
+        params = parse_qs(urlsplit(url).query)
+        self.assertEqual(params["rank"], ["species"])
+        self.assertEqual(params["per_page"], ["50"])
 
     def test_date_range_for_window(self) -> None:
         today = date(2026, 7, 9)

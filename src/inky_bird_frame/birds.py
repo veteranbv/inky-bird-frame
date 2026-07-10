@@ -92,6 +92,8 @@ def parse_inaturalist_species_counts(payload: object) -> list[BirdSpecies]:
         taxon = item.get("taxon")
         if not isinstance(taxon, dict):
             continue
+        if taxon.get("rank") != "species":
+            continue
         common = taxon.get("preferred_common_name")
         scientific = taxon.get("name")
         taxon_id = taxon.get("id")
@@ -135,6 +137,7 @@ def fetch_inaturalist_birds(
         "lat": f"{latitude:.6f}",
         "lng": f"{longitude:.6f}",
         "radius": str(radius_km),
+        "rank": "species",
         "verifiable": "true",
         "photos": "true",
         "per_page": str(limit),

@@ -1,9 +1,15 @@
 [discovery]
 # This location is used only to discover species. It is never rendered on a plate.
 zip_code = "12345"
+# Eight kilometers is approximately five miles: local enough to feel relevant while
+# usually covering enough observations for variety. Increase it in sparsely observed areas.
 radius_km = 8
-species_limit = 12
-window = "last-week"
+# This caps the observation result set, not generation work per cycle. Fifty avoids
+# truncating typical local results while keeping the active catalog intentionally bounded.
+species_limit = 50
+# Thirty days balances seasonal relevance with coverage. Shorter windows can be sparse;
+# last-year and all-time are better suited to one-time catalog seeding.
+window = "last-30-days"
 
 [controller]
 workspace_dir = "."
@@ -26,9 +32,12 @@ retry_max_minutes = 1440
 insufficient_references_retry_minutes = 10080
 
 [research]
-# Successful profiles are cached by taxon. These limits apply only to new bounded searches.
+# Successful profiles are cached by taxon, so retries of the artwork do not research the
+# species again. Five searches/day matches the default four generation cycles/day with room
+# for one recovery. Raise it deliberately when generation_minutes is reduced or after seeding.
 enabled = true
 max_searches_per_day = 5
+# Two allows one normal profile attempt and one bounded recovery for the same species.
 max_searches_per_species = 2
 allowed_domains = [
     "allaboutbirds.org",
@@ -44,10 +53,10 @@ allowed_domains = [
 [display_node]
 controller_url = "http://controller.example:8793"
 state_dir = "var/display-node"
-# sequential visits the sorted active catalog. shuffle preserves its existing shuffled
-# round behavior. shuffle_bag immediately adds new active birds to its durable bag and
-# visits each active bird at most once before refill. weighted uses observation counts.
-rotation_mode = "shuffle"
+# shuffle_bag is recommended: it visits every active bird once before refill and admits new
+# birds immediately. sequential is stable order; shuffle refills before admitting additions;
+# weighted favors frequently observed birds.
+rotation_mode = "shuffle_bag"
 
 [public_catalog]
 # The trusted controller opens and owner-merges catalog-only PRs in this repository.
