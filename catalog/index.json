@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-10T13:46:39+00:00",
+  "generated_at": "2026-07-10T13:55:53+00:00",
   "schema_version": 1,
   "species": [
     {
@@ -100,6 +100,17 @@
       "scientific_name": "Sialia sialis",
       "slug": "eastern-bluebird",
       "taxon_id": 12942
+    },
+    {
+      "approved_at": "2026-07-10T13:55:53+00:00",
+      "common_name": "Grasshopper Sparrow",
+      "display_path": "species/10139-grasshopper-sparrow/display.png",
+      "display_sha256": "3b047764210f0dd8b67fa80996cd02f9909ac97b5814ebedea914ee13c8cf0ab",
+      "portrait_path": "species/10139-grasshopper-sparrow/portrait.png",
+      "portrait_sha256": "2a590ea4dc125fe2d8e1bf1684685cae6bdf623325ae9d95e6f5caf1ae153db4",
+      "scientific_name": "Ammodramus savannarum",
+      "slug": "grasshopper-sparrow",
+      "taxon_id": 10139
     },
     {
       "approved_at": "2026-07-10T04:04:04+00:00",

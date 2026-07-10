@@ -1,0 +1,25 @@
+{
+  "anatomy_accuracy": 5,
+  "composition_quality": 5,
+  "findings": [
+    "Independent verification confirms Grasshopper Sparrow, Ammodramus savannarum, in Passerellidae.",
+    "All measurements printed on the plate match Cornell: length 4.3\u20134.5 in (10.8\u201311.5 cm), weight 0.5\u20130.7 oz (14\u201320 g), and wingspan 7.9 in (20 cm).",
+    "The plate accurately depicts and states the key adult marks: compact flat-crowned, thick-necked, short-tailed form; large pale conical bill; buffy unstreaked breast with white belly; mottled tan/black/chestnut upperparts; thin pale eye-ring and orange-yellow lore; and pale pink legs and feet. These agree with the supplied field photographs.",
+    "Habitat and behavior text agrees with the live Cornell and Audubon accounts. No place name, ZIP code, coordinates, map, or local-observation detail appears.",
+    "No concrete material anatomy, species, plumage, text, or composition issue found. The illustrated bird has one head, one beak, two wings, two legs, and one tail."
+  ],
+  "location_free": true,
+  "passed": true,
+  "species_accuracy": 5,
+  "text_accuracy": 5,
+  "verification_sources": [
+    {
+      "title": "Grasshopper Sparrow Identification \u2014 All About Birds, Cornell Lab of Ornithology",
+      "url": "https://www.allaboutbirds.org/guide/Grasshopper_Sparrow/id"
+    },
+    {
+      "title": "Grasshopper Sparrow \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/grasshopper-sparrow"
+    }
+  ]
+}
