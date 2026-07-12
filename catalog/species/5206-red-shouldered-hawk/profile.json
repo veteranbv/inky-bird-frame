@@ -1,0 +1,46 @@
+{
+  "behavior": "Perches and watches for prey, then swoops down; also soars and circles with wings and tail spread.",
+  "common_name": "Red-shouldered Hawk",
+  "family": "Accipitridae",
+  "field_marks": [
+    "Medium-sized, slim-bodied hawk with a relatively long, banded tail.",
+    "Adults show warm rufous to reddish barring across the underparts.",
+    "Upperwings show conspicuous dark-and-pale checkering, with rufous shoulder coverts.",
+    "Tail is dark with narrow pale bands; immature birds are browner and more heavily streaked below.",
+    "Broad, rounded wings show small translucent pale crescents near the wingtips in flight.",
+    "Hooked dark bill with a yellow cere and yellow unfeathered legs."
+  ],
+  "habitat": "Mature deciduous or mixed woodland, especially wet forest, bottomland woods, swamps, and wooded waterways; also uses open-canopy woodland edges and some wooded residential areas.",
+  "measurements": {
+    "length": "43\u201361 cm (16.9\u201324.0 in)",
+    "weight": "486\u2013774 g (17.1\u201327.3 oz)",
+    "wingspan": "94\u2013111 cm (37.0\u201343.7 in)"
+  },
+  "palette": [
+    "rufous red",
+    "chestnut brown",
+    "dark brown",
+    "cream white",
+    "yellow"
+  ],
+  "scientific_name": "Buteo lineatus",
+  "sources": [
+    {
+      "title": "Red-shouldered Hawk Identification \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Red-shouldered_Hawk/id"
+    },
+    {
+      "title": "Red-shouldered Hawk Life History \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/red-shouldered_hawk/lifehistory"
+    },
+    {
+      "title": "Buteo lineatus \u2014 Animal Diversity Web",
+      "url": "https://animaldiversity.org/accounts/Buteo_lineatus/"
+    },
+    {
+      "title": "Red-shouldered Hawk \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/red-shouldered-hawk"
+    }
+  ],
+  "taxon_id": 5206
+}
