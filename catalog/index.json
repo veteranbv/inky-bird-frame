@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-10T18:51:24+00:00",
+  "generated_at": "2026-07-12T20:44:31+00:00",
   "schema_version": 1,
   "species": [
     {
@@ -364,6 +364,17 @@
       "scientific_name": "Melanerpes carolinus",
       "slug": "red-bellied-woodpecker",
       "taxon_id": 18205
+    },
+    {
+      "approved_at": "2026-07-12T20:44:31+00:00",
+      "common_name": "Red-shouldered Hawk",
+      "display_path": "species/5206-red-shouldered-hawk/display.png",
+      "display_sha256": "40376a2f2368c8e2a73e52139bb8767fbd7d083ba8043bab7d990baba2a6b9cc",
+      "portrait_path": "species/5206-red-shouldered-hawk/portrait.png",
+      "portrait_sha256": "e5d544a5a4791524df682bf6621e323ab6d2993767aac84c9045f395e09c09b6",
+      "scientific_name": "Buteo lineatus",
+      "slug": "red-shouldered-hawk",
+      "taxon_id": 5206
     },
     {
       "approved_at": "2026-07-10T04:45:42+00:00",

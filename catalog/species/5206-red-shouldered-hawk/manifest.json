@@ -1,0 +1,149 @@
+{
+  "approved_at": "2026-07-12T20:44:31+00:00",
+  "assets": {
+    "display": {
+      "filename": "display.png",
+      "sha256": "40376a2f2368c8e2a73e52139bb8767fbd7d083ba8043bab7d990baba2a6b9cc"
+    },
+    "portrait": {
+      "filename": "portrait.png",
+      "sha256": "e5d544a5a4791524df682bf6621e323ab6d2993767aac84c9045f395e09c09b6"
+    }
+  },
+  "common_name": "Red-shouldered Hawk",
+  "generation": {
+    "attempt": 1,
+    "generated_at": "2026-07-12T20:44:31+00:00",
+    "generator": "Codex subscription / built-in gpt-image-2",
+    "max_attempts": 3,
+    "prompt_version": "field-journal-v2"
+  },
+  "profile": {
+    "behavior": "Perches and watches for prey, then swoops down; also soars and circles with wings and tail spread.",
+    "common_name": "Red-shouldered Hawk",
+    "family": "Accipitridae",
+    "field_marks": [
+      "Medium-sized, slim-bodied hawk with a relatively long, banded tail.",
+      "Adults show warm rufous to reddish barring across the underparts.",
+      "Upperwings show conspicuous dark-and-pale checkering, with rufous shoulder coverts.",
+      "Tail is dark with narrow pale bands; immature birds are browner and more heavily streaked below.",
+      "Broad, rounded wings show small translucent pale crescents near the wingtips in flight.",
+      "Hooked dark bill with a yellow cere and yellow unfeathered legs."
+    ],
+    "habitat": "Mature deciduous or mixed woodland, especially wet forest, bottomland woods, swamps, and wooded waterways; also uses open-canopy woodland edges and some wooded residential areas.",
+    "measurements": {
+      "length": "43\u201361 cm (16.9\u201324.0 in)",
+      "weight": "486\u2013774 g (17.1\u201327.3 oz)",
+      "wingspan": "94\u2013111 cm (37.0\u201343.7 in)"
+    },
+    "palette": [
+      "rufous red",
+      "chestnut brown",
+      "dark brown",
+      "cream white",
+      "yellow"
+    ],
+    "scientific_name": "Buteo lineatus",
+    "sources": [
+      {
+        "title": "Red-shouldered Hawk Identification \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Red-shouldered_Hawk/id"
+      },
+      {
+        "title": "Red-shouldered Hawk Life History \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/red-shouldered_hawk/lifehistory"
+      },
+      {
+        "title": "Buteo lineatus \u2014 Animal Diversity Web",
+        "url": "https://animaldiversity.org/accounts/Buteo_lineatus/"
+      },
+      {
+        "title": "Red-shouldered Hawk \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/red-shouldered-hawk"
+      }
+    ],
+    "taxon_id": 5206
+  },
+  "quality_review": {
+    "anatomy_accuracy": 5,
+    "composition_quality": 5,
+    "findings": [
+      "Passed. The plate shows a single, anatomically coherent Red-shouldered Hawk: one head, one hooked bill, two wings, two yellow legs/feet, and one long, narrowly pale-banded tail.",
+      "All visible printed claims are supported: Buteo lineatus; Accipitridae; the stated length, wingspan, and weight; adult rufous barring, dark-and-pale checkered wings, black/dark tail with narrow pale bands, yellow cere and legs, immature streaking, and pale wing crescents.",
+      "The illustration agrees with the supplied adult field references in its rufous barred underparts, checkered upperwing, yellow cere/legs, hooked dark bill, and long banded tail. No place name, ZIP code, coordinates, map, or local-observation detail appears."
+    ],
+    "location_free": true,
+    "passed": true,
+    "species_accuracy": 5,
+    "text_accuracy": 5,
+    "verification_sources": [
+      {
+        "title": "Red-shouldered Hawk Identification \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Red-shouldered_Hawk/id"
+      },
+      {
+        "title": "Red-shouldered Hawk \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/red-shouldered-hawk"
+      }
+    ]
+  },
+  "references": [
+    {
+      "attribution": "(c) Don Loarie, some rights reserved (CC BY)",
+      "filename": "01-14603656.jpg",
+      "height": 1304,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/14603656/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 10499671,
+      "observer": "dloarie",
+      "photo_id": 14603656,
+      "sha256": "83c1bbd85ea924335f3ade8be28a344e3e7214bd7900f8d4537cb6f18a3d3421",
+      "source_url": "https://www.inaturalist.org/observations/10499671",
+      "width": 1578
+    },
+    {
+      "attribution": "(c) Alan Rockefeller, some rights reserved (CC BY)",
+      "filename": "02-346808436.jpg",
+      "height": 2048,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/346808436/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 196975178,
+      "observer": "alan_rockefeller",
+      "photo_id": 346808436,
+      "sha256": "87e1d04132041db826da8a18016f09045803400b17fff26c4edef3bcc676f614",
+      "source_url": "https://www.inaturalist.org/observations/196975178",
+      "width": 1669
+    },
+    {
+      "attribution": "(c) Michael, some rights reserved (CC BY)",
+      "filename": "03-621312144.jpg",
+      "height": 2048,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/621312144/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 341313307,
+      "observer": "mikeymacro",
+      "photo_id": 621312144,
+      "sha256": "8b19e851b267f6b1441df121fe910cfc874c412628679c845a9ba9740563b63d",
+      "source_url": "https://www.inaturalist.org/observations/341313307",
+      "width": 1639
+    },
+    {
+      "attribution": "no rights reserved",
+      "filename": "04-278213999.jpg",
+      "height": 1536,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/278213999/large.jpg",
+      "license_code": "cc0",
+      "observation_id": 160977484,
+      "observer": "erikschiff",
+      "photo_id": 278213999,
+      "sha256": "3fcea6c3542876df7c77c4e792c7ed6d5dc1fb0a143fa180ad5db3fa9ba3419f",
+      "source_url": "https://www.inaturalist.org/observations/160977484",
+      "width": 2048
+    }
+  ],
+  "schema_version": 1,
+  "scientific_name": "Buteo lineatus",
+  "slug": "red-shouldered-hawk",
+  "status": "approved",
+  "taxon_id": 5206
+}
