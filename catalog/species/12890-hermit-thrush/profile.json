@@ -1,0 +1,41 @@
+{
+  "behavior": "Ground-foraging thrush that hops and scrapes through leaf litter; often flicks its wings and slowly bobs or raises its tail.",
+  "common_name": "Hermit Thrush",
+  "family": "Turdidae",
+  "field_marks": [
+    "Rich brown to olive-brown upperparts",
+    "Warm reddish-brown tail contrasting with the browner back",
+    "Thin pale eye-ring around a dark eye",
+    "Pale underparts with dark spots on the throat and smudgy breast spotting",
+    "Round-headed, full-bodied profile with a slender straight bill and fairly long tail"
+  ],
+  "habitat": "Forest understory and floor, especially in deciduous, coniferous, or mixed woodland with edges, openings, shrubs, and leaf litter.",
+  "measurements": {
+    "length": "14\u201318 cm (5.5\u20137.1 in)",
+    "weight": "23\u201337 g (0.8\u20131.3 oz)",
+    "wingspan": "25\u201329 cm (9.8\u201311.4 in)"
+  },
+  "palette": [
+    "rich brown",
+    "olive-gray brown",
+    "warm rufous",
+    "pale buff-white",
+    "dark brown"
+  ],
+  "scientific_name": "Catharus guttatus",
+  "sources": [
+    {
+      "title": "Hermit Thrush Identification \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Hermit_Thrush/id"
+    },
+    {
+      "title": "Hermit Thrush \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/hermit-thrush"
+    },
+    {
+      "title": "Catharus guttatus \u2014 Animal Diversity Web",
+      "url": "https://animaldiversity.org/accounts/Catharus_guttatus/"
+    }
+  ],
+  "taxon_id": 12890
+}

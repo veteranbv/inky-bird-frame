@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-12T20:44:31+00:00",
+  "generated_at": "2026-07-12T22:43:37+00:00",
   "schema_version": 1,
   "species": [
     {
@@ -188,6 +188,17 @@
       "scientific_name": "Butorides virescens",
       "slug": "green-heron",
       "taxon_id": 5020
+    },
+    {
+      "approved_at": "2026-07-12T22:43:37+00:00",
+      "common_name": "Hermit Thrush",
+      "display_path": "species/12890-hermit-thrush/display.png",
+      "display_sha256": "ec0c730fc6ecb6d45b55db0b92d4932f305fd0e553af4d63f4cf7f70a49b53db",
+      "portrait_path": "species/12890-hermit-thrush/portrait.png",
+      "portrait_sha256": "6dbe0fcd16d684684525ad2d742e38728ba0f353d64bb21afbebdd5b20fab61f",
+      "scientific_name": "Catharus guttatus",
+      "slug": "hermit-thrush",
+      "taxon_id": 12890
     },
     {
       "approved_at": "2026-07-10T18:43:08+00:00",
