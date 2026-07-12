@@ -1,0 +1,42 @@
+{
+  "behavior": "Agile bark-forager; climbs trunks and large branches in any orientation, often head-down, probing crevices and caching seeds.",
+  "common_name": "White-breasted Nuthatch",
+  "family": "Sittidae",
+  "field_marks": [
+    "Compact, big-headed, almost neckless shape with a very short tail",
+    "Long, narrow, sharply pointed bill, straight to slightly upturned",
+    "Blue-gray back and folded wings",
+    "Crisp white face, throat, breast, and belly",
+    "Dark cap and nape: blacker in males, grayer in females",
+    "Chestnut to rusty wash or patches on the lower belly and under-tail coverts"
+  ],
+  "habitat": "Mature deciduous woodland and woodland edge; also mixed forest with large trees, parks, and gardens.",
+  "measurements": {
+    "length": "13\u201314 cm (5.1\u20135.5 in)",
+    "weight": "18\u201330 g (0.6\u20131.1 oz)",
+    "wingspan": "20\u201327 cm (7.9\u201310.6 in)"
+  },
+  "palette": [
+    "blue-gray upperparts",
+    "frosty white face and underparts",
+    "black cap",
+    "slate-gray bill and legs",
+    "chestnut-rust lower belly"
+  ],
+  "scientific_name": "Sitta carolinensis",
+  "sources": [
+    {
+      "title": "White-breasted Nuthatch Identification \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/White-breasted_Nuthatch/id"
+    },
+    {
+      "title": "White-breasted Nuthatch \u2014 Animal Diversity Web",
+      "url": "https://animaldiversity.org/accounts/Sitta_carolinensis/"
+    },
+    {
+      "title": "White-breasted Nuthatch \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/white-breasted-nuthatch"
+    }
+  ],
+  "taxon_id": 14801
+}
