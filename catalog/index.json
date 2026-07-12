@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-12T22:43:37+00:00",
+  "generated_at": "2026-07-12T22:52:05+00:00",
   "schema_version": 1,
   "species": [
     {
@@ -452,6 +452,17 @@
       "scientific_name": "Cathartes aura",
       "slug": "turkey-vulture",
       "taxon_id": 4756
+    },
+    {
+      "approved_at": "2026-07-12T22:52:05+00:00",
+      "common_name": "White-breasted Nuthatch",
+      "display_path": "species/14801-white-breasted-nuthatch/display.png",
+      "display_sha256": "5439f0e2e7d4057310926347c0b92f8bd88ee39fa2952000ba522f7bec3b3fa2",
+      "portrait_path": "species/14801-white-breasted-nuthatch/portrait.png",
+      "portrait_sha256": "11dde3330e26f4a63842cadcbf4ef02a6cfb76aefbf9111d6d5ddfeff0b16bd4",
+      "scientific_name": "Sitta carolinensis",
+      "slug": "white-breasted-nuthatch",
+      "taxon_id": 14801
     },
     {
       "approved_at": "2026-07-10T03:29:00+00:00",

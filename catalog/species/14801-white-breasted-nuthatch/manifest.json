@@ -1,0 +1,149 @@
+{
+  "approved_at": "2026-07-12T22:52:05+00:00",
+  "assets": {
+    "display": {
+      "filename": "display.png",
+      "sha256": "5439f0e2e7d4057310926347c0b92f8bd88ee39fa2952000ba522f7bec3b3fa2"
+    },
+    "portrait": {
+      "filename": "portrait.png",
+      "sha256": "11dde3330e26f4a63842cadcbf4ef02a6cfb76aefbf9111d6d5ddfeff0b16bd4"
+    }
+  },
+  "common_name": "White-breasted Nuthatch",
+  "generation": {
+    "attempt": 1,
+    "generated_at": "2026-07-12T22:52:05+00:00",
+    "generator": "Codex subscription / built-in gpt-image-2",
+    "max_attempts": 3,
+    "prompt_version": "field-journal-v2"
+  },
+  "profile": {
+    "behavior": "Agile bark-forager; climbs trunks and large branches in any orientation, often head-down, probing crevices and caching seeds.",
+    "common_name": "White-breasted Nuthatch",
+    "family": "Sittidae",
+    "field_marks": [
+      "Compact, big-headed, almost neckless shape with a very short tail",
+      "Long, narrow, sharply pointed bill, straight to slightly upturned",
+      "Blue-gray back and folded wings",
+      "Crisp white face, throat, breast, and belly",
+      "Dark cap and nape: blacker in males, grayer in females",
+      "Chestnut to rusty wash or patches on the lower belly and under-tail coverts"
+    ],
+    "habitat": "Mature deciduous woodland and woodland edge; also mixed forest with large trees, parks, and gardens.",
+    "measurements": {
+      "length": "13\u201314 cm (5.1\u20135.5 in)",
+      "weight": "18\u201330 g (0.6\u20131.1 oz)",
+      "wingspan": "20\u201327 cm (7.9\u201310.6 in)"
+    },
+    "palette": [
+      "blue-gray upperparts",
+      "frosty white face and underparts",
+      "black cap",
+      "slate-gray bill and legs",
+      "chestnut-rust lower belly"
+    ],
+    "scientific_name": "Sitta carolinensis",
+    "sources": [
+      {
+        "title": "White-breasted Nuthatch Identification \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/White-breasted_Nuthatch/id"
+      },
+      {
+        "title": "White-breasted Nuthatch \u2014 Animal Diversity Web",
+        "url": "https://animaldiversity.org/accounts/Sitta_carolinensis/"
+      },
+      {
+        "title": "White-breasted Nuthatch \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/white-breasted-nuthatch"
+      }
+    ],
+    "taxon_id": 14801
+  },
+  "quality_review": {
+    "anatomy_accuracy": 5,
+    "composition_quality": 4,
+    "findings": [
+      "Identity, taxonomy, measurements, habitat, behavior, and listed field marks are verified for Sitta carolinensis.",
+      "The plate accurately shows a single compact white-breasted nuthatch with one head, one pointed bill, two legs, two wings (one folded and one largely obscured), and one short tail; plumage, bill, eye, wings, feet, and rusty undertail area agree with the supplied reference photos.",
+      "No material text, species, anatomy, or location-detail errors found; no place name, ZIP code, coordinates, map, or local-observation detail appears."
+    ],
+    "location_free": true,
+    "passed": true,
+    "species_accuracy": 5,
+    "text_accuracy": 5,
+    "verification_sources": [
+      {
+        "title": "White-breasted Nuthatch Identification \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/White-breasted_Nuthatch/id"
+      },
+      {
+        "title": "White-breasted Nuthatch \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/white-breasted-nuthatch"
+      },
+      {
+        "title": "Sitta carolinensis \u2014 Animal Diversity Web",
+        "url": "https://animaldiversity.org/accounts/Sitta_carolinensis/"
+      }
+    ]
+  },
+  "references": [
+    {
+      "attribution": "(c) Rusty, some rights reserved (CC BY)",
+      "filename": "01-72686727.jpg",
+      "height": 927,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/72686727/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 45831168,
+      "observer": "crusty",
+      "photo_id": 72686727,
+      "sha256": "057b3e8ad171b73efffeb979b373cccdda929a6766c78cb85241110e12855c2d",
+      "source_url": "https://www.inaturalist.org/observations/45831168",
+      "width": 926
+    },
+    {
+      "attribution": "no rights reserved",
+      "filename": "02-174609302.jpeg",
+      "height": 1365,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/174609302/large.jpeg",
+      "license_code": "cc0",
+      "observation_id": 104225171,
+      "observer": "andywilson",
+      "photo_id": 174609302,
+      "sha256": "4be56650ecea9cc721e03858f66be28da12ce7c969ce9f775b77dc3aa6d93bc7",
+      "source_url": "https://www.inaturalist.org/observations/104225171",
+      "width": 2048
+    },
+    {
+      "attribution": "no rights reserved",
+      "filename": "03-343999842.jpg",
+      "height": 1099,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/343999842/large.jpg",
+      "license_code": "cc0",
+      "observation_id": 195523844,
+      "observer": "joy4birds",
+      "photo_id": 343999842,
+      "sha256": "d6f0824e9e3c680cb4f0bd14c479fca279398db7db0ef8068eefbf3f6aabb154",
+      "source_url": "https://www.inaturalist.org/observations/195523844",
+      "width": 1004
+    },
+    {
+      "attribution": "(c) Chris O'Donoghue, some rights reserved (CC BY)",
+      "filename": "04-478791488.jpg",
+      "height": 1638,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/478791488/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 266477746,
+      "observer": "codonoghue",
+      "photo_id": 478791488,
+      "sha256": "1a4843d5e80c6eb36e7734ecef611c27928954e727b9fb61e3f3207806b10ad5",
+      "source_url": "https://www.inaturalist.org/observations/266477746",
+      "width": 2048
+    }
+  ],
+  "schema_version": 1,
+  "scientific_name": "Sitta carolinensis",
+  "slug": "white-breasted-nuthatch",
+  "status": "approved",
+  "taxon_id": 14801
+}
