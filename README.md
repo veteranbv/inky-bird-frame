@@ -113,6 +113,32 @@ an opening that leaves the Pi, microSD card, and power connector accessible. The
 Pi connects directly to the display and does not need a separate case. A
 right-angle power cable is not required.
 
+### A reuse-first build
+
+The frame pictured below was built from parts already on hand: an Inky
+Impression display, a Compute Module 4, and a Waveshare carrier board. The CM4
+is larger and more powerful than the display role requires, but reusing it made
+this build practical without buying another computer. This is one working
+layout, not required hardware; the smaller Pi Zero 2 W above remains the
+recommended display node for a new build.
+
+<table>
+<tr>
+<td width="50%" align="center">
+<img src="docs/images/reference-build-open-back.jpg" alt="Open back of the framed display during assembly, with the panel and CM4 carrier visible" width="100%">
+<br><strong>Before the backing board.</strong> Heavy-duty duct tape holds the panel securely while the display node remains accessible.
+</td>
+<td width="50%" align="center">
+<img src="docs/images/reference-build-backing-cutout.jpg" alt="Rear backing board cut around the CM4 carrier in the assembled frame" width="100%">
+<br><strong>With the backing fitted.</strong> The supplied board was cut around the carrier so power, storage, and service access remain available.
+</td>
+</tr>
+</table>
+
+Whatever hardware you reuse, test-fit every layer before cutting the backing.
+Avoid pressure on the e-paper panel, keep the display cable relaxed, and leave
+connectors and ventilation unobstructed.
+
 ### Dedicated controller
 
 An existing 64-bit macOS or Linux computer can run the controller at no
