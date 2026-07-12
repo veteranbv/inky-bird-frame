@@ -1,0 +1,145 @@
+{
+  "approved_at": "2026-07-12T22:43:37+00:00",
+  "assets": {
+    "display": {
+      "filename": "display.png",
+      "sha256": "ec0c730fc6ecb6d45b55db0b92d4932f305fd0e553af4d63f4cf7f70a49b53db"
+    },
+    "portrait": {
+      "filename": "portrait.png",
+      "sha256": "6dbe0fcd16d684684525ad2d742e38728ba0f353d64bb21afbebdd5b20fab61f"
+    }
+  },
+  "common_name": "Hermit Thrush",
+  "generation": {
+    "attempt": 1,
+    "generated_at": "2026-07-12T22:43:37+00:00",
+    "generator": "Codex subscription / built-in gpt-image-2",
+    "max_attempts": 3,
+    "prompt_version": "field-journal-v2"
+  },
+  "profile": {
+    "behavior": "Ground-foraging thrush that hops and scrapes through leaf litter; often flicks its wings and slowly bobs or raises its tail.",
+    "common_name": "Hermit Thrush",
+    "family": "Turdidae",
+    "field_marks": [
+      "Rich brown to olive-brown upperparts",
+      "Warm reddish-brown tail contrasting with the browner back",
+      "Thin pale eye-ring around a dark eye",
+      "Pale underparts with dark spots on the throat and smudgy breast spotting",
+      "Round-headed, full-bodied profile with a slender straight bill and fairly long tail"
+    ],
+    "habitat": "Forest understory and floor, especially in deciduous, coniferous, or mixed woodland with edges, openings, shrubs, and leaf litter.",
+    "measurements": {
+      "length": "14\u201318 cm (5.5\u20137.1 in)",
+      "weight": "23\u201337 g (0.8\u20131.3 oz)",
+      "wingspan": "25\u201329 cm (9.8\u201311.4 in)"
+    },
+    "palette": [
+      "rich brown",
+      "olive-gray brown",
+      "warm rufous",
+      "pale buff-white",
+      "dark brown"
+    ],
+    "scientific_name": "Catharus guttatus",
+    "sources": [
+      {
+        "title": "Hermit Thrush Identification \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Hermit_Thrush/id"
+      },
+      {
+        "title": "Hermit Thrush \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/hermit-thrush"
+      },
+      {
+        "title": "Catharus guttatus \u2014 Animal Diversity Web",
+        "url": "https://animaldiversity.org/accounts/Catharus_guttatus/"
+      }
+    ],
+    "taxon_id": 12890
+  },
+  "quality_review": {
+    "anatomy_accuracy": 4,
+    "composition_quality": 5,
+    "findings": [
+      "Verified identity: the plate depicts a Hermit Thrush (Catharus guttatus) with the diagnostic brown upperparts, contrasting warm rufous tail, thin pale eye-ring, pale spotted throat/breast, round head, slender straight bill, and fairly long tail. These match the reference photos and the Cornell and Audubon guides.",
+      "All visible plate text is factually supported. The stated 14\u201318 cm length, 25\u201329 cm wingspan, and 23\u201337 g weight match Cornell exactly; Audubon gives a slightly different published length/wingspan range (16\u201319 cm; 28\u201330 cm), so the plate's figures remain valid rather than erroneous.",
+      "The bird has one head, one beak, two legs, and one tail. Its two wings are anatomically coherent: one is visible on the perched bird and the detached wing is clearly a study inset, not an additional attached limb. Feet and toes are somewhat stylized and visually busy, but retain plausible passerine perching anatomy.",
+      "No place name, ZIP code, coordinates, map, or local-observation detail appears on the candidate plate."
+    ],
+    "location_free": true,
+    "passed": true,
+    "species_accuracy": 5,
+    "text_accuracy": 5,
+    "verification_sources": [
+      {
+        "title": "Hermit Thrush Identification \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Hermit_Thrush/id"
+      },
+      {
+        "title": "Hermit Thrush \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/hermit-thrush"
+      }
+    ]
+  },
+  "references": [
+    {
+      "attribution": "(c) Laura Gaudette, some rights reserved (CC BY)",
+      "filename": "01-2709840.jpg",
+      "height": 1851,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/2709840/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 2432168,
+      "observer": "gaudettelaura",
+      "photo_id": 2709840,
+      "sha256": "513fbf7c8c738ceacec72f1a218ba906a74b106c313b77a3f25223b18c89f159",
+      "source_url": "http://www.inaturalist.org/observations/2432168",
+      "width": 1234
+    },
+    {
+      "attribution": "(c) James M. Maley, some rights reserved (CC BY)",
+      "filename": "02-118379876.jpg",
+      "height": 1536,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/118379876/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 72590641,
+      "observer": "jmaley",
+      "photo_id": 118379876,
+      "sha256": "bfaf3fc4849efceb6b370577d7001a16b39fa9d9ddebd83837af5e2b7468bffe",
+      "source_url": "https://www.inaturalist.org/observations/72590641",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) Paul Roots, some rights reserved (CC BY)",
+      "filename": "03-16842683.jpeg",
+      "height": 1536,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/16842683/large.jpeg",
+      "license_code": "cc-by",
+      "observation_id": 11775860,
+      "observer": "paulroots",
+      "photo_id": 16842683,
+      "sha256": "c739211b39304918177b083a1a1ffa58c7d58e286fe3f020b013f3bd0cddbb96",
+      "source_url": "https://www.inaturalist.org/observations/11775860",
+      "width": 2048
+    },
+    {
+      "attribution": "no rights reserved",
+      "filename": "04-266706129.jpeg",
+      "height": 1365,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/266706129/large.jpeg",
+      "license_code": "cc0",
+      "observation_id": 154359626,
+      "observer": "radrat",
+      "photo_id": 266706129,
+      "sha256": "dc6a13c4a5912143cc6eb62d82d9c5c4d70085e7f12bd82dfdea2dd24d3c308a",
+      "source_url": "https://www.inaturalist.org/observations/154359626",
+      "width": 2048
+    }
+  ],
+  "schema_version": 1,
+  "scientific_name": "Catharus guttatus",
+  "slug": "hermit-thrush",
+  "status": "approved",
+  "taxon_id": 12890
+}
