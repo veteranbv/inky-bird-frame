@@ -11,7 +11,7 @@ import subprocess
 from collections.abc import Iterator
 from contextlib import contextmanager
 from pathlib import Path
-from tempfile import TemporaryDirectory
+from tempfile import TemporaryDirectory, mkdtemp
 from typing import cast
 
 from PIL import Image
@@ -355,7 +355,8 @@ def sync_public_catalog(
     published: list[dict[str, object]] = []
     existing: list[int] = []
 
-    with TemporaryDirectory(prefix=".sync-", dir=destination_species) as temporary:
+    transaction = Path(mkdtemp(prefix=".sync-", dir=destination_species))
+    try:
         for taxon_id, entry in sorted(source_by_taxon.items()):
             source = source_catalog / "species" / f"{taxon_id}-{entry.slug}"
             matches = sorted(destination_species.glob(f"{taxon_id}-*"))
@@ -370,7 +371,7 @@ def sync_public_catalog(
                     )
                 existing.append(taxon_id)
                 continue
-            staged = Path(temporary) / source.name
+            staged = transaction / source.name
             shutil.copytree(source, staged)
             _validate_species_directory(staged)
             staged.replace(destination_species / source.name)
@@ -384,7 +385,11 @@ def sync_public_catalog(
             )
 
         rebuild_catalog_index(destination_catalog)
-    validate_public_catalog(destination_catalog)
+        shutil.rmtree(transaction)
+        validate_public_catalog(destination_catalog)
+    except BaseException:
+        transaction.mkdir(exist_ok=True)
+        raise
     return {"published": published, "already_present": existing}
 
 

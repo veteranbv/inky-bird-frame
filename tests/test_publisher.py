@@ -331,6 +331,30 @@ class PublisherTests(unittest.TestCase):
             self.assertEqual(result["already_present"], [1, 2])
             self.assertEqual(len(validate_public_catalog(destination)), 2)
 
+    def test_sync_preserves_transaction_marker_after_partial_failure(self) -> None:
+        with TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            source = root / "source"
+            recovery_source = root / "recovery-source"
+            destination = root / "destination"
+            _create_species(source, 1, "First Bird")
+            _create_species(source, 2, "Second Bird")
+            _create_species(recovery_source, 1, "First Bird")
+            _create_species(destination, 2, "Conflicting Bird")
+
+            with self.assertRaisesRegex(CatalogPublishError, "conflicts"):
+                sync_public_catalog(source, destination)
+
+            self.assertEqual(
+                len(list((destination / "species").glob(".sync-*"))),
+                1,
+            )
+            recovered = sync_public_catalog(recovery_source, destination)
+
+            self.assertEqual(recovered["already_present"], [1])
+            self.assertFalse(list((destination / "species").glob(".sync-*")))
+            self.assertEqual(len(validate_public_catalog(destination)), 2)
+
     def test_rejects_a_requested_taxon_missing_from_the_source_catalog(self) -> None:
         with TemporaryDirectory() as temporary:
             root = Path(temporary)
