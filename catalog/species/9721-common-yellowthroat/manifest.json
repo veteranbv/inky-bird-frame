@@ -1,0 +1,146 @@
+{
+  "approved_at": "2026-07-13T03:53:44+00:00",
+  "assets": {
+    "display": {
+      "filename": "display.png",
+      "sha256": "36c29347a48f94d6a4329ef932fe191f415052b2887c6c39e445cb39f52cb599"
+    },
+    "portrait": {
+      "filename": "portrait.png",
+      "sha256": "38c0fe36032caeb3ba82a81ad089ad6b91640d91b703b2aa88d11227be1c63ca"
+    }
+  },
+  "common_name": "Common Yellowthroat",
+  "generation": {
+    "attempt": 1,
+    "generated_at": "2026-07-13T03:53:44+00:00",
+    "generator": "Codex subscription / built-in gpt-image-2",
+    "max_attempts": 3,
+    "prompt_version": "field-journal-v2"
+  },
+  "profile": {
+    "behavior": "A secretive, active foliage-gleaner that usually stays low in dense cover, searching leaves and stems for insects and spiders; males often sing from a more exposed perch.",
+    "common_name": "Common Yellowthroat",
+    "family": "Parulidae",
+    "field_marks": [
+      "Small, rounded-headed warbler with a plump belly and medium-long, slightly rounded tail.",
+      "Adult male has a broad black face mask, cleanly edged above by a narrow pale gray-white band.",
+      "Underparts are bright yellow, strongest on the throat and breast; undertail coverts are yellow.",
+      "Upperparts, wings, and tail are olive to olive-brown; wings are plain, without obvious wing bars.",
+      "Female is plainer olive-brown above with yellow on the throat and breast, and lacks the black mask.",
+      "Fine, pointed dark bill; dark eye and slender pale pinkish legs."
+    ],
+    "habitat": "Dense, low vegetation in marshes, wet thickets, scrub, brushy field edges, and similar tangled cover; also uses grasslands and open woodland with thick understory.",
+    "measurements": {
+      "length": "11\u201313 cm (4.3\u20135.1 in)",
+      "weight": "9\u201311 g (0.3\u20130.4 oz)",
+      "wingspan": "15\u201319 cm (5.9\u20137.5 in)"
+    },
+    "palette": [
+      "bright yellow",
+      "olive green",
+      "olive-brown",
+      "black",
+      "pale gray-white"
+    ],
+    "scientific_name": "Geothlypis trichas",
+    "sources": [
+      {
+        "title": "Common Yellowthroat Identification \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/common_yellowthroat/id"
+      },
+      {
+        "title": "Common Yellowthroat Life History \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Common_Yellowthroat/lifehistory"
+      },
+      {
+        "title": "Common Yellowthroat \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/common-yellowthroat"
+      }
+    ],
+    "taxon_id": 9721
+  },
+  "quality_review": {
+    "anatomy_accuracy": 5,
+    "composition_quality": 5,
+    "findings": [
+      "Live verification confirms Common Yellowthroat (Geothlypis trichas), family Parulidae. Plate measurements match Audubon (11\u201313 cm; 15\u201319 cm wingspan; 9\u201311 g); Cornell lists 9\u201310 g, a minor source-range difference only.",
+      "The illustrated adult male correctly shows the black facial mask narrowly bordered above by pale gray-white, bright yellow throat/underparts, olive-brown upperparts and plain wings, pointed dark bill, dark eye, pale pinkish legs, rounded head, and medium-long rounded tail. The supplemental head and wing studies are consistent.",
+      "All visible species, habitat, behavior, measurement, palette, and field-mark text is supported or consistent with the checked sources. No place name, ZIP code, coordinates, map, or local-observation detail appears.",
+      "The illustration contains exactly one head, one beak, two wings, two legs, and one tail."
+    ],
+    "location_free": true,
+    "passed": true,
+    "species_accuracy": 5,
+    "text_accuracy": 5,
+    "verification_sources": [
+      {
+        "title": "Common Yellowthroat Identification \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Common_Yellowthroat/id"
+      },
+      {
+        "title": "Common Yellowthroat \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/common-yellowthroat"
+      }
+    ]
+  },
+  "references": [
+    {
+      "attribution": "no rights reserved",
+      "filename": "01-79301180.jpg",
+      "height": 1155,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/79301180/large.jpg",
+      "license_code": "cc0",
+      "observation_id": 49945853,
+      "observer": "davidfbird",
+      "photo_id": 79301180,
+      "sha256": "8683946f722661994339a096c995cfc360a6d6f236783a6b603af9c45bc95e7d",
+      "source_url": "https://www.inaturalist.org/observations/49945853",
+      "width": 1521
+    },
+    {
+      "attribution": "(c) Blake Ross, some rights reserved (CC BY)",
+      "filename": "02-233864191.jpg",
+      "height": 1535,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/233864191/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 136979527,
+      "observer": "blakemross",
+      "photo_id": 233864191,
+      "sha256": "e338023cf5132265a51aba93803fdc156fd32ed4ebf3adac7ede4ac0361a7d01",
+      "source_url": "https://www.inaturalist.org/observations/136979527",
+      "width": 2048
+    },
+    {
+      "attribution": "no rights reserved",
+      "filename": "03-645087346.jpg",
+      "height": 1000,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/645087346/large.jpg",
+      "license_code": "cc0",
+      "observation_id": 353562272,
+      "observer": "nonbinary-naturalist",
+      "photo_id": 645087346,
+      "sha256": "b1bf9ff0346587ea990cec93be0f65df200415be6513f2b4bed576f839e79c5a",
+      "source_url": "https://www.inaturalist.org/observations/353562272",
+      "width": 1000
+    },
+    {
+      "attribution": "(c) Shirley Zundell, some rights reserved (CC BY)",
+      "filename": "04-38393227.jpeg",
+      "height": 1549,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/38393227/large.jpeg",
+      "license_code": "cc-by",
+      "observation_id": 24823278,
+      "observer": "sdz456",
+      "photo_id": 38393227,
+      "sha256": "4f507a9c8a655958d6526ca70a9bdd14cb6ff2ad790787a500e817bfa9dc4616",
+      "source_url": "https://www.inaturalist.org/observations/24823278",
+      "width": 2048
+    }
+  ],
+  "schema_version": 1,
+  "scientific_name": "Geothlypis trichas",
+  "slug": "common-yellowthroat",
+  "status": "approved",
+  "taxon_id": 9721
+}

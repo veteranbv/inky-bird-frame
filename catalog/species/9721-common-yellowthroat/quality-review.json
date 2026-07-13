@@ -1,0 +1,24 @@
+{
+  "anatomy_accuracy": 5,
+  "composition_quality": 5,
+  "findings": [
+    "Live verification confirms Common Yellowthroat (Geothlypis trichas), family Parulidae. Plate measurements match Audubon (11\u201313 cm; 15\u201319 cm wingspan; 9\u201311 g); Cornell lists 9\u201310 g, a minor source-range difference only.",
+    "The illustrated adult male correctly shows the black facial mask narrowly bordered above by pale gray-white, bright yellow throat/underparts, olive-brown upperparts and plain wings, pointed dark bill, dark eye, pale pinkish legs, rounded head, and medium-long rounded tail. The supplemental head and wing studies are consistent.",
+    "All visible species, habitat, behavior, measurement, palette, and field-mark text is supported or consistent with the checked sources. No place name, ZIP code, coordinates, map, or local-observation detail appears.",
+    "The illustration contains exactly one head, one beak, two wings, two legs, and one tail."
+  ],
+  "location_free": true,
+  "passed": true,
+  "species_accuracy": 5,
+  "text_accuracy": 5,
+  "verification_sources": [
+    {
+      "title": "Common Yellowthroat Identification \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Common_Yellowthroat/id"
+    },
+    {
+      "title": "Common Yellowthroat \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/common-yellowthroat"
+    }
+  ]
+}

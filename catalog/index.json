@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-13T03:44:32+00:00",
+  "generated_at": "2026-07-13T03:53:44+00:00",
   "schema_version": 1,
   "species": [
     {
@@ -199,6 +199,17 @@
       "scientific_name": "Corvus corax",
       "slug": "common-raven",
       "taxon_id": 8010
+    },
+    {
+      "approved_at": "2026-07-13T03:53:44+00:00",
+      "common_name": "Common Yellowthroat",
+      "display_path": "species/9721-common-yellowthroat/display.png",
+      "display_sha256": "36c29347a48f94d6a4329ef932fe191f415052b2887c6c39e445cb39f52cb599",
+      "portrait_path": "species/9721-common-yellowthroat/portrait.png",
+      "portrait_sha256": "38c0fe36032caeb3ba82a81ad089ad6b91640d91b703b2aa88d11227be1c63ca",
+      "scientific_name": "Geothlypis trichas",
+      "slug": "common-yellowthroat",
+      "taxon_id": 9721
     },
     {
       "approved_at": "2026-07-10T03:40:16+00:00",
