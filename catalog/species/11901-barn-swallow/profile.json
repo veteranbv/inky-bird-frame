@@ -1,0 +1,38 @@
+{
+  "behavior": "Aerial insectivore; catches flying insects in agile, low, swooping flight with quick turns and little gliding.",
+  "common_name": "Barn Swallow",
+  "family": "Hirundinidae",
+  "field_marks": [
+    "Slender, streamlined swallow with very long, narrow, pointed wings.",
+    "Adult tail is long and deeply forked, with elongated outer streamers extending beyond the wingtips.",
+    "Steely blue to blue-black crown, back, wings, and tail.",
+    "Cinnamon to chestnut forehead and throat contrast with the dark blue face.",
+    "Underparts range from tawny or buff to pale; small white spots beneath the tail may show in flight.",
+    "Short, dark, broad-based bill and small dark legs."
+  ],
+  "habitat": "Open and semi-open country, including fields, grasslands, marshes, ponds, and coastal water; commonly forages over open ground or water and nests on sheltered human-made structures such as eaves, buildings, and bridges.",
+  "measurements": {
+    "length": "15\u201319 cm (5.9\u20137.5 in)",
+    "weight": "17\u201320 g (0.6\u20130.7 oz)",
+    "wingspan": "29\u201332 cm (11.4\u201312.6 in)"
+  },
+  "palette": [
+    "steely blue",
+    "blue-black",
+    "cinnamon chestnut",
+    "tawny buff",
+    "white"
+  ],
+  "scientific_name": "Hirundo rustica",
+  "sources": [
+    {
+      "title": "Barn Swallow Identification \u2014 All About Birds, Cornell Lab of Ornithology",
+      "url": "https://www.allaboutbirds.org/guide/Barn_Swallow/id"
+    },
+    {
+      "title": "Barn Swallow \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/barn-swallow?nid=4186&site=pa"
+    }
+  ],
+  "taxon_id": 11901
+}
