@@ -49,6 +49,7 @@ from .errors import (
     InsufficientReferencesError,
     MissingDependencyError,
     QualityReviewError,
+    SpeciesStateError,
 )
 from .geo import ZipLocation, lookup_us_zip
 from .http import write_json_atomic
@@ -625,15 +626,15 @@ def load_or_fetch_references(config: AppConfig, species: BirdSpecies) -> list[Re
         try:
             raw = json.loads(manifest_path.read_text())
         except json.JSONDecodeError as exc:
-            raise CatalogError(f"Invalid reference manifest: {manifest_path}") from exc
+            raise SpeciesStateError(f"Invalid reference manifest: {manifest_path}") from exc
         if not isinstance(raw, dict) or not isinstance(raw.get("references"), list):
-            raise CatalogError(f"Invalid reference manifest: {manifest_path}")
+            raise SpeciesStateError(f"Invalid reference manifest: {manifest_path}")
         references = [_reference_from_dict(item) for item in raw["references"]]
         missing = [
             item.filename for item in references if not (directory / item.filename).is_file()
         ]
         if missing:
-            raise CatalogError(f"Reference files are missing: {', '.join(missing)}")
+            raise SpeciesStateError(f"Reference files are missing: {', '.join(missing)}")
         return references
 
     candidates = fetch_reference_candidates(
@@ -673,11 +674,11 @@ def load_or_create_profile(
         try:
             raw = json.loads(cache_path.read_text())
         except json.JSONDecodeError as exc:
-            raise CatalogError(f"Invalid cached species profile: {cache_path}") from exc
+            raise SpeciesStateError(f"Invalid cached species profile: {cache_path}") from exc
         try:
             profile = parse_species_profile(raw, config.research.allowed_domains)
         except GenerationError as exc:
-            raise CatalogError(f"Invalid cached species profile: {cache_path}") from exc
+            raise SpeciesStateError(f"Invalid cached species profile: {cache_path}") from exc
     else:
         if not config.research.enabled:
             raise GenerationError(
@@ -703,7 +704,7 @@ def load_or_create_profile(
         or profile["common_name"] != species.common_name
         or profile["scientific_name"] != species.scientific_name
     ):
-        raise CatalogError(
+        raise SpeciesStateError(
             f"Cached species profile identity does not match taxon {species.taxon_id}"
         )
     write_json_atomic(output_path, profile)
@@ -957,7 +958,7 @@ def run_generation_cycle(config: AppConfig) -> dict[str, object]:
                 )
             except MissingDependencyError:
                 raise
-            except CatalogError as exc:
+            except SpeciesStateError as exc:
                 retry_store.clear(species.taxon_id)
                 failure_path = record_failure(config.controller.state_dir, species, exc)
                 failures.append(
@@ -969,6 +970,8 @@ def run_generation_cycle(config: AppConfig) -> dict[str, object]:
                         "terminal": True,
                     }
                 )
+            except CatalogError:
+                raise
             except InkyBirdFrameError as exc:
                 retry = retry_store.record_failure(
                     species.taxon_id,

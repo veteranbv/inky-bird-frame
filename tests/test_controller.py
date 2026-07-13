@@ -37,6 +37,7 @@ from inky_bird_frame.errors import (
     GenerationError,
     InsufficientReferencesError,
     QualityReviewError,
+    SpeciesStateError,
 )
 from inky_bird_frame.geo import ZipLocation
 from inky_bird_frame.models import QualityReview, SpeciesProfileData
@@ -813,6 +814,28 @@ class ControllerTests(unittest.TestCase):
             self.assertEqual(first_failure["error"], "profile failed")
             self.assertFalse(first_failure["terminal"])
 
+    def test_catalog_wide_error_still_aborts_the_cycle(self) -> None:
+        species = BirdSpecies(9083, "Northern Cardinal", "Cardinalis cardinalis", 2, "test")
+        location = ZipLocation("12345", "Exampleville", "XY", 1.0, 2.0)
+        with TemporaryDirectory() as temporary:
+            config_path = Path(temporary) / "config.toml"
+            config_path.write_text(CONFIG)
+            config = load_config(config_path)
+            with (
+                patch(
+                    "inky_bird_frame.controller.discover_species",
+                    return_value=discovery_result(location, [species]),
+                ),
+                patch(
+                    "inky_bird_frame.controller.generate_candidate",
+                    side_effect=CatalogError("Asset checksum mismatch: catalog corrupt"),
+                ),
+                self.assertRaisesRegex(CatalogError, "catalog corrupt"),
+            ):
+                run_controller_cycle(config)
+
+            self.assertEqual(list((config.controller.state_dir / "failed").glob("*")), [])
+
     def test_catalog_failure_is_terminal_for_species_without_aborting_cycle(self) -> None:
         species = BirdSpecies(9083, "Northern Cardinal", "Cardinalis cardinalis", 2, "test")
         location = ZipLocation("12345", "Exampleville", "XY", 1.0, 2.0)
@@ -827,7 +850,7 @@ class ControllerTests(unittest.TestCase):
                 ),
                 patch("inky_bird_frame.controller.generate_candidate") as generate,
             ):
-                generate.side_effect = CatalogError("cached references are invalid")
+                generate.side_effect = SpeciesStateError("cached references are invalid")
                 result = run_controller_cycle(config)
 
             failures = list((config.controller.state_dir / "failed").glob("9083-*"))

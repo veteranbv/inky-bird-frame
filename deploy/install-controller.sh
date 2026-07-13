@@ -295,12 +295,10 @@ if [ -f "${catalog_publish_plist}" ]; then
 fi
 
 launchctl bootout "gui/${uid}/com.inky-bird-frame.serve" 2>/dev/null || true
-launchctl bootout "gui/${uid}/com.inky-bird-frame.controller-cycle" 2>/dev/null || true
 launchctl bootout "gui/${uid}/com.inky-bird-frame.refresh" 2>/dev/null || true
 launchctl bootout "gui/${uid}/com.inky-bird-frame.generate" 2>/dev/null || true
 launchctl bootout "gui/${uid}/com.inky-bird-frame.catalog-publish" 2>/dev/null || true
 launchctl bootout "gui/${uid}/com.inky-bird-frame.notifications" 2>/dev/null || true
-rm -f "${legacy_cycle_plist}"
 launchctl bootstrap "gui/${uid}" "${serve_plist}"
 launchctl bootstrap "gui/${uid}" "${refresh_plist}"
 launchctl bootstrap "gui/${uid}" "${generation_plist}"
@@ -321,6 +319,10 @@ if [ -f "${notifications_plist}" ]; then
 fi
 
 installation_complete=true
+# Remove the legacy single-agent layout only after the new agents verified,
+# so a failed upgrade leaves the previous controller runnable.
+launchctl bootout "gui/${uid}/com.inky-bird-frame.controller-cycle" 2>/dev/null || true
+rm -f "${legacy_cycle_plist}"
 echo "Controller installed from ${root} into ${app_dir}."
 echo "Configuration: ${config_path}"
 echo "Logs: ${log_dir}"

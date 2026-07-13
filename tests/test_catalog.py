@@ -154,6 +154,23 @@ class CatalogTests(unittest.TestCase):
                 [species.taxon_id],
             )
 
+    def test_successful_approval_leaves_no_staging_directory(self) -> None:
+        species = BirdSpecies(7513, "Carolina Wren", "Thryothorus ludovicianus", 5, "test")
+        review = QualityReview(True, 4, 4, 4, 4, True, ())
+        with TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            state = root / "state"
+            catalog = root / "catalog"
+            make_candidate(state, species, review)
+
+            approve_candidate(state, catalog, species.taxon_id)
+
+            self.assertFalse((catalog / ".staging").exists())
+            self.assertEqual(
+                sorted(path.name for path in catalog.iterdir()),
+                ["index.json", "species"],
+            )
+
     def test_partial_destination_is_discarded_and_reapproved_from_pending(self) -> None:
         species = BirdSpecies(7513, "Carolina Wren", "Thryothorus ludovicianus", 5, "test")
         review = QualityReview(True, 4, 4, 4, 4, True, ())

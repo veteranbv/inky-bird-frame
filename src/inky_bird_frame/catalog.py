@@ -7,7 +7,7 @@ import hashlib
 import json
 import shutil
 from collections.abc import Iterator
-from contextlib import contextmanager
+from contextlib import contextmanager, suppress
 from dataclasses import dataclass
 from datetime import UTC, datetime
 from pathlib import Path
@@ -275,11 +275,15 @@ def is_bounded_generation(generation: object) -> bool:
 
 
 def clear_catalog_staging(catalog_dir: Path, name: str | None = None) -> None:
-    target = catalog_dir / ".staging" if name is None else catalog_dir / ".staging" / name
+    staging = catalog_dir / ".staging"
+    target = staging if name is None else staging / name
     if target.is_symlink() or target.is_file():
         target.unlink()
     elif target.is_dir():
         shutil.rmtree(target)
+    if name is not None:
+        with suppress(OSError):
+            staging.rmdir()
 
 
 def _asset_manifest_entries(
@@ -383,6 +387,9 @@ def approve_candidate(state_dir: Path, catalog_dir: Path, taxon_id: int) -> Cata
     write_json_atomic(staged / "manifest.json", approved_manifest)
     destination.parent.mkdir(parents=True, exist_ok=True)
     staged.rename(destination)
+    # An empty .staging directory would fail the publish root allowlist.
+    with suppress(OSError):
+        staged.parent.rmdir()
     shutil.rmtree(source)
     entries = rebuild_catalog_index(catalog_dir)
     return next(entry for entry in entries if entry.taxon_id == taxon_id)
