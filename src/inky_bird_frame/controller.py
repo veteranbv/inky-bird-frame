@@ -35,8 +35,8 @@ from .catalog import (
     has_passing_sourced_review,
     is_bounded_generation,
     rebuild_catalog_index,
+    utc_now,
     write_candidate_manifest,
-    write_json_atomic,
 )
 from .codex_runner import CodexRunner, parse_species_profile
 from .config import AppConfig, DiscoveryProvider, discovery_source_label
@@ -50,6 +50,7 @@ from .errors import (
     QualityReviewError,
 )
 from .geo import ZipLocation, lookup_us_zip
+from .http import write_json_atomic
 from .images import prepare_generated_plate
 from .models import ReferencePhoto, SpeciesProfileData
 from .prompts import PROMPT_VERSION
@@ -411,7 +412,7 @@ def _write_generation_queue(config: AppConfig, species: list[BirdSpecies]) -> No
         _generation_queue_path(config),
         {
             "schema_version": 2,
-            "updated_at": datetime.now(UTC).replace(microsecond=0).isoformat(),
+            "updated_at": utc_now(),
             "species": [_species_payload(item) for item in species],
         },
     )
@@ -500,7 +501,7 @@ def _write_active_catalog(config: AppConfig, species_list: list[BirdSpecies]) ->
         _active_catalog_path(config),
         {
             "schema_version": 1,
-            "generated_at": datetime.now(UTC).replace(microsecond=0).isoformat(),
+            "generated_at": utc_now(),
             "species": active,
         },
     )
@@ -821,7 +822,7 @@ def record_failure(state_dir: Path, species: BirdSpecies, error: InkyBirdFrameEr
         {
             "schema_version": 1,
             "status": "failed",
-            "failed_at": datetime.now(UTC).replace(microsecond=0).isoformat(),
+            "failed_at": utc_now(),
             "taxon_id": species.taxon_id,
             "common_name": species.common_name,
             "scientific_name": species.scientific_name,

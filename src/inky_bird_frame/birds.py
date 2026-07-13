@@ -10,12 +10,11 @@ from dataclasses import dataclass, replace
 from datetime import UTC, date, datetime, timedelta
 from enum import StrEnum
 from pathlib import Path
-from tempfile import NamedTemporaryFile
 from typing import Final
 from urllib.parse import quote, urlencode
 
 from .errors import DataSourceError, TaxonomyMatchError
-from .http import get_json
+from .http import get_json, write_json_atomic
 
 
 @dataclass(frozen=True)
@@ -625,21 +624,7 @@ def _read_taxonomy_crosswalk(path: Path) -> dict[str, dict[str, object]]:
 
 
 def _write_taxonomy_crosswalk(path: Path, entries: dict[str, dict[str, object]]) -> None:
-    path.parent.mkdir(parents=True, exist_ok=True)
-    with NamedTemporaryFile(
-        "w",
-        dir=path.parent,
-        prefix=f".{path.name}.",
-        suffix=".tmp",
-        delete=False,
-    ) as handle:
-        json.dump({"schema_version": 1, "entries": entries}, handle, indent=2, sort_keys=True)
-        handle.write("\n")
-        temporary = Path(handle.name)
-    try:
-        temporary.replace(path)
-    finally:
-        temporary.unlink(missing_ok=True)
+    write_json_atomic(path, {"schema_version": 1, "entries": entries})
 
 
 def parse_inaturalist_taxon(payload: object) -> TaxonContext:

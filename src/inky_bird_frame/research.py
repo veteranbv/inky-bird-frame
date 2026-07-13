@@ -6,8 +6,8 @@ import json
 from datetime import UTC, date, datetime
 from pathlib import Path
 
-from .catalog import write_json_atomic
 from .errors import CatalogError, GenerationError
+from .http import write_json_atomic
 
 
 class ResearchBudget:

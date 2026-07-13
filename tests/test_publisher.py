@@ -10,9 +10,10 @@ from unittest.mock import patch
 
 from PIL import Image, PngImagePlugin
 
-from inky_bird_frame.catalog import rebuild_catalog_index, sha256_file, write_json_atomic
+from inky_bird_frame.catalog import rebuild_catalog_index, sha256_file
 from inky_bird_frame.config import PublicCatalogConfig, load_config
 from inky_bird_frame.errors import CatalogPublishError
+from inky_bird_frame.http import write_json_atomic
 from inky_bird_frame.publisher import (
     _remote_repository,
     _validate_checkout,

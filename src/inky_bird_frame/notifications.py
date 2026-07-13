@@ -14,9 +14,9 @@ from typing import TYPE_CHECKING
 from urllib.parse import urlsplit
 from uuid import uuid4
 
-from .catalog import write_json_atomic
 from .config import AppConfig, NotificationDestination, NotificationEvent
 from .errors import CatalogError, ConfigurationError, MissingDependencyError
+from .http import write_json_atomic
 
 if TYPE_CHECKING:
     import apprise

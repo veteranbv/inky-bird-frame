@@ -14,11 +14,11 @@ from pathlib import Path
 from typing import cast
 from urllib.parse import quote
 
-from .catalog import CatalogEntry, write_json_atomic
+from .catalog import CatalogEntry
 from .config import DisplayNodeConfig, RotationMode
 from .display import show_on_inky
 from .errors import CatalogError
-from .http import get_bytes, get_json, write_bytes_atomic
+from .http import get_bytes, get_json, write_bytes_atomic, write_json_atomic
 from .selection import select_catalog_entry, select_shuffle_bag_entry
 
 DISPLAY_STATE_SCHEMA_VERSION = 3

@@ -4,17 +4,8 @@ from __future__ import annotations
 
 import random
 
-from .birds import BirdSpecies
 from .catalog import CatalogEntry
 from .config import RotationMode
-
-
-def select_rotating_species(species: list[BirdSpecies], step: int = 0) -> BirdSpecies:
-    if not species:
-        raise ValueError("species list must not be empty")
-    if step < 0:
-        raise ValueError("step must be zero or greater")
-    return species[step % len(species)]
 
 
 def select_catalog_entry(

@@ -7,8 +7,9 @@ from dataclasses import dataclass
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
 
-from .catalog import write_json_atomic
+from .catalog import utc_now
 from .errors import CatalogError
+from .http import write_json_atomic
 
 
 @dataclass(frozen=True)
@@ -123,7 +124,7 @@ class RetryStore:
             self.path,
             {
                 "schema_version": 1,
-                "updated_at": datetime.now(UTC).replace(microsecond=0).isoformat(),
+                "updated_at": utc_now(),
                 "records": [
                     record.as_dict()
                     for record in sorted(self._records.values(), key=lambda item: item.taxon_id)

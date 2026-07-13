@@ -12,9 +12,9 @@ from inky_bird_frame.catalog import (
     candidate_directory,
     rebuild_catalog_index,
     write_candidate_manifest,
-    write_json_atomic,
 )
 from inky_bird_frame.errors import CatalogError
+from inky_bird_frame.http import write_json_atomic
 from inky_bird_frame.models import QualityReview, SpeciesProfileData
 
 PROFILE = SpeciesProfileData(
