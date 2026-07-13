@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-13T04:34:30+00:00",
+  "generated_at": "2026-07-13T04:49:46+00:00",
   "schema_version": 1,
   "species": [
     {
@@ -276,6 +276,17 @@
       "scientific_name": "Spizella pusilla",
       "slug": "field-sparrow",
       "taxon_id": 9152
+    },
+    {
+      "approved_at": "2026-07-13T04:49:46+00:00",
+      "common_name": "Fish Crow",
+      "display_path": "species/8001-fish-crow/display.png",
+      "display_sha256": "c0cc60f86620b14f787a8b7f7bd09f60bfdf9465846f505b04ecac2c1b954da9",
+      "portrait_path": "species/8001-fish-crow/portrait.png",
+      "portrait_sha256": "13307b6ae0f9318359481036f79b1945984629b7ccc098d2a5b0a9d3fe8489e7",
+      "scientific_name": "Corvus ossifragus",
+      "slug": "fish-crow",
+      "taxon_id": 8001
     },
     {
       "approved_at": "2026-07-10T13:55:53+00:00",

@@ -1,0 +1,42 @@
+{
+  "behavior": "Social, omnivorous ground-forager; often forages in flocks and gives short nasal calls.",
+  "common_name": "Fish Crow",
+  "family": "Corvidae",
+  "field_marks": [
+    "Entirely black plumage, often with a subtle green-purple sheen",
+    "Heavy, glossy black bill",
+    "Dark black eyes",
+    "Sturdy black legs and feet",
+    "Broad, fingered wings with slightly pointed tips",
+    "Rounded to square-tipped tail"
+  ],
+  "habitat": "Wetlands and water-associated habitats including shorelines, estuaries, marshes, swamps, rivers, lakes, ponds, and adjacent woodland; also uses urban and agricultural areas.",
+  "measurements": {
+    "length": "36\u201341 cm",
+    "weight": "195\u2013350 g",
+    "wingspan": "77\u201385 cm"
+  },
+  "palette": [
+    "black",
+    "charcoal black",
+    "blue-black",
+    "green-purple iridescence",
+    "dark gray"
+  ],
+  "scientific_name": "Corvus ossifragus",
+  "sources": [
+    {
+      "title": "Fish Crow Identification \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Fish_Crow/id"
+    },
+    {
+      "title": "Fish Crow \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/fish-crow"
+    },
+    {
+      "title": "Corvus ossifragus \u2014 Animal Diversity Web",
+      "url": "https://animaldiversity.org/accounts/Corvus_ossifragus/"
+    }
+  ],
+  "taxon_id": 8001
+}

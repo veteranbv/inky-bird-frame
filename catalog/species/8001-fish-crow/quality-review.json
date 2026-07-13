@@ -1,0 +1,28 @@
+{
+  "anatomy_accuracy": 4,
+  "composition_quality": 5,
+  "findings": [
+    "The plate depicts a single anatomically coherent crow: one head, one beak, two legs and feet, one tail, and a folded wing plus the opposite wing implied behind the body; the separate lower-left wing study is consistent with the bird rather than an extra appendage.",
+    "Plumage, glossy dark bill, dark eye, sturdy black legs and feet, broad fingered/pointed wing treatment, and rounded-to-square tail treatment agree with the licensed reference photos and verified Fish Crow descriptions. The bill is illustrated somewhat more massive than typical, but remains plausible.",
+    "All visible taxonomic, habitat, behavior, palette, and measurement claims are supported. The stated 36\u201341 cm length, 77\u201385 cm wingspan, and 280\u2013350 g weight match Audubon's published range.",
+    "No place name, ZIP code, coordinates, map, or local-observation detail appears."
+  ],
+  "location_free": true,
+  "passed": true,
+  "species_accuracy": 4,
+  "text_accuracy": 5,
+  "verification_sources": [
+    {
+      "title": "Fish Crow Identification \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/fish_crow/id"
+    },
+    {
+      "title": "Fish Crow \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/fish-crow"
+    },
+    {
+      "title": "Corvus ossifragus \u2014 Animal Diversity Web",
+      "url": "https://animaldiversity.org/accounts/Corvus_ossifragus/"
+    }
+  ]
+}
