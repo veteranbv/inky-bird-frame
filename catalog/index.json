@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-13T05:55:39+00:00",
+  "generated_at": "2026-07-13T06:08:35+00:00",
   "schema_version": 1,
   "species": [
     {
@@ -540,6 +540,17 @@
       "scientific_name": "Pandion haliaetus",
       "slug": "osprey",
       "taxon_id": 116999
+    },
+    {
+      "approved_at": "2026-07-13T06:08:35+00:00",
+      "common_name": "Ovenbird",
+      "display_path": "species/62550-ovenbird/display.png",
+      "display_sha256": "0716d12305653038bfe9dcf9de5ab05cd884b929098c27cfea5f9d85b11d51d9",
+      "portrait_path": "species/62550-ovenbird/portrait.png",
+      "portrait_sha256": "208eff57af566684f830f67180946d29d75744eea1ec8dc591706482c6b6b2ca",
+      "scientific_name": "Seiurus aurocapilla",
+      "slug": "ovenbird",
+      "taxon_id": 62550
     },
     {
       "approved_at": "2026-07-10T18:19:56+00:00",
