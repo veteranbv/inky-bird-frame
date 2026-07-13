@@ -145,6 +145,55 @@ class ConfigTests(unittest.TestCase):
             with self.assertRaisesRegex(ConfigurationError, "up to 30 days"):
                 load_config(path)
 
+    def test_birdweather_source_requires_a_station_token(self) -> None:
+        with TemporaryDirectory() as temporary:
+            path = Path(temporary) / "config.toml"
+            path.write_text(
+                CONFIG.replace("[discovery]\n", '[discovery]\nsource = "birdweather"\n')
+            )
+
+            with self.assertRaisesRegex(ConfigurationError, "requires birdweather_token"):
+                load_config(path)
+
+    def test_birdweather_token_can_come_from_environment(self) -> None:
+        configured = CONFIG.replace(
+            "[discovery]\n",
+            '[discovery]\nsource = "birdweather"\n'
+            'birdweather_token_env = "TEST_BIRDWEATHER_TOKEN"\n',
+        )
+        with TemporaryDirectory() as temporary:
+            path = Path(temporary) / "config.toml"
+            path.write_text(configured)
+            with patch.dict("os.environ", {"TEST_BIRDWEATHER_TOKEN": "secret"}):
+                config = load_config(path)
+
+        self.assertIs(config.discovery.source, DiscoverySource.BIRDWEATHER)
+        self.assertEqual(config.discovery.birdweather_token, "secret")
+
+    def test_all_source_requires_both_provider_credentials(self) -> None:
+        configured = CONFIG.replace(
+            "[discovery]\n",
+            '[discovery]\nsource = "all"\nebird_api_key = "ebird-secret"\n',
+        )
+        with TemporaryDirectory() as temporary:
+            path = Path(temporary) / "config.toml"
+            path.write_text(configured)
+
+            with self.assertRaisesRegex(ConfigurationError, "requires birdweather_token"):
+                load_config(path)
+
+    def test_birdweather_rejects_species_limit_over_api_maximum(self) -> None:
+        configured = CONFIG.replace(
+            "[discovery]\n",
+            '[discovery]\nsource = "birdweather"\nbirdweather_token = "secret"\n',
+        ).replace("species_limit = 20", "species_limit = 101")
+        with TemporaryDirectory() as temporary:
+            path = Path(temporary) / "config.toml"
+            path.write_text(configured)
+
+            with self.assertRaisesRegex(ConfigurationError, "must not exceed 100"):
+                load_config(path)
+
     def test_rejects_invalid_zip(self) -> None:
         with TemporaryDirectory() as temporary:
             path = Path(temporary) / "config.toml"

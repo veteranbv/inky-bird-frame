@@ -458,6 +458,7 @@ def config_validate_command(args: argparse.Namespace) -> int:
             "discovery": {
                 "source": config.discovery.source.value,
                 "ebird_configured": config.discovery.ebird_api_key is not None,
+                "birdweather_configured": config.discovery.birdweather_token is not None,
                 "window": config.discovery.observation_window.value,
                 "radius_km": config.discovery.radius_km,
             },

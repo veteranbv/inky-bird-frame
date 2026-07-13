@@ -26,10 +26,16 @@ class DiscoverySource(StrEnum):
     INATURALIST = "inaturalist"
     EBIRD = "ebird"
     COMBINED = "combined"
+    BIRDWEATHER = "birdweather"
+    ALL = "all"
 
     @property
     def uses_ebird(self) -> bool:
-        return self in {DiscoverySource.EBIRD, DiscoverySource.COMBINED}
+        return self in {DiscoverySource.EBIRD, DiscoverySource.COMBINED, DiscoverySource.ALL}
+
+    @property
+    def uses_birdweather(self) -> bool:
+        return self in {DiscoverySource.BIRDWEATHER, DiscoverySource.ALL}
 
 
 def parse_discovery_source(value: str) -> DiscoverySource:
@@ -70,6 +76,8 @@ class DiscoveryConfig:
     source: DiscoverySource = DiscoverySource.INATURALIST
     ebird_api_key: str | None = field(default=None, repr=False)
     ebird_api_key_env: str | None = field(default=None, repr=False)
+    birdweather_token: str | None = field(default=None, repr=False)
+    birdweather_token_env: str | None = field(default=None, repr=False)
 
 
 @dataclass(frozen=True)
@@ -310,6 +318,38 @@ def _executable_path(value: str, base_dir: Path) -> Path:
     return Path(resolved) if resolved is not None else path
 
 
+def _private_value(
+    section: dict[str, object],
+    name: str,
+    *,
+    required: bool,
+    provider_name: str,
+) -> tuple[str | None, str | None]:
+    direct_value = section.get(name)
+    environment_name = section.get(f"{name}_env")
+    if direct_value is not None and (not isinstance(direct_value, str) or not direct_value.strip()):
+        raise ConfigurationError(f"{name} must be a non-empty string")
+    if environment_name is not None and (
+        not isinstance(environment_name, str) or not environment_name.strip()
+    ):
+        raise ConfigurationError(f"{name}_env must be a non-empty string")
+    if direct_value is not None and environment_name is not None:
+        raise ConfigurationError(f"Choose {name} or {name}_env, not both")
+
+    resolved = direct_value.strip() if isinstance(direct_value, str) else None
+    variable = environment_name.strip() if isinstance(environment_name, str) else None
+    if variable is not None:
+        environment_value = environ.get(variable)
+        resolved = environment_value.strip() if environment_value else None
+        if required and resolved is None:
+            raise ConfigurationError(
+                f"{provider_name} discovery requires environment variable {variable}"
+            )
+    if required and resolved is None:
+        raise ConfigurationError(f"{provider_name} discovery requires {name} or {name}_env")
+    return resolved, variable
+
+
 def load_config(path: Path) -> AppConfig:
     try:
         raw = tomllib.loads(path.read_text())
@@ -349,26 +389,18 @@ def load_config(path: Path) -> AppConfig:
     if species_limit <= 0:
         raise ConfigurationError("species_limit must be greater than zero")
 
-    ebird_api_key_value = discovery.get("ebird_api_key")
-    ebird_api_key_env_value = discovery.get("ebird_api_key_env")
-    if ebird_api_key_value is not None and (
-        not isinstance(ebird_api_key_value, str) or not ebird_api_key_value.strip()
-    ):
-        raise ConfigurationError("ebird_api_key must be a non-empty string")
-    if ebird_api_key_env_value is not None and (
-        not isinstance(ebird_api_key_env_value, str) or not ebird_api_key_env_value.strip()
-    ):
-        raise ConfigurationError("ebird_api_key_env must be a non-empty string")
-    if ebird_api_key_value is not None and ebird_api_key_env_value is not None:
-        raise ConfigurationError("Choose ebird_api_key or ebird_api_key_env, not both")
-    ebird_api_key = ebird_api_key_value.strip() if isinstance(ebird_api_key_value, str) else None
-    if ebird_api_key_env_value is not None:
-        environment_value = environ.get(ebird_api_key_env_value)
-        ebird_api_key = environment_value.strip() if environment_value else None
-        if ebird_api_key is None and discovery_source.uses_ebird:
-            raise ConfigurationError(
-                f"eBird discovery requires environment variable {ebird_api_key_env_value}"
-            )
+    ebird_api_key, ebird_api_key_env = _private_value(
+        discovery,
+        "ebird_api_key",
+        required=discovery_source.uses_ebird,
+        provider_name="eBird",
+    )
+    birdweather_token, birdweather_token_env = _private_value(
+        discovery,
+        "birdweather_token",
+        required=discovery_source.uses_birdweather,
+        provider_name="BirdWeather",
+    )
     if discovery_source.uses_ebird:
         if window in {ObservationWindow.LAST_YEAR, ObservationWindow.ALL_TIME}:
             raise ConfigurationError("eBird discovery supports observation windows up to 30 days")
@@ -376,8 +408,8 @@ def load_config(path: Path) -> AppConfig:
             raise ConfigurationError("eBird discovery radius_km must not exceed 50")
         if species_limit > 10_000:
             raise ConfigurationError("eBird species_limit must not exceed 10000")
-        if ebird_api_key is None:
-            raise ConfigurationError("eBird discovery requires ebird_api_key or ebird_api_key_env")
+    if discovery_source.uses_birdweather and species_limit > 100:
+        raise ConfigurationError("BirdWeather species_limit must not exceed 100")
 
     controller_url = _string(display_node, "controller_url").rstrip("/")
     if not controller_url.startswith(("http://", "https://")):
@@ -447,9 +479,9 @@ def load_config(path: Path) -> AppConfig:
             species_limit=species_limit,
             observation_window=window,
             ebird_api_key=ebird_api_key,
-            ebird_api_key_env=(
-                ebird_api_key_env_value if isinstance(ebird_api_key_env_value, str) else None
-            ),
+            ebird_api_key_env=ebird_api_key_env,
+            birdweather_token=birdweather_token,
+            birdweather_token_env=birdweather_token_env,
         ),
         controller=ControllerConfig(
             workspace_dir=_path(_string(controller, "workspace_dir"), base_dir),

@@ -9,18 +9,22 @@ from urllib.parse import parse_qs, urlsplit
 
 from inky_bird_frame.birds import (
     BirdSpecies,
+    BirdWeatherSpecies,
     EbirdSpecies,
     ObservationWindow,
     date_range_for_window,
+    fetch_birdweather_species,
     fetch_ebird_observations,
     fetch_inaturalist_birds,
     fetch_taxon_context,
     parse_birdnet_taxon,
+    parse_birdweather_species,
     parse_ebird_observations,
     parse_inaturalist_species_counts,
     parse_inaturalist_taxon,
     parse_inaturalist_taxon_match,
     parse_observation_window,
+    resolve_birdweather_species,
     resolve_ebird_species,
 )
 from inky_bird_frame.errors import DataSourceError, TaxonomyMatchError
@@ -316,6 +320,94 @@ class EbirdTests(unittest.TestCase):
 
         self.assertEqual(result.species, [species])
         self.assertFalse(state_exists)
+
+
+class BirdWeatherTests(unittest.TestCase):
+    def test_parse_species_keeps_complete_unique_avian_detections(self) -> None:
+        payload = {
+            "success": True,
+            "species": [
+                {
+                    "id": 42,
+                    "commonName": "Eastern Bluebird",
+                    "scientificName": "Sialia sialis",
+                    "classification": "avian",
+                    "detections": {"total": 7},
+                    "latestDetectionAt": "2026-07-12T08:15:00-04:00",
+                },
+                {
+                    "id": 42,
+                    "commonName": "Eastern Bluebird",
+                    "scientificName": "Sialia sialis",
+                    "classification": "avian",
+                    "detections": {"total": 6},
+                    "latestDetectionAt": "2026-07-11T08:15:00-04:00",
+                },
+                {
+                    "id": 9,
+                    "commonName": "Little Brown Bat",
+                    "scientificName": "Myotis lucifugus",
+                    "classification": "bat",
+                    "detections": {"total": 2},
+                    "latestDetectionAt": "2026-07-12T01:00:00-04:00",
+                },
+            ],
+        }
+
+        species = parse_birdweather_species(payload)
+
+        self.assertEqual(
+            species,
+            [
+                BirdWeatherSpecies(
+                    42,
+                    "Eastern Bluebird",
+                    "Sialia sialis",
+                    7,
+                    "2026-07-12T08:15:00-04:00",
+                )
+            ],
+        )
+
+    def test_parse_species_rejects_unsuccessful_response(self) -> None:
+        with self.assertRaisesRegex(DataSourceError, "not successful"):
+            parse_birdweather_species({"success": False})
+
+    @patch("inky_bird_frame.birds.get_json", return_value={"success": True, "species": []})
+    def test_fetch_species_bounds_window_and_redacts_token(self, get_json: MagicMock) -> None:
+        fetch_birdweather_species(
+            token="station/token",
+            limit=50,
+            window=ObservationWindow.LAST_YEAR,
+            today=date(2026, 7, 12),
+        )
+
+        url = get_json.call_args.args[0]
+        params = parse_qs(urlsplit(url).query)
+        self.assertIn("station%2Ftoken", url)
+        self.assertEqual(params["from"], ["2025-07-12"])
+        self.assertEqual(params["to"], ["2026-07-12"])
+        self.assertEqual(params["classification"], ["avian"])
+        self.assertEqual(get_json.call_args.kwargs["error_label"], "BirdWeather API")
+
+    def test_resolution_preserves_detection_count_and_source(self) -> None:
+        detection = BirdWeatherSpecies(
+            42,
+            "Eastern Bluebird",
+            "Sialia sialis",
+            7,
+            "2026-07-12T08:15:00-04:00",
+        )
+        match = BirdSpecies(12942, "Eastern Bluebird", "Sialia sialis", 1, "eBird")
+        with TemporaryDirectory() as temporary:
+            cache = Path(temporary) / "crosswalk.json"
+            with patch("inky_bird_frame.birds.fetch_inaturalist_taxon_match", return_value=match):
+                species, unresolved = resolve_birdweather_species([detection], cache)
+
+        self.assertEqual(unresolved, [])
+        self.assertEqual(species[0].taxon_id, 12942)
+        self.assertEqual(species[0].observation_count, 7)
+        self.assertEqual(species[0].sources, ("BirdWeather",))
 
 
 if __name__ == "__main__":

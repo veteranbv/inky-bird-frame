@@ -18,25 +18,27 @@ def get_json(
     timeout_seconds: float = 10.0,
     *,
     headers: Mapping[str, str] | None = None,
+    error_label: str | None = None,
 ) -> object:
     request_headers = {"User-Agent": "inky-bird-frame/0.1"}
     if headers is not None:
         request_headers.update(headers)
     request = Request(url, headers=request_headers)
+    display_url = error_label or url
     try:
         with urlopen(request, timeout=timeout_seconds) as response:
             body = response.read()
     except HTTPError as exc:
-        raise DataSourceError(f"HTTP {exc.code} from {url}") from exc
+        raise DataSourceError(f"HTTP {exc.code} from {display_url}") from exc
     except URLError as exc:
-        raise DataSourceError(f"Could not reach {url}: {exc.reason}") from exc
+        raise DataSourceError(f"Could not reach {display_url}: {exc.reason}") from exc
     except TimeoutError as exc:
-        raise DataSourceError(f"Timed out reading {url}") from exc
+        raise DataSourceError(f"Timed out reading {display_url}") from exc
 
     try:
         return cast(object, json.loads(body))
     except json.JSONDecodeError as exc:
-        raise DataSourceError(f"Invalid JSON from {url}") from exc
+        raise DataSourceError(f"Invalid JSON from {display_url}") from exc
 
 
 def get_bytes(url: str, timeout_seconds: float = 30.0) -> bytes:

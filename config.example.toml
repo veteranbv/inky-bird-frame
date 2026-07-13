@@ -1,6 +1,7 @@
 [discovery]
-# iNaturalist needs no credentials and supports every window. eBird provides bird-specific
-# recent sightings but requires a personal API key. combined queries both independently.
+# iNaturalist needs no credentials. eBird provides nearby public sightings. BirdWeather
+# provides acoustic detections from one authenticated station. combined is iNaturalist plus
+# eBird; all queries all three independently. See docs/discovery.md before choosing.
 source = "inaturalist"
 # This location is used only to discover species. It is never rendered on a plate.
 zip_code = "12345"
@@ -17,6 +18,10 @@ window = "last-30-days"
 # radius. Keep a real key only in this private mode-0600 file, or name an injected variable.
 # ebird_api_key = "YOUR_PERSONAL_EBIRD_API_KEY"
 # ebird_api_key_env = "EBIRD_API_KEY"
+# BirdWeather and all accept at most 100 species. This token authenticates one station and
+# belongs only in this private file or an injected environment variable.
+# birdweather_token = "YOUR_BIRDWEATHER_STATION_TOKEN"
+# birdweather_token_env = "BIRDWEATHER_TOKEN"
 
 [controller]
 workspace_dir = "."
