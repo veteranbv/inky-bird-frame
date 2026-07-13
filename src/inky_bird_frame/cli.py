@@ -94,11 +94,15 @@ def discover_command(args: argparse.Namespace) -> int:
     location = discovery.location
     print_result(
         {
-            "location": {
-                "zip_code": location.zip_code,
-                "place_name": location.place_name,
-                "state": location.state,
-            },
+            "location": (
+                {
+                    "zip_code": location.zip_code,
+                    "place_name": location.place_name,
+                    "state": location.state,
+                }
+                if location is not None
+                else None
+            ),
             "radius_km": config.discovery.radius_km,
             "window": config.discovery.observation_window.value,
             "source": config.discovery.source.value,
@@ -134,7 +138,7 @@ def refresh_command(args: argparse.Namespace) -> int:
         body="Observation refresh is succeeding again.",
     )
     providers = result.get("providers")
-    ebird_succeeded = False
+    successful_providers: set[str] = set()
     if isinstance(providers, list):
         for provider in providers:
             if not isinstance(provider, dict) or not isinstance(provider.get("name"), str):
@@ -148,8 +152,7 @@ def refresh_command(args: argparse.Namespace) -> int:
                     body=f"The {name} provider failed; another configured provider supplied data.",
                 )
             else:
-                if name == "ebird":
-                    ebird_succeeded = True
+                successful_providers.add(name)
                 safe_record_recovery(
                     config,
                     key=f"observation-provider-{name}",
@@ -157,20 +160,30 @@ def refresh_command(args: argparse.Namespace) -> int:
                     body=f"The {name} provider is succeeding again.",
                 )
     unresolved = result.get("unresolved_species")
-    if isinstance(unresolved, list) and unresolved:
-        safe_record_degradation(
-            config,
-            key="ebird-taxonomy",
-            title="Some eBird species are awaiting taxonomy matching",
-            body=f"{len(unresolved)} species were deferred without blocking bird discovery.",
-        )
-    elif ebird_succeeded:
-        safe_record_recovery(
-            config,
-            key="ebird-taxonomy",
-            title="eBird taxonomy matching recovered",
-            body="Deferred eBird taxonomy matches have cleared.",
-        )
+    unresolved_by_provider: dict[str, int] = {}
+    if isinstance(unresolved, list):
+        for item in unresolved:
+            if not isinstance(item, dict) or not isinstance(item.get("provider"), str):
+                continue
+            provider = item["provider"]
+            unresolved_by_provider[provider] = unresolved_by_provider.get(provider, 0) + 1
+    taxonomy_providers = {"ebird": "eBird", "birdweather": "BirdWeather"}
+    for provider, display_name in taxonomy_providers.items():
+        unresolved_count = unresolved_by_provider.get(provider, 0)
+        if unresolved_count:
+            safe_record_degradation(
+                config,
+                key=f"{provider}-taxonomy",
+                title=f"Some {display_name} species are awaiting taxonomy matching",
+                body=(f"{unresolved_count} species were deferred without blocking bird discovery."),
+            )
+        elif provider in successful_providers:
+            safe_record_recovery(
+                config,
+                key=f"{provider}-taxonomy",
+                title=f"{display_name} taxonomy matching recovered",
+                body=f"Deferred {display_name} taxonomy matches have cleared.",
+            )
     new_species = result.get("new_species")
     if isinstance(new_species, list) and new_species:
         names: list[str] = []
@@ -458,6 +471,7 @@ def config_validate_command(args: argparse.Namespace) -> int:
             "discovery": {
                 "source": config.discovery.source.value,
                 "ebird_configured": config.discovery.ebird_api_key is not None,
+                "birdweather_configured": config.discovery.birdweather_token is not None,
                 "window": config.discovery.observation_window.value,
                 "radius_km": config.discovery.radius_km,
             },

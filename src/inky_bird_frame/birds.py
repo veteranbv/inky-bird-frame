@@ -41,6 +41,15 @@ class EbirdSpecies:
 
 
 @dataclass(frozen=True)
+class BirdWeatherSpecies:
+    species_id: int
+    common_name: str
+    scientific_name: str
+    detection_count: int
+    latest_detection_at: str
+
+
+@dataclass(frozen=True)
 class EbirdResolution:
     species: list[BirdSpecies]
     unresolved: list[EbirdSpecies]
@@ -71,6 +80,7 @@ EBIRD_BACK_DAYS: Final = {
 }
 EBIRD_MAX_RADIUS_KM: Final = 50
 EBIRD_UNRESOLVED_RETRY_DAYS: Final = 7
+BIRDWEATHER_MAX_SPECIES: Final = 100
 
 
 @dataclass(frozen=True)
@@ -261,6 +271,91 @@ def fetch_ebird_observations(
     return parse_ebird_observations(payload)
 
 
+def parse_birdweather_species(payload: object) -> list[BirdWeatherSpecies]:
+    if not isinstance(payload, dict) or payload.get("success") is not True:
+        raise DataSourceError("BirdWeather response was not successful")
+    results = payload.get("species")
+    if not isinstance(results, list):
+        raise DataSourceError("BirdWeather response did not include a species list")
+
+    species: list[BirdWeatherSpecies] = []
+    seen: set[int] = set()
+    for item in results:
+        if not isinstance(item, dict) or item.get("classification") != "avian":
+            continue
+        species_id = item.get("id")
+        common_name = item.get("commonName")
+        scientific_name = item.get("scientificName")
+        latest_detection_at = item.get("latestDetectionAt")
+        detections = item.get("detections")
+        count = detections.get("total") if isinstance(detections, dict) else None
+        if (
+            not isinstance(species_id, int)
+            or isinstance(species_id, bool)
+            or species_id <= 0
+            or species_id in seen
+            or not isinstance(common_name, str)
+            or not common_name.strip()
+            or not isinstance(scientific_name, str)
+            or not scientific_name.strip()
+            or not isinstance(latest_detection_at, str)
+            or not latest_detection_at.strip()
+            or not isinstance(count, int)
+            or isinstance(count, bool)
+            or count <= 0
+        ):
+            continue
+        seen.add(species_id)
+        species.append(
+            BirdWeatherSpecies(
+                species_id=species_id,
+                common_name=common_name.strip(),
+                scientific_name=scientific_name.strip(),
+                detection_count=count,
+                latest_detection_at=latest_detection_at.strip(),
+            )
+        )
+    if results and not species:
+        raise DataSourceError("BirdWeather response did not include usable avian species")
+    return species
+
+
+def fetch_birdweather_species(
+    *,
+    token: str,
+    limit: int,
+    window: ObservationWindow,
+    today: date | None = None,
+    timeout_seconds: float = 10.0,
+) -> list[BirdWeatherSpecies]:
+    if not token.strip():
+        raise ValueError("BirdWeather station token must not be empty")
+    if not 0 < limit <= BIRDWEATHER_MAX_SPECIES:
+        raise ValueError(
+            f"BirdWeather species_limit must be between 1 and {BIRDWEATHER_MAX_SPECIES}"
+        )
+    date_range = date_range_for_window(window, today)
+    query: dict[str, str] = {
+        "limit": str(limit),
+        "sort": "top",
+        "order": "desc",
+        "classification": "avian",
+    }
+    if date_range.start is None:
+        query["period"] = "all"
+    else:
+        query["from"] = date_range.start.isoformat()
+        if date_range.end is not None:
+            query["to"] = date_range.end.isoformat()
+    encoded_token = quote(token.strip(), safe="")
+    payload = get_json(
+        f"https://app.birdweather.com/api/v1/stations/{encoded_token}/species?{urlencode(query)}",
+        timeout_seconds,
+        error_label="BirdWeather API",
+    )
+    return parse_birdweather_species(payload)
+
+
 def parse_inaturalist_taxon_match(payload: object, scientific_name: str) -> BirdSpecies:
     if not isinstance(payload, dict):
         raise DataSourceError("iNaturalist taxon search response was not an object")
@@ -326,7 +421,7 @@ def resolve_ebird_species(
     persist_cache: bool = True,
 ) -> EbirdResolution:
     if not persist_cache:
-        return _resolve_ebird_species_locked(
+        return _resolve_external_species_locked(
             observations,
             cache_path,
             now=now,
@@ -334,8 +429,8 @@ def resolve_ebird_species(
             persist_cache=False,
         )
     cache_path.parent.mkdir(parents=True, exist_ok=True)
-    with _ebird_crosswalk_lock(cache_path):
-        return _resolve_ebird_species_locked(
+    with _taxonomy_crosswalk_lock(cache_path):
+        return _resolve_external_species_locked(
             observations,
             cache_path,
             now=now,
@@ -344,16 +439,18 @@ def resolve_ebird_species(
         )
 
 
-def _resolve_ebird_species_locked(
+def _resolve_external_species_locked(
     observations: list[EbirdSpecies],
     cache_path: Path,
     *,
     now: datetime | None,
     timeout_seconds: float,
     persist_cache: bool,
+    source: str = "eBird",
+    counts: dict[str, int] | None = None,
 ) -> EbirdResolution:
     current = (now or datetime.now(UTC)).astimezone(UTC).replace(microsecond=0)
-    cache = _read_ebird_crosswalk(cache_path)
+    cache = _read_taxonomy_crosswalk(cache_path)
     resolved: list[BirdSpecies] = []
     unresolved: list[EbirdSpecies] = []
     changed = False
@@ -369,8 +466,8 @@ def _resolve_ebird_species_locked(
                         taxon_id=taxon_id,
                         common_name=common_name,
                         scientific_name=observation.scientific_name,
-                        observation_count=1,
-                        source="eBird",
+                        observation_count=(counts or {}).get(observation.species_code, 1),
+                        source=source,
                     )
                 )
                 continue
@@ -397,16 +494,90 @@ def _resolve_ebird_species_locked(
             "taxon_id": species.taxon_id,
             "resolved_at": current.isoformat(),
         }
-        resolved.append(species)
+        resolved.append(
+            BirdSpecies(
+                taxon_id=species.taxon_id,
+                common_name=species.common_name,
+                scientific_name=species.scientific_name,
+                observation_count=(counts or {}).get(observation.species_code, 1),
+                source=source,
+            )
+        )
         changed = True
 
     if changed and persist_cache:
-        _write_ebird_crosswalk(cache_path, cache)
+        _write_taxonomy_crosswalk(cache_path, cache)
     return EbirdResolution(species=resolved, unresolved=unresolved)
 
 
+def resolve_birdweather_species(
+    detections: list[BirdWeatherSpecies],
+    cache_path: Path,
+    *,
+    now: datetime | None = None,
+    timeout_seconds: float = 10.0,
+    persist_cache: bool = True,
+) -> tuple[list[BirdSpecies], list[BirdWeatherSpecies]]:
+    observations = [
+        EbirdSpecies(
+            species_code=str(item.species_id),
+            common_name=item.common_name,
+            scientific_name=item.scientific_name,
+            observed_at=item.latest_detection_at,
+        )
+        for item in detections
+    ]
+    counts = {str(item.species_id): item.detection_count for item in detections}
+    resolution = _resolve_external_species(
+        observations,
+        cache_path,
+        source="BirdWeather",
+        counts=counts,
+        now=now,
+        timeout_seconds=timeout_seconds,
+        persist_cache=persist_cache,
+    )
+    unresolved_codes = {item.species_code for item in resolution.unresolved}
+    return resolution.species, [
+        item for item in detections if str(item.species_id) in unresolved_codes
+    ]
+
+
+def _resolve_external_species(
+    observations: list[EbirdSpecies],
+    cache_path: Path,
+    *,
+    source: str,
+    counts: dict[str, int],
+    now: datetime | None,
+    timeout_seconds: float,
+    persist_cache: bool,
+) -> EbirdResolution:
+    if not persist_cache:
+        return _resolve_external_species_locked(
+            observations,
+            cache_path,
+            now=now,
+            timeout_seconds=timeout_seconds,
+            persist_cache=False,
+            source=source,
+            counts=counts,
+        )
+    cache_path.parent.mkdir(parents=True, exist_ok=True)
+    with _taxonomy_crosswalk_lock(cache_path):
+        return _resolve_external_species_locked(
+            observations,
+            cache_path,
+            now=now,
+            timeout_seconds=timeout_seconds,
+            persist_cache=True,
+            source=source,
+            counts=counts,
+        )
+
+
 @contextmanager
-def _ebird_crosswalk_lock(cache_path: Path) -> Iterator[None]:
+def _taxonomy_crosswalk_lock(cache_path: Path) -> Iterator[None]:
     with cache_path.with_suffix(f"{cache_path.suffix}.lock").open("a+") as handle:
         fcntl.flock(handle.fileno(), fcntl.LOCK_EX)
         try:
@@ -427,24 +598,24 @@ def _parse_cache_datetime(value: object) -> datetime | None:
     return parsed.astimezone(UTC)
 
 
-def _read_ebird_crosswalk(path: Path) -> dict[str, dict[str, object]]:
+def _read_taxonomy_crosswalk(path: Path) -> dict[str, dict[str, object]]:
     try:
         raw = json.loads(path.read_text())
     except FileNotFoundError:
         return {}
     except json.JSONDecodeError as exc:
-        raise DataSourceError(f"Invalid eBird taxonomy crosswalk: {path}") from exc
+        raise DataSourceError(f"Invalid taxonomy crosswalk: {path}") from exc
     if not isinstance(raw, dict) or raw.get("schema_version") != 1:
-        raise DataSourceError(f"Unsupported eBird taxonomy crosswalk: {path}")
+        raise DataSourceError(f"Unsupported taxonomy crosswalk: {path}")
     entries = raw.get("entries")
     if not isinstance(entries, dict) or any(
         not isinstance(key, str) or not isinstance(value, dict) for key, value in entries.items()
     ):
-        raise DataSourceError(f"Invalid eBird taxonomy crosswalk: {path}")
+        raise DataSourceError(f"Invalid taxonomy crosswalk: {path}")
     return {str(key): dict(value) for key, value in entries.items()}
 
 
-def _write_ebird_crosswalk(path: Path, entries: dict[str, dict[str, object]]) -> None:
+def _write_taxonomy_crosswalk(path: Path, entries: dict[str, dict[str, object]]) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     with NamedTemporaryFile(
         "w",

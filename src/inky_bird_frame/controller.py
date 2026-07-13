@@ -16,11 +16,14 @@ from typing import cast
 
 from .birds import (
     BirdSpecies,
+    BirdWeatherSpecies,
     EbirdSpecies,
     ObservationWindow,
+    fetch_birdweather_species,
     fetch_ebird_observations,
     fetch_inaturalist_birds,
     fetch_taxon_context,
+    resolve_birdweather_species,
     resolve_ebird_species,
 )
 from .catalog import (
@@ -85,10 +88,10 @@ class ProviderStatus:
 
 @dataclass(frozen=True)
 class DiscoveryResult:
-    location: ZipLocation
+    location: ZipLocation | None
     species: list[BirdSpecies]
     providers: list[ProviderStatus]
-    unresolved: list[EbirdSpecies]
+    unresolved: list[EbirdSpecies | BirdWeatherSpecies]
 
 
 @contextmanager
@@ -140,12 +143,36 @@ def discover_species(
             raise ValueError("eBird discovery radius_km must be between 1 and 50")
         if not 0 < selected_limit <= 10_000:
             raise ValueError("eBird species_limit must be between 1 and 10000")
-    location = lookup_us_zip(config.discovery.zip_code)
+    if selected_source.uses_birdweather and not 0 < selected_limit <= 100:
+        raise ValueError("BirdWeather species_limit must be between 1 and 100")
     providers: list[ProviderStatus] = []
     provider_species: list[list[BirdSpecies]] = []
-    unresolved: list[EbirdSpecies] = []
+    unresolved: list[EbirdSpecies | BirdWeatherSpecies] = []
+    location: ZipLocation | None = None
 
-    if selected_source in {DiscoverySource.INATURALIST, DiscoverySource.COMBINED}:
+    location_provider_names: list[str] = []
+    if selected_source in {
+        DiscoverySource.INATURALIST,
+        DiscoverySource.COMBINED,
+        DiscoverySource.ALL,
+    }:
+        location_provider_names.append("inaturalist")
+    if selected_source in {DiscoverySource.EBIRD, DiscoverySource.COMBINED, DiscoverySource.ALL}:
+        location_provider_names.append("ebird")
+    if location_provider_names:
+        try:
+            location = lookup_us_zip(config.discovery.zip_code)
+        except DataSourceError as exc:
+            providers.extend(
+                ProviderStatus(name, "error", 0, error=f"ZIP lookup failed: {exc}")
+                for name in location_provider_names
+            )
+
+    if location is not None and selected_source in {
+        DiscoverySource.INATURALIST,
+        DiscoverySource.COMBINED,
+        DiscoverySource.ALL,
+    }:
         try:
             inaturalist = fetch_inaturalist_birds(
                 latitude=location.latitude,
@@ -160,7 +187,11 @@ def discover_species(
             provider_species.append(inaturalist)
             providers.append(ProviderStatus("inaturalist", "ok", len(inaturalist)))
 
-    if selected_source in {DiscoverySource.EBIRD, DiscoverySource.COMBINED}:
+    if location is not None and selected_source in {
+        DiscoverySource.EBIRD,
+        DiscoverySource.COMBINED,
+        DiscoverySource.ALL,
+    }:
         try:
             api_key = config.discovery.ebird_api_key
             if api_key is None and config.discovery.ebird_api_key_env is not None:
@@ -206,13 +237,56 @@ def discover_species(
                     )
                 )
 
+    if selected_source in {DiscoverySource.BIRDWEATHER, DiscoverySource.ALL}:
+        try:
+            token = config.discovery.birdweather_token
+            if token is None and config.discovery.birdweather_token_env is not None:
+                environment_value = os.environ.get(config.discovery.birdweather_token_env)
+                token = environment_value.strip() if environment_value else None
+            if token is None:
+                raise DataSourceError("BirdWeather station token is not configured")
+            detections = fetch_birdweather_species(
+                token=token,
+                limit=selected_limit,
+                window=selected_window,
+            )
+            resolved, birdweather_unresolved = resolve_birdweather_species(
+                detections,
+                config.controller.state_dir / "birdweather-taxonomy-crosswalk.json",
+                persist_cache=persist_taxonomy_cache,
+            )
+        except (DataSourceError, ValueError) as exc:
+            providers.append(ProviderStatus("birdweather", "error", 0, error=str(exc)))
+        else:
+            unresolved.extend(birdweather_unresolved)
+            if detections and not resolved:
+                providers.append(
+                    ProviderStatus(
+                        "birdweather",
+                        "error",
+                        0,
+                        unresolved_count=len(birdweather_unresolved),
+                        error="No BirdWeather detections had an exact iNaturalist species match",
+                    )
+                )
+            else:
+                provider_species.append(resolved)
+                providers.append(
+                    ProviderStatus(
+                        "birdweather",
+                        "ok",
+                        len(resolved),
+                        unresolved_count=len(birdweather_unresolved),
+                    )
+                )
+
     if not provider_species:
         failures = "; ".join(
             f"{provider.name}: {provider.error}" for provider in providers if provider.error
         )
         raise DataSourceError(f"All configured observation providers failed: {failures}")
     species = _merge_provider_species(provider_species)
-    if selected_source is DiscoverySource.COMBINED:
+    if selected_source in {DiscoverySource.COMBINED, DiscoverySource.ALL}:
         species.sort(key=lambda item: (item.common_name.casefold(), item.taxon_id))
     return DiscoveryResult(location, species, providers, unresolved)
 
@@ -259,6 +333,23 @@ def _species_payload(species: BirdSpecies) -> dict[str, object]:
         "observation_count": species.observation_count,
         "source": species.source,
         "sources": list(species.sources),
+    }
+
+
+def _unresolved_species_payload(
+    species: EbirdSpecies | BirdWeatherSpecies,
+) -> dict[str, object]:
+    if isinstance(species, EbirdSpecies):
+        provider = "ebird"
+        provider_species_id = species.species_code
+    else:
+        provider = "birdweather"
+        provider_species_id = str(species.species_id)
+    return {
+        "provider": provider,
+        "species_code": provider_species_id,
+        "common_name": species.common_name,
+        "scientific_name": species.scientific_name,
     }
 
 
@@ -418,12 +509,16 @@ def _write_active_catalog(config: AppConfig, species_list: list[BirdSpecies]) ->
 def run_refresh_cycle(config: AppConfig) -> dict[str, object]:
     with exclusive_refresh_lock(config.controller.state_dir):
         previous_taxa: set[int] = set()
+        place_name = ""
+        state = ""
         if _snapshot_path(config).exists():
-            previous_taxa = {
-                species.taxon_id for species in _read_discovery_snapshot(config).species
-            }
+            previous = _read_discovery_snapshot(config)
+            previous_taxa = {species.taxon_id for species in previous.species}
         discovery = discover_species(config)
         location = discovery.location
+        if location is not None:
+            place_name = location.place_name
+            state = location.state
         species_list = discovery.species
         new_species = [species for species in species_list if species.taxon_id not in previous_taxa]
         with catalog_state_lock(config.controller.state_dir):
@@ -433,8 +528,8 @@ def run_refresh_cycle(config: AppConfig) -> dict[str, object]:
                 {
                     "schema_version": 2,
                     "refreshed_at": refreshed_at.isoformat(),
-                    "place_name": location.place_name,
-                    "state": location.state,
+                    "place_name": place_name,
+                    "state": state,
                     "providers": [provider.as_dict() for provider in discovery.providers],
                     "species": [_species_payload(species) for species in species_list],
                 },
@@ -442,19 +537,14 @@ def run_refresh_cycle(config: AppConfig) -> dict[str, object]:
             active_count = _write_active_catalog(config, species_list)
     return {
         "refreshed_at": refreshed_at.isoformat(),
-        "place_name": location.place_name,
-        "state": location.state,
+        "place_name": place_name,
+        "state": state,
         "window": config.discovery.observation_window.value,
         "radius_km": config.discovery.radius_km,
         "source": config.discovery.source.value,
         "providers": [provider.as_dict() for provider in discovery.providers],
         "unresolved_species": [
-            {
-                "species_code": species.species_code,
-                "common_name": species.common_name,
-                "scientific_name": species.scientific_name,
-            }
-            for species in discovery.unresolved
+            _unresolved_species_payload(species) for species in discovery.unresolved
         ],
         "species_count": len(species_list),
         "new_species": [_species_payload(species) for species in new_species],

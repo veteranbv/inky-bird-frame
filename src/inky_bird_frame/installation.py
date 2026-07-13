@@ -623,7 +623,22 @@ def setup(
     venv: Path | None = None,
 ) -> dict[str, object]:
     config_path = config_path.expanduser().resolve()
-    load_config(config_path)
+    config = load_config(config_path)
+    if role is InstallationRole.CONTROLLER:
+        environment_credentials: list[str] = []
+        if config.discovery.source.uses_ebird and config.discovery.ebird_api_key_env is not None:
+            environment_credentials.append("ebird_api_key_env")
+        if (
+            config.discovery.source.uses_birdweather
+            and config.discovery.birdweather_token_env is not None
+        ):
+            environment_credentials.append("birdweather_token_env")
+        if environment_credentials:
+            names = ", ".join(environment_credentials)
+            raise InstallationError(
+                f"Managed controller services cannot use {names}; store the corresponding "
+                "credential directly in the private mode-0600 configuration file"
+            )
     script = _setup_script(role, source_dir)
     if not script.is_file():
         raise InstallationError(f"Installer is missing: {script}")

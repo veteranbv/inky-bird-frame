@@ -173,6 +173,32 @@ display_startup_delay_seconds = 30
         self.assertIn("--yes", str(result["confirmation"]))
         run.assert_not_called()
 
+    def test_managed_controller_rejects_environment_provider_credentials(self) -> None:
+        cases = (
+            (
+                'source = "ebird"\nebird_api_key_env = "TEST_PROVIDER_TOKEN"\n',
+                "ebird_api_key_env",
+            ),
+            (
+                'source = "birdweather"\nbirdweather_token_env = "TEST_PROVIDER_TOKEN"\n',
+                "birdweather_token_env",
+            ),
+        )
+        for configuration, expected in cases:
+            with self.subTest(expected=expected), TemporaryDirectory() as temporary:
+                root = Path(temporary)
+                codex = root / "codex"
+                codex.touch(mode=0o700)
+                config = write_config(root, codex)
+                config.write_text(
+                    config.read_text().replace("[discovery]\n", f"[discovery]\n{configuration}")
+                )
+                with (
+                    patch.dict("os.environ", {"TEST_PROVIDER_TOKEN": "secret"}),
+                    self.assertRaisesRegex(InstallationError, expected),
+                ):
+                    setup(InstallationRole.CONTROLLER, config, apply=False)
+
     def test_setup_uses_explicit_source_checkout(self) -> None:
         with TemporaryDirectory() as temporary:
             root = Path(temporary)

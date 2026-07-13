@@ -263,6 +263,40 @@ class CliTests(unittest.TestCase):
         recovered_keys = [call.kwargs["key"] for call in recover.call_args_list]
         self.assertNotIn("ebird-taxonomy", recovered_keys)
 
+    def test_refresh_tracks_taxonomy_alerts_by_provider(self) -> None:
+        config = SimpleNamespace(discovery=SimpleNamespace(source=DiscoverySource.ALL))
+        result = {
+            "providers": [
+                {"name": "inaturalist", "status": "ok"},
+                {"name": "ebird", "status": "ok"},
+                {"name": "birdweather", "status": "ok"},
+            ],
+            "unresolved_species": [
+                {
+                    "provider": "birdweather",
+                    "species_code": "42",
+                    "common_name": "Split Bird",
+                    "scientific_name": "Avis split",
+                }
+            ],
+            "new_species": [],
+        }
+        with (
+            patch("inky_bird_frame.cli._config", return_value=config),
+            patch("inky_bird_frame.cli.run_refresh_cycle", return_value=result),
+            patch("inky_bird_frame.cli.safe_record_degradation") as degradation,
+            patch("inky_bird_frame.cli.safe_record_recovery") as recovery,
+            redirect_stdout(io.StringIO()),
+        ):
+            refresh_command(Namespace())
+
+        degraded_keys = [call.kwargs["key"] for call in degradation.call_args_list]
+        recovered_keys = [call.kwargs["key"] for call in recovery.call_args_list]
+        self.assertIn("birdweather-taxonomy", degraded_keys)
+        self.assertNotIn("ebird-taxonomy", degraded_keys)
+        self.assertIn("ebird-taxonomy", recovered_keys)
+        self.assertNotIn("birdweather-taxonomy", recovered_keys)
+
 
 if __name__ == "__main__":
     unittest.main()

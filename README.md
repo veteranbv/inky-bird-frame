@@ -226,11 +226,14 @@ uv run inky-bird-frame catalog-publish --config config.toml --dry-run
 uv run inky-bird-frame catalog-publish --config config.toml
 ```
 
-Discovery sources are `inaturalist`, `ebird`, and `combined`. eBird supplies
-bird-specific public sightings; every eBird result is exact-matched to an
-iNaturalist species before the existing licensed-reference pipeline accepts it.
+Discovery sources are `inaturalist`, `ebird`, `combined`, `birdweather`, and
+`all`. BirdWeather adds species detected by one authenticated acoustic station;
+the project reads detection metadata only and never receives or manages audio.
+Every external species is exact-matched to iNaturalist taxonomy before the
+existing licensed-reference pipeline accepts it.
 Observation windows are `last-day`, `last-week`, `last-30-days`, `last-year`,
-and `all-time`; eBird modes support the first three and a maximum 50 km radius.
+and `all-time`; eBird modes support the first three and a maximum 50 km radius,
+while BirdWeather supports every window and at most 100 species.
 See [Discovery sources](docs/discovery.md) for credentials, merging, failure
 handling, privacy, and provider limitations.
 Rotation modes are `sequential`, `shuffle`, `shuffle_bag`, and `weighted`.
@@ -238,9 +241,10 @@ Rotation modes are `sequential`, `shuffle`, `shuffle_bag`, and `weighted`.
 separate bag: it displays each currently active bird at most once before a
 refill, adds newly active birds to the current bag immediately, prunes inactive
 birds, and avoids a repeat at the refill boundary when alternatives exist.
-`weighted` uses iNaturalist observation counts where available; eBird-only
-species receive a presence weight of one. It avoids immediate repeats when
-alternatives are available.
+`weighted` uses iNaturalist observation counts or BirdWeather station-detection
+counts where available; eBird-only species receive a presence weight of one.
+Counts from different providers are not equivalent evidence. It avoids
+immediate repeats when alternatives are available.
 Recovery and operator-override commands are documented in
 [`docs/operations.md`](docs/operations.md).
 
