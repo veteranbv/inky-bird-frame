@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-13T05:19:40+00:00",
+  "generated_at": "2026-07-13T05:27:10+00:00",
   "schema_version": 1,
   "species": [
     {
@@ -397,6 +397,17 @@
       "scientific_name": "Pavo cristatus",
       "slug": "indian-peafowl",
       "taxon_id": 1204
+    },
+    {
+      "approved_at": "2026-07-13T05:27:10+00:00",
+      "common_name": "Indigo Bunting",
+      "display_path": "species/10227-indigo-bunting/display.png",
+      "display_sha256": "b51cab984995c6de66f509462c850ebeff09e59cf478605ec5221c8957812a8d",
+      "portrait_path": "species/10227-indigo-bunting/portrait.png",
+      "portrait_sha256": "e1b67615e54809f4812fa9ecd63a6eb64419b0c0b66d990688e72c38f2297374",
+      "scientific_name": "Passerina cyanea",
+      "slug": "indigo-bunting",
+      "taxon_id": 10227
     },
     {
       "approved_at": "2026-07-10T05:12:49+00:00",

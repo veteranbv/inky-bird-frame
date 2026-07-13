@@ -1,0 +1,143 @@
+{
+  "approved_at": "2026-07-13T05:27:10+00:00",
+  "assets": {
+    "display": {
+      "filename": "display.png",
+      "sha256": "b51cab984995c6de66f509462c850ebeff09e59cf478605ec5221c8957812a8d"
+    },
+    "portrait": {
+      "filename": "portrait.png",
+      "sha256": "e1b67615e54809f4812fa9ecd63a6eb64419b0c0b66d990688e72c38f2297374"
+    }
+  },
+  "common_name": "Indigo Bunting",
+  "generation": {
+    "attempt": 1,
+    "generated_at": "2026-07-13T05:27:10+00:00",
+    "generator": "Codex subscription / built-in gpt-image-2",
+    "max_attempts": 3,
+    "prompt_version": "field-journal-v2"
+  },
+  "profile": {
+    "behavior": "Forages for seeds and insects in low vegetation; males sing from exposed high perches and may swish the tail while perched. Migratory movements are chiefly nocturnal.",
+    "common_name": "Indigo Bunting",
+    "family": "Cardinalidae",
+    "field_marks": [
+      "Small, stocky, sparrow-sized bunting with a short tail.",
+      "Adult breeding male is vivid indigo-blue overall, often richer blue on the head.",
+      "Short, thick, conical bill; silver-gray in breeding males.",
+      "Dark eye and dark legs contrast subtly with the blue plumage.",
+      "Wings and tail are darker blue-black, with compact rounded proportions.",
+      "Females and immatures are brownish with a pale throat, faint breast streaking, and occasional blue on wing, tail, or rump."
+    ],
+    "habitat": "Brushy, weedy edge habitats: hedgerows, overgrown fields and pastures, woodland margins, clearings, and shrubby vegetation near open ground.",
+    "measurements": {
+      "length": "4.7\u20135.1 in (12\u201313 cm)",
+      "weight": "0.4\u20130.6 oz (12\u201318 g)",
+      "wingspan": "7.5\u20138.7 in (19\u201322 cm)"
+    },
+    "palette": [
+      "indigo blue",
+      "deep cobalt blue",
+      "blue-black",
+      "silver-gray",
+      "warm brown"
+    ],
+    "scientific_name": "Passerina cyanea",
+    "sources": [
+      {
+        "title": "Indigo Bunting Identification \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Indigo_Bunting/id"
+      },
+      {
+        "title": "Indigo Bunting \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/indigo-bunting"
+      }
+    ],
+    "taxon_id": 10227
+  },
+  "quality_review": {
+    "anatomy_accuracy": 4,
+    "composition_quality": 5,
+    "findings": [
+      "The illustrated male has one head, one beak, two anatomically normal legs and feet, two wings (the far wing is occluded by the side-on pose), and one tail; no duplicated or malformed anatomy is present.",
+      "Plumage, silver-gray conical bill, dark eye and legs, darker flight feathers, compact body, and rounded wing/tail treatment agree with the supplied male reference photographs and live species accounts.",
+      "Minor illustration variance: the bill is drawn somewhat larger/deeper and the tail slightly more elongate than in the supplied photographs; neither is a material misidentification.",
+      "All visible plate claims were checked. The stated measurements exactly match All About Birds; Audubon gives a slightly broader maximum length (5.5 in / 14 cm), so the plate's length is a valid narrower published range. No factual text error found.",
+      "No place name, ZIP code, coordinates, map, or local-observation detail appears on the plate."
+    ],
+    "location_free": true,
+    "passed": true,
+    "species_accuracy": 4,
+    "text_accuracy": 5,
+    "verification_sources": [
+      {
+        "title": "Indigo Bunting Identification \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Indigo_Bunting/id"
+      },
+      {
+        "title": "Indigo Bunting \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/indigo-bunting"
+      }
+    ]
+  },
+  "references": [
+    {
+      "attribution": "no rights reserved",
+      "filename": "01-130795958.jpeg",
+      "height": 1365,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/130795958/large.jpeg",
+      "license_code": "cc0",
+      "observation_id": 79837584,
+      "observer": "radrat",
+      "photo_id": 130795958,
+      "sha256": "ea5bc90c517b066f7be93500e81753bb9776a115ba0c31390d5fc26faaf48216",
+      "source_url": "https://www.inaturalist.org/observations/79837584",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) Matt Felperin, some rights reserved (CC BY)",
+      "filename": "02-402950078.jpg",
+      "height": 1252,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/402950078/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 227160645,
+      "observer": "mattyfelp",
+      "photo_id": 402950078,
+      "sha256": "8e13b38418b4d1c6f79e07a14b38e85507b662fe7fada67ac2a7dc028e73cf90",
+      "source_url": "https://www.inaturalist.org/observations/227160645",
+      "width": 1878
+    },
+    {
+      "attribution": "no rights reserved",
+      "filename": "03-339455700.jpg",
+      "height": 1334,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/339455700/large.jpg",
+      "license_code": "cc0",
+      "observation_id": 193252002,
+      "observer": "rawcomposition",
+      "photo_id": 339455700,
+      "sha256": "01a00ddf7cee1c805ea3a657231307a304f48fd503533d2df96f6aba16f63432",
+      "source_url": "https://www.inaturalist.org/observations/193252002",
+      "width": 2000
+    },
+    {
+      "attribution": "no rights reserved",
+      "filename": "04-123858685.jpg",
+      "height": 1345,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/123858685/large.jpg",
+      "license_code": "cc0",
+      "observation_id": 75689680,
+      "observer": "w_mark_c",
+      "photo_id": 123858685,
+      "sha256": "4b2fa1e2ad2dbecb175724e2cdd2aaf280d495438df0dd8745d341cc18d1afcc",
+      "source_url": "https://www.inaturalist.org/observations/75689680",
+      "width": 2048
+    }
+  ],
+  "schema_version": 1,
+  "scientific_name": "Passerina cyanea",
+  "slug": "indigo-bunting",
+  "status": "approved",
+  "taxon_id": 10227
+}

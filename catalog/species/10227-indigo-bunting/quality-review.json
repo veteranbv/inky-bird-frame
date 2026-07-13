@@ -1,0 +1,25 @@
+{
+  "anatomy_accuracy": 4,
+  "composition_quality": 5,
+  "findings": [
+    "The illustrated male has one head, one beak, two anatomically normal legs and feet, two wings (the far wing is occluded by the side-on pose), and one tail; no duplicated or malformed anatomy is present.",
+    "Plumage, silver-gray conical bill, dark eye and legs, darker flight feathers, compact body, and rounded wing/tail treatment agree with the supplied male reference photographs and live species accounts.",
+    "Minor illustration variance: the bill is drawn somewhat larger/deeper and the tail slightly more elongate than in the supplied photographs; neither is a material misidentification.",
+    "All visible plate claims were checked. The stated measurements exactly match All About Birds; Audubon gives a slightly broader maximum length (5.5 in / 14 cm), so the plate's length is a valid narrower published range. No factual text error found.",
+    "No place name, ZIP code, coordinates, map, or local-observation detail appears on the plate."
+  ],
+  "location_free": true,
+  "passed": true,
+  "species_accuracy": 4,
+  "text_accuracy": 5,
+  "verification_sources": [
+    {
+      "title": "Indigo Bunting Identification \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Indigo_Bunting/id"
+    },
+    {
+      "title": "Indigo Bunting \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/indigo-bunting"
+    }
+  ]
+}
