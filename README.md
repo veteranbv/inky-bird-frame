@@ -33,16 +33,13 @@ window.
 
 ```mermaid
 flowchart LR
-    A["Local observations"] --> B["Species queue"]
-    B --> C["Facts + licensed references"]
-    C --> D["Field-journal plate"]
-    D --> E{"Independent AI review"}
-    E -->|pass| F["Approved local catalog"]
-    E -->|revise| D
-    F --> G["Active local rotation"]
-    G --> H["E-paper display"]
-    F --> I["Validated catalog-only PR"]
-    I --> J["Reusable project catalog"]
+    A["iNaturalist / eBird / BirdWeather"] --> B["Controller"]
+    B --> C["Approved plate catalog"]
+    C --> D["HTTP on the private network"]
+    D --> E["Raspberry Pi display node"]
+    E --> F["Pimoroni Inky Impression"]
+    B --> G["Codex generation and review"]
+    G --> C
 ```
 
 The system has two deliberately small roles:
@@ -52,6 +49,11 @@ The system has two deliberately small roles:
   and serves approved assets.
 - The **display node** downloads approved assets, verifies their checksums, and
   rotates them on the Inky panel. It does no AI or discovery work.
+
+The roles may run on one capable Raspberry Pi, but the recommended wall build
+keeps the lightweight display node behind the frame and runs the controller on
+an existing Mac, Linux computer, Raspberry Pi 4 or 5, or Docker host. A Pi Zero
+2 W is recommended for display duty, not Codex generation.
 
 <p align="center">
   <img src="docs/images/installation-architecture.png" alt="Inky Bird Frame architecture showing a Mac or Raspberry Pi controller serving approved bird plates over a private home network to a Raspberry Pi Zero 2 W display node" width="900">
@@ -226,8 +228,9 @@ uv run inky-bird-frame catalog-publish --config config.toml --dry-run
 uv run inky-bird-frame catalog-publish --config config.toml
 ```
 
-Discovery sources are `inaturalist`, `ebird`, `combined`, `birdweather`, and
-`all`. BirdWeather adds species detected by one authenticated acoustic station;
+Configure any combination with `discovery.sources`, for example
+`["inaturalist", "ebird", "birdweather"]`. The older singular `source` values
+remain accepted for compatibility. BirdWeather adds species detected by one authenticated acoustic station;
 the project reads detection metadata only and never receives or manages audio.
 Every external species is exact-matched to iNaturalist taxonomy before the
 existing licensed-reference pipeline accepts it.
@@ -247,6 +250,18 @@ Counts from different providers are not equivalent evidence. It avoids
 immediate repeats when alternatives are available.
 Recovery and operator-override commands are documented in
 [`docs/operations.md`](docs/operations.md).
+
+## Related project
+
+Looking for a microphone-first bird station? [AvianVisitors](https://github.com/Twarner491/AvianVisitors)
+by Teddy Warner builds on BirdNET-Pi to identify birds heard by a local USB
+microphone and present them through a live illustrated collage. It also supports
+Home Assistant, MQTT, remote access, eBird regional filtering, optional e-ink
+hardware, BirdWeather operation, and complete kits. Inky Bird Frame instead
+focuses on rotating reusable scientific field-journal plates from configurable
+observation and detection services without managing audio. Teddy's detailed
+[AvianVisitors project write-up](https://theodore.net/projects/AvianVisitors/)
+shows the complete listening-station workflow.
 
 ## Notifications
 

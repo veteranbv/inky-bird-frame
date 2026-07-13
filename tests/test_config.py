@@ -6,7 +6,7 @@ from tempfile import TemporaryDirectory
 from unittest.mock import patch
 
 from inky_bird_frame.birds import ObservationWindow
-from inky_bird_frame.config import DiscoverySource, NotificationEvent, RotationMode, load_config
+from inky_bird_frame.config import DiscoveryProvider, NotificationEvent, RotationMode, load_config
 from inky_bird_frame.errors import ConfigurationError
 
 CONFIG = """
@@ -61,7 +61,7 @@ class ConfigTests(unittest.TestCase):
             config = load_config(path)
 
         self.assertEqual(config.discovery.observation_window, ObservationWindow.LAST_30_DAYS)
-        self.assertIs(config.discovery.source, DiscoverySource.INATURALIST)
+        self.assertEqual(config.discovery.sources, (DiscoveryProvider.INATURALIST,))
         self.assertEqual(config.discovery.radius_km, 16)
         self.assertEqual(config.controller.catalog_dir, (Path(temporary) / "catalog").resolve())
         self.assertEqual(config.controller.max_generation_attempts, 3)
@@ -104,7 +104,10 @@ class ConfigTests(unittest.TestCase):
             with patch.dict("os.environ", {"TEST_EBIRD_KEY": "secret"}):
                 config = load_config(path)
 
-        self.assertIs(config.discovery.source, DiscoverySource.COMBINED)
+        self.assertEqual(
+            config.discovery.sources,
+            (DiscoveryProvider.INATURALIST, DiscoveryProvider.EBIRD),
+        )
         self.assertEqual(config.discovery.ebird_api_key, "secret")
 
     def test_inaturalist_default_resolves_key_for_source_override(self) -> None:
@@ -117,7 +120,7 @@ class ConfigTests(unittest.TestCase):
             with patch.dict("os.environ", {"TEST_EBIRD_KEY": "secret"}):
                 config = load_config(path)
 
-        self.assertIs(config.discovery.source, DiscoverySource.INATURALIST)
+        self.assertEqual(config.discovery.sources, (DiscoveryProvider.INATURALIST,))
         self.assertEqual(config.discovery.ebird_api_key, "secret")
 
     def test_inaturalist_default_allows_missing_optional_ebird_environment(self) -> None:
@@ -130,7 +133,7 @@ class ConfigTests(unittest.TestCase):
             with patch.dict("os.environ", {}, clear=True):
                 config = load_config(path)
 
-        self.assertIs(config.discovery.source, DiscoverySource.INATURALIST)
+        self.assertEqual(config.discovery.sources, (DiscoveryProvider.INATURALIST,))
         self.assertIsNone(config.discovery.ebird_api_key)
         self.assertEqual(config.discovery.ebird_api_key_env, "TEST_EBIRD_KEY")
 
@@ -167,8 +170,49 @@ class ConfigTests(unittest.TestCase):
             with patch.dict("os.environ", {"TEST_BIRDWEATHER_TOKEN": "secret"}):
                 config = load_config(path)
 
-        self.assertIs(config.discovery.source, DiscoverySource.BIRDWEATHER)
+        self.assertEqual(config.discovery.sources, (DiscoveryProvider.BIRDWEATHER,))
         self.assertEqual(config.discovery.birdweather_token, "secret")
+
+    def test_sources_array_selects_arbitrary_providers(self) -> None:
+        configured = CONFIG.replace(
+            "[discovery]\n",
+            '[discovery]\nsources = ["ebird", "birdweather"]\n'
+            'ebird_api_key = "ebird-secret"\n'
+            'birdweather_token = "station-secret"\n',
+        )
+        with TemporaryDirectory() as temporary:
+            path = Path(temporary) / "config.toml"
+            path.write_text(configured)
+            config = load_config(path)
+
+        self.assertEqual(
+            config.discovery.sources,
+            (DiscoveryProvider.EBIRD, DiscoveryProvider.BIRDWEATHER),
+        )
+
+    def test_rejects_source_and_sources_together(self) -> None:
+        configured = CONFIG.replace(
+            "[discovery]\n",
+            '[discovery]\nsource = "inaturalist"\nsources = ["inaturalist"]\n',
+        )
+        with TemporaryDirectory() as temporary:
+            path = Path(temporary) / "config.toml"
+            path.write_text(configured)
+            with self.assertRaisesRegex(ConfigurationError, "source or discovery.sources"):
+                load_config(path)
+
+    def test_rejects_empty_or_duplicate_sources(self) -> None:
+        for value, message in (
+            ("[]", "at least one"),
+            ('["inaturalist", "inaturalist"]', "duplicates"),
+        ):
+            with self.subTest(value=value), TemporaryDirectory() as temporary:
+                path = Path(temporary) / "config.toml"
+                path.write_text(
+                    CONFIG.replace("[discovery]\n", f"[discovery]\nsources = {value}\n")
+                )
+                with self.assertRaisesRegex(ConfigurationError, message):
+                    load_config(path)
 
     def test_all_source_requires_both_provider_credentials(self) -> None:
         configured = CONFIG.replace(

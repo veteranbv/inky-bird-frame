@@ -6,22 +6,23 @@ these services and sends every result through one catalog and review pipeline.
 Merlin Bird ID is Cornell's identification application; its nearby lists are
 powered by eBird. This project integrates the documented eBird API, not Merlin.
 
-## Choose a source
+## Choose providers
 
 | Source | Credentials | Windows | Best use |
 | --- | --- | --- | --- |
 | `inaturalist` | None | All | Default setup, historical seeds, and licensed references |
 | `ebird` | Personal eBird key | 1, 7, or 30 days | Bird-specific recent public sightings |
-| `combined` | Personal eBird key | 1, 7, or 30 days | Broad recent discovery with provider fallback |
 | `birdweather` | BirdWeather station token | All | Species acoustically detected by one station |
-| `all` | Both credentials | 1, 7, or 30 days | Public observations plus station detections |
+
+Select any combination with a TOML array. Each configured provider runs
+independently:
 
 Request a personal key from [eBird](https://ebird.org/api/keygen). Store it in
 the private configuration:
 
 ```toml
 [discovery]
-source = "combined"
+sources = ["inaturalist", "ebird"]
 zip_code = "12345"
 radius_km = 8
 species_limit = 50
@@ -46,7 +47,7 @@ station authentication token into the private controller configuration:
 
 ```toml
 [discovery]
-source = "birdweather"
+sources = ["birdweather"]
 zip_code = "12345"
 radius_km = 8
 species_limit = 50
@@ -54,8 +55,8 @@ window = "last-30-days"
 birdweather_token = "your-station-token"
 ```
 
-Use `source = "all"` and configure both `ebird_api_key` and
-`birdweather_token` to query every provider. For manually invoked commands,
+Use `sources = ["inaturalist", "ebird", "birdweather"]` and configure both
+credentials to query every current provider. For manually invoked commands,
 `birdweather_token_env = "BIRDWEATHER_TOKEN"` is also supported. Managed
 services require the direct token in the private mode-`0600` file because they
 do not inherit the installation shell environment.
@@ -107,14 +108,19 @@ iNaturalist remains the source for taxonomy and research-grade CC0/CC-BY
 reference photographs. eBird and Macaulay Library media are not copied into the
 generation pipeline.
 
-## Combined and all modes
+## Multiple providers
 
 Each provider receives the configured `species_limit`; the merged result can be
-larger before duplicates are removed by iNaturalist taxon ID. `combined` queries
-iNaturalist and eBird. `all` adds BirdWeather. If one provider fails, successful
+larger before duplicates are removed by iNaturalist taxon ID. If one provider fails, successful
 providers still refresh the active catalog and the controller records a
 provider-specific degradation. The refresh fails only when every configured
 provider fails, leaving the prior active catalog in place.
+
+The legacy singular values `source = "inaturalist"`, `"ebird"`, `"combined"`,
+`"birdweather"`, and `"all"` remain accepted. Do not set both `source` and
+`sources`. The meaning of legacy `all` is frozen to the three providers present
+when it was introduced, so an application upgrade cannot silently contact a
+future provider. New configurations should use the explicit array.
 
 iNaturalist supplies observation counts, BirdWeather supplies station detection
 counts, and eBird's nearby endpoint supplies presence rather than a comparable
@@ -132,6 +138,10 @@ iNaturalist seed for longer periods:
 inky-bird-frame seed --config /path/to/config.toml \
   --source inaturalist --window last-year --species-limit 500
 ```
+
+Repeat `--source` for a multi-provider seed, for example `--source inaturalist
+--source ebird`. CLI overrides accept concrete providers rather than legacy
+group aliases.
 
 Review the official [eBird API documentation](https://documenter.getpostman.com/view/664302/S1ENwy59/)
 and [eBird data-use guidance](https://support.ebird.org/en/support/solutions/articles/48001078113)
