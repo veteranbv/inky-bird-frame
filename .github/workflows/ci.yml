@@ -129,15 +129,23 @@ jobs:
           docker volume create "$config_volume"
           docker run --rm inky-bird-frame:ci --help
           docker run --rm --entrypoint codex inky-bird-frame:ci --version
-          docker run --rm --read-only --cap-drop ALL \
-            --security-opt no-new-privileges:true \
-            --security-opt seccomp=unconfined \
-            --security-opt apparmor=unconfined \
-            --pids-limit 256 \
-            --tmpfs /tmp:size=256m,mode=1777 \
-            --tmpfs /data:uid=10001,gid=10001 \
-            --tmpfs /home/inky/.codex:uid=10001,gid=10001 \
-            --entrypoint codex inky-bird-frame:ci sandbox -- /bin/true
+          run_sandbox() {
+            docker run --rm --read-only --cap-drop ALL \
+              --security-opt no-new-privileges:true \
+              --security-opt seccomp=unconfined \
+              --security-opt apparmor=unconfined \
+              --pids-limit 256 \
+              --tmpfs /tmp:size=256m,mode=1777 \
+              --tmpfs /data:uid=10001,gid=10001 \
+              --tmpfs /home/inky/.codex:uid=10001,gid=10001 \
+              --entrypoint codex inky-bird-frame:ci sandbox -- "$@"
+          }
+          run_sandbox /bin/true
+          if run_sandbox python -c \
+            "import socket; socket.create_connection(('1.1.1.1', 443), timeout=1)"; then
+            echo "Codex sandbox unexpectedly allowed network access" >&2
+            exit 1
+          fi
           docker run --rm --entrypoint gh inky-bird-frame:ci --version
           docker run --rm inky-bird-frame:ci catalog validate --catalog /app/catalog
           docker run --rm --interactive \
