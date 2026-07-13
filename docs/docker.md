@@ -99,7 +99,11 @@ docker compose run --rm --no-deps scheduler \
 `config install` validates the complete TOML before atomically replacing the
 container copy and stores it with mode `0600`. Run the same import after any
 local configuration change. The local file remains the operator-owned source
-of truth.
+of truth. If the services are already running, reload the imported settings:
+
+```bash
+docker compose restart controller scheduler
+```
 
 ## Authenticate Codex
 
@@ -175,7 +179,7 @@ git pull --ff-only
 docker compose build --pull
 docker compose run --rm --no-deps -T scheduler \
   config install --destination /data/config.toml < config.toml
-docker compose up --detach --remove-orphans
+docker compose up --detach --remove-orphans --force-recreate
 curl --fail --silent http://127.0.0.1:8793/health
 ```
 
