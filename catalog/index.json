@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-13T04:21:25+00:00",
+  "generated_at": "2026-07-13T04:34:30+00:00",
   "schema_version": 1,
   "species": [
     {
@@ -265,6 +265,17 @@
       "scientific_name": "Contopus virens",
       "slug": "eastern-wood-pewee",
       "taxon_id": 16100
+    },
+    {
+      "approved_at": "2026-07-13T04:34:30+00:00",
+      "common_name": "Field Sparrow",
+      "display_path": "species/9152-field-sparrow/display.png",
+      "display_sha256": "a7aead57d3ada85d80ad13e7e39ed3a37331e29b57e824ad29b6582b784c5200",
+      "portrait_path": "species/9152-field-sparrow/portrait.png",
+      "portrait_sha256": "9557a3821a09cbc8b2dbda244a05b28aa48a686cce8eae3852180ae446464e14",
+      "scientific_name": "Spizella pusilla",
+      "slug": "field-sparrow",
+      "taxon_id": 9152
     },
     {
       "approved_at": "2026-07-10T13:55:53+00:00",

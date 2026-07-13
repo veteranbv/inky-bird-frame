@@ -1,0 +1,29 @@
+{
+  "anatomy_accuracy": 5,
+  "composition_quality": 5,
+  "findings": [
+    "Independent verification confirms Field Sparrow (Spizella pusilla), family Passerellidae, and the stated length (12\u201315 cm), weight (11\u201315 g), and wingspan (19\u201322 cm).",
+    "All visible factual claims are consistent with the verified sources: small slender build, rounded head, relatively long subtly notched tail, pale gray face, white eye-ring, rufous crown and postocular line, short pink conical bill, pinkish legs, black-streaked brown back, weak paired wingbars, and pale gray-buff underparts.",
+    "The painted bird agrees closely with the supplied field-reference photos in facial pattern, pink bill and legs, warm rufous crown, streaked upperparts, wingbars, and long tail. It depicts one head, one beak, two legs, one tail, and two wings (one exposed and one occluded in side view); the separate wing study is an anatomical detail, not an added body part.",
+    "No place name, ZIP code, coordinates, map, or local-observation detail appears.",
+    "No material anatomy, species, or text errors found."
+  ],
+  "location_free": true,
+  "passed": true,
+  "species_accuracy": 5,
+  "text_accuracy": 5,
+  "verification_sources": [
+    {
+      "title": "Field Sparrow Identification \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Field_Sparrow/id"
+    },
+    {
+      "title": "Field Sparrow \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/field-sparrow"
+    },
+    {
+      "title": "Spizella pusilla \u2014 Animal Diversity Web",
+      "url": "https://animaldiversity.org/accounts/Spizella_pusilla/"
+    }
+  ]
+}
