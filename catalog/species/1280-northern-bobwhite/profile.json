@@ -1,0 +1,46 @@
+{
+  "behavior": "Ground-dwelling and chiefly a walking forager; often travels in coveys, runs between dense cover, and flushes in a short burst of rapid wingbeats when disturbed.",
+  "common_name": "Northern Bobwhite",
+  "family": "Odontophoridae",
+  "field_marks": [
+    "Small, plump quail with a rounded body, small head, and very short tail",
+    "Male has a bold black-and-white striped face with a white throat and eyebrow",
+    "Female has a buff throat and buff eyebrow rather than the male's white facial pattern",
+    "Rich chestnut to rufous upperparts, finely mottled with black, buff, and white",
+    "Underparts show dense pale scaling and dark barring",
+    "Short, dark, slightly downcurved bill; gray legs and rounded wings"
+  ],
+  "habitat": "Semi-open country with a grassy ground layer and dense low cover: overgrown fields, grasslands, shrubby areas, woodland edges, and open pine or mixed woodland.",
+  "measurements": {
+    "length": "20\u201328 cm (8\u201311 in)",
+    "weight": "140\u2013170 g (4.9\u20136.0 oz)",
+    "wingspan": "33\u201336 cm (13\u201314 in)"
+  },
+  "palette": [
+    "chestnut brown",
+    "rufous",
+    "buff tan",
+    "black",
+    "white"
+  ],
+  "scientific_name": "Colinus virginianus",
+  "sources": [
+    {
+      "title": "Northern Bobwhite Identification \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Northern_Bobwhite/id"
+    },
+    {
+      "title": "Northern Bobwhite \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/northern-bobwhite"
+    },
+    {
+      "title": "Colinus virginianus \u2014 Animal Diversity Web",
+      "url": "https://animaldiversity.org/accounts/Colinus_virginianus/"
+    },
+    {
+      "title": "Northern bobwhite \u2014 Wikipedia",
+      "url": "https://en.wikipedia.org/wiki/Northern_bobwhite"
+    }
+  ],
+  "taxon_id": 1280
+}

@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-13T05:27:10+00:00",
+  "generated_at": "2026-07-13T05:37:08+00:00",
   "schema_version": 1,
   "species": [
     {
@@ -463,6 +463,17 @@
       "scientific_name": "Zenaida macroura",
       "slug": "mourning-dove",
       "taxon_id": 3454
+    },
+    {
+      "approved_at": "2026-07-13T05:37:08+00:00",
+      "common_name": "Northern Bobwhite",
+      "display_path": "species/1280-northern-bobwhite/display.png",
+      "display_sha256": "0447ecf8bc905eaac91f618540213a6d99f3a17a54e06784dfcd7224cf50557c",
+      "portrait_path": "species/1280-northern-bobwhite/portrait.png",
+      "portrait_sha256": "d69fb6237af4b583d40a68cba33f6b44bc9bbd98104119bd6fe597017fb90817",
+      "scientific_name": "Colinus virginianus",
+      "slug": "northern-bobwhite",
+      "taxon_id": 1280
     },
     {
       "approved_at": "2026-07-09T19:05:59+00:00",

@@ -1,0 +1,158 @@
+{
+  "approved_at": "2026-07-13T05:37:08+00:00",
+  "assets": {
+    "display": {
+      "filename": "display.png",
+      "sha256": "0447ecf8bc905eaac91f618540213a6d99f3a17a54e06784dfcd7224cf50557c"
+    },
+    "portrait": {
+      "filename": "portrait.png",
+      "sha256": "d69fb6237af4b583d40a68cba33f6b44bc9bbd98104119bd6fe597017fb90817"
+    }
+  },
+  "common_name": "Northern Bobwhite",
+  "generation": {
+    "attempt": 1,
+    "generated_at": "2026-07-13T05:37:08+00:00",
+    "generator": "Codex subscription / built-in gpt-image-2",
+    "max_attempts": 3,
+    "prompt_version": "field-journal-v2"
+  },
+  "profile": {
+    "behavior": "Ground-dwelling and chiefly a walking forager; often travels in coveys, runs between dense cover, and flushes in a short burst of rapid wingbeats when disturbed.",
+    "common_name": "Northern Bobwhite",
+    "family": "Odontophoridae",
+    "field_marks": [
+      "Small, plump quail with a rounded body, small head, and very short tail",
+      "Male has a bold black-and-white striped face with a white throat and eyebrow",
+      "Female has a buff throat and buff eyebrow rather than the male's white facial pattern",
+      "Rich chestnut to rufous upperparts, finely mottled with black, buff, and white",
+      "Underparts show dense pale scaling and dark barring",
+      "Short, dark, slightly downcurved bill; gray legs and rounded wings"
+    ],
+    "habitat": "Semi-open country with a grassy ground layer and dense low cover: overgrown fields, grasslands, shrubby areas, woodland edges, and open pine or mixed woodland.",
+    "measurements": {
+      "length": "20\u201328 cm (8\u201311 in)",
+      "weight": "140\u2013170 g (4.9\u20136.0 oz)",
+      "wingspan": "33\u201336 cm (13\u201314 in)"
+    },
+    "palette": [
+      "chestnut brown",
+      "rufous",
+      "buff tan",
+      "black",
+      "white"
+    ],
+    "scientific_name": "Colinus virginianus",
+    "sources": [
+      {
+        "title": "Northern Bobwhite Identification \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Northern_Bobwhite/id"
+      },
+      {
+        "title": "Northern Bobwhite \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/northern-bobwhite"
+      },
+      {
+        "title": "Colinus virginianus \u2014 Animal Diversity Web",
+        "url": "https://animaldiversity.org/accounts/Colinus_virginianus/"
+      },
+      {
+        "title": "Northern bobwhite \u2014 Wikipedia",
+        "url": "https://en.wikipedia.org/wiki/Northern_bobwhite"
+      }
+    ],
+    "taxon_id": 1280
+  },
+  "quality_review": {
+    "anatomy_accuracy": 4,
+    "composition_quality": 5,
+    "findings": [
+      "Identity is correct: the illustrated adult male shows the diagnostic white throat and eyebrow bordered by black, chestnut/rufous mottled upperparts, scaled underparts, rounded body and very short tail seen in the supplied reference photos.",
+      "Anatomy count is correct: one head, one beak, two wings (one largely occluded), two legs, and one tail. Legs, feet, rounded wings, and short dark bill are plausible; the bill is slightly more hooked/prominent than in the photos.",
+      "All visible plate claims are supported: Colinus virginianus, Odontophoridae, male/female facial distinction, habitat, covey/ground-running/flush behavior, and the stated length and mass ranges. The listed 33\u201336 cm wingspan falls within the independently reported 33\u201338 cm range.",
+      "No place name, ZIP code, coordinates, map, or local-observation detail appears on the candidate."
+    ],
+    "location_free": true,
+    "passed": true,
+    "species_accuracy": 5,
+    "text_accuracy": 5,
+    "verification_sources": [
+      {
+        "title": "Northern Bobwhite Identification \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Northern_Bobwhite/id"
+      },
+      {
+        "title": "Northern Bobwhite \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/northern-bobwhite"
+      },
+      {
+        "title": "Northern bobwhite \u2014 Wikipedia",
+        "url": "https://en.wikipedia.org/wiki/Northern_bobwhite"
+      },
+      {
+        "title": "Colinus virginianus \u2014 Animal Diversity Web",
+        "url": "https://animaldiversity.org/accounts/Colinus_virginianus/"
+      }
+    ]
+  },
+  "references": [
+    {
+      "attribution": "no rights reserved",
+      "filename": "01-287031775.jpeg",
+      "height": 2010,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/287031775/large.jpeg",
+      "license_code": "cc0",
+      "observation_id": 165794755,
+      "observer": "wildreturn",
+      "photo_id": 287031775,
+      "sha256": "b77961d74d27fde1853d028d9f561c516674ab896306da3b081f41be783cc4b9",
+      "source_url": "https://www.inaturalist.org/observations/165794755",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) Laura Mae, some rights reserved (CC BY)",
+      "filename": "02-210578224.jpg",
+      "height": 1536,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/210578224/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 124242207,
+      "observer": "lauralovesbirds",
+      "photo_id": 210578224,
+      "sha256": "1c042899ff2abb90379825198fcbc4e15cf1291ec553221b78f743688ccbc527",
+      "source_url": "https://www.inaturalist.org/observations/124242207",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) Scott Clark, some rights reserved (CC BY)",
+      "filename": "03-211613399.jpeg",
+      "height": 1365,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/211613399/large.jpeg",
+      "license_code": "cc-by",
+      "observation_id": 124824531,
+      "observer": "sfc155",
+      "photo_id": 211613399,
+      "sha256": "070554eaaae03cd545a3240146585ff040f17045b95758621e75db9f6a1bf09c",
+      "source_url": "https://www.inaturalist.org/observations/124824531",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) Dan Vickers, some rights reserved (CC BY)",
+      "filename": "04-591790853.jpg",
+      "height": 1200,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/591790853/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 326725054,
+      "observer": "kodiakgarden",
+      "photo_id": 591790853,
+      "sha256": "a3fddf81be3fa2d99ce7803b11524595546aea4ad9be2804d8c3c2b5dea078c6",
+      "source_url": "https://www.inaturalist.org/observations/326725054",
+      "width": 1200
+    }
+  ],
+  "schema_version": 1,
+  "scientific_name": "Colinus virginianus",
+  "slug": "northern-bobwhite",
+  "status": "approved",
+  "taxon_id": 1280
+}
