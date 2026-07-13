@@ -1,0 +1,30 @@
+{
+  "anatomy_accuracy": 4,
+  "composition_quality": 5,
+  "findings": [
+    "Verified identity: Eastern Wood-Pewee (Contopus virens), family Tyrannidae.",
+    "All visible plate claims are supported: name, scientific name, family, behavior, woodland/edge habitat, field marks, and the stated 15\u201317 cm length, 25\u201328 cm wingspan, and 12\u201314 g weight.",
+    "The illustration matches the references and verified diagnosis: olive-gray upperparts, off-white throat/belly, dusky vest, small peaked head, long pointed wings, long narrow tail, two thin pale wingbars, minimal eye-ring, and a dark upper bill with yellow-orange lower mandible.",
+    "Anatomy is coherent: one head, one beak, two legs/feet, one tail, and a normal two-winged bird shown in lateral view with the far wing occluded. No extra or malformed body parts.",
+    "Minor stylistic variance only: the eye is enlarged and glossier than in the field-reference photos, but this does not obscure the species-appropriate lack of a prominent eye-ring or create a material identification error.",
+    "No place name, ZIP code, coordinates, map, or local-observation detail appears on the plate."
+  ],
+  "location_free": true,
+  "passed": true,
+  "species_accuracy": 4,
+  "text_accuracy": 5,
+  "verification_sources": [
+    {
+      "title": "Eastern Wood-Pewee Identification \u2014 All About Birds, Cornell Lab of Ornithology",
+      "url": "https://www.allaboutbirds.org/guide/Eastern_Wood-Pewee/id"
+    },
+    {
+      "title": "Eastern Wood-Pewee \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/eastern-wood-pewee"
+    },
+    {
+      "title": "Contopus virens \u2014 Animal Diversity Web",
+      "url": "https://animaldiversity.org/accounts/Contopus_virens/"
+    }
+  ]
+}

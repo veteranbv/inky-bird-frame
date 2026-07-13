@@ -1,0 +1,42 @@
+{
+  "behavior": "Perches upright on exposed branches, then sallies out to catch flying insects and commonly returns to the same or a nearby perch.",
+  "common_name": "Eastern Wood-Pewee",
+  "family": "Tyrannidae",
+  "field_marks": [
+    "Olive-gray upperparts with a pale, off-white throat and belly",
+    "Dusky breast sides create a subtle gray \u201cvested\u201d look",
+    "Long, pointed wings and a relatively long, narrow tail",
+    "Small peaked crown gives the head a slightly triangular profile",
+    "Two thin, pale wingbars; juveniles may show buffier bars",
+    "Fine, dark upper bill with a mostly yellow-orange lower mandible; little or no eye-ring"
+  ],
+  "habitat": "Open deciduous or mixed woodland, forest edges, clearings, groves, and other wooded habitat with exposed perches.",
+  "measurements": {
+    "length": "15\u201317 cm (5.9\u20136.7 in)",
+    "weight": "12\u201314 g (0.4\u20130.5 oz)",
+    "wingspan": "25\u201328 cm (9.8\u201311 in)"
+  },
+  "palette": [
+    "olive-gray",
+    "soft gray",
+    "off-white",
+    "dusky brown",
+    "yellow-orange"
+  ],
+  "scientific_name": "Contopus virens",
+  "sources": [
+    {
+      "title": "Eastern Wood-Pewee Identification \u2014 All About Birds, Cornell Lab of Ornithology",
+      "url": "https://www.allaboutbirds.org/guide/Eastern_Wood-Pewee/id"
+    },
+    {
+      "title": "Eastern Wood-Pewee \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/eastern-wood-pewee"
+    },
+    {
+      "title": "Contopus virens \u2014 Animal Diversity Web",
+      "url": "https://animaldiversity.org/accounts/Contopus_virens/"
+    }
+  ],
+  "taxon_id": 16100
+}
