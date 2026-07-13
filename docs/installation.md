@@ -5,9 +5,10 @@ that returns after a reboot. Follow the sections in order. The first panel test
 uses an included plate, so you can prove the hardware before setting up Codex or
 bird observations.
 
-![Inky Bird Frame runtime architecture showing Internet services, the controller,
-its private HTTP connection with the Raspberry Pi display node, and the Inky
-Impression panel](images/installation-architecture.png)
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="images/installation-architecture-dark.png">
+  <img src="images/installation-architecture.png" alt="Inky Bird Frame runtime architecture showing Internet services, the controller, its private HTTP connection with the Raspberry Pi display node, and the Inky Impression panel">
+</picture>
 
 The display initiates every application connection. The controller's configured
 port (8793 in the supplied example configuration) must remain on a trusted
