@@ -1,0 +1,27 @@
+{
+  "anatomy_accuracy": 5,
+  "composition_quality": 5,
+  "findings": [
+    "Verified identity: the plate depicts an Eastern Kingbird (Tyrannus tyrannus) with one head, one beak, two wings, two legs, and one tail. Its dark head/upperparts, white underparts, broad-headed flycatcher form, short straight dark bill, pointed wings, and square dark tail with a white terminal band agree with the attached field references and live sources.",
+    "All visible taxonomic, measurement, habitat, behavior, field-mark, and concealed crown-patch claims are supported. No material factual or anatomical issues found.",
+    "No place name, ZIP code, coordinates, map, or local-observation detail appears on the plate."
+  ],
+  "location_free": true,
+  "passed": true,
+  "species_accuracy": 5,
+  "text_accuracy": 5,
+  "verification_sources": [
+    {
+      "title": "Eastern Kingbird Identification \u2014 All About Birds, Cornell Lab of Ornithology",
+      "url": "https://www.allaboutbirds.org/guide/Eastern_Kingbird/id"
+    },
+    {
+      "title": "Eastern Kingbird \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/eastern-kingbird"
+    },
+    {
+      "title": "Eastern Kingbird \u2014 eBird",
+      "url": "https://ebird.org/species/easkin"
+    }
+  ]
+}
