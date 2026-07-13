@@ -1,0 +1,38 @@
+{
+  "behavior": "Usually forages high in the canopy, sitting quietly before making short aerial sallies for insects or gleaning along branches.",
+  "common_name": "Summer Tanager",
+  "family": "Cardinalidae",
+  "field_marks": [
+    "Chunky, medium-sized songbird with a large head and thick, blunt-tipped bill.",
+    "Adult male is uniformly bright rosy red, including wings and tail.",
+    "Female and immature male are yellow to yellow-green, often yellower below and greener on back and wings.",
+    "Bill is conspicuously pale or horn-colored; eye is dark.",
+    "Wings are plain and rounded, without bold wingbars.",
+    "Tail is medium-long and broad, typically rounded to square-tipped."
+  ],
+  "habitat": "Open deciduous and mixed woodlands, forest gaps and edges, and wooded streamside groves; also uses open and second-growth wooded habitats.",
+  "measurements": {
+    "length": "6.7\u20137.5 in (17\u201319 cm)",
+    "weight": "0.8\u20131.1 oz (23\u201331 g)",
+    "wingspan": "11\u201312 in (28\u201330 cm)"
+  },
+  "palette": [
+    "bright rosy red",
+    "yellow-green",
+    "rich yellow",
+    "pale horn",
+    "dark gray-brown"
+  ],
+  "scientific_name": "Piranga rubra",
+  "sources": [
+    {
+      "title": "Summer Tanager Identification \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/summer_tanager/id"
+    },
+    {
+      "title": "Summer Tanager \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/summer-tanager"
+    }
+  ],
+  "taxon_id": 9915
+}
