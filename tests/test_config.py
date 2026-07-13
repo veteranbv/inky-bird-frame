@@ -67,6 +67,7 @@ class ConfigTests(unittest.TestCase):
         self.assertEqual(config.controller.max_generation_attempts, 3)
         self.assertEqual(config.display_node.controller_url, "http://controller.test:8793")
         self.assertEqual(config.display_node.rotation_mode, RotationMode.WEIGHTED)
+        self.assertTrue(config.display_node.prioritize_latest_detection)
         self.assertTrue(config.public_catalog.enabled)
         self.assertEqual(
             config.public_catalog.checkout_dir,
@@ -343,6 +344,18 @@ class ConfigTests(unittest.TestCase):
             config = load_config(path)
 
         self.assertEqual(config.display_node.rotation_mode, RotationMode.SHUFFLE_BAG)
+
+    def test_can_disable_latest_detection_priority(self) -> None:
+        configured = CONFIG.replace(
+            'rotation_mode = "weighted"',
+            'rotation_mode = "weighted"\nprioritize_latest_detection = false',
+        )
+        with TemporaryDirectory() as temporary:
+            path = Path(temporary) / "config.toml"
+            path.write_text(configured)
+            config = load_config(path)
+
+        self.assertFalse(config.display_node.prioritize_latest_detection)
 
     def test_loads_research_queue_and_notification_settings(self) -> None:
         configured = (

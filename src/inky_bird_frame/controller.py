@@ -297,6 +297,7 @@ def _merge_provider_species(provider_species: list[list[BirdSpecies]]) -> list[B
                 observation_count=max(existing.observation_count, species.observation_count),
                 source="+".join(sources),
                 sources=sources,
+                latest_detection_at=(existing.latest_detection_at or species.latest_detection_at),
             )
     return [merged[taxon_id] for taxon_id in order]
 
@@ -314,7 +315,7 @@ def _generation_queue_path(config: AppConfig) -> Path:
 
 
 def _species_payload(species: BirdSpecies) -> dict[str, object]:
-    return {
+    payload: dict[str, object] = {
         "taxon_id": species.taxon_id,
         "common_name": species.common_name,
         "scientific_name": species.scientific_name,
@@ -322,6 +323,9 @@ def _species_payload(species: BirdSpecies) -> dict[str, object]:
         "source": species.source,
         "sources": list(species.sources),
     }
+    if species.latest_detection_at is not None:
+        payload["latest_detection_at"] = species.latest_detection_at
+    return payload
 
 
 def _unresolved_species_payload(
@@ -353,6 +357,7 @@ def _parse_species_list(raw: object, source: Path) -> list[BirdSpecies]:
         observation_count = item.get("observation_count")
         strings = [item.get(name) for name in ("common_name", "scientific_name")]
         sources_value = item.get("sources")
+        latest_detection_at = item.get("latest_detection_at")
         if sources_value is None and isinstance(item.get("source"), str):
             sources_value = [item["source"]]
         if (
@@ -367,6 +372,10 @@ def _parse_species_list(raw: object, source: Path) -> list[BirdSpecies]:
             or not isinstance(sources_value, list)
             or not sources_value
             or any(not isinstance(value, str) or not value for value in sources_value)
+            or (
+                latest_detection_at is not None
+                and (not isinstance(latest_detection_at, str) or not latest_detection_at)
+            )
         ):
             raise CatalogError(f"Invalid species in {source}")
         seen.add(taxon_id)
@@ -378,6 +387,7 @@ def _parse_species_list(raw: object, source: Path) -> list[BirdSpecies]:
                 observation_count=observation_count,
                 source="+".join(cast(list[str], sources_value)),
                 sources=tuple(cast(list[str], sources_value)),
+                latest_detection_at=latest_detection_at,
             )
         )
     return species
@@ -483,6 +493,8 @@ def _write_active_catalog(config: AppConfig, species_list: list[BirdSpecies]) ->
             continue
         value = entry.as_dict()
         value["observation_count"] = species.observation_count
+        if species.latest_detection_at is not None:
+            value["latest_detection_at"] = species.latest_detection_at
         active.append(value)
     write_json_atomic(
         _active_catalog_path(config),

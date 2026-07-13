@@ -373,6 +373,24 @@ class BirdWeatherTests(unittest.TestCase):
         with self.assertRaisesRegex(DataSourceError, "not successful"):
             parse_birdweather_species({"success": False})
 
+    def test_parse_species_rejects_invalid_detection_timestamp(self) -> None:
+        payload = {
+            "success": True,
+            "species": [
+                {
+                    "id": 42,
+                    "commonName": "Eastern Bluebird",
+                    "scientificName": "Sialia sialis",
+                    "classification": "avian",
+                    "detections": {"total": 7},
+                    "latestDetectionAt": "not-a-timestamp",
+                }
+            ],
+        }
+
+        with self.assertRaisesRegex(DataSourceError, "usable avian species"):
+            parse_birdweather_species(payload)
+
     @patch("inky_bird_frame.birds.get_json", return_value={"success": True, "species": []})
     def test_fetch_species_bounds_window_and_redacts_token(self, get_json: MagicMock) -> None:
         fetch_birdweather_species(
@@ -398,7 +416,7 @@ class BirdWeatherTests(unittest.TestCase):
             7,
             "2026-07-12T08:15:00-04:00",
         )
-        match = BirdSpecies(12942, "Eastern Bluebird", "Sialia sialis", 1, "eBird")
+        match = BirdSpecies(12942, "Eastern Bluebird", "Sialia canonicalis", 1, "eBird")
         with TemporaryDirectory() as temporary:
             cache = Path(temporary) / "crosswalk.json"
             with patch("inky_bird_frame.birds.fetch_inaturalist_taxon_match", return_value=match):
@@ -406,8 +424,10 @@ class BirdWeatherTests(unittest.TestCase):
 
         self.assertEqual(unresolved, [])
         self.assertEqual(species[0].taxon_id, 12942)
+        self.assertEqual(species[0].scientific_name, "Sialia canonicalis")
         self.assertEqual(species[0].observation_count, 7)
         self.assertEqual(species[0].sources, ("BirdWeather",))
+        self.assertEqual(species[0].latest_detection_at, detection.latest_detection_at)
 
 
 if __name__ == "__main__":
