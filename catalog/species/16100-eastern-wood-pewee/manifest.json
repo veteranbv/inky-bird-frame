@@ -1,0 +1,152 @@
+{
+  "approved_at": "2026-07-13T04:21:25+00:00",
+  "assets": {
+    "display": {
+      "filename": "display.png",
+      "sha256": "6b97f802d1170873a9cfa75dda68101633602e6c5c3c3859d743a1fd6d43bc64"
+    },
+    "portrait": {
+      "filename": "portrait.png",
+      "sha256": "ee459caed579d8366c1508e16889951db2ec2e6e7d2d4969aa76dc6ed8616d0a"
+    }
+  },
+  "common_name": "Eastern Wood-Pewee",
+  "generation": {
+    "attempt": 1,
+    "generated_at": "2026-07-13T04:21:25+00:00",
+    "generator": "Codex subscription / built-in gpt-image-2",
+    "max_attempts": 3,
+    "prompt_version": "field-journal-v2"
+  },
+  "profile": {
+    "behavior": "Perches upright on exposed branches, then sallies out to catch flying insects and commonly returns to the same or a nearby perch.",
+    "common_name": "Eastern Wood-Pewee",
+    "family": "Tyrannidae",
+    "field_marks": [
+      "Olive-gray upperparts with a pale, off-white throat and belly",
+      "Dusky breast sides create a subtle gray \u201cvested\u201d look",
+      "Long, pointed wings and a relatively long, narrow tail",
+      "Small peaked crown gives the head a slightly triangular profile",
+      "Two thin, pale wingbars; juveniles may show buffier bars",
+      "Fine, dark upper bill with a mostly yellow-orange lower mandible; little or no eye-ring"
+    ],
+    "habitat": "Open deciduous or mixed woodland, forest edges, clearings, groves, and other wooded habitat with exposed perches.",
+    "measurements": {
+      "length": "15\u201317 cm (5.9\u20136.7 in)",
+      "weight": "12\u201314 g (0.4\u20130.5 oz)",
+      "wingspan": "25\u201328 cm (9.8\u201311 in)"
+    },
+    "palette": [
+      "olive-gray",
+      "soft gray",
+      "off-white",
+      "dusky brown",
+      "yellow-orange"
+    ],
+    "scientific_name": "Contopus virens",
+    "sources": [
+      {
+        "title": "Eastern Wood-Pewee Identification \u2014 All About Birds, Cornell Lab of Ornithology",
+        "url": "https://www.allaboutbirds.org/guide/Eastern_Wood-Pewee/id"
+      },
+      {
+        "title": "Eastern Wood-Pewee \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/eastern-wood-pewee"
+      },
+      {
+        "title": "Contopus virens \u2014 Animal Diversity Web",
+        "url": "https://animaldiversity.org/accounts/Contopus_virens/"
+      }
+    ],
+    "taxon_id": 16100
+  },
+  "quality_review": {
+    "anatomy_accuracy": 4,
+    "composition_quality": 5,
+    "findings": [
+      "Verified identity: Eastern Wood-Pewee (Contopus virens), family Tyrannidae.",
+      "All visible plate claims are supported: name, scientific name, family, behavior, woodland/edge habitat, field marks, and the stated 15\u201317 cm length, 25\u201328 cm wingspan, and 12\u201314 g weight.",
+      "The illustration matches the references and verified diagnosis: olive-gray upperparts, off-white throat/belly, dusky vest, small peaked head, long pointed wings, long narrow tail, two thin pale wingbars, minimal eye-ring, and a dark upper bill with yellow-orange lower mandible.",
+      "Anatomy is coherent: one head, one beak, two legs/feet, one tail, and a normal two-winged bird shown in lateral view with the far wing occluded. No extra or malformed body parts.",
+      "Minor stylistic variance only: the eye is enlarged and glossier than in the field-reference photos, but this does not obscure the species-appropriate lack of a prominent eye-ring or create a material identification error.",
+      "No place name, ZIP code, coordinates, map, or local-observation detail appears on the plate."
+    ],
+    "location_free": true,
+    "passed": true,
+    "species_accuracy": 4,
+    "text_accuracy": 5,
+    "verification_sources": [
+      {
+        "title": "Eastern Wood-Pewee Identification \u2014 All About Birds, Cornell Lab of Ornithology",
+        "url": "https://www.allaboutbirds.org/guide/Eastern_Wood-Pewee/id"
+      },
+      {
+        "title": "Eastern Wood-Pewee \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/eastern-wood-pewee"
+      },
+      {
+        "title": "Contopus virens \u2014 Animal Diversity Web",
+        "url": "https://animaldiversity.org/accounts/Contopus_virens/"
+      }
+    ]
+  },
+  "references": [
+    {
+      "attribution": "(c) Whitney Mattila, some rights reserved (CC BY)",
+      "filename": "01-21177779.jpeg",
+      "height": 2048,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/21177779/large.jpeg",
+      "license_code": "cc-by",
+      "observation_id": 14266386,
+      "observer": "tanyuu",
+      "photo_id": 21177779,
+      "sha256": "12019de86dd7700cca0bf7fc84348b08ffa2001bf5414358a69b3fa43afb1542",
+      "source_url": "https://www.inaturalist.org/observations/14266386",
+      "width": 2033
+    },
+    {
+      "attribution": "(c) Juan Carlos Caicedo Hern\u00e1ndez, some rights reserved (CC BY)",
+      "filename": "02-67966814.jpg",
+      "height": 1702,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/67966814/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 42798857,
+      "observer": "juan_carlos_caicedo_hdz",
+      "photo_id": 67966814,
+      "sha256": "e83105a93e5e414f3a251b49003dcec2b09395e6ef1e85633e07cb26219ad1ef",
+      "source_url": "https://www.inaturalist.org/observations/42798857",
+      "width": 1622
+    },
+    {
+      "attribution": "(c) Chris O'Donoghue, some rights reserved (CC BY)",
+      "filename": "03-410284598.jpg",
+      "height": 1917,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/410284598/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 231037934,
+      "observer": "codonoghue",
+      "photo_id": 410284598,
+      "sha256": "3aa78fb8fa45aac0aab4b83a76844243188ba42baf09e3c42fba5e02f51d4bd3",
+      "source_url": "https://www.inaturalist.org/observations/231037934",
+      "width": 1278
+    },
+    {
+      "attribution": "(c) Eric Schmidt, some rights reserved (CC BY)",
+      "filename": "04-158458950.jpeg",
+      "height": 1536,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/158458950/large.jpeg",
+      "license_code": "cc-by",
+      "observation_id": 95458560,
+      "observer": "eric-schmitty",
+      "photo_id": 158458950,
+      "sha256": "c8ade407b2a410de37ac388d05edbfee754d542f30d861a4ec8f2c790ca661ea",
+      "source_url": "https://www.inaturalist.org/observations/95458560",
+      "width": 2048
+    }
+  ],
+  "schema_version": 1,
+  "scientific_name": "Contopus virens",
+  "slug": "eastern-wood-pewee",
+  "status": "approved",
+  "taxon_id": 16100
+}

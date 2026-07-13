@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-13T04:11:52+00:00",
+  "generated_at": "2026-07-13T04:21:25+00:00",
   "schema_version": 1,
   "species": [
     {
@@ -254,6 +254,17 @@
       "scientific_name": "Pipilo erythrophthalmus",
       "slug": "eastern-towhee",
       "taxon_id": 9424
+    },
+    {
+      "approved_at": "2026-07-13T04:21:25+00:00",
+      "common_name": "Eastern Wood-Pewee",
+      "display_path": "species/16100-eastern-wood-pewee/display.png",
+      "display_sha256": "6b97f802d1170873a9cfa75dda68101633602e6c5c3c3859d743a1fd6d43bc64",
+      "portrait_path": "species/16100-eastern-wood-pewee/portrait.png",
+      "portrait_sha256": "ee459caed579d8366c1508e16889951db2ec2e6e7d2d4969aa76dc6ed8616d0a",
+      "scientific_name": "Contopus virens",
+      "slug": "eastern-wood-pewee",
+      "taxon_id": 16100
     },
     {
       "approved_at": "2026-07-10T13:55:53+00:00",
