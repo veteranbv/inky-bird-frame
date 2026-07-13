@@ -1,0 +1,42 @@
+{
+  "behavior": "Active, quick-moving foliage forager; frequently flicks or cocks its tail while gleaning insects and spiders.",
+  "common_name": "Blue-gray Gnatcatcher",
+  "family": "Polioptilidae",
+  "field_marks": [
+    "Tiny, slim songbird with a long-legged, delicate profile",
+    "Pale blue-gray upperparts and grayish-white underparts",
+    "Thin, straight, dark bill",
+    "Fine, conspicuous white eye ring",
+    "Long mostly black tail with white outer feathers or edges; often held cocked",
+    "Breeding male may show a narrow black V above the eyes"
+  ],
+  "habitat": "Broadleaf and mixed woodlands, woodland edges, thickets, and scrub; often favors moist areas or vegetation near water.",
+  "measurements": {
+    "length": "10\u201311 cm (3.9\u20134.4 in)",
+    "weight": "5\u20138 g (0.2\u20130.3 oz)",
+    "wingspan": "16 cm (6.3 in)"
+  },
+  "palette": [
+    "blue-gray",
+    "slate gray",
+    "grayish white",
+    "black",
+    "white"
+  ],
+  "scientific_name": "Polioptila caerulea",
+  "sources": [
+    {
+      "title": "Blue-gray Gnatcatcher Identification \u2014 Cornell Lab of Ornithology",
+      "url": "https://www.allaboutbirds.org/guide/Blue-gray_Gnatcatcher/id"
+    },
+    {
+      "title": "Blue-gray Gnatcatcher Life History \u2014 Cornell Lab of Ornithology",
+      "url": "https://www.allaboutbirds.org/guide/Blue-gray_Gnatcatcher/lifehistory"
+    },
+    {
+      "title": "Blue-gray Gnatcatcher \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/blue-gray-gnatcatcher"
+    }
+  ],
+  "taxon_id": 7493
+}

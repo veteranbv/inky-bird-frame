@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-13T03:10:43+00:00",
+  "generated_at": "2026-07-13T03:19:49+00:00",
   "schema_version": 1,
   "species": [
     {
@@ -89,6 +89,17 @@
       "scientific_name": "Cyanocitta cristata",
       "slug": "blue-jay",
       "taxon_id": 8229
+    },
+    {
+      "approved_at": "2026-07-13T03:19:49+00:00",
+      "common_name": "Blue-gray Gnatcatcher",
+      "display_path": "species/7493-blue-gray-gnatcatcher/display.png",
+      "display_sha256": "f5bc726e10ab3a84ba0ae2c48758a9ff32ce984e5eb5cd2a05a0e102159914ad",
+      "portrait_path": "species/7493-blue-gray-gnatcatcher/portrait.png",
+      "portrait_sha256": "4a24b592727ae06ff368efb791575ca31971cbfd90f1dcc34c7ea79324184e85",
+      "scientific_name": "Polioptila caerulea",
+      "slug": "blue-gray-gnatcatcher",
+      "taxon_id": 7493
     },
     {
       "approved_at": "2026-07-10T17:37:41+00:00",
