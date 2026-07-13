@@ -359,6 +359,10 @@ def retry_command(args: argparse.Namespace) -> int:
         cleared_cached_profile = profile_cache.exists()
         if cleared_cached_profile:
             sources.append(profile_cache)
+        reference_cache = config.controller.state_dir / "references" / str(args.taxon_id)
+        cleared_cached_references = reference_cache.exists()
+        if cleared_cached_references:
+            sources.append(reference_cache)
         archive = config.controller.state_dir / "archive"
         archive.mkdir(parents=True, exist_ok=True)
         moved: list[str] = []
@@ -378,6 +382,7 @@ def retry_command(args: argparse.Namespace) -> int:
             "archived": moved,
             "cleared_deferred_retry": deferred,
             "cleared_cached_profile": cleared_cached_profile,
+            "cleared_cached_references": cleared_cached_references,
         }
     )
     return 0

@@ -153,7 +153,7 @@ class DisplayNodeTests(unittest.TestCase):
 
         def fake_get_json(url: str, timeout: float) -> object:
             requested.append(url)
-            return payload if url.endswith("/v1/catalog") else {"ok": True}
+            return payload if "/v1/catalog" in url else {"ok": True}
 
         with TemporaryDirectory() as temporary:
             config = DisplayNodeConfig("http://controller.test", Path(temporary))

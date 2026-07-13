@@ -336,6 +336,9 @@ rotation_mode = "shuffle_bag"
             profile = state_dir / "profiles/42/profile.json"
             profile.parent.mkdir(parents=True)
             profile.write_text("{}")
+            references = state_dir / "references/42/references.json"
+            references.parent.mkdir(parents=True)
+            references.write_text("{}")
             config = SimpleNamespace(controller=SimpleNamespace(state_dir=state_dir))
             output = io.StringIO()
 
@@ -343,10 +346,11 @@ rotation_mode = "shuffle_bag"
                 retry_command(Namespace(taxon_id=42))
 
             result = json.loads(output.getvalue())["data"]
-            profile_exists = profile.exists()
+            profile_exists = profile.exists() or references.exists()
             archived_profile_exists = (state_dir / "archive/42/profile.json").exists()
 
         self.assertTrue(result["cleared_cached_profile"])
+        self.assertTrue(result["cleared_cached_references"])
         self.assertFalse(profile_exists)
         self.assertTrue(archived_profile_exists)
 

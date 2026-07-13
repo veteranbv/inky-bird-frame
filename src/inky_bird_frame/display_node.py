@@ -305,7 +305,7 @@ def run_display_cycle(
         # refreshing the controller-side heartbeat and staleness alerts fire.
         state_path = config.state_dir / "state.json"
         state = _read_state(state_path)
-        catalog_payload = get_json(f"{config.controller_url}/v1/catalog", 20.0)
+        catalog_payload = get_json(f"{config.controller_url}/v1/catalog?reports_success=1", 20.0)
         entries = parse_catalog_entries(catalog_payload)
         shuffle_remaining = list(state.shuffle_remaining)
         shuffle_bag_remaining = list(state.shuffle_bag_remaining)

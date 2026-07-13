@@ -625,7 +625,7 @@ def load_or_fetch_references(config: AppConfig, species: BirdSpecies) -> list[Re
     if manifest_path.is_file():
         try:
             raw = json.loads(manifest_path.read_text())
-        except json.JSONDecodeError as exc:
+        except (json.JSONDecodeError, UnicodeDecodeError) as exc:
             raise SpeciesStateError(f"Invalid reference manifest: {manifest_path}") from exc
         if not isinstance(raw, dict) or not isinstance(raw.get("references"), list):
             raise SpeciesStateError(f"Invalid reference manifest: {manifest_path}")

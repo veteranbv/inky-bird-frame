@@ -51,7 +51,8 @@ class CatalogRequestHandler(BaseHTTPRequestHandler):
         self.wfile.write(body)
 
     def do_GET(self) -> None:  # noqa: N802 - BaseHTTPRequestHandler API
-        request_path = urlsplit(self.path).path
+        split = urlsplit(self.path)
+        request_path = split.path
         if request_path == "/health":
             self._send_json(
                 HTTPStatus.OK,
@@ -76,7 +77,11 @@ class CatalogRequestHandler(BaseHTTPRequestHandler):
             with suppress(OSError):
                 write_json_atomic(
                     self.state_dir / "display-last-fetch.json",
-                    {"schema_version": 1, "fetched_at": utc_now()},
+                    {
+                        "schema_version": 1,
+                        "fetched_at": utc_now(),
+                        "reports_success": "reports_success=1" in split.query,
+                    },
                 )
             return
         if request_path == "/v1/display-success":

@@ -27,6 +27,7 @@ from inky_bird_frame.controller import (
     exclusive_refresh_lock,
     generate_candidate,
     load_or_create_profile,
+    load_or_fetch_references,
     run_controller_cycle,
     run_generation_cycle,
     run_refresh_cycle,
@@ -861,6 +862,19 @@ class ControllerTests(unittest.TestCase):
         if isinstance(failure_results, list):
             self.assertEqual(failure_results[0]["error"], "cached references are invalid")
             self.assertTrue(failure_results[0]["terminal"])
+
+    def test_non_utf8_reference_manifest_raises_species_state_error(self) -> None:
+        species = BirdSpecies(9083, "Northern Cardinal", "Cardinalis cardinalis", 2, "test")
+        with TemporaryDirectory() as temporary:
+            config_path = Path(temporary) / "config.toml"
+            config_path.write_text(CONFIG)
+            config = load_config(config_path)
+            manifest = config.controller.state_dir / "references" / "9083" / "references.json"
+            manifest.parent.mkdir(parents=True)
+            manifest.write_bytes(b'{"references": [\xff\xfe')
+
+            with self.assertRaisesRegex(SpeciesStateError, "Invalid reference manifest"):
+                load_or_fetch_references(config, species)
 
     def test_corrupt_profile_cache_quarantines_species_and_cycle_continues(self) -> None:
         self._assert_corrupt_profile_cache_is_quarantined(b"{}")
