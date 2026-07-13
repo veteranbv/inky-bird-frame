@@ -1,0 +1,150 @@
+{
+  "approved_at": "2026-07-13T05:46:36+00:00",
+  "assets": {
+    "display": {
+      "filename": "display.png",
+      "sha256": "0be5589568c42a3162bd31628f740fa4b5a703e8db0856d55583951628e4bac8"
+    },
+    "portrait": {
+      "filename": "portrait.png",
+      "sha256": "6140ab7b97f58c42caaa4b6171b0c1c733607519603da727e4a986be5234c992"
+    }
+  },
+  "common_name": "Northern Mockingbird",
+  "generation": {
+    "attempt": 1,
+    "generated_at": "2026-07-13T05:46:36+00:00",
+    "generator": "Codex subscription / built-in gpt-image-2",
+    "max_attempts": 3,
+    "prompt_version": "field-journal-v2"
+  },
+  "profile": {
+    "behavior": "Often conspicuous on exposed perches or moving on open ground; may flash the white wing patches while running. Highly vocal, delivering varied phrases with repeated imitations; territorial birds chase intruders.",
+    "common_name": "Northern Mockingbird",
+    "family": "Mimidae",
+    "field_marks": [
+      "Slender, medium-sized songbird with a notably long tail.",
+      "Gray-brown upperparts and paler whitish underparts.",
+      "Two white wingbars and a white wing patch, especially conspicuous in flight.",
+      "White outer tail feathers flash when the tail is spread in flight.",
+      "Long, thin, slightly downcurved dark bill; small head and long legs."
+    ],
+    "habitat": "Open ground with dense low shrubs, including woodland edges, brushy thickets, farmland, parkland, and developed green spaces.",
+    "measurements": {
+      "length": "21\u201326 cm (8.3\u201310.2 in)",
+      "weight": "45\u201358 g (1.6\u20132.0 oz)",
+      "wingspan": "31\u201335 cm (12.2\u201313.8 in)"
+    },
+    "palette": [
+      "gray-brown",
+      "pale gray",
+      "whitish",
+      "black",
+      "dark gray"
+    ],
+    "scientific_name": "Mimus polyglottos",
+    "sources": [
+      {
+        "title": "Northern Mockingbird Identification \u2014 All About Birds, Cornell Lab of Ornithology",
+        "url": "https://www.allaboutbirds.org/guide/Northern_Mockingbird/id"
+      },
+      {
+        "title": "Northern Mockingbird \u2014 Smithsonian's National Zoo and Conservation Biology Institute",
+        "url": "https://nationalzoo.si.edu/animals/northern-mockingbird"
+      },
+      {
+        "title": "Northern Mockingbird \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/northern-mockingbird"
+      }
+    ],
+    "taxon_id": 14886
+  },
+  "quality_review": {
+    "anatomy_accuracy": 5,
+    "composition_quality": 5,
+    "findings": [
+      "Identity, taxonomy, measurements, habitat, behavior, and field-mark claims are independently supported by the live All About Birds, Audubon, and Smithsonian pages.",
+      "The illustration matches the supplied Northern Mockingbird references: slender gray-brown songbird; one small head with one thin, slightly downcurved dark beak; two wings with white bars and a white wing patch; two long legs and gripping feet; and one notably long tail with pale outer feathers.",
+      "The plate contains exactly one head, one beak, two wings, two legs, and one tail. No anatomical defects or material species mismatches found.",
+      "All visible plate text is accurate, including Mimus polyglottos, Mimidae, the stated 21\u201326 cm length, 31\u201335 cm wingspan, and 45\u201358 g weight. The ruler is labeled only in centimeters and has no erroneous measurement claim.",
+      "No place name, ZIP code, coordinates, map, or local-observation detail appears on the candidate plate."
+    ],
+    "location_free": true,
+    "passed": true,
+    "species_accuracy": 5,
+    "text_accuracy": 5,
+    "verification_sources": [
+      {
+        "title": "Northern Mockingbird Identification \u2014 All About Birds, Cornell Lab of Ornithology",
+        "url": "https://www.allaboutbirds.org/guide/Northern_Mockingbird/id"
+      },
+      {
+        "title": "Northern Mockingbird \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/northern-mockingbird"
+      },
+      {
+        "title": "Northern mockingbird \u2014 Smithsonian's National Zoo and Conservation Biology Institute",
+        "url": "https://nationalzoo.si.edu/animals/northern-mockingbird"
+      }
+    ]
+  },
+  "references": [
+    {
+      "attribution": "(c) hr_dragonfly, some rights reserved (CC BY)",
+      "filename": "01-606201427.jpg",
+      "height": 840,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/606201427/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 333879355,
+      "observer": "hr_dragonfly",
+      "photo_id": 606201427,
+      "sha256": "7abb92212b17b02e091da20b169989baabee1e9218011d68145700f393f1ba1a",
+      "source_url": "https://www.inaturalist.org/observations/333879355",
+      "width": 1034
+    },
+    {
+      "attribution": "(c) Annika Lindqvist, some rights reserved (CC BY)",
+      "filename": "02-2790469.jpg",
+      "height": 1085,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/2790469/large.JPG",
+      "license_code": "cc-by",
+      "observation_id": 2488393,
+      "observer": "annikaml",
+      "photo_id": 2790469,
+      "sha256": "99f6cf3cb97a16fcf8f0c93d85b63a96e326d6fd5c1b67a3ae0cabdffc3fc6b6",
+      "source_url": "http://www.inaturalist.org/observations/2488393",
+      "width": 1446
+    },
+    {
+      "attribution": "no rights reserved",
+      "filename": "03-246376554.jpg",
+      "height": 1536,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/246376554/large.jpg",
+      "license_code": "cc0",
+      "observation_id": 143640028,
+      "observer": "aparrot1",
+      "photo_id": 246376554,
+      "sha256": "36149eb6fc2bfdd97c75368542982c796f30c6b8183b2b5634aa9d024c41d7c9",
+      "source_url": "https://www.inaturalist.org/observations/143640028",
+      "width": 2048
+    },
+    {
+      "attribution": "no rights reserved",
+      "filename": "04-79255714.jpg",
+      "height": 1579,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/79255714/large.jpg",
+      "license_code": "cc0",
+      "observation_id": 49916741,
+      "observer": "lyneisfilm",
+      "photo_id": 79255714,
+      "sha256": "db92d72529438ba6f243e0790b4fce5ef63844f8beffca8d91b6b7471a15ba71",
+      "source_url": "https://www.inaturalist.org/observations/49916741",
+      "width": 2048
+    }
+  ],
+  "schema_version": 1,
+  "scientific_name": "Mimus polyglottos",
+  "slug": "northern-mockingbird",
+  "status": "approved",
+  "taxon_id": 14886
+}

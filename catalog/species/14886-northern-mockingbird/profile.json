@@ -1,0 +1,41 @@
+{
+  "behavior": "Often conspicuous on exposed perches or moving on open ground; may flash the white wing patches while running. Highly vocal, delivering varied phrases with repeated imitations; territorial birds chase intruders.",
+  "common_name": "Northern Mockingbird",
+  "family": "Mimidae",
+  "field_marks": [
+    "Slender, medium-sized songbird with a notably long tail.",
+    "Gray-brown upperparts and paler whitish underparts.",
+    "Two white wingbars and a white wing patch, especially conspicuous in flight.",
+    "White outer tail feathers flash when the tail is spread in flight.",
+    "Long, thin, slightly downcurved dark bill; small head and long legs."
+  ],
+  "habitat": "Open ground with dense low shrubs, including woodland edges, brushy thickets, farmland, parkland, and developed green spaces.",
+  "measurements": {
+    "length": "21\u201326 cm (8.3\u201310.2 in)",
+    "weight": "45\u201358 g (1.6\u20132.0 oz)",
+    "wingspan": "31\u201335 cm (12.2\u201313.8 in)"
+  },
+  "palette": [
+    "gray-brown",
+    "pale gray",
+    "whitish",
+    "black",
+    "dark gray"
+  ],
+  "scientific_name": "Mimus polyglottos",
+  "sources": [
+    {
+      "title": "Northern Mockingbird Identification \u2014 All About Birds, Cornell Lab of Ornithology",
+      "url": "https://www.allaboutbirds.org/guide/Northern_Mockingbird/id"
+    },
+    {
+      "title": "Northern Mockingbird \u2014 Smithsonian's National Zoo and Conservation Biology Institute",
+      "url": "https://nationalzoo.si.edu/animals/northern-mockingbird"
+    },
+    {
+      "title": "Northern Mockingbird \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/northern-mockingbird"
+    }
+  ],
+  "taxon_id": 14886
+}
