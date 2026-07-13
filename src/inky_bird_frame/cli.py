@@ -93,8 +93,8 @@ def species_to_dict(species: BirdSpecies) -> dict[str, object]:
     }
 
 
-def _config(args: argparse.Namespace) -> AppConfig:
-    return load_config(args.config)
+def _config(args: argparse.Namespace, *, load_secrets: bool = True) -> AppConfig:
+    return load_config(args.config, load_secrets=load_secrets)
 
 
 def _failure_notification(operation: str, exc: Exception) -> str:
@@ -414,7 +414,7 @@ def status_command(args: argparse.Namespace) -> int:
 
 
 def serve_command(args: argparse.Namespace) -> int:
-    serve_catalog(_config(args).controller)
+    serve_catalog(_config(args, load_secrets=False).controller)
     return 0
 
 

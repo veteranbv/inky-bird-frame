@@ -90,7 +90,18 @@ jobs:
         run: uv run pytest
 
       - name: Validate Compose configuration
-        run: docker compose config --quiet
+        run: |
+          set -euo pipefail
+          env_file="$(mktemp)"
+          compose_json="$(mktemp)"
+          trap 'rm -f "$env_file" "$compose_json"' EXIT
+          printf '%s\n' 'SECRET_BOUNDARY_SENTINEL=present' > "$env_file"
+          INKY_BIRD_ENV="$env_file" docker compose config --format json > "$compose_json"
+          jq -e '
+            .services.scheduler.environment.SECRET_BOUNDARY_SENTINEL == "present"
+            and (.services.controller.environment.SECRET_BOUNDARY_SENTINEL == null)
+            and (.services.bootstrap.environment.SECRET_BOUNDARY_SENTINEL == null)
+          ' "$compose_json"
 
       - name: Build controller container
         run: docker build --tag inky-bird-frame:ci .

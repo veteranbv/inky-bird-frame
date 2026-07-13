@@ -21,6 +21,7 @@ from inky_bird_frame.cli import (
     refresh_command,
     retry_command,
     seed_command,
+    serve_command,
     species_to_dict,
 )
 from inky_bird_frame.config import DiscoveryProvider
@@ -112,6 +113,22 @@ class CliTests(unittest.TestCase):
         args = build_parser().parse_args(["scheduler", "--config", "instance.toml"])
 
         self.assertEqual(str(args.config), "instance.toml")
+
+    def test_serve_loads_config_without_resolving_private_environment(self) -> None:
+        controller = SimpleNamespace()
+        args = Namespace(config=Path("instance.toml"))
+        with (
+            patch(
+                "inky_bird_frame.cli.load_config",
+                return_value=SimpleNamespace(controller=controller),
+            ) as load,
+            patch("inky_bird_frame.cli.serve_catalog") as serve,
+        ):
+            result = serve_command(args)
+
+        self.assertEqual(result, 0)
+        load.assert_called_once_with(Path("instance.toml"), load_secrets=False)
+        serve.assert_called_once_with(controller)
 
     def test_seed_supports_year_window_and_overrides(self) -> None:
         args = build_parser().parse_args(

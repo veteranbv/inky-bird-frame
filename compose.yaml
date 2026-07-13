@@ -5,9 +5,6 @@ x-controller-common: &controller-common
   build:
     context: .
     target: runtime
-  env_file:
-    - path: ${INKY_BIRD_ENV:-./controller.env}
-      required: false
   read_only: true
   cap_drop:
     - ALL
@@ -55,6 +52,9 @@ services:
 
   scheduler:
     <<: *controller-common
+    env_file:
+      - path: ${INKY_BIRD_ENV:-./controller.env}
+        required: false
     command: [scheduler, --config, /data/config.toml]
     depends_on:
       bootstrap:
