@@ -1,0 +1,38 @@
+{
+  "behavior": "Often inconspicuous in low, shrubby cover; males give a rich warbling song from exposed perches. Forages on the ground and in low vegetation, and commonly flicks or twitches its tail sideways.",
+  "common_name": "Blue Grosbeak",
+  "family": "Cardinalidae",
+  "field_marks": [
+    "Stocky, full-bodied songbird with a very large triangular bill.",
+    "Adult male is deep blue overall, often with a small black mask before the eye.",
+    "Bill is bicolored: dark upper mandible and silvery lower mandible.",
+    "Two conspicuous wingbars, with a chestnut upper bar and paler lower bar.",
+    "Dark, rounded wings and a fairly long dark tail; tail may be flicked sideways.",
+    "Females and immature birds are warm cinnamon-brown, with wingbars and often bluish tail or scattered blue feathers."
+  ],
+  "habitat": "Semi-open, shrubby vegetation: brushy fields, hedgerows, woodland edges, young regrowth, thickets, and open weedy ground; also uses shrubby growth near water in drier landscapes.",
+  "measurements": {
+    "length": "5.9\u20137.5 in (15\u201319 cm)",
+    "weight": "0.9\u20131.1 oz (26\u201331 g)",
+    "wingspan": "11\u201312 in (28\u201330 cm)"
+  },
+  "palette": [
+    "deep cobalt blue",
+    "chestnut orange-brown",
+    "black",
+    "silvery gray",
+    "warm cinnamon-brown"
+  ],
+  "scientific_name": "Passerina caerulea",
+  "sources": [
+    {
+      "title": "Blue Grosbeak Identification \u2014 All About Birds, Cornell Lab of Ornithology",
+      "url": "https://www.allaboutbirds.org/guide/Blue_Grosbeak/id"
+    },
+    {
+      "title": "Blue Grosbeak \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/blue-grosbeak"
+    }
+  ],
+  "taxon_id": 73155
+}
