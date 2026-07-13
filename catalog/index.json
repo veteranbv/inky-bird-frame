@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-13T05:46:36+00:00",
+  "generated_at": "2026-07-13T05:55:39+00:00",
   "schema_version": 1,
   "species": [
     {
@@ -529,6 +529,17 @@
       "scientific_name": "Setophaga americana",
       "slug": "northern-parula",
       "taxon_id": 145233
+    },
+    {
+      "approved_at": "2026-07-13T05:55:39+00:00",
+      "common_name": "Osprey",
+      "display_path": "species/116999-osprey/display.png",
+      "display_sha256": "4652f0b3a9401392ef0ea3cc376bc20db112090785efbee066830c9849344d7e",
+      "portrait_path": "species/116999-osprey/portrait.png",
+      "portrait_sha256": "2e0b58890600fe71d9638093235435fafd82416292a141722248e1c75df2528a",
+      "scientific_name": "Pandion haliaetus",
+      "slug": "osprey",
+      "taxon_id": 116999
     },
     {
       "approved_at": "2026-07-10T18:19:56+00:00",

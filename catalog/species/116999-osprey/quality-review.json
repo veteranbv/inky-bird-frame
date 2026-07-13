@@ -1,0 +1,25 @@
+{
+  "anatomy_accuracy": 5,
+  "composition_quality": 5,
+  "findings": [
+    "Candidate depicts a single, anatomically coherent Osprey: one head, one hooked black bill, two folded wings, two long legs with large curved talons, and one barred tail.",
+    "Plumage and proportions match the supplied references and live identification sources: brown upperparts, mostly white underparts, white head with broad dark eye stripe, pale blue-gray feet, and long narrow-winged raptor structure.",
+    "All visible measurements match Cornell\u2019s published ranges: length 54\u201358 cm, wingspan 150\u2013180 cm, and weight 1.4\u20132.0 kg.",
+    "The visible behavior, habitat, and field-mark text is supported by the checked sources. No place name, ZIP code, coordinates, map, or local-observation detail appears on the plate.",
+    "Minor wording note only: \u201cyellow to orange\u201d belongs to the eye-color palette rather than plumage proper; it is visually appropriate and not a material text error."
+  ],
+  "location_free": true,
+  "passed": true,
+  "species_accuracy": 5,
+  "text_accuracy": 5,
+  "verification_sources": [
+    {
+      "title": "Osprey Identification \u2014 All About Birds, Cornell Lab of Ornithology",
+      "url": "https://www.allaboutbirds.org/guide/Osprey/id"
+    },
+    {
+      "title": "Pandion haliaetus (osprey) \u2014 Animal Diversity Web",
+      "url": "https://animaldiversity.org/accounts/Pandion_haliaetus/"
+    }
+  ]
+}
