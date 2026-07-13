@@ -396,18 +396,10 @@ class DisplayHeartbeatTests(unittest.TestCase):
         path.write_text(DISPLAY_CONFIG.format(rotation_minutes=rotation_minutes))
         return load_config(path)
 
-    def _write_heartbeat(
-        self, config: AppConfig, fetched_at: datetime, *, reports_success: bool = True
-    ) -> None:
+    def _write_heartbeat(self, config: AppConfig, fetched_at: datetime) -> None:
         config.controller.state_dir.mkdir(parents=True, exist_ok=True)
         (config.controller.state_dir / "display-last-fetch.json").write_text(
-            json.dumps(
-                {
-                    "schema_version": 1,
-                    "fetched_at": fetched_at.isoformat(),
-                    "reports_success": reports_success,
-                }
-            )
+            json.dumps({"schema_version": 1, "fetched_at": fetched_at.isoformat()})
         )
 
     def _write_success(self, config: AppConfig, succeeded_at: datetime) -> None:
@@ -490,24 +482,6 @@ class DisplayHeartbeatTests(unittest.TestCase):
         self.assertTrue(result["checked"])
         self.assertFalse(result["stale"])
         notify.assert_not_called()
-
-    def test_legacy_display_without_success_reporting_uses_fetch_age(self) -> None:
-        now = datetime(2026, 7, 10, tzinfo=UTC)
-        with TemporaryDirectory() as temporary:
-            config = self._config(temporary)
-            self._write_heartbeat(config, now - timedelta(minutes=10), reports_success=False)
-            with patch("inky_bird_frame.notifications.safe_notify") as notify:
-                fresh = check_display_heartbeat(config, now=now)
-            self._write_heartbeat(config, now - timedelta(minutes=200), reports_success=False)
-            with patch(
-                "inky_bird_frame.notifications.safe_notify",
-                return_value={"queued": True},
-            ):
-                stale = check_display_heartbeat(config, now=now)
-
-        self.assertFalse(fresh["stale"])
-        notify.assert_not_called()
-        self.assertTrue(stale["stale"])
 
     def test_fetching_without_any_completed_update_alerts(self) -> None:
         now = datetime(2026, 7, 10, tzinfo=UTC)

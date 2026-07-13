@@ -400,9 +400,10 @@ def safe_record_recovery(
 
 def check_display_heartbeat(config: AppConfig, *, now: datetime | None = None) -> dict[str, object]:
     current = (now or datetime.now(UTC)).astimezone(UTC).replace(microsecond=0)
-    success_path = display_success_path(config)
-    success_at, success_warning, _ = _read_display_heartbeat(success_path, "succeeded_at")
-    fetched_at, fetch_warning, reports_success = _read_display_heartbeat(
+    success_at, success_warning = _read_display_heartbeat(
+        display_success_path(config), "succeeded_at"
+    )
+    fetched_at, fetch_warning = _read_display_heartbeat(
         display_heartbeat_path(config), "fetched_at"
     )
     warning = success_warning or fetch_warning
@@ -418,22 +419,15 @@ def check_display_heartbeat(config: AppConfig, *, now: datetime | None = None) -
         stale = current - success_at > threshold
         described = f"completed a display update at {success_at.isoformat()}"
     else:
+        # Only display nodes write the fetch heartbeat, so fetches without a
+        # completed update mean every cycle fails after the catalog download;
+        # the incident failure threshold absorbs the window between a node's
+        # first fetch and its first success.
         assert fetched_at is not None
         signal = "catalog-fetch"
         seen_at = fetched_at
-        if reports_success or success_path.exists():
-            # A node that declares success reporting, or an unreadable success
-            # record, means every cycle fails after the catalog download; the
-            # incident failure threshold absorbs the window between a node's
-            # first fetch and its first success.
-            stale = True
-            described = (
-                f"fetched the catalog at {fetched_at.isoformat()} but never completed an update"
-            )
-        else:
-            # Displays that predate success reporting only signal fetches.
-            stale = current - fetched_at > threshold
-            described = f"fetched the catalog at {fetched_at.isoformat()}"
+        stale = True
+        described = f"fetched the catalog at {fetched_at.isoformat()} but never completed an update"
     if stale:
         notice = safe_record_degradation(
             config,
@@ -723,21 +717,20 @@ def _health_datetime(value: object) -> datetime | None:
     return parse_utc_timestamp(value)
 
 
-def _read_display_heartbeat(path: Path, field: str) -> tuple[datetime | None, str | None, bool]:
+def _read_display_heartbeat(path: Path, field: str) -> tuple[datetime | None, str | None]:
     # A missing file is a valid no-signal state; a corrupt file is reported, never fatal.
     if not path.exists():
-        return None, None, False
+        return None, None
     try:
         raw = json.loads(path.read_text())
     except (OSError, UnicodeDecodeError, json.JSONDecodeError):
-        return None, f"Invalid display heartbeat: {path}", False
+        return None, f"Invalid display heartbeat: {path}"
     if not isinstance(raw, dict) or raw.get("schema_version") != 1:
-        return None, f"Unsupported display heartbeat: {path}", False
-    reports_success = raw.get("reports_success") is True
+        return None, f"Unsupported display heartbeat: {path}"
     seen_at = _health_datetime(raw.get(field))
     if seen_at is None:
-        return None, f"Invalid display heartbeat timestamp: {path}", reports_success
-    return seen_at, None, reports_success
+        return None, f"Invalid display heartbeat timestamp: {path}"
+    return seen_at, None
 
 
 def _read_health(path: Path) -> dict[str, dict[str, object]]:

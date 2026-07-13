@@ -208,9 +208,13 @@ class ServerTests(unittest.TestCase):
             active_catalog_path = state_dir / "active-catalog.json"
             active_catalog_path.write_text(json.dumps(active))
             with _serving(catalog_dir, active_catalog_path, state_dir) as port:
-                status, _, body = _get(port, "/v1/catalog")
+                plain_status, _, _ = _get(port, "/v1/catalog")
+                plain_written = (state_dir / "display-last-fetch.json").exists()
+                status, _, body = _get(port, "/v1/catalog?reports_success=1")
             heartbeat = json.loads((state_dir / "display-last-fetch.json").read_text())
 
+        self.assertEqual(plain_status, 200)
+        self.assertFalse(plain_written)
         self.assertEqual(status, 200)
         self.assertEqual(json.loads(body), active)
         self.assertEqual(heartbeat["schema_version"], 1)

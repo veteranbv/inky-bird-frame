@@ -74,15 +74,14 @@ class CatalogRequestHandler(BaseHTTPRequestHandler):
                 )
                 return
             self._send_json(HTTPStatus.OK, payload)
-            with suppress(OSError):
-                write_json_atomic(
-                    self.state_dir / "display-last-fetch.json",
-                    {
-                        "schema_version": 1,
-                        "fetched_at": utc_now(),
-                        "reports_success": "reports_success=1" in split.query,
-                    },
-                )
+            # Only display nodes send the marker; a curl or monitor fetch must
+            # not refresh the liveness signal.
+            if "reports_success=1" in split.query:
+                with suppress(OSError):
+                    write_json_atomic(
+                        self.state_dir / "display-last-fetch.json",
+                        {"schema_version": 1, "fetched_at": utc_now()},
+                    )
             return
         if request_path == "/v1/display-success":
             self._send_json(HTTPStatus.OK, {"ok": True, "schema_version": 1})

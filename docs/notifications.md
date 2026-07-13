@@ -68,10 +68,10 @@ against completed updates: `display_stale` is raised when no update has
 completed for three times `schedule.rotation_minutes` (minimum 60 minutes),
 and also when a current display node keeps fetching the catalog without ever
 completing an update, so a panel that fails before its first success is still
-detected. Display nodes that predate success reporting are recognized by
-their fetches and fall back to fetch age, so upgrading the controller first
-does not raise false alerts. `display_recovered` is sent once updates
-resume.
+detected. Only display nodes refresh these signals; other catalog readers
+never mask a silent display. Display nodes that predate success reporting
+write no heartbeat and are not monitored until they are updated, so update
+display nodes first. `display_recovered` is sent once updates resume.
 
 Routine successes do not notify. Transient failures notify only after
 `degradation_failure_threshold` consecutive failures or
