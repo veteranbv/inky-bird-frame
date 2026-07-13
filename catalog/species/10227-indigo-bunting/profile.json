@@ -1,0 +1,38 @@
+{
+  "behavior": "Forages for seeds and insects in low vegetation; males sing from exposed high perches and may swish the tail while perched. Migratory movements are chiefly nocturnal.",
+  "common_name": "Indigo Bunting",
+  "family": "Cardinalidae",
+  "field_marks": [
+    "Small, stocky, sparrow-sized bunting with a short tail.",
+    "Adult breeding male is vivid indigo-blue overall, often richer blue on the head.",
+    "Short, thick, conical bill; silver-gray in breeding males.",
+    "Dark eye and dark legs contrast subtly with the blue plumage.",
+    "Wings and tail are darker blue-black, with compact rounded proportions.",
+    "Females and immatures are brownish with a pale throat, faint breast streaking, and occasional blue on wing, tail, or rump."
+  ],
+  "habitat": "Brushy, weedy edge habitats: hedgerows, overgrown fields and pastures, woodland margins, clearings, and shrubby vegetation near open ground.",
+  "measurements": {
+    "length": "4.7\u20135.1 in (12\u201313 cm)",
+    "weight": "0.4\u20130.6 oz (12\u201318 g)",
+    "wingspan": "7.5\u20138.7 in (19\u201322 cm)"
+  },
+  "palette": [
+    "indigo blue",
+    "deep cobalt blue",
+    "blue-black",
+    "silver-gray",
+    "warm brown"
+  ],
+  "scientific_name": "Passerina cyanea",
+  "sources": [
+    {
+      "title": "Indigo Bunting Identification \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Indigo_Bunting/id"
+    },
+    {
+      "title": "Indigo Bunting \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/indigo-bunting"
+    }
+  ],
+  "taxon_id": 10227
+}
