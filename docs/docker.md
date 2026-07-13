@@ -21,9 +21,11 @@ of overlapping processes.
 The scheduler runs as UID 10001 with a read-only root filesystem, all Linux
 capabilities dropped, and `no-new-privileges`. It disables Docker's outer
 seccomp and AppArmor profiles because they block the unprivileged namespace and
-mount setup required by Bubblewrap. Codex then applies its own Bubblewrap
-filesystem and network sandbox to generation and review commands. The
-controller and bootstrap retain Docker's default security profiles.
+mount setup required by Bubblewrap. The scheduler adds only `NET_ADMIN` so
+Bubblewrap can initialize loopback inside its isolated network namespace. Codex
+then applies its own Bubblewrap filesystem and network sandbox to generation and
+review commands. The controller and bootstrap retain Docker's default security
+profiles and no added capabilities.
 
 ## Prerequisites
 

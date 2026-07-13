@@ -104,6 +104,8 @@ jobs:
             and (.services.scheduler.security_opt | index("seccomp=unconfined") != null)
             and (.services.scheduler.security_opt | index("apparmor=unconfined") != null)
             and (.services.scheduler.security_opt | index("no-new-privileges:true") != null)
+            and (.services.scheduler.cap_add == ["NET_ADMIN"])
+            and (.services.scheduler.cap_drop == ["ALL"])
             and (.services.controller.security_opt | index("seccomp=unconfined") == null)
             and (.services.controller.security_opt | index("apparmor=unconfined") == null)
             and (.services.bootstrap.security_opt | index("seccomp=unconfined") == null)
@@ -122,6 +124,7 @@ jobs:
           docker run --rm inky-bird-frame:ci --help
           docker run --rm --entrypoint codex inky-bird-frame:ci --version
           docker run --rm --read-only --cap-drop ALL \
+            --cap-add NET_ADMIN \
             --security-opt no-new-privileges:true \
             --security-opt seccomp=unconfined \
             --security-opt apparmor=unconfined \
