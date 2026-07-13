@@ -66,6 +66,7 @@ RUN mkdir -p \
       /data/catalog/species \
       /data/public-catalog \
       /data/var/controller \
+      /data/workspace \
       /home/inky/.codex \
       /home/inky/.config/git \
       /home/inky/.config/gh \

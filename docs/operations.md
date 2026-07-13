@@ -27,9 +27,10 @@ consume the budget again. Use `seed` for a broad historical catalog instead of
 making the active observation window permanently broad.
 
 The controller's `workspace_dir` must be writable because the Codex image tool
-copies its final image there. `catalog_dir` and `state_dir` must persist across
-deployments. `codex_path` must point to a Codex CLI whose `login status` reports
-a ChatGPT-authenticated session.
+copies its final image there. Keep it separate from configuration, catalog, and
+state; the example uses a dedicated `workspace` directory. `catalog_dir` and
+`state_dir` must persist across deployments. `codex_path` must point to a Codex
+CLI whose `login status` reports a ChatGPT-authenticated session.
 
 Schedules are configured in `[schedule]`. Conservative starting values are:
 

@@ -64,18 +64,22 @@ jobs:
             echo 'tags<<EOF'
             case "$EVENT_NAME" in
               workflow_run)
-                echo "${image}:latest"
                 echo "${image}:sha-${SOURCE_SHA}"
+                git fetch --no-tags --depth=1 origin \
+                  refs/heads/main:refs/remotes/origin/main
+                if [ "$(git rev-parse refs/remotes/origin/main)" = "$SOURCE_SHA" ]; then
+                  echo "${image}:latest"
+                else
+                  echo "Skipping latest tag because ${SOURCE_SHA} is no longer current main." >&2
+                fi
                 ;;
               release)
-                if [[ ! "$GITHUB_REF_NAME" =~ ^v([0-9]+)\.([0-9]+)\.([0-9]+)$ ]]; then
+                if [[ ! "$GITHUB_REF_NAME" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
                   echo "Release tag must use vMAJOR.MINOR.PATCH" >&2
                   exit 1
                 fi
                 version="${GITHUB_REF_NAME#v}"
                 echo "${image}:${version}"
-                echo "${image}:${BASH_REMATCH[1]}.${BASH_REMATCH[2]}"
-                echo "${image}:${BASH_REMATCH[1]}"
                 ;;
               workflow_dispatch)
                 if [[ ! "$REQUESTED_TAG" =~ ^[A-Za-z0-9_][A-Za-z0-9_.-]{0,127}$ ]]; then

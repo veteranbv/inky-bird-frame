@@ -83,7 +83,10 @@ Edit `config.toml`. At minimum:
 5. enable only the notifications you want.
 
 The relative controller paths in the example are intentional. After the file
-is imported into `/data`, they resolve inside the persistent Docker volume.
+is imported into `/data`, they resolve to `/data/workspace`, `/data/catalog`,
+and `/data/var/controller` inside the persistent volume. Codex receives write
+access to the workspace directory, not the private configuration, approved
+catalog, or controller state directories.
 
 Secrets can stay in the mode-`0600` TOML file or come from `controller.env`.
 For environment-backed values, name the variable in TOML:
