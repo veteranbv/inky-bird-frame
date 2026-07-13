@@ -1,0 +1,24 @@
+{
+  "anatomy_accuracy": 5,
+  "composition_quality": 5,
+  "findings": [
+    "Verified as an adult male Eastern Towhee (Pipilo erythrophthalmus): sooty-black hood and upperparts, rufous flanks, clean white belly, stout triangular bill, reddish-brown eye, pinkish legs, white wing markings, and long rounded tail with white outer corners agree with the field-reference photos and sources.",
+    "All visible plate text is supported: the stated length, wingspan, and mass match the verified range; habitat, ground-foraging behavior, and listed field marks are consistent with source descriptions.",
+    "Anatomy is coherent: exactly one head, one beak, two legs, one tail, and two wings (one folded wing visible and the far wing naturally occluded).",
+    "No place name, ZIP code, coordinates, map, or local-observation detail appears."
+  ],
+  "location_free": true,
+  "passed": true,
+  "species_accuracy": 5,
+  "text_accuracy": 5,
+  "verification_sources": [
+    {
+      "title": "Eastern Towhee | Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/eastern-towhee"
+    },
+    {
+      "title": "Pipilo erythrophthalmus (eastern towhee) | Animal Diversity Web",
+      "url": "https://animaldiversity.org/accounts/Pipilo_erythrophthalmus/"
+    }
+  ]
+}

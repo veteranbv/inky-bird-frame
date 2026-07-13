@@ -1,0 +1,38 @@
+{
+  "behavior": "Primarily a ground forager, scratching through leaf litter with both feet; often concealed in dense undergrowth and may perch in low shrubs to sing.",
+  "common_name": "Eastern Towhee",
+  "family": "Passerellidae",
+  "field_marks": [
+    "Large, chunky sparrow with a thick triangular bill",
+    "Long, rounded tail with conspicuous white outer corners",
+    "Adult male has a sooty-black head, throat, breast, and upperparts",
+    "Warm rufous sides contrast with a clean white belly",
+    "Folded wing shows small white bars or a white check-mark",
+    "Eyes are usually dark to reddish; legs are pinkish"
+  ],
+  "habitat": "Dense brush, tangles, thickets, scrub, and forest edges with leaf litter for ground foraging.",
+  "measurements": {
+    "length": "6.8\u20138.2 in (17.3\u201320.8 cm)",
+    "weight": "1.1\u20131.8 oz (32\u201352 g)",
+    "wingspan": "7.9\u201311.0 in (20\u201328 cm)"
+  },
+  "palette": [
+    "sooty black",
+    "rufous chestnut",
+    "white",
+    "charcoal gray",
+    "pinkish gray"
+  ],
+  "scientific_name": "Pipilo erythrophthalmus",
+  "sources": [
+    {
+      "title": "Eastern Towhee Identification \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Eastern_Towhee/id/"
+    },
+    {
+      "title": "Eastern Towhee \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/eastern-towhee?nid=4186&site=pa"
+    }
+  ],
+  "taxon_id": 9424
+}

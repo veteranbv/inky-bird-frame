@@ -1,0 +1,142 @@
+{
+  "approved_at": "2026-07-13T04:11:52+00:00",
+  "assets": {
+    "display": {
+      "filename": "display.png",
+      "sha256": "dc5f46c3d25607ed18a6179b5590506348530fba1e6543ebb5df29cf460a097d"
+    },
+    "portrait": {
+      "filename": "portrait.png",
+      "sha256": "b3e4b70d405a81641f0a537913392fa2a8f4a23bd62ea00b2ceccb0f01b03728"
+    }
+  },
+  "common_name": "Eastern Towhee",
+  "generation": {
+    "attempt": 1,
+    "generated_at": "2026-07-13T04:11:52+00:00",
+    "generator": "Codex subscription / built-in gpt-image-2",
+    "max_attempts": 3,
+    "prompt_version": "field-journal-v2"
+  },
+  "profile": {
+    "behavior": "Primarily a ground forager, scratching through leaf litter with both feet; often concealed in dense undergrowth and may perch in low shrubs to sing.",
+    "common_name": "Eastern Towhee",
+    "family": "Passerellidae",
+    "field_marks": [
+      "Large, chunky sparrow with a thick triangular bill",
+      "Long, rounded tail with conspicuous white outer corners",
+      "Adult male has a sooty-black head, throat, breast, and upperparts",
+      "Warm rufous sides contrast with a clean white belly",
+      "Folded wing shows small white bars or a white check-mark",
+      "Eyes are usually dark to reddish; legs are pinkish"
+    ],
+    "habitat": "Dense brush, tangles, thickets, scrub, and forest edges with leaf litter for ground foraging.",
+    "measurements": {
+      "length": "6.8\u20138.2 in (17.3\u201320.8 cm)",
+      "weight": "1.1\u20131.8 oz (32\u201352 g)",
+      "wingspan": "7.9\u201311.0 in (20\u201328 cm)"
+    },
+    "palette": [
+      "sooty black",
+      "rufous chestnut",
+      "white",
+      "charcoal gray",
+      "pinkish gray"
+    ],
+    "scientific_name": "Pipilo erythrophthalmus",
+    "sources": [
+      {
+        "title": "Eastern Towhee Identification \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Eastern_Towhee/id/"
+      },
+      {
+        "title": "Eastern Towhee \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/eastern-towhee?nid=4186&site=pa"
+      }
+    ],
+    "taxon_id": 9424
+  },
+  "quality_review": {
+    "anatomy_accuracy": 5,
+    "composition_quality": 5,
+    "findings": [
+      "Verified as an adult male Eastern Towhee (Pipilo erythrophthalmus): sooty-black hood and upperparts, rufous flanks, clean white belly, stout triangular bill, reddish-brown eye, pinkish legs, white wing markings, and long rounded tail with white outer corners agree with the field-reference photos and sources.",
+      "All visible plate text is supported: the stated length, wingspan, and mass match the verified range; habitat, ground-foraging behavior, and listed field marks are consistent with source descriptions.",
+      "Anatomy is coherent: exactly one head, one beak, two legs, one tail, and two wings (one folded wing visible and the far wing naturally occluded).",
+      "No place name, ZIP code, coordinates, map, or local-observation detail appears."
+    ],
+    "location_free": true,
+    "passed": true,
+    "species_accuracy": 5,
+    "text_accuracy": 5,
+    "verification_sources": [
+      {
+        "title": "Eastern Towhee | Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/eastern-towhee"
+      },
+      {
+        "title": "Pipilo erythrophthalmus (eastern towhee) | Animal Diversity Web",
+        "url": "https://animaldiversity.org/accounts/Pipilo_erythrophthalmus/"
+      }
+    ]
+  },
+  "references": [
+    {
+      "attribution": "(c) Carrie Seltzer, some rights reserved (CC BY)",
+      "filename": "01-114992760.jpg",
+      "height": 1871,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/114992760/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 70706284,
+      "observer": "carrieseltzer",
+      "photo_id": 114992760,
+      "sha256": "0edf285b4e895ec02a21641914a52e30e83f2c696010abcef949e5accfc572ce",
+      "source_url": "https://www.inaturalist.org/observations/70706284",
+      "width": 2048
+    },
+    {
+      "attribution": "no rights reserved",
+      "filename": "02-578388369.jpg",
+      "height": 1365,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/578388369/large.jpg",
+      "license_code": "cc0",
+      "observation_id": 319934931,
+      "observer": "davidfbird",
+      "photo_id": 578388369,
+      "sha256": "95944b3e8bea532df515b68ddf3038ffdcd6f906990485e7cf7d34ea3b8f8663",
+      "source_url": "https://www.inaturalist.org/observations/319934931",
+      "width": 2048
+    },
+    {
+      "attribution": "no rights reserved",
+      "filename": "03-18795557.jpg",
+      "height": 1365,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/18795557/large.jpg",
+      "license_code": "cc0",
+      "observation_id": 12934894,
+      "observer": "kpmcfarland",
+      "photo_id": 18795557,
+      "sha256": "656008f3706c385394407f398085d1b563a21f0dc6cb9c4589b91a8c5932111b",
+      "source_url": "https://www.inaturalist.org/observations/12934894",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) Andrew Hrycyna, some rights reserved (CC BY)",
+      "filename": "04-69227694.jpg",
+      "height": 1366,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/69227694/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 43643657,
+      "observer": "hryc111",
+      "photo_id": 69227694,
+      "sha256": "094875e54f5731378f11986f732092c4eae824bd55dd2ea395198aa3c70d386d",
+      "source_url": "https://www.inaturalist.org/observations/43643657",
+      "width": 2048
+    }
+  ],
+  "schema_version": 1,
+  "scientific_name": "Pipilo erythrophthalmus",
+  "slug": "eastern-towhee",
+  "status": "approved",
+  "taxon_id": 9424
+}
