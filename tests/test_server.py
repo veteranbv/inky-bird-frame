@@ -10,7 +10,7 @@ from http.server import ThreadingHTTPServer
 from pathlib import Path
 from tempfile import TemporaryDirectory
 
-from inky_bird_frame.server import CatalogRequestHandler
+from inky_bird_frame.server import CatalogRequestHandler, rebuild_index_logging_failures
 
 PNG_BYTES = b"\x89PNG\r\n\x1a\n" + b"\x00" * 16
 
@@ -67,6 +67,44 @@ class ServerTests(unittest.TestCase):
 
         self.assertEqual(status, 200)
         self.assertEqual(headers.get("Cache-Control"), "no-store")
+
+    def test_non_utf8_state_files_degrade_gracefully(self) -> None:
+        with self._environment() as (_, catalog_dir, state_dir):
+            active_catalog_path = state_dir / "active-catalog.json"
+            active_catalog_path.write_bytes(b'{"schema_version": 1, "species": [\xff\xfe')
+            (catalog_dir / "index.json").write_bytes(b'{"species": [\xff\xfe')
+            with _serving(catalog_dir, active_catalog_path, state_dir) as port:
+                catalog_status, _, _ = _get(port, "/v1/catalog")
+                health_status, _, health_body = _get(port, "/health")
+
+        self.assertEqual(catalog_status, 503)
+        self.assertEqual(health_status, 200)
+        payload = json.loads(health_body)
+        self.assertEqual(payload["approved_species"], 0)
+        self.assertEqual(payload["active_species"], 0)
+
+    def test_startup_index_rebuild_survives_missing_assets(self) -> None:
+        with self._environment() as (_, catalog_dir, _state_dir):
+            species = catalog_dir / "species" / "1-robin"
+            species.mkdir(parents=True)
+            (species / "manifest.json").write_text(
+                json.dumps(
+                    {
+                        "schema_version": 1,
+                        "status": "approved",
+                        "taxon_id": 1,
+                        "common_name": "Robin",
+                        "scientific_name": "Turdus migratorius",
+                        "slug": "robin",
+                        "approved_at": "2026-07-10T00:00:00+00:00",
+                        "assets": {
+                            "portrait": {"filename": "portrait.png", "sha256": "a" * 64},
+                            "display": {"filename": "display.png", "sha256": "b" * 64},
+                        },
+                    }
+                )
+            )
+            rebuild_index_logging_failures(catalog_dir)
 
     def test_display_success_report_is_recorded(self) -> None:
         with self._environment() as (_, catalog_dir, state_dir):

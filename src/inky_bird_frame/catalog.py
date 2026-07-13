@@ -83,7 +83,7 @@ def read_json(path: Path) -> object:
         return cast(object, json.loads(path.read_text()))
     except FileNotFoundError as exc:
         raise CatalogError(f"Catalog file not found: {path}") from exc
-    except json.JSONDecodeError as exc:
+    except (json.JSONDecodeError, UnicodeDecodeError) as exc:
         raise CatalogError(f"Invalid JSON in catalog file: {path}") from exc
 
 
@@ -359,16 +359,21 @@ def approve_candidate(state_dir: Path, catalog_dir: Path, taxon_id: int) -> Cata
     clear_catalog_staging(catalog_dir, destination.name)
     if destination.exists():
         existing = _existing_destination_manifest(destination)
-        if existing is None or not _same_candidate(manifest, existing):
+        if existing is None:
+            # No readable manifest is never a valid approval, only debris from
+            # an interrupted legacy copy: discard it and approve again.
+            shutil.rmtree(destination)
+        elif not _same_candidate(manifest, existing):
             raise CatalogError(
                 f"Taxon {taxon_id} is already approved; use an explicit replacement workflow"
             )
-        if _destination_assets_intact(existing, destination):
+        elif _destination_assets_intact(existing, destination):
             shutil.rmtree(source)
             entries = rebuild_catalog_index(catalog_dir)
             return next(entry for entry in entries if entry.taxon_id == taxon_id)
-        # Same candidate but an incomplete copy: discard it and approve again.
-        shutil.rmtree(destination)
+        else:
+            # Same candidate but an incomplete copy: discard it and approve again.
+            shutil.rmtree(destination)
 
     approved_manifest = dict(manifest)
     approved_manifest["status"] = "approved"

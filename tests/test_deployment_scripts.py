@@ -100,6 +100,10 @@ def test_macos_controller_installer_restores_previously_loaded_agents_on_failure
     assert 'if [ "${installation_complete}" != true ]' in script
     assert 'previously_loaded_labels+=("${label}")' in script
     assert 'restore_previous_agent "${label}"' in script
+    assert 'was_previously_loaded "${label}"' in script
+    assert script.index('if was_previously_loaded "${label}"') < script.index(
+        "# Not running before this install: undo any half-installed agent."
+    )
     assert "for label in serve refresh generate catalog-publish notifications; do" in script
     assert 'restore_catalog_publisher_schedule "${uid}" || true' in script
     assert 'rm -rf "${plist_backup_dir}"' in script

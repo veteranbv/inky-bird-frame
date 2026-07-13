@@ -90,13 +90,36 @@ uid=$(id -u)
 plist_backup_dir=$(mktemp -d "${support_dir}/launchd-restore.XXXXXX")
 previously_loaded_labels=()
 installation_complete=false
+was_previously_loaded() {
+  local target=$1
+  local loaded
+  if [ "${#previously_loaded_labels[@]}" -gt 0 ]; then
+    for loaded in "${previously_loaded_labels[@]}"; do
+      if [ "${loaded}" = "${target}" ]; then
+        return 0
+      fi
+    done
+  fi
+  return 1
+}
+
 cleanup() {
   status=$?
   trap - EXIT
-  if [ "${installation_complete}" != true ] \
-    && [ "${#previously_loaded_labels[@]}" -gt 0 ]; then
-    for label in "${previously_loaded_labels[@]}"; do
-      restore_previous_agent "${label}"
+  if [ "${installation_complete}" != true ]; then
+    for label in serve refresh generate catalog-publish notifications; do
+      if was_previously_loaded "${label}"; then
+        restore_previous_agent "${label}"
+      else
+        # Not running before this install: undo any half-installed agent.
+        launchctl bootout "gui/${uid}/com.inky-bird-frame.${label}" 2>/dev/null || true
+        if [ -f "${plist_backup_dir}/com.inky-bird-frame.${label}.plist" ]; then
+          cp "${plist_backup_dir}/com.inky-bird-frame.${label}.plist" \
+            "${agents_dir}/com.inky-bird-frame.${label}.plist" || true
+        else
+          rm -f "${agents_dir}/com.inky-bird-frame.${label}.plist"
+        fi
+      fi
     done
   fi
   rm -rf "${plist_backup_dir}"

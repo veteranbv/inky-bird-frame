@@ -108,12 +108,16 @@ class CatalogRequestHandler(BaseHTTPRequestHandler):
         )
 
 
+def rebuild_index_logging_failures(catalog_dir: Path) -> None:
+    try:
+        rebuild_catalog_index(catalog_dir)
+    except (CatalogError, OSError) as exc:
+        print(json.dumps({"event": "catalog_index_rebuild_failed", "error": str(exc)}))
+
+
 def serve_catalog(config: ControllerConfig) -> None:
     config.catalog_dir.mkdir(parents=True, exist_ok=True)
-    try:
-        rebuild_catalog_index(config.catalog_dir)
-    except CatalogError as exc:
-        print(json.dumps({"event": "catalog_index_rebuild_failed", "error": str(exc)}))
+    rebuild_index_logging_failures(config.catalog_dir)
     handler = type(
         "ConfiguredCatalogRequestHandler",
         (CatalogRequestHandler,),

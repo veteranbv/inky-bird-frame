@@ -5,13 +5,13 @@ from __future__ import annotations
 import json
 import os
 from collections.abc import Mapping
-from http.client import HTTPResponse
+from http.client import HTTPMessage, HTTPResponse
 from pathlib import Path
 from tempfile import NamedTemporaryFile
-from typing import cast
+from typing import IO, cast
 from urllib.error import HTTPError, URLError
 from urllib.parse import urlsplit
-from urllib.request import Request, urlopen
+from urllib.request import HTTPRedirectHandler, Request, build_opener
 
 from .errors import DataSourceError
 
@@ -36,6 +36,25 @@ def _checked_request(url: str, headers: Mapping[str, str]) -> Request:
     return Request(url, headers=dict(headers))
 
 
+class _HTTPOnlyRedirectHandler(HTTPRedirectHandler):
+    # urllib otherwise follows redirects onto FTP, bypassing the scheme check.
+    def redirect_request(
+        self,
+        req: Request,
+        fp: IO[bytes],
+        code: int,
+        msg: str,
+        headers: HTTPMessage,
+        newurl: str,
+    ) -> Request | None:
+        if urlsplit(newurl).scheme not in ("http", "https"):
+            raise DataSourceError(f"Refusing redirect to non-HTTP URL scheme: {newurl}")
+        return super().redirect_request(req, fp, code, msg, headers, newurl)
+
+
+_OPENER = build_opener(_HTTPOnlyRedirectHandler)
+
+
 def get_json(
     url: str,
     timeout_seconds: float = 10.0,
@@ -49,7 +68,7 @@ def get_json(
     display_url = error_label or url
     request = _checked_request(url, request_headers)
     try:
-        with urlopen(request, timeout=timeout_seconds) as response:
+        with _OPENER.open(request, timeout=timeout_seconds) as response:
             body = _read_capped(cast(HTTPResponse, response), MAX_JSON_BYTES, display_url)
     except HTTPError as exc:
         raise DataSourceError(f"HTTP {exc.code} from {display_url}") from exc
@@ -67,7 +86,7 @@ def get_json(
 def get_bytes(url: str, timeout_seconds: float = 30.0) -> bytes:
     request = _checked_request(url, {"User-Agent": "inky-bird-frame/0.1"})
     try:
-        with urlopen(request, timeout=timeout_seconds) as response:
+        with _OPENER.open(request, timeout=timeout_seconds) as response:
             return _read_capped(cast(HTTPResponse, response), MAX_ASSET_BYTES, url)
     except HTTPError as exc:
         raise DataSourceError(f"HTTP {exc.code} from {url}") from exc

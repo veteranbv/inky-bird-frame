@@ -12,6 +12,7 @@ from inky_bird_frame.catalog import (
     approve_candidate,
     candidate_directory,
     read_catalog_entries,
+    read_json,
     rebuild_catalog_index,
     write_candidate_manifest,
 )
@@ -180,6 +181,33 @@ class CatalogTests(unittest.TestCase):
                 [item.taxon_id for item in read_catalog_entries(catalog)],
                 [species.taxon_id],
             )
+
+    def test_destination_without_readable_manifest_is_discarded_and_reapproved(self) -> None:
+        species = BirdSpecies(7513, "Carolina Wren", "Thryothorus ludovicianus", 5, "test")
+        review = QualityReview(True, 4, 4, 4, 4, True, ())
+        with TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            state = root / "state"
+            catalog = root / "catalog"
+            candidate = make_candidate(state, species, review)
+
+            # An old-flow crash before the manifest landed in the destination.
+            destination = catalog / "species" / "7513-carolina-wren"
+            destination.mkdir(parents=True)
+            (destination / "portrait.png").write_bytes(b"partial")
+
+            entry = approve_candidate(state, catalog, species.taxon_id)
+
+            self.assertEqual(entry.taxon_id, species.taxon_id)
+            self.assertFalse(candidate.exists())
+            self.assertEqual((destination / "display.png").read_bytes(), b"display")
+
+    def test_read_json_reports_non_utf8_corruption_as_catalog_error(self) -> None:
+        with TemporaryDirectory() as temporary:
+            path = Path(temporary) / "torn.json"
+            path.write_bytes(b'{"schema_version": 1, "species": [\xff\xfe')
+            with self.assertRaisesRegex(CatalogError, "Invalid JSON"):
+                read_json(path)
 
     def test_conflicting_destination_still_requires_explicit_replacement(self) -> None:
         species = BirdSpecies(7513, "Carolina Wren", "Thryothorus ludovicianus", 5, "test")
