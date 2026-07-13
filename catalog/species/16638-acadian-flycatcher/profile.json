@@ -1,0 +1,38 @@
+{
+  "behavior": "Perches upright at mid-levels, then sallies or hovers to catch insects in the air or from foliage; also takes spiders and small fruits.",
+  "common_name": "Acadian Flycatcher",
+  "family": "Tyrannidae",
+  "field_marks": [
+    "Small, upright flycatcher with a relatively large, peaked-looking head",
+    "Olive-green upperparts and pale whitish to yellow-washed underparts",
+    "Thin, distinct pale eye-ring around a dark eye",
+    "Dark wings with two clear pale wingbars and long wing tips",
+    "Broad, flat bill: dark above and orange-yellow below",
+    "Long, fairly square-tipped tail; dark legs"
+  ],
+  "habitat": "Mature deciduous forest and woodland, especially shaded lowlands near streams, rivers, swamps, ravines, or other wet forest; also tropical forest in the nonbreeding season.",
+  "measurements": {
+    "length": "5.5\u20135.9 in (14\u201315 cm)",
+    "weight": "0.4\u20130.5 oz (11\u201314 g)",
+    "wingspan": "8.7\u20139.4 in (22\u201324 cm)"
+  },
+  "palette": [
+    "olive green",
+    "soft gray-olive",
+    "whitish",
+    "pale yellow",
+    "dark brown-black"
+  ],
+  "scientific_name": "Empidonax virescens",
+  "sources": [
+    {
+      "title": "Acadian Flycatcher Identification \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Acadian_Flycatcher/id"
+    },
+    {
+      "title": "Acadian Flycatcher \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/acadian-flycatcher"
+    }
+  ],
+  "taxon_id": 16638
+}

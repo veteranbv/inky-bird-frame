@@ -1,0 +1,24 @@
+{
+  "anatomy_accuracy": 5,
+  "composition_quality": 5,
+  "findings": [
+    "Independent live verification confirms Acadian Flycatcher (Empidonax virescens), family Tyrannidae. The candidate's length, wingspan, and weight match Audubon's published ranges exactly; Cornell gives the same length and substantially matching weight, but a narrower wingspan range.",
+    "All visible factual claims are supported: upright mid-level perch-and-sally foraging, insects/spiders/small fruits, mature wet deciduous woodland and tropical winter forest, olive upperparts, pale underparts, thin pale eye-ring, two pale wingbars, long wing tips, broad dark-above/orange-yellow-below bill, and square-tipped tail.",
+    "The illustration agrees with the supplied reference photos and verified field marks: single peaked-looking head, single broad bicolored bill, pale eye-ring around a dark eye, olive back, pale underparts, dark folded wing with two pale wingbars, long tail, and dark legs/feet. It visibly depicts one head, one beak, two wings, two legs, and one tail with no anatomical defects.",
+    "No place name, ZIP code, coordinates, map, or local-observation detail appears on the plate."
+  ],
+  "location_free": true,
+  "passed": true,
+  "species_accuracy": 5,
+  "text_accuracy": 5,
+  "verification_sources": [
+    {
+      "title": "Acadian Flycatcher Identification \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Acadian_Flycatcher/id"
+    },
+    {
+      "title": "Acadian Flycatcher \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/acadian-flycatcher"
+    }
+  ]
+}

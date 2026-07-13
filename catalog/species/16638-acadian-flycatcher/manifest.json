@@ -1,0 +1,142 @@
+{
+  "approved_at": "2026-07-13T02:27:13+00:00",
+  "assets": {
+    "display": {
+      "filename": "display.png",
+      "sha256": "c56ffe2f8a3d962a3da3e13745b4a6b726f5d2449717eae8b06865dcfed97594"
+    },
+    "portrait": {
+      "filename": "portrait.png",
+      "sha256": "120090841c0114e5e71dfad770122991edefa3c232dee0df04ea6388af9a6b2c"
+    }
+  },
+  "common_name": "Acadian Flycatcher",
+  "generation": {
+    "attempt": 1,
+    "generated_at": "2026-07-13T02:27:13+00:00",
+    "generator": "Codex subscription / built-in gpt-image-2",
+    "max_attempts": 3,
+    "prompt_version": "field-journal-v2"
+  },
+  "profile": {
+    "behavior": "Perches upright at mid-levels, then sallies or hovers to catch insects in the air or from foliage; also takes spiders and small fruits.",
+    "common_name": "Acadian Flycatcher",
+    "family": "Tyrannidae",
+    "field_marks": [
+      "Small, upright flycatcher with a relatively large, peaked-looking head",
+      "Olive-green upperparts and pale whitish to yellow-washed underparts",
+      "Thin, distinct pale eye-ring around a dark eye",
+      "Dark wings with two clear pale wingbars and long wing tips",
+      "Broad, flat bill: dark above and orange-yellow below",
+      "Long, fairly square-tipped tail; dark legs"
+    ],
+    "habitat": "Mature deciduous forest and woodland, especially shaded lowlands near streams, rivers, swamps, ravines, or other wet forest; also tropical forest in the nonbreeding season.",
+    "measurements": {
+      "length": "5.5\u20135.9 in (14\u201315 cm)",
+      "weight": "0.4\u20130.5 oz (11\u201314 g)",
+      "wingspan": "8.7\u20139.4 in (22\u201324 cm)"
+    },
+    "palette": [
+      "olive green",
+      "soft gray-olive",
+      "whitish",
+      "pale yellow",
+      "dark brown-black"
+    ],
+    "scientific_name": "Empidonax virescens",
+    "sources": [
+      {
+        "title": "Acadian Flycatcher Identification \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Acadian_Flycatcher/id"
+      },
+      {
+        "title": "Acadian Flycatcher \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/acadian-flycatcher"
+      }
+    ],
+    "taxon_id": 16638
+  },
+  "quality_review": {
+    "anatomy_accuracy": 5,
+    "composition_quality": 5,
+    "findings": [
+      "Independent live verification confirms Acadian Flycatcher (Empidonax virescens), family Tyrannidae. The candidate's length, wingspan, and weight match Audubon's published ranges exactly; Cornell gives the same length and substantially matching weight, but a narrower wingspan range.",
+      "All visible factual claims are supported: upright mid-level perch-and-sally foraging, insects/spiders/small fruits, mature wet deciduous woodland and tropical winter forest, olive upperparts, pale underparts, thin pale eye-ring, two pale wingbars, long wing tips, broad dark-above/orange-yellow-below bill, and square-tipped tail.",
+      "The illustration agrees with the supplied reference photos and verified field marks: single peaked-looking head, single broad bicolored bill, pale eye-ring around a dark eye, olive back, pale underparts, dark folded wing with two pale wingbars, long tail, and dark legs/feet. It visibly depicts one head, one beak, two wings, two legs, and one tail with no anatomical defects.",
+      "No place name, ZIP code, coordinates, map, or local-observation detail appears on the plate."
+    ],
+    "location_free": true,
+    "passed": true,
+    "species_accuracy": 5,
+    "text_accuracy": 5,
+    "verification_sources": [
+      {
+        "title": "Acadian Flycatcher Identification \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Acadian_Flycatcher/id"
+      },
+      {
+        "title": "Acadian Flycatcher \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/acadian-flycatcher"
+      }
+    ]
+  },
+  "references": [
+    {
+      "attribution": "no rights reserved",
+      "filename": "01-520177950.jpg",
+      "height": 1366,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/520177950/large.jpg",
+      "license_code": "cc0",
+      "observation_id": 289218186,
+      "observer": "deberly",
+      "photo_id": 520177950,
+      "sha256": "2dd47e03235f7d77bdb0c7e5464f3cd8652d319668ead92ecca5a08e4dd22a00",
+      "source_url": "https://www.inaturalist.org/observations/289218186",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) Daniel S. Katz, some rights reserved (CC BY)",
+      "filename": "02-200875344.jpeg",
+      "height": 1000,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/200875344/large.jpeg",
+      "license_code": "cc-by",
+      "observation_id": 118863524,
+      "observer": "danielskatz",
+      "photo_id": 200875344,
+      "sha256": "e648fad3ff6c39cc065000ba1cc952b057c12c3266b5b4576d7cb7f52b560c78",
+      "source_url": "https://www.inaturalist.org/observations/118863524",
+      "width": 1000
+    },
+    {
+      "attribution": "(c) Ken Clark, some rights reserved (CC BY)",
+      "filename": "03-688831670.jpg",
+      "height": 1536,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/688831670/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 376730343,
+      "observer": "peliken",
+      "photo_id": 688831670,
+      "sha256": "16d124b0e1dd6e09d7c5b070c1e992424fe1fdb51362f8e2df08110e14bc3e01",
+      "source_url": "https://www.inaturalist.org/observations/376730343",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) Shawn Taylor, some rights reserved (CC BY)",
+      "filename": "04-53441573.jpg",
+      "height": 1365,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/53441573/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 33989019,
+      "observer": "atlnature",
+      "photo_id": 53441573,
+      "sha256": "2456057733b5e8fc3cd32fba02dee6d9e7e947d14c2b6aaec4f5004b9ea5bafd",
+      "source_url": "https://www.inaturalist.org/observations/33989019",
+      "width": 2048
+    }
+  ],
+  "schema_version": 1,
+  "scientific_name": "Empidonax virescens",
+  "slug": "acadian-flycatcher",
+  "status": "approved",
+  "taxon_id": 16638
+}
