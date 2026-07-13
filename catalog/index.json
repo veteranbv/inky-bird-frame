@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-13T02:30:59+00:00",
+  "generated_at": "2026-07-13T02:45:02+00:00",
   "schema_version": 1,
   "species": [
     {
@@ -45,6 +45,17 @@
       "scientific_name": "Turdus migratorius",
       "slug": "american-robin",
       "taxon_id": 12727
+    },
+    {
+      "approved_at": "2026-07-13T02:45:02+00:00",
+      "common_name": "Barn Swallow",
+      "display_path": "species/11901-barn-swallow/display.png",
+      "display_sha256": "03480b0c729cd7f774cc54a0bd41da0dba6747ac1c119374c3df59c4cdfec760",
+      "portrait_path": "species/11901-barn-swallow/portrait.png",
+      "portrait_sha256": "1755bb047cf3a8b3c03c6899b160676d561f6440618cc4f95c96d264bcf9a43d",
+      "scientific_name": "Hirundo rustica",
+      "slug": "barn-swallow",
+      "taxon_id": 11901
     },
     {
       "approved_at": "2026-07-10T14:16:22+00:00",

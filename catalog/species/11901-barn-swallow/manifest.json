@@ -1,0 +1,142 @@
+{
+  "approved_at": "2026-07-13T02:45:02+00:00",
+  "assets": {
+    "display": {
+      "filename": "display.png",
+      "sha256": "03480b0c729cd7f774cc54a0bd41da0dba6747ac1c119374c3df59c4cdfec760"
+    },
+    "portrait": {
+      "filename": "portrait.png",
+      "sha256": "1755bb047cf3a8b3c03c6899b160676d561f6440618cc4f95c96d264bcf9a43d"
+    }
+  },
+  "common_name": "Barn Swallow",
+  "generation": {
+    "attempt": 2,
+    "generated_at": "2026-07-13T02:45:02+00:00",
+    "generator": "Codex subscription / built-in gpt-image-2",
+    "max_attempts": 3,
+    "prompt_version": "field-journal-v2"
+  },
+  "profile": {
+    "behavior": "Aerial insectivore; catches flying insects in agile, low, swooping flight with quick turns and little gliding.",
+    "common_name": "Barn Swallow",
+    "family": "Hirundinidae",
+    "field_marks": [
+      "Slender, streamlined swallow with very long, narrow, pointed wings.",
+      "Adult tail is long and deeply forked, with elongated outer streamers extending beyond the wingtips.",
+      "Steely blue to blue-black crown, back, wings, and tail.",
+      "Cinnamon to chestnut forehead and throat contrast with the dark blue face.",
+      "Underparts range from tawny or buff to pale; small white spots beneath the tail may show in flight.",
+      "Short, dark, broad-based bill and small dark legs."
+    ],
+    "habitat": "Open and semi-open country, including fields, grasslands, marshes, ponds, and coastal water; commonly forages over open ground or water and nests on sheltered human-made structures such as eaves, buildings, and bridges.",
+    "measurements": {
+      "length": "15\u201319 cm (5.9\u20137.5 in)",
+      "weight": "17\u201320 g (0.6\u20130.7 oz)",
+      "wingspan": "29\u201332 cm (11.4\u201312.6 in)"
+    },
+    "palette": [
+      "steely blue",
+      "blue-black",
+      "cinnamon chestnut",
+      "tawny buff",
+      "white"
+    ],
+    "scientific_name": "Hirundo rustica",
+    "sources": [
+      {
+        "title": "Barn Swallow Identification \u2014 All About Birds, Cornell Lab of Ornithology",
+        "url": "https://www.allaboutbirds.org/guide/Barn_Swallow/id"
+      },
+      {
+        "title": "Barn Swallow \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/barn-swallow?nid=4186&site=pa"
+      }
+    ],
+    "taxon_id": 11901
+  },
+  "quality_review": {
+    "anatomy_accuracy": 4,
+    "composition_quality": 5,
+    "findings": [
+      "Live verification confirms Barn Swallow (Hirundo rustica), family Hirundinidae. Cornell gives 15\u201319 cm length, 17\u201320 g weight, and 29\u201332 cm wingspan; the plate reproduces these correctly. Audubon independently gives 15\u201320 cm and describes the long forked tail, steel-blue back, chestnut throat, pale-to-buff underparts, and long narrow pointed wings.",
+      "The illustrated adult matches the references: steely blue upperparts, chestnut forehead/throat, buff underparts, short dark bill, pointed wings, and a deeply forked tail with elongated streamers. It shows one head, one beak, two wings in a side-on pose, two legs/feet, and one tail; no extra or malformed anatomy is apparent.",
+      "All visible text claims are consistent with the verified identification, behavior, habitat, and field marks. The plate contains no place name, ZIP code, coordinates, map, or local-observation detail.",
+      "Minor illustration caveat: the eye is slightly enlarged/stylized and the tail streamers are especially prominent, but both remain anatomically plausible for an adult Barn Swallow and are not material errors."
+    ],
+    "location_free": true,
+    "passed": true,
+    "species_accuracy": 5,
+    "text_accuracy": 5,
+    "verification_sources": [
+      {
+        "title": "Barn Swallow Identification \u2014 All About Birds, Cornell Lab of Ornithology",
+        "url": "https://www.allaboutbirds.org/guide/Barn_Swallow/id"
+      },
+      {
+        "title": "Barn Swallow \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/barn-swallow?nid=4186&site=pa"
+      }
+    ]
+  },
+  "references": [
+    {
+      "attribution": "(c) Diego Gonz\u00e1lez Dopico, some rights reserved (CC BY)",
+      "filename": "01-575999585.jpg",
+      "height": 1366,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/575999585/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 239048645,
+      "observer": "diegodgd",
+      "photo_id": 575999585,
+      "sha256": "960a5e231e8fcab272e48c7318f2f6b093badf71836f0cdd85a5a2f6f9361bee",
+      "source_url": "https://www.inaturalist.org/observations/239048645",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) Nelson Chu Pavlosky, some rights reserved (CC BY)",
+      "filename": "02-326606761.jpeg",
+      "height": 1197,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/326606761/large.jpeg",
+      "license_code": "cc-by",
+      "observation_id": 186839287,
+      "observer": "skyfaller",
+      "photo_id": 326606761,
+      "sha256": "dc7bd06881504d08038d0484da76430cc7231e26090fcef7112c27a0290b0657",
+      "source_url": "https://www.inaturalist.org/observations/186839287",
+      "width": 1197
+    },
+    {
+      "attribution": "no rights reserved",
+      "filename": "03-8209375.jpeg",
+      "height": 2048,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/8209375/large.jpeg",
+      "license_code": "cc0",
+      "observation_id": 6487004,
+      "observer": "hannawacker",
+      "photo_id": 8209375,
+      "sha256": "ebe924be8dbadaa3833a0e3f2e6a84cb2957bd4b19eea191203e4f65be23941b",
+      "source_url": "https://www.inaturalist.org/observations/6487004",
+      "width": 1924
+    },
+    {
+      "attribution": "(c) SteveM4560, some rights reserved (CC BY)",
+      "filename": "04-656530117.jpg",
+      "height": 1536,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/656530117/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 359817945,
+      "observer": "stevem4560",
+      "photo_id": 656530117,
+      "sha256": "801d09371404f4cca0cfbb0671fcae94a335c8f1e33d9f287568fa33317d958c",
+      "source_url": "https://www.inaturalist.org/observations/359817945",
+      "width": 2048
+    }
+  ],
+  "schema_version": 1,
+  "scientific_name": "Hirundo rustica",
+  "slug": "barn-swallow",
+  "status": "approved",
+  "taxon_id": 11901
+}

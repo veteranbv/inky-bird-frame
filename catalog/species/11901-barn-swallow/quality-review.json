@@ -1,0 +1,24 @@
+{
+  "anatomy_accuracy": 4,
+  "composition_quality": 5,
+  "findings": [
+    "Live verification confirms Barn Swallow (Hirundo rustica), family Hirundinidae. Cornell gives 15\u201319 cm length, 17\u201320 g weight, and 29\u201332 cm wingspan; the plate reproduces these correctly. Audubon independently gives 15\u201320 cm and describes the long forked tail, steel-blue back, chestnut throat, pale-to-buff underparts, and long narrow pointed wings.",
+    "The illustrated adult matches the references: steely blue upperparts, chestnut forehead/throat, buff underparts, short dark bill, pointed wings, and a deeply forked tail with elongated streamers. It shows one head, one beak, two wings in a side-on pose, two legs/feet, and one tail; no extra or malformed anatomy is apparent.",
+    "All visible text claims are consistent with the verified identification, behavior, habitat, and field marks. The plate contains no place name, ZIP code, coordinates, map, or local-observation detail.",
+    "Minor illustration caveat: the eye is slightly enlarged/stylized and the tail streamers are especially prominent, but both remain anatomically plausible for an adult Barn Swallow and are not material errors."
+  ],
+  "location_free": true,
+  "passed": true,
+  "species_accuracy": 5,
+  "text_accuracy": 5,
+  "verification_sources": [
+    {
+      "title": "Barn Swallow Identification \u2014 All About Birds, Cornell Lab of Ornithology",
+      "url": "https://www.allaboutbirds.org/guide/Barn_Swallow/id"
+    },
+    {
+      "title": "Barn Swallow \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/barn-swallow?nid=4186&site=pa"
+    }
+  ]
+}
