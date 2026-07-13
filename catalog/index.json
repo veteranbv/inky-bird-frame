@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-13T04:02:53+00:00",
+  "generated_at": "2026-07-13T04:11:52+00:00",
   "schema_version": 1,
   "species": [
     {
@@ -243,6 +243,17 @@
       "scientific_name": "Tyrannus tyrannus",
       "slug": "eastern-kingbird",
       "taxon_id": 16782
+    },
+    {
+      "approved_at": "2026-07-13T04:11:52+00:00",
+      "common_name": "Eastern Towhee",
+      "display_path": "species/9424-eastern-towhee/display.png",
+      "display_sha256": "dc5f46c3d25607ed18a6179b5590506348530fba1e6543ebb5df29cf460a097d",
+      "portrait_path": "species/9424-eastern-towhee/portrait.png",
+      "portrait_sha256": "b3e4b70d405a81641f0a537913392fa2a8f4a23bd62ea00b2ceccb0f01b03728",
+      "scientific_name": "Pipilo erythrophthalmus",
+      "slug": "eastern-towhee",
+      "taxon_id": 9424
     },
     {
       "approved_at": "2026-07-10T13:55:53+00:00",
