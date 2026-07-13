@@ -110,6 +110,21 @@ class ConfigTests(unittest.TestCase):
         )
         self.assertEqual(config.discovery.ebird_api_key, "secret")
 
+    def test_nonsecret_load_preserves_ebird_declaration_without_resolving_it(self) -> None:
+        configured = CONFIG.replace(
+            "[discovery]\n",
+            '[discovery]\nsource = "ebird"\nebird_api_key_env = "TEST_EBIRD_KEY"\n',
+        )
+        with TemporaryDirectory() as temporary:
+            path = Path(temporary) / "config.toml"
+            path.write_text(configured)
+            with patch.dict("os.environ", {}, clear=True):
+                config = load_config(path, load_secrets=False)
+
+        self.assertEqual(config.discovery.sources, (DiscoveryProvider.EBIRD,))
+        self.assertIsNone(config.discovery.ebird_api_key)
+        self.assertEqual(config.discovery.ebird_api_key_env, "TEST_EBIRD_KEY")
+
     def test_inaturalist_default_resolves_key_for_source_override(self) -> None:
         configured = CONFIG.replace(
             "[discovery]\n", '[discovery]\nebird_api_key_env = "TEST_EBIRD_KEY"\n'
@@ -443,6 +458,52 @@ events = ["terminal_error"]
         self.assertFalse(config.notifications.enabled)
         self.assertEqual(config.notifications.destinations[0].url, "env://MISSING_NOTIFICATION_URL")
         self.assertEqual(config.notifications.destinations[0].url_env, "MISSING_NOTIFICATION_URL")
+
+    def test_nonsecret_load_does_not_resolve_enabled_notification_environment(self) -> None:
+        configured = (
+            CONFIG
+            + """
+
+[notifications]
+enabled = true
+
+[[notifications.destinations]]
+name = "pushover"
+url_env = "MISSING_NOTIFICATION_URL"
+events = ["terminal_error"]
+"""
+        )
+        with TemporaryDirectory() as temporary:
+            path = Path(temporary) / "config.toml"
+            path.write_text(configured)
+            with patch.dict("os.environ", {}, clear=True):
+                config = load_config(path, load_secrets=False)
+
+        destination = config.notifications.destinations[0]
+        self.assertTrue(config.notifications.enabled)
+        self.assertEqual(destination.url, "env://MISSING_NOTIFICATION_URL")
+        self.assertEqual(destination.url_env, "MISSING_NOTIFICATION_URL")
+
+    def test_nonsecret_load_redacts_direct_notification_url(self) -> None:
+        configured = (
+            CONFIG
+            + """
+
+[notifications]
+enabled = true
+
+[[notifications.destinations]]
+name = "pushover"
+url = "pover://private-user@private-token"
+events = ["terminal_error"]
+"""
+        )
+        with TemporaryDirectory() as temporary:
+            path = Path(temporary) / "config.toml"
+            path.write_text(configured)
+            config = load_config(path, load_secrets=False)
+
+        self.assertEqual(config.notifications.destinations[0].url, "pover://redacted")
 
 
 if __name__ == "__main__":

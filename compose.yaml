@@ -1,0 +1,80 @@
+name: inky-bird-frame
+
+x-controller-common: &controller-common
+  image: ${INKY_BIRD_IMAGE:-ghcr.io/veteranbv/inky-bird-frame:latest}
+  build:
+    context: .
+    target: runtime
+  read_only: true
+  cap_drop:
+    - ALL
+  security_opt:
+    - no-new-privileges:true
+  pids_limit: 256
+  tmpfs:
+    - /tmp:size=256m,mode=1777
+  volumes:
+    - controller-data:/data
+
+services:
+  bootstrap:
+    <<: *controller-common
+    command:
+      - catalog
+      - sync
+      - --source-catalog
+      - /app/catalog
+      - --catalog
+      - /data/catalog
+      - --state-dir
+      - /data/state
+    restart: "no"
+
+  controller:
+    <<: *controller-common
+    command: [serve, --config, /data/config.toml]
+    depends_on:
+      bootstrap:
+        condition: service_completed_successfully
+    ports:
+      - ${INKY_BIRD_PORT:-8793}:8793
+    healthcheck:
+      test:
+        - CMD
+        - python
+        - -c
+        - "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8793/health', timeout=5).read()"
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    restart: unless-stopped
+
+  scheduler:
+    <<: *controller-common
+    # Bubblewrap creates an unprivileged user namespace for Codex's inner sandbox.
+    # The host profile in deploy/apparmor grants only Codex user-namespace access.
+    # Docker's default seccomp and AppArmor profiles still block namespace setup and mounts.
+    security_opt:
+      - no-new-privileges:true
+      - seccomp=unconfined
+      - apparmor=unconfined
+    env_file:
+      - path: ${INKY_BIRD_ENV:-./controller.env}
+        required: false
+    command: [scheduler, --config, /data/config.toml]
+    depends_on:
+      bootstrap:
+        condition: service_completed_successfully
+      controller:
+        condition: service_healthy
+    volumes:
+      - controller-data:/data
+      - codex-auth:/home/inky/.codex
+      - github-auth:/home/inky/.config
+    restart: unless-stopped
+
+volumes:
+  controller-data:
+  codex-auth:
+  github-auth:

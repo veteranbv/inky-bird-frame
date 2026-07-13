@@ -11,7 +11,7 @@ import subprocess
 from collections.abc import Iterator
 from contextlib import contextmanager
 from pathlib import Path
-from tempfile import TemporaryDirectory
+from tempfile import TemporaryDirectory, mkdtemp
 from typing import cast
 
 from PIL import Image
@@ -330,39 +330,66 @@ def sync_public_catalog(
     }
 
     _validate_catalog_root(destination_catalog, allow_create=True)
-    if (destination_catalog / "index.json").exists():
-        validate_public_catalog(destination_catalog)
-    elif any((destination_catalog / "species").iterdir()):
-        raise CatalogPublishError("Catalog with species entries must include index.json")
-
     destination_species = destination_catalog / "species"
+    interrupted_staging = list(destination_species.glob(".sync-*"))
+    for staging_directory in interrupted_staging:
+        if staging_directory.is_symlink() or not staging_directory.is_dir():
+            raise CatalogPublishError(f"Invalid catalog sync staging path: {staging_directory}")
+        shutil.rmtree(staging_directory)
+    if (destination_catalog / "index.json").exists():
+        try:
+            validate_public_catalog(destination_catalog)
+        except CatalogPublishError:
+            if not interrupted_staging:
+                raise
+            for directory in destination_species.iterdir():
+                _validate_species_directory(directory)
+            rebuild_catalog_index(destination_catalog)
+            validate_public_catalog(destination_catalog)
+    elif any(destination_species.iterdir()):
+        for directory in destination_species.iterdir():
+            _validate_species_directory(directory)
+        rebuild_catalog_index(destination_catalog)
+        validate_public_catalog(destination_catalog)
+
     published: list[dict[str, object]] = []
     existing: list[int] = []
 
-    for taxon_id, entry in sorted(source_by_taxon.items()):
-        source = source_catalog / "species" / f"{taxon_id}-{entry.slug}"
-        matches = sorted(destination_species.glob(f"{taxon_id}-*"))
-        if len(matches) > 1:
-            raise CatalogPublishError(f"Catalog contains multiple directories for taxon {taxon_id}")
-        if matches:
-            if matches[0].name != source.name or not _trees_match(source, matches[0]):
+    transaction = Path(mkdtemp(prefix=".sync-", dir=destination_species))
+    try:
+        for taxon_id, entry in sorted(source_by_taxon.items()):
+            source = source_catalog / "species" / f"{taxon_id}-{entry.slug}"
+            matches = sorted(destination_species.glob(f"{taxon_id}-*"))
+            if len(matches) > 1:
                 raise CatalogPublishError(
-                    f"Catalog taxon {taxon_id} conflicts with immutable local approval"
+                    f"Catalog contains multiple directories for taxon {taxon_id}"
                 )
-            existing.append(taxon_id)
-            continue
-        shutil.copytree(source, destination_species / source.name)
-        published.append(
-            {
-                "taxon_id": entry.taxon_id,
-                "common_name": entry.common_name,
-                "scientific_name": entry.scientific_name,
-                "slug": entry.slug,
-            }
-        )
+            if matches:
+                if matches[0].name != source.name or not _trees_match(source, matches[0]):
+                    raise CatalogPublishError(
+                        f"Catalog taxon {taxon_id} conflicts with immutable local approval"
+                    )
+                existing.append(taxon_id)
+                continue
+            staged = transaction / source.name
+            shutil.copytree(source, staged)
+            _validate_species_directory(staged)
+            staged.replace(destination_species / source.name)
+            published.append(
+                {
+                    "taxon_id": entry.taxon_id,
+                    "common_name": entry.common_name,
+                    "scientific_name": entry.scientific_name,
+                    "slug": entry.slug,
+                }
+            )
 
-    rebuild_catalog_index(destination_catalog)
-    validate_public_catalog(destination_catalog)
+        rebuild_catalog_index(destination_catalog)
+        shutil.rmtree(transaction)
+        validate_public_catalog(destination_catalog)
+    except BaseException:
+        transaction.mkdir(exist_ok=True)
+        raise
     return {"published": published, "already_present": existing}
 
 

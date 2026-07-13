@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import io
 import json
+import stat
 import unittest
 from argparse import Namespace
 from contextlib import redirect_stdout
@@ -13,16 +14,19 @@ from unittest.mock import patch
 from inky_bird_frame.birds import BirdSpecies
 from inky_bird_frame.cli import (
     build_parser,
+    catalog_sync_command,
+    config_install_command,
     generate_command,
     main,
     refresh_command,
     retry_command,
     seed_command,
+    serve_command,
     species_to_dict,
 )
 from inky_bird_frame.config import DiscoveryProvider
 from inky_bird_frame.controller import exclusive_cycle_lock
-from inky_bird_frame.errors import DataSourceError, GenerationError
+from inky_bird_frame.errors import ConfigurationError, DataSourceError, GenerationError
 
 
 class CliTests(unittest.TestCase):
@@ -67,6 +71,64 @@ class CliTests(unittest.TestCase):
         self.assertEqual(str(prepare.catalog), "catalog")
         self.assertEqual(str(validate.catalog), "catalog")
         self.assertEqual(str(validate.base_catalog), "base-catalog")
+
+    def test_catalog_sync_uses_explicit_catalog_paths(self) -> None:
+        args = build_parser().parse_args(
+            [
+                "catalog",
+                "sync",
+                "--source-catalog",
+                "bundled-catalog",
+                "--catalog",
+                "managed-catalog",
+                "--state-dir",
+                "controller-state",
+            ]
+        )
+
+        self.assertEqual(str(args.source_catalog), "bundled-catalog")
+        self.assertEqual(str(args.catalog), "managed-catalog")
+        self.assertEqual(str(args.state_dir), "controller-state")
+
+    def test_catalog_sync_uses_controller_catalog_lock(self) -> None:
+        args = Namespace(
+            source_catalog=Path("bundled-catalog"),
+            catalog=Path("managed-catalog"),
+            state_dir=Path("controller-state"),
+        )
+        with (
+            patch("inky_bird_frame.cli.catalog_state_lock") as catalog_lock,
+            patch(
+                "inky_bird_frame.cli.sync_public_catalog",
+                return_value={"published": [], "already_present": []},
+            ) as sync,
+            redirect_stdout(io.StringIO()),
+        ):
+            catalog_sync_command(args)
+
+        catalog_lock.assert_called_once_with(Path("controller-state"))
+        sync.assert_called_once_with(Path("bundled-catalog"), Path("managed-catalog"))
+
+    def test_scheduler_requires_explicit_config(self) -> None:
+        args = build_parser().parse_args(["scheduler", "--config", "instance.toml"])
+
+        self.assertEqual(str(args.config), "instance.toml")
+
+    def test_serve_loads_config_without_resolving_private_environment(self) -> None:
+        controller = SimpleNamespace()
+        args = Namespace(config=Path("instance.toml"))
+        with (
+            patch(
+                "inky_bird_frame.cli.load_config",
+                return_value=SimpleNamespace(controller=controller),
+            ) as load,
+            patch("inky_bird_frame.cli.serve_catalog") as serve,
+        ):
+            result = serve_command(args)
+
+        self.assertEqual(result, 0)
+        load.assert_called_once_with(Path("instance.toml"), load_secrets=False)
+        serve.assert_called_once_with(controller)
 
     def test_seed_supports_year_window_and_overrides(self) -> None:
         args = build_parser().parse_args(
@@ -120,6 +182,55 @@ class CliTests(unittest.TestCase):
         self.assertEqual(str(test.config), "instance.toml")
         self.assertEqual(str(dispatch.config), "instance.toml")
         self.assertEqual(str(retry.config), "instance.toml")
+
+    def test_config_install_validates_and_atomically_writes_private_file(self) -> None:
+        with TemporaryDirectory() as temporary:
+            destination = Path(temporary) / "config.toml"
+            config = """
+[discovery]
+zip_code = "12345"
+radius_km = 8
+species_limit = 50
+window = "last-30-days"
+
+[controller]
+workspace_dir = "workspace"
+catalog_dir = "catalog"
+state_dir = "state"
+codex_path = "codex"
+bind_host = "0.0.0.0"
+port = 8793
+references_per_species = 4
+generations_per_cycle = 1
+
+[display_node]
+controller_url = "http://controller.test:8793"
+state_dir = "display-state"
+rotation_mode = "shuffle_bag"
+"""
+            with patch("sys.stdin", io.StringIO(config)), redirect_stdout(io.StringIO()):
+                config_install_command(Namespace(destination=destination))
+
+            installed = destination.read_text()
+            mode = stat.S_IMODE(destination.stat().st_mode)
+
+        self.assertEqual(installed, config)
+        self.assertEqual(mode, 0o600)
+
+    def test_config_install_does_not_replace_destination_with_invalid_toml(self) -> None:
+        with TemporaryDirectory() as temporary:
+            destination = Path(temporary) / "config.toml"
+            destination.write_text("existing")
+            with (
+                patch("sys.stdin", io.StringIO("not = [valid")),
+                redirect_stdout(io.StringIO()),
+                self.assertRaisesRegex(ConfigurationError, "Invalid TOML"),
+            ):
+                config_install_command(Namespace(destination=destination))
+
+            installed = destination.read_text()
+
+        self.assertEqual(installed, "existing")
 
     def test_setup_and_doctor_have_role_specific_commands(self) -> None:
         setup = build_parser().parse_args(

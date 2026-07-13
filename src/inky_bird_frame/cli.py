@@ -4,13 +4,19 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import shutil
+import signal
 import sys
+import threading
+from contextlib import nullcontext
 from pathlib import Path
+from tempfile import NamedTemporaryFile
 
 from .birds import BirdSpecies, ObservationWindow, parse_observation_window
 from .catalog import (
     approve_candidate,
+    catalog_state_lock,
     find_taxon_directory,
     read_json,
     rebuild_catalog_index,
@@ -54,6 +60,7 @@ from .publisher import (
     validate_public_catalog,
 )
 from .retry import RetryStore
+from .scheduler import ScheduledJob, SubprocessCommandRunner, run_scheduler
 from .server import serve_catalog
 
 
@@ -86,8 +93,8 @@ def species_to_dict(species: BirdSpecies) -> dict[str, object]:
     }
 
 
-def _config(args: argparse.Namespace) -> AppConfig:
-    return load_config(args.config)
+def _config(args: argparse.Namespace, *, load_secrets: bool = True) -> AppConfig:
+    return load_config(args.config, load_secrets=load_secrets)
 
 
 def _failure_notification(operation: str, exc: Exception) -> str:
@@ -407,7 +414,7 @@ def status_command(args: argparse.Namespace) -> int:
 
 
 def serve_command(args: argparse.Namespace) -> int:
-    serve_catalog(_config(args).controller)
+    serve_catalog(_config(args, load_secrets=False).controller)
     return 0
 
 
@@ -460,6 +467,20 @@ def catalog_prepare_command(args: argparse.Namespace) -> int:
     return 0
 
 
+def catalog_sync_command(args: argparse.Namespace) -> int:
+    lock = catalog_state_lock(args.state_dir) if args.state_dir is not None else nullcontext()
+    with lock:
+        result = sync_public_catalog(args.source_catalog, args.catalog)
+    print_result(
+        {
+            **result,
+            "catalog": str(args.catalog),
+            "source_catalog": str(args.source_catalog),
+        }
+    )
+    return 0
+
+
 def catalog_validate_command(args: argparse.Namespace) -> int:
     entries = validate_public_catalog(args.catalog)
     result: dict[str, object] = {
@@ -499,6 +520,33 @@ def config_validate_command(args: argparse.Namespace) -> int:
     return 0
 
 
+def config_install_command(args: argparse.Namespace) -> int:
+    destination = args.destination
+    destination.parent.mkdir(parents=True, exist_ok=True)
+    temporary_path: Path | None = None
+    try:
+        with NamedTemporaryFile(
+            mode="w",
+            encoding="utf-8",
+            dir=destination.parent,
+            prefix=f".{destination.name}.",
+            delete=False,
+        ) as handle:
+            temporary_path = Path(handle.name)
+            os.chmod(temporary_path, 0o600)
+            handle.write(sys.stdin.read())
+            handle.flush()
+            os.fsync(handle.fileno())
+        load_config(temporary_path)
+        os.replace(temporary_path, destination)
+    except Exception:
+        if temporary_path is not None:
+            temporary_path.unlink(missing_ok=True)
+        raise
+    print_result({"config": str(destination), "installed": True, "valid": True})
+    return 0
+
+
 def notifications_status_command(args: argparse.Namespace) -> int:
     print_result(notification_status(_config(args)))
     return 0
@@ -522,6 +570,66 @@ def notifications_retry_command(args: argparse.Namespace) -> int:
     config = _config(args)
     requeued = requeue_dead_letters(config)
     print_result({"requeued": requeued, "delivery": dispatch_notifications(config)})
+    return 0
+
+
+def scheduler_command(args: argparse.Namespace) -> int:
+    config = _config(args)
+    config_arguments = ("--config", str(args.config))
+    jobs = [
+        ScheduledJob(
+            "refresh",
+            ("refresh", *config_arguments),
+            config.schedule.refresh_minutes * 60,
+        ),
+        ScheduledJob(
+            "generate",
+            ("generate", *config_arguments),
+            config.schedule.generation_minutes * 60,
+            requires_refresh=True,
+        ),
+    ]
+    if config.public_catalog.enabled:
+        jobs.append(
+            ScheduledJob(
+                "catalog-publish",
+                ("catalog-publish", *config_arguments),
+                config.schedule.catalog_publish_minutes * 60,
+            )
+        )
+    if config.notifications.enabled:
+        jobs.append(
+            ScheduledJob(
+                "notifications",
+                ("notifications", "dispatch", *config_arguments),
+                config.notifications.delivery_retry_minutes * 60,
+            )
+        )
+
+    stop = threading.Event()
+
+    command_runner = SubprocessCommandRunner((sys.executable, "-m", "inky_bird_frame.cli"))
+
+    def request_stop(signum: int, _frame: object) -> None:
+        stop.set()
+        command_runner.terminate(signum)
+
+    previous_sigterm = signal.signal(signal.SIGTERM, request_stop)
+    previous_sigint = signal.signal(signal.SIGINT, request_stop)
+
+    def wait(seconds: float) -> None:
+        stop.wait(seconds)
+
+    try:
+        run_scheduler(
+            jobs,
+            command_runner,
+            stop_requested=stop.is_set,
+            wait=wait,
+        )
+    finally:
+        signal.signal(signal.SIGTERM, previous_sigterm)
+        signal.signal(signal.SIGINT, previous_sigint)
     return 0
 
 
@@ -695,6 +803,12 @@ def build_parser() -> argparse.ArgumentParser:
     add_config_argument(serve_parser)
     serve_parser.set_defaults(func=serve_command)
 
+    scheduler_parser = subparsers.add_parser(
+        "scheduler", help="Run controller maintenance jobs on their configured schedules"
+    )
+    add_config_argument(scheduler_parser)
+    scheduler_parser.set_defaults(func=scheduler_command)
+
     display_cycle_parser = subparsers.add_parser(
         "display-cycle",
         help="Pull and display the next approved plate",
@@ -732,6 +846,17 @@ def build_parser() -> argparse.ArgumentParser:
         help="Repository catalog to update (default: catalog)",
     )
     catalog_prepare_parser.set_defaults(func=catalog_prepare_command)
+    catalog_sync_parser = catalog_subparsers.add_parser(
+        "sync", help="Add immutable species from one catalog to another"
+    )
+    catalog_sync_parser.add_argument("--source-catalog", type=Path, required=True)
+    catalog_sync_parser.add_argument("--catalog", type=Path, required=True)
+    catalog_sync_parser.add_argument(
+        "--state-dir",
+        type=Path,
+        help="Optional controller state directory used to lock catalog writes",
+    )
+    catalog_sync_parser.set_defaults(func=catalog_sync_command)
     catalog_validate_parser = catalog_subparsers.add_parser(
         "validate", help="Validate catalog files, privacy, and immutability"
     )
@@ -753,6 +878,11 @@ def build_parser() -> argparse.ArgumentParser:
     config_validate_parser = config_subparsers.add_parser("validate", help="Validate TOML settings")
     add_config_argument(config_validate_parser)
     config_validate_parser.set_defaults(func=config_validate_command)
+    config_install_parser = config_subparsers.add_parser(
+        "install", help="Validate TOML from standard input and install it atomically"
+    )
+    config_install_parser.add_argument("--destination", type=Path, required=True)
+    config_install_parser.set_defaults(func=config_install_command)
 
     notifications_parser = subparsers.add_parser(
         "notifications", help="Inspect and test notification delivery"

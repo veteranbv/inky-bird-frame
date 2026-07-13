@@ -257,7 +257,7 @@ def _string_tuple(
 
 
 def _notification_destinations(
-    raw: object, *, resolve_environment: bool
+    raw: object, *, load_secrets: bool
 ) -> tuple[NotificationDestination, ...]:
     if raw is None:
         return ()
@@ -279,11 +279,13 @@ def _notification_destinations(
                 f"Notification destination {name} must set exactly one of url or url_env"
             )
         if has_url:
-            url = _string(item, "url")
+            configured_url = _string(item, "url")
+            scheme = urlsplit(configured_url).scheme
+            url = configured_url if load_secrets else f"{scheme}://redacted"
             variable = None
         else:
             variable = _string(item, "url_env")
-            if resolve_environment:
+            if load_secrets:
                 url = environ.get(variable, "").strip()
                 if not url:
                     raise ConfigurationError(
@@ -334,6 +336,7 @@ def _private_value(
     *,
     required: bool,
     provider_name: str,
+    load_secret: bool,
 ) -> tuple[str | None, str | None]:
     direct_value = section.get(name)
     environment_name = section.get(f"{name}_env")
@@ -346,21 +349,21 @@ def _private_value(
     if direct_value is not None and environment_name is not None:
         raise ConfigurationError(f"Choose {name} or {name}_env, not both")
 
-    resolved = direct_value.strip() if isinstance(direct_value, str) else None
+    resolved = direct_value.strip() if load_secret and isinstance(direct_value, str) else None
     variable = environment_name.strip() if isinstance(environment_name, str) else None
-    if variable is not None:
+    if variable is not None and load_secret:
         environment_value = environ.get(variable)
         resolved = environment_value.strip() if environment_value else None
         if required and resolved is None:
             raise ConfigurationError(
                 f"{provider_name} discovery requires environment variable {variable}"
             )
-    if required and resolved is None:
+    if required and direct_value is None and variable is None:
         raise ConfigurationError(f"{provider_name} discovery requires {name} or {name}_env")
     return resolved, variable
 
 
-def load_config(path: Path) -> AppConfig:
+def load_config(path: Path, *, load_secrets: bool = True) -> AppConfig:
     try:
         raw = tomllib.loads(path.read_text())
     except FileNotFoundError as exc:
@@ -416,12 +419,14 @@ def load_config(path: Path) -> AppConfig:
         "ebird_api_key",
         required=DiscoveryProvider.EBIRD in discovery_sources,
         provider_name="eBird",
+        load_secret=load_secrets,
     )
     birdweather_token, birdweather_token_env = _private_value(
         discovery,
         "birdweather_token",
         required=DiscoveryProvider.BIRDWEATHER in discovery_sources,
         provider_name="BirdWeather",
+        load_secret=load_secrets,
     )
     if DiscoveryProvider.EBIRD in discovery_sources:
         if window in {ObservationWindow.LAST_YEAR, ObservationWindow.ALL_TIME}:
@@ -480,7 +485,8 @@ def load_config(path: Path) -> AppConfig:
         )
     notifications_enabled = _optional_boolean(notifications, "enabled", default=False)
     destinations = _notification_destinations(
-        notifications.get("destinations"), resolve_environment=notifications_enabled
+        notifications.get("destinations"),
+        load_secrets=notifications_enabled and load_secrets,
     )
     if notifications_enabled and not destinations:
         raise ConfigurationError(

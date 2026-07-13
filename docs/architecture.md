@@ -45,6 +45,14 @@ The controller also exposes a read-only HTTP catalog:
 - `GET /v1/catalog`
 - `GET /v1/assets/<catalog-relative-path>`
 
+Native installations use launchd or systemd to schedule the controller's
+one-shot commands. Docker installations run the same commands through one
+serial scheduler process. A scheduler job failure is isolated to that job and
+its next interval; generation remains disabled after scheduler startup until a
+refresh succeeds. The HTTP server runs without Codex or GitHub authentication,
+while the scheduler receives only the persistent credential volumes needed for
+enabled work.
+
 ### Display node
 
 The display node does not discover birds or generate art. Each timer cycle:

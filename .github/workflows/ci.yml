@@ -88,3 +88,70 @@ jobs:
 
       - name: Pytest
         run: uv run pytest
+
+      - name: Validate Compose configuration
+        run: |
+          set -euo pipefail
+          env_file="$(mktemp)"
+          compose_json="$(mktemp)"
+          trap 'rm -f "$env_file" "$compose_json"' EXIT
+          printf '%s\n' 'SECRET_BOUNDARY_SENTINEL=present' > "$env_file"
+          INKY_BIRD_ENV="$env_file" docker compose config --format json > "$compose_json"
+          jq -e '
+            .services.scheduler.environment.SECRET_BOUNDARY_SENTINEL == "present"
+            and (.services.controller.environment.SECRET_BOUNDARY_SENTINEL == null)
+            and (.services.bootstrap.environment.SECRET_BOUNDARY_SENTINEL == null)
+            and (.services.scheduler.security_opt | index("seccomp=unconfined") != null)
+            and (.services.scheduler.security_opt | index("apparmor=unconfined") != null)
+            and (.services.scheduler.security_opt | index("no-new-privileges:true") != null)
+            and (.services.scheduler.cap_drop == ["ALL"])
+            and (.services.scheduler.cap_add == null)
+            and (.services.controller.security_opt | index("seccomp=unconfined") == null)
+            and (.services.controller.security_opt | index("apparmor=unconfined") == null)
+            and (.services.bootstrap.security_opt | index("seccomp=unconfined") == null)
+            and (.services.bootstrap.security_opt | index("apparmor=unconfined") == null)
+          ' "$compose_json"
+
+      - name: Build controller container
+        run: |
+          sudo install -m 0644 deploy/apparmor/inky-bird-frame-codex /etc/apparmor.d/inky-bird-frame-codex
+          sudo apparmor_parser -r /etc/apparmor.d/inky-bird-frame-codex
+          if [[ -r /proc/sys/kernel/apparmor_restrict_unprivileged_userns ]]; then
+            test "$(cat /proc/sys/kernel/apparmor_restrict_unprivileged_userns)" = "1"
+          fi
+          docker build --tag inky-bird-frame:ci .
+
+      - name: Smoke-test controller container
+        run: |
+          set -euo pipefail
+          config_volume="inky-bird-frame-ci-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          trap 'docker volume rm --force "$config_volume"' EXIT
+          docker volume create "$config_volume"
+          docker run --rm inky-bird-frame:ci --help
+          docker run --rm --entrypoint codex inky-bird-frame:ci --version
+          run_sandbox() {
+            docker run --rm --read-only --cap-drop ALL \
+              --security-opt no-new-privileges:true \
+              --security-opt seccomp=unconfined \
+              --security-opt apparmor=unconfined \
+              --pids-limit 256 \
+              --tmpfs /tmp:size=256m,mode=1777 \
+              --tmpfs /data:uid=10001,gid=10001 \
+              --tmpfs /home/inky/.codex:uid=10001,gid=10001 \
+              --entrypoint codex inky-bird-frame:ci sandbox -- "$@"
+          }
+          run_sandbox /bin/true
+          if run_sandbox python -c \
+            "import socket; socket.create_connection(('1.1.1.1', 443), timeout=1)"; then
+            echo "Codex sandbox unexpectedly allowed network access" >&2
+            exit 1
+          fi
+          docker run --rm --entrypoint gh inky-bird-frame:ci --version
+          docker run --rm inky-bird-frame:ci catalog validate --catalog /app/catalog
+          docker run --rm --interactive \
+            --volume "$config_volume:/data" \
+            inky-bird-frame:ci config install --destination /data/config.toml \
+            < config.example.toml
+          docker run --rm \
+            --volume "$config_volume:/data" \
+            inky-bird-frame:ci config validate --config /data/config.toml

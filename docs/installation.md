@@ -15,7 +15,9 @@ stays on the trusted network.*
 The controller and display node have different requirements. A capable Linux
 Raspberry Pi may run both roles, but the recommended framed installation uses a
 small display node and a separate controller. The controller may also run as a
-container on an existing Docker host.
+container on an existing Docker host; follow the
+[Docker controller guide](docker.md) instead of either native controller
+section.
 
 | Role | Recommended | Supported | Notes |
 | --- | --- | --- | --- |
@@ -206,6 +208,14 @@ successful refresh before installing the units, then each timer schedules its
 first run relative to activation and continues at the configured interval.
 Installer progress and any `sudo` prompt remain visible. See the official
 [`systemd.timer` manual](https://www.freedesktop.org/software/systemd/man/latest/systemd.timer.html).
+
+### Docker controller
+
+Use the dedicated [Docker controller guide](docker.md) for Linux containers on
+AMD64 or ARM64. It covers persistent paths, private environment-backed secrets,
+Codex device authentication, optional GitHub authentication, health checks,
+reboot recovery, updates, backups, and troubleshooting. After its health check
+passes, continue at [Prepare the display Pi](#2-prepare-the-display-pi).
 
 ### Verify controller data
 
@@ -450,6 +460,10 @@ deliberately repoints the Pimoroni environment at the managed runtime. The
 explicit source directory ensures each update installs the checkout that was
 just pulled rather than the previous managed copy.
 
+Docker controller updates use `docker compose build --pull` followed by
+`docker compose up --detach --remove-orphans`; the complete process and
+persistence model are in the [Docker controller guide](docker.md#update).
+
 ## Uninstall
 
 Uninstalling services does not delete configuration, catalogs, generated art,
@@ -512,3 +526,5 @@ ID, status, summary, and remediation. Continue with the focused runbook in
 - [Apple launchd jobs](https://developer.apple.com/library/archive/documentation/MacOSX/Conceptual/BPSystemStartup/Chapters/CreatingLaunchdJobs.html)
 - [systemd service control](https://www.freedesktop.org/software/systemd/man/latest/systemctl.html)
   and [timers](https://www.freedesktop.org/software/systemd/man/latest/systemd.timer.html)
+- [Docker Compose](https://docs.docker.com/compose/) and
+  [service startup ordering](https://docs.docker.com/compose/how-tos/startup-order/)
