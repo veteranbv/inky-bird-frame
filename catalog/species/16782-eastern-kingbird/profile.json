@@ -1,0 +1,42 @@
+{
+  "behavior": "Perches conspicuously in open country, sallies out to catch flying insects, and vigorously defends its territory; migratory.",
+  "common_name": "Eastern Kingbird",
+  "family": "Tyrannidae",
+  "field_marks": [
+    "Dark blackish-to-slate-gray head and upperparts",
+    "Clean white throat, breast, and belly",
+    "Broad-shouldered, large-headed flycatcher profile",
+    "Short, straight, dark bill",
+    "Long, pointed wings",
+    "Dark square-tipped tail with a crisp white terminal band"
+  ],
+  "habitat": "Open and semi-open habitats with scattered trees, shrubs, or perches, including fields, grasslands, forest edges, orchards, and waterside edges.",
+  "measurements": {
+    "length": "7.5\u20139.1 in (19\u201323 cm)",
+    "weight": "1.2\u20131.9 oz (33\u201355 g)",
+    "wingspan": "13\u201315 in (33\u201338 cm)"
+  },
+  "palette": [
+    "blackish slate-gray",
+    "charcoal gray",
+    "white",
+    "black",
+    "concealed red-orange-yellow"
+  ],
+  "scientific_name": "Tyrannus tyrannus",
+  "sources": [
+    {
+      "title": "Eastern Kingbird \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/eastern-kingbird"
+    },
+    {
+      "title": "Eastern Kingbird \u2014 All About Birds, Cornell Lab of Ornithology",
+      "url": "https://www.allaboutbirds.org/guide/Eastern_Kingbird/overview"
+    },
+    {
+      "title": "Eastern Kingbird Life History \u2014 All About Birds, Cornell Lab of Ornithology",
+      "url": "https://www.allaboutbirds.org/guide/Eastern_Kingbird/lifehistory"
+    }
+  ],
+  "taxon_id": 16782
+}

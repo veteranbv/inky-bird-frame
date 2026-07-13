@@ -1,0 +1,149 @@
+{
+  "approved_at": "2026-07-13T04:02:53+00:00",
+  "assets": {
+    "display": {
+      "filename": "display.png",
+      "sha256": "4b8c4d7fbfa3a47e0770711497b15696dc33af93c179ab7c93bf817955d394dd"
+    },
+    "portrait": {
+      "filename": "portrait.png",
+      "sha256": "b880de4f29cdcec9236ef4a0122fe580b3593ae09bcbe7af29cb2cf5f4c8dc22"
+    }
+  },
+  "common_name": "Eastern Kingbird",
+  "generation": {
+    "attempt": 1,
+    "generated_at": "2026-07-13T04:02:53+00:00",
+    "generator": "Codex subscription / built-in gpt-image-2",
+    "max_attempts": 3,
+    "prompt_version": "field-journal-v2"
+  },
+  "profile": {
+    "behavior": "Perches conspicuously in open country, sallies out to catch flying insects, and vigorously defends its territory; migratory.",
+    "common_name": "Eastern Kingbird",
+    "family": "Tyrannidae",
+    "field_marks": [
+      "Dark blackish-to-slate-gray head and upperparts",
+      "Clean white throat, breast, and belly",
+      "Broad-shouldered, large-headed flycatcher profile",
+      "Short, straight, dark bill",
+      "Long, pointed wings",
+      "Dark square-tipped tail with a crisp white terminal band"
+    ],
+    "habitat": "Open and semi-open habitats with scattered trees, shrubs, or perches, including fields, grasslands, forest edges, orchards, and waterside edges.",
+    "measurements": {
+      "length": "7.5\u20139.1 in (19\u201323 cm)",
+      "weight": "1.2\u20131.9 oz (33\u201355 g)",
+      "wingspan": "13\u201315 in (33\u201338 cm)"
+    },
+    "palette": [
+      "blackish slate-gray",
+      "charcoal gray",
+      "white",
+      "black",
+      "concealed red-orange-yellow"
+    ],
+    "scientific_name": "Tyrannus tyrannus",
+    "sources": [
+      {
+        "title": "Eastern Kingbird \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/eastern-kingbird"
+      },
+      {
+        "title": "Eastern Kingbird \u2014 All About Birds, Cornell Lab of Ornithology",
+        "url": "https://www.allaboutbirds.org/guide/Eastern_Kingbird/overview"
+      },
+      {
+        "title": "Eastern Kingbird Life History \u2014 All About Birds, Cornell Lab of Ornithology",
+        "url": "https://www.allaboutbirds.org/guide/Eastern_Kingbird/lifehistory"
+      }
+    ],
+    "taxon_id": 16782
+  },
+  "quality_review": {
+    "anatomy_accuracy": 5,
+    "composition_quality": 5,
+    "findings": [
+      "Verified identity: the plate depicts an Eastern Kingbird (Tyrannus tyrannus) with one head, one beak, two wings, two legs, and one tail. Its dark head/upperparts, white underparts, broad-headed flycatcher form, short straight dark bill, pointed wings, and square dark tail with a white terminal band agree with the attached field references and live sources.",
+      "All visible taxonomic, measurement, habitat, behavior, field-mark, and concealed crown-patch claims are supported. No material factual or anatomical issues found.",
+      "No place name, ZIP code, coordinates, map, or local-observation detail appears on the plate."
+    ],
+    "location_free": true,
+    "passed": true,
+    "species_accuracy": 5,
+    "text_accuracy": 5,
+    "verification_sources": [
+      {
+        "title": "Eastern Kingbird Identification \u2014 All About Birds, Cornell Lab of Ornithology",
+        "url": "https://www.allaboutbirds.org/guide/Eastern_Kingbird/id"
+      },
+      {
+        "title": "Eastern Kingbird \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/eastern-kingbird"
+      },
+      {
+        "title": "Eastern Kingbird \u2014 eBird",
+        "url": "https://ebird.org/species/easkin"
+      }
+    ]
+  },
+  "references": [
+    {
+      "attribution": "(c) Laura Mae, some rights reserved (CC BY)",
+      "filename": "01-26210699.jpeg",
+      "height": 1536,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/26210699/large.jpeg",
+      "license_code": "cc-by",
+      "observation_id": 17276562,
+      "observer": "lauralovesbirds",
+      "photo_id": 26210699,
+      "sha256": "d58c13ba857871e82abaf3f8a1060552282a1bff34e8ca6bc1b77aac32d68b76",
+      "source_url": "https://www.inaturalist.org/observations/17276562",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) ecovore, some rights reserved (CC BY)",
+      "filename": "02-318712391.jpeg",
+      "height": 2048,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/318712391/large.jpeg",
+      "license_code": "cc-by",
+      "observation_id": 182758316,
+      "observer": "ecovore",
+      "photo_id": 318712391,
+      "sha256": "713c4d8c9ce07f47c2cc1a1aaa8c46dedd46c8fc0d63487f9bf69ac0f0ec1ace",
+      "source_url": "https://www.inaturalist.org/observations/182758316",
+      "width": 1497
+    },
+    {
+      "attribution": "(c) Eric Schmidt, some rights reserved (CC BY)",
+      "filename": "03-219359516.jpeg",
+      "height": 1536,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/219359516/large.jpeg",
+      "license_code": "cc-by",
+      "observation_id": 129103967,
+      "observer": "eric-schmitty",
+      "photo_id": 219359516,
+      "sha256": "adf4b7a1c0724532777dcef215848a550485f1326a6d094795472df8f9ca2b29",
+      "source_url": "https://www.inaturalist.org/observations/129103967",
+      "width": 2048
+    },
+    {
+      "attribution": "no rights reserved",
+      "filename": "04-433088013.jpg",
+      "height": 1365,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/433088013/large.jpg",
+      "license_code": "cc0",
+      "observation_id": 242913294,
+      "observer": "rawcomposition",
+      "photo_id": 433088013,
+      "sha256": "cc91a04c27138af3fcd3c9fbbf94794f914fbae01862ca2a9f884335f2cc7f1c",
+      "source_url": "https://www.inaturalist.org/observations/242913294",
+      "width": 2048
+    }
+  ],
+  "schema_version": 1,
+  "scientific_name": "Tyrannus tyrannus",
+  "slug": "eastern-kingbird",
+  "status": "approved",
+  "taxon_id": 16782
+}

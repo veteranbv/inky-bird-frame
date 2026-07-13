@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-13T03:53:44+00:00",
+  "generated_at": "2026-07-13T04:02:53+00:00",
   "schema_version": 1,
   "species": [
     {
@@ -232,6 +232,17 @@
       "scientific_name": "Sialia sialis",
       "slug": "eastern-bluebird",
       "taxon_id": 12942
+    },
+    {
+      "approved_at": "2026-07-13T04:02:53+00:00",
+      "common_name": "Eastern Kingbird",
+      "display_path": "species/16782-eastern-kingbird/display.png",
+      "display_sha256": "4b8c4d7fbfa3a47e0770711497b15696dc33af93c179ab7c93bf817955d394dd",
+      "portrait_path": "species/16782-eastern-kingbird/portrait.png",
+      "portrait_sha256": "b880de4f29cdcec9236ef4a0122fe580b3593ae09bcbe7af29cb2cf5f4c8dc22",
+      "scientific_name": "Tyrannus tyrannus",
+      "slug": "eastern-kingbird",
+      "taxon_id": 16782
     },
     {
       "approved_at": "2026-07-10T13:55:53+00:00",
