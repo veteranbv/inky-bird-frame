@@ -242,8 +242,8 @@ def fetch_ebird_observations(
 
     params = urlencode(
         {
-            "lat": f"{latitude:.2f}",
-            "lng": f"{longitude:.2f}",
+            "lat": f"{latitude:.6f}",
+            "lng": f"{longitude:.6f}",
             "dist": str(radius_km),
             "back": str(EBIRD_BACK_DAYS[window]),
             "cat": "species",

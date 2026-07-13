@@ -231,8 +231,8 @@ class EbirdTests(unittest.TestCase):
 
         url = get_json.call_args.args[0]
         params = parse_qs(urlsplit(url).query)
-        self.assertEqual(params["lat"], ["38.12"])
-        self.assertEqual(params["lng"], ["-77.99"])
+        self.assertEqual(params["lat"], ["38.123450"])
+        self.assertEqual(params["lng"], ["-77.987650"])
         self.assertEqual(params["dist"], ["11"])
         self.assertEqual(params["back"], ["30"])
         self.assertEqual(params["cat"], ["species"])

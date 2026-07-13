@@ -75,6 +75,7 @@ def species_to_dict(species: BirdSpecies) -> dict[str, object]:
         "common_name": species.common_name,
         "scientific_name": species.scientific_name,
         "observation_count": species.observation_count,
+        "source": species.source,
         "sources": list(species.sources),
     }
 

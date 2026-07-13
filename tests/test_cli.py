@@ -10,7 +10,14 @@ from tempfile import TemporaryDirectory
 from types import SimpleNamespace
 from unittest.mock import patch
 
-from inky_bird_frame.cli import build_parser, generate_command, main, retry_command
+from inky_bird_frame.birds import BirdSpecies
+from inky_bird_frame.cli import (
+    build_parser,
+    generate_command,
+    main,
+    retry_command,
+    species_to_dict,
+)
 from inky_bird_frame.controller import exclusive_cycle_lock
 from inky_bird_frame.errors import DataSourceError, GenerationError
 
@@ -81,6 +88,14 @@ class CliTests(unittest.TestCase):
         self.assertEqual(args.radius_km, 16)
         self.assertEqual(args.species_limit, 500)
         self.assertTrue(args.dry_run)
+
+    def test_species_output_preserves_legacy_source(self) -> None:
+        species = BirdSpecies(12942, "Eastern Bluebird", "Sialia sialis", 3, "iNaturalist")
+
+        payload = species_to_dict(species)
+
+        self.assertEqual(payload["source"], "iNaturalist")
+        self.assertEqual(payload["sources"], ["iNaturalist"])
 
     def test_config_validation_and_notification_commands_require_config(self) -> None:
         validate = build_parser().parse_args(["config", "validate", "--config", "instance.toml"])

@@ -362,6 +362,13 @@ def load_config(path: Path) -> AppConfig:
     if ebird_api_key_value is not None and ebird_api_key_env_value is not None:
         raise ConfigurationError("Choose ebird_api_key or ebird_api_key_env, not both")
     ebird_api_key = ebird_api_key_value.strip() if isinstance(ebird_api_key_value, str) else None
+    if ebird_api_key_env_value is not None:
+        environment_value = environ.get(ebird_api_key_env_value)
+        ebird_api_key = environment_value.strip() if environment_value else None
+        if ebird_api_key is None:
+            raise ConfigurationError(
+                f"eBird discovery requires environment variable {ebird_api_key_env_value}"
+            )
     if discovery_source.uses_ebird:
         if window in {ObservationWindow.LAST_YEAR, ObservationWindow.ALL_TIME}:
             raise ConfigurationError("eBird discovery supports observation windows up to 30 days")
@@ -369,13 +376,6 @@ def load_config(path: Path) -> AppConfig:
             raise ConfigurationError("eBird discovery radius_km must not exceed 50")
         if species_limit > 10_000:
             raise ConfigurationError("eBird species_limit must not exceed 10000")
-        if ebird_api_key_env_value is not None:
-            environment_value = environ.get(ebird_api_key_env_value)
-            ebird_api_key = environment_value.strip() if environment_value else None
-            if not ebird_api_key:
-                raise ConfigurationError(
-                    f"eBird discovery requires environment variable {ebird_api_key_env_value}"
-                )
         if ebird_api_key is None:
             raise ConfigurationError("eBird discovery requires ebird_api_key or ebird_api_key_env")
 
