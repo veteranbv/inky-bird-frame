@@ -1,0 +1,42 @@
+{
+  "behavior": "Clings upright to trunks and large branches, bracing with stiff tail feathers; probes, scales bark, and excavates dead wood for insects.",
+  "common_name": "Hairy Woodpecker",
+  "family": "Picidae",
+  "field_marks": [
+    "Medium-sized, boldly black-and-white woodpecker with an upright, straight-backed posture.",
+    "Long, straight, chisel-like bill, nearly as long as the head.",
+    "Two white facial stripes frame a black head; males show a small red patch on the rear crown.",
+    "Broad white patch runs down the center of the black back.",
+    "Black wings are checkered with white; outer tail feathers are plain white and stiff.",
+    "Dark eye and feet; long, pointed tail used as a brace on trunks."
+  ],
+  "habitat": "Mature deciduous, coniferous, and mixed woodlands with medium to large trees; also forest edges, groves, burned stands, and other treed habitats with dead wood.",
+  "measurements": {
+    "length": "18\u201326 cm (7.1\u201310.2 in)",
+    "weight": "40\u201395 g (1.4\u20133.4 oz)",
+    "wingspan": "33\u201341 cm (13.0\u201316.1 in)"
+  },
+  "palette": [
+    "black",
+    "white",
+    "red",
+    "charcoal gray",
+    "pale gray"
+  ],
+  "scientific_name": "Leuconotopicus villosus",
+  "sources": [
+    {
+      "title": "Hairy Woodpecker Identification \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Hairy_Woodpecker/id/"
+    },
+    {
+      "title": "Hairy Woodpecker Life History \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Hairy_Woodpecker/lifehistory"
+    },
+    {
+      "title": "Hairy Woodpecker \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/hairy-woodpecker?nid=2806&site=wa"
+    }
+  ],
+  "taxon_id": 1651487
+}

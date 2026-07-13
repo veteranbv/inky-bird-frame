@@ -1,0 +1,149 @@
+{
+  "approved_at": "2026-07-13T05:19:40+00:00",
+  "assets": {
+    "display": {
+      "filename": "display.png",
+      "sha256": "14ca21c4284181ad6530e2a8944a96329f845fec87cd9e1d623a1296f3bf9889"
+    },
+    "portrait": {
+      "filename": "portrait.png",
+      "sha256": "00c439f5537699778e9294ef48416b66144eacf252f93a057bd64f7984b00a8e"
+    }
+  },
+  "common_name": "Hairy Woodpecker",
+  "generation": {
+    "attempt": 2,
+    "generated_at": "2026-07-13T05:19:40+00:00",
+    "generator": "Codex subscription / built-in gpt-image-2",
+    "max_attempts": 3,
+    "prompt_version": "field-journal-v2"
+  },
+  "profile": {
+    "behavior": "Clings upright to trunks and large branches, bracing with stiff tail feathers; probes, scales bark, and excavates dead wood for insects.",
+    "common_name": "Hairy Woodpecker",
+    "family": "Picidae",
+    "field_marks": [
+      "Medium-sized, boldly black-and-white woodpecker with an upright, straight-backed posture.",
+      "Long, straight, chisel-like bill, nearly as long as the head.",
+      "Two white facial stripes frame a black head; males show a small red patch on the rear crown.",
+      "Broad white patch runs down the center of the black back.",
+      "Black wings are checkered with white; outer tail feathers are plain white and stiff.",
+      "Dark eye and feet; long, pointed tail used as a brace on trunks."
+    ],
+    "habitat": "Mature deciduous, coniferous, and mixed woodlands with medium to large trees; also forest edges, groves, burned stands, and other treed habitats with dead wood.",
+    "measurements": {
+      "length": "18\u201326 cm (7.1\u201310.2 in)",
+      "weight": "40\u201395 g (1.4\u20133.4 oz)",
+      "wingspan": "33\u201341 cm (13.0\u201316.1 in)"
+    },
+    "palette": [
+      "black",
+      "white",
+      "red",
+      "charcoal gray",
+      "pale gray"
+    ],
+    "scientific_name": "Leuconotopicus villosus",
+    "sources": [
+      {
+        "title": "Hairy Woodpecker Identification \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Hairy_Woodpecker/id/"
+      },
+      {
+        "title": "Hairy Woodpecker Life History \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Hairy_Woodpecker/lifehistory"
+      },
+      {
+        "title": "Hairy Woodpecker \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/hairy-woodpecker?nid=2806&site=wa"
+      }
+    ],
+    "taxon_id": 1651487
+  },
+  "quality_review": {
+    "anatomy_accuracy": 5,
+    "composition_quality": 5,
+    "findings": [
+      "No material issues identified. The illustrated adult male has one head, one long straight bill, two wings, two legs with gripping feet, and one stiff, pointed tail; its black-and-white pattern, white back patch, white wing checks, head stripes, dark eye, and rear-crown red patch agree with the field-reference photos and live sources.",
+      "The plate\u2019s measurements, Picidae family assignment, behavior, habitat summary, palette, and field-mark text agree with the independently checked sources. Leuconotopicus villosus is an accepted scientific combination; some authorities instead use Dryobates villosus.",
+      "No place name, ZIP code, coordinates, map, or local-observation detail appears on the candidate plate."
+    ],
+    "location_free": true,
+    "passed": true,
+    "species_accuracy": 5,
+    "text_accuracy": 5,
+    "verification_sources": [
+      {
+        "title": "Hairy Woodpecker Identification \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Hairy_Woodpecker/id/"
+      },
+      {
+        "title": "Hairy Woodpecker \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/hairy-woodpecker?nid=2806&site=wa"
+      },
+      {
+        "title": "Hairy woodpecker \u2014 Wikipedia",
+        "url": "https://en.wikipedia.org/wiki/Hairy_woodpecker"
+      }
+    ]
+  },
+  "references": [
+    {
+      "attribution": "(c) Katie Kucera, some rights reserved (CC BY)",
+      "filename": "01-32279981.jpg",
+      "height": 2048,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/32279981/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 20916077,
+      "observer": "kkucera",
+      "photo_id": 32279981,
+      "sha256": "91630b874f38d8bd8e0cea73a04310f9d17577b07686a1662ba5b957c941bc9c",
+      "source_url": "https://www.inaturalist.org/observations/20916077",
+      "width": 1536
+    },
+    {
+      "attribution": "(c) David Anderson, some rights reserved (CC BY)",
+      "filename": "02-185291143.jpeg",
+      "height": 1844,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/185291143/large.jpeg",
+      "license_code": "cc-by",
+      "observation_id": 109889225,
+      "observer": "geographerdave",
+      "photo_id": 185291143,
+      "sha256": "9e0e707e7e520377696d01f2dc96e8242190884f53a17cb490841e08aa3d08a5",
+      "source_url": "https://www.inaturalist.org/observations/109889225",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) Blake Ross, some rights reserved (CC BY)",
+      "filename": "03-248588440.jpg",
+      "height": 1583,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/248588440/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 144792425,
+      "observer": "blakemross",
+      "photo_id": 248588440,
+      "sha256": "d6cc0e0b6999b3556fb45369bb4245d90470844e7c6a0313a1d99e29f04beab9",
+      "source_url": "https://www.inaturalist.org/observations/144792425",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) Gavin Slater, some rights reserved (CC BY)",
+      "filename": "04-377350845.jpeg",
+      "height": 922,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/377350845/large.jpeg",
+      "license_code": "cc-by",
+      "observation_id": 213518820,
+      "observer": "littlelegofan",
+      "photo_id": 377350845,
+      "sha256": "b306c771fd7e0c177903dc64459851b88d3b1b9daac909ead4788e3b62955f6f",
+      "source_url": "https://www.inaturalist.org/observations/213518820",
+      "width": 922
+    }
+  ],
+  "schema_version": 1,
+  "scientific_name": "Leuconotopicus villosus",
+  "slug": "hairy-woodpecker",
+  "status": "approved",
+  "taxon_id": 1651487
+}
