@@ -1,0 +1,146 @@
+{
+  "approved_at": "2026-07-13T07:05:24+00:00",
+  "assets": {
+    "display": {
+      "filename": "display.png",
+      "sha256": "4e3519756cbbb5c3373ef98e951a45dc5b99e58429a118bc3e191f453a1b3d22"
+    },
+    "portrait": {
+      "filename": "portrait.png",
+      "sha256": "7ef076e87379676404b25dd5dc65cb8892b3f806dc68f5da8410a6967a33fa02"
+    }
+  },
+  "common_name": "Song Sparrow",
+  "generation": {
+    "attempt": 2,
+    "generated_at": "2026-07-13T07:05:24+00:00",
+    "generator": "Codex subscription / built-in gpt-image-2",
+    "max_attempts": 3,
+    "prompt_version": "field-journal-v2"
+  },
+  "profile": {
+    "behavior": "Forages mainly on the ground, in low shrubs, and sometimes in shallow water; diet is chiefly seeds and insects. Its song typically opens with a few distinct notes and ends in a buzz or trill.",
+    "common_name": "Song Sparrow",
+    "family": "Passerellidae",
+    "field_marks": [
+      "Brown, heavily streaked upperparts",
+      "Pale underparts with bold dark breast streaks that often form a central spot",
+      "Grayish face with a dark brown line through the eye",
+      "Rounded, fairly long brown tail",
+      "Short, stout gray bill",
+      "Pinkish-brown legs and dark eye"
+    ],
+    "habitat": "Dense low vegetation: thickets, brushy fields, marsh edges, woodland edges, hedgerows, streamsides, and well-vegetated gardens.",
+    "measurements": {
+      "length": "11\u201318 cm (4.3\u20137.1 in)",
+      "weight": "11.9\u201353 g (0.42\u20131.87 oz)",
+      "wingspan": "18\u201325.4 cm (7.1\u201310.0 in)"
+    },
+    "palette": [
+      "streaked brown",
+      "gray",
+      "buff-white",
+      "dark brown",
+      "pinkish brown"
+    ],
+    "scientific_name": "Melospiza melodia",
+    "sources": [
+      {
+        "title": "Song Sparrow | Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/song-sparrow"
+      },
+      {
+        "title": "Song Sparrow | All About Birds",
+        "url": "https://dl.allaboutbirds.org/song-sparrow"
+      },
+      {
+        "title": "Song sparrow | Wikipedia",
+        "url": "https://en.wikipedia.org/wiki/Song_sparrow"
+      }
+    ],
+    "taxon_id": 9100
+  },
+  "quality_review": {
+    "anatomy_accuracy": 4,
+    "composition_quality": 4,
+    "findings": [
+      "Identity is correct: the main bird matches Song Sparrow proportions and plumage\u2014rounded head, short stout gray bill, dark eye, grayish/russet-striped face, heavily streaked brown upperparts, bold breast streaking with a central concentration, long rounded tail, and pinkish-brown legs. Its two legs, one tail, one head, and one beak are anatomically coherent; the far wing is occluded by the near wing in this side view.",
+      "All printed claims match the independently checked Cornell measurements: length 12\u201317 cm (4.7\u20136.7 in), wingspan 18\u201324 cm (7.1\u20139.4 in), and weight 12\u201353 g (0.4\u20131.9 oz). Family, scientific name, habitat, foraging/diet, song description, and field marks are supported by Cornell and Audubon.",
+      "Minor presentation issue only: the detached head and wing studies are useful field-plate insets, but they can momentarily read as extra anatomy rather than labeled detail studies. This is not a species, text, or main-bird anatomy error.",
+      "No place name, ZIP code, coordinates, map, or local-observation detail appears on the candidate."
+    ],
+    "location_free": true,
+    "passed": true,
+    "species_accuracy": 5,
+    "text_accuracy": 5,
+    "verification_sources": [
+      {
+        "title": "Song Sparrow Identification | All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/song_sparrow/id"
+      },
+      {
+        "title": "Song Sparrow | Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/song-sparrow"
+      }
+    ]
+  },
+  "references": [
+    {
+      "attribution": "(c) Daniel Levitis, some rights reserved (CC BY)",
+      "filename": "01-355151027.png",
+      "height": 2048,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/355151027/large.png",
+      "license_code": "cc-by",
+      "observation_id": 201213760,
+      "observer": "dlevitis",
+      "photo_id": 355151027,
+      "sha256": "8f06ad4fbd0fef9536af7085a17230d09a0909066c4c5555970ef8ac06852c57",
+      "source_url": "https://www.inaturalist.org/observations/201213760",
+      "width": 2048
+    },
+    {
+      "attribution": "no rights reserved",
+      "filename": "02-129376982.jpg",
+      "height": 1365,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/129376982/large.jpg",
+      "license_code": "cc0",
+      "observation_id": 79016324,
+      "observer": "andywilson",
+      "photo_id": 129376982,
+      "sha256": "0061f79a8480f3ed871f0ed915b48e9f6e4b7dcfa3b349c309e030c8ecf13083",
+      "source_url": "https://www.inaturalist.org/observations/79016324",
+      "width": 2048
+    },
+    {
+      "attribution": "no rights reserved",
+      "filename": "03-480991086.jpg",
+      "height": 1017,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/480991086/large.jpg",
+      "license_code": "cc0",
+      "observation_id": 267636534,
+      "observer": "lyneisfilm",
+      "photo_id": 480991086,
+      "sha256": "e0cdfafe99504822e77db156ea11415cbde5c265a136298b5d4fa60f49e83a47",
+      "source_url": "https://www.inaturalist.org/observations/267636534",
+      "width": 1327
+    },
+    {
+      "attribution": "no rights reserved",
+      "filename": "04-546060381.jpg",
+      "height": 1422,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/546060381/large.jpg",
+      "license_code": "cc0",
+      "observation_id": 302980489,
+      "observer": "swpollinators",
+      "photo_id": 546060381,
+      "sha256": "de6f8449f059b143bd9cfecfc6bf7e2299effe6448e89aa63d3872465099fe91",
+      "source_url": "https://www.inaturalist.org/observations/302980489",
+      "width": 1969
+    }
+  ],
+  "schema_version": 1,
+  "scientific_name": "Melospiza melodia",
+  "slug": "song-sparrow",
+  "status": "approved",
+  "taxon_id": 9100
+}

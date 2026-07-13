@@ -1,0 +1,24 @@
+{
+  "anatomy_accuracy": 4,
+  "composition_quality": 4,
+  "findings": [
+    "Identity is correct: the main bird matches Song Sparrow proportions and plumage\u2014rounded head, short stout gray bill, dark eye, grayish/russet-striped face, heavily streaked brown upperparts, bold breast streaking with a central concentration, long rounded tail, and pinkish-brown legs. Its two legs, one tail, one head, and one beak are anatomically coherent; the far wing is occluded by the near wing in this side view.",
+    "All printed claims match the independently checked Cornell measurements: length 12\u201317 cm (4.7\u20136.7 in), wingspan 18\u201324 cm (7.1\u20139.4 in), and weight 12\u201353 g (0.4\u20131.9 oz). Family, scientific name, habitat, foraging/diet, song description, and field marks are supported by Cornell and Audubon.",
+    "Minor presentation issue only: the detached head and wing studies are useful field-plate insets, but they can momentarily read as extra anatomy rather than labeled detail studies. This is not a species, text, or main-bird anatomy error.",
+    "No place name, ZIP code, coordinates, map, or local-observation detail appears on the candidate."
+  ],
+  "location_free": true,
+  "passed": true,
+  "species_accuracy": 5,
+  "text_accuracy": 5,
+  "verification_sources": [
+    {
+      "title": "Song Sparrow Identification | All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/song_sparrow/id"
+    },
+    {
+      "title": "Song Sparrow | Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/song-sparrow"
+    }
+  ]
+}
