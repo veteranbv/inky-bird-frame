@@ -872,10 +872,7 @@ class DiscoveryProviderTests(unittest.TestCase):
             )
             config = load_config(config_path)
             with (
-                patch(
-                    "inky_bird_frame.controller.lookup_us_zip",
-                    return_value=ZipLocation("12345", "Exampleville", "XY", 1.0, 2.0),
-                ),
+                patch("inky_bird_frame.controller.lookup_us_zip") as lookup,
                 patch(
                     "inky_bird_frame.controller.fetch_birdweather_species",
                     return_value=[detection],
@@ -888,8 +885,57 @@ class DiscoveryProviderTests(unittest.TestCase):
                 result = discover_species(config)
 
         self.assertEqual(result.species, [resolved])
+        self.assertIsNone(result.location)
         self.assertEqual(result.providers, [ProviderStatus("birdweather", "ok", 1)])
         self.assertEqual(fetch.call_args.kwargs["token"], "station-secret")
+        lookup.assert_not_called()
+
+    def test_all_mode_uses_birdweather_when_zip_lookup_fails(self) -> None:
+        detection = BirdWeatherSpecies(
+            42,
+            "Eastern Bluebird",
+            "Sialia sialis",
+            7,
+            "2026-07-12T08:15:00-04:00",
+        )
+        resolved = BirdSpecies(12942, "Eastern Bluebird", "Sialia sialis", 7, "BirdWeather")
+        with TemporaryDirectory() as temporary:
+            config_path = Path(temporary) / "config.toml"
+            config_path.write_text(
+                CONFIG.replace(
+                    "[discovery]\n",
+                    '[discovery]\nsource = "all"\n'
+                    'ebird_api_key = "ebird-secret"\n'
+                    'birdweather_token = "station-secret"\n',
+                )
+            )
+            config = load_config(config_path)
+            with (
+                patch(
+                    "inky_bird_frame.controller.lookup_us_zip",
+                    side_effect=DataSourceError("ZIP service unavailable"),
+                ),
+                patch("inky_bird_frame.controller.fetch_inaturalist_birds") as inaturalist,
+                patch("inky_bird_frame.controller.fetch_ebird_observations") as ebird,
+                patch(
+                    "inky_bird_frame.controller.fetch_birdweather_species",
+                    return_value=[detection],
+                ),
+                patch(
+                    "inky_bird_frame.controller.resolve_birdweather_species",
+                    return_value=([resolved], []),
+                ),
+            ):
+                result = discover_species(config)
+
+        self.assertEqual(result.species, [resolved])
+        self.assertIsNone(result.location)
+        self.assertEqual(
+            [(provider.name, provider.status) for provider in result.providers],
+            [("inaturalist", "error"), ("ebird", "error"), ("birdweather", "ok")],
+        )
+        inaturalist.assert_not_called()
+        ebird.assert_not_called()
 
     def test_all_mode_continues_when_birdweather_fails(self) -> None:
         inaturalist = BirdSpecies(12942, "Eastern Bluebird", "Sialia sialis", 9, "iNaturalist")
