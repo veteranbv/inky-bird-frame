@@ -267,6 +267,70 @@ class PublisherTests(unittest.TestCase):
                 [2],
             )
 
+    def test_sync_recovers_complete_species_when_initial_index_was_interrupted(self) -> None:
+        with TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            source = root / "source"
+            destination = root / "destination"
+            _create_species(source, 1, "Example Bird")
+            (destination / "species").mkdir(parents=True)
+            shutil.copytree(
+                source / "species/1-example-bird",
+                destination / "species/1-example-bird",
+            )
+
+            result = sync_public_catalog(source, destination)
+
+            self.assertEqual(result["published"], [])
+            self.assertEqual(result["already_present"], [1])
+            self.assertEqual(len(validate_public_catalog(destination)), 1)
+
+    def test_sync_removes_interrupted_staging_directory_before_retry(self) -> None:
+        with TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            source = root / "source"
+            destination = root / "destination"
+            _create_species(source, 1, "Example Bird")
+            staging = destination / "species/.sync-interrupted/1-example-bird"
+            staging.mkdir(parents=True)
+            (staging / "manifest.json").write_text("partial")
+
+            result = sync_public_catalog(source, destination)
+
+            self.assertFalse((destination / "species/.sync-interrupted").exists())
+            self.assertEqual(
+                result["published"],
+                [
+                    {
+                        "taxon_id": 1,
+                        "common_name": "Example Bird",
+                        "scientific_name": "Avis exemplaris",
+                        "slug": "example-bird",
+                    }
+                ],
+            )
+            self.assertEqual(len(validate_public_catalog(destination)), 1)
+
+    def test_sync_recovers_stale_index_only_with_interrupted_transaction_marker(self) -> None:
+        with TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            source = root / "source"
+            destination = root / "destination"
+            _create_species(source, 1, "First Bird")
+            _create_species(source, 2, "Second Bird")
+            _create_species(destination, 1, "First Bird")
+            shutil.copytree(
+                source / "species/2-second-bird",
+                destination / "species/2-second-bird",
+            )
+            (destination / "species/.sync-interrupted").mkdir()
+
+            result = sync_public_catalog(source, destination)
+
+            self.assertEqual(result["published"], [])
+            self.assertEqual(result["already_present"], [1, 2])
+            self.assertEqual(len(validate_public_catalog(destination)), 2)
+
     def test_rejects_a_requested_taxon_missing_from_the_source_catalog(self) -> None:
         with TemporaryDirectory() as temporary:
             root = Path(temporary)

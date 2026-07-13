@@ -1,8 +1,10 @@
 from __future__ import annotations
 
 import unittest
+from signal import SIGTERM
+from unittest.mock import Mock, patch
 
-from inky_bird_frame.scheduler import ScheduledJob, run_scheduler
+from inky_bird_frame.scheduler import ScheduledJob, SubprocessCommandRunner, run_scheduler
 
 
 class FakeClock:
@@ -17,6 +19,43 @@ class FakeClock:
 
 
 class SchedulerTests(unittest.TestCase):
+    def test_subprocess_runner_forwards_termination_to_active_process_group(self) -> None:
+        process = Mock(pid=42)
+        runner = SubprocessCommandRunner(("python", "-m", "example"))
+
+        def terminate_while_waiting() -> int:
+            runner.terminate(SIGTERM)
+            return 143
+
+        process.wait.side_effect = terminate_while_waiting
+
+        with (
+            patch("inky_bird_frame.scheduler.subprocess.Popen", return_value=process) as popen,
+            patch("inky_bird_frame.scheduler.os.killpg") as killpg,
+        ):
+            exit_code = runner(("refresh",))
+
+        popen.assert_called_once_with(
+            ["python", "-m", "example", "refresh"],
+            start_new_session=True,
+        )
+        killpg.assert_called_once_with(42, SIGTERM)
+        self.assertEqual(exit_code, 143)
+
+    def test_subprocess_runner_forwards_signal_requested_during_spawn(self) -> None:
+        process = Mock(pid=42)
+        process.wait.return_value = 143
+        runner = SubprocessCommandRunner(("inky-bird-frame",))
+        runner.terminate(SIGTERM)
+
+        with (
+            patch("inky_bird_frame.scheduler.subprocess.Popen", return_value=process),
+            patch("inky_bird_frame.scheduler.os.killpg") as killpg,
+        ):
+            runner(("generate",))
+
+        killpg.assert_called_once_with(42, SIGTERM)
+
     def test_jobs_run_serially_and_repeat_on_their_own_intervals(self) -> None:
         clock = FakeClock()
         calls: list[tuple[str, ...]] = []

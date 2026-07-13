@@ -3,8 +3,11 @@
 from __future__ import annotations
 
 import json
+import os
+import subprocess
 import time
 from collections.abc import Callable, Sequence
+from contextlib import suppress
 from dataclasses import dataclass
 
 
@@ -18,6 +21,38 @@ class ScheduledJob:
 
 CommandRunner = Callable[[tuple[str, ...]], int]
 Waiter = Callable[[float], None]
+
+
+class SubprocessCommandRunner:
+    """Run one child process group and forward container termination signals."""
+
+    def __init__(self, command_prefix: Sequence[str]) -> None:
+        self._command_prefix = tuple(command_prefix)
+        self._active: subprocess.Popen[bytes] | None = None
+        self._termination_signal: int | None = None
+
+    def __call__(self, arguments: tuple[str, ...]) -> int:
+        process = subprocess.Popen(
+            [*self._command_prefix, *arguments],
+            start_new_session=True,
+        )
+        self._active = process
+        if self._termination_signal is not None:
+            self._forward_signal(process, self._termination_signal)
+        try:
+            return process.wait()
+        finally:
+            self._active = None
+
+    def terminate(self, signum: int) -> None:
+        self._termination_signal = signum
+        if self._active is not None:
+            self._forward_signal(self._active, signum)
+
+    @staticmethod
+    def _forward_signal(process: subprocess.Popen[bytes], signum: int) -> None:
+        with suppress(ProcessLookupError):
+            os.killpg(process.pid, signum)
 
 
 def _log_event(event: str, job: ScheduledJob, **details: object) -> None:

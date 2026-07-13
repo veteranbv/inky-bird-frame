@@ -7,7 +7,6 @@ import json
 import os
 import shutil
 import signal
-import subprocess
 import sys
 import threading
 from contextlib import nullcontext
@@ -61,7 +60,7 @@ from .publisher import (
     validate_public_catalog,
 )
 from .retry import RetryStore
-from .scheduler import ScheduledJob, run_scheduler
+from .scheduler import ScheduledJob, SubprocessCommandRunner, run_scheduler
 from .server import serve_catalog
 
 
@@ -609,18 +608,14 @@ def scheduler_command(args: argparse.Namespace) -> int:
 
     stop = threading.Event()
 
-    def request_stop(_signum: int, _frame: object) -> None:
+    command_runner = SubprocessCommandRunner((sys.executable, "-m", "inky_bird_frame.cli"))
+
+    def request_stop(signum: int, _frame: object) -> None:
         stop.set()
+        command_runner.terminate(signum)
 
     previous_sigterm = signal.signal(signal.SIGTERM, request_stop)
     previous_sigint = signal.signal(signal.SIGINT, request_stop)
-
-    def run_command(arguments: tuple[str, ...]) -> int:
-        completed = subprocess.run(
-            [sys.executable, "-m", "inky_bird_frame.cli", *arguments],
-            check=False,
-        )
-        return completed.returncode
 
     def wait(seconds: float) -> None:
         stop.wait(seconds)
@@ -628,7 +623,7 @@ def scheduler_command(args: argparse.Namespace) -> int:
     try:
         run_scheduler(
             jobs,
-            run_command,
+            command_runner,
             stop_requested=stop.is_set,
             wait=wait,
         )
