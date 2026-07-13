@@ -1,0 +1,42 @@
+{
+  "behavior": "Forages mainly on or near the ground for small seeds and insects; often uses low shrubs or other exposed perches.",
+  "common_name": "Field Sparrow",
+  "family": "Passerellidae",
+  "field_marks": [
+    "Small, slender sparrow with a rounded head and relatively long tail",
+    "Pale gray face with a crisp white eye-ring",
+    "Warm rufous crown and rufous line behind the eye",
+    "Short, conical pink bill; legs are pinkish",
+    "Brown, black-streaked back with two faint pale wingbars",
+    "Pale gray-buff underparts and a subtly notched tail"
+  ],
+  "habitat": "Open, early-successional country: grassy old fields, pastures, brushy edges, fencerows, and woodland openings with scattered shrubs or small trees for perches.",
+  "measurements": {
+    "length": "12\u201315 cm (4.7\u20135.9 in)",
+    "weight": "11\u201315 g (0.4\u20130.5 oz)",
+    "wingspan": "19\u201322 cm (7.5\u20138.7 in)"
+  },
+  "palette": [
+    "pale gray",
+    "rufous brown",
+    "warm buff",
+    "white",
+    "pink"
+  ],
+  "scientific_name": "Spizella pusilla",
+  "sources": [
+    {
+      "title": "Field Sparrow Identification \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/field_sparrow/id"
+    },
+    {
+      "title": "Field Sparrow \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/field-sparrow"
+    },
+    {
+      "title": "Spizella pusilla \u2014 Animal Diversity Web",
+      "url": "https://animaldiversity.org/accounts/Spizella_pusilla/"
+    }
+  ],
+  "taxon_id": 9152
+}
