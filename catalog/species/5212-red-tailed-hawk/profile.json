@@ -1,0 +1,38 @@
+{
+  "behavior": "Soars and glides over open ground, often hunting from a perch or by hovering into the wind before a controlled dive.",
+  "common_name": "Red-tailed Hawk",
+  "family": "Accipitridae",
+  "field_marks": [
+    "Large, bulky buteo with very broad, rounded wings and spread \u201cfingered\u201d wingtips.",
+    "Usually rich brown above and paler below, often with a darker streaked belly band.",
+    "Adult tail is typically cinnamon-red above and pale below; juveniles have a brown, narrowly banded tail.",
+    "Underwings commonly show pale flight feathers contrasted with dark leading-edge bars and darker wingtips.",
+    "Short, strongly hooked dark bill; eyes and bare legs/feet appear yellow to pale yellow.",
+    "Plumage is variable: light, rufous, and dark morphs occur."
+  ],
+  "habitat": "Open country and habitat edges: fields, grasslands, meadows, shrublands, woodland margins, and other open areas with scattered perches or trees.",
+  "measurements": {
+    "length": "43\u201366 cm (17\u201326 in)",
+    "weight": "690\u20131,470 g (24\u201352 oz)",
+    "wingspan": "114\u2013133 cm (45\u201352 in)"
+  },
+  "palette": [
+    "rich brown",
+    "cinnamon red",
+    "cream white",
+    "dark chocolate brown",
+    "yellow"
+  ],
+  "scientific_name": "Buteo jamaicensis",
+  "sources": [
+    {
+      "title": "Red-tailed Hawk Identification \u2014 All About Birds, Cornell Lab of Ornithology",
+      "url": "https://www.allaboutbirds.org/guide/Red-tailed_Hawk/id"
+    },
+    {
+      "title": "Red-tailed Hawk \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/red-tailed-hawk"
+    }
+  ],
+  "taxon_id": 5212
+}
