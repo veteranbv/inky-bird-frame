@@ -33,6 +33,7 @@ class DisplayState:
     shuffle_bag_remaining: tuple[int, ...] = ()
     shuffle_bag_seen: tuple[int, ...] = ()
     last_prioritized_detection_at: str | None = None
+    prioritized_detection_taxa: tuple[int, ...] = ()
 
 
 @contextmanager
@@ -127,7 +128,9 @@ def _detection_datetime(value: object, source: str) -> datetime:
 
 
 def _latest_unseen_detection(
-    entries: list[CatalogEntry], last_prioritized_at: str | None
+    entries: list[CatalogEntry],
+    last_prioritized_at: str | None,
+    prioritized_taxa: tuple[int, ...],
 ) -> CatalogEntry | None:
     watermark = (
         _detection_datetime(last_prioritized_at, "display-node state")
@@ -139,7 +142,14 @@ def _latest_unseen_detection(
         for entry in entries
         if entry.latest_detection_at is not None
     ]
-    unseen = [item for item in candidates if watermark is None or item[0] > watermark]
+    consumed_taxa = set(prioritized_taxa)
+    unseen = [
+        item
+        for item in candidates
+        if watermark is None
+        or item[0] > watermark
+        or (item[0] == watermark and item[1].taxon_id not in consumed_taxa)
+    ]
     if not unseen:
         return None
     return max(unseen, key=lambda item: (item[0], -item[1].taxon_id))[1]
@@ -181,6 +191,7 @@ def _read_state(path: Path) -> DisplayState:
             "shuffle_bag_remaining",
             "shuffle_bag_seen",
             "last_prioritized_detection_at",
+            "prioritized_detection_taxa",
         )
     ):
         raise CatalogError(f"Invalid display-node state: {path}")
@@ -191,6 +202,7 @@ def _read_state(path: Path) -> DisplayState:
     shuffle_bag_remaining = _state_taxon_ids(raw.get("shuffle_bag_remaining", []), path)
     shuffle_bag_seen = _state_taxon_ids(raw.get("shuffle_bag_seen", []), path)
     last_prioritized_detection_at = raw.get("last_prioritized_detection_at")
+    prioritized_detection_taxa = _state_taxon_ids(raw.get("prioritized_detection_taxa", []), path)
     if (
         not isinstance(next_index, int)
         or isinstance(next_index, bool)
@@ -209,6 +221,8 @@ def _read_state(path: Path) -> DisplayState:
             last_prioritized_detection_at is not None
             and not isinstance(last_prioritized_detection_at, str)
         )
+        or (last_prioritized_detection_at is None and prioritized_detection_taxa)
+        or (last_prioritized_detection_at is not None and not prioritized_detection_taxa)
     ):
         raise CatalogError(f"Invalid display-node state: {path}")
     if isinstance(last_prioritized_detection_at, str):
@@ -221,6 +235,7 @@ def _read_state(path: Path) -> DisplayState:
         shuffle_bag_remaining=shuffle_bag_remaining,
         shuffle_bag_seen=shuffle_bag_seen,
         last_prioritized_detection_at=last_prioritized_detection_at,
+        prioritized_detection_taxa=prioritized_detection_taxa,
     )
 
 
@@ -234,6 +249,7 @@ def _write_state(
     shuffle_bag_seen: list[int],
     last_sha256: str,
     last_prioritized_detection_at: str | None,
+    prioritized_detection_taxa: list[int],
 ) -> None:
     write_json_atomic(
         path,
@@ -246,8 +262,27 @@ def _write_state(
             "shuffle_bag_remaining": shuffle_bag_remaining,
             "shuffle_bag_seen": shuffle_bag_seen,
             "last_prioritized_detection_at": last_prioritized_detection_at,
+            "prioritized_detection_taxa": prioritized_detection_taxa,
         },
     )
+
+
+def _advanced_priority_state(state: DisplayState, selected: CatalogEntry) -> tuple[str, list[int]]:
+    timestamp = selected.latest_detection_at
+    if timestamp is None:
+        raise CatalogError("Prioritized catalog entry has no detection timestamp")
+    selected_at = _detection_datetime(timestamp, "controller catalog")
+    if state.last_prioritized_detection_at is not None and selected_at == _detection_datetime(
+        state.last_prioritized_detection_at, "display-node state"
+    ):
+        taxa = list(state.prioritized_detection_taxa)
+        watermark = state.last_prioritized_detection_at
+    else:
+        taxa = []
+        watermark = timestamp
+    if selected.taxon_id not in taxa:
+        taxa.append(selected.taxon_id)
+    return watermark, taxa
 
 
 def run_display_cycle(
@@ -265,21 +300,36 @@ def run_display_cycle(
         shuffle_bag_remaining = list(state.shuffle_bag_remaining)
         shuffle_bag_seen = list(state.shuffle_bag_seen)
         prioritized = (
-            _latest_unseen_detection(entries, state.last_prioritized_detection_at)
+            _latest_unseen_detection(
+                entries,
+                state.last_prioritized_detection_at,
+                state.prioritized_detection_taxa,
+            )
             if config.prioritize_latest_detection
             else None
         )
+        prioritized_at = state.last_prioritized_detection_at
+        prioritized_taxa = list(state.prioritized_detection_taxa)
         if prioritized is not None:
             selected = prioritized
+            prioritized_at, prioritized_taxa = _advanced_priority_state(state, selected)
             following_index = state.next_index
             if config.rotation_mode is RotationMode.SEQUENTIAL:
                 next_entry = entries[state.next_index % len(entries)]
                 if next_entry.taxon_id == selected.taxon_id:
                     following_index = (state.next_index + 1) % len(entries)
             elif config.rotation_mode is RotationMode.SHUFFLE:
+                active_taxa = {entry.taxon_id for entry in entries}
                 shuffle_remaining = [
-                    taxon_id for taxon_id in shuffle_remaining if taxon_id != selected.taxon_id
+                    taxon_id
+                    for taxon_id in shuffle_remaining
+                    if taxon_id in active_taxa and taxon_id != selected.taxon_id
                 ]
+                if not shuffle_remaining:
+                    shuffle_remaining = [
+                        entry.taxon_id for entry in entries if entry.taxon_id != selected.taxon_id
+                    ]
+                    (rng or random.SystemRandom()).shuffle(shuffle_remaining)
             elif config.rotation_mode is RotationMode.SHUFFLE_BAG:
                 shuffle_bag_remaining = [
                     taxon_id for taxon_id in shuffle_bag_remaining if taxon_id != selected.taxon_id
@@ -313,11 +363,8 @@ def run_display_cycle(
                 shuffle_bag_remaining=shuffle_bag_remaining,
                 shuffle_bag_seen=shuffle_bag_seen,
                 last_sha256=state.last_sha256,
-                last_prioritized_detection_at=(
-                    selected.latest_detection_at
-                    if prioritized is not None
-                    else state.last_prioritized_detection_at
-                ),
+                last_prioritized_detection_at=prioritized_at,
+                prioritized_detection_taxa=prioritized_taxa,
             )
             return {
                 "display_update": "unchanged",
@@ -344,11 +391,8 @@ def run_display_cycle(
             shuffle_bag_remaining=shuffle_bag_remaining,
             shuffle_bag_seen=shuffle_bag_seen,
             last_sha256=actual_hash,
-            last_prioritized_detection_at=(
-                selected.latest_detection_at
-                if prioritized is not None
-                else state.last_prioritized_detection_at
-            ),
+            last_prioritized_detection_at=prioritized_at,
+            prioritized_detection_taxa=prioritized_taxa,
         )
         return {
             "display_update": "sent",

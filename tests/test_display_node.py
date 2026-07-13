@@ -291,6 +291,56 @@ class DisplayNodeTests(unittest.TestCase):
         self.assertEqual((first["taxon_id"], first["selection_reason"]), (1, "latest_detection"))
         self.assertEqual((second["taxon_id"], second["selection_reason"]), (2, "rotation"))
 
+    def test_equal_latest_detection_timestamps_are_each_prioritized(self) -> None:
+        images = {1: b"one", 2: b"two", 3: b"three"}
+        payload = catalog_payload(images)
+        species = payload["species"]
+        assert isinstance(species, list)
+        species[0]["latest_detection_at"] = "2026-07-13T08:10:00-04:00"
+        species[1]["latest_detection_at"] = "2026-07-13T12:10:00+00:00"
+        with TemporaryDirectory() as temporary:
+            state_path = Path(temporary) / "state.json"
+            config = DisplayNodeConfig("http://controller.test", Path(temporary))
+            with (
+                patch("inky_bird_frame.display_node.get_json", return_value=payload),
+                patch("inky_bird_frame.display_node.get_bytes", side_effect=asset_response(images)),
+                patch("inky_bird_frame.display_node.show_on_inky", return_value=(1600, 1200)),
+            ):
+                first = run_display_cycle(config)
+                second = run_display_cycle(config)
+                third = run_display_cycle(config)
+                state = json.loads(state_path.read_text())
+
+        self.assertEqual((first["taxon_id"], first["selection_reason"]), (1, "latest_detection"))
+        self.assertEqual((second["taxon_id"], second["selection_reason"]), (2, "latest_detection"))
+        self.assertEqual(third["selection_reason"], "rotation")
+        self.assertEqual(state["prioritized_detection_taxa"], [1, 2])
+
+    def test_latest_detection_seeds_empty_shuffle_without_selected_taxon(self) -> None:
+        images = {1: b"one", 2: b"two", 3: b"three"}
+        payload = catalog_payload(images)
+        species = payload["species"]
+        assert isinstance(species, list)
+        species[1]["latest_detection_at"] = "2026-07-13T08:10:00-04:00"
+        with TemporaryDirectory() as temporary:
+            state_path = Path(temporary) / "state.json"
+            config = DisplayNodeConfig(
+                "http://controller.test", Path(temporary), RotationMode.SHUFFLE
+            )
+            with (
+                patch("inky_bird_frame.display_node.get_json", return_value=payload),
+                patch("inky_bird_frame.display_node.get_bytes", side_effect=asset_response(images)),
+                patch("inky_bird_frame.display_node.show_on_inky", return_value=(1600, 1200)),
+            ):
+                first = run_display_cycle(config, rng=random.Random(3))
+                state = json.loads(state_path.read_text())
+                second = run_display_cycle(config, rng=random.Random(3))
+                third = run_display_cycle(config, rng=random.Random(3))
+
+        self.assertEqual((first["taxon_id"], first["selection_reason"]), (2, "latest_detection"))
+        self.assertCountEqual(state["shuffle_remaining"], [1, 3])
+        self.assertNotIn(2, {second["taxon_id"], third["taxon_id"]})
+
     def test_latest_detection_failure_does_not_consume_watermark(self) -> None:
         images = {1: b"one", 2: b"two"}
         payload = catalog_payload(images)
