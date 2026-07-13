@@ -22,6 +22,24 @@ class RotationMode(StrEnum):
     WEIGHTED = "weighted"
 
 
+class DiscoverySource(StrEnum):
+    INATURALIST = "inaturalist"
+    EBIRD = "ebird"
+    COMBINED = "combined"
+
+    @property
+    def uses_ebird(self) -> bool:
+        return self in {DiscoverySource.EBIRD, DiscoverySource.COMBINED}
+
+
+def parse_discovery_source(value: str) -> DiscoverySource:
+    try:
+        return DiscoverySource(value)
+    except ValueError as exc:
+        allowed = ", ".join(item.value for item in DiscoverySource)
+        raise ValueError(f"discovery source must be one of: {allowed}") from exc
+
+
 class NotificationEvent(StrEnum):
     DISCOVERY = "discovery"
     GENERATION_APPROVED = "generation_approved"
@@ -49,6 +67,9 @@ class DiscoveryConfig:
     radius_km: int
     species_limit: int
     observation_window: ObservationWindow
+    source: DiscoverySource = DiscoverySource.INATURALIST
+    ebird_api_key: str | None = field(default=None, repr=False)
+    ebird_api_key_env: str | None = field(default=None, repr=False)
 
 
 @dataclass(frozen=True)
@@ -316,6 +337,48 @@ def load_config(path: Path) -> AppConfig:
     except ValueError as exc:
         raise ConfigurationError(str(exc)) from exc
 
+    source_value = _optional_string(discovery, "source", default=DiscoverySource.INATURALIST.value)
+    try:
+        discovery_source = parse_discovery_source(source_value)
+    except ValueError as exc:
+        raise ConfigurationError(str(exc)) from exc
+    radius_km = _integer(discovery, "radius_km")
+    species_limit = _integer(discovery, "species_limit")
+    if radius_km <= 0:
+        raise ConfigurationError("radius_km must be greater than zero")
+    if species_limit <= 0:
+        raise ConfigurationError("species_limit must be greater than zero")
+
+    ebird_api_key_value = discovery.get("ebird_api_key")
+    ebird_api_key_env_value = discovery.get("ebird_api_key_env")
+    if ebird_api_key_value is not None and (
+        not isinstance(ebird_api_key_value, str) or not ebird_api_key_value.strip()
+    ):
+        raise ConfigurationError("ebird_api_key must be a non-empty string")
+    if ebird_api_key_env_value is not None and (
+        not isinstance(ebird_api_key_env_value, str) or not ebird_api_key_env_value.strip()
+    ):
+        raise ConfigurationError("ebird_api_key_env must be a non-empty string")
+    if ebird_api_key_value is not None and ebird_api_key_env_value is not None:
+        raise ConfigurationError("Choose ebird_api_key or ebird_api_key_env, not both")
+    ebird_api_key = ebird_api_key_value.strip() if isinstance(ebird_api_key_value, str) else None
+    if ebird_api_key_env_value is not None:
+        environment_value = environ.get(ebird_api_key_env_value)
+        ebird_api_key = environment_value.strip() if environment_value else None
+        if ebird_api_key is None and discovery_source.uses_ebird:
+            raise ConfigurationError(
+                f"eBird discovery requires environment variable {ebird_api_key_env_value}"
+            )
+    if discovery_source.uses_ebird:
+        if window in {ObservationWindow.LAST_YEAR, ObservationWindow.ALL_TIME}:
+            raise ConfigurationError("eBird discovery supports observation windows up to 30 days")
+        if radius_km > 50:
+            raise ConfigurationError("eBird discovery radius_km must not exceed 50")
+        if species_limit > 10_000:
+            raise ConfigurationError("eBird species_limit must not exceed 10000")
+        if ebird_api_key is None:
+            raise ConfigurationError("eBird discovery requires ebird_api_key or ebird_api_key_env")
+
     controller_url = _string(display_node, "controller_url").rstrip("/")
     if not controller_url.startswith(("http://", "https://")):
         raise ConfigurationError("controller_url must start with http:// or https://")
@@ -378,10 +441,15 @@ def load_config(path: Path) -> AppConfig:
 
     return AppConfig(
         discovery=DiscoveryConfig(
+            source=discovery_source,
             zip_code=zip_code,
-            radius_km=_integer(discovery, "radius_km"),
-            species_limit=_integer(discovery, "species_limit"),
+            radius_km=radius_km,
+            species_limit=species_limit,
             observation_window=window,
+            ebird_api_key=ebird_api_key,
+            ebird_api_key_env=(
+                ebird_api_key_env_value if isinstance(ebird_api_key_env_value, str) else None
+            ),
         ),
         controller=ControllerConfig(
             workspace_dir=_path(_string(controller, "workspace_dir"), base_dir),

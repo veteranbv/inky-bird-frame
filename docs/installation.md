@@ -408,7 +408,7 @@ blank the frame.
 
 | Section | Used by | Purpose |
 | --- | --- | --- |
-| `[discovery]` | Controller | ZIP, radius, active observation window, and species cap |
+| `[discovery]` | Controller | Source, credentials, ZIP, radius, observation window, and species cap |
 | `[controller]` | Controller | Persistent paths, Codex executable, HTTP bind, and generation bounds |
 | `[research]` | Controller | Bounded fallback research policy and approved domains |
 | `[notifications]` | Controller | Optional Apprise destinations, events, retries, and noise controls |

@@ -4,16 +4,25 @@ from __future__ import annotations
 
 import fcntl
 import json
+import os
 import shutil
 from collections.abc import Iterator
-from contextlib import contextmanager
+from contextlib import contextmanager, nullcontext
 from dataclasses import dataclass
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
 from tempfile import TemporaryDirectory
 from typing import cast
 
-from .birds import BirdSpecies, ObservationWindow, fetch_inaturalist_birds, fetch_taxon_context
+from .birds import (
+    BirdSpecies,
+    EbirdSpecies,
+    ObservationWindow,
+    fetch_ebird_observations,
+    fetch_inaturalist_birds,
+    fetch_taxon_context,
+    resolve_ebird_species,
+)
 from .catalog import (
     approve_candidate,
     approved_taxon_ids,
@@ -27,7 +36,7 @@ from .catalog import (
     write_json_atomic,
 )
 from .codex_runner import CodexRunner, parse_species_profile
-from .config import AppConfig
+from .config import AppConfig, DiscoverySource
 from .errors import (
     CatalogError,
     DataSourceError,
@@ -52,6 +61,34 @@ class DiscoverySnapshot:
     place_name: str
     state: str
     species: list[BirdSpecies]
+
+
+@dataclass(frozen=True)
+class ProviderStatus:
+    name: str
+    status: str
+    species_count: int
+    unresolved_count: int = 0
+    error: str | None = None
+
+    def as_dict(self) -> dict[str, object]:
+        value: dict[str, object] = {
+            "name": self.name,
+            "status": self.status,
+            "species_count": self.species_count,
+            "unresolved_count": self.unresolved_count,
+        }
+        if self.error is not None:
+            value["error"] = self.error
+        return value
+
+
+@dataclass(frozen=True)
+class DiscoveryResult:
+    location: ZipLocation
+    species: list[BirdSpecies]
+    providers: list[ProviderStatus]
+    unresolved: list[EbirdSpecies]
 
 
 @contextmanager
@@ -83,16 +120,123 @@ def exclusive_refresh_lock(state_dir: Path) -> Iterator[None]:
             fcntl.flock(handle.fileno(), fcntl.LOCK_UN)
 
 
-def discover_species(config: AppConfig) -> tuple[ZipLocation, list[BirdSpecies]]:
+def discover_species(
+    config: AppConfig,
+    *,
+    source: DiscoverySource | None = None,
+    window: ObservationWindow | None = None,
+    radius_km: int | None = None,
+    species_limit: int | None = None,
+    persist_taxonomy_cache: bool = True,
+) -> DiscoveryResult:
+    selected_source = source or config.discovery.source
+    selected_window = window or config.discovery.observation_window
+    selected_radius = radius_km if radius_km is not None else config.discovery.radius_km
+    selected_limit = species_limit if species_limit is not None else config.discovery.species_limit
+    if selected_source.uses_ebird:
+        if selected_window in {ObservationWindow.LAST_YEAR, ObservationWindow.ALL_TIME}:
+            raise ValueError("eBird discovery supports observation windows up to 30 days")
+        if not 0 < selected_radius <= 50:
+            raise ValueError("eBird discovery radius_km must be between 1 and 50")
+        if not 0 < selected_limit <= 10_000:
+            raise ValueError("eBird species_limit must be between 1 and 10000")
     location = lookup_us_zip(config.discovery.zip_code)
-    species = fetch_inaturalist_birds(
-        latitude=location.latitude,
-        longitude=location.longitude,
-        radius_km=config.discovery.radius_km,
-        limit=config.discovery.species_limit,
-        window=config.discovery.observation_window,
-    )
-    return location, species
+    providers: list[ProviderStatus] = []
+    provider_species: list[list[BirdSpecies]] = []
+    unresolved: list[EbirdSpecies] = []
+
+    if selected_source in {DiscoverySource.INATURALIST, DiscoverySource.COMBINED}:
+        try:
+            inaturalist = fetch_inaturalist_birds(
+                latitude=location.latitude,
+                longitude=location.longitude,
+                radius_km=selected_radius,
+                limit=selected_limit,
+                window=selected_window,
+            )
+        except DataSourceError as exc:
+            providers.append(ProviderStatus("inaturalist", "error", 0, error=str(exc)))
+        else:
+            provider_species.append(inaturalist)
+            providers.append(ProviderStatus("inaturalist", "ok", len(inaturalist)))
+
+    if selected_source in {DiscoverySource.EBIRD, DiscoverySource.COMBINED}:
+        try:
+            api_key = config.discovery.ebird_api_key
+            if api_key is None and config.discovery.ebird_api_key_env is not None:
+                environment_value = os.environ.get(config.discovery.ebird_api_key_env)
+                api_key = environment_value.strip() if environment_value else None
+            if api_key is None:
+                raise DataSourceError("eBird API key is not configured")
+            observations = fetch_ebird_observations(
+                latitude=location.latitude,
+                longitude=location.longitude,
+                radius_km=selected_radius,
+                limit=selected_limit,
+                window=selected_window,
+                api_key=api_key,
+            )
+            resolution = resolve_ebird_species(
+                observations,
+                config.controller.state_dir / "ebird-taxonomy-crosswalk.json",
+                persist_cache=persist_taxonomy_cache,
+            )
+        except (DataSourceError, ValueError) as exc:
+            providers.append(ProviderStatus("ebird", "error", 0, error=str(exc)))
+        else:
+            unresolved.extend(resolution.unresolved)
+            if observations and not resolution.species:
+                providers.append(
+                    ProviderStatus(
+                        "ebird",
+                        "error",
+                        0,
+                        unresolved_count=len(resolution.unresolved),
+                        error="No eBird observations had an exact iNaturalist species match",
+                    )
+                )
+            else:
+                provider_species.append(resolution.species)
+                providers.append(
+                    ProviderStatus(
+                        "ebird",
+                        "ok",
+                        len(resolution.species),
+                        unresolved_count=len(resolution.unresolved),
+                    )
+                )
+
+    if not provider_species:
+        failures = "; ".join(
+            f"{provider.name}: {provider.error}" for provider in providers if provider.error
+        )
+        raise DataSourceError(f"All configured observation providers failed: {failures}")
+    species = _merge_provider_species(provider_species)
+    if selected_source is DiscoverySource.COMBINED:
+        species.sort(key=lambda item: (item.common_name.casefold(), item.taxon_id))
+    return DiscoveryResult(location, species, providers, unresolved)
+
+
+def _merge_provider_species(provider_species: list[list[BirdSpecies]]) -> list[BirdSpecies]:
+    merged: dict[int, BirdSpecies] = {}
+    order: list[int] = []
+    for result in provider_species:
+        for species in result:
+            existing = merged.get(species.taxon_id)
+            if existing is None:
+                merged[species.taxon_id] = species
+                order.append(species.taxon_id)
+                continue
+            sources = tuple(dict.fromkeys((*existing.sources, *species.sources)))
+            merged[species.taxon_id] = BirdSpecies(
+                taxon_id=existing.taxon_id,
+                common_name=existing.common_name,
+                scientific_name=existing.scientific_name,
+                observation_count=max(existing.observation_count, species.observation_count),
+                source="+".join(sources),
+                sources=sources,
+            )
+    return [merged[taxon_id] for taxon_id in order]
 
 
 def _snapshot_path(config: AppConfig) -> Path:
@@ -114,6 +258,7 @@ def _species_payload(species: BirdSpecies) -> dict[str, object]:
         "scientific_name": species.scientific_name,
         "observation_count": species.observation_count,
         "source": species.source,
+        "sources": list(species.sources),
     }
 
 
@@ -127,7 +272,10 @@ def _parse_species_list(raw: object, source: Path) -> list[BirdSpecies]:
             raise CatalogError(f"Invalid species in {source}")
         taxon_id = item.get("taxon_id")
         observation_count = item.get("observation_count")
-        strings = [item.get(name) for name in ("common_name", "scientific_name", "source")]
+        strings = [item.get(name) for name in ("common_name", "scientific_name")]
+        sources_value = item.get("sources")
+        if sources_value is None and isinstance(item.get("source"), str):
+            sources_value = [item["source"]]
         if (
             not isinstance(taxon_id, int)
             or isinstance(taxon_id, bool)
@@ -137,6 +285,9 @@ def _parse_species_list(raw: object, source: Path) -> list[BirdSpecies]:
             or isinstance(observation_count, bool)
             or observation_count < 0
             or any(not isinstance(value, str) or not value for value in strings)
+            or not isinstance(sources_value, list)
+            or not sources_value
+            or any(not isinstance(value, str) or not value for value in sources_value)
         ):
             raise CatalogError(f"Invalid species in {source}")
         seen.add(taxon_id)
@@ -146,7 +297,8 @@ def _parse_species_list(raw: object, source: Path) -> list[BirdSpecies]:
                 common_name=cast(str, strings[0]),
                 scientific_name=cast(str, strings[1]),
                 observation_count=observation_count,
-                source=cast(str, strings[2]),
+                source="+".join(cast(list[str], sources_value)),
+                sources=tuple(cast(list[str], sources_value)),
             )
         )
     return species
@@ -160,7 +312,7 @@ def read_generation_queue(config: AppConfig) -> list[BirdSpecies]:
         raw = json.loads(path.read_text())
     except json.JSONDecodeError as exc:
         raise CatalogError(f"Invalid generation queue: {path}") from exc
-    if not isinstance(raw, dict) or raw.get("schema_version") != 1:
+    if not isinstance(raw, dict) or raw.get("schema_version") not in {1, 2}:
         raise CatalogError(f"Unsupported generation queue: {path}")
     return _parse_species_list(raw.get("species"), path)
 
@@ -169,7 +321,7 @@ def _write_generation_queue(config: AppConfig, species: list[BirdSpecies]) -> No
     write_json_atomic(
         _generation_queue_path(config),
         {
-            "schema_version": 1,
+            "schema_version": 2,
             "updated_at": datetime.now(UTC).replace(microsecond=0).isoformat(),
             "species": [_species_payload(item) for item in species],
         },
@@ -180,6 +332,7 @@ def enqueue_seed_species(
     config: AppConfig,
     *,
     window: ObservationWindow,
+    source: DiscoverySource | None = None,
     radius_km: int | None = None,
     species_limit: int | None = None,
     dry_run: bool = False,
@@ -191,15 +344,17 @@ def enqueue_seed_species(
     if limit <= 0:
         raise ValueError("species_limit must be greater than zero")
 
-    with exclusive_cycle_lock(config.controller.state_dir):
-        location = lookup_us_zip(config.discovery.zip_code)
-        discovered = fetch_inaturalist_birds(
-            latitude=location.latitude,
-            longitude=location.longitude,
-            radius_km=radius,
-            limit=limit,
+    cycle_lock = nullcontext() if dry_run else exclusive_cycle_lock(config.controller.state_dir)
+    with cycle_lock:
+        discovery = discover_species(
+            config,
+            source=source,
             window=window,
+            radius_km=radius,
+            species_limit=limit,
+            persist_taxonomy_cache=not dry_run,
         )
+        discovered = discovery.species
         approved = approved_taxon_ids(config.controller.catalog_dir)
         existing = [
             species for species in read_generation_queue(config) if species.taxon_id not in approved
@@ -223,6 +378,7 @@ def enqueue_seed_species(
 
     return {
         "window": window.value,
+        "source": (source or config.discovery.source).value,
         "radius_km": radius,
         "species_limit": limit,
         "discovered_count": len(discovered),
@@ -232,6 +388,8 @@ def enqueue_seed_species(
         "queued_count": len(queued),
         "dry_run": dry_run,
         "added": [_species_payload(species) for species in added],
+        "providers": [provider.as_dict() for provider in discovery.providers],
+        "unresolved_count": len(discovery.unresolved),
     }
 
 
@@ -264,17 +422,20 @@ def run_refresh_cycle(config: AppConfig) -> dict[str, object]:
             previous_taxa = {
                 species.taxon_id for species in _read_discovery_snapshot(config).species
             }
-        location, species_list = discover_species(config)
+        discovery = discover_species(config)
+        location = discovery.location
+        species_list = discovery.species
         new_species = [species for species in species_list if species.taxon_id not in previous_taxa]
         with catalog_state_lock(config.controller.state_dir):
             refreshed_at = datetime.now(UTC).replace(microsecond=0)
             write_json_atomic(
                 _snapshot_path(config),
                 {
-                    "schema_version": 1,
+                    "schema_version": 2,
                     "refreshed_at": refreshed_at.isoformat(),
                     "place_name": location.place_name,
                     "state": location.state,
+                    "providers": [provider.as_dict() for provider in discovery.providers],
                     "species": [_species_payload(species) for species in species_list],
                 },
             )
@@ -285,6 +446,16 @@ def run_refresh_cycle(config: AppConfig) -> dict[str, object]:
         "state": location.state,
         "window": config.discovery.observation_window.value,
         "radius_km": config.discovery.radius_km,
+        "source": config.discovery.source.value,
+        "providers": [provider.as_dict() for provider in discovery.providers],
+        "unresolved_species": [
+            {
+                "species_code": species.species_code,
+                "common_name": species.common_name,
+                "scientific_name": species.scientific_name,
+            }
+            for species in discovery.unresolved
+        ],
         "species_count": len(species_list),
         "new_species": [_species_payload(species) for species in new_species],
         "active_approved_count": active_count,
@@ -299,7 +470,7 @@ def _read_discovery_snapshot(config: AppConfig) -> DiscoverySnapshot:
         raise DataSourceError("Discovery state is missing; run refresh before generation") from exc
     except json.JSONDecodeError as exc:
         raise CatalogError(f"Invalid discovery state: {path}") from exc
-    if not isinstance(raw, dict) or raw.get("schema_version") != 1:
+    if not isinstance(raw, dict) or raw.get("schema_version") not in {1, 2}:
         raise CatalogError(f"Unsupported discovery state: {path}")
     refreshed_at = raw.get("refreshed_at")
     place_name = raw.get("place_name")

@@ -8,12 +8,15 @@ from tempfile import TemporaryDirectory
 from typing import cast
 from unittest.mock import patch
 
-from inky_bird_frame.birds import BirdSpecies, ObservationWindow
+from inky_bird_frame.birds import BirdSpecies, EbirdResolution, EbirdSpecies, ObservationWindow
 from inky_bird_frame.catalog import CatalogEntry, candidate_directory, write_candidate_manifest
 from inky_bird_frame.codex_runner import CodexRunner
-from inky_bird_frame.config import load_config
+from inky_bird_frame.config import DiscoverySource, load_config
 from inky_bird_frame.controller import (
+    DiscoveryResult,
     DiscoverySnapshot,
+    ProviderStatus,
+    discover_species,
     enqueue_seed_species,
     exclusive_refresh_lock,
     generate_candidate,
@@ -33,6 +36,16 @@ from inky_bird_frame.geo import ZipLocation
 from inky_bird_frame.models import QualityReview, SpeciesProfileData
 from inky_bird_frame.prompts import PROMPT_VERSION
 from inky_bird_frame.retry import RetryStore
+
+
+def discovery_result(location: ZipLocation, species: list[BirdSpecies]) -> DiscoveryResult:
+    return DiscoveryResult(
+        location=location,
+        species=species,
+        providers=[ProviderStatus("inaturalist", "ok", len(species))],
+        unresolved=[],
+    )
+
 
 PROFILE = SpeciesProfileData(
     taxon_id=9083,
@@ -175,8 +188,36 @@ class ControllerTests(unittest.TestCase):
         self.assertEqual(result["discovered_count"], 2)
         self.assertEqual(result["already_approved_count"], 1)
         self.assertEqual(result["added_count"], 1)
+        added = cast(list[dict[str, object]], result["added"])
+        self.assertEqual(added[0]["source"], "iNaturalist")
         self.assertEqual(queue["species"][0]["taxon_id"], 2)
         self.assertNotIn("zip_code", queue)
+
+    def test_seed_dry_run_does_not_create_controller_state(self) -> None:
+        species = BirdSpecies(2, "New Bird", "Avis nova", 1, "eBird")
+        location = ZipLocation("12345", "Exampleville", "XY", 1.0, 2.0)
+        with TemporaryDirectory() as temporary:
+            config_path = Path(temporary) / "config.toml"
+            config_path.write_text(CONFIG)
+            config = load_config(config_path)
+            with (
+                patch(
+                    "inky_bird_frame.controller.discover_species",
+                    return_value=discovery_result(location, [species]),
+                ) as discover,
+                patch("inky_bird_frame.controller.approved_taxon_ids", return_value=set()),
+            ):
+                result = enqueue_seed_species(
+                    config,
+                    window=ObservationWindow.LAST_WEEK,
+                    dry_run=True,
+                )
+
+            state_exists = config.controller.state_dir.exists()
+
+        self.assertEqual(result["added_count"], 1)
+        self.assertFalse(state_exists)
+        self.assertFalse(discover.call_args.kwargs["persist_taxonomy_cache"])
 
     def test_generation_prioritizes_current_species_before_seed_queue(self) -> None:
         current = BirdSpecies(1, "Current Bird", "Avis current", 4, "iNaturalist")
@@ -468,7 +509,7 @@ class ControllerTests(unittest.TestCase):
             with (
                 patch(
                     "inky_bird_frame.controller.discover_species",
-                    return_value=(location, [observed, unapproved]),
+                    return_value=discovery_result(location, [observed, unapproved]),
                 ),
                 patch(
                     "inky_bird_frame.controller.rebuild_catalog_index",
@@ -484,6 +525,7 @@ class ControllerTests(unittest.TestCase):
         self.assertEqual(active["species"][0]["observation_count"], 9)
         self.assertNotIn("zip_code", active)
         self.assertEqual(len(snapshot["species"]), 2)
+        self.assertEqual(snapshot["species"][0]["source"], "iNaturalist")
 
     def test_refresh_preserves_approved_catalog_order(self) -> None:
         first = BirdSpecies(1, "Alpha Bird", "Alpha avis", 2, "iNaturalist")
@@ -510,7 +552,7 @@ class ControllerTests(unittest.TestCase):
             with (
                 patch(
                     "inky_bird_frame.controller.discover_species",
-                    return_value=(location, [second, first]),
+                    return_value=discovery_result(location, [second, first]),
                 ),
                 patch(
                     "inky_bird_frame.controller.rebuild_catalog_index",
@@ -533,7 +575,7 @@ class ControllerTests(unittest.TestCase):
             with (
                 patch(
                     "inky_bird_frame.controller.discover_species",
-                    return_value=(location, [species]),
+                    return_value=discovery_result(location, [species]),
                 ),
                 patch("inky_bird_frame.controller.generate_candidate") as generate,
             ):
@@ -584,7 +626,7 @@ class ControllerTests(unittest.TestCase):
             )
             with patch(
                 "inky_bird_frame.controller.discover_species",
-                return_value=(location, [species]),
+                return_value=discovery_result(location, [species]),
             ):
                 result = run_controller_cycle(config)
 
@@ -623,7 +665,7 @@ class ControllerTests(unittest.TestCase):
             )
             with patch(
                 "inky_bird_frame.controller.discover_species",
-                return_value=(location, []),
+                return_value=discovery_result(location, []),
             ):
                 result = run_controller_cycle(config)
 
@@ -643,7 +685,7 @@ class ControllerTests(unittest.TestCase):
             with (
                 patch(
                     "inky_bird_frame.controller.discover_species",
-                    return_value=(location, [species]),
+                    return_value=discovery_result(location, [species]),
                 ),
                 patch("inky_bird_frame.controller.generate_candidate") as generate,
             ):
@@ -737,7 +779,7 @@ class ControllerTests(unittest.TestCase):
             with (
                 patch(
                     "inky_bird_frame.controller.discover_species",
-                    return_value=(location, [species]),
+                    return_value=discovery_result(location, [species]),
                 ),
                 patch("inky_bird_frame.controller.generate_candidate") as generate,
             ):
@@ -766,7 +808,7 @@ class ControllerTests(unittest.TestCase):
             with (
                 patch(
                     "inky_bird_frame.controller.discover_species",
-                    return_value=(location, [species]),
+                    return_value=discovery_result(location, [species]),
                 ),
                 patch("inky_bird_frame.controller.generate_candidate") as generate,
             ):
@@ -788,7 +830,7 @@ class ControllerTests(unittest.TestCase):
             with (
                 patch(
                     "inky_bird_frame.controller.discover_species",
-                    return_value=(location, [species]),
+                    return_value=discovery_result(location, [species]),
                 ),
                 patch("inky_bird_frame.controller.generate_candidate") as generate,
             ):
@@ -802,6 +844,126 @@ class ControllerTests(unittest.TestCase):
         self.assertIsInstance(failure_results, list)
         if isinstance(failure_results, list):
             self.assertTrue(failure_results[0]["terminal"])
+
+
+class DiscoveryProviderTests(unittest.TestCase):
+    def test_ebird_override_resolves_environment_key_at_execution_time(self) -> None:
+        observation = EbirdSpecies("easblu", "Eastern Bluebird", "Sialia sialis", "2026-07-12")
+        resolved = BirdSpecies(12942, "Eastern Bluebird", "Sialia sialis", 1, "eBird")
+        with TemporaryDirectory() as temporary:
+            config_path = Path(temporary) / "config.toml"
+            config_path.write_text(
+                CONFIG.replace(
+                    "[discovery]\n", '[discovery]\nebird_api_key_env = "TEST_EBIRD_KEY"\n'
+                )
+            )
+            with patch.dict("os.environ", {}, clear=True):
+                config = load_config(config_path)
+            with (
+                patch.dict("os.environ", {"TEST_EBIRD_KEY": "secret"}),
+                patch(
+                    "inky_bird_frame.controller.lookup_us_zip",
+                    return_value=ZipLocation("12345", "Exampleville", "XY", 1.0, 2.0),
+                ),
+                patch(
+                    "inky_bird_frame.controller.fetch_ebird_observations",
+                    return_value=[observation],
+                ) as fetch,
+                patch(
+                    "inky_bird_frame.controller.resolve_ebird_species",
+                    return_value=EbirdResolution([resolved], []),
+                ),
+            ):
+                result = discover_species(config, source=DiscoverySource.EBIRD)
+
+        self.assertEqual(result.species, [resolved])
+        self.assertEqual(fetch.call_args.kwargs["api_key"], "secret")
+
+    def test_combined_override_rejects_long_window_before_querying(self) -> None:
+        with TemporaryDirectory() as temporary:
+            config_path = Path(temporary) / "config.toml"
+            config_path.write_text(
+                CONFIG.replace(
+                    "[discovery]\n",
+                    '[discovery]\nsource = "combined"\nebird_api_key = "secret"\n',
+                )
+            )
+            config = load_config(config_path)
+            with (
+                patch("inky_bird_frame.controller.lookup_us_zip") as lookup,
+                self.assertRaisesRegex(ValueError, "up to 30 days"),
+            ):
+                discover_species(config, window=ObservationWindow.LAST_YEAR)
+
+        lookup.assert_not_called()
+
+    def test_combined_mode_deduplicates_by_inaturalist_taxon(self) -> None:
+        inaturalist = BirdSpecies(12942, "Eastern Bluebird", "Sialia sialis", 9, "iNaturalist")
+        ebird = BirdSpecies(12942, "Eastern Bluebird", "Sialia sialis", 1, "eBird")
+        observation = EbirdSpecies("easblu", "Eastern Bluebird", "Sialia sialis", "2026-07-12")
+        with TemporaryDirectory() as temporary:
+            config_path = Path(temporary) / "config.toml"
+            config_path.write_text(
+                CONFIG.replace(
+                    "[discovery]\n",
+                    '[discovery]\nsource = "combined"\nebird_api_key = "secret"\n',
+                )
+            )
+            config = load_config(config_path)
+            with (
+                patch(
+                    "inky_bird_frame.controller.lookup_us_zip",
+                    return_value=ZipLocation("12345", "Exampleville", "XY", 1.0, 2.0),
+                ),
+                patch(
+                    "inky_bird_frame.controller.fetch_inaturalist_birds",
+                    return_value=[inaturalist],
+                ),
+                patch(
+                    "inky_bird_frame.controller.fetch_ebird_observations",
+                    return_value=[observation],
+                ),
+                patch(
+                    "inky_bird_frame.controller.resolve_ebird_species",
+                    return_value=EbirdResolution([ebird], []),
+                ),
+            ):
+                result = discover_species(config)
+
+        self.assertEqual(len(result.species), 1)
+        self.assertEqual(result.species[0].observation_count, 9)
+        self.assertEqual(result.species[0].sources, ("iNaturalist", "eBird"))
+        self.assertTrue(all(provider.status == "ok" for provider in result.providers))
+
+    def test_combined_mode_continues_when_ebird_fails(self) -> None:
+        inaturalist = BirdSpecies(12942, "Eastern Bluebird", "Sialia sialis", 9, "iNaturalist")
+        with TemporaryDirectory() as temporary:
+            config_path = Path(temporary) / "config.toml"
+            config_path.write_text(
+                CONFIG.replace(
+                    "[discovery]\n",
+                    '[discovery]\nsource = "combined"\nebird_api_key = "secret"\n',
+                )
+            )
+            config = load_config(config_path)
+            with (
+                patch(
+                    "inky_bird_frame.controller.lookup_us_zip",
+                    return_value=ZipLocation("12345", "Exampleville", "XY", 1.0, 2.0),
+                ),
+                patch(
+                    "inky_bird_frame.controller.fetch_inaturalist_birds",
+                    return_value=[inaturalist],
+                ),
+                patch(
+                    "inky_bird_frame.controller.fetch_ebird_observations",
+                    side_effect=DataSourceError("eBird unavailable"),
+                ),
+            ):
+                result = discover_species(config)
+
+        self.assertEqual(result.species, [inaturalist])
+        self.assertEqual(result.providers[1].status, "error")
 
 
 if __name__ == "__main__":

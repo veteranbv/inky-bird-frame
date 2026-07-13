@@ -6,7 +6,7 @@ from tempfile import TemporaryDirectory
 from unittest.mock import patch
 
 from inky_bird_frame.birds import ObservationWindow
-from inky_bird_frame.config import NotificationEvent, RotationMode, load_config
+from inky_bird_frame.config import DiscoverySource, NotificationEvent, RotationMode, load_config
 from inky_bird_frame.errors import ConfigurationError
 
 CONFIG = """
@@ -61,6 +61,7 @@ class ConfigTests(unittest.TestCase):
             config = load_config(path)
 
         self.assertEqual(config.discovery.observation_window, ObservationWindow.LAST_30_DAYS)
+        self.assertIs(config.discovery.source, DiscoverySource.INATURALIST)
         self.assertEqual(config.discovery.radius_km, 16)
         self.assertEqual(config.controller.catalog_dir, (Path(temporary) / "catalog").resolve())
         self.assertEqual(config.controller.max_generation_attempts, 3)
@@ -83,6 +84,66 @@ class ConfigTests(unittest.TestCase):
         self.assertEqual(config.schedule.rotation_jitter_seconds, 7)
         self.assertEqual(config.schedule.display_startup_delay_seconds, 30)
         self.assertEqual(config.schedule.catalog_publish_minutes, 4)
+
+    def test_ebird_source_requires_a_key(self) -> None:
+        with TemporaryDirectory() as temporary:
+            path = Path(temporary) / "config.toml"
+            path.write_text(CONFIG.replace("[discovery]\n", '[discovery]\nsource = "ebird"\n'))
+
+            with self.assertRaisesRegex(ConfigurationError, "requires ebird_api_key"):
+                load_config(path)
+
+    def test_ebird_key_can_come_from_environment(self) -> None:
+        configured = CONFIG.replace(
+            "[discovery]\n",
+            '[discovery]\nsource = "combined"\nebird_api_key_env = "TEST_EBIRD_KEY"\n',
+        )
+        with TemporaryDirectory() as temporary:
+            path = Path(temporary) / "config.toml"
+            path.write_text(configured)
+            with patch.dict("os.environ", {"TEST_EBIRD_KEY": "secret"}):
+                config = load_config(path)
+
+        self.assertIs(config.discovery.source, DiscoverySource.COMBINED)
+        self.assertEqual(config.discovery.ebird_api_key, "secret")
+
+    def test_inaturalist_default_resolves_key_for_source_override(self) -> None:
+        configured = CONFIG.replace(
+            "[discovery]\n", '[discovery]\nebird_api_key_env = "TEST_EBIRD_KEY"\n'
+        )
+        with TemporaryDirectory() as temporary:
+            path = Path(temporary) / "config.toml"
+            path.write_text(configured)
+            with patch.dict("os.environ", {"TEST_EBIRD_KEY": "secret"}):
+                config = load_config(path)
+
+        self.assertIs(config.discovery.source, DiscoverySource.INATURALIST)
+        self.assertEqual(config.discovery.ebird_api_key, "secret")
+
+    def test_inaturalist_default_allows_missing_optional_ebird_environment(self) -> None:
+        configured = CONFIG.replace(
+            "[discovery]\n", '[discovery]\nebird_api_key_env = "TEST_EBIRD_KEY"\n'
+        )
+        with TemporaryDirectory() as temporary:
+            path = Path(temporary) / "config.toml"
+            path.write_text(configured)
+            with patch.dict("os.environ", {}, clear=True):
+                config = load_config(path)
+
+        self.assertIs(config.discovery.source, DiscoverySource.INATURALIST)
+        self.assertIsNone(config.discovery.ebird_api_key)
+        self.assertEqual(config.discovery.ebird_api_key_env, "TEST_EBIRD_KEY")
+
+    def test_ebird_rejects_long_observation_windows(self) -> None:
+        configured = CONFIG.replace(
+            "[discovery]\n", '[discovery]\nsource = "ebird"\nebird_api_key = "secret"\n'
+        ).replace('window = "last-30-days"', 'window = "last-year"')
+        with TemporaryDirectory() as temporary:
+            path = Path(temporary) / "config.toml"
+            path.write_text(configured)
+
+            with self.assertRaisesRegex(ConfigurationError, "up to 30 days"):
+                load_config(path)
 
     def test_rejects_invalid_zip(self) -> None:
         with TemporaryDirectory() as temporary:

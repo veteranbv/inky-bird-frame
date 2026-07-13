@@ -61,7 +61,6 @@ fi
 mkdir -p "${app_dir}/catalog" "${app_dir}/deploy" "${support_dir}" "${log_dir}" "${agents_dir}"
 if [ "${root}" != "${app_dir}" ]; then
   rsync -a --delete "${root}/src/" "${app_dir}/src/"
-  rsync -a "${root}/catalog/" "${app_dir}/catalog/"
   install -m 0755 "${root}/deploy/install-controller.sh" "${app_dir}/deploy/"
   for file in pyproject.toml uv.lock README.md LICENSE; do
     install -m 0644 "${root}/${file}" "${app_dir}/${file}"
@@ -96,6 +95,11 @@ from inky_bird_frame.publisher import sync_public_catalog
 ) = map(Path, sys.argv[1:])
 executable = app_dir / ".venv/bin/inky-bird-frame"
 config = load_config(config_path)
+if config.discovery.source.uses_ebird and config.discovery.ebird_api_key_env is not None:
+    raise ConfigurationError(
+        "The macOS LaunchAgent installer requires ebird_api_key in the private config "
+        "file; environment variables are not inherited by managed services"
+    )
 environment_destinations = [
     destination.name
     for destination in config.notifications.destinations
@@ -111,7 +115,12 @@ schedule = config.schedule
 config.controller.workspace_dir.mkdir(parents=True, exist_ok=True)
 config.controller.catalog_dir.parent.mkdir(parents=True, exist_ok=True)
 with catalog_state_lock(config.controller.state_dir):
-    sync_public_catalog(root / "catalog", config.controller.catalog_dir)
+    source_catalog = root / "catalog"
+    managed_catalog = app_dir / "catalog"
+    if root != app_dir and managed_catalog.resolve() != config.controller.catalog_dir.resolve():
+        sync_public_catalog(source_catalog, managed_catalog)
+        source_catalog = managed_catalog
+    sync_public_catalog(source_catalog, config.controller.catalog_dir)
 
 common = {
     "WorkingDirectory": str(app_dir),

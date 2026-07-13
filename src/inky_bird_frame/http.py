@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+from collections.abc import Mapping
 from pathlib import Path
 from tempfile import NamedTemporaryFile
 from typing import cast
@@ -12,8 +13,16 @@ from urllib.request import Request, urlopen
 from .errors import DataSourceError
 
 
-def get_json(url: str, timeout_seconds: float = 10.0) -> object:
-    request = Request(url, headers={"User-Agent": "inky-bird-frame/0.1"})
+def get_json(
+    url: str,
+    timeout_seconds: float = 10.0,
+    *,
+    headers: Mapping[str, str] | None = None,
+) -> object:
+    request_headers = {"User-Agent": "inky-bird-frame/0.1"}
+    if headers is not None:
+        request_headers.update(headers)
+    request = Request(url, headers=request_headers)
     try:
         with urlopen(request, timeout=timeout_seconds) as response:
             body = response.read()

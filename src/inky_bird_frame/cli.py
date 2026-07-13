@@ -16,7 +16,7 @@ from .catalog import (
     rebuild_catalog_index,
     reject_candidate,
 )
-from .config import AppConfig, NotificationEvent, load_config
+from .config import AppConfig, DiscoverySource, NotificationEvent, load_config
 from .controller import (
     discover_species,
     enqueue_seed_species,
@@ -76,6 +76,7 @@ def species_to_dict(species: BirdSpecies) -> dict[str, object]:
         "scientific_name": species.scientific_name,
         "observation_count": species.observation_count,
         "source": species.source,
+        "sources": list(species.sources),
     }
 
 
@@ -89,7 +90,8 @@ def _failure_notification(operation: str, exc: Exception) -> str:
 
 def discover_command(args: argparse.Namespace) -> int:
     config = _config(args)
-    location, species = discover_species(config)
+    discovery = discover_species(config, persist_taxonomy_cache=False)
+    location = discovery.location
     print_result(
         {
             "location": {
@@ -99,7 +101,10 @@ def discover_command(args: argparse.Namespace) -> int:
             },
             "radius_km": config.discovery.radius_km,
             "window": config.discovery.observation_window.value,
-            "species": [species_to_dict(item) for item in species],
+            "source": config.discovery.source.value,
+            "providers": [provider.as_dict() for provider in discovery.providers],
+            "unresolved_count": len(discovery.unresolved),
+            "species": [species_to_dict(item) for item in discovery.species],
         }
     )
     return 0
@@ -128,6 +133,44 @@ def refresh_command(args: argparse.Namespace) -> int:
         title="Bird discovery recovered",
         body="Observation refresh is succeeding again.",
     )
+    providers = result.get("providers")
+    ebird_succeeded = False
+    if isinstance(providers, list):
+        for provider in providers:
+            if not isinstance(provider, dict) or not isinstance(provider.get("name"), str):
+                continue
+            name = provider["name"]
+            if provider.get("status") == "error":
+                safe_record_degradation(
+                    config,
+                    key=f"observation-provider-{name}",
+                    title=f"{name} bird discovery is degraded",
+                    body=f"The {name} provider failed; another configured provider supplied data.",
+                )
+            else:
+                if name == "ebird":
+                    ebird_succeeded = True
+                safe_record_recovery(
+                    config,
+                    key=f"observation-provider-{name}",
+                    title=f"{name} bird discovery recovered",
+                    body=f"The {name} provider is succeeding again.",
+                )
+    unresolved = result.get("unresolved_species")
+    if isinstance(unresolved, list) and unresolved:
+        safe_record_degradation(
+            config,
+            key="ebird-taxonomy",
+            title="Some eBird species are awaiting taxonomy matching",
+            body=f"{len(unresolved)} species were deferred without blocking bird discovery.",
+        )
+    elif ebird_succeeded:
+        safe_record_recovery(
+            config,
+            key="ebird-taxonomy",
+            title="eBird taxonomy matching recovered",
+            body="Deferred eBird taxonomy matches have cleared.",
+        )
     new_species = result.get("new_species")
     if isinstance(new_species, list) and new_species:
         names: list[str] = []
@@ -235,6 +278,7 @@ def seed_command(args: argparse.Namespace) -> int:
         enqueue_seed_species(
             _config(args),
             window=parse_observation_window(args.window),
+            source=DiscoverySource(args.source) if args.source is not None else None,
             radius_km=args.radius_km,
             species_limit=args.species_limit,
             dry_run=args.dry_run,
@@ -411,6 +455,12 @@ def config_validate_command(args: argparse.Namespace) -> int:
         {
             "config": str(args.config),
             "valid": True,
+            "discovery": {
+                "source": config.discovery.source.value,
+                "ebird_configured": config.discovery.ebird_api_key is not None,
+                "window": config.discovery.observation_window.value,
+                "radius_km": config.discovery.radius_km,
+            },
             "notifications": {
                 "enabled": config.notifications.enabled,
                 "destinations": destinations,
@@ -577,6 +627,11 @@ def build_parser() -> argparse.ArgumentParser:
         "--window",
         required=True,
         choices=[window.value for window in ObservationWindow],
+    )
+    seed_parser.add_argument(
+        "--source",
+        choices=[source.value for source in DiscoverySource],
+        help="Override the configured discovery source for this seed run",
     )
     seed_parser.add_argument("--radius-km", type=int)
     seed_parser.add_argument("--species-limit", type=int)

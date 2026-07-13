@@ -9,6 +9,10 @@ class DataSourceError(InkyBirdFrameError):
     """Raised when a remote data source cannot be used."""
 
 
+class TaxonomyMatchError(DataSourceError):
+    """Raised when a valid response has no unambiguous canonical species match."""
+
+
 class InsufficientReferencesError(DataSourceError):
     """Raised when a valid source response cannot satisfy reference policy."""
 
