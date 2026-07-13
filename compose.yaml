@@ -2,9 +2,6 @@ name: inky-bird-frame
 
 x-controller-common: &controller-common
   image: ${INKY_BIRD_IMAGE:-ghcr.io/veteranbv/inky-bird-frame:latest}
-  build:
-    context: .
-    target: runtime
   read_only: true
   cap_drop:
     - ALL
@@ -27,7 +24,7 @@ services:
       - --catalog
       - /data/catalog
       - --state-dir
-      - /data/state
+      - /data/var/controller
     restart: "no"
 
   controller:

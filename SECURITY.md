@@ -13,12 +13,16 @@ unresolved vulnerability publicly.
 
 ## Supported code
 
-Security fixes target the current `main` branch. This project has not yet begun
-publishing versioned releases with separate support windows.
+Security fixes target the current release and `main`. Older releases do not
+have separate support windows yet.
 
 ## Trust boundaries
 
 - Pull requests from forks run only deterministic checks on GitHub-hosted runners.
 - External pull requests do not receive Codex, notification, deployment, or publishing credentials.
 - Trusted controller workflows must never execute code from an untrusted pull request.
-- Catalog submissions are treated as untrusted data until deterministic and independent review pass.
+- Catalog submissions are treated as untrusted data until deterministic checks
+  and an independent review pass.
+- Container images publish only from trusted `main`, a repository release, or
+  an owner-started workflow. Pull requests can build images but cannot publish
+  them.

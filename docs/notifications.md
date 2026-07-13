@@ -1,13 +1,14 @@
 # Notifications
 
-Inky Bird Frame embeds the open-source Apprise Python library. Apprise translates one local
-configuration model into each provider's API. You do not need an Apprise account, hosted Apprise
-service, or separate notification container.
+Inky Bird Frame includes the open-source Apprise Python library. It translates
+one local configuration into each provider's API. You do not need an Apprise
+account, hosted Apprise service, or separate notification container.
 
-You do need the destination you choose. Pushover requires a Pushover account and application
-token. Discord requires a channel webhook. A self-hosted ntfy or Gotify destination requires that
-server. SMTP email requires a mailbox or relay. Notification credentials stay in the private
-deployment `config.toml` or its process environment and are never written to the catalog.
+You do need an account or server for the destination you choose. Pushover needs
+a Pushover account and application token. Discord needs a channel webhook. A
+self-hosted ntfy or Gotify destination needs that server. Email needs a mailbox
+or SMTP relay. Credentials stay in private configuration and never enter the
+bird catalog.
 
 ## Basic setup
 
@@ -32,16 +33,16 @@ deployment `config.toml` or its process environment and are never written to the
    inky-bird-frame notifications status --config /path/to/config.toml
    ```
 
-The supported macOS installer runs `notifications dispatch` on the configured delivery retry
-interval. Other service managers should schedule the same command. To requeue all dead letters
-after fixing a destination, run:
+The native installers run `notifications dispatch` on the configured retry
+interval. Other service managers should schedule the same command. After
+fixing a destination, requeue its dead letters with:
 
 ```bash
 inky-bird-frame notifications retry --config /path/to/config.toml
 ```
 
-Status and validation output include only destination name, scheme, subscribed events, and queue
-counts. They never include service URLs or credentials.
+Status and validation output includes the destination name, scheme, subscribed
+events, and queue counts. It never includes service URLs or credentials.
 
 ## Events and noise controls
 
@@ -57,23 +58,23 @@ Each destination has its own `events` list:
 | `publication_error` | Public catalog publication crosses the degradation threshold |
 | `publication_recovered` | Public catalog publication succeeds after a reported degradation |
 
-Routine successes do not notify. Transient failures notify only after either
-`degradation_failure_threshold` consecutive failures or `degradation_window_minutes` has elapsed.
-`cooldown_minutes` suppresses repeat notices while the same service remains unhealthy. Recovery
-sends once, and only if a degradation notice was sent.
+Routine successes do not notify. Transient failures notify only after
+`degradation_failure_threshold` consecutive failures or
+`degradation_window_minutes` has elapsed. `cooldown_minutes` suppresses repeat
+notices while the same service remains unhealthy. Recovery sends once, and
+only after a degradation notice was sent.
 
 ## Delivery reliability
 
-Application work commits before notification delivery. A provider outage cannot roll back
-discovery, generation, publication, or display state.
+Application work commits before notification delivery. A provider outage cannot
+roll back discovery, generation, publication, or display state.
 
-The controller stores a private durable outbox under its configured `state_dir`. Successful
-destinations are recorded individually. If Discord succeeds and Pushover fails, the retry targets
-only Pushover. Delivery retries after `delivery_retry_minutes`; after
-`max_delivery_attempts`, the message moves to a visible dead-letter count for operator review.
-Event IDs are retained in a bounded ledger so service restarts do not resend completed events.
-Only one dispatcher performs network delivery at a time. Enqueue operations use a short separate
-state lock, so a slow provider cannot block or overwrite application events.
+The controller stores a durable private outbox under `state_dir`. It records
+each destination separately. If Discord succeeds and Pushover fails, only
+Pushover is retried. After `max_delivery_attempts`, the message moves to a
+visible dead-letter count for inspection. A bounded event ledger prevents
+completed messages from being resent after a restart. A slow provider cannot
+block or overwrite application events.
 
 ## Provider setup
 

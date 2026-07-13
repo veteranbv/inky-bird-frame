@@ -81,8 +81,9 @@ inky-bird-frame refresh --config /path/to/config.toml
 
 Check DNS, outbound HTTPS, the ZIP code, and the controller clock. For eBird,
 also run `config validate` and confirm that the personal API key is available.
-Combined mode reports each provider independently and continues when either one
-is healthy. A refresh failure does not remove the existing active catalog.
+A multi-provider refresh reports each provider independently and continues when
+at least one configured provider is healthy. A refresh failure does not remove
+the existing active catalog.
 
 ### Generation fails or keeps retrying
 

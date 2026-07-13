@@ -1,10 +1,11 @@
 # Discovery sources
 
-Inky Bird Frame can discover birds through public observations or an optional
-authenticated acoustic station. The controller consumes species metadata from
-these services and sends every result through one catalog and review pipeline.
-Merlin Bird ID is Cornell's identification application; its nearby lists are
-powered by eBird. This project integrates the documented eBird API, not Merlin.
+Inky Bird Frame reads public observations, detections from your own acoustic
+station, or both. Every result enters the same catalog and review process.
+
+Merlin Bird ID is Cornell's identification app. Its nearby lists are powered by
+eBird, so this project uses the documented eBird API rather than trying to
+automate Merlin.
 
 ## Choose providers
 
@@ -15,7 +16,7 @@ powered by eBird. This project integrates the documented eBird API, not Merlin.
 | `birdweather` | BirdWeather station token | All | Species acoustically detected by one station |
 
 Select any combination with a TOML array. Each configured provider runs
-independently:
+independently.
 
 Request a personal key from [eBird](https://ebird.org/api/keygen). Store it in
 the private configuration:
@@ -30,10 +31,10 @@ window = "last-30-days"
 ebird_api_key = "your-personal-api-key"
 ```
 
-For manually invoked commands, you may replace `ebird_api_key` with
-`ebird_api_key_env = "EBIRD_API_KEY"`. Managed controller services do not inherit the shell
-environment used during installation, so LaunchAgent and systemd installations require the direct
-value in the private mode-`0600` configuration file.
+For commands you run yourself, you may replace `ebird_api_key` with
+`ebird_api_key_env = "EBIRD_API_KEY"`. Native LaunchAgent and systemd services
+do not inherit your installation shell, so those installations need the key in
+the private mode-`0600` configuration file.
 
 Keep the configuration outside the checkout with mode `0600`. The application
 never writes the key to state, logs, catalog files, or command output.
@@ -110,11 +111,11 @@ generation pipeline.
 
 ## Multiple providers
 
-Each provider receives the configured `species_limit`; the merged result can be
-larger before duplicates are removed by iNaturalist taxon ID. If one provider fails, successful
-providers still refresh the active catalog and the controller records a
-provider-specific degradation. The refresh fails only when every configured
-provider fails, leaving the prior active catalog in place.
+Each provider receives the configured `species_limit`, so the merged result may
+be larger before duplicate species are removed. If one provider fails, the
+others still refresh the active catalog and the controller records which source
+failed. A refresh fails only when every configured provider fails. In that
+case, the prior active catalog stays in place.
 
 The legacy singular values `source = "inaturalist"`, `"ebird"`, `"combined"`,
 `"birdweather"`, and `"all"` remain accepted. Do not set both `source` and

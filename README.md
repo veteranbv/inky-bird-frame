@@ -1,7 +1,7 @@
 # Inky Bird Frame
 
-Turn birds observed near you into a rotating collection of illustrated,
-scientific field-journal plates on a color e-paper display.
+Show birds recently observed or detected near you as illustrated field-journal
+plates on a color e-paper display.
 
 <table>
   <tr>
@@ -21,54 +21,46 @@ scientific field-journal plates on a color e-paper display.
   <br><em>A finished portrait installation using the recommended 12 x 16 inch frame with a panel-fitted mat opening.</em>
 </p>
 
-The frame follows public bird observations within a configurable distance and
-rolling time window. When a new species appears, a controller researches it,
-collects licensed reference photographs, creates a plate through Codex, and
-subjects the result to an independent factual and visual review. Passing plates
-join an immutable, reusable catalog. A lightweight Raspberry Pi rotates the
-approved birds that are active in the installation's current observation
-window.
+The controller checks public bird observations within a distance and time
+window you choose. If a matching plate already exists, it uses it. If not, the
+controller gathers licensed reference photos, researches the species, creates a
+plate with Codex, and reviews the result before it can appear on the frame.
+Approved plates are cached and reused.
 
 ## How it works
 
 ```mermaid
 flowchart LR
-    A["iNaturalist / eBird / BirdWeather"] --> B["Controller"]
-    B --> C["Approved plate catalog"]
-    C --> D["HTTP on the private network"]
-    D --> E["Raspberry Pi display node"]
-    E --> F["Pimoroni Inky Impression"]
-    B --> G["Codex generation and review"]
-    G --> C
+    S["iNaturalist, eBird, or BirdWeather"] --> C["Controller"]
+    C --> G["Codex generation and review"]
+    G --> A["Approved plate catalog"]
+    A --> C
+    D["Raspberry Pi display node"] -- "GET catalog and images" --> C
+    C -- "Approved plates over the private network" --> D
+    D --> P["Pimoroni Inky Impression"]
 ```
 
-The system has two deliberately small roles:
+The project has two jobs:
 
-- The **controller** refreshes observations, builds a private active catalog,
-  downloads references, researches facts, generates and reviews candidates,
-  and serves approved assets.
+- The **controller** checks observations, creates and reviews missing plates,
+  and serves approved images on the private network.
 - The **display node** downloads approved assets, verifies their checksums, and
-  rotates them on the Inky panel. It does no AI or discovery work.
+  rotates them on the Inky panel. It never runs discovery or Codex.
 
 The roles may run on one capable Raspberry Pi, but the recommended wall build
 keeps the lightweight display node behind the frame and runs the controller on
 an existing Mac, Linux computer, Raspberry Pi 4 or 5, or Docker host. A Pi Zero
-2 W is recommended for display duty, not Codex generation.
-
-<p align="center">
-  <img src="docs/images/installation-architecture.png" alt="Inky Bird Frame architecture showing a Mac or Raspberry Pi controller serving approved bird plates over a private home network to a Raspberry Pi Zero 2 W display node" width="900">
-  <br><em>The controller performs discovery and generation; the display node only pulls approved plates over the local network.</em>
-</p>
+2 W is a good display node, but it is not recommended for Codex generation.
 
 Discovery location is private controller configuration. Approved plates and
 manifests contain no ZIP code, coordinates, observation dates, local place
 names, network details, or machine paths. A plate generated for one installation
 can therefore be reused by every installation.
 
-## Trust model
+## How plates are approved
 
-Generation is not treated as approval. For every candidate, a separate Codex
-run:
+Creating an image does not approve it. A separate Codex run checks every
+candidate:
 
 1. independently verifies the profile against at least two authoritative
    sources;
@@ -82,9 +74,9 @@ A failed review becomes corrective input for the next attempt. Attempts are
 bounded by configuration, and exhausted work stops for inspection rather than
 publishing. Once a taxon passes, it is never regenerated implicitly.
 
-Deterministic code owns selection, licensing rules, checksums, dimensions,
-rotation, publication, serving, and display state. Codex is limited to sourced
-fact synthesis, illustration, and independent review.
+Regular application code handles selection, licensing rules, checksums, image
+dimensions, rotation, publishing, downloads, and display state. Codex handles
+sourced species research, illustration, and review.
 
 ## Hardware
 
@@ -172,23 +164,26 @@ The panel reports a `1600x1200` landscape canvas. Plates are authored at
 
 ## Install
 
-The [complete installation guide](docs/installation.md) starts with blank
-macOS, Ubuntu, Raspberry Pi OS, and Raspberry Pi display-node systems. It covers
-the support matrix, Wi-Fi and SSH prerequisites, Codex authentication, hardware
-assembly, private TOML configuration, startup services, reboot recovery,
-updates, uninstall, and focused troubleshooting. Controller users can choose
-native macOS/Linux services or the production [Docker deployment](docs/docker.md).
+Start with the path that matches your controller:
 
-The commissioning flow is intentionally staged:
+- **Docker or a NAS:** use the [Docker controller guide](docs/docker.md). It
+  downloads a small deployment bundle and pulls the published AMD64 or ARM64
+  [GHCR image](https://github.com/veteranbv/inky-bird-frame/pkgs/container/inky-bird-frame).
+  It does not build the project from source.
+- **macOS, Ubuntu, or Raspberry Pi OS:** use the
+  [native installation guide](docs/installation.md).
+
+Both guides take you through the display Pi after the controller is healthy.
+Installation follows five checkpoints:
 
 1. prepare and diagnose the controller;
 2. flash the display Pi and attach PIM774;
-3. show the included Eastern Bluebird without AI or a controller;
+3. show the included Eastern Bluebird without Codex or a controller;
 4. prove the Pi can reach the controller; and
 5. enable live rotation and automatic generation.
 
-Setup always previews first. Apply the same command with `--yes`, then require a
-clean doctor result:
+Native setup previews its changes first. Repeat the command with `--yes` to
+apply them, then run the matching doctor:
 
 ```bash
 inky-bird-frame setup controller --config /path/to/config.toml
@@ -210,7 +205,7 @@ inky-bird-frame doctor display --config /path/to/config.toml
 # Refresh observations and the private active catalog without invoking Codex.
 uv run inky-bird-frame refresh --config config.toml
 
-# Generate and AI-review missing plates from the latest refresh.
+# Generate and review missing plates from the latest refresh.
 uv run inky-bird-frame generate --config config.toml
 
 # Queue a broader one-time set without changing the active display window.
@@ -229,48 +224,38 @@ uv run inky-bird-frame catalog-publish --config config.toml --dry-run
 uv run inky-bird-frame catalog-publish --config config.toml
 ```
 
-Configure any combination with `discovery.sources`, for example
-`["inaturalist", "ebird", "birdweather"]`. The older singular `source` values
-remain accepted for compatibility. BirdWeather adds species detected by one authenticated acoustic station;
-the project reads detection metadata only and never receives or manages audio.
-Every external species is exact-matched to iNaturalist taxonomy before the
-existing licensed-reference pipeline accepts it.
-Observation windows are `last-day`, `last-week`, `last-30-days`, `last-year`,
-and `all-time`; eBird modes support the first three and a maximum 50 km radius,
-while BirdWeather supports every window and at most 100 species.
-See [Discovery sources](docs/discovery.md) for credentials, merging, failure
-handling, privacy, and provider limitations.
+Choose any combination of `inaturalist`, `ebird`, and `birdweather` in
+`discovery.sources`. BirdWeather reads detection summaries from one station; it
+does not receive recordings or manage microphones. Every provider result is
+matched to the same iNaturalist species identity before it enters the catalog.
+
+Choose `last-day`, `last-week`, `last-30-days`, `last-year`, or `all-time` for
+the observation window. Provider limits still apply. The
+[discovery guide](docs/discovery.md) explains credentials, merging, privacy,
+and those limits.
+
 Rotation modes are `sequential`, `shuffle`, `shuffle_bag`, and `weighted`.
-`shuffle` keeps its existing shuffled-round behavior. `shuffle_bag` persists a
-separate bag: it displays each currently active bird at most once before a
-refill, adds newly active birds to the current bag immediately, prunes inactive
-birds, and avoids a repeat at the refill boundary when alternatives exist.
-`weighted` uses iNaturalist observation counts or BirdWeather station-detection
-counts where available; eBird-only species receive a presence weight of one.
-Counts from different providers are not equivalent evidence. It avoids
-immediate repeats when alternatives are available.
-Recovery and operator-override commands are documented in
-[`docs/operations.md`](docs/operations.md).
+`shuffle_bag` is the default: it shows every active bird once before starting a
+new round, while adding newly discovered birds to the current round. See
+[Operations](docs/operations.md) for every option and the recovery commands.
 
 ## Related project
 
-Looking for a microphone-first bird station? [AvianVisitors](https://github.com/Twarner491/AvianVisitors)
-by Teddy Warner builds on BirdNET-Pi to identify birds heard by a local USB
-microphone and present them through a live illustrated collage. It also supports
-Home Assistant, MQTT, remote access, eBird regional filtering, optional e-ink
-hardware, BirdWeather operation, and complete kits. Inky Bird Frame instead
-focuses on rotating reusable scientific field-journal plates from configurable
-observation and detection services without managing audio. Teddy's detailed
+Looking for a project that listens through a local microphone?
+[AvianVisitors](https://github.com/Twarner491/AvianVisitors) by Teddy Warner
+uses BirdNET-Pi and presents detected birds in a live illustrated collage. It
+also supports Home Assistant, MQTT, remote access, eBird regional filtering,
+optional e-ink hardware, BirdWeather, and complete kits. Inky Bird Frame focuses
+on reusable field-journal plates and does not manage audio. Teddy's detailed
 [AvianVisitors project write-up](https://theodore.net/projects/AvianVisitors/)
 shows the complete listening-station workflow.
 
 ## Notifications
 
-Optional notifications make a headless installation easier to trust without
-turning routine activity into noise. Events are selectable, deduplicated, and
-delivered through a durable retry queue, so an operator can receive useful
-signals such as a newly approved plate, a discovered species, a recovery, or a
-terminal error.
+Notifications tell you when something worth seeing happens: a new bird appears,
+a plate passes review, a failed service recovers, or a generation needs help.
+Routine successes stay quiet. Delivery uses a retry queue, so a notification
+provider outage does not block discovery or generation.
 
 ![Pushover notifications for a recovered generation queue and an approved American Goldfinch plate](docs/images/pushover-notifications.png)
 
@@ -292,12 +277,11 @@ Downloaded source photographs, run logs, pending work, rejected work, and
 display state stay under ignored runtime storage. Reference licenses and source
 URLs remain recorded without redistributing the source bitmaps.
 
-Catalog publication is optional and independent of the live display. The
-publisher accepts only new immutable taxa whose manifests, reviews, checksums,
-image dimensions, and privacy constraints validate. A trusted controller opens
-a catalog-only PR in this repository, verifies the exact staged paths, and uses
-the authenticated repository owner's ruleset bypass to merge it. External PRs
-and GitHub-hosted workflows never receive that credential.
+Publishing to the shared catalog is optional and separate from the live frame.
+The publisher accepts only new species that pass the catalog checks, opens a
+catalog-only pull request, and verifies the exact files before merging it.
+External pull requests and GitHub-hosted workflows never receive the private
+controller's publication credentials.
 
 ## Contributing
 

@@ -21,8 +21,8 @@ body:
   - type: input
     id: taxon_id
     attributes:
-      label: eBird taxon ID
-      description: Include the numeric eBird taxon ID when known so contributors do not duplicate work.
+      label: iNaturalist taxon ID
+      description: Include the numeric iNaturalist taxon ID when known so contributors do not duplicate work.
   - type: textarea
     id: sources
     attributes:

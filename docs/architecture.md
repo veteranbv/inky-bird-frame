@@ -1,5 +1,20 @@
 # Architecture
 
+Inky Bird Frame has three roles. The controller discovers birds and creates
+plates. The display node pulls approved images. An optional publisher sends new
+plates to a shared GitHub catalog.
+
+```mermaid
+flowchart LR
+    S["Observation services"] --> C["Controller"]
+    C --> R["Research, generation, and review"]
+    R --> A["Approved local catalog"]
+    A --> C
+    D["Display node"] -- "GET catalog and images" --> C
+    C -- "Approved plates" --> D
+    A -. "optional catalog-only PR" .-> P["Public catalog"]
+```
+
 ## Roles
 
 ### Controller
@@ -25,7 +40,7 @@ then:
 5. prepares portrait and display assets;
 6. runs an independent, sourced Codex factual and visual review;
 7. regenerates failed reviews with corrective findings, within a configured
-   attempt limit; and
+   attempt limit;
 8. atomically publishes passing output through the pending queue; and
 9. immediately rebuilds the private active catalog from the latest observation
    snapshot.
@@ -61,10 +76,9 @@ The display node does not discover birds or generate art. Each timer cycle:
 2. selects an entry using the configured sequential, shuffle, `shuffle_bag`, or
    observation-weighted policy and durable local state. A newer BirdWeather
    station detection may take priority once and counts as shown in the current
-   rotation when applicable. `shuffle_bag` has its own persisted
-   remaining/shown state, so catalog
-   additions join the active bag without restoring species already shown in
-   that bag;
+   rotation. `shuffle_bag` keeps its own remaining and shown lists, so a newly
+   active species joins the current bag without restoring species already
+   shown;
 3. downloads the display asset;
 4. verifies its SHA-256 checksum;
 5. writes it to a local cache atomically; and
@@ -107,7 +121,7 @@ unchanged. The next scheduled cycle retries from the current remote branch.
 
 | State | Meaning | Automatic generation allowed |
 | --- | --- | --- |
-| approved | Independent AI review passed; published immutably | No |
+| approved | Independent Codex review passed; published immutably | No |
 | pending | Passing candidate awaiting atomic publication or crash recovery | No |
 | rejected | Operator override rejected a candidate | No |
 | failed | Generation exhausted its bounded attempts | No |
@@ -115,7 +129,7 @@ unchanged. The next scheduled cycle retries from the current remote branch.
 | eligible | No terminal state exists | Yes |
 
 `retry TAXON_ID` archives rejected or failed state and makes that taxon
-eligible. There is deliberately no implicit replacement path for approved art.
+eligible. Approved art is never replaced implicitly.
 
 ## Privacy and licensing
 
@@ -131,11 +145,10 @@ state and are not redistributed in the catalog.
 
 ## Deterministic and generative work
 
-Deterministic code handles discovery parameters, the persistent seed queue,
+Regular application code handles discovery parameters, the seed queue,
 terminal-state selection, license filtering, reference checksums, prompt
-assembly, image dimensions, rotation, catalog checksums, local approval,
-catalog publication, serving,
-downloading, and display rotation.
+assembly, image dimensions, catalog checksums, local approval, publication,
+downloads, and display rotation.
 
 Codex handles factual synthesis, image generation, and independent factual and
 visual review. Those steps are bounded by structured schemas, attached

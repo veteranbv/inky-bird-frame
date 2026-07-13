@@ -1,0 +1,13 @@
+x-controller-build: &controller-build
+  build:
+    context: .
+    target: runtime
+  pull_policy: build
+
+services:
+  bootstrap:
+    <<: *controller-build
+  controller:
+    <<: *controller-build
+  scheduler:
+    <<: *controller-build

@@ -1,21 +1,29 @@
 # Installation
 
-This guide takes a blank controller and a blank Raspberry Pi display node to a
-working, reboot-persistent Inky Bird Frame. Follow it in order. The first panel
-test uses an included plate and does not require Codex, observations, or a
-working controller.
+This guide starts with a blank controller and Raspberry Pi and ends with a frame
+that returns after a reboot. Follow the sections in order. The first panel test
+uses an included plate, so you can prove the hardware before setting up Codex or
+bird observations.
 
-![Controller, network, and display-node installation flow](images/installation-architecture.png)
+```mermaid
+flowchart LR
+    S["Observation services"] --> C["Controller"]
+    C --> G["Codex generation and review"]
+    G --> C
+    D["Raspberry Pi display node"] -- "GET catalog and images on port 8793" --> C
+    C -- "Approved plates" --> D
+    D --> P["Inky Impression"]
+```
 
-*Conceptual network view. The display pulls from the controller; port 8793
-stays on the trusted network.*
+The display starts every application connection. Port 8793 stays on the trusted
+network and is never forwarded to the internet.
 
 ## Choose the two computers
 
-The controller and display node have different requirements. A capable Linux
-Raspberry Pi may run both roles, but the recommended framed installation uses a
-small display node and a separate controller. The controller may also run as a
-container on an existing Docker host; follow the
+The controller and display node have different jobs. A capable Linux Raspberry
+Pi can run both, but the recommended framed build puts a small Pi behind the
+display and runs the controller elsewhere. The controller can also run on an
+existing Docker host; follow the
 [Docker controller guide](docker.md) instead of either native controller
 section.
 
@@ -24,10 +32,9 @@ section.
 | Controller | Existing Apple silicon Mac or Ubuntu Server 24.04 LTS computer | macOS with launchd; 64-bit Ubuntu 24.04 with systemd; 64-bit Raspberry Pi OS Bookworm or later with systemd | A Raspberry Pi 4 with 4GB is the smallest recommended dedicated controller. Docker installation is documented separately. |
 | Display | Raspberry Pi Zero 2 W with pre-soldered 40-pin header and Raspberry Pi OS Lite 64-bit | Raspberry Pi OS Bookworm or later on a 40-pin Raspberry Pi | This release supports the Pimoroni Inky Impression 13.3 inch PIM774 at 1600x1200. |
 
-The setup command detects launchd or systemd capabilities, but that does not
-expand this tested support matrix. Other operating systems may work and are
-welcome as documented contributions; they are not implied to be supported by
-the presence of `systemctl` alone.
+The setup command detects launchd or systemd, but detection does not mean every
+operating system has been tested. Other systems may work. Contributions that
+document and test them are welcome.
 
 Pimoroni lists PIM774 as compatible with every 40-pin Raspberry Pi, including
 Zero variants. A Zero without a header requires soldering. The Zero 2 W has a
@@ -71,9 +78,8 @@ proxy if traffic must cross an untrusted network.
 
 ## 1. Install the controller
 
-Choose the macOS or Linux path below. Keep the source checkout: future updates
-are installed by pulling the checkout and running the same idempotent setup
-command again.
+Choose the macOS or Linux path below. Keep the source checkout. Future updates
+pull that checkout and run the same setup command again.
 
 ### macOS controller
 
@@ -211,11 +217,10 @@ Installer progress and any `sudo` prompt remain visible. See the official
 
 ### Docker controller
 
-Use the dedicated [Docker controller guide](docker.md) for Linux containers on
-AMD64 or ARM64. It covers persistent paths, private environment-backed secrets,
-Codex device authentication, optional GitHub authentication, health checks,
-reboot recovery, updates, backups, and troubleshooting. After its health check
-passes, continue at [Prepare the display Pi](#2-prepare-the-display-pi).
+Use the [Docker controller guide](docker.md) on an AMD64 or ARM64 Docker host.
+The normal path pulls the published GHCR image; it does not build from source.
+After the controller health check passes, continue at
+[Prepare the display Pi](#2-prepare-the-display-pi).
 
 ### Verify controller data
 
@@ -306,7 +311,7 @@ the manual SPI, I2C, and `dtoverlay=spi0-0cs` requirements in the
 [Inky library installation guide](https://github.com/pimoroni/inky#installation).
 Reboot if the installer asks.
 
-### Prove the panel without AI
+### Prove the panel without Codex
 
 Clone this project and install it into the same Pimoroni environment:
 
@@ -456,13 +461,13 @@ git pull --ff-only
 ```
 
 `--source-dir "$PWD"` is required in the display update path because setup
-deliberately repoints the Pimoroni environment at the managed runtime. The
+points the Pimoroni environment at the managed runtime. The
 explicit source directory ensures each update installs the checkout that was
 just pulled rather than the previous managed copy.
 
-Docker controller updates use `docker compose build --pull` followed by
-`docker compose up --detach --remove-orphans`; the complete process and
-persistence model are in the [Docker controller guide](docker.md#update).
+Docker controller updates pull a published image and recreate the services. See
+the [Docker update instructions](docker.md#update) for version pinning and
+rollback.
 
 ## Uninstall
 
@@ -504,7 +509,7 @@ done
 
 After service removal, delete `~/Services/inky-bird-frame` only if its managed
 runtime is no longer needed. Delete the private support/configuration directory
-only after intentionally preserving any wanted catalog and state.
+only after saving any catalog or state you want to keep.
 
 ## Troubleshooting
 
