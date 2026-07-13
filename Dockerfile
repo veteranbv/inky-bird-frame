@@ -79,4 +79,4 @@ USER 10001:10001
 WORKDIR /data
 EXPOSE 8793
 ENTRYPOINT ["inky-bird-frame"]
-CMD ["serve", "--config", "/config/config.toml"]
+CMD ["serve", "--config", "/data/config.toml"]

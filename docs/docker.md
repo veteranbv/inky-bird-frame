@@ -34,7 +34,9 @@ cp controller.env.example controller.env
 chmod 600 config.toml controller.env
 ```
 
-Both private filenames are ignored by Git.
+Both private filenames are ignored by Git. Keep `config.toml` at mode `0600`;
+it is imported into container-managed private storage instead of being exposed
+through a host UID-dependent bind mount.
 
 ## Configure
 
@@ -82,11 +84,22 @@ Do not quote Compose environment-file values unless the quotes are part of the
 secret. Direct TOML values remain supported for users who manage the entire
 private file through a secrets system.
 
-Validate the resolved Compose model before starting:
+Build the image, validate the resolved Compose model, and import the private
+configuration through standard input:
 
 ```bash
+docker compose build --pull
 docker compose config --quiet
+docker compose run --rm --no-deps -T scheduler \
+  config install --destination /data/config.toml < config.toml
+docker compose run --rm --no-deps scheduler \
+  config validate --config /data/config.toml
 ```
+
+`config install` validates the complete TOML before atomically replacing the
+container copy and stores it with mode `0600`. Run the same import after any
+local configuration change. The local file remains the operator-owned source
+of truth.
 
 ## Authenticate Codex
 
@@ -120,10 +133,9 @@ GitHub authentication or a publication checkout.
 
 ## Start and verify
 
-Build the pinned multi-stage image and start the controller:
+Start the configured controller:
 
 ```bash
-docker compose build --pull
 docker compose up --detach
 docker compose ps
 curl --fail --silent http://127.0.0.1:8793/health
@@ -140,9 +152,10 @@ Do not expose this unauthenticated read-only service to the public internet.
 
 ## Persistence and recovery
 
-`controller-data` stores observations, generated work, approved plates, retry
-state, notification queues, and the optional publication checkout. `codex-auth`
-and `github-auth` contain authentication state. Compose uses
+`controller-data` stores the private configuration, observations, generated
+work, approved plates, retry state, notification queues, and the optional
+publication checkout. `codex-auth` and `github-auth` contain authentication
+state. Compose uses
 `restart: unless-stopped`, so the HTTP service and scheduler return after the
 Docker daemon starts following a reboot. The scheduler performs a fresh
 observation refresh before allowing generation.
@@ -160,6 +173,8 @@ For a source checkout:
 ```bash
 git pull --ff-only
 docker compose build --pull
+docker compose run --rm --no-deps -T scheduler \
+  config install --destination /data/config.toml < config.toml
 docker compose up --detach --remove-orphans
 curl --fail --silent http://127.0.0.1:8793/health
 ```
@@ -173,7 +188,7 @@ Inspect failures without exposing private configuration:
 ```bash
 docker compose ps --all
 docker compose logs controller scheduler bootstrap
-docker compose run --rm --no-deps scheduler config validate --config /config/config.toml
+docker compose run --rm --no-deps scheduler config validate --config /data/config.toml
 ```
 
 The repository owner can publish an AMD64/ARM64 GHCR image from trusted `main`

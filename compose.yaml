@@ -17,7 +17,6 @@ x-controller-common: &controller-common
   tmpfs:
     - /tmp:size=256m,mode=1777
   volumes:
-    - ${INKY_BIRD_CONFIG:-./config.toml}:/config/config.toml:ro
     - controller-data:/data
 
 services:
@@ -36,7 +35,7 @@ services:
 
   controller:
     <<: *controller-common
-    command: [serve, --config, /config/config.toml]
+    command: [serve, --config, /data/config.toml]
     depends_on:
       bootstrap:
         condition: service_completed_successfully
@@ -56,14 +55,13 @@ services:
 
   scheduler:
     <<: *controller-common
-    command: [scheduler, --config, /config/config.toml]
+    command: [scheduler, --config, /data/config.toml]
     depends_on:
       bootstrap:
         condition: service_completed_successfully
       controller:
         condition: service_healthy
     volumes:
-      - ${INKY_BIRD_CONFIG:-./config.toml}:/config/config.toml:ro
       - controller-data:/data
       - codex-auth:/home/inky/.codex
       - github-auth:/home/inky/.config

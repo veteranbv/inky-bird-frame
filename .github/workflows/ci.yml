@@ -90,16 +90,25 @@ jobs:
         run: uv run pytest
 
       - name: Validate Compose configuration
-        run: |
-          cp config.example.toml config.toml
-          docker compose config --quiet
+        run: docker compose config --quiet
 
       - name: Build controller container
         run: docker build --tag inky-bird-frame:ci .
 
       - name: Smoke-test controller container
         run: |
+          set -euo pipefail
+          config_volume="inky-bird-frame-ci-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          trap 'docker volume rm --force "$config_volume"' EXIT
+          docker volume create "$config_volume"
           docker run --rm inky-bird-frame:ci --help
           docker run --rm --entrypoint codex inky-bird-frame:ci --version
           docker run --rm --entrypoint gh inky-bird-frame:ci --version
           docker run --rm inky-bird-frame:ci catalog validate --catalog /app/catalog
+          docker run --rm --interactive \
+            --volume "$config_volume:/data" \
+            inky-bird-frame:ci config install --destination /data/config.toml \
+            < config.example.toml
+          docker run --rm \
+            --volume "$config_volume:/data" \
+            inky-bird-frame:ci config validate --config /data/config.toml

@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import shutil
 import signal
 import subprocess
@@ -11,6 +12,7 @@ import sys
 import threading
 from contextlib import nullcontext
 from pathlib import Path
+from tempfile import NamedTemporaryFile
 
 from .birds import BirdSpecies, ObservationWindow, parse_observation_window
 from .catalog import (
@@ -519,6 +521,33 @@ def config_validate_command(args: argparse.Namespace) -> int:
     return 0
 
 
+def config_install_command(args: argparse.Namespace) -> int:
+    destination = args.destination
+    destination.parent.mkdir(parents=True, exist_ok=True)
+    temporary_path: Path | None = None
+    try:
+        with NamedTemporaryFile(
+            mode="w",
+            encoding="utf-8",
+            dir=destination.parent,
+            prefix=f".{destination.name}.",
+            delete=False,
+        ) as handle:
+            temporary_path = Path(handle.name)
+            os.chmod(temporary_path, 0o600)
+            handle.write(sys.stdin.read())
+            handle.flush()
+            os.fsync(handle.fileno())
+        load_config(temporary_path)
+        os.replace(temporary_path, destination)
+    except Exception:
+        if temporary_path is not None:
+            temporary_path.unlink(missing_ok=True)
+        raise
+    print_result({"config": str(destination), "installed": True, "valid": True})
+    return 0
+
+
 def notifications_status_command(args: argparse.Namespace) -> int:
     print_result(notification_status(_config(args)))
     return 0
@@ -854,6 +883,11 @@ def build_parser() -> argparse.ArgumentParser:
     config_validate_parser = config_subparsers.add_parser("validate", help="Validate TOML settings")
     add_config_argument(config_validate_parser)
     config_validate_parser.set_defaults(func=config_validate_command)
+    config_install_parser = config_subparsers.add_parser(
+        "install", help="Validate TOML from standard input and install it atomically"
+    )
+    config_install_parser.add_argument("--destination", type=Path, required=True)
+    config_install_parser.set_defaults(func=config_install_command)
 
     notifications_parser = subparsers.add_parser(
         "notifications", help="Inspect and test notification delivery"

@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import io
 import json
+import stat
 import unittest
 from argparse import Namespace
 from contextlib import redirect_stdout
@@ -14,6 +15,7 @@ from inky_bird_frame.birds import BirdSpecies
 from inky_bird_frame.cli import (
     build_parser,
     catalog_sync_command,
+    config_install_command,
     generate_command,
     main,
     refresh_command,
@@ -23,7 +25,7 @@ from inky_bird_frame.cli import (
 )
 from inky_bird_frame.config import DiscoveryProvider
 from inky_bird_frame.controller import exclusive_cycle_lock
-from inky_bird_frame.errors import DataSourceError, GenerationError
+from inky_bird_frame.errors import ConfigurationError, DataSourceError, GenerationError
 
 
 class CliTests(unittest.TestCase):
@@ -163,6 +165,55 @@ class CliTests(unittest.TestCase):
         self.assertEqual(str(test.config), "instance.toml")
         self.assertEqual(str(dispatch.config), "instance.toml")
         self.assertEqual(str(retry.config), "instance.toml")
+
+    def test_config_install_validates_and_atomically_writes_private_file(self) -> None:
+        with TemporaryDirectory() as temporary:
+            destination = Path(temporary) / "config.toml"
+            config = """
+[discovery]
+zip_code = "12345"
+radius_km = 8
+species_limit = 50
+window = "last-30-days"
+
+[controller]
+workspace_dir = "workspace"
+catalog_dir = "catalog"
+state_dir = "state"
+codex_path = "codex"
+bind_host = "0.0.0.0"
+port = 8793
+references_per_species = 4
+generations_per_cycle = 1
+
+[display_node]
+controller_url = "http://controller.test:8793"
+state_dir = "display-state"
+rotation_mode = "shuffle_bag"
+"""
+            with patch("sys.stdin", io.StringIO(config)), redirect_stdout(io.StringIO()):
+                config_install_command(Namespace(destination=destination))
+
+            installed = destination.read_text()
+            mode = stat.S_IMODE(destination.stat().st_mode)
+
+        self.assertEqual(installed, config)
+        self.assertEqual(mode, 0o600)
+
+    def test_config_install_does_not_replace_destination_with_invalid_toml(self) -> None:
+        with TemporaryDirectory() as temporary:
+            destination = Path(temporary) / "config.toml"
+            destination.write_text("existing")
+            with (
+                patch("sys.stdin", io.StringIO("not = [valid")),
+                redirect_stdout(io.StringIO()),
+                self.assertRaisesRegex(ConfigurationError, "Invalid TOML"),
+            ):
+                config_install_command(Namespace(destination=destination))
+
+            installed = destination.read_text()
+
+        self.assertEqual(installed, "existing")
 
     def test_setup_and_doctor_have_role_specific_commands(self) -> None:
         setup = build_parser().parse_args(
