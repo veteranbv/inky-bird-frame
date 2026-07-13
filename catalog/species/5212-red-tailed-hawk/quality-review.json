@@ -1,0 +1,24 @@
+{
+  "anatomy_accuracy": 5,
+  "composition_quality": 5,
+  "findings": [
+    "Independent verification confirms Red-tailed Hawk (Buteo jamaicensis), family Accipitridae. The measurements shown are valid combined sex ranges: length 43\u201366 cm (17\u201326 in), wingspan 114\u2013133 cm (45\u201352 in), and weight 690\u20131,470 g (24\u201352 oz).",
+    "The plate accurately depicts a light/adult-type Red-tailed Hawk: one head, one strongly hooked bill, two folded wings, two yellow-legged/footed legs, and one cinnamon-red tail. It has broad buteo proportions, brown upperparts, pale streaked underparts, and a darker belly band consistent with the references and verified field marks.",
+    "Visible text is consistent with the verified species\u2019 behavior, open-country/edge habitat, adult versus juvenile tail distinction, variable morphs, and underwing pattern. No material species or text errors found.",
+    "No place name, ZIP code, coordinates, map, or local-observation detail appears on the plate."
+  ],
+  "location_free": true,
+  "passed": true,
+  "species_accuracy": 5,
+  "text_accuracy": 5,
+  "verification_sources": [
+    {
+      "title": "Red-tailed Hawk Identification \u2014 All About Birds, Cornell Lab of Ornithology",
+      "url": "https://www.allaboutbirds.org/guide/Red-tailed_Hawk/id"
+    },
+    {
+      "title": "Red-tailed Hawk \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/red-tailed-hawk"
+    }
+  ]
+}

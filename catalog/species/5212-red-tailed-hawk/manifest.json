@@ -1,0 +1,142 @@
+{
+  "approved_at": "2026-07-13T06:30:13+00:00",
+  "assets": {
+    "display": {
+      "filename": "display.png",
+      "sha256": "648ad0c8e233833df3a1ec23d41370fc022533f340b63902435a768eacd348ad"
+    },
+    "portrait": {
+      "filename": "portrait.png",
+      "sha256": "d53359ffd2e1da04c61947b7f8d234c6a2817eb74dda1df804ddbab8e1843604"
+    }
+  },
+  "common_name": "Red-tailed Hawk",
+  "generation": {
+    "attempt": 2,
+    "generated_at": "2026-07-13T06:30:13+00:00",
+    "generator": "Codex subscription / built-in gpt-image-2",
+    "max_attempts": 3,
+    "prompt_version": "field-journal-v2"
+  },
+  "profile": {
+    "behavior": "Soars and glides over open ground, often hunting from a perch or by hovering into the wind before a controlled dive.",
+    "common_name": "Red-tailed Hawk",
+    "family": "Accipitridae",
+    "field_marks": [
+      "Large, bulky buteo with very broad, rounded wings and spread \u201cfingered\u201d wingtips.",
+      "Usually rich brown above and paler below, often with a darker streaked belly band.",
+      "Adult tail is typically cinnamon-red above and pale below; juveniles have a brown, narrowly banded tail.",
+      "Underwings commonly show pale flight feathers contrasted with dark leading-edge bars and darker wingtips.",
+      "Short, strongly hooked dark bill; eyes and bare legs/feet appear yellow to pale yellow.",
+      "Plumage is variable: light, rufous, and dark morphs occur."
+    ],
+    "habitat": "Open country and habitat edges: fields, grasslands, meadows, shrublands, woodland margins, and other open areas with scattered perches or trees.",
+    "measurements": {
+      "length": "43\u201366 cm (17\u201326 in)",
+      "weight": "690\u20131,470 g (24\u201352 oz)",
+      "wingspan": "114\u2013133 cm (45\u201352 in)"
+    },
+    "palette": [
+      "rich brown",
+      "cinnamon red",
+      "cream white",
+      "dark chocolate brown",
+      "yellow"
+    ],
+    "scientific_name": "Buteo jamaicensis",
+    "sources": [
+      {
+        "title": "Red-tailed Hawk Identification \u2014 All About Birds, Cornell Lab of Ornithology",
+        "url": "https://www.allaboutbirds.org/guide/Red-tailed_Hawk/id"
+      },
+      {
+        "title": "Red-tailed Hawk \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/red-tailed-hawk"
+      }
+    ],
+    "taxon_id": 5212
+  },
+  "quality_review": {
+    "anatomy_accuracy": 5,
+    "composition_quality": 5,
+    "findings": [
+      "Independent verification confirms Red-tailed Hawk (Buteo jamaicensis), family Accipitridae. The measurements shown are valid combined sex ranges: length 43\u201366 cm (17\u201326 in), wingspan 114\u2013133 cm (45\u201352 in), and weight 690\u20131,470 g (24\u201352 oz).",
+      "The plate accurately depicts a light/adult-type Red-tailed Hawk: one head, one strongly hooked bill, two folded wings, two yellow-legged/footed legs, and one cinnamon-red tail. It has broad buteo proportions, brown upperparts, pale streaked underparts, and a darker belly band consistent with the references and verified field marks.",
+      "Visible text is consistent with the verified species\u2019 behavior, open-country/edge habitat, adult versus juvenile tail distinction, variable morphs, and underwing pattern. No material species or text errors found.",
+      "No place name, ZIP code, coordinates, map, or local-observation detail appears on the plate."
+    ],
+    "location_free": true,
+    "passed": true,
+    "species_accuracy": 5,
+    "text_accuracy": 5,
+    "verification_sources": [
+      {
+        "title": "Red-tailed Hawk Identification \u2014 All About Birds, Cornell Lab of Ornithology",
+        "url": "https://www.allaboutbirds.org/guide/Red-tailed_Hawk/id"
+      },
+      {
+        "title": "Red-tailed Hawk \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/red-tailed-hawk"
+      }
+    ]
+  },
+  "references": [
+    {
+      "attribution": "(c) Brooke J., some rights reserved (CC BY)",
+      "filename": "01-668055074.jpg",
+      "height": 1146,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/668055074/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 365887523,
+      "observer": "inkasaur",
+      "photo_id": 668055074,
+      "sha256": "df0fe8ef6f098a77274f32f21a5664ca86bdaa82ffb956ccec65ee798abca1c5",
+      "source_url": "https://www.inaturalist.org/observations/365887523",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) Catherine C. Galley, some rights reserved (CC BY)",
+      "filename": "02-55307530.jpg",
+      "height": 892,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/55307530/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 35088315,
+      "observer": "catherine_g",
+      "photo_id": 55307530,
+      "sha256": "50b15fb86f78756c30ae631a95b255eabd0c0632eb09a222fe9a8284a22393b7",
+      "source_url": "https://www.inaturalist.org/observations/35088315",
+      "width": 849
+    },
+    {
+      "attribution": "no rights reserved",
+      "filename": "03-12266847.jpeg",
+      "height": 1536,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/12266847/large.jpeg",
+      "license_code": "cc0",
+      "observation_id": 9083488,
+      "observer": "reuvenm",
+      "photo_id": 12266847,
+      "sha256": "a9b664f127b4ce3766ff2538d2fe464cfdb8550fbddad53b060ce4a74b797983",
+      "source_url": "https://www.inaturalist.org/observations/9083488",
+      "width": 2048
+    },
+    {
+      "attribution": "no rights reserved",
+      "filename": "04-3663761.jpeg",
+      "height": 1365,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/3663761/large.jpeg",
+      "license_code": "cc0",
+      "observation_id": 3168339,
+      "observer": "ksherlock",
+      "photo_id": 3663761,
+      "sha256": "c6fe073e1d1515cd57aa819b5fad05e986d730b8f3818b1767ed9ee50482fe28",
+      "source_url": "http://www.inaturalist.org/observations/3168339",
+      "width": 2048
+    }
+  ],
+  "schema_version": 1,
+  "scientific_name": "Buteo jamaicensis",
+  "slug": "red-tailed-hawk",
+  "status": "approved",
+  "taxon_id": 5212
+}

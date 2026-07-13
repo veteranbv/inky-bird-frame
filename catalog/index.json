@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-13T06:18:02+00:00",
+  "generated_at": "2026-07-13T06:30:13+00:00",
   "schema_version": 1,
   "species": [
     {
@@ -617,6 +617,17 @@
       "scientific_name": "Buteo lineatus",
       "slug": "red-shouldered-hawk",
       "taxon_id": 5206
+    },
+    {
+      "approved_at": "2026-07-13T06:30:13+00:00",
+      "common_name": "Red-tailed Hawk",
+      "display_path": "species/5212-red-tailed-hawk/display.png",
+      "display_sha256": "648ad0c8e233833df3a1ec23d41370fc022533f340b63902435a768eacd348ad",
+      "portrait_path": "species/5212-red-tailed-hawk/portrait.png",
+      "portrait_sha256": "d53359ffd2e1da04c61947b7f8d234c6a2817eb74dda1df804ddbab8e1843604",
+      "scientific_name": "Buteo jamaicensis",
+      "slug": "red-tailed-hawk",
+      "taxon_id": 5212
     },
     {
       "approved_at": "2026-07-10T04:45:42+00:00",
