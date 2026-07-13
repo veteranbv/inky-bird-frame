@@ -1,0 +1,25 @@
+{
+  "anatomy_accuracy": 4,
+  "composition_quality": 5,
+  "findings": [
+    "Species identity is supported: the plate matches the reference photos and live sources in its small slim form, pale blue-gray upperparts, grayish-white underparts, fine white eye ring, thin straight dark bill, long legs, and mostly black, white-edged cocked tail.",
+    "The illustrated bird shows one head, one beak, two legs, one tail, and two wings (the far wing is occluded by the lateral pose); legs, feet, bill, eye, and feather pattern are anatomically coherent.",
+    "All visible descriptive claims are supported by the live sources: family Polioptilidae; active foliage-foraging behavior including insects and spiders; wooded, scrubby, and often moist/near-water habitats; and the listed field marks.",
+    "Measurements are substantively correct. Audubon gives 10\u201311 cm, 16 cm, and 5\u20138 g; Cornell gives 10\u201311 cm, 16 cm, and 4.8\u20138.9 g. The plate's 3.9\u20134.4 in length combines the endpoints of the two authorities (Cornell gives 3.9\u20134.3 in; Audubon gives 4.0\u20134.4 in), a minor precision inconsistency but not a material text error.",
+    "No place name, ZIP code, coordinates, map, or local-observation detail appears on the candidate plate."
+  ],
+  "location_free": true,
+  "passed": true,
+  "species_accuracy": 5,
+  "text_accuracy": 4,
+  "verification_sources": [
+    {
+      "title": "Blue-gray Gnatcatcher Identification \u2014 Cornell Lab of Ornithology",
+      "url": "https://www.allaboutbirds.org/guide/Blue-gray_Gnatcatcher/id"
+    },
+    {
+      "title": "Blue-gray Gnatcatcher \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/blue-gray-gnatcatcher"
+    }
+  ]
+}
