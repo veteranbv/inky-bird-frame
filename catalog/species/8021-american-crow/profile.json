@@ -1,0 +1,46 @@
+{
+  "behavior": "Diurnal, social omnivore that commonly forages on the ground; extended family groups may cooperate in rearing young, and large communal roosts can form outside the breeding season.",
+  "common_name": "American Crow",
+  "family": "Corvidae",
+  "field_marks": [
+    "Large, all-black corvid with a robust, moderately sized black bill.",
+    "Adult plumage is glossy black, often showing a subtle blue-violet sheen in good light.",
+    "Dark eyes, black legs, and strong black feet.",
+    "Broad wings show five conspicuous, fingered primary tips in flight.",
+    "Tail is short and square-tipped to slightly rounded, not wedge-shaped.",
+    "Usually flies with steady, methodical wingbeats."
+  ],
+  "habitat": "Adaptable in open or semi-open places with trees and reliable food, including woodlands, forest edges, fields, farmland, shorelines, wetlands, and human-modified green spaces; generally avoids extensive unbroken forest and deserts.",
+  "measurements": {
+    "length": "16\u201321 in (41\u201353 cm)",
+    "weight": "11\u201322 oz (311\u2013623 g)",
+    "wingspan": "34\u201339 in (86\u201399 cm)"
+  },
+  "palette": [
+    "glossy black",
+    "blue-black sheen",
+    "charcoal black",
+    "dark brown-black eye",
+    "slate-black legs and bill"
+  ],
+  "scientific_name": "Corvus brachyrhynchos",
+  "sources": [
+    {
+      "title": "American Crow \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/american-crow"
+    },
+    {
+      "title": "American Crow Overview \u2014 Cornell Lab of Ornithology",
+      "url": "https://www.allaboutbirds.org/guide/American_Crow"
+    },
+    {
+      "title": "American Crow Life History \u2014 Cornell Lab of Ornithology",
+      "url": "https://www.allaboutbirds.org/guide/american_crow/lifehistory"
+    },
+    {
+      "title": "Corvus brachyrhynchos \u2014 Animal Diversity Web",
+      "url": "https://animaldiversity.org/accounts/Corvus_brachyrhynchos/"
+    }
+  ],
+  "taxon_id": 8021
+}

@@ -1,0 +1,26 @@
+{
+  "anatomy_accuracy": 5,
+  "composition_quality": 5,
+  "findings": [
+    "Verified identity: American Crow (Corvus brachyrhynchos), family Corvidae.",
+    "Measurements printed on the plate exactly match Audubon: 16\u201321 in (41\u201353 cm), wingspan 34\u201339 in (86\u201399 cm), weight 11\u201322 oz (311\u2013623 g).",
+    "The illustration matches the supplied reference photos and verified field marks: all-black glossy plumage with subtle blue-violet sheen, robust black bill, dark brown-black eye, black/slate legs and strong feet, broad wing, and short square-to-slightly-rounded tail rather than a raven-like wedge.",
+    "Behavior, habitat, social-family, communal-roost, ground-foraging, and methodical-flight claims are supported by the live Cornell and Audubon pages.",
+    "No material factual, text, species, or anatomical errors found. The plate shows one head, one beak, two wings, two legs, and one tail; no extra or missing parts are visible.",
+    "No place name, ZIP code, coordinates, map, or local-observation detail appears."
+  ],
+  "location_free": true,
+  "passed": true,
+  "species_accuracy": 5,
+  "text_accuracy": 5,
+  "verification_sources": [
+    {
+      "title": "American Crow Overview \u2014 Cornell Lab of Ornithology",
+      "url": "https://www.allaboutbirds.org/guide/American_Crow/overview"
+    },
+    {
+      "title": "American Crow \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/american-crow"
+    }
+  ]
+}
