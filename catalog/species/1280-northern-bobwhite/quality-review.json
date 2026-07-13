@@ -1,0 +1,32 @@
+{
+  "anatomy_accuracy": 4,
+  "composition_quality": 5,
+  "findings": [
+    "Identity is correct: the illustrated adult male shows the diagnostic white throat and eyebrow bordered by black, chestnut/rufous mottled upperparts, scaled underparts, rounded body and very short tail seen in the supplied reference photos.",
+    "Anatomy count is correct: one head, one beak, two wings (one largely occluded), two legs, and one tail. Legs, feet, rounded wings, and short dark bill are plausible; the bill is slightly more hooked/prominent than in the photos.",
+    "All visible plate claims are supported: Colinus virginianus, Odontophoridae, male/female facial distinction, habitat, covey/ground-running/flush behavior, and the stated length and mass ranges. The listed 33\u201336 cm wingspan falls within the independently reported 33\u201338 cm range.",
+    "No place name, ZIP code, coordinates, map, or local-observation detail appears on the candidate."
+  ],
+  "location_free": true,
+  "passed": true,
+  "species_accuracy": 5,
+  "text_accuracy": 5,
+  "verification_sources": [
+    {
+      "title": "Northern Bobwhite Identification \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Northern_Bobwhite/id"
+    },
+    {
+      "title": "Northern Bobwhite \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/northern-bobwhite"
+    },
+    {
+      "title": "Northern bobwhite \u2014 Wikipedia",
+      "url": "https://en.wikipedia.org/wiki/Northern_bobwhite"
+    },
+    {
+      "title": "Colinus virginianus \u2014 Animal Diversity Web",
+      "url": "https://animaldiversity.org/accounts/Colinus_virginianus/"
+    }
+  ]
+}
