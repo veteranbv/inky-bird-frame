@@ -1,0 +1,42 @@
+{
+  "behavior": "A secretive, active foliage-gleaner that usually stays low in dense cover, searching leaves and stems for insects and spiders; males often sing from a more exposed perch.",
+  "common_name": "Common Yellowthroat",
+  "family": "Parulidae",
+  "field_marks": [
+    "Small, rounded-headed warbler with a plump belly and medium-long, slightly rounded tail.",
+    "Adult male has a broad black face mask, cleanly edged above by a narrow pale gray-white band.",
+    "Underparts are bright yellow, strongest on the throat and breast; undertail coverts are yellow.",
+    "Upperparts, wings, and tail are olive to olive-brown; wings are plain, without obvious wing bars.",
+    "Female is plainer olive-brown above with yellow on the throat and breast, and lacks the black mask.",
+    "Fine, pointed dark bill; dark eye and slender pale pinkish legs."
+  ],
+  "habitat": "Dense, low vegetation in marshes, wet thickets, scrub, brushy field edges, and similar tangled cover; also uses grasslands and open woodland with thick understory.",
+  "measurements": {
+    "length": "11\u201313 cm (4.3\u20135.1 in)",
+    "weight": "9\u201311 g (0.3\u20130.4 oz)",
+    "wingspan": "15\u201319 cm (5.9\u20137.5 in)"
+  },
+  "palette": [
+    "bright yellow",
+    "olive green",
+    "olive-brown",
+    "black",
+    "pale gray-white"
+  ],
+  "scientific_name": "Geothlypis trichas",
+  "sources": [
+    {
+      "title": "Common Yellowthroat Identification \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/common_yellowthroat/id"
+    },
+    {
+      "title": "Common Yellowthroat Life History \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Common_Yellowthroat/lifehistory"
+    },
+    {
+      "title": "Common Yellowthroat \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/common-yellowthroat"
+    }
+  ],
+  "taxon_id": 9721
+}
