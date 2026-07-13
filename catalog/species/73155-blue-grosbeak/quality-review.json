@@ -1,0 +1,25 @@
+{
+  "anatomy_accuracy": 5,
+  "composition_quality": 4,
+  "findings": [
+    "Species identity is correct: the illustrated adult male shows the diagnostic stocky/full-bodied form, very large triangular black-and-silver bill, small black facial mask, deep blue plumage, chestnut upper wingbar, paler lower wingbar, dark rounded wing, and long dark tail seen in the supplied references and verified sources.",
+    "Visible anatomy is coherent: one head, one beak, two wings (one largely occluded in the posed bird), two legs with feet, and one tail; no duplicated or malformed body parts are evident.",
+    "All substantive plate text is supported by the checked sources, including the scientific name, Cardinalidae placement, Audubon measurement ranges, habitat, behavior, bill coloration, wingbars, and female/immature coloration.",
+    "Concrete presentation issue: the decorative inch ruler omits the numeral 6 between 5 and 7. It does not create a material species or textual error.",
+    "No place name, ZIP code, coordinates, map, or local-observation detail appears on the candidate plate."
+  ],
+  "location_free": true,
+  "passed": true,
+  "species_accuracy": 5,
+  "text_accuracy": 5,
+  "verification_sources": [
+    {
+      "title": "Blue Grosbeak Identification \u2014 All About Birds, Cornell Lab of Ornithology",
+      "url": "https://www.allaboutbirds.org/guide/Blue_Grosbeak/id"
+    },
+    {
+      "title": "Blue Grosbeak \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/blue-grosbeak"
+    }
+  ]
+}

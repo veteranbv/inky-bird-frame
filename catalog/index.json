@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-13T02:45:02+00:00",
+  "generated_at": "2026-07-13T03:10:43+00:00",
   "schema_version": 1,
   "species": [
     {
@@ -67,6 +67,17 @@
       "scientific_name": "Mniotilta varia",
       "slug": "black-and-white-warbler",
       "taxon_id": 10286
+    },
+    {
+      "approved_at": "2026-07-13T03:10:43+00:00",
+      "common_name": "Blue Grosbeak",
+      "display_path": "species/73155-blue-grosbeak/display.png",
+      "display_sha256": "c066baa4f313e81e5e725a7a62d2dd9c5d5d108f514e26aaff5b8f58b1e0fd8c",
+      "portrait_path": "species/73155-blue-grosbeak/portrait.png",
+      "portrait_sha256": "d8119116fde74c73acb19f20f3d85bd888e61b760bccd378758f17e1c36140e9",
+      "scientific_name": "Passerina caerulea",
+      "slug": "blue-grosbeak",
+      "taxon_id": 73155
     },
     {
       "approved_at": "2026-07-10T04:29:43+00:00",

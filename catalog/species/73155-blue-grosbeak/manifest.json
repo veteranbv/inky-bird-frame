@@ -1,0 +1,143 @@
+{
+  "approved_at": "2026-07-13T03:10:43+00:00",
+  "assets": {
+    "display": {
+      "filename": "display.png",
+      "sha256": "c066baa4f313e81e5e725a7a62d2dd9c5d5d108f514e26aaff5b8f58b1e0fd8c"
+    },
+    "portrait": {
+      "filename": "portrait.png",
+      "sha256": "d8119116fde74c73acb19f20f3d85bd888e61b760bccd378758f17e1c36140e9"
+    }
+  },
+  "common_name": "Blue Grosbeak",
+  "generation": {
+    "attempt": 1,
+    "generated_at": "2026-07-13T03:10:43+00:00",
+    "generator": "Codex subscription / built-in gpt-image-2",
+    "max_attempts": 3,
+    "prompt_version": "field-journal-v2"
+  },
+  "profile": {
+    "behavior": "Often inconspicuous in low, shrubby cover; males give a rich warbling song from exposed perches. Forages on the ground and in low vegetation, and commonly flicks or twitches its tail sideways.",
+    "common_name": "Blue Grosbeak",
+    "family": "Cardinalidae",
+    "field_marks": [
+      "Stocky, full-bodied songbird with a very large triangular bill.",
+      "Adult male is deep blue overall, often with a small black mask before the eye.",
+      "Bill is bicolored: dark upper mandible and silvery lower mandible.",
+      "Two conspicuous wingbars, with a chestnut upper bar and paler lower bar.",
+      "Dark, rounded wings and a fairly long dark tail; tail may be flicked sideways.",
+      "Females and immature birds are warm cinnamon-brown, with wingbars and often bluish tail or scattered blue feathers."
+    ],
+    "habitat": "Semi-open, shrubby vegetation: brushy fields, hedgerows, woodland edges, young regrowth, thickets, and open weedy ground; also uses shrubby growth near water in drier landscapes.",
+    "measurements": {
+      "length": "5.9\u20137.5 in (15\u201319 cm)",
+      "weight": "0.9\u20131.1 oz (26\u201331 g)",
+      "wingspan": "11\u201312 in (28\u201330 cm)"
+    },
+    "palette": [
+      "deep cobalt blue",
+      "chestnut orange-brown",
+      "black",
+      "silvery gray",
+      "warm cinnamon-brown"
+    ],
+    "scientific_name": "Passerina caerulea",
+    "sources": [
+      {
+        "title": "Blue Grosbeak Identification \u2014 All About Birds, Cornell Lab of Ornithology",
+        "url": "https://www.allaboutbirds.org/guide/Blue_Grosbeak/id"
+      },
+      {
+        "title": "Blue Grosbeak \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/blue-grosbeak"
+      }
+    ],
+    "taxon_id": 73155
+  },
+  "quality_review": {
+    "anatomy_accuracy": 5,
+    "composition_quality": 4,
+    "findings": [
+      "Species identity is correct: the illustrated adult male shows the diagnostic stocky/full-bodied form, very large triangular black-and-silver bill, small black facial mask, deep blue plumage, chestnut upper wingbar, paler lower wingbar, dark rounded wing, and long dark tail seen in the supplied references and verified sources.",
+      "Visible anatomy is coherent: one head, one beak, two wings (one largely occluded in the posed bird), two legs with feet, and one tail; no duplicated or malformed body parts are evident.",
+      "All substantive plate text is supported by the checked sources, including the scientific name, Cardinalidae placement, Audubon measurement ranges, habitat, behavior, bill coloration, wingbars, and female/immature coloration.",
+      "Concrete presentation issue: the decorative inch ruler omits the numeral 6 between 5 and 7. It does not create a material species or textual error.",
+      "No place name, ZIP code, coordinates, map, or local-observation detail appears on the candidate plate."
+    ],
+    "location_free": true,
+    "passed": true,
+    "species_accuracy": 5,
+    "text_accuracy": 5,
+    "verification_sources": [
+      {
+        "title": "Blue Grosbeak Identification \u2014 All About Birds, Cornell Lab of Ornithology",
+        "url": "https://www.allaboutbirds.org/guide/Blue_Grosbeak/id"
+      },
+      {
+        "title": "Blue Grosbeak \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/blue-grosbeak"
+      }
+    ]
+  },
+  "references": [
+    {
+      "attribution": "(c) MarvalPhotography19, some rights reserved (CC BY)",
+      "filename": "01-257754860.jpg",
+      "height": 1638,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/257754860/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 149570574,
+      "observer": "fernandoarvizu19",
+      "photo_id": 257754860,
+      "sha256": "a8daa22df0a9b04f504f796367673fd7f43834c5f829815eb498758774de785d",
+      "source_url": "https://www.inaturalist.org/observations/149570574",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) Jonathan Eisen, some rights reserved (CC BY)",
+      "filename": "02-679190896.jpg",
+      "height": 1207,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/679190896/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 371476182,
+      "observer": "phylogenomics",
+      "photo_id": 679190896,
+      "sha256": "ca81c6ad4850387f5d60b24adf418f59f9857188d9eea4dde42977018ace4425",
+      "source_url": "https://www.inaturalist.org/observations/371476182",
+      "width": 1811
+    },
+    {
+      "attribution": "(c) Bill Levine, some rights reserved (CC BY)",
+      "filename": "03-472795990.jpeg",
+      "height": 1365,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/472795990/large.jpeg",
+      "license_code": "cc-by",
+      "observation_id": 263202151,
+      "observer": "blevine",
+      "photo_id": 472795990,
+      "sha256": "bd96f17d69e5361f4da5b327e5ce750331db20ebe9130efdbb4c3ba879f70189",
+      "source_url": "https://www.inaturalist.org/observations/263202151",
+      "width": 2048
+    },
+    {
+      "attribution": "no rights reserved",
+      "filename": "04-381683583.jpg",
+      "height": 2048,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/381683583/large.jpg",
+      "license_code": "cc0",
+      "observation_id": 215855783,
+      "observer": "polichara",
+      "photo_id": 381683583,
+      "sha256": "ab6e5f9618224d99c636895b4e93d99c4f215f091dc1637d733ab6ea96e3f84e",
+      "source_url": "https://www.inaturalist.org/observations/215855783",
+      "width": 1638
+    }
+  ],
+  "schema_version": 1,
+  "scientific_name": "Passerina caerulea",
+  "slug": "blue-grosbeak",
+  "status": "approved",
+  "taxon_id": 73155
+}
