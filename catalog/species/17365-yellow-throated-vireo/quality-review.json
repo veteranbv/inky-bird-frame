@@ -1,0 +1,23 @@
+{
+  "anatomy_accuracy": 4,
+  "composition_quality": 5,
+  "findings": [
+    "Species identity is supported by the yellow spectacles, bright yellow throat and upper breast, olive upperparts, gray rump, two white wingbars, white belly, and compact vireo form; these agree with the reference photos and verified guides.",
+    "All visible taxonomy, measurement, habitat, behavior, and field-mark claims are correct. The plate contains no place name, ZIP code, coordinates, map, or local-observation detail.",
+    "The bird is depicted with one head, one beak, two wings (one largely occluded in profile), two legs, and one tail. The bill is slightly longer and finer-looking than the stout, subtly hooked bill in the photos, but remains acceptable and is not a material identification error."
+  ],
+  "location_free": true,
+  "passed": true,
+  "species_accuracy": 4,
+  "text_accuracy": 5,
+  "verification_sources": [
+    {
+      "title": "Yellow-throated Vireo \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Yellow-throated_Vireo/overview"
+    },
+    {
+      "title": "Yellow-throated Vireo \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/yellow-throated-vireo"
+    }
+  ]
+}

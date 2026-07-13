@@ -1,0 +1,38 @@
+{
+  "behavior": "A deliberate foliage gleaner, moving slowly through tree branches to pick insects from leaves and twigs.",
+  "common_name": "Yellow-throated Vireo",
+  "family": "Vireonidae",
+  "field_marks": [
+    "Bright yellow spectacles: a complete eyering joined to yellow lores.",
+    "Unstreaked, vivid yellow throat and upper breast.",
+    "Olive-green head and upperparts with a contrasting gray rump.",
+    "Two crisp white wingbars on dark gray wings.",
+    "White belly and undertail coverts.",
+    "Small, sturdy dark bill with a subtly hooked tip."
+  ],
+  "habitat": "Open deciduous woodland and forest edges; also uses mixed deciduous forest, wooded gaps, and shrubby woodland edges.",
+  "measurements": {
+    "length": "5\u20136 in (13\u201315 cm)",
+    "weight": "0.3\u20130.4 oz (9\u201311 g)",
+    "wingspan": "8\u20139 in (20\u201323 cm)"
+  },
+  "palette": [
+    "olive green",
+    "bright yellow",
+    "slate gray",
+    "white",
+    "charcoal black"
+  ],
+  "scientific_name": "Vireo flavifrons",
+  "sources": [
+    {
+      "title": "Yellow-throated Vireo \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Yellow-throated_Vireo/overview"
+    },
+    {
+      "title": "Yellow-throated Vireo \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/yellow-throated-vireo"
+    }
+  ],
+  "taxon_id": 17365
+}
