@@ -1,6 +1,16 @@
 name: publish controller container
 
 on:
+  workflow_run:
+    workflows:
+      - ci
+    types:
+      - completed
+    branches:
+      - main
+  release:
+    types:
+      - published
   workflow_dispatch:
     inputs:
       tag:
@@ -11,35 +21,83 @@ on:
 
 permissions:
   contents: read
-  packages: write
 
 concurrency:
-  group: controller-container-publish
+  group: controller-container-publish-${{ github.ref }}
   cancel-in-progress: false
 
 jobs:
   publish:
-    if: github.actor == github.repository_owner && github.ref == 'refs/heads/main'
+    if: >-
+      (github.event_name == 'workflow_run' &&
+       github.event.workflow_run.conclusion == 'success' &&
+       github.event.workflow_run.event == 'push' &&
+       github.event.workflow_run.head_branch == 'main') ||
+      (github.event_name == 'release' && github.actor == github.repository_owner) ||
+      (github.event_name == 'workflow_dispatch' &&
+       github.actor == github.repository_owner && github.ref == 'refs/heads/main')
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    outputs:
+      version: ${{ steps.image.outputs.version }}
     steps:
       - name: Checkout trusted main revision
         uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
         with:
+          ref: ${{ github.event_name == 'workflow_run' && github.event.workflow_run.head_sha || github.ref }}
           persist-credentials: false
 
       - name: Validate image tag
         id: image
         env:
-          REQUESTED_TAG: ${{ inputs.tag }}
+          EVENT_NAME: ${{ github.event_name }}
           REPOSITORY: ${{ github.repository }}
+          REQUESTED_TAG: ${{ inputs.tag }}
+          SOURCE_SHA: ${{ github.event_name == 'workflow_run' && github.event.workflow_run.head_sha || github.sha }}
         run: |
           set -euo pipefail
-          if [[ ! "$REQUESTED_TAG" =~ ^[A-Za-z0-9_][A-Za-z0-9_.-]{0,127}$ ]]; then
-            echo "Invalid container tag" >&2
-            exit 1
-          fi
-          echo "name=ghcr.io/${REPOSITORY}:${REQUESTED_TAG}" >> "$GITHUB_OUTPUT"
-          echo "created=$(git show --no-patch --format=%cI "$GITHUB_SHA")" >> "$GITHUB_OUTPUT"
+          image="ghcr.io/${REPOSITORY}"
+          version=""
+          {
+            echo 'tags<<EOF'
+            case "$EVENT_NAME" in
+              workflow_run)
+                echo "${image}:sha-${SOURCE_SHA}"
+                git fetch --no-tags --depth=1 origin \
+                  refs/heads/main:refs/remotes/origin/main
+                if [ "$(git rev-parse refs/remotes/origin/main)" = "$SOURCE_SHA" ]; then
+                  echo "${image}:latest"
+                else
+                  echo "Skipping latest tag because ${SOURCE_SHA} is no longer current main." >&2
+                fi
+                ;;
+              release)
+                if [[ ! "$GITHUB_REF_NAME" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+                  echo "Release tag must use vMAJOR.MINOR.PATCH" >&2
+                  exit 1
+                fi
+                version="${GITHUB_REF_NAME#v}"
+                echo "${image}:${version}"
+                ;;
+              workflow_dispatch)
+                if [[ ! "$REQUESTED_TAG" =~ ^[A-Za-z0-9_][A-Za-z0-9_.-]{0,127}$ ]]; then
+                  echo "Invalid container tag" >&2
+                  exit 1
+                fi
+                echo "${image}:${REQUESTED_TAG}"
+                ;;
+              *)
+                echo "Unsupported event: ${EVENT_NAME}" >&2
+                exit 1
+                ;;
+            esac
+            echo 'EOF'
+            echo "version=${version}"
+            echo "source_sha=${SOURCE_SHA}"
+          } >> "$GITHUB_OUTPUT"
+          echo "created=$(git show --no-patch --format=%cI "$SOURCE_SHA")" >> "$GITHUB_OUTPUT"
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@c7c53464625b32c7a7e944ae62b3e17d2b600130 # v3
@@ -60,9 +118,52 @@ jobs:
           context: .
           platforms: linux/amd64,linux/arm64
           push: true
-          tags: ${{ steps.image.outputs.name }}
+          tags: ${{ steps.image.outputs.tags }}
           build-args: |
-            VCS_REF=${{ github.sha }}
+            VCS_REF=${{ steps.image.outputs.source_sha }}
             BUILD_DATE=${{ steps.image.outputs.created }}
           provenance: mode=max
           sbom: true
+
+  release-bundle:
+    if: github.event_name == 'release'
+    needs: publish
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout released revision
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+        with:
+          persist-credentials: false
+
+      - name: Build Docker deployment bundle
+        env:
+          REPOSITORY: ${{ github.repository }}
+          VERSION: ${{ needs.publish.outputs.version }}
+        run: |
+          set -euo pipefail
+          test -n "$VERSION"
+          bundle="inky-bird-frame-docker"
+          mkdir -p "${bundle}/deploy/apparmor"
+          install -m 0644 compose.yaml "${bundle}/compose.yaml"
+          install -m 0644 config.example.toml "${bundle}/config.example.toml"
+          install -m 0644 controller.env.example "${bundle}/controller.env.example"
+          install -m 0644 deploy/apparmor/inky-bird-frame-codex \
+            "${bundle}/deploy/apparmor/inky-bird-frame-codex"
+          printf 'INKY_BIRD_IMAGE=ghcr.io/%s:%s\n' "$REPOSITORY" "$VERSION" \
+            > "${bundle}/.env.example"
+          printf '%s\n' \
+            "Docker installation: https://github.com/${REPOSITORY}/blob/v${VERSION}/docs/docker.md" \
+            > "${bundle}/README.txt"
+          tar -czf "${bundle}.tar.gz" "$bundle"
+          sha256sum "${bundle}.tar.gz" > "${bundle}.tar.gz.sha256"
+
+      - name: Attach Docker deployment bundle
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release upload "$GITHUB_REF_NAME" \
+            inky-bird-frame-docker.tar.gz \
+            inky-bird-frame-docker.tar.gz.sha256 \
+            --clobber

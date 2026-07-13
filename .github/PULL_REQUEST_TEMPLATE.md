@@ -28,7 +28,7 @@ Delete this section when the pull request does not add a bird plate.
 
 - Common name:
 - Scientific name:
-- eBird taxon ID:
+- iNaturalist taxon ID:
 - [ ] The plate was produced and approved through the project pipeline.
 - [ ] I ran `inky-bird-frame catalog prepare` rather than hand-editing catalog JSON.
 - [ ] The manifest records factual sources, reference provenance, generation details, and independent review.

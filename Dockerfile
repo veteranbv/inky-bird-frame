@@ -65,7 +65,7 @@ COPY --chown=10001:10001 catalog /app/catalog
 RUN mkdir -p \
       /data/catalog/species \
       /data/public-catalog \
-      /data/state \
+      /data/var/controller \
       /data/workspace \
       /home/inky/.codex \
       /home/inky/.config/git \

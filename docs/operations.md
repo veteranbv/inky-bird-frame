@@ -21,15 +21,16 @@ and subscription-backed generation:
 | `schedule.rotation_minutes` | `30` | A calm starting cadence for an e-paper display. |
 | `display_node.rotation_mode` | `"shuffle_bag"` | Shows every active bird once before repeating. |
 
-These are operating recommendations, not service limits. A controller configured
-to generate more frequently should raise `max_searches_per_day` intentionally;
-cached profiles do not consume the budget again. Use `seed` for a broad historical
-catalog instead of making the active observation window permanently broad.
+These are starting points, not service limits. If the controller generates more
+often, review and raise `max_searches_per_day` to match. Cached profiles do not
+consume the budget again. Use `seed` for a broad historical catalog instead of
+making the active observation window permanently broad.
 
 The controller's `workspace_dir` must be writable because the Codex image tool
-copies its final image there. `catalog_dir` and `state_dir` must persist across
-deployments. `codex_path` must point to a Codex CLI whose `login status` reports
-a ChatGPT-authenticated session.
+copies its final image there. Keep it separate from configuration, catalog, and
+state; the example uses a dedicated `workspace` directory. `catalog_dir` and
+`state_dir` must persist across deployments. `codex_path` must point to a Codex
+CLI whose `login status` reports a ChatGPT-authenticated session.
 
 Schedules are configured in `[schedule]`. Conservative starting values are:
 
@@ -43,7 +44,7 @@ The refresh command does not invoke Codex. `generation_minutes`,
 `generations_per_cycle`, and `max_generation_attempts` jointly bound
 subscription use. If generation takes longer than its interval, the service
 manager does not start a second copy and the generation lock also rejects
-manual overlap. Only a candidate that passes the independent AI review is
+manual overlap. Only a candidate that passes the independent Codex review is
 published.
 
 `max_species_attempts_per_cycle` is a separate queue scan cap. A transiently

@@ -29,6 +29,16 @@ Run the application from the managed environment:
 uv run inky-bird-frame --help
 ```
 
+To test the controller container built from your checkout, add the source-build
+override explicitly:
+
+```bash
+docker compose -f compose.yaml -f compose.build.yaml build --pull
+```
+
+The default `compose.yaml` pulls the published image and is the normal user
+path. It never builds local source by itself.
+
 Private controller configuration is not required for unit tests or catalog
 validation. Never commit a real `config.toml`, notification destination,
 observation snapshot, downloaded reference image, generated run directory, or
@@ -84,7 +94,7 @@ one new taxon; it must not edit or replace an approved taxon.
 
 ### Generate and prepare a plate
 
-Generate and approve the plate using your own controller and AI account. Then,
+Generate and approve the plate using your own controller and Codex account. Then,
 from a checkout of your fork, copy exactly one approved taxon into the public
 catalog:
 

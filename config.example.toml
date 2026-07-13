@@ -24,7 +24,8 @@ window = "last-30-days"
 # birdweather_token_env = "BIRDWEATHER_TOKEN"
 
 [controller]
-workspace_dir = "."
+# Keep Codex's writable workspace separate from configuration, catalog, and state.
+workspace_dir = "workspace"
 catalog_dir = "catalog"
 state_dir = "var/controller"
 # Use an absolute path when a service manager does not inherit your shell PATH.

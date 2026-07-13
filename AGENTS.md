@@ -49,4 +49,6 @@ uv run inky-bird-frame catalog validate --catalog catalog
 - Public pull requests run only on GitHub-hosted runners.
 - Deployment is manual, owner-gated, and runs only from `main` on the trusted
   controller runner.
+- Container publication runs only from trusted `main`, a repository release,
+  or an owner-started workflow. Pull requests never publish packages.
 - Never expose or copy a ChatGPT/Codex login into GitHub Actions.
