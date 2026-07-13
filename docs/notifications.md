@@ -61,10 +61,13 @@ Each destination has its own `events` list:
 | `display_recovered` | Display catalog fetches resume after a `display_stale` notice |
 
 The controller's HTTP server records the display's most recent catalog fetch
-in `display-last-fetch.json` under `state_dir`. The notifications cycle raises
-`display_stale` when no fetch has been seen for three times
-`schedule.rotation_minutes`, with a minimum of 60 minutes, and sends
-`display_recovered` once fetches resume.
+in `display-last-fetch.json` and, when the display reports a completed update
+through `GET /v1/display-success`, the completion time in
+`display-last-success.json`, both under `state_dir`. The notifications cycle
+prefers the completed-update signal, so a node that still fetches the catalog
+but can no longer drive the panel is detected. It raises `display_stale` when
+no signal has been seen for three times `schedule.rotation_minutes`, with a
+minimum of 60 minutes, and sends `display_recovered` once updates resume.
 
 Routine successes do not notify. Transient failures notify only after
 `degradation_failure_threshold` consecutive failures or

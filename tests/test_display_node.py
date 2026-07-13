@@ -147,6 +147,45 @@ class DisplayNodeTests(unittest.TestCase):
             self.assertFalse(state_path.exists())
         show_on_inky.assert_not_called()
 
+    def test_successful_cycle_reports_display_success(self) -> None:
+        payload = catalog_payload({1: b"one"})
+        requested: list[str] = []
+
+        def fake_get_json(url: str, timeout: float) -> object:
+            requested.append(url)
+            return payload if url.endswith("/v1/catalog") else {"ok": True}
+
+        with TemporaryDirectory() as temporary:
+            config = DisplayNodeConfig("http://controller.test", Path(temporary))
+            with (
+                patch("inky_bird_frame.display_node.get_json", side_effect=fake_get_json),
+                patch("inky_bird_frame.display_node.get_bytes", return_value=b"one"),
+                patch("inky_bird_frame.display_node.show_on_inky", return_value=(1600, 1200)),
+            ):
+                run_display_cycle(config)
+
+        self.assertEqual(requested[-1], "http://controller.test/v1/display-success")
+
+    def test_failed_cycle_does_not_report_display_success(self) -> None:
+        payload = catalog_payload({1: b"one"})
+        requested: list[str] = []
+
+        def fake_get_json(url: str, timeout: float) -> object:
+            requested.append(url)
+            return payload
+
+        with TemporaryDirectory() as temporary:
+            config = DisplayNodeConfig("http://controller.test", Path(temporary))
+            with (
+                patch("inky_bird_frame.display_node.get_json", side_effect=fake_get_json),
+                patch("inky_bird_frame.display_node.get_bytes", return_value=b"tampered"),
+                patch("inky_bird_frame.display_node.show_on_inky"),
+                self.assertRaisesRegex(CatalogError, "checksum mismatch"),
+            ):
+                run_display_cycle(config)
+
+        self.assertEqual([url for url in requested if url.endswith("/v1/display-success")], [])
+
     def test_successful_cycle_evicts_stale_cache_for_same_taxon_only(self) -> None:
         images = {1: b"one"}
         payload = catalog_payload(images)

@@ -135,7 +135,10 @@ def test_macos_controller_uninstaller_removes_agents_and_preserves_data() -> Non
     ).read_text()
 
     assert "set -euo pipefail" in script
-    assert "for label in serve refresh generate catalog-publish notifications; do" in script
+    assert (
+        "for label in serve refresh generate catalog-publish notifications controller-cycle; do"
+        in script
+    )
     assert 'launchctl bootout "gui/${uid}/${agent}"' in script
     assert 'rm -f "${plist}"' in script
     assert "Intentionally left in place:" in script

@@ -17,7 +17,7 @@ from urllib.parse import quote
 from .catalog import CatalogEntry
 from .config import DisplayNodeConfig, RotationMode
 from .display import show_on_inky
-from .errors import CatalogError
+from .errors import CatalogError, DataSourceError
 from .http import get_bytes, get_json, write_bytes_atomic, write_json_atomic
 from .selection import select_catalog_entry, select_shuffle_bag_entry
 from .timeutil import parse_utc_timestamp
@@ -288,6 +288,12 @@ def _evict_stale_cache_entries(current_image_path: Path, taxon_id: int) -> None:
                 stale.unlink(missing_ok=True)
 
 
+def _report_display_success(controller_url: str) -> None:
+    # Best-effort: the update already succeeded; an older controller returns 404.
+    with suppress(DataSourceError):
+        get_json(f"{controller_url}/v1/display-success", 10.0)
+
+
 def run_display_cycle(
     config: DisplayNodeConfig,
     *,
@@ -371,6 +377,7 @@ def run_display_cycle(
                 last_prioritized_detection_at=prioritized_at,
                 prioritized_detection_taxa=prioritized_taxa,
             )
+            _report_display_success(config.controller_url)
             return {
                 "display_update": "unchanged",
                 "taxon_id": selected.taxon_id,
@@ -400,6 +407,7 @@ def run_display_cycle(
             prioritized_detection_taxa=prioritized_taxa,
         )
         _evict_stale_cache_entries(image_path, selected.taxon_id)
+        _report_display_success(config.controller_url)
         return {
             "display_update": "sent",
             "taxon_id": selected.taxon_id,

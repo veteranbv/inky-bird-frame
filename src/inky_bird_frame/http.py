@@ -77,6 +77,21 @@ def get_bytes(url: str, timeout_seconds: float = 30.0) -> bytes:
         raise DataSourceError(f"Timed out reading {url}") from exc
 
 
+def _fsync_directory(directory: Path) -> None:
+    # Rename durability needs the parent directory synced; skip filesystems
+    # that cannot fsync a directory handle rather than failing the write.
+    try:
+        fd = os.open(directory, os.O_RDONLY)
+    except OSError:
+        return
+    try:
+        os.fsync(fd)
+    except OSError:
+        pass
+    finally:
+        os.close(fd)
+
+
 def write_bytes_atomic(path: Path, content: bytes) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     with NamedTemporaryFile(
@@ -92,6 +107,7 @@ def write_bytes_atomic(path: Path, content: bytes) -> None:
         temporary = Path(handle.name)
     try:
         temporary.replace(path)
+        _fsync_directory(path.parent)
     finally:
         temporary.unlink(missing_ok=True)
 

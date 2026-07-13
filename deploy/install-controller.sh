@@ -52,12 +52,11 @@ restore_previous_agent() {
   local label=$1
   local plist="${agents_dir}/com.inky-bird-frame.${label}.plist"
   local backup="${plist_backup_dir}/com.inky-bird-frame.${label}.plist"
-  if launchctl print "gui/${uid}/com.inky-bird-frame.${label}" >/dev/null 2>&1; then
-    return 0
-  fi
   if [ ! -f "${backup}" ]; then
     return 0
   fi
+  # A loaded label here is the failed replacement; put the saved agent back.
+  launchctl bootout "gui/${uid}/com.inky-bird-frame.${label}" 2>/dev/null || true
   cp "${backup}" "${plist}" || return 0
   if [ "${label}" = "catalog-publish" ]; then
     restore_catalog_publisher_schedule "${uid}" || true

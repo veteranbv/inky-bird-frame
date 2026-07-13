@@ -282,37 +282,62 @@ def clear_catalog_staging(catalog_dir: Path, name: str | None = None) -> None:
         shutil.rmtree(target)
 
 
-def _asset_checksums(manifest: dict[str, object]) -> tuple[str, str] | None:
+def _asset_manifest_entries(
+    manifest: dict[str, object],
+) -> tuple[tuple[str, str], tuple[str, str]] | None:
     assets = manifest.get("assets")
     if not isinstance(assets, dict):
         return None
-    portrait = assets.get("portrait")
-    display = assets.get("display")
-    if not isinstance(portrait, dict) or not isinstance(display, dict):
-        return None
-    portrait_hash = portrait.get("sha256")
-    display_hash = display.get("sha256")
-    if not isinstance(portrait_hash, str) or not isinstance(display_hash, str):
-        return None
-    return portrait_hash, display_hash
+    entries: list[tuple[str, str]] = []
+    for name in ("portrait", "display"):
+        asset = assets.get(name)
+        if not isinstance(asset, dict):
+            return None
+        filename = asset.get("filename")
+        digest = asset.get("sha256")
+        if not isinstance(filename, str) or not isinstance(digest, str):
+            return None
+        entries.append((filename, digest))
+    return entries[0], entries[1]
 
 
-def _is_completed_approval(manifest: dict[str, object], destination: Path) -> bool:
+def _asset_checksums(manifest: dict[str, object]) -> tuple[str, str] | None:
+    entries = _asset_manifest_entries(manifest)
+    if entries is None:
+        return None
+    return entries[0][1], entries[1][1]
+
+
+def _existing_destination_manifest(destination: Path) -> dict[str, object] | None:
     existing_path = destination / "manifest.json"
     if not existing_path.is_file():
-        return False
+        return None
     try:
         existing = read_json(existing_path)
     except CatalogError:
-        return False
+        return None
+    return existing if isinstance(existing, dict) else None
+
+
+def _same_candidate(manifest: dict[str, object], existing: dict[str, object]) -> bool:
     checksums = _asset_checksums(manifest)
     return (
-        isinstance(existing, dict)
-        and existing.get("status") == "approved"
+        existing.get("status") == "approved"
         and existing.get("taxon_id") == manifest.get("taxon_id")
         and checksums is not None
         and _asset_checksums(existing) == checksums
     )
+
+
+def _destination_assets_intact(existing: dict[str, object], destination: Path) -> bool:
+    entries = _asset_manifest_entries(existing)
+    if entries is None:
+        return False
+    for filename, digest in entries:
+        asset_path = destination / filename
+        if not asset_path.is_file() or sha256_file(asset_path) != digest:
+            return False
+    return True
 
 
 def approve_candidate(state_dir: Path, catalog_dir: Path, taxon_id: int) -> CatalogEntry:
@@ -333,13 +358,17 @@ def approve_candidate(state_dir: Path, catalog_dir: Path, taxon_id: int) -> Cata
     destination = catalog_dir / "species" / f"{taxon_id}-{slug}"
     clear_catalog_staging(catalog_dir, destination.name)
     if destination.exists():
-        if not _is_completed_approval(manifest, destination):
+        existing = _existing_destination_manifest(destination)
+        if existing is None or not _same_candidate(manifest, existing):
             raise CatalogError(
                 f"Taxon {taxon_id} is already approved; use an explicit replacement workflow"
             )
-        shutil.rmtree(source)
-        entries = rebuild_catalog_index(catalog_dir)
-        return next(entry for entry in entries if entry.taxon_id == taxon_id)
+        if _destination_assets_intact(existing, destination):
+            shutil.rmtree(source)
+            entries = rebuild_catalog_index(catalog_dir)
+            return next(entry for entry in entries if entry.taxon_id == taxon_id)
+        # Same candidate but an incomplete copy: discard it and approve again.
+        shutil.rmtree(destination)
 
     approved_manifest = dict(manifest)
     approved_manifest["status"] = "approved"

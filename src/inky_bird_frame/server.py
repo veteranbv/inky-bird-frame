@@ -79,6 +79,14 @@ class CatalogRequestHandler(BaseHTTPRequestHandler):
                     {"schema_version": 1, "fetched_at": utc_now()},
                 )
             return
+        if request_path == "/v1/display-success":
+            self._send_json(HTTPStatus.OK, {"ok": True, "schema_version": 1})
+            with suppress(OSError):
+                write_json_atomic(
+                    self.state_dir / "display-last-success.json",
+                    {"schema_version": 1, "succeeded_at": utc_now()},
+                )
+            return
         prefix = "/v1/assets/"
         if request_path.startswith(prefix):
             relative = Path(unquote(request_path.removeprefix(prefix)))

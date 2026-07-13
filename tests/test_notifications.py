@@ -402,6 +402,71 @@ class DisplayHeartbeatTests(unittest.TestCase):
             json.dumps({"schema_version": 1, "fetched_at": fetched_at.isoformat()})
         )
 
+    def _write_success(self, config: AppConfig, succeeded_at: datetime) -> None:
+        config.controller.state_dir.mkdir(parents=True, exist_ok=True)
+        (config.controller.state_dir / "display-last-success.json").write_text(
+            json.dumps({"schema_version": 1, "succeeded_at": succeeded_at.isoformat()})
+        )
+
+    def test_stale_display_updates_alert_despite_fresh_fetches(self) -> None:
+        now = datetime(2026, 7, 10, tzinfo=UTC)
+        with TemporaryDirectory() as temporary:
+            config = self._config(temporary)
+            self._write_heartbeat(config, now - timedelta(minutes=5))
+            self._write_success(config, now - timedelta(minutes=200))
+            with patch(
+                "inky_bird_frame.notifications.safe_notify",
+                return_value={"queued": True},
+            ) as notify:
+                result = check_display_heartbeat(config, now=now)
+
+        self.assertTrue(result["stale"])
+        self.assertEqual(result["signal"], "display-update")
+        self.assertIs(notify.call_args.args[1], NotificationEvent.DISPLAY_STALE)
+
+    def test_fresh_display_update_overrides_stale_fetch_signal(self) -> None:
+        now = datetime(2026, 7, 10, tzinfo=UTC)
+        with TemporaryDirectory() as temporary:
+            config = self._config(temporary)
+            self._write_heartbeat(config, now - timedelta(minutes=200))
+            self._write_success(config, now - timedelta(minutes=10))
+            with patch("inky_bird_frame.notifications.safe_notify") as notify:
+                result = check_display_heartbeat(config, now=now)
+
+        self.assertFalse(result["stale"])
+        self.assertEqual(result["signal"], "display-update")
+        notify.assert_not_called()
+
+    def test_corrupt_success_file_falls_back_to_fetch_signal(self) -> None:
+        now = datetime(2026, 7, 10, tzinfo=UTC)
+        with TemporaryDirectory() as temporary:
+            config = self._config(temporary)
+            self._write_heartbeat(config, now - timedelta(minutes=10))
+            config.controller.state_dir.mkdir(parents=True, exist_ok=True)
+            (config.controller.state_dir / "display-last-success.json").write_bytes(
+                b'{"schema_version": 1, "succeeded_at": "2026-07-10T\xff'
+            )
+            with patch("inky_bird_frame.notifications.safe_notify") as notify:
+                result = check_display_heartbeat(config, now=now)
+
+        self.assertFalse(result["stale"])
+        self.assertEqual(result["signal"], "catalog-fetch")
+        self.assertIn("warning", result)
+        notify.assert_not_called()
+
+    def test_non_utf8_heartbeat_is_reported_not_fatal(self) -> None:
+        now = datetime(2026, 7, 10, tzinfo=UTC)
+        with TemporaryDirectory() as temporary:
+            config = self._config(temporary)
+            config.controller.state_dir.mkdir(parents=True, exist_ok=True)
+            (config.controller.state_dir / "display-last-fetch.json").write_bytes(
+                b'{"schema_version": 1, "fetched_at": "2026-\xff\xfe'
+            )
+            result = check_display_heartbeat(config, now=now)
+
+        self.assertFalse(result["checked"])
+        self.assertIn("warning", result)
+
     def test_fresh_heartbeat_does_not_alert(self) -> None:
         now = datetime(2026, 7, 10, tzinfo=UTC)
         with TemporaryDirectory() as temporary:

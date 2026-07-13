@@ -68,6 +68,18 @@ class ServerTests(unittest.TestCase):
         self.assertEqual(status, 200)
         self.assertEqual(headers.get("Cache-Control"), "no-store")
 
+    def test_display_success_report_is_recorded(self) -> None:
+        with self._environment() as (_, catalog_dir, state_dir):
+            with _serving(catalog_dir, state_dir / "active-catalog.json", state_dir) as port:
+                status, _, body = _get(port, "/v1/display-success")
+
+            recorded = json.loads((state_dir / "display-last-success.json").read_text())
+
+        self.assertEqual(status, 200)
+        self.assertTrue(json.loads(body)["ok"])
+        self.assertEqual(recorded["schema_version"], 1)
+        self.assertIn("succeeded_at", recorded)
+
     def test_asset_is_served_with_png_content_type(self) -> None:
         with self._environment() as (_, catalog_dir, state_dir):
             asset = catalog_dir / "species" / "1-robin" / "portrait.png"

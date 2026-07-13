@@ -12,7 +12,8 @@ config_path=${INKY_BIRD_CONFIG_PATH:-"${support_dir}/config.toml"}
 agents_dir="${HOME}/Library/LaunchAgents"
 uid=$(id -u)
 
-for label in serve refresh generate catalog-publish notifications; do
+# controller-cycle is the legacy single-agent layout replaced by the labels below.
+for label in serve refresh generate catalog-publish notifications controller-cycle; do
   agent="com.inky-bird-frame.${label}"
   plist="${agents_dir}/${agent}.plist"
   if launchctl print "gui/${uid}/${agent}" >/dev/null 2>&1; then

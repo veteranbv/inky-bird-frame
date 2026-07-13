@@ -63,8 +63,10 @@ The controller also exposes a read-only HTTP catalog:
 `/health` reports approved and active species counts from the last built
 catalog index and never rebuilds it, so a health check answers cheaply at any
 catalog size. The server also records the time of the last `/v1/catalog`
-fetch in `display-last-fetch.json` under `state_dir`; the notifications cycle
-uses it to raise the display-staleness events described in
+fetch in `display-last-fetch.json` and of the last display-reported completed
+update (`GET /v1/display-success`) in `display-last-success.json`, both under
+`state_dir`; the notifications cycle uses them to raise the display-staleness
+events described in
 [`notifications.md`](notifications.md#events-and-noise-controls).
 
 Native installations use launchd or systemd to schedule the controller's
