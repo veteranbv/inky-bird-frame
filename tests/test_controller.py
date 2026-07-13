@@ -17,7 +17,7 @@ from inky_bird_frame.birds import (
 )
 from inky_bird_frame.catalog import CatalogEntry, candidate_directory, write_candidate_manifest
 from inky_bird_frame.codex_runner import CodexRunner
-from inky_bird_frame.config import DiscoverySource, load_config
+from inky_bird_frame.config import DiscoveryProvider, load_config
 from inky_bird_frame.controller import (
     DiscoveryResult,
     DiscoverySnapshot,
@@ -1099,7 +1099,7 @@ class DiscoveryProviderTests(unittest.TestCase):
                     return_value=EbirdResolution([resolved], []),
                 ),
             ):
-                result = discover_species(config, source=DiscoverySource.EBIRD)
+                result = discover_species(config, sources=(DiscoveryProvider.EBIRD,))
 
         self.assertEqual(result.species, [resolved])
         self.assertEqual(fetch.call_args.kwargs["api_key"], "secret")

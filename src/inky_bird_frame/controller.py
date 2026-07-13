@@ -39,7 +39,7 @@ from .catalog import (
     write_json_atomic,
 )
 from .codex_runner import CodexRunner, parse_species_profile
-from .config import AppConfig, DiscoverySource
+from .config import AppConfig, DiscoveryProvider, discovery_source_label
 from .errors import (
     CatalogError,
     DataSourceError,
@@ -126,24 +126,24 @@ def exclusive_refresh_lock(state_dir: Path) -> Iterator[None]:
 def discover_species(
     config: AppConfig,
     *,
-    source: DiscoverySource | None = None,
+    sources: tuple[DiscoveryProvider, ...] | None = None,
     window: ObservationWindow | None = None,
     radius_km: int | None = None,
     species_limit: int | None = None,
     persist_taxonomy_cache: bool = True,
 ) -> DiscoveryResult:
-    selected_source = source or config.discovery.source
+    selected_sources = sources or config.discovery.sources
     selected_window = window or config.discovery.observation_window
     selected_radius = radius_km if radius_km is not None else config.discovery.radius_km
     selected_limit = species_limit if species_limit is not None else config.discovery.species_limit
-    if selected_source.uses_ebird:
+    if DiscoveryProvider.EBIRD in selected_sources:
         if selected_window in {ObservationWindow.LAST_YEAR, ObservationWindow.ALL_TIME}:
             raise ValueError("eBird discovery supports observation windows up to 30 days")
         if not 0 < selected_radius <= 50:
             raise ValueError("eBird discovery radius_km must be between 1 and 50")
         if not 0 < selected_limit <= 10_000:
             raise ValueError("eBird species_limit must be between 1 and 10000")
-    if selected_source.uses_birdweather and not 0 < selected_limit <= 100:
+    if DiscoveryProvider.BIRDWEATHER in selected_sources and not 0 < selected_limit <= 100:
         raise ValueError("BirdWeather species_limit must be between 1 and 100")
     providers: list[ProviderStatus] = []
     provider_species: list[list[BirdSpecies]] = []
@@ -151,13 +151,9 @@ def discover_species(
     location: ZipLocation | None = None
 
     location_provider_names: list[str] = []
-    if selected_source in {
-        DiscoverySource.INATURALIST,
-        DiscoverySource.COMBINED,
-        DiscoverySource.ALL,
-    }:
+    if DiscoveryProvider.INATURALIST in selected_sources:
         location_provider_names.append("inaturalist")
-    if selected_source in {DiscoverySource.EBIRD, DiscoverySource.COMBINED, DiscoverySource.ALL}:
+    if DiscoveryProvider.EBIRD in selected_sources:
         location_provider_names.append("ebird")
     if location_provider_names:
         try:
@@ -168,11 +164,7 @@ def discover_species(
                 for name in location_provider_names
             )
 
-    if location is not None and selected_source in {
-        DiscoverySource.INATURALIST,
-        DiscoverySource.COMBINED,
-        DiscoverySource.ALL,
-    }:
+    if location is not None and DiscoveryProvider.INATURALIST in selected_sources:
         try:
             inaturalist = fetch_inaturalist_birds(
                 latitude=location.latitude,
@@ -187,11 +179,7 @@ def discover_species(
             provider_species.append(inaturalist)
             providers.append(ProviderStatus("inaturalist", "ok", len(inaturalist)))
 
-    if location is not None and selected_source in {
-        DiscoverySource.EBIRD,
-        DiscoverySource.COMBINED,
-        DiscoverySource.ALL,
-    }:
+    if location is not None and DiscoveryProvider.EBIRD in selected_sources:
         try:
             api_key = config.discovery.ebird_api_key
             if api_key is None and config.discovery.ebird_api_key_env is not None:
@@ -237,7 +225,7 @@ def discover_species(
                     )
                 )
 
-    if selected_source in {DiscoverySource.BIRDWEATHER, DiscoverySource.ALL}:
+    if DiscoveryProvider.BIRDWEATHER in selected_sources:
         try:
             token = config.discovery.birdweather_token
             if token is None and config.discovery.birdweather_token_env is not None:
@@ -286,7 +274,7 @@ def discover_species(
         )
         raise DataSourceError(f"All configured observation providers failed: {failures}")
     species = _merge_provider_species(provider_species)
-    if selected_source in {DiscoverySource.COMBINED, DiscoverySource.ALL}:
+    if len(selected_sources) > 1:
         species.sort(key=lambda item: (item.common_name.casefold(), item.taxon_id))
     return DiscoveryResult(location, species, providers, unresolved)
 
@@ -423,7 +411,7 @@ def enqueue_seed_species(
     config: AppConfig,
     *,
     window: ObservationWindow,
-    source: DiscoverySource | None = None,
+    sources: tuple[DiscoveryProvider, ...] | None = None,
     radius_km: int | None = None,
     species_limit: int | None = None,
     dry_run: bool = False,
@@ -439,7 +427,7 @@ def enqueue_seed_species(
     with cycle_lock:
         discovery = discover_species(
             config,
-            source=source,
+            sources=sources,
             window=window,
             radius_km=radius,
             species_limit=limit,
@@ -469,7 +457,8 @@ def enqueue_seed_species(
 
     return {
         "window": window.value,
-        "source": (source or config.discovery.source).value,
+        "source": discovery_source_label(sources or config.discovery.sources),
+        "sources": [provider.value for provider in (sources or config.discovery.sources)],
         "radius_km": radius,
         "species_limit": limit,
         "discovered_count": len(discovered),
@@ -541,7 +530,8 @@ def run_refresh_cycle(config: AppConfig) -> dict[str, object]:
         "state": state,
         "window": config.discovery.observation_window.value,
         "radius_km": config.discovery.radius_km,
-        "source": config.discovery.source.value,
+        "source": discovery_source_label(config.discovery.sources),
+        "sources": [provider.value for provider in config.discovery.sources],
         "providers": [provider.as_dict() for provider in discovery.providers],
         "unresolved_species": [
             _unresolved_species_payload(species) for species in discovery.unresolved

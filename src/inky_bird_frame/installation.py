@@ -14,7 +14,7 @@ from enum import StrEnum
 from pathlib import Path
 from urllib.parse import urlsplit, urlunsplit
 
-from .config import AppConfig, load_config
+from .config import AppConfig, DiscoveryProvider, load_config
 from .errors import ConfigurationError, InkyBirdFrameError, InstallationError
 from .http import get_json
 
@@ -626,10 +626,13 @@ def setup(
     config = load_config(config_path)
     if role is InstallationRole.CONTROLLER:
         environment_credentials: list[str] = []
-        if config.discovery.source.uses_ebird and config.discovery.ebird_api_key_env is not None:
+        if (
+            DiscoveryProvider.EBIRD in config.discovery.sources
+            and config.discovery.ebird_api_key_env is not None
+        ):
             environment_credentials.append("ebird_api_key_env")
         if (
-            config.discovery.source.uses_birdweather
+            DiscoveryProvider.BIRDWEATHER in config.discovery.sources
             and config.discovery.birdweather_token_env is not None
         ):
             environment_credentials.append("birdweather_token_env")

@@ -88,7 +88,7 @@ import sys
 from pathlib import Path
 
 from inky_bird_frame.catalog import catalog_state_lock
-from inky_bird_frame.config import load_config
+from inky_bird_frame.config import DiscoveryProvider, load_config
 from inky_bird_frame.errors import ConfigurationError
 from inky_bird_frame.installation import controller_systemd_units
 from inky_bird_frame.publisher import sync_public_catalog
@@ -97,10 +97,19 @@ from inky_bird_frame.publisher import sync_public_catalog
 unit_dir, root, app_dir, config_path, home = map(Path, sys.argv[1:6])
 user = sys.argv[6]
 config = load_config(config_path)
-if config.discovery.source.uses_ebird and config.discovery.ebird_api_key_env is not None:
+environment_credentials = []
+if DiscoveryProvider.EBIRD in config.discovery.sources and config.discovery.ebird_api_key_env:
+    environment_credentials.append("ebird_api_key_env")
+if (
+    DiscoveryProvider.BIRDWEATHER in config.discovery.sources
+    and config.discovery.birdweather_token_env
+):
+    environment_credentials.append("birdweather_token_env")
+if environment_credentials:
+    names = ", ".join(environment_credentials)
     raise ConfigurationError(
-        "The systemd installer requires ebird_api_key in the private config file; "
-        "environment variables are not inherited by managed services"
+        f"The systemd installer cannot use {names}; store the corresponding credential "
+        "directly in the private config file"
     )
 environment_destinations = [
     destination.name

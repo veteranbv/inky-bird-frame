@@ -12,12 +12,14 @@ stays on the trusted network.*
 
 ## Choose the two computers
 
-The controller and display node have different requirements. They may be on the
-same computer for development, but the supported framed installation uses two.
+The controller and display node have different requirements. A capable Linux
+Raspberry Pi may run both roles, but the recommended framed installation uses a
+small display node and a separate controller. The controller may also run as a
+container on an existing Docker host.
 
 | Role | Recommended | Supported | Notes |
 | --- | --- | --- | --- |
-| Controller | Existing Apple silicon Mac or Ubuntu Server 24.04 LTS computer | macOS with launchd; 64-bit Ubuntu 24.04 with systemd; 64-bit Raspberry Pi OS Bookworm or later with systemd | Codex publishes native macOS, Linux x86_64, and Linux arm64 builds. A Raspberry Pi 4 with 4GB is the smallest recommended dedicated controller. |
+| Controller | Existing Apple silicon Mac or Ubuntu Server 24.04 LTS computer | macOS with launchd; 64-bit Ubuntu 24.04 with systemd; 64-bit Raspberry Pi OS Bookworm or later with systemd | A Raspberry Pi 4 with 4GB is the smallest recommended dedicated controller. Docker installation is documented separately. |
 | Display | Raspberry Pi Zero 2 W with pre-soldered 40-pin header and Raspberry Pi OS Lite 64-bit | Raspberry Pi OS Bookworm or later on a 40-pin Raspberry Pi | This release supports the Pimoroni Inky Impression 13.3 inch PIM774 at 1600x1200. |
 
 The setup command detects launchd or systemd capabilities, but that does not
@@ -408,7 +410,7 @@ blank the frame.
 
 | Section | Used by | Purpose |
 | --- | --- | --- |
-| `[discovery]` | Controller | Source, credentials, ZIP, radius, observation window, and species cap |
+| `[discovery]` | Controller | Providers, credentials, ZIP, radius, observation window, and species cap |
 | `[controller]` | Controller | Persistent paths, Codex executable, HTTP bind, and generation bounds |
 | `[research]` | Controller | Bounded fallback research policy and approved domains |
 | `[notifications]` | Controller | Optional Apprise destinations, events, retries, and noise controls |

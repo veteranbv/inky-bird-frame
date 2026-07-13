@@ -8,10 +8,10 @@ The controller owns discovery and generation through independent schedules.
 An observation refresh:
 
 1. resolves the private discovery location;
-2. queries iNaturalist species counts for the configured radius and window,
-   requiring species rank in both the request and response;
-3. atomically stores the private observation snapshot; and
-4. publishes a private active catalog containing only observed taxa that
+2. queries each explicitly configured observation provider independently;
+3. exact-matches external taxonomy to canonical iNaturalist species IDs;
+4. atomically stores the private observation snapshot; and
+5. publishes a private active catalog containing only observed taxa that
    already have approved plates.
 
 A locked generation cycle reads the latest non-stale snapshot and the durable

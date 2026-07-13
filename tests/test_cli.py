@@ -17,9 +17,10 @@ from inky_bird_frame.cli import (
     main,
     refresh_command,
     retry_command,
+    seed_command,
     species_to_dict,
 )
-from inky_bird_frame.config import DiscoverySource
+from inky_bird_frame.config import DiscoveryProvider
 from inky_bird_frame.controller import exclusive_cycle_lock
 from inky_bird_frame.errors import DataSourceError, GenerationError
 
@@ -77,6 +78,8 @@ class CliTests(unittest.TestCase):
                 "last-year",
                 "--source",
                 "inaturalist",
+                "--source",
+                "ebird",
                 "--radius-km",
                 "16",
                 "--species-limit",
@@ -86,7 +89,7 @@ class CliTests(unittest.TestCase):
         )
 
         self.assertEqual(args.window, "last-year")
-        self.assertEqual(args.source, "inaturalist")
+        self.assertEqual(args.source, ["inaturalist", "ebird"])
         self.assertEqual(args.radius_km, 16)
         self.assertEqual(args.species_limit, 500)
         self.assertTrue(args.dry_run)
@@ -98,6 +101,10 @@ class CliTests(unittest.TestCase):
 
         self.assertEqual(payload["source"], "iNaturalist")
         self.assertEqual(payload["sources"], ["iNaturalist"])
+
+    def test_seed_rejects_duplicate_source_overrides(self) -> None:
+        with self.assertRaisesRegex(ValueError, "must not repeat"):
+            seed_command(Namespace(source=["ebird", "ebird"]))
 
     def test_config_validation_and_notification_commands_require_config(self) -> None:
         validate = build_parser().parse_args(["config", "validate", "--config", "instance.toml"])
@@ -241,7 +248,9 @@ class CliTests(unittest.TestCase):
 
     def test_refresh_does_not_clear_taxonomy_alert_when_ebird_fails(self) -> None:
         config = SimpleNamespace(
-            discovery=SimpleNamespace(source=DiscoverySource.COMBINED),
+            discovery=SimpleNamespace(
+                sources=(DiscoveryProvider.INATURALIST, DiscoveryProvider.EBIRD)
+            ),
         )
         result = {
             "providers": [
@@ -264,7 +273,7 @@ class CliTests(unittest.TestCase):
         self.assertNotIn("ebird-taxonomy", recovered_keys)
 
     def test_refresh_tracks_taxonomy_alerts_by_provider(self) -> None:
-        config = SimpleNamespace(discovery=SimpleNamespace(source=DiscoverySource.ALL))
+        config = SimpleNamespace(discovery=SimpleNamespace(sources=tuple(DiscoveryProvider)))
         result = {
             "providers": [
                 {"name": "inaturalist", "status": "ok"},

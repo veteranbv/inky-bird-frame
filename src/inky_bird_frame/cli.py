@@ -16,7 +16,13 @@ from .catalog import (
     rebuild_catalog_index,
     reject_candidate,
 )
-from .config import AppConfig, DiscoverySource, NotificationEvent, load_config
+from .config import (
+    AppConfig,
+    DiscoveryProvider,
+    NotificationEvent,
+    discovery_source_label,
+    load_config,
+)
 from .controller import (
     discover_species,
     enqueue_seed_species,
@@ -105,7 +111,8 @@ def discover_command(args: argparse.Namespace) -> int:
             ),
             "radius_km": config.discovery.radius_km,
             "window": config.discovery.observation_window.value,
-            "source": config.discovery.source.value,
+            "source": discovery_source_label(config.discovery.sources),
+            "sources": [provider.value for provider in config.discovery.sources],
             "providers": [provider.as_dict() for provider in discovery.providers],
             "unresolved_count": len(discovery.unresolved),
             "species": [species_to_dict(item) for item in discovery.species],
@@ -287,11 +294,18 @@ def generate_command(args: argparse.Namespace) -> int:
 
 
 def seed_command(args: argparse.Namespace) -> int:
+    source_values = args.source
+    if source_values is not None and len(source_values) != len(set(source_values)):
+        raise ValueError("--source must not repeat a provider")
     print_result(
         enqueue_seed_species(
             _config(args),
             window=parse_observation_window(args.window),
-            source=DiscoverySource(args.source) if args.source is not None else None,
+            sources=(
+                tuple(DiscoveryProvider(value) for value in source_values)
+                if source_values is not None
+                else None
+            ),
             radius_km=args.radius_km,
             species_limit=args.species_limit,
             dry_run=args.dry_run,
@@ -469,7 +483,8 @@ def config_validate_command(args: argparse.Namespace) -> int:
             "config": str(args.config),
             "valid": True,
             "discovery": {
-                "source": config.discovery.source.value,
+                "source": discovery_source_label(config.discovery.sources),
+                "sources": [provider.value for provider in config.discovery.sources],
                 "ebird_configured": config.discovery.ebird_api_key is not None,
                 "birdweather_configured": config.discovery.birdweather_token is not None,
                 "window": config.discovery.observation_window.value,
@@ -644,8 +659,9 @@ def build_parser() -> argparse.ArgumentParser:
     )
     seed_parser.add_argument(
         "--source",
-        choices=[source.value for source in DiscoverySource],
-        help="Override the configured discovery source for this seed run",
+        action="append",
+        choices=[provider.value for provider in DiscoveryProvider],
+        help="Override discovery with one provider; repeat to select multiple providers",
     )
     seed_parser.add_argument("--radius-km", type=int)
     seed_parser.add_argument("--species-limit", type=int)

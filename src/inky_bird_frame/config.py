@@ -22,28 +22,38 @@ class RotationMode(StrEnum):
     WEIGHTED = "weighted"
 
 
-class DiscoverySource(StrEnum):
+class DiscoveryProvider(StrEnum):
     INATURALIST = "inaturalist"
     EBIRD = "ebird"
-    COMBINED = "combined"
     BIRDWEATHER = "birdweather"
-    ALL = "all"
-
-    @property
-    def uses_ebird(self) -> bool:
-        return self in {DiscoverySource.EBIRD, DiscoverySource.COMBINED, DiscoverySource.ALL}
-
-    @property
-    def uses_birdweather(self) -> bool:
-        return self in {DiscoverySource.BIRDWEATHER, DiscoverySource.ALL}
 
 
-def parse_discovery_source(value: str) -> DiscoverySource:
+LEGACY_DISCOVERY_SOURCES: dict[str, tuple[DiscoveryProvider, ...]] = {
+    "inaturalist": (DiscoveryProvider.INATURALIST,),
+    "ebird": (DiscoveryProvider.EBIRD,),
+    "combined": (DiscoveryProvider.INATURALIST, DiscoveryProvider.EBIRD),
+    "birdweather": (DiscoveryProvider.BIRDWEATHER,),
+    "all": (
+        DiscoveryProvider.INATURALIST,
+        DiscoveryProvider.EBIRD,
+        DiscoveryProvider.BIRDWEATHER,
+    ),
+}
+
+
+def parse_discovery_provider(value: str) -> DiscoveryProvider:
     try:
-        return DiscoverySource(value)
+        return DiscoveryProvider(value)
     except ValueError as exc:
-        allowed = ", ".join(item.value for item in DiscoverySource)
-        raise ValueError(f"discovery source must be one of: {allowed}") from exc
+        allowed = ", ".join(item.value for item in DiscoveryProvider)
+        raise ValueError(f"discovery provider must be one of: {allowed}") from exc
+
+
+def discovery_source_label(providers: tuple[DiscoveryProvider, ...]) -> str:
+    for label, legacy_providers in LEGACY_DISCOVERY_SOURCES.items():
+        if providers == legacy_providers:
+            return label
+    return ",".join(provider.value for provider in providers)
 
 
 class NotificationEvent(StrEnum):
@@ -73,7 +83,7 @@ class DiscoveryConfig:
     radius_km: int
     species_limit: int
     observation_window: ObservationWindow
-    source: DiscoverySource = DiscoverySource.INATURALIST
+    sources: tuple[DiscoveryProvider, ...] = (DiscoveryProvider.INATURALIST,)
     ebird_api_key: str | None = field(default=None, repr=False)
     ebird_api_key_env: str | None = field(default=None, repr=False)
     birdweather_token: str | None = field(default=None, repr=False)
@@ -377,11 +387,23 @@ def load_config(path: Path) -> AppConfig:
     except ValueError as exc:
         raise ConfigurationError(str(exc)) from exc
 
-    source_value = _optional_string(discovery, "source", default=DiscoverySource.INATURALIST.value)
-    try:
-        discovery_source = parse_discovery_source(source_value)
-    except ValueError as exc:
-        raise ConfigurationError(str(exc)) from exc
+    if "source" in discovery and "sources" in discovery:
+        raise ConfigurationError("Choose discovery.source or discovery.sources, not both")
+    if "sources" in discovery:
+        source_values = _string_tuple(discovery, "sources")
+        if not source_values:
+            raise ConfigurationError("discovery.sources must contain at least one provider")
+        try:
+            discovery_sources = tuple(parse_discovery_provider(value) for value in source_values)
+        except ValueError as exc:
+            raise ConfigurationError(str(exc)) from exc
+    else:
+        source_value = _optional_string(discovery, "source", default="inaturalist")
+        try:
+            discovery_sources = LEGACY_DISCOVERY_SOURCES[source_value]
+        except KeyError as exc:
+            allowed = ", ".join(LEGACY_DISCOVERY_SOURCES)
+            raise ConfigurationError(f"discovery source must be one of: {allowed}") from exc
     radius_km = _integer(discovery, "radius_km")
     species_limit = _integer(discovery, "species_limit")
     if radius_km <= 0:
@@ -392,23 +414,23 @@ def load_config(path: Path) -> AppConfig:
     ebird_api_key, ebird_api_key_env = _private_value(
         discovery,
         "ebird_api_key",
-        required=discovery_source.uses_ebird,
+        required=DiscoveryProvider.EBIRD in discovery_sources,
         provider_name="eBird",
     )
     birdweather_token, birdweather_token_env = _private_value(
         discovery,
         "birdweather_token",
-        required=discovery_source.uses_birdweather,
+        required=DiscoveryProvider.BIRDWEATHER in discovery_sources,
         provider_name="BirdWeather",
     )
-    if discovery_source.uses_ebird:
+    if DiscoveryProvider.EBIRD in discovery_sources:
         if window in {ObservationWindow.LAST_YEAR, ObservationWindow.ALL_TIME}:
             raise ConfigurationError("eBird discovery supports observation windows up to 30 days")
         if radius_km > 50:
             raise ConfigurationError("eBird discovery radius_km must not exceed 50")
         if species_limit > 10_000:
             raise ConfigurationError("eBird species_limit must not exceed 10000")
-    if discovery_source.uses_birdweather and species_limit > 100:
+    if DiscoveryProvider.BIRDWEATHER in discovery_sources and species_limit > 100:
         raise ConfigurationError("BirdWeather species_limit must not exceed 100")
 
     controller_url = _string(display_node, "controller_url").rstrip("/")
@@ -473,7 +495,7 @@ def load_config(path: Path) -> AppConfig:
 
     return AppConfig(
         discovery=DiscoveryConfig(
-            source=discovery_source,
+            sources=discovery_sources,
             zip_code=zip_code,
             radius_km=radius_km,
             species_limit=species_limit,
