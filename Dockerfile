@@ -60,7 +60,7 @@ RUN apt-get update \
 COPY --from=build /app/.venv /app/.venv
 COPY --from=tool-downloads /out/codex /usr/local/bin/codex
 COPY --from=tool-downloads /out/gh /usr/local/bin/gh
-COPY catalog /app/catalog
+COPY --chown=10001:10001 catalog /app/catalog
 RUN mkdir -p \
       /data/catalog/species \
       /data/public-catalog \
