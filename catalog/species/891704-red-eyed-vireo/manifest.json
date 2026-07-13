@@ -1,0 +1,146 @@
+{
+  "approved_at": "2026-07-13T06:18:02+00:00",
+  "assets": {
+    "display": {
+      "filename": "display.png",
+      "sha256": "22fa3b0ad99e82523ac665350da0f274a88663ff6edce32d51f3f8456a94b3ed"
+    },
+    "portrait": {
+      "filename": "portrait.png",
+      "sha256": "efb5285a1dcfca31edab0efcc3edae03b1f1dfa5d7886e231af475077d5b13f1"
+    }
+  },
+  "common_name": "Red-eyed Vireo",
+  "generation": {
+    "attempt": 1,
+    "generated_at": "2026-07-13T06:18:02+00:00",
+    "generator": "Codex subscription / built-in gpt-image-2",
+    "max_attempts": 3,
+    "prompt_version": "field-journal-v2"
+  },
+  "profile": {
+    "behavior": "Slow, methodical canopy forager that gleans invertebrates from leaves; adults are often heard giving persistent song.",
+    "common_name": "Red-eyed Vireo",
+    "family": "Vireonidae",
+    "field_marks": [
+      "Olive-green upperparts, including back, wings, and tail",
+      "Clean white throat, breast, and belly",
+      "Gray crown with a bold white eyebrow stripe",
+      "Dark eye-line bordering the eyebrow; adult iris dark red but often appears dark at distance",
+      "Strong, long dark bill with a small hook at the tip",
+      "Stocky body with a fairly short tail and dark gray legs"
+    ],
+    "habitat": "Deciduous and mixed forests with dense or shrubby understory; also uses woodland, forest edges, second-growth forest, and other tree-rich habitats during movement periods.",
+    "measurements": {
+      "length": "12\u201313 cm (4.7\u20135.1 in)",
+      "weight": "12\u201326 g (0.4\u20130.9 oz)",
+      "wingspan": "23\u201325 cm (9.1\u20139.8 in)"
+    },
+    "palette": [
+      "olive green",
+      "soft gray",
+      "clean white",
+      "pale yellow-green",
+      "charcoal gray",
+      "dark red"
+    ],
+    "scientific_name": "Vireo olivaceus",
+    "sources": [
+      {
+        "title": "Red-eyed Vireo Identification \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Red-eyed_Vireo/id"
+      },
+      {
+        "title": "Vireo olivaceus \u2014 Animal Diversity Web",
+        "url": "https://animaldiversity.org/accounts/Vireo_olivaceus/"
+      }
+    ],
+    "taxon_id": 891704
+  },
+  "quality_review": {
+    "anatomy_accuracy": 4,
+    "composition_quality": 5,
+    "findings": [
+      "Identity, taxonomy, plumage, adult red iris, strong hooked bill, stocky build, fairly short tail, dark gray legs, and the visible head/beak/wing/leg/tail anatomy are consistent with Red-eyed Vireo and the supplied reference photos.",
+      "All printed measurement values match Cornell All About Birds. Audubon and Animal Diversity Web publish larger length and wingspan figures (13\u201315 cm and 25\u201328 cm; 15.2 cm and 25.4 cm respectively), so the plate should identify its measurement authority if cross-source consistency is required; this is a source discrepancy, not a material species-identification error.",
+      "The behavior, habitat, family, scientific name, and field-mark text agree with the live sources. The plate contains no place name, ZIP code, coordinates, map, or local-observation detail."
+    ],
+    "location_free": true,
+    "passed": true,
+    "species_accuracy": 5,
+    "text_accuracy": 4,
+    "verification_sources": [
+      {
+        "title": "Red-eyed Vireo Identification \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Red-eyed_Vireo/id"
+      },
+      {
+        "title": "Vireo olivaceus \u2014 Animal Diversity Web",
+        "url": "https://animaldiversity.org/accounts/Vireo_olivaceus/"
+      },
+      {
+        "title": "Red-eyed Vireo \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/red-eyed-vireo"
+      }
+    ]
+  },
+  "references": [
+    {
+      "attribution": "no rights reserved",
+      "filename": "01-158043683.jpeg",
+      "height": 1365,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/158043683/large.jpeg",
+      "license_code": "cc0",
+      "observation_id": 95215070,
+      "observer": "davidfbird",
+      "photo_id": 158043683,
+      "sha256": "91ad0b4407c72d1cbfb9b22a088cc5006ea0e51f17a76d84498ccdbfac89e531",
+      "source_url": "https://www.inaturalist.org/observations/95215070",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) Antoine Guiguet, some rights reserved (CC BY)",
+      "filename": "02-95646829.jpeg",
+      "height": 1536,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/95646829/large.jpeg",
+      "license_code": "cc-by",
+      "observation_id": 59840900,
+      "observer": "antoine_guiguet_",
+      "photo_id": 95646829,
+      "sha256": "9d447ee3a61abf84bfff9afc082a49d6aa2feabe28d9de716311c9cd05ea061c",
+      "source_url": "https://www.inaturalist.org/observations/59840900",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) Bobby McCabe, some rights reserved (CC BY)",
+      "filename": "03-435858684.jpeg",
+      "height": 1536,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/435858684/large.jpeg",
+      "license_code": "cc-by",
+      "observation_id": 244357322,
+      "observer": "bobby23",
+      "photo_id": 435858684,
+      "sha256": "386e0eae641610f5f3467725a692d57ad87d8e32fb30eacdec6073e055855e27",
+      "source_url": "https://www.inaturalist.org/observations/244357322",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) Thomas Koffel, some rights reserved (CC BY)",
+      "filename": "04-5091429.jpeg",
+      "height": 1203,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/5091429/large.jpeg",
+      "license_code": "cc-by",
+      "observation_id": 4255922,
+      "observer": "tkoffel",
+      "photo_id": 5091429,
+      "sha256": "c9e6185498efb93b9d64f4a018c88fa682da755e6c007305e5f800875216edde",
+      "source_url": "http://www.inaturalist.org/observations/4255922",
+      "width": 1600
+    }
+  ],
+  "schema_version": 1,
+  "scientific_name": "Vireo olivaceus",
+  "slug": "red-eyed-vireo",
+  "status": "approved",
+  "taxon_id": 891704
+}

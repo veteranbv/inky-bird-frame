@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-13T06:08:35+00:00",
+  "generated_at": "2026-07-13T06:18:02+00:00",
   "schema_version": 1,
   "species": [
     {
@@ -595,6 +595,17 @@
       "scientific_name": "Melanerpes carolinus",
       "slug": "red-bellied-woodpecker",
       "taxon_id": 18205
+    },
+    {
+      "approved_at": "2026-07-13T06:18:02+00:00",
+      "common_name": "Red-eyed Vireo",
+      "display_path": "species/891704-red-eyed-vireo/display.png",
+      "display_sha256": "22fa3b0ad99e82523ac665350da0f274a88663ff6edce32d51f3f8456a94b3ed",
+      "portrait_path": "species/891704-red-eyed-vireo/portrait.png",
+      "portrait_sha256": "efb5285a1dcfca31edab0efcc3edae03b1f1dfa5d7886e231af475077d5b13f1",
+      "scientific_name": "Vireo olivaceus",
+      "slug": "red-eyed-vireo",
+      "taxon_id": 891704
     },
     {
       "approved_at": "2026-07-12T20:44:31+00:00",
