@@ -4,12 +4,13 @@ from __future__ import annotations
 
 import json
 from dataclasses import dataclass
-from datetime import UTC, datetime, timedelta
+from datetime import datetime, timedelta
 from pathlib import Path
 
 from .catalog import utc_now
 from .errors import CatalogError
 from .http import write_json_atomic
+from .timeutil import parse_utc_timestamp
 
 
 @dataclass(frozen=True)
@@ -134,15 +135,10 @@ class RetryStore:
 
 
 def _parse_datetime(value: object, source: Path) -> datetime:
-    if not isinstance(value, str):
+    parsed = parse_utc_timestamp(value)
+    if parsed is None:
         raise CatalogError(f"Invalid retry timestamp: {source}")
-    try:
-        parsed = datetime.fromisoformat(value)
-    except ValueError as exc:
-        raise CatalogError(f"Invalid retry timestamp: {source}") from exc
-    if parsed.tzinfo is None:
-        raise CatalogError(f"Retry timestamp has no timezone: {source}")
-    return parsed.astimezone(UTC)
+    return parsed
 
 
 def _parse_record(raw: object, source: Path) -> RetryRecord:

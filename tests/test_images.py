@@ -9,6 +9,8 @@ class ImageHelperTests(unittest.TestCase):
     def test_slugify(self) -> None:
         self.assertEqual(slugify("Eastern Bluebird"), "eastern-bluebird")
         self.assertEqual(slugify("Sialia sialis!"), "sialia-sialis")
+        self.assertEqual(slugify("Anna's Hummingbird"), "anna-s-hummingbird")
+        self.assertEqual(slugify("Piopío"), "piopío")
 
     def test_canonical_assets_match_inky_panel(self) -> None:
         self.assertEqual(PORTRAIT_SIZE, (1200, 1600))

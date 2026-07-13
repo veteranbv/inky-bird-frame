@@ -813,7 +813,7 @@ class ControllerTests(unittest.TestCase):
             self.assertEqual(first_failure["error"], "profile failed")
             self.assertFalse(first_failure["terminal"])
 
-    def test_catalog_failure_aborts_cycle_without_terminal_species_state(self) -> None:
+    def test_catalog_failure_is_terminal_for_species_without_aborting_cycle(self) -> None:
         species = BirdSpecies(9083, "Northern Cardinal", "Cardinalis cardinalis", 2, "test")
         location = ZipLocation("12345", "Exampleville", "XY", 1.0, 2.0)
         with TemporaryDirectory() as temporary:
@@ -828,12 +828,154 @@ class ControllerTests(unittest.TestCase):
                 patch("inky_bird_frame.controller.generate_candidate") as generate,
             ):
                 generate.side_effect = CatalogError("cached references are invalid")
-                with self.assertRaisesRegex(CatalogError, "cached references are invalid"):
-                    run_controller_cycle(config)
+                result = run_controller_cycle(config)
 
             failures = list((config.controller.state_dir / "failed").glob("9083-*"))
 
-        self.assertEqual(failures, [])
+        self.assertEqual(len(failures), 1)
+        failure_results = result["failures"]
+        self.assertIsInstance(failure_results, list)
+        if isinstance(failure_results, list):
+            self.assertEqual(failure_results[0]["error"], "cached references are invalid")
+            self.assertTrue(failure_results[0]["terminal"])
+
+    def test_corrupt_profile_cache_quarantines_species_and_cycle_continues(self) -> None:
+        corrupt = BirdSpecies(9083, "Northern Cardinal", "Cardinalis cardinalis", 2, "test")
+        healthy = BirdSpecies(7513, "Carolina Wren", "Thryothorus ludovicianus", 3, "test")
+        location = ZipLocation("12345", "Exampleville", "XY", 1.0, 2.0)
+        review = QualityReview(
+            True,
+            5,
+            4,
+            5,
+            5,
+            True,
+            (),
+            (
+                {"title": "Cornell", "url": "https://www.allaboutbirds.org/example"},
+                {"title": "Audubon", "url": "https://www.audubon.org/example"},
+            ),
+        )
+        wren_profile = {
+            "taxon_id": 7513,
+            "common_name": "Carolina Wren",
+            "scientific_name": "Thryothorus ludovicianus",
+            "family": "Troglodytidae",
+            "measurements": {"length": "5.5 in", "wingspan": "11 in", "weight": "0.7 oz"},
+            "field_marks": ["white eyebrow", "rufous back", "barred wings", "upright tail"],
+            "habitat": "Brushy woodland",
+            "behavior": "Forages low in cover",
+            "palette": ["rufous", "cream", "umber"],
+            "sources": [
+                {"title": "Cornell", "url": "https://www.allaboutbirds.org/one"},
+                {"title": "Audubon", "url": "https://www.audubon.org/two"},
+            ],
+        }
+
+        class FakeRunner:
+            def __init__(self, _executable: Path, _workspace: Path) -> None:
+                pass
+
+            def generate_plate(self, *_args: object) -> Path:
+                output_path = _args[-3]
+                assert isinstance(output_path, Path)
+                output_path.write_bytes(b"generated")
+                return output_path
+
+            def review_plate(self, *_args: object, **_kwargs: object) -> QualityReview:
+                return review
+
+        def prepare(_source: Path, portrait: Path, display: Path) -> None:
+            portrait.write_bytes(b"portrait")
+            display.write_bytes(b"display")
+
+        with TemporaryDirectory() as temporary:
+            config_path = Path(temporary) / "config.toml"
+            config_path.write_text(CONFIG)
+            config = load_config(config_path)
+            profiles = config.controller.state_dir / "profiles"
+            (profiles / "9083").mkdir(parents=True)
+            (profiles / "9083" / "profile.json").write_text("{}")
+            (profiles / "7513").mkdir(parents=True)
+            (profiles / "7513" / "profile.json").write_text(json.dumps(wren_profile))
+            with (
+                patch(
+                    "inky_bird_frame.controller.discover_species",
+                    return_value=discovery_result(location, [corrupt, healthy]),
+                ),
+                patch("inky_bird_frame.controller.load_or_fetch_references", return_value=[]),
+                patch("inky_bird_frame.controller.CodexRunner", FakeRunner),
+                patch("inky_bird_frame.controller.prepare_generated_plate", side_effect=prepare),
+            ):
+                result = run_controller_cycle(config)
+
+            terminal_failures = list((config.controller.state_dir / "failed").glob("9083-*"))
+            published = (config.controller.catalog_dir / "species/7513-carolina-wren").is_dir()
+
+        self.assertEqual(len(terminal_failures), 1)
+        self.assertTrue(published)
+        failure_results = result["failures"]
+        self.assertIsInstance(failure_results, list)
+        if isinstance(failure_results, list):
+            self.assertEqual(failure_results[0]["taxon_id"], 9083)
+            self.assertTrue(failure_results[0]["terminal"])
+        generated = cast(list[dict[str, object]], result["generated"])
+        self.assertEqual([item["taxon_id"] for item in generated], [7513])
+
+    def test_cycle_recovers_legacy_orphan_approved_pending_candidate(self) -> None:
+        species = BirdSpecies(9083, "Northern Cardinal", "Cardinalis cardinalis", 2, "test")
+        location = ZipLocation("12345", "Exampleville", "XY", 1.0, 2.0)
+        review = QualityReview(
+            True,
+            5,
+            4,
+            5,
+            5,
+            True,
+            (),
+            (
+                {"title": "Cornell", "url": "https://example.test/cornell"},
+                {"title": "ADW", "url": "https://example.test/adw"},
+            ),
+        )
+        with TemporaryDirectory() as temporary:
+            config_path = Path(temporary) / "config.toml"
+            config_path.write_text(CONFIG)
+            config = load_config(config_path)
+            candidate = candidate_directory(config.controller.state_dir, species)
+            candidate.mkdir(parents=True)
+            (candidate / "portrait.png").write_bytes(b"portrait")
+            (candidate / "display.png").write_bytes(b"display")
+            manifest_path = write_candidate_manifest(
+                candidate,
+                species,
+                PROFILE,
+                [],
+                review,
+                generator="test",
+                prompt_version=PROMPT_VERSION,
+                attempt=2,
+                max_attempts=3,
+            )
+            manifest = json.loads(manifest_path.read_text())
+            manifest["status"] = "approved"
+            manifest["approved_at"] = "2026-07-12T08:00:00+00:00"
+            manifest_path.write_text(json.dumps(manifest))
+            with patch(
+                "inky_bird_frame.controller.discover_species",
+                return_value=discovery_result(location, [species]),
+            ):
+                result = run_controller_cycle(config)
+
+            published = (config.controller.catalog_dir / "species/9083-northern-cardinal").is_dir()
+            orphan_remains = candidate.exists()
+
+        self.assertTrue(published)
+        self.assertFalse(orphan_remains)
+        published_pending = result["published_pending"]
+        self.assertIsInstance(published_pending, list)
+        if isinstance(published_pending, list):
+            self.assertEqual(len(published_pending), 1)
 
     def test_exhausted_quality_review_becomes_terminal(self) -> None:
         species = BirdSpecies(9083, "Northern Cardinal", "Cardinalis cardinalis", 2, "test")

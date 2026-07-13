@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import shutil
 import unittest
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
@@ -10,6 +11,7 @@ from inky_bird_frame.birds import BirdSpecies
 from inky_bird_frame.catalog import (
     approve_candidate,
     candidate_directory,
+    read_catalog_entries,
     rebuild_catalog_index,
     write_candidate_manifest,
 )
@@ -32,6 +34,23 @@ PROFILE = SpeciesProfileData(
         {"title": "Source two", "url": "https://example.test/two"},
     ],
 )
+
+
+def make_candidate(state: Path, species: BirdSpecies, review: QualityReview) -> Path:
+    candidate = candidate_directory(state, species)
+    candidate.mkdir(parents=True)
+    (candidate / "portrait.png").write_bytes(b"portrait")
+    (candidate / "display.png").write_bytes(b"display")
+    write_candidate_manifest(
+        candidate,
+        species,
+        PROFILE,
+        [],
+        review,
+        generator="test",
+        prompt_version="test-v1",
+    )
+    return candidate
 
 
 class CatalogTests(unittest.TestCase):
@@ -88,6 +107,79 @@ class CatalogTests(unittest.TestCase):
             self.assertFalse(candidate.exists())
             with self.assertRaises(CatalogError):
                 approve_candidate(state, catalog, species.taxon_id)
+
+    def test_interrupted_approval_with_leftover_pending_candidate_completes(self) -> None:
+        species = BirdSpecies(7513, "Carolina Wren", "Thryothorus ludovicianus", 5, "test")
+        review = QualityReview(True, 4, 4, 4, 4, True, ())
+        with TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            state = root / "state"
+            catalog = root / "catalog"
+            candidate = make_candidate(state, species, review)
+            backup = root / "backup"
+            shutil.copytree(candidate, backup)
+            approve_candidate(state, catalog, species.taxon_id)
+            shutil.copytree(backup, candidate)
+
+            entry = approve_candidate(state, catalog, species.taxon_id)
+
+            self.assertEqual(entry.taxon_id, species.taxon_id)
+            self.assertFalse(candidate.exists())
+            self.assertEqual(
+                [item.taxon_id for item in read_catalog_entries(catalog)],
+                [species.taxon_id],
+            )
+
+    def test_stale_staging_is_cleared_and_invisible_to_catalog_reads(self) -> None:
+        species = BirdSpecies(7513, "Carolina Wren", "Thryothorus ludovicianus", 5, "test")
+        review = QualityReview(True, 4, 4, 4, 4, True, ())
+        with TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            state = root / "state"
+            catalog = root / "catalog"
+            make_candidate(state, species, review)
+            stale = catalog / ".staging" / "7513-carolina-wren"
+            stale.mkdir(parents=True)
+            (stale / "manifest.json").write_text("{not json")
+
+            self.assertEqual(read_catalog_entries(catalog), [])
+
+            entry = approve_candidate(state, catalog, species.taxon_id)
+
+            self.assertFalse(stale.exists())
+            self.assertEqual(entry.taxon_id, species.taxon_id)
+            self.assertEqual(
+                [item.taxon_id for item in read_catalog_entries(catalog)],
+                [species.taxon_id],
+            )
+
+    def test_conflicting_destination_still_requires_explicit_replacement(self) -> None:
+        species = BirdSpecies(7513, "Carolina Wren", "Thryothorus ludovicianus", 5, "test")
+        review = QualityReview(True, 4, 4, 4, 4, True, ())
+        with TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            state = root / "state"
+            catalog = root / "catalog"
+            make_candidate(state, species, review)
+            approve_candidate(state, catalog, species.taxon_id)
+            candidate = candidate_directory(state, species)
+            candidate.mkdir(parents=True)
+            (candidate / "portrait.png").write_bytes(b"different portrait")
+            (candidate / "display.png").write_bytes(b"different display")
+            write_candidate_manifest(
+                candidate,
+                species,
+                PROFILE,
+                [],
+                review,
+                generator="test",
+                prompt_version="test-v1",
+            )
+
+            with self.assertRaisesRegex(CatalogError, "already approved"):
+                approve_candidate(state, catalog, species.taxon_id)
+
+            self.assertTrue(candidate.exists())
 
 
 if __name__ == "__main__":

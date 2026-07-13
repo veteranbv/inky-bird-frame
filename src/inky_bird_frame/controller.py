@@ -31,6 +31,7 @@ from .catalog import (
     approved_taxon_ids,
     candidate_directory,
     catalog_state_lock,
+    clear_catalog_staging,
     find_taxon_directory,
     has_passing_sourced_review,
     is_bounded_generation,
@@ -57,6 +58,7 @@ from .prompts import PROMPT_VERSION
 from .references import download_references, fetch_reference_candidates
 from .research import ResearchBudget
 from .retry import RetryStore
+from .timeutil import parse_utc_timestamp
 
 
 @dataclass(frozen=True)
@@ -576,12 +578,9 @@ def _read_discovery_snapshot(config: AppConfig) -> DiscoverySnapshot:
         or not isinstance(species_raw, list)
     ):
         raise CatalogError(f"Invalid discovery state: {path}")
-    try:
-        refreshed = datetime.fromisoformat(refreshed_at)
-    except ValueError as exc:
-        raise CatalogError(f"Invalid discovery timestamp: {path}") from exc
-    if refreshed.tzinfo is None:
-        raise CatalogError(f"Discovery timestamp has no timezone: {path}")
+    refreshed = parse_utc_timestamp(refreshed_at)
+    if refreshed is None:
+        raise CatalogError(f"Invalid discovery timestamp: {path}")
 
     species = _parse_species_list(species_raw, path)
     return DiscoverySnapshot(refreshed, place_name, state, species)
@@ -835,6 +834,7 @@ def record_failure(state_dir: Path, species: BirdSpecies, error: InkyBirdFrameEr
 
 def approve_passing_candidates(config: AppConfig) -> list[dict[str, object]]:
     published: list[dict[str, object]] = []
+    clear_catalog_staging(config.controller.catalog_dir)
     pending_root = config.controller.state_dir / "pending"
     for manifest_path in sorted(pending_root.glob("*/manifest.json")):
         try:
@@ -955,8 +955,20 @@ def run_generation_cycle(config: AppConfig) -> dict[str, object]:
                         "terminal": True,
                     }
                 )
-            except (CatalogError, MissingDependencyError):
+            except MissingDependencyError:
                 raise
+            except CatalogError as exc:
+                retry_store.clear(species.taxon_id)
+                failure_path = record_failure(config.controller.state_dir, species, exc)
+                failures.append(
+                    {
+                        "taxon_id": species.taxon_id,
+                        "common_name": species.common_name,
+                        "error": str(exc),
+                        "failure": str(failure_path),
+                        "terminal": True,
+                    }
+                )
             except InkyBirdFrameError as exc:
                 retry = retry_store.record_failure(
                     species.taxon_id,

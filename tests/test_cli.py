@@ -18,6 +18,7 @@ from inky_bird_frame.cli import (
     config_install_command,
     generate_command,
     main,
+    notifications_dispatch_command,
     refresh_command,
     retry_command,
     seed_command,
@@ -182,6 +183,28 @@ class CliTests(unittest.TestCase):
         self.assertEqual(str(test.config), "instance.toml")
         self.assertEqual(str(dispatch.config), "instance.toml")
         self.assertEqual(str(retry.config), "instance.toml")
+
+    def test_notifications_dispatch_checks_display_heartbeat(self) -> None:
+        output = io.StringIO()
+        with (
+            patch("inky_bird_frame.cli._config"),
+            patch(
+                "inky_bird_frame.cli.dispatch_notifications",
+                return_value={"attempted": 0},
+            ) as dispatch,
+            patch(
+                "inky_bird_frame.cli.check_display_heartbeat",
+                return_value={"checked": False, "stale": None},
+            ) as check,
+            redirect_stdout(output),
+        ):
+            notifications_dispatch_command(Namespace())
+
+        payload = json.loads(output.getvalue())["data"]
+        self.assertEqual(check.call_count, 1)
+        self.assertEqual(dispatch.call_count, 1)
+        self.assertEqual(payload["display_heartbeat"], {"checked": False, "stale": None})
+        self.assertEqual(payload["attempted"], 0)
 
     def test_config_install_validates_and_atomically_writes_private_file(self) -> None:
         with TemporaryDirectory() as temporary:

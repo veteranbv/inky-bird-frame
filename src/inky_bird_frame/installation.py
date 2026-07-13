@@ -28,6 +28,19 @@ SYSTEMD_DEFAULT_EXECUTABLE_PATH = (
     "/sbin",
     "/bin",
 )
+# Sandboxing for units that never run Codex. The Codex-driven oneshot units
+# (refresh, generate, catalog-publish, notifications) build their own
+# bubblewrap user-namespace sandbox and must stay unconstrained. Services live
+# in the user's home and the display node needs SPI/GPIO devices, so
+# ProtectSystem/ProtectHome and device restrictions are intentionally omitted.
+SYSTEMD_SERVICE_HARDENING = (
+    "NoNewPrivileges=true\n"
+    "PrivateTmp=true\n"
+    "ProtectKernelTunables=true\n"
+    "ProtectKernelModules=true\n"
+    "ProtectControlGroups=true\n"
+    "RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX\n"
+)
 
 
 class InstallationRole(StrEnum):
@@ -146,7 +159,7 @@ Wants=network-online.target
 
 [Service]
 Type=simple
-{common}ExecStart={command("serve", "--config", str(config_path))}
+{common}{SYSTEMD_SERVICE_HARDENING}ExecStart={command("serve", "--config", str(config_path))}
 Restart=on-failure
 RestartSec=10s
 
@@ -225,7 +238,7 @@ Type=oneshot
 User={user}
 WorkingDirectory={_systemd_literal(str(app_dir))}
 Environment=PYTHONUNBUFFERED=1
-ExecStart={exec_start}
+{SYSTEMD_SERVICE_HARDENING}ExecStart={exec_start}
 TimeoutStartSec=15min
 """
     timer = f"""[Unit]

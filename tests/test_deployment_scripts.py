@@ -86,6 +86,25 @@ def test_systemd_controller_installer_restarts_boot_persistent_services() -> Non
     assert "rebuild_catalog_index" not in script
 
 
+def test_macos_controller_installer_restores_previously_loaded_agents_on_failure() -> None:
+    script = (Path(__file__).resolve().parents[1] / "deploy" / "install-controller.sh").read_text()
+
+    backup = script.index('cp "${plist}" "${plist_backup_dir}/"')
+    plist_write = script.index("plistlib.dump(payload, handle, sort_keys=True)")
+    unconditional_bootout = script.index('launchctl bootout "gui/${uid}/com.inky-bird-frame.serve"')
+    bootstrap = script.index('launchctl bootstrap "gui/${uid}" "${serve_plist}"')
+    completion = script.index("installation_complete=true")
+
+    assert backup < plist_write < unconditional_bootout < bootstrap < completion
+    assert "trap cleanup EXIT" in script
+    assert 'if [ "${installation_complete}" != true ]' in script
+    assert 'previously_loaded_labels+=("${label}")' in script
+    assert 'restore_previous_agent "${label}"' in script
+    assert "for label in serve refresh generate catalog-publish notifications; do" in script
+    assert 'restore_catalog_publisher_schedule "${uid}" || true' in script
+    assert 'rm -rf "${plist_backup_dir}"' in script
+
+
 def test_local_display_installer_uses_configured_schedule_and_verifies_timer() -> None:
     script = (
         Path(__file__).resolve().parents[1] / "deploy" / "install-display-local.sh"
@@ -108,3 +127,53 @@ def test_remote_display_installer_selects_noninteractive_sudo() -> None:
     ).read_text()
 
     assert "INKY_BIRD_NONINTERACTIVE_SUDO=true" in script
+
+
+def test_macos_controller_uninstaller_removes_agents_and_preserves_data() -> None:
+    script = (
+        Path(__file__).resolve().parents[1] / "deploy" / "uninstall-controller.sh"
+    ).read_text()
+
+    assert "set -euo pipefail" in script
+    assert "for label in serve refresh generate catalog-publish notifications; do" in script
+    assert 'launchctl bootout "gui/${uid}/${agent}"' in script
+    assert 'rm -f "${plist}"' in script
+    assert "Intentionally left in place:" in script
+    assert "${HOME}/Services/inky-bird-frame" in script
+    assert "rm -rf" not in script
+    assert 'rm -f "${config_path}"' not in script
+
+
+def test_systemd_controller_uninstaller_removes_units_and_preserves_data() -> None:
+    script = (
+        Path(__file__).resolve().parents[1] / "deploy" / "uninstall-controller-systemd.sh"
+    ).read_text()
+
+    assert "set -euo pipefail" in script
+    assert "for name in refresh generate catalog-publish notifications; do" in script
+    assert 'sudo systemctl disable --now "${timer}"' in script
+    assert "sudo systemctl disable --now inky-bird-frame-controller.service" in script
+    assert "for name in controller refresh generate catalog-publish notifications; do" in script
+    assert 'sudo rm -f "/etc/systemd/system/${unit}"' in script
+    assert "sudo systemctl daemon-reload" in script
+    assert "Intentionally left in place:" in script
+    assert "rm -rf" not in script
+    assert 'rm -f "${config_path}"' not in script
+
+
+def test_local_display_uninstaller_removes_units_and_preserves_data() -> None:
+    script = (
+        Path(__file__).resolve().parents[1] / "deploy" / "uninstall-display-local.sh"
+    ).read_text()
+
+    assert "set -euo pipefail" in script
+    assert "noninteractive_sudo=${INKY_BIRD_NONINTERACTIVE_SUDO:-false}" in script
+    assert "sudo_command+=(-n)" in script
+    assert '"${sudo_command[@]}" systemctl disable --now inky-bird-frame-display.timer' in script
+    assert '"${sudo_command[@]}" systemctl stop inky-bird-frame-display.service' in script
+    assert '"${sudo_command[@]}" rm -f "/etc/systemd/system/${unit}"' in script
+    assert '"${sudo_command[@]}" systemctl daemon-reload' in script
+    assert "Intentionally left in place:" in script
+    assert "Pimoroni Python environment" in script
+    assert "rm -rf" not in script
+    assert 'rm -f "${config_path}"' not in script

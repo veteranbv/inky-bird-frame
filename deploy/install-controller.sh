@@ -48,6 +48,24 @@ restore_catalog_publisher_schedule() {
   rmdir "${recovery_dir}"
 }
 
+restore_previous_agent() {
+  local label=$1
+  local plist="${agents_dir}/com.inky-bird-frame.${label}.plist"
+  local backup="${plist_backup_dir}/com.inky-bird-frame.${label}.plist"
+  if launchctl print "gui/${uid}/com.inky-bird-frame.${label}" >/dev/null 2>&1; then
+    return 0
+  fi
+  if [ ! -f "${backup}" ]; then
+    return 0
+  fi
+  cp "${backup}" "${plist}" || return 0
+  if [ "${label}" = "catalog-publish" ]; then
+    restore_catalog_publisher_schedule "${uid}" || true
+  else
+    launchctl bootstrap "gui/${uid}" "${plist}" || true
+  fi
+}
+
 if [ ! -f "${config_path}" ]; then
   echo "Controller configuration is missing: ${config_path}" >&2
   exit 1
@@ -68,6 +86,34 @@ if [ "${root}" != "${app_dir}" ]; then
 fi
 
 "${uv_bin}" sync --project "${app_dir}" --python "${python_version}" --extra controller --locked
+
+uid=$(id -u)
+plist_backup_dir=$(mktemp -d "${support_dir}/launchd-restore.XXXXXX")
+previously_loaded_labels=()
+installation_complete=false
+cleanup() {
+  status=$?
+  trap - EXIT
+  if [ "${installation_complete}" != true ] \
+    && [ "${#previously_loaded_labels[@]}" -gt 0 ]; then
+    for label in "${previously_loaded_labels[@]}"; do
+      restore_previous_agent "${label}"
+    done
+  fi
+  rm -rf "${plist_backup_dir}"
+  exit "${status}"
+}
+trap cleanup EXIT
+
+for label in serve refresh generate catalog-publish notifications; do
+  if launchctl print "gui/${uid}/com.inky-bird-frame.${label}" >/dev/null 2>&1; then
+    previously_loaded_labels+=("${label}")
+  fi
+  plist="${agents_dir}/com.inky-bird-frame.${label}.plist"
+  if [ -f "${plist}" ]; then
+    cp "${plist}" "${plist_backup_dir}/"
+  fi
+done
 
 "${app_dir}/.venv/bin/python" - \
   "${serve_plist}" "${refresh_plist}" "${generation_plist}" "${catalog_publish_plist}" \
@@ -211,7 +257,6 @@ else:
     notifications_path.unlink(missing_ok=True)
 PY
 
-uid=$(id -u)
 if [ -f "${catalog_publish_plist}" ]; then
   publisher_was_loaded=false
   if launchctl print "gui/${uid}/com.inky-bird-frame.catalog-publish" >/dev/null 2>&1; then
@@ -253,6 +298,7 @@ if [ -f "${notifications_plist}" ]; then
   launchctl print "gui/${uid}/com.inky-bird-frame.notifications" >/dev/null
 fi
 
+installation_complete=true
 echo "Controller installed from ${root} into ${app_dir}."
 echo "Configuration: ${config_path}"
 echo "Logs: ${log_dir}"

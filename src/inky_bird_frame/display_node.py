@@ -7,9 +7,9 @@ import hashlib
 import json
 import random
 from collections.abc import Iterator
-from contextlib import contextmanager
+from contextlib import contextmanager, suppress
 from dataclasses import dataclass
-from datetime import UTC, datetime
+from datetime import datetime
 from pathlib import Path
 from typing import cast
 from urllib.parse import quote
@@ -20,6 +20,7 @@ from .display import show_on_inky
 from .errors import CatalogError
 from .http import get_bytes, get_json, write_bytes_atomic, write_json_atomic
 from .selection import select_catalog_entry, select_shuffle_bag_entry
+from .timeutil import parse_utc_timestamp
 
 DISPLAY_STATE_SCHEMA_VERSION = 3
 
@@ -116,15 +117,10 @@ def parse_catalog_entries(payload: object) -> list[CatalogEntry]:
 
 
 def _detection_datetime(value: object, source: str) -> datetime:
-    if not isinstance(value, str) or not value:
+    parsed = parse_utc_timestamp(value)
+    if parsed is None:
         raise CatalogError(f"Invalid latest detection timestamp in {source}")
-    try:
-        parsed = datetime.fromisoformat(value.replace("Z", "+00:00"))
-    except ValueError as exc:
-        raise CatalogError(f"Invalid latest detection timestamp in {source}") from exc
-    if parsed.tzinfo is None or parsed.utcoffset() is None:
-        raise CatalogError(f"Latest detection timestamp must include a timezone in {source}")
-    return parsed.astimezone(UTC)
+    return parsed
 
 
 def _latest_unseen_detection(
@@ -285,6 +281,13 @@ def _advanced_priority_state(state: DisplayState, selected: CatalogEntry) -> tup
     return watermark, taxa
 
 
+def _evict_stale_cache_entries(current_image_path: Path, taxon_id: int) -> None:
+    for stale in current_image_path.parent.glob(f"{taxon_id}-*.png"):
+        if stale != current_image_path:
+            with suppress(OSError):
+                stale.unlink(missing_ok=True)
+
+
 def run_display_cycle(
     config: DisplayNodeConfig,
     *,
@@ -292,10 +295,12 @@ def run_display_cycle(
     rng: random.Random | random.SystemRandom | None = None,
 ) -> dict[str, object]:
     with exclusive_display_cycle_lock(config.state_dir):
-        catalog_payload = get_json(f"{config.controller_url}/v1/catalog", 20.0)
-        entries = parse_catalog_entries(catalog_payload)
+        # Validate local state before fetching so a wedged node stops
+        # refreshing the controller-side heartbeat and staleness alerts fire.
         state_path = config.state_dir / "state.json"
         state = _read_state(state_path)
+        catalog_payload = get_json(f"{config.controller_url}/v1/catalog", 20.0)
+        entries = parse_catalog_entries(catalog_payload)
         shuffle_remaining = list(state.shuffle_remaining)
         shuffle_bag_remaining = list(state.shuffle_bag_remaining)
         shuffle_bag_seen = list(state.shuffle_bag_seen)
@@ -394,6 +399,7 @@ def run_display_cycle(
             last_prioritized_detection_at=prioritized_at,
             prioritized_detection_taxa=prioritized_taxa,
         )
+        _evict_stale_cache_entries(image_path, selected.taxon_id)
         return {
             "display_update": "sent",
             "taxon_id": selected.taxon_id,

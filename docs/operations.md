@@ -117,6 +117,39 @@ is used unless `--radius-km` is provided. Repeating a seed
 is idempotent: approved, terminal, and already queued taxa are not added again.
 Current observations remain ahead of seed-only taxa during generation.
 
+## Run a combined cycle
+
+`refresh` and `generate` are the scheduled one-shot commands.
+`controller-cycle` runs one observation refresh followed by one generation
+cycle in a single invocation and reports the combined JSON result:
+
+```bash
+inky-bird-frame controller-cycle --config /path/to/config.toml
+```
+
+Use it for a manual end-to-end pass. Scheduled installations keep the separate
+`refresh` and `generate` commands so each job retains its own interval and
+failure notifications; `controller-cycle` does not send the per-command
+notifications those commands emit.
+
+## Copy species between catalogs
+
+`catalog sync` copies every species missing from one catalog into another and
+rebuilds the destination index:
+
+```bash
+inky-bird-frame catalog sync --source-catalog /path/to/source \
+  --catalog /path/to/destination
+```
+
+The command is add-only. It validates both catalogs, refuses a destination
+taxon that conflicts with its immutable source version, and reports published
+and already-present taxa. Pass `--state-dir` with the controller state
+directory when the destination is a live controller catalog, so the copy holds
+the same lock as generation. The Docker bootstrap service uses this command to
+copy the image's bundled catalog into persistent storage; see the
+[Docker controller guide](docker.md#what-runs).
+
 ## Catalog publication
 
 Clone this project repository into a controller-only checkout. Install GitHub
@@ -195,6 +228,22 @@ Enable catalog publication to preserve accepted plates for other installations.
 Each generated image receives an auditable catalog-only PR, while application
 code continues through the full review and CI policy.
 
+## Display a personal image
+
+`prepare-image` fits any image onto the supported plate geometry without
+Codex:
+
+```bash
+inky-bird-frame prepare-image /path/to/image.jpg --output-dir output
+```
+
+It centers the source on a paper-colored `1200x1600` portrait canvas and
+writes `<name>-portrait.png` plus a rotated `1600x1200` `<name>-display.png`
+into `--output-dir` (default `output`). Add `--display` to also send the
+prepared display asset to a locally attached Inky panel, or copy the file to
+the display node and use `display-image`. Prepared images are local output
+only; they never enter the approved catalog or rotation.
+
 ## Failure recovery
 
 - Network or source failure: inspect the refresh or generation log and JSON
@@ -212,6 +261,21 @@ code continues through the full review and CI policy.
   authentication, remote divergence, or the reported validation problem, then
   rerun `catalog-publish`. Local approval and display rotation continue while
   public publication is unavailable.
+
+## Runtime state retention
+
+`runs/`, `failed/`, and `rejected/` under the controller `state_dir` grow
+without automatic pruning so failed and rejected work stays available for
+inspection. Check them first when investigating a generation failure. Entries
+are safe to delete once they have been reviewed.
+
+## Log retention
+
+On systemd hosts the services log JSON to journald and rely on the
+distribution's default journal rotation. Set `SystemMaxUse=` in
+`/etc/systemd/journald.conf` and restart `systemd-journald` to enforce a hard
+size cap. macOS LaunchAgents write to log files under the managed support
+directory instead.
 
 See [`notifications.md`](notifications.md) for provider setup, event filtering,
 durable delivery, noise controls, testing, and redacted status commands.

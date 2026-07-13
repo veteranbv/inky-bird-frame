@@ -15,6 +15,7 @@ from urllib.parse import quote, urlencode
 
 from .errors import DataSourceError, TaxonomyMatchError
 from .http import get_json, write_json_atomic
+from .timeutil import parse_utc_timestamp
 
 
 @dataclass(frozen=True)
@@ -595,15 +596,7 @@ def _taxonomy_crosswalk_lock(cache_path: Path) -> Iterator[None]:
 
 
 def _parse_cache_datetime(value: object) -> datetime | None:
-    if not isinstance(value, str):
-        return None
-    try:
-        parsed = datetime.fromisoformat(value)
-    except ValueError:
-        return None
-    if parsed.tzinfo is None:
-        return None
-    return parsed.astimezone(UTC)
+    return parse_utc_timestamp(value)
 
 
 def _read_taxonomy_crosswalk(path: Path) -> dict[str, dict[str, object]]:

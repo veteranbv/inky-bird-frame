@@ -103,6 +103,21 @@ class InstallationTests(unittest.TestCase):
         )
         self.assertNotIn("inky-bird-frame-notifications.timer", units)
         self.assertNotIn("inky-bird-frame-catalog-publish.timer", units)
+        serve_unit = units["inky-bird-frame-controller.service"]
+        self.assertIn("NoNewPrivileges=true", serve_unit)
+        self.assertIn("PrivateTmp=true", serve_unit)
+        self.assertIn("ProtectKernelTunables=true", serve_unit)
+        self.assertIn("ProtectKernelModules=true", serve_unit)
+        self.assertIn("ProtectControlGroups=true", serve_unit)
+        self.assertIn("RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX", serve_unit)
+        self.assertNotIn("ProtectSystem=", serve_unit)
+        self.assertNotIn("ProtectHome=", serve_unit)
+        for codex_unit in ("inky-bird-frame-refresh.service", "inky-bird-frame-generate.service"):
+            self.assertNotIn("NoNewPrivileges=", units[codex_unit])
+            self.assertNotIn("PrivateTmp=", units[codex_unit])
+            self.assertNotIn("ProtectKernel", units[codex_unit])
+            self.assertNotIn("ProtectControlGroups=", units[codex_unit])
+            self.assertNotIn("RestrictAddressFamilies=", units[codex_unit])
 
     def test_display_systemd_units_use_startup_rotation_and_jitter_values(self) -> None:
         with TemporaryDirectory() as temporary:
@@ -137,6 +152,16 @@ display_startup_delay_seconds = 30
         self.assertIn("OnActiveSec=30s", timer)
         self.assertIn("OnUnitActiveSec=180s", timer)
         self.assertIn("RandomizedDelaySec=7s", timer)
+        self.assertIn("NoNewPrivileges=true", service)
+        self.assertIn("PrivateTmp=true", service)
+        self.assertIn("ProtectKernelTunables=true", service)
+        self.assertIn("ProtectKernelModules=true", service)
+        self.assertIn("ProtectControlGroups=true", service)
+        self.assertIn("RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX", service)
+        self.assertNotIn("ProtectSystem=", service)
+        self.assertNotIn("ProtectHome=", service)
+        self.assertNotIn("DevicePolicy=", service)
+        self.assertNotIn("PrivateDevices=", service)
 
     def test_display_health_url_preserves_controller_path_prefix(self) -> None:
         with TemporaryDirectory() as temporary:

@@ -17,6 +17,7 @@ from uuid import uuid4
 from .config import AppConfig, NotificationDestination, NotificationEvent
 from .errors import CatalogError, ConfigurationError, MissingDependencyError
 from .http import write_json_atomic
+from .timeutil import parse_utc_timestamp
 
 if TYPE_CHECKING:
     import apprise
@@ -57,6 +58,15 @@ class NotificationState:
 
 def notification_state_path(config: AppConfig) -> Path:
     return config.controller.state_dir / "notifications.json"
+
+
+def display_heartbeat_path(config: AppConfig) -> Path:
+    return config.controller.state_dir / "display-last-fetch.json"
+
+
+def display_stale_threshold(config: AppConfig) -> timedelta:
+    # Three missed rotations, floored so short rotations survive controller downtime.
+    return timedelta(minutes=max(3 * config.schedule.rotation_minutes, 60))
 
 
 def _new_notifier() -> apprise.Apprise:
@@ -349,6 +359,7 @@ def safe_record_degradation(
     title: str,
     body: str,
     event: NotificationEvent = NotificationEvent.DEGRADED,
+    now: datetime | None = None,
 ) -> dict[str, object]:
     try:
         return record_degradation(
@@ -357,6 +368,7 @@ def safe_record_degradation(
             title=title,
             body=body,
             event=event,
+            now=now,
         )
     except Exception as exc:
         return {"queued": False, "error_type": type(exc).__name__}
@@ -380,6 +392,45 @@ def safe_record_recovery(
         )
     except Exception as exc:
         return {"queued": False, "error_type": type(exc).__name__}
+
+
+def check_display_heartbeat(config: AppConfig, *, now: datetime | None = None) -> dict[str, object]:
+    current = (now or datetime.now(UTC)).astimezone(UTC).replace(microsecond=0)
+    fetched_at, warning = _read_display_heartbeat(display_heartbeat_path(config))
+    if fetched_at is None:
+        missing: dict[str, object] = {"checked": False, "stale": None}
+        if warning is not None:
+            missing["warning"] = warning
+        return missing
+    threshold = display_stale_threshold(config)
+    stale = current - fetched_at > threshold
+    if stale:
+        notice = safe_record_degradation(
+            config,
+            key="display-heartbeat",
+            title="Display updates are stale",
+            body=(
+                f"The display node last fetched the catalog at {fetched_at.isoformat()}. "
+                "The frame may be showing an old plate; check its power and network."
+            ),
+            event=NotificationEvent.DISPLAY_STALE,
+            now=current,
+        )
+    else:
+        notice = safe_record_recovery(
+            config,
+            key="display-heartbeat",
+            title="Display updates recovered",
+            body="The display node is fetching the catalog again.",
+            event=NotificationEvent.DISPLAY_RECOVERED,
+        )
+    return {
+        "checked": True,
+        "stale": stale,
+        "fetched_at": fetched_at.isoformat(),
+        "threshold_minutes": int(threshold.total_seconds() // 60),
+        "notice": notice,
+    }
 
 
 def requeue_dead_letters(config: AppConfig, *, now: datetime | None = None) -> int:
@@ -635,13 +686,23 @@ def _required_datetime(value: object, source: Path) -> datetime:
 
 
 def _health_datetime(value: object) -> datetime | None:
-    if not isinstance(value, str):
-        return None
+    return parse_utc_timestamp(value)
+
+
+def _read_display_heartbeat(path: Path) -> tuple[datetime | None, str | None]:
+    # A missing file is a valid no-signal state; a corrupt file is reported, never fatal.
+    if not path.exists():
+        return None, None
     try:
-        parsed = datetime.fromisoformat(value)
-    except ValueError:
-        return None
-    return parsed.astimezone(UTC) if parsed.tzinfo is not None else None
+        raw = json.loads(path.read_text())
+    except (OSError, json.JSONDecodeError):
+        return None, f"Invalid display heartbeat: {path}"
+    if not isinstance(raw, dict) or raw.get("schema_version") != 1:
+        return None, f"Unsupported display heartbeat: {path}"
+    fetched_at = _health_datetime(raw.get("fetched_at"))
+    if fetched_at is None:
+        return None, f"Invalid display heartbeat timestamp: {path}"
+    return fetched_at, None
 
 
 def _read_health(path: Path) -> dict[str, dict[str, object]]:

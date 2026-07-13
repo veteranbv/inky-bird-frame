@@ -269,6 +269,10 @@ Every approved species lives under `catalog/species/<taxon-id>-<slug>/`:
 - `display.png`: hardware-ready `1600x1200` image
 - `manifest.json`: facts, research and review sources, reference provenance,
   quality scores, generation metadata, and SHA-256 checksums
+- `profile.json`: factual species profile matching the manifest, when produced
+  by the current pipeline
+- `quality-review.json`: sourced review matching the manifest, when produced by
+  the current pipeline
 
 Downloaded source photographs, run logs, pending work, rejected work, and
 display state stay under ignored runtime storage. Reference licenses and source

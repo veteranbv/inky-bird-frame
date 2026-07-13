@@ -108,7 +108,7 @@ max_delivery_attempts = 20
 
 # Keep real service URLs only in your private config.toml. Choose url or url_env, not both.
 # Events: discovery, generation_approved, terminal_error, degraded, recovered,
-# publication_error, publication_recovered.
+# publication_error, publication_recovered, display_stale, display_recovered.
 
 # [[notifications.destinations]]
 # name = "pushover"

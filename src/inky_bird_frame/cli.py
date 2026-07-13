@@ -44,6 +44,7 @@ from .errors import InkyBirdFrameError
 from .images import prepare_uploaded_image
 from .installation import InstallationRole, doctor, setup
 from .notifications import (
+    check_display_heartbeat,
     dispatch_notifications,
     notification_status,
     requeue_dead_letters,
@@ -562,7 +563,9 @@ def notifications_test_command(args: argparse.Namespace) -> int:
 
 
 def notifications_dispatch_command(args: argparse.Namespace) -> int:
-    print_result(dispatch_notifications(_config(args)))
+    config = _config(args)
+    display_heartbeat = check_display_heartbeat(config)
+    print_result({**dispatch_notifications(config), "display_heartbeat": display_heartbeat})
     return 0
 
 

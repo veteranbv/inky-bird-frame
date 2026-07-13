@@ -4,18 +4,32 @@ from __future__ import annotations
 
 import json
 import mimetypes
+from contextlib import suppress
 from http import HTTPStatus
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from urllib.parse import unquote, urlsplit
 
-from .catalog import read_json, rebuild_catalog_index
+from .catalog import read_json, rebuild_catalog_index, utc_now
 from .config import ControllerConfig
+from .errors import CatalogError
+from .http import write_json_atomic
+
+
+def _species_count(path: Path) -> int:
+    try:
+        value = read_json(path)
+    except CatalogError:
+        return 0
+    if isinstance(value, dict) and isinstance(value.get("species"), list):
+        return len(value["species"])
+    return 0
 
 
 class CatalogRequestHandler(BaseHTTPRequestHandler):
     catalog_dir: Path
     active_catalog_path: Path
+    state_dir: Path
 
     def _send_json(self, status: HTTPStatus, payload: object) -> None:
         body = json.dumps(payload, sort_keys=True).encode()
@@ -39,30 +53,31 @@ class CatalogRequestHandler(BaseHTTPRequestHandler):
     def do_GET(self) -> None:  # noqa: N802 - BaseHTTPRequestHandler API
         request_path = urlsplit(self.path).path
         if request_path == "/health":
-            entries = rebuild_catalog_index(self.catalog_dir)
-            active_count = 0
-            if self.active_catalog_path.is_file():
-                active = read_json(self.active_catalog_path)
-                if isinstance(active, dict) and isinstance(active.get("species"), list):
-                    active_count = len(active["species"])
             self._send_json(
                 HTTPStatus.OK,
                 {
                     "ok": True,
-                    "approved_species": len(entries),
-                    "active_species": active_count,
+                    "approved_species": _species_count(self.catalog_dir / "index.json"),
+                    "active_species": _species_count(self.active_catalog_path),
                     "schema_version": 1,
                 },
             )
             return
         if request_path == "/v1/catalog":
-            if not self.active_catalog_path.is_file():
+            try:
+                payload = read_json(self.active_catalog_path)
+            except CatalogError:
                 self._send_json(
                     HTTPStatus.SERVICE_UNAVAILABLE,
                     {"ok": False, "error": "active catalog unavailable", "schema_version": 1},
                 )
                 return
-            self._send_json(HTTPStatus.OK, read_json(self.active_catalog_path))
+            self._send_json(HTTPStatus.OK, payload)
+            with suppress(OSError):
+                write_json_atomic(
+                    self.state_dir / "display-last-fetch.json",
+                    {"schema_version": 1, "fetched_at": utc_now()},
+                )
             return
         prefix = "/v1/assets/"
         if request_path.startswith(prefix):
@@ -87,13 +102,17 @@ class CatalogRequestHandler(BaseHTTPRequestHandler):
 
 def serve_catalog(config: ControllerConfig) -> None:
     config.catalog_dir.mkdir(parents=True, exist_ok=True)
-    rebuild_catalog_index(config.catalog_dir)
+    try:
+        rebuild_catalog_index(config.catalog_dir)
+    except CatalogError as exc:
+        print(json.dumps({"event": "catalog_index_rebuild_failed", "error": str(exc)}))
     handler = type(
         "ConfiguredCatalogRequestHandler",
         (CatalogRequestHandler,),
         {
             "catalog_dir": config.catalog_dir,
             "active_catalog_path": config.state_dir / "active-catalog.json",
+            "state_dir": config.state_dir,
         },
     )
     server = ThreadingHTTPServer((config.bind_host, config.port), handler)

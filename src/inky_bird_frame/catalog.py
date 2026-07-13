@@ -274,13 +274,54 @@ def is_bounded_generation(generation: object) -> bool:
     )
 
 
+def clear_catalog_staging(catalog_dir: Path, name: str | None = None) -> None:
+    target = catalog_dir / ".staging" if name is None else catalog_dir / ".staging" / name
+    if target.is_symlink() or target.is_file():
+        target.unlink()
+    elif target.is_dir():
+        shutil.rmtree(target)
+
+
+def _asset_checksums(manifest: dict[str, object]) -> tuple[str, str] | None:
+    assets = manifest.get("assets")
+    if not isinstance(assets, dict):
+        return None
+    portrait = assets.get("portrait")
+    display = assets.get("display")
+    if not isinstance(portrait, dict) or not isinstance(display, dict):
+        return None
+    portrait_hash = portrait.get("sha256")
+    display_hash = display.get("sha256")
+    if not isinstance(portrait_hash, str) or not isinstance(display_hash, str):
+        return None
+    return portrait_hash, display_hash
+
+
+def _is_completed_approval(manifest: dict[str, object], destination: Path) -> bool:
+    existing_path = destination / "manifest.json"
+    if not existing_path.is_file():
+        return False
+    try:
+        existing = read_json(existing_path)
+    except CatalogError:
+        return False
+    checksums = _asset_checksums(manifest)
+    return (
+        isinstance(existing, dict)
+        and existing.get("status") == "approved"
+        and existing.get("taxon_id") == manifest.get("taxon_id")
+        and checksums is not None
+        and _asset_checksums(existing) == checksums
+    )
+
+
 def approve_candidate(state_dir: Path, catalog_dir: Path, taxon_id: int) -> CatalogEntry:
     source = find_taxon_directory(state_dir / "pending", taxon_id)
     if source is None:
         raise CatalogError(f"No pending candidate exists for taxon {taxon_id}")
     manifest_path = source / "manifest.json"
     manifest = read_json(manifest_path)
-    if not isinstance(manifest, dict) or manifest.get("status") != "pending":
+    if not isinstance(manifest, dict) or manifest.get("status") not in ("pending", "approved"):
         raise CatalogError(f"Candidate manifest is not pending: {manifest_path}")
     review = manifest.get("quality_review")
     if not isinstance(review, dict) or review.get("passed") is not True:
@@ -290,17 +331,24 @@ def approve_candidate(state_dir: Path, catalog_dir: Path, taxon_id: int) -> Cata
     if not isinstance(slug, str):
         raise CatalogError("Candidate manifest has no slug")
     destination = catalog_dir / "species" / f"{taxon_id}-{slug}"
+    clear_catalog_staging(catalog_dir, destination.name)
     if destination.exists():
-        raise CatalogError(
-            f"Taxon {taxon_id} is already approved; use an explicit replacement workflow"
-        )
+        if not _is_completed_approval(manifest, destination):
+            raise CatalogError(
+                f"Taxon {taxon_id} is already approved; use an explicit replacement workflow"
+            )
+        shutil.rmtree(source)
+        entries = rebuild_catalog_index(catalog_dir)
+        return next(entry for entry in entries if entry.taxon_id == taxon_id)
 
     approved_manifest = dict(manifest)
     approved_manifest["status"] = "approved"
     approved_manifest["approved_at"] = utc_now()
-    write_json_atomic(manifest_path, approved_manifest)
+    staged = catalog_dir / ".staging" / destination.name
+    shutil.copytree(source, staged)
+    write_json_atomic(staged / "manifest.json", approved_manifest)
     destination.parent.mkdir(parents=True, exist_ok=True)
-    shutil.copytree(source, destination)
+    staged.rename(destination)
     shutil.rmtree(source)
     entries = rebuild_catalog_index(catalog_dir)
     return next(entry for entry in entries if entry.taxon_id == taxon_id)

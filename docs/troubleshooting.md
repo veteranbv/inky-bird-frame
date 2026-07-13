@@ -85,6 +85,20 @@ A multi-provider refresh reports each provider independently and continues when
 at least one configured provider is healthy. A refresh failure does not remove
 the existing active catalog.
 
+### TLS or certificate errors right after boot
+
+Raspberry Pi computers have no battery-backed real-time clock. After a power
+loss, the clock is wrong until NTP synchronizes, so outbound HTTPS calls can
+fail certificate validity checks during the first minutes after boot. These
+errors clear on their own once the clock is correct.
+
+```bash
+timedatectl
+```
+
+Wait for `System clock synchronized: yes` before treating a certificate
+failure as a persistent problem.
+
 ### Generation fails or keeps retrying
 
 ```bash
