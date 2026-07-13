@@ -5,18 +5,13 @@ that returns after a reboot. Follow the sections in order. The first panel test
 uses an included plate, so you can prove the hardware before setting up Codex or
 bird observations.
 
-```mermaid
-flowchart LR
-    S["Observation services"] --> C["Controller"]
-    C --> G["Codex generation and review"]
-    G --> C
-    D["Raspberry Pi display node"] -- "GET catalog and images on port 8793" --> C
-    C -- "Approved plates" --> D
-    D --> P["Inky Impression"]
-```
+![Inky Bird Frame runtime architecture showing Internet services, the controller,
+its private HTTP connection with the Raspberry Pi display node, and the Inky
+Impression panel](images/installation-architecture.png)
 
-The display starts every application connection. Port 8793 stays on the trusted
-network and is never forwarded to the internet.
+The display initiates every application connection. The controller's configured
+port (8793 in the supplied example configuration) must remain on a trusted
+network and must not be forwarded from the public internet.
 
 ## Choose the two computers
 
@@ -62,8 +57,8 @@ CLI. The display requires `git`, `rsync`, and Pimoroni's Python environment.
 
 | From | To | Purpose |
 | --- | --- | --- |
-| Controller | Internet HTTPS (TCP 443) | Codex, iNaturalist, Zippopotam.us, licensed references, and configured research sources |
-| Display node | Controller TCP 8793 by default | Read-only health, catalog, and image downloads |
+| Controller | Internet HTTPS (TCP 443) | Codex, configured observation services, ZIP lookup, licensed references, and configured research sources |
+| Display node | Configured controller TCP port (8793 in the supplied example) | Read-only health, catalog, and image downloads |
 | Setup computer | Display node SSH (TCP 22) | Installation, updates, and troubleshooting |
 
 The two computers do not have to share a subnet. They must be routable to each
@@ -72,9 +67,9 @@ controller. Give the controller a stable DNS name or DHCP reservation because
 the display stores its URL. The display itself may use ordinary DHCP because it
 initiates every application connection.
 
-Do not expose port 8793 to the public internet. The built-in server is an
-unauthenticated, read-only LAN service. Use a VPN or an authenticated TLS reverse
-proxy if traffic must cross an untrusted network.
+Do not expose the configured controller port to the public internet. The
+built-in server is an unauthenticated, read-only LAN service. Use a VPN or an
+authenticated TLS reverse proxy if traffic must cross an untrusted network.
 
 ## 1. Install the controller
 

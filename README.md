@@ -21,24 +21,18 @@ plates on a color e-paper display.
   <br><em>A finished portrait installation using the recommended 12 x 16 inch frame with a panel-fitted mat opening.</em>
 </p>
 
-The controller checks public bird observations within a distance and time
-window you choose. If a matching plate already exists, it uses it. If not, the
-controller gathers licensed reference photos, researches the species, creates a
+The controller checks the observation sources you configure. iNaturalist and
+eBird use your distance and time window; BirdWeather uses recent detections from
+your station. If a matching plate already exists, the controller uses it. If
+not, it gathers licensed reference photos, researches the species, creates a
 plate with Codex, and reviews the result before it can appear on the frame.
 Approved plates are cached and reused.
 
 ## How it works
 
-```mermaid
-flowchart LR
-    S["iNaturalist, eBird, or BirdWeather"] --> C["Controller"]
-    C --> G["Codex generation and review"]
-    G --> A["Approved plate catalog"]
-    A --> C
-    D["Raspberry Pi display node"] -- "GET catalog and images" --> C
-    C -- "Approved plates over the private network" --> D
-    D --> P["Pimoroni Inky Impression"]
-```
+<p align="center">
+  <img src="docs/images/installation-architecture.png" alt="Inky Bird Frame runtime architecture showing Internet services, the controller, its private HTTP connection with the Raspberry Pi display node, and the Inky Impression panel" width="760">
+</p>
 
 The project has two jobs:
 
