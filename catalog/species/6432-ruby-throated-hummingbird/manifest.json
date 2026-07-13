@@ -1,0 +1,147 @@
+{
+  "approved_at": "2026-07-13T06:39:52+00:00",
+  "assets": {
+    "display": {
+      "filename": "display.png",
+      "sha256": "e9371e6ac6568fc2905350396c013c6b3e16615a65b88da15ee71d24b58366b6"
+    },
+    "portrait": {
+      "filename": "portrait.png",
+      "sha256": "4c7a783ebf7c18e58b37c82721ba9e4cd84b581f87b292b9208a1a6dd345dda8"
+    }
+  },
+  "common_name": "Ruby-throated Hummingbird",
+  "generation": {
+    "attempt": 1,
+    "generated_at": "2026-07-13T06:39:52+00:00",
+    "generator": "Codex subscription / built-in gpt-image-2",
+    "max_attempts": 3,
+    "prompt_version": "field-journal-v2"
+  },
+  "profile": {
+    "behavior": "Hovers to feed, flies with rapid, precise movements, and catches small insects as well as taking nectar.",
+    "common_name": "Ruby-throated Hummingbird",
+    "family": "Trochilidae",
+    "field_marks": [
+      "Tiny, compact hummingbird with a long, slender, slightly downcurved dark bill.",
+      "Bright emerald to golden-green crown and upperparts.",
+      "Gray-white to whitish underparts, often with buffy flanks.",
+      "Adult male has an iridescent ruby-red throat that can look dark in poor light; female lacks it.",
+      "Short dark tail: forked in males; females show white tips on the outer tail feathers.",
+      "Large dark eye, very short legs, and long, narrow wings adapted for hovering."
+    ],
+    "habitat": "Open woodlands and forest edges, including meadows, old fields, orchards, gardens, hedgerows, and scrub.",
+    "measurements": {
+      "length": "2.8\u20133.5 in (7\u20139 cm)",
+      "weight": "0.1\u20130.2 oz (2\u20136 g)",
+      "wingspan": "3.1\u20134.3 in (8\u201311 cm)"
+    },
+    "palette": [
+      "emerald green",
+      "golden green",
+      "ruby red",
+      "gray-white",
+      "black"
+    ],
+    "scientific_name": "Archilochus colubris",
+    "sources": [
+      {
+        "title": "Ruby-throated Hummingbird Identification \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Ruby-throated_Hummingbird/id"
+      },
+      {
+        "title": "Archilochus colubris \u2014 Animal Diversity Web",
+        "url": "https://animaldiversity.org/accounts/Archilochus_colubris/"
+      }
+    ],
+    "taxon_id": 6432
+  },
+  "quality_review": {
+    "anatomy_accuracy": 4,
+    "composition_quality": 5,
+    "findings": [
+      "Species identity verified: the plate depicts an adult male Ruby-throated Hummingbird, Archilochus colubris (Trochilidae).",
+      "All visible text claims are supported: scientific and common names, family, length, weight, wingspan, green upperparts, gray-white underparts, red male gorget, male forked dark tail, female white-tipped outer tail feathers, habitat, hovering/nectar/insect behavior, and palette.",
+      "The illustrated male\u2019s slender slightly downcurved dark bill, large dark eye, compact body, green crown/back, pale underparts, ruby throat, short legs/feet, folded long narrow wing, and forked dark tail are consistent with the verified species and the supplied references. The tail and feet are slightly stylized/over-emphasized, but not materially inaccurate.",
+      "Anatomy check passes: one head, one beak, two wings (one occluded in side view), two legs, and one tail; no extra or malformed structures.",
+      "No place name, ZIP code, coordinates, map, or local-observation detail appears on the plate."
+    ],
+    "location_free": true,
+    "passed": true,
+    "species_accuracy": 5,
+    "text_accuracy": 5,
+    "verification_sources": [
+      {
+        "title": "Ruby-throated Hummingbird Identification \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Ruby-throated_Hummingbird/id"
+      },
+      {
+        "title": "Archilochus colubris \u2014 Animal Diversity Web",
+        "url": "https://animaldiversity.org/accounts/Archilochus_colubris/"
+      },
+      {
+        "title": "Ruby-throated Hummingbird \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/ruby-throated-hummingbird"
+      }
+    ]
+  },
+  "references": [
+    {
+      "attribution": "(c) Blake Ross, some rights reserved (CC BY)",
+      "filename": "01-239401590.jpg",
+      "height": 1539,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/239401590/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 139913607,
+      "observer": "blakemross",
+      "photo_id": 239401590,
+      "sha256": "c41d557f1d38ae42c35138c90bb00af19d4674a66fb9a0e9e995c10af7da1b6f",
+      "source_url": "https://www.inaturalist.org/observations/139913607",
+      "width": 2048
+    },
+    {
+      "attribution": "no rights reserved",
+      "filename": "02-314800928.jpeg",
+      "height": 1536,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/314800928/large.jpeg",
+      "license_code": "cc0",
+      "observation_id": 180695032,
+      "observer": "carterdorscht",
+      "photo_id": 314800928,
+      "sha256": "95f083f827834b795be233721c87f7f1765fc31a36dfd7041767b40cc9a0fc7c",
+      "source_url": "https://www.inaturalist.org/observations/180695032",
+      "width": 2048
+    },
+    {
+      "attribution": "no rights reserved",
+      "filename": "03-47442194.jpg",
+      "height": 2048,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/47442194/large.jpg",
+      "license_code": "cc0",
+      "observation_id": 30367760,
+      "observer": "kpmcfarland",
+      "photo_id": 47442194,
+      "sha256": "f64b06720fa3a66ebc91a9750869afc0344d71c1670f59201d6ca97675dd415b",
+      "source_url": "https://www.inaturalist.org/observations/30367760",
+      "width": 1536
+    },
+    {
+      "attribution": "(c) Nick Block, some rights reserved (CC BY)",
+      "filename": "04-44499619.jpeg",
+      "height": 995,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/44499619/large.jpeg",
+      "license_code": "cc-by",
+      "observation_id": 28541375,
+      "observer": "nlblock",
+      "photo_id": 44499619,
+      "sha256": "38ddd54c2e126ae56169783bd2a2edaa4653149d19c00094cb3a01578daf850f",
+      "source_url": "https://www.inaturalist.org/observations/28541375",
+      "width": 1200
+    }
+  ],
+  "schema_version": 1,
+  "scientific_name": "Archilochus colubris",
+  "slug": "ruby-throated-hummingbird",
+  "status": "approved",
+  "taxon_id": 6432
+}

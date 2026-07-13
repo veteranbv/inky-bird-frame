@@ -1,0 +1,29 @@
+{
+  "anatomy_accuracy": 4,
+  "composition_quality": 5,
+  "findings": [
+    "Species identity verified: the plate depicts an adult male Ruby-throated Hummingbird, Archilochus colubris (Trochilidae).",
+    "All visible text claims are supported: scientific and common names, family, length, weight, wingspan, green upperparts, gray-white underparts, red male gorget, male forked dark tail, female white-tipped outer tail feathers, habitat, hovering/nectar/insect behavior, and palette.",
+    "The illustrated male\u2019s slender slightly downcurved dark bill, large dark eye, compact body, green crown/back, pale underparts, ruby throat, short legs/feet, folded long narrow wing, and forked dark tail are consistent with the verified species and the supplied references. The tail and feet are slightly stylized/over-emphasized, but not materially inaccurate.",
+    "Anatomy check passes: one head, one beak, two wings (one occluded in side view), two legs, and one tail; no extra or malformed structures.",
+    "No place name, ZIP code, coordinates, map, or local-observation detail appears on the plate."
+  ],
+  "location_free": true,
+  "passed": true,
+  "species_accuracy": 5,
+  "text_accuracy": 5,
+  "verification_sources": [
+    {
+      "title": "Ruby-throated Hummingbird Identification \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Ruby-throated_Hummingbird/id"
+    },
+    {
+      "title": "Archilochus colubris \u2014 Animal Diversity Web",
+      "url": "https://animaldiversity.org/accounts/Archilochus_colubris/"
+    },
+    {
+      "title": "Ruby-throated Hummingbird \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/ruby-throated-hummingbird"
+    }
+  ]
+}
