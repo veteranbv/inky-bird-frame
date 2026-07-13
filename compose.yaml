@@ -52,6 +52,12 @@ services:
 
   scheduler:
     <<: *controller-common
+    # Bubblewrap creates an unprivileged user namespace for Codex's inner sandbox.
+    # Docker's default seccomp and AppArmor profiles block namespace setup and mounts.
+    security_opt:
+      - no-new-privileges:true
+      - seccomp=unconfined
+      - apparmor=unconfined
     env_file:
       - path: ${INKY_BIRD_ENV:-./controller.env}
         required: false

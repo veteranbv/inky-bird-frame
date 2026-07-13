@@ -18,6 +18,13 @@ refresh in the current scheduler process. A long job can delay later jobs; each
 overdue job runs once when the prior work finishes instead of creating a burst
 of overlapping processes.
 
+The scheduler runs as UID 10001 with a read-only root filesystem, all Linux
+capabilities dropped, and `no-new-privileges`. It disables Docker's outer
+seccomp and AppArmor profiles because they block the unprivileged namespace and
+mount setup required by Bubblewrap. Codex then applies its own Bubblewrap
+filesystem and network sandbox to generation and review commands. The
+controller and bootstrap retain Docker's default security profiles.
+
 ## Prerequisites
 
 Install Docker Engine with the Compose plugin, or Docker Desktop, on a 64-bit
@@ -102,8 +109,12 @@ local configuration change. The local file remains the operator-owned source
 of truth. If the services are already running, reload the imported settings:
 
 ```bash
-docker compose restart controller scheduler
+docker compose up --detach --force-recreate controller scheduler
 ```
+
+Recreating the services is required when `controller.env` changes because a
+container restart does not reload its environment. It also gives both services
+the newly imported `config.toml` in one consistent operation.
 
 ## Authenticate Codex
 

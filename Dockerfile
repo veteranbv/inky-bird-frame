@@ -53,8 +53,9 @@ LABEL org.opencontainers.image.title="Inky Bird Frame Controller" \
       org.opencontainers.image.created="${BUILD_DATE}" \
       org.opencontainers.image.licenses="MIT"
 RUN apt-get update \
-    && apt-get install --yes --no-install-recommends ca-certificates git \
+    && apt-get install --yes --no-install-recommends bubblewrap ca-certificates git \
     && rm -rf /var/lib/apt/lists/* \
+    && bwrap --version \
     && groupadd --gid 10001 inky \
     && useradd --uid 10001 --gid 10001 --create-home --shell /usr/sbin/nologin inky
 COPY --from=build /app/.venv /app/.venv

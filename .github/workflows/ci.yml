@@ -101,6 +101,13 @@ jobs:
             .services.scheduler.environment.SECRET_BOUNDARY_SENTINEL == "present"
             and (.services.controller.environment.SECRET_BOUNDARY_SENTINEL == null)
             and (.services.bootstrap.environment.SECRET_BOUNDARY_SENTINEL == null)
+            and (.services.scheduler.security_opt | index("seccomp=unconfined") != null)
+            and (.services.scheduler.security_opt | index("apparmor=unconfined") != null)
+            and (.services.scheduler.security_opt | index("no-new-privileges:true") != null)
+            and (.services.controller.security_opt | index("seccomp=unconfined") == null)
+            and (.services.controller.security_opt | index("apparmor=unconfined") == null)
+            and (.services.bootstrap.security_opt | index("seccomp=unconfined") == null)
+            and (.services.bootstrap.security_opt | index("apparmor=unconfined") == null)
           ' "$compose_json"
 
       - name: Build controller container
@@ -114,6 +121,15 @@ jobs:
           docker volume create "$config_volume"
           docker run --rm inky-bird-frame:ci --help
           docker run --rm --entrypoint codex inky-bird-frame:ci --version
+          docker run --rm --read-only --cap-drop ALL \
+            --security-opt no-new-privileges:true \
+            --security-opt seccomp=unconfined \
+            --security-opt apparmor=unconfined \
+            --pids-limit 256 \
+            --tmpfs /tmp:size=256m,mode=1777 \
+            --tmpfs /data:uid=10001,gid=10001 \
+            --tmpfs /home/inky/.codex:uid=10001,gid=10001 \
+            --entrypoint codex inky-bird-frame:ci sandbox -- /bin/true
           docker run --rm --entrypoint gh inky-bird-frame:ci --version
           docker run --rm inky-bird-frame:ci catalog validate --catalog /app/catalog
           docker run --rm --interactive \
