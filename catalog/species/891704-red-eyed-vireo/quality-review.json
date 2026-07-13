@@ -1,0 +1,27 @@
+{
+  "anatomy_accuracy": 4,
+  "composition_quality": 5,
+  "findings": [
+    "Identity, taxonomy, plumage, adult red iris, strong hooked bill, stocky build, fairly short tail, dark gray legs, and the visible head/beak/wing/leg/tail anatomy are consistent with Red-eyed Vireo and the supplied reference photos.",
+    "All printed measurement values match Cornell All About Birds. Audubon and Animal Diversity Web publish larger length and wingspan figures (13\u201315 cm and 25\u201328 cm; 15.2 cm and 25.4 cm respectively), so the plate should identify its measurement authority if cross-source consistency is required; this is a source discrepancy, not a material species-identification error.",
+    "The behavior, habitat, family, scientific name, and field-mark text agree with the live sources. The plate contains no place name, ZIP code, coordinates, map, or local-observation detail."
+  ],
+  "location_free": true,
+  "passed": true,
+  "species_accuracy": 5,
+  "text_accuracy": 4,
+  "verification_sources": [
+    {
+      "title": "Red-eyed Vireo Identification \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Red-eyed_Vireo/id"
+    },
+    {
+      "title": "Vireo olivaceus \u2014 Animal Diversity Web",
+      "url": "https://animaldiversity.org/accounts/Vireo_olivaceus/"
+    },
+    {
+      "title": "Red-eyed Vireo \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/red-eyed-vireo"
+    }
+  ]
+}

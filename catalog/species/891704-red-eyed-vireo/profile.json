@@ -1,0 +1,39 @@
+{
+  "behavior": "Slow, methodical canopy forager that gleans invertebrates from leaves; adults are often heard giving persistent song.",
+  "common_name": "Red-eyed Vireo",
+  "family": "Vireonidae",
+  "field_marks": [
+    "Olive-green upperparts, including back, wings, and tail",
+    "Clean white throat, breast, and belly",
+    "Gray crown with a bold white eyebrow stripe",
+    "Dark eye-line bordering the eyebrow; adult iris dark red but often appears dark at distance",
+    "Strong, long dark bill with a small hook at the tip",
+    "Stocky body with a fairly short tail and dark gray legs"
+  ],
+  "habitat": "Deciduous and mixed forests with dense or shrubby understory; also uses woodland, forest edges, second-growth forest, and other tree-rich habitats during movement periods.",
+  "measurements": {
+    "length": "12\u201313 cm (4.7\u20135.1 in)",
+    "weight": "12\u201326 g (0.4\u20130.9 oz)",
+    "wingspan": "23\u201325 cm (9.1\u20139.8 in)"
+  },
+  "palette": [
+    "olive green",
+    "soft gray",
+    "clean white",
+    "pale yellow-green",
+    "charcoal gray",
+    "dark red"
+  ],
+  "scientific_name": "Vireo olivaceus",
+  "sources": [
+    {
+      "title": "Red-eyed Vireo Identification \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Red-eyed_Vireo/id"
+    },
+    {
+      "title": "Vireo olivaceus \u2014 Animal Diversity Web",
+      "url": "https://animaldiversity.org/accounts/Vireo_olivaceus/"
+    }
+  ],
+  "taxon_id": 891704
+}
