@@ -3,6 +3,21 @@ from __future__ import annotations
 from pathlib import Path
 
 
+def _controller_installers() -> list[str]:
+    root = Path(__file__).resolve().parents[1] / "deploy"
+    return [
+        (root / "install-controller.sh").read_text(),
+        (root / "install-controller-systemd.sh").read_text(),
+    ]
+
+
+def test_controller_installers_use_provider_lists_for_managed_credentials() -> None:
+    for script in _controller_installers():
+        assert "DiscoveryProvider.EBIRD in config.discovery.sources" in script
+        assert "DiscoveryProvider.BIRDWEATHER in config.discovery.sources" in script
+        assert "config.discovery.source." not in script
+
+
 def test_controller_installer_restores_schedule_without_run_at_load_on_failure() -> None:
     script = (Path(__file__).resolve().parents[1] / "deploy" / "install-controller.sh").read_text()
 
@@ -25,7 +40,9 @@ def test_controller_installer_restores_schedule_without_run_at_load_on_failure()
     assert "sync_public_catalog(source_catalog, managed_catalog)" in script
     assert "sync_public_catalog(source_catalog, config.controller.catalog_dir)" in script
     assert "managed_catalog.resolve() != config.controller.catalog_dir.resolve()" in script
-    assert "requires ebird_api_key in the private config" in script
+    assert "cannot use {names}" in script
+    assert 'environment_credentials.append("ebird_api_key_env")' in script
+    assert 'environment_credentials.append("birdweather_token_env")' in script
     assert "config.controller.workspace_dir.mkdir(parents=True, exist_ok=True)" in script
     assert "config.controller.catalog_dir.parent.mkdir(parents=True, exist_ok=True)" in script
     assert "rebuild_catalog_index" not in script
@@ -61,7 +78,9 @@ def test_systemd_controller_installer_restarts_boot_persistent_services() -> Non
     assert "sync_public_catalog(source_catalog, managed_catalog)" in script
     assert "sync_public_catalog(source_catalog, config.controller.catalog_dir)" in script
     assert "managed_catalog.resolve() != config.controller.catalog_dir.resolve()" in script
-    assert "requires ebird_api_key in the private config" in script
+    assert "cannot use {names}" in script
+    assert 'environment_credentials.append("ebird_api_key_env")' in script
+    assert 'environment_credentials.append("birdweather_token_env")' in script
     assert "config.controller.workspace_dir.mkdir(parents=True, exist_ok=True)" in script
     assert "config.controller.catalog_dir.parent.mkdir(parents=True, exist_ok=True)" in script
     assert "rebuild_catalog_index" not in script
