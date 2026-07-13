@@ -323,7 +323,16 @@ def resolve_ebird_species(
     *,
     now: datetime | None = None,
     timeout_seconds: float = 10.0,
+    persist_cache: bool = True,
 ) -> EbirdResolution:
+    if not persist_cache:
+        return _resolve_ebird_species_locked(
+            observations,
+            cache_path,
+            now=now,
+            timeout_seconds=timeout_seconds,
+            persist_cache=False,
+        )
     cache_path.parent.mkdir(parents=True, exist_ok=True)
     with _ebird_crosswalk_lock(cache_path):
         return _resolve_ebird_species_locked(
@@ -331,6 +340,7 @@ def resolve_ebird_species(
             cache_path,
             now=now,
             timeout_seconds=timeout_seconds,
+            persist_cache=True,
         )
 
 
@@ -340,6 +350,7 @@ def _resolve_ebird_species_locked(
     *,
     now: datetime | None,
     timeout_seconds: float,
+    persist_cache: bool,
 ) -> EbirdResolution:
     current = (now or datetime.now(UTC)).astimezone(UTC).replace(microsecond=0)
     cache = _read_ebird_crosswalk(cache_path)
@@ -389,7 +400,7 @@ def _resolve_ebird_species_locked(
         resolved.append(species)
         changed = True
 
-    if changed:
+    if changed and persist_cache:
         _write_ebird_crosswalk(cache_path, cache)
     return EbirdResolution(species=resolved, unresolved=unresolved)
 

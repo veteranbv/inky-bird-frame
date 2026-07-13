@@ -15,9 +15,11 @@ from inky_bird_frame.cli import (
     build_parser,
     generate_command,
     main,
+    refresh_command,
     retry_command,
     species_to_dict,
 )
+from inky_bird_frame.config import DiscoverySource
 from inky_bird_frame.controller import exclusive_cycle_lock
 from inky_bird_frame.errors import DataSourceError, GenerationError
 
@@ -236,6 +238,30 @@ class CliTests(unittest.TestCase):
         body = degradation.call_args.kwargs["body"]
         self.assertNotIn(secret, body)
         self.assertIn("DataSourceError", body)
+
+    def test_refresh_does_not_clear_taxonomy_alert_when_ebird_fails(self) -> None:
+        config = SimpleNamespace(
+            discovery=SimpleNamespace(source=DiscoverySource.COMBINED),
+        )
+        result = {
+            "providers": [
+                {"name": "inaturalist", "status": "ok"},
+                {"name": "ebird", "status": "error"},
+            ],
+            "unresolved_species": [],
+            "new_species": [],
+        }
+        with (
+            patch("inky_bird_frame.cli._config", return_value=config),
+            patch("inky_bird_frame.cli.run_refresh_cycle", return_value=result),
+            patch("inky_bird_frame.cli.safe_record_degradation"),
+            patch("inky_bird_frame.cli.safe_record_recovery") as recover,
+            redirect_stdout(io.StringIO()),
+        ):
+            refresh_command(Namespace())
+
+        recovered_keys = [call.kwargs["key"] for call in recover.call_args_list]
+        self.assertNotIn("ebird-taxonomy", recovered_keys)
 
 
 if __name__ == "__main__":

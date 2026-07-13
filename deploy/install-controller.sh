@@ -95,6 +95,11 @@ from inky_bird_frame.publisher import sync_public_catalog
 ) = map(Path, sys.argv[1:])
 executable = app_dir / ".venv/bin/inky-bird-frame"
 config = load_config(config_path)
+if config.discovery.source.uses_ebird and config.discovery.ebird_api_key_env is not None:
+    raise ConfigurationError(
+        "The macOS LaunchAgent installer requires ebird_api_key in the private config "
+        "file; environment variables are not inherited by managed services"
+    )
 environment_destinations = [
     destination.name
     for destination in config.notifications.destinations

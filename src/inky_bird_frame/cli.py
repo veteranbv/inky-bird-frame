@@ -90,7 +90,7 @@ def _failure_notification(operation: str, exc: Exception) -> str:
 
 def discover_command(args: argparse.Namespace) -> int:
     config = _config(args)
-    discovery = discover_species(config)
+    discovery = discover_species(config, persist_taxonomy_cache=False)
     location = discovery.location
     print_result(
         {
@@ -134,6 +134,7 @@ def refresh_command(args: argparse.Namespace) -> int:
         body="Observation refresh is succeeding again.",
     )
     providers = result.get("providers")
+    ebird_succeeded = False
     if isinstance(providers, list):
         for provider in providers:
             if not isinstance(provider, dict) or not isinstance(provider.get("name"), str):
@@ -147,6 +148,8 @@ def refresh_command(args: argparse.Namespace) -> int:
                     body=f"The {name} provider failed; another configured provider supplied data.",
                 )
             else:
+                if name == "ebird":
+                    ebird_succeeded = True
                 safe_record_recovery(
                     config,
                     key=f"observation-provider-{name}",
@@ -161,7 +164,7 @@ def refresh_command(args: argparse.Namespace) -> int:
             title="Some eBird species are awaiting taxonomy matching",
             body=f"{len(unresolved)} species were deferred without blocking bird discovery.",
         )
-    elif config.discovery.source.uses_ebird:
+    elif ebird_succeeded:
         safe_record_recovery(
             config,
             key="ebird-taxonomy",

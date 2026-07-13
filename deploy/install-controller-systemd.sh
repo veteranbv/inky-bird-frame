@@ -97,6 +97,11 @@ from inky_bird_frame.publisher import sync_public_catalog
 unit_dir, root, app_dir, config_path, home = map(Path, sys.argv[1:6])
 user = sys.argv[6]
 config = load_config(config_path)
+if config.discovery.source.uses_ebird and config.discovery.ebird_api_key_env is not None:
+    raise ConfigurationError(
+        "The systemd installer requires ebird_api_key in the private config file; "
+        "environment variables are not inherited by managed services"
+    )
 environment_destinations = [
     destination.name
     for destination in config.notifications.destinations

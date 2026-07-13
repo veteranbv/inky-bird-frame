@@ -8,6 +8,7 @@ from unittest.mock import MagicMock, patch
 from urllib.parse import parse_qs, urlsplit
 
 from inky_bird_frame.birds import (
+    BirdSpecies,
     EbirdSpecies,
     ObservationWindow,
     date_range_for_window,
@@ -299,6 +300,22 @@ class EbirdTests(unittest.TestCase):
         self.assertEqual(fetch.call_count, 1)
         self.assertEqual(first.unresolved, [observation])
         self.assertEqual(second.unresolved, [observation])
+
+    def test_non_persistent_resolution_does_not_create_cache_state(self) -> None:
+        observation = EbirdSpecies("easblu", "Eastern Bluebird", "Sialia sialis", "2026-07-12")
+        species = BirdSpecies(12942, "Eastern Bluebird", "Sialia sialis", 1, "eBird")
+        with TemporaryDirectory() as temporary:
+            cache = Path(temporary) / "state/crosswalk.json"
+            with patch(
+                "inky_bird_frame.birds.fetch_inaturalist_taxon_match",
+                return_value=species,
+            ):
+                result = resolve_ebird_species([observation], cache, persist_cache=False)
+
+            state_exists = cache.parent.exists()
+
+        self.assertEqual(result.species, [species])
+        self.assertFalse(state_exists)
 
 
 if __name__ == "__main__":

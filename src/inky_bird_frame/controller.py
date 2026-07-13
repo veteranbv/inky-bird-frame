@@ -7,7 +7,7 @@ import json
 import os
 import shutil
 from collections.abc import Iterator
-from contextlib import contextmanager
+from contextlib import contextmanager, nullcontext
 from dataclasses import dataclass
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
@@ -127,6 +127,7 @@ def discover_species(
     window: ObservationWindow | None = None,
     radius_km: int | None = None,
     species_limit: int | None = None,
+    persist_taxonomy_cache: bool = True,
 ) -> DiscoveryResult:
     selected_source = source or config.discovery.source
     selected_window = window or config.discovery.observation_window
@@ -178,6 +179,7 @@ def discover_species(
             resolution = resolve_ebird_species(
                 observations,
                 config.controller.state_dir / "ebird-taxonomy-crosswalk.json",
+                persist_cache=persist_taxonomy_cache,
             )
         except (DataSourceError, ValueError) as exc:
             providers.append(ProviderStatus("ebird", "error", 0, error=str(exc)))
@@ -342,13 +344,15 @@ def enqueue_seed_species(
     if limit <= 0:
         raise ValueError("species_limit must be greater than zero")
 
-    with exclusive_cycle_lock(config.controller.state_dir):
+    cycle_lock = nullcontext() if dry_run else exclusive_cycle_lock(config.controller.state_dir)
+    with cycle_lock:
         discovery = discover_species(
             config,
             source=source,
             window=window,
             radius_km=radius,
             species_limit=limit,
+            persist_taxonomy_cache=not dry_run,
         )
         discovered = discovery.species
         approved = approved_taxon_ids(config.controller.catalog_dir)

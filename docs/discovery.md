@@ -13,7 +13,7 @@ powered by eBird. This project integrates the documented eBird API, not Merlin.
 | `combined` | Personal eBird key | 1, 7, or 30 days | Broad recent discovery with provider fallback |
 
 Request a personal key from [eBird](https://ebird.org/api/keygen). Store it in
-the private configuration or inject it through an environment variable:
+the private configuration:
 
 ```toml
 [discovery]
@@ -22,14 +22,16 @@ zip_code = "12345"
 radius_km = 8
 species_limit = 50
 window = "last-30-days"
-ebird_api_key_env = "EBIRD_API_KEY"
+ebird_api_key = "your-personal-api-key"
 ```
 
+For manually invoked commands, you may replace `ebird_api_key` with
+`ebird_api_key_env = "EBIRD_API_KEY"`. Managed controller services do not inherit the shell
+environment used during installation, so LaunchAgent and systemd installations require the direct
+value in the private mode-`0600` configuration file.
+
 Keep the configuration outside the checkout with mode `0600`. The application
-never writes the key to state, logs, catalog files, or command output. Native
-services do not necessarily inherit an interactive shell environment; a direct
-value in the protected private TOML is the simplest option unless the service
-manager explicitly injects `EBIRD_API_KEY`.
+never writes the key to state, logs, catalog files, or command output.
 
 ## How eBird enrichment works
 

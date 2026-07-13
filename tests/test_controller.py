@@ -193,6 +193,32 @@ class ControllerTests(unittest.TestCase):
         self.assertEqual(queue["species"][0]["taxon_id"], 2)
         self.assertNotIn("zip_code", queue)
 
+    def test_seed_dry_run_does_not_create_controller_state(self) -> None:
+        species = BirdSpecies(2, "New Bird", "Avis nova", 1, "eBird")
+        location = ZipLocation("12345", "Exampleville", "XY", 1.0, 2.0)
+        with TemporaryDirectory() as temporary:
+            config_path = Path(temporary) / "config.toml"
+            config_path.write_text(CONFIG)
+            config = load_config(config_path)
+            with (
+                patch(
+                    "inky_bird_frame.controller.discover_species",
+                    return_value=discovery_result(location, [species]),
+                ) as discover,
+                patch("inky_bird_frame.controller.approved_taxon_ids", return_value=set()),
+            ):
+                result = enqueue_seed_species(
+                    config,
+                    window=ObservationWindow.LAST_WEEK,
+                    dry_run=True,
+                )
+
+            state_exists = config.controller.state_dir.exists()
+
+        self.assertEqual(result["added_count"], 1)
+        self.assertFalse(state_exists)
+        self.assertFalse(discover.call_args.kwargs["persist_taxonomy_cache"])
+
     def test_generation_prioritizes_current_species_before_seed_queue(self) -> None:
         current = BirdSpecies(1, "Current Bird", "Avis current", 4, "iNaturalist")
         queued = BirdSpecies(2, "Queued Bird", "Avis queued", 3, "iNaturalist")

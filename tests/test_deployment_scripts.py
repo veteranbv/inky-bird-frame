@@ -23,6 +23,7 @@ def test_controller_installer_restores_schedule_without_run_at_load_on_failure()
     assert 'if [ "${root}" != "${app_dir}" ]; then' in script
     assert 'rsync -a "${root}/catalog/" "${app_dir}/catalog/"' not in script
     assert 'sync_public_catalog(root / "catalog", config.controller.catalog_dir)' in script
+    assert "requires ebird_api_key in the private config" in script
     assert "config.controller.workspace_dir.mkdir(parents=True, exist_ok=True)" in script
     assert "config.controller.catalog_dir.parent.mkdir(parents=True, exist_ok=True)" in script
     assert "rebuild_catalog_index" not in script
@@ -56,6 +57,7 @@ def test_systemd_controller_installer_restarts_boot_persistent_services() -> Non
     assert 'if [ "${root}" != "${app_dir}" ]; then' in script
     assert 'rsync -a "${root}/catalog/" "${app_dir}/catalog/"' not in script
     assert 'sync_public_catalog(root / "catalog", config.controller.catalog_dir)' in script
+    assert "requires ebird_api_key in the private config" in script
     assert "config.controller.workspace_dir.mkdir(parents=True, exist_ok=True)" in script
     assert "config.controller.catalog_dir.parent.mkdir(parents=True, exist_ok=True)" in script
     assert "rebuild_catalog_index" not in script
