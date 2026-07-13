@@ -31,7 +31,10 @@ Approved plates are cached and reused.
 ## How it works
 
 <p align="center">
-  <img src="docs/images/installation-architecture.png" alt="Inky Bird Frame runtime architecture showing Internet services, the controller, its private HTTP connection with the Raspberry Pi display node, and the Inky Impression panel" width="760">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="docs/images/installation-architecture-dark.png">
+    <img src="docs/images/installation-architecture.png" alt="Inky Bird Frame runtime architecture showing Internet services, the controller, its private HTTP connection with the Raspberry Pi display node, and the Inky Impression panel" width="760">
+  </picture>
 </p>
 
 The project has two jobs:
