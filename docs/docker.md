@@ -21,11 +21,11 @@ of overlapping processes.
 The scheduler runs as UID 10001 with a read-only root filesystem, all Linux
 capabilities dropped, and `no-new-privileges`. It disables Docker's outer
 seccomp and AppArmor profiles because they block the unprivileged namespace and
-mount setup required by Bubblewrap. The scheduler adds only `NET_ADMIN` so
-Bubblewrap can initialize loopback inside its isolated network namespace. Codex
-then applies its own Bubblewrap filesystem and network sandbox to generation and
-review commands. The controller and bootstrap retain Docker's default security
-profiles and no added capabilities.
+mount setup required by Bubblewrap. On Ubuntu, a targeted host AppArmor profile
+allows only the container's Codex binary to create the user namespace. Codex then
+applies its own Bubblewrap filesystem and network sandbox to generated commands.
+The controller and bootstrap retain Docker's default security profiles, and every
+service has all Linux capabilities dropped.
 
 ## Prerequisites
 
@@ -42,6 +42,18 @@ cp config.example.toml config.toml
 cp controller.env.example controller.env
 chmod 600 config.toml controller.env
 ```
+
+Ubuntu restricts unprivileged user namespaces through AppArmor. Install the
+included profile before starting the scheduler. This keeps the system-wide
+restriction enabled and grants the exception only to Codex inside this image:
+
+```bash
+sudo install -m 0644 deploy/apparmor/inky-bird-frame-codex \
+  /etc/apparmor.d/inky-bird-frame-codex
+sudo apparmor_parser -r /etc/apparmor.d/inky-bird-frame-codex
+```
+
+Docker Desktop does not require this host step.
 
 Both private filenames are ignored by Git. Keep `config.toml` at mode `0600`;
 it is imported into container-managed private storage instead of being exposed

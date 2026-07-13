@@ -1,0 +1,10 @@
+abi <abi/4.0>,
+
+include <tunables/global>
+
+# Permit Codex to create the user namespace used by Bubblewrap without
+# disabling Ubuntu's system-wide unprivileged-user-namespace restriction.
+profile inky-bird-frame-codex /usr/local/bin/codex flags=(unconfined) {
+  userns,
+  /usr/local/bin/codex mr,
+}

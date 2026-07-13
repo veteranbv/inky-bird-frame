@@ -104,8 +104,8 @@ jobs:
             and (.services.scheduler.security_opt | index("seccomp=unconfined") != null)
             and (.services.scheduler.security_opt | index("apparmor=unconfined") != null)
             and (.services.scheduler.security_opt | index("no-new-privileges:true") != null)
-            and (.services.scheduler.cap_add == ["NET_ADMIN"])
             and (.services.scheduler.cap_drop == ["ALL"])
+            and (.services.scheduler.cap_add == null)
             and (.services.controller.security_opt | index("seccomp=unconfined") == null)
             and (.services.controller.security_opt | index("apparmor=unconfined") == null)
             and (.services.bootstrap.security_opt | index("seccomp=unconfined") == null)
@@ -113,7 +113,13 @@ jobs:
           ' "$compose_json"
 
       - name: Build controller container
-        run: docker build --tag inky-bird-frame:ci .
+        run: |
+          sudo install -m 0644 deploy/apparmor/inky-bird-frame-codex /etc/apparmor.d/inky-bird-frame-codex
+          sudo apparmor_parser -r /etc/apparmor.d/inky-bird-frame-codex
+          if [[ -r /proc/sys/kernel/apparmor_restrict_unprivileged_userns ]]; then
+            test "$(cat /proc/sys/kernel/apparmor_restrict_unprivileged_userns)" = "1"
+          fi
+          docker build --tag inky-bird-frame:ci .
 
       - name: Smoke-test controller container
         run: |
@@ -124,7 +130,6 @@ jobs:
           docker run --rm inky-bird-frame:ci --help
           docker run --rm --entrypoint codex inky-bird-frame:ci --version
           docker run --rm --read-only --cap-drop ALL \
-            --cap-add NET_ADMIN \
             --security-opt no-new-privileges:true \
             --security-opt seccomp=unconfined \
             --security-opt apparmor=unconfined \

@@ -53,10 +53,8 @@ services:
   scheduler:
     <<: *controller-common
     # Bubblewrap creates an unprivileged user namespace for Codex's inner sandbox.
-    # Docker's default seccomp and AppArmor profiles block namespace setup and mounts.
-    # NET_ADMIN is needed only to initialize loopback inside the isolated network namespace.
-    cap_add:
-      - NET_ADMIN
+    # The host profile in deploy/apparmor grants only Codex user-namespace access.
+    # Docker's default seccomp and AppArmor profiles still block namespace setup and mounts.
     security_opt:
       - no-new-privileges:true
       - seccomp=unconfined
