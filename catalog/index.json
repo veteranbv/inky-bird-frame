@@ -1,7 +1,18 @@
 {
-  "generated_at": "2026-07-12T22:52:05+00:00",
+  "generated_at": "2026-07-13T02:27:13+00:00",
   "schema_version": 1,
   "species": [
+    {
+      "approved_at": "2026-07-13T02:27:13+00:00",
+      "common_name": "Acadian Flycatcher",
+      "display_path": "species/16638-acadian-flycatcher/display.png",
+      "display_sha256": "c56ffe2f8a3d962a3da3e13745b4a6b726f5d2449717eae8b06865dcfed97594",
+      "portrait_path": "species/16638-acadian-flycatcher/portrait.png",
+      "portrait_sha256": "120090841c0114e5e71dfad770122991edefa3c232dee0df04ea6388af9a6b2c",
+      "scientific_name": "Empidonax virescens",
+      "slug": "acadian-flycatcher",
+      "taxon_id": 16638
+    },
     {
       "approved_at": "2026-07-10T16:35:59+00:00",
       "common_name": "American Goldfinch",
