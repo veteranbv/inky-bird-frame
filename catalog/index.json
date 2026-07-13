@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-13T02:27:13+00:00",
+  "generated_at": "2026-07-13T02:30:59+00:00",
   "schema_version": 1,
   "species": [
     {
@@ -12,6 +12,17 @@
       "scientific_name": "Empidonax virescens",
       "slug": "acadian-flycatcher",
       "taxon_id": 16638
+    },
+    {
+      "approved_at": "2026-07-13T02:30:59+00:00",
+      "common_name": "American Crow",
+      "display_path": "species/8021-american-crow/display.png",
+      "display_sha256": "7537ee58a5021a2b0d1888ecda3454c5f589be16ab4ccfe81712a35cfffce6b9",
+      "portrait_path": "species/8021-american-crow/portrait.png",
+      "portrait_sha256": "98043b8e595b5e64780220875aa938b14d34922cda060272fc43bd55bfd372fa",
+      "scientific_name": "Corvus brachyrhynchos",
+      "slug": "american-crow",
+      "taxon_id": 8021
     },
     {
       "approved_at": "2026-07-10T16:35:59+00:00",
