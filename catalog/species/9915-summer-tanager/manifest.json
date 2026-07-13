@@ -1,0 +1,142 @@
+{
+  "approved_at": "2026-07-13T07:14:52+00:00",
+  "assets": {
+    "display": {
+      "filename": "display.png",
+      "sha256": "03a934163e35d15ad829cf3d636dec968b2a77a10b5adec9a60d943585892098"
+    },
+    "portrait": {
+      "filename": "portrait.png",
+      "sha256": "9d2c5a2aec688818815c0e49a67371489c99cdb2fa457d5825e9510b15fb6dc0"
+    }
+  },
+  "common_name": "Summer Tanager",
+  "generation": {
+    "attempt": 1,
+    "generated_at": "2026-07-13T07:14:52+00:00",
+    "generator": "Codex subscription / built-in gpt-image-2",
+    "max_attempts": 3,
+    "prompt_version": "field-journal-v2"
+  },
+  "profile": {
+    "behavior": "Usually forages high in the canopy, sitting quietly before making short aerial sallies for insects or gleaning along branches.",
+    "common_name": "Summer Tanager",
+    "family": "Cardinalidae",
+    "field_marks": [
+      "Chunky, medium-sized songbird with a large head and thick, blunt-tipped bill.",
+      "Adult male is uniformly bright rosy red, including wings and tail.",
+      "Female and immature male are yellow to yellow-green, often yellower below and greener on back and wings.",
+      "Bill is conspicuously pale or horn-colored; eye is dark.",
+      "Wings are plain and rounded, without bold wingbars.",
+      "Tail is medium-long and broad, typically rounded to square-tipped."
+    ],
+    "habitat": "Open deciduous and mixed woodlands, forest gaps and edges, and wooded streamside groves; also uses open and second-growth wooded habitats.",
+    "measurements": {
+      "length": "6.7\u20137.5 in (17\u201319 cm)",
+      "weight": "0.8\u20131.1 oz (23\u201331 g)",
+      "wingspan": "11\u201312 in (28\u201330 cm)"
+    },
+    "palette": [
+      "bright rosy red",
+      "yellow-green",
+      "rich yellow",
+      "pale horn",
+      "dark gray-brown"
+    ],
+    "scientific_name": "Piranga rubra",
+    "sources": [
+      {
+        "title": "Summer Tanager Identification \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/summer_tanager/id"
+      },
+      {
+        "title": "Summer Tanager \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/summer-tanager"
+      }
+    ],
+    "taxon_id": 9915
+  },
+  "quality_review": {
+    "anatomy_accuracy": 5,
+    "composition_quality": 5,
+    "findings": [
+      "Live verification confirms Summer Tanager (Piranga rubra), family Cardinalidae. The plate\u2019s adult-male plumage, chunky large-headed profile, thick blunt pale-horn bill, dark eye, plain rounded wing, and broad medium-long tail agree with the field-reference photos and guides.",
+      "Measurements shown are correct: length 6.7\u20137.5 in (17\u201319 cm), wingspan 11\u201312 in (28\u201330 cm), and weight 0.8\u20131.1 oz (23\u201331 g).",
+      "Behavior and habitat text agrees with live references. The female/immature note is acceptable, though molting immature males may also be patchy red and yellow.",
+      "Anatomy is coherent: exactly one head, one beak, two wings, two legs with feet, and one tail. No place name, ZIP code, coordinates, map, or local-observation detail appears."
+    ],
+    "location_free": true,
+    "passed": true,
+    "species_accuracy": 5,
+    "text_accuracy": 5,
+    "verification_sources": [
+      {
+        "title": "Summer Tanager Identification \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Summer_Tanager/id"
+      },
+      {
+        "title": "Summer Tanager \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/summer-tanager"
+      }
+    ]
+  },
+  "references": [
+    {
+      "attribution": "(c) zr217, some rights reserved (CC BY)",
+      "filename": "01-427179435.jpeg",
+      "height": 1365,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/427179435/large.jpeg",
+      "license_code": "cc-by",
+      "observation_id": 239821337,
+      "observer": "zr217",
+      "photo_id": 427179435,
+      "sha256": "4d6577c4be4e95ad5755e15aba781068570a1a3a20d152dee160b5b031bca4d7",
+      "source_url": "https://www.inaturalist.org/observations/239821337",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) Esteban Poveda, some rights reserved (CC BY)",
+      "filename": "02-172792631.jpeg",
+      "height": 1453,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/172792631/large.jpeg",
+      "license_code": "cc-by",
+      "observation_id": 103267846,
+      "observer": "quilicotriste",
+      "photo_id": 172792631,
+      "sha256": "0ebd94cb95ad5cdab2892ca9b38e4bfe348e79377bf9cc657b48ad3cf044ac27",
+      "source_url": "https://www.inaturalist.org/observations/103267846",
+      "width": 1935
+    },
+    {
+      "attribution": "no rights reserved",
+      "filename": "03-653294587.jpg",
+      "height": 1125,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/653294587/large.jpg",
+      "license_code": "cc0",
+      "observation_id": 358139703,
+      "observer": "terrybb",
+      "photo_id": 653294587,
+      "sha256": "405c644ec7b84015bac6c517d1a4368823274ab0bb13aacdb5c08121c842f5b7",
+      "source_url": "https://www.inaturalist.org/observations/358139703",
+      "width": 1500
+    },
+    {
+      "attribution": "(c) tcantrell52, some rights reserved (CC BY)",
+      "filename": "04-509744501.jpg",
+      "height": 2048,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/509744501/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 283679183,
+      "observer": "tcantrell52",
+      "photo_id": 509744501,
+      "sha256": "542b959efedb216ff8df1a85d75e7cc98e7de18de3ebf3ac238c16d78390b126",
+      "source_url": "https://www.inaturalist.org/observations/283679183",
+      "width": 2048
+    }
+  ],
+  "schema_version": 1,
+  "scientific_name": "Piranga rubra",
+  "slug": "summer-tanager",
+  "status": "approved",
+  "taxon_id": 9915
+}

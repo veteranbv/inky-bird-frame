@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-13T07:05:24+00:00",
+  "generated_at": "2026-07-13T07:14:52+00:00",
   "schema_version": 1,
   "species": [
     {
@@ -683,6 +683,17 @@
       "scientific_name": "Melospiza melodia",
       "slug": "song-sparrow",
       "taxon_id": 9100
+    },
+    {
+      "approved_at": "2026-07-13T07:14:52+00:00",
+      "common_name": "Summer Tanager",
+      "display_path": "species/9915-summer-tanager/display.png",
+      "display_sha256": "03a934163e35d15ad829cf3d636dec968b2a77a10b5adec9a60d943585892098",
+      "portrait_path": "species/9915-summer-tanager/portrait.png",
+      "portrait_sha256": "9d2c5a2aec688818815c0e49a67371489c99cdb2fa457d5825e9510b15fb6dc0",
+      "scientific_name": "Piranga rubra",
+      "slug": "summer-tanager",
+      "taxon_id": 9915
     },
     {
       "approved_at": "2026-07-09T22:29:46+00:00",
