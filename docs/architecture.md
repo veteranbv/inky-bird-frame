@@ -59,9 +59,12 @@ The display node does not discover birds or generate art. Each timer cycle:
 
 1. fetches the private active catalog;
 2. selects an entry using the configured sequential, shuffle, `shuffle_bag`, or
-   observation-weighted policy and durable local state. `shuffle_bag` has its
-   own persisted remaining/shown state, so catalog additions join the active bag
-   without restoring species already shown in that bag;
+   observation-weighted policy and durable local state. A newer BirdWeather
+   station detection may take priority once and counts as shown in the current
+   rotation when applicable. `shuffle_bag` has its own persisted
+   remaining/shown state, so catalog
+   additions join the active bag without restoring species already shown in
+   that bag;
 3. downloads the display asset;
 4. verifies its SHA-256 checksum;
 5. writes it to a local cache atomically; and

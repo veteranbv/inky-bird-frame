@@ -492,7 +492,14 @@ class ControllerTests(unittest.TestCase):
     def test_refresh_writes_only_observed_approved_species_to_private_active_catalog(
         self,
     ) -> None:
-        observed = BirdSpecies(12942, "Eastern Bluebird", "Sialia sialis", 9, "iNaturalist")
+        observed = BirdSpecies(
+            12942,
+            "Eastern Bluebird",
+            "Sialia sialis",
+            9,
+            "BirdWeather",
+            latest_detection_at="2026-07-13T08:10:00-04:00",
+        )
         unapproved = BirdSpecies(
             7513, "Carolina Wren", "Thryothorus ludovicianus", 4, "iNaturalist"
         )
@@ -529,9 +536,11 @@ class ControllerTests(unittest.TestCase):
         self.assertEqual(result["active_approved_count"], 1)
         self.assertEqual(active["species"][0]["taxon_id"], 12942)
         self.assertEqual(active["species"][0]["observation_count"], 9)
+        self.assertEqual(active["species"][0]["latest_detection_at"], "2026-07-13T08:10:00-04:00")
         self.assertNotIn("zip_code", active)
         self.assertEqual(len(snapshot["species"]), 2)
-        self.assertEqual(snapshot["species"][0]["source"], "iNaturalist")
+        self.assertEqual(snapshot["species"][0]["source"], "BirdWeather")
+        self.assertEqual(snapshot["species"][0]["latest_detection_at"], "2026-07-13T08:10:00-04:00")
 
     def test_refresh_preserves_approved_catalog_order(self) -> None:
         first = BirdSpecies(1, "Alpha Bird", "Alpha avis", 2, "iNaturalist")

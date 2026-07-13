@@ -45,6 +45,7 @@ class CatalogEntry:
     display_sha256: str
     approved_at: str
     observation_count: int | None = None
+    latest_detection_at: str | None = None
 
     def as_dict(self) -> dict[str, object]:
         value: dict[str, object] = {
@@ -60,6 +61,8 @@ class CatalogEntry:
         }
         if self.observation_count is not None:
             value["observation_count"] = self.observation_count
+        if self.latest_detection_at is not None:
+            value["latest_detection_at"] = self.latest_detection_at
         return value
 
 

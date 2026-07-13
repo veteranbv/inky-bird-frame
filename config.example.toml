@@ -69,6 +69,9 @@ state_dir = "var/display-node"
 # birds immediately. sequential is stable order; shuffle refills before admitting additions;
 # weighted favors frequently observed birds.
 rotation_mode = "shuffle_bag"
+# When BirdWeather is configured, show the newest station detection once before resuming
+# rotation. Disable this to make every display update follow rotation_mode exclusively.
+prioritize_latest_detection = true
 
 [public_catalog]
 # The trusted controller opens and owner-merges catalog-only PRs in this repository.

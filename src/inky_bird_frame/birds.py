@@ -6,7 +6,7 @@ import fcntl
 import json
 from collections.abc import Iterator
 from contextlib import contextmanager
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from datetime import UTC, date, datetime, timedelta
 from enum import StrEnum
 from pathlib import Path
@@ -26,6 +26,7 @@ class BirdSpecies:
     observation_count: int
     source: str
     sources: tuple[str, ...] = ()
+    latest_detection_at: str | None = None
 
     def __post_init__(self) -> None:
         if not self.sources:
@@ -300,6 +301,7 @@ def parse_birdweather_species(payload: object) -> list[BirdWeatherSpecies]:
             or not scientific_name.strip()
             or not isinstance(latest_detection_at, str)
             or not latest_detection_at.strip()
+            or _parse_cache_datetime(latest_detection_at) is None
             or not isinstance(count, int)
             or isinstance(count, bool)
             or count <= 0
@@ -538,9 +540,16 @@ def resolve_birdweather_species(
         persist_cache=persist_cache,
     )
     unresolved_codes = {item.species_code for item in resolution.unresolved}
-    return resolution.species, [
-        item for item in detections if str(item.species_id) in unresolved_codes
+    resolved_detections = [
+        item for item in detections if str(item.species_id) not in unresolved_codes
     ]
+    if len(resolution.species) != len(resolved_detections):
+        raise DataSourceError("BirdWeather taxonomy resolution returned inconsistent results")
+    resolved = [
+        replace(species, latest_detection_at=detection.latest_detection_at)
+        for species, detection in zip(resolution.species, resolved_detections, strict=True)
+    ]
+    return resolved, [item for item in detections if str(item.species_id) in unresolved_codes]
 
 
 def _resolve_external_species(

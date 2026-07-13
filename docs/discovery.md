@@ -128,6 +128,13 @@ aggregate count. eBird-only species receive weight one. These counts describe
 different collection methods and should not be compared as equivalent evidence.
 `shuffle_bag` is the recommended source-neutral rotation policy.
 
+BirdWeather also supplies each species' latest station-detection timestamp.
+By default, a display node shows the newest detection once before returning to
+its configured rotation. This is display priority, not a confidence claim or a
+live event stream: the timestamp advances only when the controller refreshes
+the station summary, and recording-only detection limitations still apply.
+Configure `display_node.prioritize_latest_detection = false` to disable it.
+
 ## Limits and data use
 
 The eBird nearby API supports at most 30 days and 50 km. BirdWeather returns at

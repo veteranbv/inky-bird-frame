@@ -148,6 +148,7 @@ class DisplayNodeConfig:
     controller_url: str
     state_dir: Path
     rotation_mode: RotationMode = RotationMode.SEQUENTIAL
+    prioritize_latest_detection: bool = True
 
 
 @dataclass(frozen=True)
@@ -536,6 +537,9 @@ def load_config(path: Path, *, load_secrets: bool = True) -> AppConfig:
             controller_url=controller_url,
             state_dir=_path(_string(display_node, "state_dir"), base_dir),
             rotation_mode=rotation_mode,
+            prioritize_latest_detection=_optional_boolean(
+                display_node, "prioritize_latest_detection", default=True
+            ),
         ),
         public_catalog=PublicCatalogConfig(
             enabled=public_catalog_enabled,

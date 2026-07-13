@@ -80,6 +80,16 @@ facts rather than trusting the profile's citations.
 - `weighted`: random selection weighted by current observation count, without
   immediate repeats when another species is active.
 
+`prioritize_latest_detection = true` is the default. When the active catalog
+contains BirdWeather timestamps, the newest detection later than the display
+node's durable watermark is shown once before the configured rotation resumes.
+The priority display counts as shown when that bird is already next in sequence
+or present in a shuffle pool, which prevents an immediate duplicate without
+reordering the other birds. A failed panel update does not consume the
+detection, and a first run shows only the current newest detection rather than
+replaying the historical window. Set the option to `false` to use
+`rotation_mode` for every update.
+
 Approved plates use the project's canonical 1200x1600 portrait and 1600x1200
 display assets. This geometry is a catalog contract so committed plates remain
 portable across installations using the supported panel. Controller and display
