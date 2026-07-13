@@ -1,0 +1,42 @@
+{
+  "behavior": "Forages mainly on the ground, in low shrubs, and sometimes in shallow water; diet is chiefly seeds and insects. Its song typically opens with a few distinct notes and ends in a buzz or trill.",
+  "common_name": "Song Sparrow",
+  "family": "Passerellidae",
+  "field_marks": [
+    "Brown, heavily streaked upperparts",
+    "Pale underparts with bold dark breast streaks that often form a central spot",
+    "Grayish face with a dark brown line through the eye",
+    "Rounded, fairly long brown tail",
+    "Short, stout gray bill",
+    "Pinkish-brown legs and dark eye"
+  ],
+  "habitat": "Dense low vegetation: thickets, brushy fields, marsh edges, woodland edges, hedgerows, streamsides, and well-vegetated gardens.",
+  "measurements": {
+    "length": "11\u201318 cm (4.3\u20137.1 in)",
+    "weight": "11.9\u201353 g (0.42\u20131.87 oz)",
+    "wingspan": "18\u201325.4 cm (7.1\u201310.0 in)"
+  },
+  "palette": [
+    "streaked brown",
+    "gray",
+    "buff-white",
+    "dark brown",
+    "pinkish brown"
+  ],
+  "scientific_name": "Melospiza melodia",
+  "sources": [
+    {
+      "title": "Song Sparrow | Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/song-sparrow"
+    },
+    {
+      "title": "Song Sparrow | All About Birds",
+      "url": "https://dl.allaboutbirds.org/song-sparrow"
+    },
+    {
+      "title": "Song sparrow | Wikipedia",
+      "url": "https://en.wikipedia.org/wiki/Song_sparrow"
+    }
+  ],
+  "taxon_id": 9100
+}

@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-13T06:39:52+00:00",
+  "generated_at": "2026-07-13T07:05:24+00:00",
   "schema_version": 1,
   "species": [
     {
@@ -672,6 +672,17 @@
       "scientific_name": "Archilochus colubris",
       "slug": "ruby-throated-hummingbird",
       "taxon_id": 6432
+    },
+    {
+      "approved_at": "2026-07-13T07:05:24+00:00",
+      "common_name": "Song Sparrow",
+      "display_path": "species/9100-song-sparrow/display.png",
+      "display_sha256": "4e3519756cbbb5c3373ef98e951a45dc5b99e58429a118bc3e191f453a1b3d22",
+      "portrait_path": "species/9100-song-sparrow/portrait.png",
+      "portrait_sha256": "7ef076e87379676404b25dd5dc65cb8892b3f806dc68f5da8410a6967a33fa02",
+      "scientific_name": "Melospiza melodia",
+      "slug": "song-sparrow",
+      "taxon_id": 9100
     },
     {
       "approved_at": "2026-07-09T22:29:46+00:00",
