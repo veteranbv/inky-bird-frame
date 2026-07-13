@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-13T06:30:13+00:00",
+  "generated_at": "2026-07-13T06:39:52+00:00",
   "schema_version": 1,
   "species": [
     {
@@ -661,6 +661,17 @@
       "scientific_name": "Corthylio calendula",
       "slug": "ruby-crowned-kinglet",
       "taxon_id": 1289388
+    },
+    {
+      "approved_at": "2026-07-13T06:39:52+00:00",
+      "common_name": "Ruby-throated Hummingbird",
+      "display_path": "species/6432-ruby-throated-hummingbird/display.png",
+      "display_sha256": "e9371e6ac6568fc2905350396c013c6b3e16615a65b88da15ee71d24b58366b6",
+      "portrait_path": "species/6432-ruby-throated-hummingbird/portrait.png",
+      "portrait_sha256": "4c7a783ebf7c18e58b37c82721ba9e4cd84b581f87b292b9208a1a6dd345dda8",
+      "scientific_name": "Archilochus colubris",
+      "slug": "ruby-throated-hummingbird",
+      "taxon_id": 6432
     },
     {
       "approved_at": "2026-07-09T22:29:46+00:00",

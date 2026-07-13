@@ -1,0 +1,38 @@
+{
+  "behavior": "Hovers to feed, flies with rapid, precise movements, and catches small insects as well as taking nectar.",
+  "common_name": "Ruby-throated Hummingbird",
+  "family": "Trochilidae",
+  "field_marks": [
+    "Tiny, compact hummingbird with a long, slender, slightly downcurved dark bill.",
+    "Bright emerald to golden-green crown and upperparts.",
+    "Gray-white to whitish underparts, often with buffy flanks.",
+    "Adult male has an iridescent ruby-red throat that can look dark in poor light; female lacks it.",
+    "Short dark tail: forked in males; females show white tips on the outer tail feathers.",
+    "Large dark eye, very short legs, and long, narrow wings adapted for hovering."
+  ],
+  "habitat": "Open woodlands and forest edges, including meadows, old fields, orchards, gardens, hedgerows, and scrub.",
+  "measurements": {
+    "length": "2.8\u20133.5 in (7\u20139 cm)",
+    "weight": "0.1\u20130.2 oz (2\u20136 g)",
+    "wingspan": "3.1\u20134.3 in (8\u201311 cm)"
+  },
+  "palette": [
+    "emerald green",
+    "golden green",
+    "ruby red",
+    "gray-white",
+    "black"
+  ],
+  "scientific_name": "Archilochus colubris",
+  "sources": [
+    {
+      "title": "Ruby-throated Hummingbird Identification \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Ruby-throated_Hummingbird/id"
+    },
+    {
+      "title": "Archilochus colubris \u2014 Animal Diversity Web",
+      "url": "https://animaldiversity.org/accounts/Archilochus_colubris/"
+    }
+  ],
+  "taxon_id": 6432
+}
