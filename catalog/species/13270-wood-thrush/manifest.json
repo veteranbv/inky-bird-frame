@@ -1,0 +1,142 @@
+{
+  "approved_at": "2026-07-13T07:24:31+00:00",
+  "assets": {
+    "display": {
+      "filename": "display.png",
+      "sha256": "b9e34426145b74438e84d80a4e6b3cc0b9a7f5f8bc07964d29bd0d675055a937"
+    },
+    "portrait": {
+      "filename": "portrait.png",
+      "sha256": "6cdb04ca672be6454648c1aa10bfe5bf1e3df79b4639092f516a9085e7a77748"
+    }
+  },
+  "common_name": "Wood Thrush",
+  "generation": {
+    "attempt": 1,
+    "generated_at": "2026-07-13T07:24:31+00:00",
+    "generator": "Codex subscription / built-in gpt-image-2",
+    "max_attempts": 3,
+    "prompt_version": "field-journal-v2"
+  },
+  "profile": {
+    "behavior": "Forages on the ground, hopping through and flipping leaf litter for invertebrates; often pauses upright to look around. Its song is clear and flute-like.",
+    "common_name": "Wood Thrush",
+    "family": "Turdidae",
+    "field_marks": [
+      "Warm reddish-brown upperparts, often richest on the head",
+      "Bold white eye ring around a large dark eye",
+      "White underparts with large, round dark spots concentrated on breast and flanks",
+      "Plump, upright thrush shape with a large head and short tail",
+      "Straight, slender grayish bill and pink legs",
+      "Brown wings and tail with subtly darker feather edging"
+    ],
+    "habitat": "Mature deciduous and mixed forest with tall trees, a moderate shrub layer, shaded ground, and abundant leaf litter; also uses lowland tropical forest in the nonbreeding season.",
+    "measurements": {
+      "length": "19\u201321 cm (7.5\u20138.3 in)",
+      "weight": "40\u201350 g (1.4\u20131.8 oz)",
+      "wingspan": "30\u201334 cm (11.8\u201313.4 in)"
+    },
+    "palette": [
+      "cinnamon brown",
+      "warm chestnut",
+      "soft white",
+      "dark brown-black",
+      "dusty pink"
+    ],
+    "scientific_name": "Hylocichla mustelina",
+    "sources": [
+      {
+        "title": "Wood Thrush Identification \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Wood_Thrush/id"
+      },
+      {
+        "title": "Wood Thrush \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/wood-thrush"
+      }
+    ],
+    "taxon_id": 13270
+  },
+  "quality_review": {
+    "anatomy_accuracy": 4,
+    "composition_quality": 5,
+    "findings": [
+      "Identity is correct: the plate depicts Wood Thrush (Hylocichla mustelina), family Turdidae. The scientific name, common name, measurements, habitat, behavior, and stated field marks agree with both live sources.",
+      "The illustration correctly shows one head, one straight slender beak, two legs with appropriate anisodactyl perching feet, two wings (one visible in side view), and one tail. It has the characteristic reddish-brown upperparts, bold white eye ring, large dark eye, white underparts with bold dark spotting, and pink legs.",
+      "Minor illustration issue: the tail projects somewhat longer and more tapering than the short-tailed profile shown in the reference photos and described by All About Birds; this is not a material identification error.",
+      "All visible factual text claims are supported. The plate contains no place name, ZIP code, coordinates, map, or local-observation detail."
+    ],
+    "location_free": true,
+    "passed": true,
+    "species_accuracy": 4,
+    "text_accuracy": 5,
+    "verification_sources": [
+      {
+        "title": "Wood Thrush Identification \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Wood_Thrush/id"
+      },
+      {
+        "title": "Wood Thrush \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/wood-thrush?nid=9871&site=nc"
+      }
+    ]
+  },
+  "references": [
+    {
+      "attribution": "no rights reserved",
+      "filename": "01-281005534.jpeg",
+      "height": 1468,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/281005534/large.jpeg",
+      "license_code": "cc0",
+      "observation_id": 162512075,
+      "observer": "wildreturn",
+      "photo_id": 281005534,
+      "sha256": "12267e96eece0b8852e14edbf5363fff36e9924754e3e94749dcc2035dd88bcf",
+      "source_url": "https://www.inaturalist.org/observations/162512075",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) Ricard Busquets Reverte, some rights reserved (CC BY)",
+      "filename": "02-116716973.jpeg",
+      "height": 1863,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/116716973/large.jpeg",
+      "license_code": "cc-by",
+      "observation_id": 71668389,
+      "observer": "ricardelremate",
+      "photo_id": 116716973,
+      "sha256": "3d97fe9ddcbfd303f0f3c66be4a1aa309190fc4549280ffbe9311057884b99cf",
+      "source_url": "https://www.inaturalist.org/observations/71668389",
+      "width": 2048
+    },
+    {
+      "attribution": "no rights reserved",
+      "filename": "03-501149463.jpeg",
+      "height": 1361,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/501149463/large.jpeg",
+      "license_code": "cc0",
+      "observation_id": 279091807,
+      "observer": "imperialwoodpecker26",
+      "photo_id": 501149463,
+      "sha256": "d0be91f3d16e15b2e50a99f6907e9115994c774b7370596950af80525d95c359",
+      "source_url": "https://www.inaturalist.org/observations/279091807",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) Laura Gaudette, some rights reserved (CC BY)",
+      "filename": "04-201913098.jpeg",
+      "height": 2048,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/201913098/large.jpeg",
+      "license_code": "cc-by",
+      "observation_id": 119443994,
+      "observer": "gaudettelaura",
+      "photo_id": 201913098,
+      "sha256": "a65fa3bc2c11f84ecf6c2d0d61f61c56e71b939011110b526c0d6fbceba1c5ce",
+      "source_url": "https://www.inaturalist.org/observations/119443994",
+      "width": 1272
+    }
+  ],
+  "schema_version": 1,
+  "scientific_name": "Hylocichla mustelina",
+  "slug": "wood-thrush",
+  "status": "approved",
+  "taxon_id": 13270
+}

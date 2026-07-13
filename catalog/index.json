@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-13T07:14:52+00:00",
+  "generated_at": "2026-07-13T07:24:31+00:00",
   "schema_version": 1,
   "species": [
     {
@@ -749,6 +749,17 @@
       "scientific_name": "Zonotrichia albicollis",
       "slug": "white-throated-sparrow",
       "taxon_id": 9184
+    },
+    {
+      "approved_at": "2026-07-13T07:24:31+00:00",
+      "common_name": "Wood Thrush",
+      "display_path": "species/13270-wood-thrush/display.png",
+      "display_sha256": "b9e34426145b74438e84d80a4e6b3cc0b9a7f5f8bc07964d29bd0d675055a937",
+      "portrait_path": "species/13270-wood-thrush/portrait.png",
+      "portrait_sha256": "6cdb04ca672be6454648c1aa10bfe5bf1e3df79b4639092f516a9085e7a77748",
+      "scientific_name": "Hylocichla mustelina",
+      "slug": "wood-thrush",
+      "taxon_id": 13270
     },
     {
       "approved_at": "2026-07-10T18:34:41+00:00",
