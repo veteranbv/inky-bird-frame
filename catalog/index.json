@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-13T05:08:12+00:00",
+  "generated_at": "2026-07-13T05:19:40+00:00",
   "schema_version": 1,
   "species": [
     {
@@ -342,6 +342,17 @@
       "scientific_name": "Butorides virescens",
       "slug": "green-heron",
       "taxon_id": 5020
+    },
+    {
+      "approved_at": "2026-07-13T05:19:40+00:00",
+      "common_name": "Hairy Woodpecker",
+      "display_path": "species/1651487-hairy-woodpecker/display.png",
+      "display_sha256": "14ca21c4284181ad6530e2a8944a96329f845fec87cd9e1d623a1296f3bf9889",
+      "portrait_path": "species/1651487-hairy-woodpecker/portrait.png",
+      "portrait_sha256": "00c439f5537699778e9294ef48416b66144eacf252f93a057bd64f7984b00a8e",
+      "scientific_name": "Leuconotopicus villosus",
+      "slug": "hairy-woodpecker",
+      "taxon_id": 1651487
     },
     {
       "approved_at": "2026-07-12T22:43:37+00:00",
