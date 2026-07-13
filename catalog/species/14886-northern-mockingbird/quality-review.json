@@ -1,0 +1,29 @@
+{
+  "anatomy_accuracy": 5,
+  "composition_quality": 5,
+  "findings": [
+    "Identity, taxonomy, measurements, habitat, behavior, and field-mark claims are independently supported by the live All About Birds, Audubon, and Smithsonian pages.",
+    "The illustration matches the supplied Northern Mockingbird references: slender gray-brown songbird; one small head with one thin, slightly downcurved dark beak; two wings with white bars and a white wing patch; two long legs and gripping feet; and one notably long tail with pale outer feathers.",
+    "The plate contains exactly one head, one beak, two wings, two legs, and one tail. No anatomical defects or material species mismatches found.",
+    "All visible plate text is accurate, including Mimus polyglottos, Mimidae, the stated 21\u201326 cm length, 31\u201335 cm wingspan, and 45\u201358 g weight. The ruler is labeled only in centimeters and has no erroneous measurement claim.",
+    "No place name, ZIP code, coordinates, map, or local-observation detail appears on the candidate plate."
+  ],
+  "location_free": true,
+  "passed": true,
+  "species_accuracy": 5,
+  "text_accuracy": 5,
+  "verification_sources": [
+    {
+      "title": "Northern Mockingbird Identification \u2014 All About Birds, Cornell Lab of Ornithology",
+      "url": "https://www.allaboutbirds.org/guide/Northern_Mockingbird/id"
+    },
+    {
+      "title": "Northern Mockingbird \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/northern-mockingbird"
+    },
+    {
+      "title": "Northern mockingbird \u2014 Smithsonian's National Zoo and Conservation Biology Institute",
+      "url": "https://nationalzoo.si.edu/animals/northern-mockingbird"
+    }
+  ]
+}
