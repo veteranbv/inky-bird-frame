@@ -365,7 +365,7 @@ def load_config(path: Path) -> AppConfig:
     if ebird_api_key_env_value is not None:
         environment_value = environ.get(ebird_api_key_env_value)
         ebird_api_key = environment_value.strip() if environment_value else None
-        if ebird_api_key is None:
+        if ebird_api_key is None and discovery_source.uses_ebird:
             raise ConfigurationError(
                 f"eBird discovery requires environment variable {ebird_api_key_env_value}"
             )

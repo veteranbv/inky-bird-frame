@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import fcntl
 import json
+import os
 import shutil
 from collections.abc import Iterator
 from contextlib import contextmanager
@@ -160,7 +161,11 @@ def discover_species(
 
     if selected_source in {DiscoverySource.EBIRD, DiscoverySource.COMBINED}:
         try:
-            if config.discovery.ebird_api_key is None:
+            api_key = config.discovery.ebird_api_key
+            if api_key is None and config.discovery.ebird_api_key_env is not None:
+                environment_value = os.environ.get(config.discovery.ebird_api_key_env)
+                api_key = environment_value.strip() if environment_value else None
+            if api_key is None:
                 raise DataSourceError("eBird API key is not configured")
             observations = fetch_ebird_observations(
                 latitude=location.latitude,
@@ -168,7 +173,7 @@ def discover_species(
                 radius_km=selected_radius,
                 limit=selected_limit,
                 window=selected_window,
-                api_key=config.discovery.ebird_api_key,
+                api_key=api_key,
             )
             resolution = resolve_ebird_species(
                 observations,
@@ -250,6 +255,7 @@ def _species_payload(species: BirdSpecies) -> dict[str, object]:
         "common_name": species.common_name,
         "scientific_name": species.scientific_name,
         "observation_count": species.observation_count,
+        "source": species.source,
         "sources": list(species.sources),
     }
 

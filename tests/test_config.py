@@ -120,6 +120,20 @@ class ConfigTests(unittest.TestCase):
         self.assertIs(config.discovery.source, DiscoverySource.INATURALIST)
         self.assertEqual(config.discovery.ebird_api_key, "secret")
 
+    def test_inaturalist_default_allows_missing_optional_ebird_environment(self) -> None:
+        configured = CONFIG.replace(
+            "[discovery]\n", '[discovery]\nebird_api_key_env = "TEST_EBIRD_KEY"\n'
+        )
+        with TemporaryDirectory() as temporary:
+            path = Path(temporary) / "config.toml"
+            path.write_text(configured)
+            with patch.dict("os.environ", {}, clear=True):
+                config = load_config(path)
+
+        self.assertIs(config.discovery.source, DiscoverySource.INATURALIST)
+        self.assertIsNone(config.discovery.ebird_api_key)
+        self.assertEqual(config.discovery.ebird_api_key_env, "TEST_EBIRD_KEY")
+
     def test_ebird_rejects_long_observation_windows(self) -> None:
         configured = CONFIG.replace(
             "[discovery]\n", '[discovery]\nsource = "ebird"\nebird_api_key = "secret"\n'

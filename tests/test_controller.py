@@ -11,7 +11,7 @@ from unittest.mock import patch
 from inky_bird_frame.birds import BirdSpecies, EbirdResolution, EbirdSpecies, ObservationWindow
 from inky_bird_frame.catalog import CatalogEntry, candidate_directory, write_candidate_manifest
 from inky_bird_frame.codex_runner import CodexRunner
-from inky_bird_frame.config import load_config
+from inky_bird_frame.config import DiscoverySource, load_config
 from inky_bird_frame.controller import (
     DiscoveryResult,
     DiscoverySnapshot,
@@ -188,6 +188,8 @@ class ControllerTests(unittest.TestCase):
         self.assertEqual(result["discovered_count"], 2)
         self.assertEqual(result["already_approved_count"], 1)
         self.assertEqual(result["added_count"], 1)
+        added = cast(list[dict[str, object]], result["added"])
+        self.assertEqual(added[0]["source"], "iNaturalist")
         self.assertEqual(queue["species"][0]["taxon_id"], 2)
         self.assertNotIn("zip_code", queue)
 
@@ -497,6 +499,7 @@ class ControllerTests(unittest.TestCase):
         self.assertEqual(active["species"][0]["observation_count"], 9)
         self.assertNotIn("zip_code", active)
         self.assertEqual(len(snapshot["species"]), 2)
+        self.assertEqual(snapshot["species"][0]["source"], "iNaturalist")
 
     def test_refresh_preserves_approved_catalog_order(self) -> None:
         first = BirdSpecies(1, "Alpha Bird", "Alpha avis", 2, "iNaturalist")
@@ -818,6 +821,38 @@ class ControllerTests(unittest.TestCase):
 
 
 class DiscoveryProviderTests(unittest.TestCase):
+    def test_ebird_override_resolves_environment_key_at_execution_time(self) -> None:
+        observation = EbirdSpecies("easblu", "Eastern Bluebird", "Sialia sialis", "2026-07-12")
+        resolved = BirdSpecies(12942, "Eastern Bluebird", "Sialia sialis", 1, "eBird")
+        with TemporaryDirectory() as temporary:
+            config_path = Path(temporary) / "config.toml"
+            config_path.write_text(
+                CONFIG.replace(
+                    "[discovery]\n", '[discovery]\nebird_api_key_env = "TEST_EBIRD_KEY"\n'
+                )
+            )
+            with patch.dict("os.environ", {}, clear=True):
+                config = load_config(config_path)
+            with (
+                patch.dict("os.environ", {"TEST_EBIRD_KEY": "secret"}),
+                patch(
+                    "inky_bird_frame.controller.lookup_us_zip",
+                    return_value=ZipLocation("12345", "Exampleville", "XY", 1.0, 2.0),
+                ),
+                patch(
+                    "inky_bird_frame.controller.fetch_ebird_observations",
+                    return_value=[observation],
+                ) as fetch,
+                patch(
+                    "inky_bird_frame.controller.resolve_ebird_species",
+                    return_value=EbirdResolution([resolved], []),
+                ),
+            ):
+                result = discover_species(config, source=DiscoverySource.EBIRD)
+
+        self.assertEqual(result.species, [resolved])
+        self.assertEqual(fetch.call_args.kwargs["api_key"], "secret")
+
     def test_combined_override_rejects_long_window_before_querying(self) -> None:
         with TemporaryDirectory() as temporary:
             config_path = Path(temporary) / "config.toml"
