@@ -1,0 +1,38 @@
+{
+  "behavior": "Forages on the ground, hopping through and flipping leaf litter for invertebrates; often pauses upright to look around. Its song is clear and flute-like.",
+  "common_name": "Wood Thrush",
+  "family": "Turdidae",
+  "field_marks": [
+    "Warm reddish-brown upperparts, often richest on the head",
+    "Bold white eye ring around a large dark eye",
+    "White underparts with large, round dark spots concentrated on breast and flanks",
+    "Plump, upright thrush shape with a large head and short tail",
+    "Straight, slender grayish bill and pink legs",
+    "Brown wings and tail with subtly darker feather edging"
+  ],
+  "habitat": "Mature deciduous and mixed forest with tall trees, a moderate shrub layer, shaded ground, and abundant leaf litter; also uses lowland tropical forest in the nonbreeding season.",
+  "measurements": {
+    "length": "19\u201321 cm (7.5\u20138.3 in)",
+    "weight": "40\u201350 g (1.4\u20131.8 oz)",
+    "wingspan": "30\u201334 cm (11.8\u201313.4 in)"
+  },
+  "palette": [
+    "cinnamon brown",
+    "warm chestnut",
+    "soft white",
+    "dark brown-black",
+    "dusty pink"
+  ],
+  "scientific_name": "Hylocichla mustelina",
+  "sources": [
+    {
+      "title": "Wood Thrush Identification \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Wood_Thrush/id"
+    },
+    {
+      "title": "Wood Thrush \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/wood-thrush"
+    }
+  ],
+  "taxon_id": 13270
+}

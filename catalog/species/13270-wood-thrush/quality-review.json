@@ -1,0 +1,24 @@
+{
+  "anatomy_accuracy": 4,
+  "composition_quality": 5,
+  "findings": [
+    "Identity is correct: the plate depicts Wood Thrush (Hylocichla mustelina), family Turdidae. The scientific name, common name, measurements, habitat, behavior, and stated field marks agree with both live sources.",
+    "The illustration correctly shows one head, one straight slender beak, two legs with appropriate anisodactyl perching feet, two wings (one visible in side view), and one tail. It has the characteristic reddish-brown upperparts, bold white eye ring, large dark eye, white underparts with bold dark spotting, and pink legs.",
+    "Minor illustration issue: the tail projects somewhat longer and more tapering than the short-tailed profile shown in the reference photos and described by All About Birds; this is not a material identification error.",
+    "All visible factual text claims are supported. The plate contains no place name, ZIP code, coordinates, map, or local-observation detail."
+  ],
+  "location_free": true,
+  "passed": true,
+  "species_accuracy": 4,
+  "text_accuracy": 5,
+  "verification_sources": [
+    {
+      "title": "Wood Thrush Identification \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Wood_Thrush/id"
+    },
+    {
+      "title": "Wood Thrush \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/wood-thrush?nid=9871&site=nc"
+    }
+  ]
+}
