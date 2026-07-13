@@ -1,0 +1,25 @@
+{
+  "anatomy_accuracy": 4,
+  "composition_quality": 5,
+  "findings": [
+    "The illustrated bird is an Ovenbird: olive-brown upperparts, black-and-dull-orange crown stripes, bold white eye-ring, heavily dark-streaked white underparts, fairly thick pointed bill, pink legs, and short tail all agree with the supplied reference photos and live field-guide descriptions.",
+    "Anatomy is coherent: one head, one beak, two legs with feet, one visible folded wing plus the implied far wing, and one tail; no extra or missing structures are visible.",
+    "All visible plate text is factually supported by Audubon, including Seiurus aurocapilla, Parulidae, behavior, habitat, field marks, and the stated 14\u201316 cm / 20\u201325 cm / 16\u201328 g measurements.",
+    "Measurement caveat: All About Birds currently gives a different length and wingspan range (11\u201314 cm and 19\u201326 cm), while Audubon directly supports the plate\u2019s values. This is source variation, not a material plate error.",
+    "No place name, ZIP code, coordinates, map, or local-observation detail appears on the plate."
+  ],
+  "location_free": true,
+  "passed": true,
+  "species_accuracy": 5,
+  "text_accuracy": 4,
+  "verification_sources": [
+    {
+      "title": "Ovenbird | Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/ovenbird"
+    },
+    {
+      "title": "Ovenbird Identification | All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Ovenbird/id"
+    }
+  ]
+}

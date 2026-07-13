@@ -1,0 +1,146 @@
+{
+  "approved_at": "2026-07-13T06:08:35+00:00",
+  "assets": {
+    "display": {
+      "filename": "display.png",
+      "sha256": "0716d12305653038bfe9dcf9de5ab05cd884b929098c27cfea5f9d85b11d51d9"
+    },
+    "portrait": {
+      "filename": "portrait.png",
+      "sha256": "208eff57af566684f830f67180946d29d75744eea1ec8dc591706482c6b6b2ca"
+    }
+  },
+  "common_name": "Ovenbird",
+  "generation": {
+    "attempt": 2,
+    "generated_at": "2026-07-13T06:08:35+00:00",
+    "generator": "Codex subscription / built-in gpt-image-2",
+    "max_attempts": 3,
+    "prompt_version": "field-journal-v2"
+  },
+  "profile": {
+    "behavior": "Ground-foraging songbird that walks deliberately through leaf litter, often with its short tail held cocked upward.",
+    "common_name": "Ovenbird",
+    "family": "Parulidae",
+    "field_marks": [
+      "Olive-brown upperparts",
+      "Dull orange crown stripe bordered by blackish stripes",
+      "Bold white eye-ring",
+      "White underparts with heavy dark streaking",
+      "Fairly thick pointed bill, pink legs, and short tail"
+    ],
+    "habitat": "Large, mature closed-canopy deciduous or mixed forests with deep leaf litter; also uses forest thickets outside the breeding season.",
+    "measurements": {
+      "length": "14\u201316 cm",
+      "weight": "16\u201328 g",
+      "wingspan": "20\u201325 cm"
+    },
+    "palette": [
+      "olive-brown",
+      "dull orange",
+      "black",
+      "white",
+      "pink"
+    ],
+    "scientific_name": "Seiurus aurocapilla",
+    "sources": [
+      {
+        "title": "Ovenbird | Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/ovenbird"
+      },
+      {
+        "title": "Ovenbird Identification | All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Ovenbird/id"
+      },
+      {
+        "title": "Ovenbird Life History | All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Ovenbird/lifehistory"
+      }
+    ],
+    "taxon_id": 62550
+  },
+  "quality_review": {
+    "anatomy_accuracy": 4,
+    "composition_quality": 5,
+    "findings": [
+      "The illustrated bird is an Ovenbird: olive-brown upperparts, black-and-dull-orange crown stripes, bold white eye-ring, heavily dark-streaked white underparts, fairly thick pointed bill, pink legs, and short tail all agree with the supplied reference photos and live field-guide descriptions.",
+      "Anatomy is coherent: one head, one beak, two legs with feet, one visible folded wing plus the implied far wing, and one tail; no extra or missing structures are visible.",
+      "All visible plate text is factually supported by Audubon, including Seiurus aurocapilla, Parulidae, behavior, habitat, field marks, and the stated 14\u201316 cm / 20\u201325 cm / 16\u201328 g measurements.",
+      "Measurement caveat: All About Birds currently gives a different length and wingspan range (11\u201314 cm and 19\u201326 cm), while Audubon directly supports the plate\u2019s values. This is source variation, not a material plate error.",
+      "No place name, ZIP code, coordinates, map, or local-observation detail appears on the plate."
+    ],
+    "location_free": true,
+    "passed": true,
+    "species_accuracy": 5,
+    "text_accuracy": 4,
+    "verification_sources": [
+      {
+        "title": "Ovenbird | Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/ovenbird"
+      },
+      {
+        "title": "Ovenbird Identification | All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Ovenbird/id"
+      }
+    ]
+  },
+  "references": [
+    {
+      "attribution": "no rights reserved",
+      "filename": "01-163213615.jpeg",
+      "height": 1365,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/163213615/large.jpeg",
+      "license_code": "cc0",
+      "observation_id": 98072049,
+      "observer": "radrat",
+      "photo_id": 163213615,
+      "sha256": "a2a53b5de77d166eaef0079ba277a0f40acee3ccd7f31862718e30449e2efcde",
+      "source_url": "https://www.inaturalist.org/observations/98072049",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) Michael J. Papay, some rights reserved (CC BY)",
+      "filename": "02-196333809.jpeg",
+      "height": 1536,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/196333809/large.jpeg",
+      "license_code": "cc-by",
+      "observation_id": 116318157,
+      "observer": "mjpapay",
+      "photo_id": 196333809,
+      "sha256": "4ad2fc30404b40af17dd86b987eda5016f56db8ddac6ba0755aef6afaefa3f18",
+      "source_url": "https://www.inaturalist.org/observations/116318157",
+      "width": 2048
+    },
+    {
+      "attribution": "no rights reserved",
+      "filename": "03-190649220.jpeg",
+      "height": 1312,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/190649220/large.jpeg",
+      "license_code": "cc0",
+      "observation_id": 112852645,
+      "observer": "wildreturn",
+      "photo_id": 190649220,
+      "sha256": "a1f49d0c2103bb471f3e133fe3c9503fb20df4e00a7cd3bb03dfd8f5346ecad9",
+      "source_url": "https://www.inaturalist.org/observations/112852645",
+      "width": 2048
+    },
+    {
+      "attribution": "no rights reserved",
+      "filename": "04-324854159.jpg",
+      "height": 2048,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/324854159/large.jpg",
+      "license_code": "cc0",
+      "observation_id": 185951076,
+      "observer": "lizardking",
+      "photo_id": 324854159,
+      "sha256": "f24b77088e159d6823bd31552f9c3a334967d8e38f231a60ac7577d538126423",
+      "source_url": "https://www.inaturalist.org/observations/185951076",
+      "width": 1536
+    }
+  ],
+  "schema_version": 1,
+  "scientific_name": "Seiurus aurocapilla",
+  "slug": "ovenbird",
+  "status": "approved",
+  "taxon_id": 62550
+}

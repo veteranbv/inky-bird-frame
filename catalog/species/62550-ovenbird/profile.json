@@ -1,0 +1,41 @@
+{
+  "behavior": "Ground-foraging songbird that walks deliberately through leaf litter, often with its short tail held cocked upward.",
+  "common_name": "Ovenbird",
+  "family": "Parulidae",
+  "field_marks": [
+    "Olive-brown upperparts",
+    "Dull orange crown stripe bordered by blackish stripes",
+    "Bold white eye-ring",
+    "White underparts with heavy dark streaking",
+    "Fairly thick pointed bill, pink legs, and short tail"
+  ],
+  "habitat": "Large, mature closed-canopy deciduous or mixed forests with deep leaf litter; also uses forest thickets outside the breeding season.",
+  "measurements": {
+    "length": "14\u201316 cm",
+    "weight": "16\u201328 g",
+    "wingspan": "20\u201325 cm"
+  },
+  "palette": [
+    "olive-brown",
+    "dull orange",
+    "black",
+    "white",
+    "pink"
+  ],
+  "scientific_name": "Seiurus aurocapilla",
+  "sources": [
+    {
+      "title": "Ovenbird | Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/ovenbird"
+    },
+    {
+      "title": "Ovenbird Identification | All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Ovenbird/id"
+    },
+    {
+      "title": "Ovenbird Life History | All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Ovenbird/lifehistory"
+    }
+  ],
+  "taxon_id": 62550
+}
