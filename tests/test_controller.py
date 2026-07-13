@@ -896,6 +896,55 @@ class DiscoveryProviderTests(unittest.TestCase):
         self.assertEqual(snapshot["place_name"], "")
         self.assertEqual(snapshot["state"], "")
 
+    def test_all_mode_station_fallback_clears_previous_location_metadata(self) -> None:
+        species = BirdSpecies(12942, "Eastern Bluebird", "Sialia sialis", 7, "BirdWeather")
+        with TemporaryDirectory() as temporary:
+            config_path = Path(temporary) / "config.toml"
+            config_path.write_text(
+                CONFIG.replace(
+                    "[discovery]\n",
+                    '[discovery]\nsource = "all"\n'
+                    'ebird_api_key = "ebird-secret"\n'
+                    'birdweather_token = "station-secret"\n',
+                )
+            )
+            config = load_config(config_path)
+            config.controller.state_dir.mkdir(parents=True)
+            (config.controller.state_dir / "discovery.json").write_text(
+                json.dumps(
+                    {
+                        "schema_version": 2,
+                        "refreshed_at": "2026-07-12T08:00:00+00:00",
+                        "place_name": "Old Location",
+                        "state": "XY",
+                        "providers": [],
+                        "species": [],
+                    }
+                )
+            )
+            discovery = DiscoveryResult(
+                location=None,
+                species=[species],
+                providers=[
+                    ProviderStatus("inaturalist", "error", 0),
+                    ProviderStatus("ebird", "error", 0),
+                    ProviderStatus("birdweather", "ok", 1),
+                ],
+                unresolved=[],
+            )
+            with (
+                patch("inky_bird_frame.controller.discover_species", return_value=discovery),
+                patch("inky_bird_frame.controller._write_active_catalog", return_value=0),
+            ):
+                result = run_refresh_cycle(config)
+
+            snapshot = json.loads((config.controller.state_dir / "discovery.json").read_text())
+
+        self.assertEqual(result["place_name"], "")
+        self.assertEqual(result["state"], "")
+        self.assertEqual(snapshot["place_name"], "")
+        self.assertEqual(snapshot["state"], "")
+
     def test_birdweather_source_uses_station_detections(self) -> None:
         detection = BirdWeatherSpecies(
             42,

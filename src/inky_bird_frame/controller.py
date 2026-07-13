@@ -514,9 +514,6 @@ def run_refresh_cycle(config: AppConfig) -> dict[str, object]:
         if _snapshot_path(config).exists():
             previous = _read_discovery_snapshot(config)
             previous_taxa = {species.taxon_id for species in previous.species}
-            if config.discovery.source is not DiscoverySource.BIRDWEATHER:
-                place_name = previous.place_name
-                state = previous.state
         discovery = discover_species(config)
         location = discovery.location
         if location is not None:
