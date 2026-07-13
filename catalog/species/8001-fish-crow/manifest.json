@@ -1,0 +1,150 @@
+{
+  "approved_at": "2026-07-13T04:49:46+00:00",
+  "assets": {
+    "display": {
+      "filename": "display.png",
+      "sha256": "c0cc60f86620b14f787a8b7f7bd09f60bfdf9465846f505b04ecac2c1b954da9"
+    },
+    "portrait": {
+      "filename": "portrait.png",
+      "sha256": "13307b6ae0f9318359481036f79b1945984629b7ccc098d2a5b0a9d3fe8489e7"
+    }
+  },
+  "common_name": "Fish Crow",
+  "generation": {
+    "attempt": 3,
+    "generated_at": "2026-07-13T04:49:46+00:00",
+    "generator": "Codex subscription / built-in gpt-image-2",
+    "max_attempts": 3,
+    "prompt_version": "field-journal-v2"
+  },
+  "profile": {
+    "behavior": "Social, omnivorous ground-forager; often forages in flocks and gives short nasal calls.",
+    "common_name": "Fish Crow",
+    "family": "Corvidae",
+    "field_marks": [
+      "Entirely black plumage, often with a subtle green-purple sheen",
+      "Heavy, glossy black bill",
+      "Dark black eyes",
+      "Sturdy black legs and feet",
+      "Broad, fingered wings with slightly pointed tips",
+      "Rounded to square-tipped tail"
+    ],
+    "habitat": "Wetlands and water-associated habitats including shorelines, estuaries, marshes, swamps, rivers, lakes, ponds, and adjacent woodland; also uses urban and agricultural areas.",
+    "measurements": {
+      "length": "36\u201341 cm",
+      "weight": "195\u2013350 g",
+      "wingspan": "77\u201385 cm"
+    },
+    "palette": [
+      "black",
+      "charcoal black",
+      "blue-black",
+      "green-purple iridescence",
+      "dark gray"
+    ],
+    "scientific_name": "Corvus ossifragus",
+    "sources": [
+      {
+        "title": "Fish Crow Identification \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Fish_Crow/id"
+      },
+      {
+        "title": "Fish Crow \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/fish-crow"
+      },
+      {
+        "title": "Corvus ossifragus \u2014 Animal Diversity Web",
+        "url": "https://animaldiversity.org/accounts/Corvus_ossifragus/"
+      }
+    ],
+    "taxon_id": 8001
+  },
+  "quality_review": {
+    "anatomy_accuracy": 4,
+    "composition_quality": 5,
+    "findings": [
+      "The plate depicts a single anatomically coherent crow: one head, one beak, two legs and feet, one tail, and a folded wing plus the opposite wing implied behind the body; the separate lower-left wing study is consistent with the bird rather than an extra appendage.",
+      "Plumage, glossy dark bill, dark eye, sturdy black legs and feet, broad fingered/pointed wing treatment, and rounded-to-square tail treatment agree with the licensed reference photos and verified Fish Crow descriptions. The bill is illustrated somewhat more massive than typical, but remains plausible.",
+      "All visible taxonomic, habitat, behavior, palette, and measurement claims are supported. The stated 36\u201341 cm length, 77\u201385 cm wingspan, and 280\u2013350 g weight match Audubon's published range.",
+      "No place name, ZIP code, coordinates, map, or local-observation detail appears."
+    ],
+    "location_free": true,
+    "passed": true,
+    "species_accuracy": 4,
+    "text_accuracy": 5,
+    "verification_sources": [
+      {
+        "title": "Fish Crow Identification \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/fish_crow/id"
+      },
+      {
+        "title": "Fish Crow \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/fish-crow"
+      },
+      {
+        "title": "Corvus ossifragus \u2014 Animal Diversity Web",
+        "url": "https://animaldiversity.org/accounts/Corvus_ossifragus/"
+      }
+    ]
+  },
+  "references": [
+    {
+      "attribution": "(c) Laura Mae, some rights reserved (CC BY)",
+      "filename": "01-112004492.jpg",
+      "height": 1536,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/112004492/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 69076127,
+      "observer": "lauralovesbirds",
+      "photo_id": 112004492,
+      "sha256": "bf229c2d29464d59ed88b801908404a0bbc22765e98a12d1ab6bf8c30542230f",
+      "source_url": "https://www.inaturalist.org/observations/69076127",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) Owen Strickland, some rights reserved (CC BY)",
+      "filename": "02-655661534.jpg",
+      "height": 1365,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/655661534/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 359365448,
+      "observer": "owenstrickland",
+      "photo_id": 655661534,
+      "sha256": "6d87ff5d2c709f2b8aaaa7acc263276b024fc01e65fa0ff355bcb0c3308d3db0",
+      "source_url": "https://www.inaturalist.org/observations/359365448",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) froggymum, some rights reserved (CC BY)",
+      "filename": "03-661804800.jpg",
+      "height": 2048,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/661804800/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 362592842,
+      "observer": "froggymum",
+      "photo_id": 661804800,
+      "sha256": "025df5d3add6fa7919dce273a8f81d19644da2779f66cab00fb8b2de244cf185",
+      "source_url": "https://www.inaturalist.org/observations/362592842",
+      "width": 1794
+    },
+    {
+      "attribution": "no rights reserved",
+      "filename": "04-396618690.jpg",
+      "height": 2048,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/396618690/large.jpg",
+      "license_code": "cc0",
+      "observation_id": 223817371,
+      "observer": "lizardking",
+      "photo_id": 396618690,
+      "sha256": "eda13c958fc276ae1eff9f81e70a8ec50089fe153f455ad59af4bde26fe7df4e",
+      "source_url": "https://www.inaturalist.org/observations/223817371",
+      "width": 1536
+    }
+  ],
+  "schema_version": 1,
+  "scientific_name": "Corvus ossifragus",
+  "slug": "fish-crow",
+  "status": "approved",
+  "taxon_id": 8001
+}
