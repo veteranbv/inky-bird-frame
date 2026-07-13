@@ -1,0 +1,148 @@
+{
+  "approved_at": "2026-07-13T03:44:32+00:00",
+  "assets": {
+    "display": {
+      "filename": "display.png",
+      "sha256": "3472a4d37b64e38986cbab7a965c7d6c52cfe355f5ca99e721881da9b43cf7c5"
+    },
+    "portrait": {
+      "filename": "portrait.png",
+      "sha256": "835757d6976255c7722a768b9bf8c75dcfa2e49ec8f94474ecc0f791aaa076f9"
+    }
+  },
+  "common_name": "Chimney Swift",
+  "generation": {
+    "attempt": 2,
+    "generated_at": "2026-07-13T03:44:32+00:00",
+    "generator": "Codex subscription / built-in gpt-image-2",
+    "max_attempts": 3,
+    "prompt_version": "field-journal-v2"
+  },
+  "profile": {
+    "behavior": "An almost continuously aerial insectivore; flies rapidly with stiff, shallow wingbeats and clings rather than perches when at rest.",
+    "common_name": "Chimney Swift",
+    "family": "Apodidae",
+    "field_marks": [
+      "Slender, tube- or cigar-shaped body",
+      "Very long, narrow, strongly curved wings",
+      "Short, tapered tail with stiff, bristle-like tips",
+      "Dark gray-brown overall, with a slightly paler throat",
+      "Tiny feet; clings to vertical surfaces rather than perching",
+      "Very short, broad-based bill that is often hard to see"
+    ],
+    "habitat": "Open airspace over a wide variety of terrain where flying insects are available; nests and roosts on enclosed vertical surfaces, including chimneys, cavities, caves, and similar structures.",
+    "measurements": {
+      "length": "4.7\u20135.9 in (12\u201315 cm)",
+      "weight": "0.6\u20131.1 oz (17\u201330 g)",
+      "wingspan": "10.6\u201311.8 in (27\u201330 cm)"
+    },
+    "palette": [
+      "sooty gray-brown",
+      "charcoal gray",
+      "blackish brown",
+      "pale gray throat",
+      "dark brown-black"
+    ],
+    "scientific_name": "Chaetura pelagica",
+    "sources": [
+      {
+        "title": "Chimney Swift Identification \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Chimney_Swift/id"
+      },
+      {
+        "title": "Chimney Swift \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/chimney-swift"
+      },
+      {
+        "title": "Chaetura pelagica \u2014 Animal Diversity Web",
+        "url": "https://animaldiversity.org/accounts/Chaetura_pelagica/"
+      }
+    ],
+    "taxon_id": 6571
+  },
+  "quality_review": {
+    "anatomy_accuracy": 4,
+    "composition_quality": 5,
+    "findings": [
+      "Identity is correct: the main bird shows the species\u2019 dark gray-brown plumage, slightly paler throat, tiny clinging feet, short broad-based bill, long narrow folded wings, and vertical-surface posture; the reference photos support these traits.",
+      "The plate\u2019s two auxiliary studies (wing and head) are labeled illustrations rather than additional whole birds; the primary bird has one head, one beak, two wings, two legs, and one tail.",
+      "All visible taxonomy, behavior, habitat, and field-mark claims agree with Cornell\u2019s live identification page. Length and weight also agree.",
+      "The printed wingspan (10.6\u201311.8 in / 27\u201330 cm) agrees with Cornell but differs from Audubon\u2019s live page, which gives 11\u201312.6 in / 27\u201332 cm. This source discrepancy should be resolved or cited before treating the plate as a single-source measurement reference.",
+      "No place name, ZIP code, coordinates, map, or local-observation detail appears in the candidate.",
+      "The illustrated eye is somewhat enlarged/stylized and the folded-wing/tail silhouette is more elongated than the clinging reference photo, but neither creates a material species-identification error."
+    ],
+    "location_free": true,
+    "passed": true,
+    "species_accuracy": 5,
+    "text_accuracy": 4,
+    "verification_sources": [
+      {
+        "title": "Chimney Swift Identification \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Chimney_Swift/id"
+      },
+      {
+        "title": "Chimney Swift \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/chimney-swift"
+      }
+    ]
+  },
+  "references": [
+    {
+      "attribution": "no rights reserved",
+      "filename": "01-143746829.jpg",
+      "height": 1275,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/143746829/large.jpg",
+      "license_code": "cc0",
+      "observation_id": 87211923,
+      "observer": "wildreturn",
+      "photo_id": 143746829,
+      "sha256": "47963312b3138ea7ce2d22f2c15d287460a3cba4fa9311fef0f261a79ba6ff91",
+      "source_url": "https://www.inaturalist.org/observations/87211923",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) Nigel Voaden, some rights reserved (CC BY)",
+      "filename": "02-1591710.jpg",
+      "height": 1358,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/1591710/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 1268258,
+      "observer": "terathopius",
+      "photo_id": 1591710,
+      "sha256": "fc3b6ba6e2112d62d4bcf257445af22d7a4f5e1f6c0276e9670d9b97ce3ca865",
+      "source_url": "http://www.inaturalist.org/observations/1268258",
+      "width": 1870
+    },
+    {
+      "attribution": "(c) Alina Martin, some rights reserved (CC BY)",
+      "filename": "03-172261741.jpeg",
+      "height": 2048,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/172261741/large.jpeg",
+      "license_code": "cc-by",
+      "observation_id": 102982769,
+      "observer": "alinamartin",
+      "photo_id": 172261741,
+      "sha256": "59e3db5a3dbd454bf2a795c9a05f3cd515dcb2b39e9162c47e98fbde34109055",
+      "source_url": "https://www.inaturalist.org/observations/102982769",
+      "width": 1536
+    },
+    {
+      "attribution": "no rights reserved",
+      "filename": "04-436391259.png",
+      "height": 1080,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/436391259/large.png",
+      "license_code": "cc0",
+      "observation_id": 244630078,
+      "observer": "stevestevens",
+      "photo_id": 436391259,
+      "sha256": "99bbfcbfaad4ac51de95b4e62bc87001eb786e87f903bdc707d00b2d7c65dbe7",
+      "source_url": "https://www.inaturalist.org/observations/244630078",
+      "width": 1920
+    }
+  ],
+  "schema_version": 1,
+  "scientific_name": "Chaetura pelagica",
+  "slug": "chimney-swift",
+  "status": "approved",
+  "taxon_id": 6571
+}

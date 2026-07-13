@@ -1,0 +1,42 @@
+{
+  "behavior": "An almost continuously aerial insectivore; flies rapidly with stiff, shallow wingbeats and clings rather than perches when at rest.",
+  "common_name": "Chimney Swift",
+  "family": "Apodidae",
+  "field_marks": [
+    "Slender, tube- or cigar-shaped body",
+    "Very long, narrow, strongly curved wings",
+    "Short, tapered tail with stiff, bristle-like tips",
+    "Dark gray-brown overall, with a slightly paler throat",
+    "Tiny feet; clings to vertical surfaces rather than perching",
+    "Very short, broad-based bill that is often hard to see"
+  ],
+  "habitat": "Open airspace over a wide variety of terrain where flying insects are available; nests and roosts on enclosed vertical surfaces, including chimneys, cavities, caves, and similar structures.",
+  "measurements": {
+    "length": "4.7\u20135.9 in (12\u201315 cm)",
+    "weight": "0.6\u20131.1 oz (17\u201330 g)",
+    "wingspan": "10.6\u201311.8 in (27\u201330 cm)"
+  },
+  "palette": [
+    "sooty gray-brown",
+    "charcoal gray",
+    "blackish brown",
+    "pale gray throat",
+    "dark brown-black"
+  ],
+  "scientific_name": "Chaetura pelagica",
+  "sources": [
+    {
+      "title": "Chimney Swift Identification \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Chimney_Swift/id"
+    },
+    {
+      "title": "Chimney Swift \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/chimney-swift"
+    },
+    {
+      "title": "Chaetura pelagica \u2014 Animal Diversity Web",
+      "url": "https://animaldiversity.org/accounts/Chaetura_pelagica/"
+    }
+  ],
+  "taxon_id": 6571
+}

@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-13T03:31:26+00:00",
+  "generated_at": "2026-07-13T03:44:32+00:00",
   "schema_version": 1,
   "species": [
     {
@@ -166,6 +166,17 @@
       "scientific_name": "Bombycilla cedrorum",
       "slug": "cedar-waxwing",
       "taxon_id": 7428
+    },
+    {
+      "approved_at": "2026-07-13T03:44:32+00:00",
+      "common_name": "Chimney Swift",
+      "display_path": "species/6571-chimney-swift/display.png",
+      "display_sha256": "3472a4d37b64e38986cbab7a965c7d6c52cfe355f5ca99e721881da9b43cf7c5",
+      "portrait_path": "species/6571-chimney-swift/portrait.png",
+      "portrait_sha256": "835757d6976255c7722a768b9bf8c75dcfa2e49ec8f94474ecc0f791aaa076f9",
+      "scientific_name": "Chaetura pelagica",
+      "slug": "chimney-swift",
+      "taxon_id": 6571
     },
     {
       "approved_at": "2026-07-10T04:38:31+00:00",
