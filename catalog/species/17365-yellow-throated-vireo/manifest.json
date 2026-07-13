@@ -1,0 +1,141 @@
+{
+  "approved_at": "2026-07-13T07:34:12+00:00",
+  "assets": {
+    "display": {
+      "filename": "display.png",
+      "sha256": "fdae94bd72391f6e4f5305e25f91d3e0d150353d7559a32c6aea5184f49154a4"
+    },
+    "portrait": {
+      "filename": "portrait.png",
+      "sha256": "1eb69b65311b34978d9f1960ef6aaa3edf8a79b2c231c2d01c75b3d8cee0f10d"
+    }
+  },
+  "common_name": "Yellow-throated Vireo",
+  "generation": {
+    "attempt": 1,
+    "generated_at": "2026-07-13T07:34:12+00:00",
+    "generator": "Codex subscription / built-in gpt-image-2",
+    "max_attempts": 3,
+    "prompt_version": "field-journal-v2"
+  },
+  "profile": {
+    "behavior": "A deliberate foliage gleaner, moving slowly through tree branches to pick insects from leaves and twigs.",
+    "common_name": "Yellow-throated Vireo",
+    "family": "Vireonidae",
+    "field_marks": [
+      "Bright yellow spectacles: a complete eyering joined to yellow lores.",
+      "Unstreaked, vivid yellow throat and upper breast.",
+      "Olive-green head and upperparts with a contrasting gray rump.",
+      "Two crisp white wingbars on dark gray wings.",
+      "White belly and undertail coverts.",
+      "Small, sturdy dark bill with a subtly hooked tip."
+    ],
+    "habitat": "Open deciduous woodland and forest edges; also uses mixed deciduous forest, wooded gaps, and shrubby woodland edges.",
+    "measurements": {
+      "length": "5\u20136 in (13\u201315 cm)",
+      "weight": "0.3\u20130.4 oz (9\u201311 g)",
+      "wingspan": "8\u20139 in (20\u201323 cm)"
+    },
+    "palette": [
+      "olive green",
+      "bright yellow",
+      "slate gray",
+      "white",
+      "charcoal black"
+    ],
+    "scientific_name": "Vireo flavifrons",
+    "sources": [
+      {
+        "title": "Yellow-throated Vireo \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Yellow-throated_Vireo/overview"
+      },
+      {
+        "title": "Yellow-throated Vireo \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/yellow-throated-vireo"
+      }
+    ],
+    "taxon_id": 17365
+  },
+  "quality_review": {
+    "anatomy_accuracy": 4,
+    "composition_quality": 5,
+    "findings": [
+      "Species identity is supported by the yellow spectacles, bright yellow throat and upper breast, olive upperparts, gray rump, two white wingbars, white belly, and compact vireo form; these agree with the reference photos and verified guides.",
+      "All visible taxonomy, measurement, habitat, behavior, and field-mark claims are correct. The plate contains no place name, ZIP code, coordinates, map, or local-observation detail.",
+      "The bird is depicted with one head, one beak, two wings (one largely occluded in profile), two legs, and one tail. The bill is slightly longer and finer-looking than the stout, subtly hooked bill in the photos, but remains acceptable and is not a material identification error."
+    ],
+    "location_free": true,
+    "passed": true,
+    "species_accuracy": 4,
+    "text_accuracy": 5,
+    "verification_sources": [
+      {
+        "title": "Yellow-throated Vireo \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Yellow-throated_Vireo/overview"
+      },
+      {
+        "title": "Yellow-throated Vireo \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/yellow-throated-vireo"
+      }
+    ]
+  },
+  "references": [
+    {
+      "attribution": "no rights reserved",
+      "filename": "01-195347973.jpeg",
+      "height": 1468,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/195347973/large.jpeg",
+      "license_code": "cc0",
+      "observation_id": 115743471,
+      "observer": "wildreturn",
+      "photo_id": 195347973,
+      "sha256": "16add6070176cce103934c18870c8f058d27dbd14cca9137865301c8b01732f0",
+      "source_url": "https://www.inaturalist.org/observations/115743471",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) Karen (with occasional help from Mike), some rights reserved (CC BY)",
+      "filename": "02-56404202.jpeg",
+      "height": 1504,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/56404202/large.jpeg",
+      "license_code": "cc-by",
+      "observation_id": 35747215,
+      "observer": "mpkw",
+      "photo_id": 56404202,
+      "sha256": "8523d6c06fd5ddfc6bb64d4cbb44f6f0309174b0bc90434508f2c842ec414ee9",
+      "source_url": "https://www.inaturalist.org/observations/35747215",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) Andrew Lai, some rights reserved (CC BY)",
+      "filename": "03-658865734.jpg",
+      "height": 1366,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/658865734/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 361041369,
+      "observer": "andrewlai530",
+      "photo_id": 658865734,
+      "sha256": "a87a3bfc98da53cd5c6058df9b915787493ca482354fa2531273f57fba15331f",
+      "source_url": "https://www.inaturalist.org/observations/361041369",
+      "width": 2048
+    },
+    {
+      "attribution": "no rights reserved",
+      "filename": "04-611956312.jpg",
+      "height": 1067,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/611956312/large.jpg",
+      "license_code": "cc0",
+      "observation_id": 336726119,
+      "observer": "davidfbird",
+      "photo_id": 611956312,
+      "sha256": "adb682934772e4c96590370f917c9e98467a98408c2209a67adfe759f9f548be",
+      "source_url": "https://www.inaturalist.org/observations/336726119",
+      "width": 1600
+    }
+  ],
+  "schema_version": 1,
+  "scientific_name": "Vireo flavifrons",
+  "slug": "yellow-throated-vireo",
+  "status": "approved",
+  "taxon_id": 17365
+}

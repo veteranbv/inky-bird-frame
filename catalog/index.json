@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-13T07:24:31+00:00",
+  "generated_at": "2026-07-13T07:34:12+00:00",
   "schema_version": 1,
   "species": [
     {
@@ -771,6 +771,17 @@
       "scientific_name": "Setophaga coronata",
       "slug": "yellow-rumped-warbler",
       "taxon_id": 145245
+    },
+    {
+      "approved_at": "2026-07-13T07:34:12+00:00",
+      "common_name": "Yellow-throated Vireo",
+      "display_path": "species/17365-yellow-throated-vireo/display.png",
+      "display_sha256": "fdae94bd72391f6e4f5305e25f91d3e0d150353d7559a32c6aea5184f49154a4",
+      "portrait_path": "species/17365-yellow-throated-vireo/portrait.png",
+      "portrait_sha256": "1eb69b65311b34978d9f1960ef6aaa3edf8a79b2c231c2d01c75b3d8cee0f10d",
+      "scientific_name": "Vireo flavifrons",
+      "slug": "yellow-throated-vireo",
+      "taxon_id": 17365
     }
   ]
 }
