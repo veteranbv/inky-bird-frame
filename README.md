@@ -175,8 +175,9 @@ The panel reports a `1600x1200` landscape canvas. Plates are authored at
 The [complete installation guide](docs/installation.md) starts with blank
 macOS, Ubuntu, Raspberry Pi OS, and Raspberry Pi display-node systems. It covers
 the support matrix, Wi-Fi and SSH prerequisites, Codex authentication, hardware
-assembly, private TOML configuration, native startup services, reboot recovery,
-updates, uninstall, and focused troubleshooting.
+assembly, private TOML configuration, startup services, reboot recovery,
+updates, uninstall, and focused troubleshooting. Controller users can choose
+native macOS/Linux services or the production [Docker deployment](docs/docker.md).
 
 The commissioning flow is intentionally staged:
 

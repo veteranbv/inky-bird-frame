@@ -1,0 +1,15 @@
+.git
+.github
+.mypy_cache
+.pytest_cache
+.ruff_cache
+.venv
+build
+controller.env
+config.toml
+dist
+docs
+output
+var
+*.egg-info
+__pycache__

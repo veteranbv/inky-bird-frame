@@ -88,3 +88,18 @@ jobs:
 
       - name: Pytest
         run: uv run pytest
+
+      - name: Validate Compose configuration
+        run: |
+          cp config.example.toml config.toml
+          docker compose config --quiet
+
+      - name: Build controller container
+        run: docker build --tag inky-bird-frame:ci .
+
+      - name: Smoke-test controller container
+        run: |
+          docker run --rm inky-bird-frame:ci --help
+          docker run --rm --entrypoint codex inky-bird-frame:ci --version
+          docker run --rm --entrypoint gh inky-bird-frame:ci --version
+          docker run --rm inky-bird-frame:ci catalog validate --catalog /app/catalog

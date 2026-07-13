@@ -13,6 +13,7 @@ from unittest.mock import patch
 from inky_bird_frame.birds import BirdSpecies
 from inky_bird_frame.cli import (
     build_parser,
+    catalog_sync_command,
     generate_command,
     main,
     refresh_command,
@@ -67,6 +68,48 @@ class CliTests(unittest.TestCase):
         self.assertEqual(str(prepare.catalog), "catalog")
         self.assertEqual(str(validate.catalog), "catalog")
         self.assertEqual(str(validate.base_catalog), "base-catalog")
+
+    def test_catalog_sync_uses_explicit_catalog_paths(self) -> None:
+        args = build_parser().parse_args(
+            [
+                "catalog",
+                "sync",
+                "--source-catalog",
+                "bundled-catalog",
+                "--catalog",
+                "managed-catalog",
+                "--state-dir",
+                "controller-state",
+            ]
+        )
+
+        self.assertEqual(str(args.source_catalog), "bundled-catalog")
+        self.assertEqual(str(args.catalog), "managed-catalog")
+        self.assertEqual(str(args.state_dir), "controller-state")
+
+    def test_catalog_sync_uses_controller_catalog_lock(self) -> None:
+        args = Namespace(
+            source_catalog=Path("bundled-catalog"),
+            catalog=Path("managed-catalog"),
+            state_dir=Path("controller-state"),
+        )
+        with (
+            patch("inky_bird_frame.cli.catalog_state_lock") as catalog_lock,
+            patch(
+                "inky_bird_frame.cli.sync_public_catalog",
+                return_value={"published": [], "already_present": []},
+            ) as sync,
+            redirect_stdout(io.StringIO()),
+        ):
+            catalog_sync_command(args)
+
+        catalog_lock.assert_called_once_with(Path("controller-state"))
+        sync.assert_called_once_with(Path("bundled-catalog"), Path("managed-catalog"))
+
+    def test_scheduler_requires_explicit_config(self) -> None:
+        args = build_parser().parse_args(["scheduler", "--config", "instance.toml"])
+
+        self.assertEqual(str(args.config), "instance.toml")
 
     def test_seed_supports_year_window_and_overrides(self) -> None:
         args = build_parser().parse_args(
