@@ -1,0 +1,147 @@
+{
+  "approved_at": "2026-07-13T05:08:12+00:00",
+  "assets": {
+    "display": {
+      "filename": "display.png",
+      "sha256": "17f84c58bcd67e5d5dc9340c01c47e35ed14bc1b455943f725d230330662435f"
+    },
+    "portrait": {
+      "filename": "portrait.png",
+      "sha256": "17c219dfc5d91f7c1dc67af9f4a248928631e8fbb88b10b395976af3a4723220"
+    }
+  },
+  "common_name": "Great Crested Flycatcher",
+  "generation": {
+    "attempt": 2,
+    "generated_at": "2026-07-13T05:08:12+00:00",
+    "generator": "Codex subscription / built-in gpt-image-2",
+    "max_attempts": 3,
+    "prompt_version": "field-journal-v2"
+  },
+  "profile": {
+    "behavior": "Usually forages from high perches, making short sallies after insects and returning to a perch; spends little time on the ground.",
+    "common_name": "Great Crested Flycatcher",
+    "family": "Tyrannidae",
+    "field_marks": [
+      "Large, lean flycatcher with a broad-shouldered look, large head, and subtle peaked crest.",
+      "Brownish-gray head, throat, and breast contrast with a bright lemon-yellow belly.",
+      "Thick, straight dark bill, often with a paler base to the lower mandible.",
+      "Olive- to reddish-brown upperparts with pale-edged wing feathers.",
+      "Rufous-orange flashes in the wings and a long, rufous-brown tail.",
+      "Dark legs and feet; sexes alike in plumage."
+    ],
+    "habitat": "Open broadleaf or mixed woodlands, woodland edges, clearings, hedgerows, and other tree-rich habitats; typically uses the upper canopy and nests in cavities.",
+    "measurements": {
+      "length": "17\u201322 cm (6.7\u20138.7 in)",
+      "weight": "27\u201340 g (0.9\u20131.4 oz)",
+      "wingspan": "33\u201338 cm (13\u201315 in)"
+    },
+    "palette": [
+      "brownish gray",
+      "olive brown",
+      "lemon yellow",
+      "rufous orange",
+      "blackish brown"
+    ],
+    "scientific_name": "Myiarchus crinitus",
+    "sources": [
+      {
+        "title": "Great Crested Flycatcher Identification, All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Great_Crested_Flycatcher/id"
+      },
+      {
+        "title": "Great Crested Flycatcher Life History, All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Great_Crested_Flycatcher/lifehistory"
+      },
+      {
+        "title": "Great Crested Flycatcher, Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/great-crested-flycatcher"
+      }
+    ],
+    "taxon_id": 16028
+  },
+  "quality_review": {
+    "anatomy_accuracy": 4,
+    "composition_quality": 5,
+    "findings": [
+      "Passed: the illustration shows one head, one straight beak, two legs and feet, one tail, and the anatomically expected pair of wings (the far wing is occluded).",
+      "Species identity is well supported by the brownish-gray head and chest, bright lemon-yellow belly, broad-shouldered large-headed profile, straight dark bill, pale-edged brown wings with rufous primary flashes, and long rufous-brown tail; these agree with the supplied reference photos and both live field guides.",
+      "The crest is rendered somewhat more conspicuously swept-up than the usually subtle/bushy crest in the reference photos, but remains within an acceptable scientific-illustration interpretation.",
+      "All visible factual text is supported. The plate's 17\u201321 cm, 6.7\u20138.3 in, and 27\u201340 g values match All About Birds; its 33\u201338 cm, 13\u201315 in wingspan matches Audubon. No material text error found.",
+      "No place name, ZIP code, coordinates, map, or local-observation detail appears on the candidate."
+    ],
+    "location_free": true,
+    "passed": true,
+    "species_accuracy": 4,
+    "text_accuracy": 5,
+    "verification_sources": [
+      {
+        "title": "Great Crested Flycatcher Identification, All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Great_Crested_Flycatcher/id"
+      },
+      {
+        "title": "Great Crested Flycatcher, Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/great-crested-flycatcher"
+      }
+    ]
+  },
+  "references": [
+    {
+      "attribution": "(c) Chelsea Carroll, some rights reserved (CC BY)",
+      "filename": "01-199498319.jpeg",
+      "height": 1377,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/199498319/large.jpeg",
+      "license_code": "cc-by",
+      "observation_id": 118108276,
+      "observer": "chelsea_carroll",
+      "photo_id": 199498319,
+      "sha256": "af84db4ed4eb868a22b3f0d8d9a7b0a43a3e013958b5d0fee800a2185cd3c230",
+      "source_url": "https://www.inaturalist.org/observations/118108276",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) Arthur Windsor, some rights reserved (CC BY)",
+      "filename": "02-77948152.jpg",
+      "height": 1365,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/77948152/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 49106767,
+      "observer": "arthur-windsor",
+      "photo_id": 77948152,
+      "sha256": "688105320a6f28685e3b8299070c8989d5028228de55b2aaa84bc5efeb1b49ad",
+      "source_url": "https://www.inaturalist.org/observations/49106767",
+      "width": 2048
+    },
+    {
+      "attribution": "no rights reserved",
+      "filename": "03-202717991.jpeg",
+      "height": 1901,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/202717991/large.jpeg",
+      "license_code": "cc0",
+      "observation_id": 119890937,
+      "observer": "wildreturn",
+      "photo_id": 202717991,
+      "sha256": "c0078805044eacaf1e41f90c2b3c2002736bb4f779fd33a534d68f55334007c1",
+      "source_url": "https://www.inaturalist.org/observations/119890937",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) Donald Davesne, some rights reserved (CC BY)",
+      "filename": "04-541158800.jpg",
+      "height": 1365,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/541158800/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 300346376,
+      "observer": "donalddavesne",
+      "photo_id": 541158800,
+      "sha256": "b3ec4577dfccfc50f138c3e9465f208d1e53f47111b0af91bfb7c41f4e234736",
+      "source_url": "https://www.inaturalist.org/observations/300346376",
+      "width": 2048
+    }
+  ],
+  "schema_version": 1,
+  "scientific_name": "Myiarchus crinitus",
+  "slug": "great-crested-flycatcher",
+  "status": "approved",
+  "taxon_id": 16028
+}

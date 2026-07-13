@@ -1,0 +1,42 @@
+{
+  "behavior": "Usually forages from high perches, making short sallies after insects and returning to a perch; spends little time on the ground.",
+  "common_name": "Great Crested Flycatcher",
+  "family": "Tyrannidae",
+  "field_marks": [
+    "Large, lean flycatcher with a broad-shouldered look, large head, and subtle peaked crest.",
+    "Brownish-gray head, throat, and breast contrast with a bright lemon-yellow belly.",
+    "Thick, straight dark bill, often with a paler base to the lower mandible.",
+    "Olive- to reddish-brown upperparts with pale-edged wing feathers.",
+    "Rufous-orange flashes in the wings and a long, rufous-brown tail.",
+    "Dark legs and feet; sexes alike in plumage."
+  ],
+  "habitat": "Open broadleaf or mixed woodlands, woodland edges, clearings, hedgerows, and other tree-rich habitats; typically uses the upper canopy and nests in cavities.",
+  "measurements": {
+    "length": "17\u201322 cm (6.7\u20138.7 in)",
+    "weight": "27\u201340 g (0.9\u20131.4 oz)",
+    "wingspan": "33\u201338 cm (13\u201315 in)"
+  },
+  "palette": [
+    "brownish gray",
+    "olive brown",
+    "lemon yellow",
+    "rufous orange",
+    "blackish brown"
+  ],
+  "scientific_name": "Myiarchus crinitus",
+  "sources": [
+    {
+      "title": "Great Crested Flycatcher Identification, All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Great_Crested_Flycatcher/id"
+    },
+    {
+      "title": "Great Crested Flycatcher Life History, All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Great_Crested_Flycatcher/lifehistory"
+    },
+    {
+      "title": "Great Crested Flycatcher, Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/great-crested-flycatcher"
+    }
+  ],
+  "taxon_id": 16028
+}

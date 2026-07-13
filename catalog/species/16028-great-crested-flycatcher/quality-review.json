@@ -1,0 +1,25 @@
+{
+  "anatomy_accuracy": 4,
+  "composition_quality": 5,
+  "findings": [
+    "Passed: the illustration shows one head, one straight beak, two legs and feet, one tail, and the anatomically expected pair of wings (the far wing is occluded).",
+    "Species identity is well supported by the brownish-gray head and chest, bright lemon-yellow belly, broad-shouldered large-headed profile, straight dark bill, pale-edged brown wings with rufous primary flashes, and long rufous-brown tail; these agree with the supplied reference photos and both live field guides.",
+    "The crest is rendered somewhat more conspicuously swept-up than the usually subtle/bushy crest in the reference photos, but remains within an acceptable scientific-illustration interpretation.",
+    "All visible factual text is supported. The plate's 17\u201321 cm, 6.7\u20138.3 in, and 27\u201340 g values match All About Birds; its 33\u201338 cm, 13\u201315 in wingspan matches Audubon. No material text error found.",
+    "No place name, ZIP code, coordinates, map, or local-observation detail appears on the candidate."
+  ],
+  "location_free": true,
+  "passed": true,
+  "species_accuracy": 4,
+  "text_accuracy": 5,
+  "verification_sources": [
+    {
+      "title": "Great Crested Flycatcher Identification, All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Great_Crested_Flycatcher/id"
+    },
+    {
+      "title": "Great Crested Flycatcher, Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/great-crested-flycatcher"
+    }
+  ]
+}
