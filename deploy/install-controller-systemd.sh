@@ -74,7 +74,6 @@ chmod 600 "${config_path}"
 mkdir -p "${app_dir}/src" "${app_dir}/catalog" "${app_dir}/deploy" "${support_dir}"
 if [ "${root}" != "${app_dir}" ]; then
   rsync -a --delete "${root}/src/" "${app_dir}/src/"
-  rsync -a "${root}/catalog/" "${app_dir}/catalog/"
   install -m 0755 "${root}/deploy/install-controller-systemd.sh" "${app_dir}/deploy/"
   for file in pyproject.toml uv.lock README.md LICENSE; do
     install -m 0644 "${root}/${file}" "${app_dir}/${file}"
