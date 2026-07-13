@@ -1,0 +1,37 @@
+{
+  "behavior": "Obligate brood parasite; does not build its own nest, instead laying eggs in other birds\u2019 nests. Often forages on the ground and gathers in flocks, especially in open country.",
+  "common_name": "Brown-headed Cowbird",
+  "family": "Icteridae",
+  "field_marks": [
+    "Stocky, short-tailed blackbird with a thick, conical, finch-like bill.",
+    "Adult male has a rich brown head contrasting with a glossy black body.",
+    "Adult female is plain dusty brown, typically paler on the head and underparts, with faint belly streaking.",
+    "Dark eye; legs and feet are dark gray to black.",
+    "Broad wings and a short, square-to-rounded tail give a compact silhouette."
+  ],
+  "habitat": "Open and semi-open habitats, including grasslands, fields, pastures, meadows, lawns, brushy edges, and woodland margins; generally avoids dense, unbroken forest.",
+  "measurements": {
+    "length": "16\u201322 cm (6.3\u20138.7 in)",
+    "weight": "38\u201350 g (1.3\u20131.8 oz)",
+    "wingspan": "32\u201338 cm (12.6\u201315.0 in)"
+  },
+  "palette": [
+    "glossy black",
+    "rich brown",
+    "dusty brown",
+    "pale buff-gray",
+    "dark gray-black"
+  ],
+  "scientific_name": "Molothrus ater",
+  "sources": [
+    {
+      "title": "Brown-headed Cowbird Identification \u2014 All About Birds, Cornell Lab of Ornithology",
+      "url": "https://www.allaboutbirds.org/guide/Brown-headed_Cowbird/id"
+    },
+    {
+      "title": "Brown-headed Cowbird \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/brown-headed-cowbird"
+    }
+  ],
+  "taxon_id": 10373
+}

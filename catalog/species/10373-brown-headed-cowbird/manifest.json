@@ -1,0 +1,143 @@
+{
+  "approved_at": "2026-07-13T03:31:26+00:00",
+  "assets": {
+    "display": {
+      "filename": "display.png",
+      "sha256": "2bceafe859a819c8bdd2606c48af7759e6ed46b4d6b411195411aa6f966fcff5"
+    },
+    "portrait": {
+      "filename": "portrait.png",
+      "sha256": "5d6bdde4af20f0efe918fb5278f8c6c4fed4156320021eb980993a83af123697"
+    }
+  },
+  "common_name": "Brown-headed Cowbird",
+  "generation": {
+    "attempt": 2,
+    "generated_at": "2026-07-13T03:31:26+00:00",
+    "generator": "Codex subscription / built-in gpt-image-2",
+    "max_attempts": 3,
+    "prompt_version": "field-journal-v2"
+  },
+  "profile": {
+    "behavior": "Obligate brood parasite; does not build its own nest, instead laying eggs in other birds\u2019 nests. Often forages on the ground and gathers in flocks, especially in open country.",
+    "common_name": "Brown-headed Cowbird",
+    "family": "Icteridae",
+    "field_marks": [
+      "Stocky, short-tailed blackbird with a thick, conical, finch-like bill.",
+      "Adult male has a rich brown head contrasting with a glossy black body.",
+      "Adult female is plain dusty brown, typically paler on the head and underparts, with faint belly streaking.",
+      "Dark eye; legs and feet are dark gray to black.",
+      "Broad wings and a short, square-to-rounded tail give a compact silhouette."
+    ],
+    "habitat": "Open and semi-open habitats, including grasslands, fields, pastures, meadows, lawns, brushy edges, and woodland margins; generally avoids dense, unbroken forest.",
+    "measurements": {
+      "length": "16\u201322 cm (6.3\u20138.7 in)",
+      "weight": "38\u201350 g (1.3\u20131.8 oz)",
+      "wingspan": "32\u201338 cm (12.6\u201315.0 in)"
+    },
+    "palette": [
+      "glossy black",
+      "rich brown",
+      "dusty brown",
+      "pale buff-gray",
+      "dark gray-black"
+    ],
+    "scientific_name": "Molothrus ater",
+    "sources": [
+      {
+        "title": "Brown-headed Cowbird Identification \u2014 All About Birds, Cornell Lab of Ornithology",
+        "url": "https://www.allaboutbirds.org/guide/Brown-headed_Cowbird/id"
+      },
+      {
+        "title": "Brown-headed Cowbird \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/brown-headed-cowbird"
+      }
+    ],
+    "taxon_id": 10373
+  },
+  "quality_review": {
+    "anatomy_accuracy": 4,
+    "composition_quality": 4,
+    "findings": [
+      "Passed: the main specimen depicts an adult male Brown-headed Cowbird with one head, one beak, two legs, one tail, and anatomically appropriate paired folded wings.",
+      "Verified identity: stocky, short-tailed blackbird; thick, short conical bill; dark eye; dark legs; rich brown head contrasting with a glossy black body. These agree with the field references and both live sources.",
+      "Verified text: Molothrus ater; Icteridae; 16\u201322 cm, 32\u201338 cm wingspan, and 38\u201350 g are valid combined-sex ranges. Habitat and brood-parasitism statements are supported.",
+      "No place name, ZIP code, coordinates, map, or local-observation detail appears on the candidate plate.",
+      "Minor presentation issue: the separate brown-gray wing study is unlabeled and could be read as a female or juvenile feature rather than part of the illustrated adult male; it does not create a material species or text error.",
+      "Minor coverage omission: the plate text describes female field marks, but no female specimen is illustrated."
+    ],
+    "location_free": true,
+    "passed": true,
+    "species_accuracy": 4,
+    "text_accuracy": 5,
+    "verification_sources": [
+      {
+        "title": "Brown-headed Cowbird Identification \u2014 All About Birds, Cornell Lab of Ornithology",
+        "url": "https://www.allaboutbirds.org/guide/brown-headed_cowbird/id"
+      },
+      {
+        "title": "Brown-headed Cowbird \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/brown-headed-cowbird"
+      }
+    ]
+  },
+  "references": [
+    {
+      "attribution": "(c) Shirley Zundell, some rights reserved (CC BY)",
+      "filename": "01-8717139.jpeg",
+      "height": 1186,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/8717139/large.jpeg",
+      "license_code": "cc-by",
+      "observation_id": 6843342,
+      "observer": "sdz456",
+      "photo_id": 8717139,
+      "sha256": "5a69c3bffd9c05bc5dcabda9072f5b0a55a28cb2ebe69eb06f319aff2212adb1",
+      "source_url": "https://www.inaturalist.org/observations/6843342",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) Lauren McLaurin, some rights reserved (CC BY)",
+      "filename": "02-400076064.jpg",
+      "height": 1365,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/400076064/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 225639151,
+      "observer": "mcferny",
+      "photo_id": 400076064,
+      "sha256": "92d0776b9688360e857bf89297fb50fa396e7940c2d7114af69bc64a03759ae7",
+      "source_url": "https://www.inaturalist.org/observations/225639151",
+      "width": 2048
+    },
+    {
+      "attribution": "no rights reserved",
+      "filename": "03-57203706.jpg",
+      "height": 1536,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/57203706/large.jpg",
+      "license_code": "cc0",
+      "observation_id": 36205657,
+      "observer": "radrat",
+      "photo_id": 57203706,
+      "sha256": "0f5021ac4eef4b1cc72f2edb50630a2598529dd318ea326ad438b307dcf533e3",
+      "source_url": "https://www.inaturalist.org/observations/36205657",
+      "width": 2048
+    },
+    {
+      "attribution": "no rights reserved",
+      "filename": "04-134762541.jpeg",
+      "height": 1365,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/134762541/large.jpeg",
+      "license_code": "cc0",
+      "observation_id": 82123095,
+      "observer": "funvill",
+      "photo_id": 134762541,
+      "sha256": "42261a9ab5df0d0792d804819f9bf025fe1532ccf8bbe30c649ae3ff17cbc77b",
+      "source_url": "https://www.inaturalist.org/observations/82123095",
+      "width": 2048
+    }
+  ],
+  "schema_version": 1,
+  "scientific_name": "Molothrus ater",
+  "slug": "brown-headed-cowbird",
+  "status": "approved",
+  "taxon_id": 10373
+}

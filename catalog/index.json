@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-13T03:19:49+00:00",
+  "generated_at": "2026-07-13T03:31:26+00:00",
   "schema_version": 1,
   "species": [
     {
@@ -111,6 +111,17 @@
       "scientific_name": "Toxostoma rufum",
       "slug": "brown-thrasher",
       "taxon_id": 14898
+    },
+    {
+      "approved_at": "2026-07-13T03:31:26+00:00",
+      "common_name": "Brown-headed Cowbird",
+      "display_path": "species/10373-brown-headed-cowbird/display.png",
+      "display_sha256": "2bceafe859a819c8bdd2606c48af7759e6ed46b4d6b411195411aa6f966fcff5",
+      "portrait_path": "species/10373-brown-headed-cowbird/portrait.png",
+      "portrait_sha256": "5d6bdde4af20f0efe918fb5278f8c6c4fed4156320021eb980993a83af123697",
+      "scientific_name": "Molothrus ater",
+      "slug": "brown-headed-cowbird",
+      "taxon_id": 10373
     },
     {
       "approved_at": "2026-07-10T17:01:12+00:00",
