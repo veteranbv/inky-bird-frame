@@ -437,7 +437,7 @@ class DisplayHeartbeatTests(unittest.TestCase):
         self.assertEqual(result["signal"], "display-update")
         notify.assert_not_called()
 
-    def test_corrupt_success_file_falls_back_to_fetch_signal(self) -> None:
+    def test_corrupt_success_file_treats_display_as_never_succeeded(self) -> None:
         now = datetime(2026, 7, 10, tzinfo=UTC)
         with TemporaryDirectory() as temporary:
             config = self._config(temporary)
@@ -446,13 +446,16 @@ class DisplayHeartbeatTests(unittest.TestCase):
             (config.controller.state_dir / "display-last-success.json").write_bytes(
                 b'{"schema_version": 1, "succeeded_at": "2026-07-10T\xff'
             )
-            with patch("inky_bird_frame.notifications.safe_notify") as notify:
+            with patch(
+                "inky_bird_frame.notifications.safe_notify",
+                return_value={"queued": True},
+            ) as notify:
                 result = check_display_heartbeat(config, now=now)
 
-        self.assertFalse(result["stale"])
+        self.assertTrue(result["stale"])
         self.assertEqual(result["signal"], "catalog-fetch")
         self.assertIn("warning", result)
-        notify.assert_not_called()
+        self.assertIs(notify.call_args.args[1], NotificationEvent.DISPLAY_STALE)
 
     def test_non_utf8_heartbeat_is_reported_not_fatal(self) -> None:
         now = datetime(2026, 7, 10, tzinfo=UTC)
@@ -472,12 +475,29 @@ class DisplayHeartbeatTests(unittest.TestCase):
         with TemporaryDirectory() as temporary:
             config = self._config(temporary)
             self._write_heartbeat(config, now - timedelta(minutes=10))
+            self._write_success(config, now - timedelta(minutes=10))
             with patch("inky_bird_frame.notifications.safe_notify") as notify:
                 result = check_display_heartbeat(config, now=now)
 
         self.assertTrue(result["checked"])
         self.assertFalse(result["stale"])
         notify.assert_not_called()
+
+    def test_fetching_without_any_completed_update_alerts(self) -> None:
+        now = datetime(2026, 7, 10, tzinfo=UTC)
+        with TemporaryDirectory() as temporary:
+            config = self._config(temporary)
+            self._write_heartbeat(config, now - timedelta(minutes=5))
+            with patch(
+                "inky_bird_frame.notifications.safe_notify",
+                return_value={"queued": True},
+            ) as notify:
+                result = check_display_heartbeat(config, now=now)
+
+        self.assertTrue(result["stale"])
+        self.assertEqual(result["signal"], "catalog-fetch")
+        self.assertIs(notify.call_args.args[1], NotificationEvent.DISPLAY_STALE)
+        self.assertIn("never completed an update", notify.call_args.kwargs["body"])
 
     def test_stale_heartbeat_alerts_once_across_dispatch_runs(self) -> None:
         now = datetime(2026, 7, 10, tzinfo=UTC)
@@ -519,7 +539,7 @@ class DisplayHeartbeatTests(unittest.TestCase):
                 return_value={"queued": True},
             ) as notify:
                 check_display_heartbeat(config, now=now)
-                self._write_heartbeat(config, now + timedelta(minutes=10))
+                self._write_success(config, now + timedelta(minutes=10))
                 recovered = check_display_heartbeat(config, now=now + timedelta(minutes=15))
                 repeated = check_display_heartbeat(config, now=now + timedelta(minutes=20))
 
@@ -557,13 +577,13 @@ class DisplayHeartbeatTests(unittest.TestCase):
         now = datetime(2026, 7, 10, tzinfo=UTC)
         with TemporaryDirectory() as temporary:
             config = self._config(temporary, rotation_minutes=5)
-            self._write_heartbeat(config, now - timedelta(minutes=50))
+            self._write_success(config, now - timedelta(minutes=50))
             with patch(
                 "inky_bird_frame.notifications.safe_notify",
                 return_value={"queued": True},
             ) as notify:
                 within_floor = check_display_heartbeat(config, now=now)
-                self._write_heartbeat(config, now - timedelta(minutes=61))
+                self._write_success(config, now - timedelta(minutes=61))
                 past_floor = check_display_heartbeat(config, now=now)
 
         self.assertEqual(within_floor["threshold_minutes"], 60)

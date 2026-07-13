@@ -673,7 +673,7 @@ def load_or_create_profile(
     if cached:
         try:
             raw = json.loads(cache_path.read_text())
-        except json.JSONDecodeError as exc:
+        except (json.JSONDecodeError, UnicodeDecodeError) as exc:
             raise SpeciesStateError(f"Invalid cached species profile: {cache_path}") from exc
         try:
             profile = parse_species_profile(raw, config.research.allowed_domains)

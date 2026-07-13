@@ -63,11 +63,12 @@ Each destination has its own `events` list:
 The controller's HTTP server records the display's most recent catalog fetch
 in `display-last-fetch.json` and, when the display reports a completed update
 through `GET /v1/display-success`, the completion time in
-`display-last-success.json`, both under `state_dir`. The notifications cycle
-prefers the completed-update signal, so a node that still fetches the catalog
-but can no longer drive the panel is detected. It raises `display_stale` when
-no signal has been seen for three times `schedule.rotation_minutes`, with a
-minimum of 60 minutes, and sends `display_recovered` once updates resume.
+`display-last-success.json`, both under `state_dir`. Staleness is measured
+against completed updates: `display_stale` is raised when no update has
+completed for three times `schedule.rotation_minutes` (minimum 60 minutes),
+and also when a node keeps fetching the catalog without ever completing an
+update, so a panel that fails before its first success is still detected.
+`display_recovered` is sent once updates resume.
 
 Routine successes do not notify. Transient failures notify only after
 `degradation_failure_threshold` consecutive failures or

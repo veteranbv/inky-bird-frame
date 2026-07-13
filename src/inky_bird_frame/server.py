@@ -92,7 +92,11 @@ class CatalogRequestHandler(BaseHTTPRequestHandler):
             relative = Path(unquote(request_path.removeprefix(prefix)))
             root = self.catalog_dir.resolve()
             candidate = (root / relative).resolve()
-            if not candidate.is_relative_to(root) or not candidate.is_file():
+            if (
+                any(part.startswith(".") for part in relative.parts)
+                or not candidate.is_relative_to(root)
+                or not candidate.is_file()
+            ):
                 self._send_json(HTTPStatus.NOT_FOUND, {"ok": False, "error": "not found"})
                 return
             self._send_file(candidate)

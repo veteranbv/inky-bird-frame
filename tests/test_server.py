@@ -106,6 +106,24 @@ class ServerTests(unittest.TestCase):
             )
             rebuild_index_logging_failures(catalog_dir)
 
+    def test_staging_and_dot_paths_are_never_served(self) -> None:
+        with self._environment() as (_, catalog_dir, state_dir):
+            staged = catalog_dir / ".staging" / "1-robin"
+            staged.mkdir(parents=True)
+            (staged / "manifest.json").write_text("{}")
+            hidden = catalog_dir / "species" / ".hidden.png"
+            hidden.parent.mkdir(parents=True)
+            hidden.write_bytes(b"secret")
+            with _serving(catalog_dir, state_dir / "active-catalog.json", state_dir) as port:
+                staging_status, _, staging_body = _get(
+                    port, "/v1/assets/.staging/1-robin/manifest.json"
+                )
+                hidden_status, _, _ = _get(port, "/v1/assets/species/.hidden.png")
+
+        self.assertEqual(staging_status, 404)
+        self.assertEqual(hidden_status, 404)
+        self.assertNotIn(b"{}", staging_body)
+
     def test_display_success_report_is_recorded(self) -> None:
         with self._environment() as (_, catalog_dir, state_dir):
             with _serving(catalog_dir, state_dir / "active-catalog.json", state_dir) as port:

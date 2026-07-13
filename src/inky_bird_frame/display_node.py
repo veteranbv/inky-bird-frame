@@ -377,6 +377,10 @@ def run_display_cycle(
                 last_prioritized_detection_at=prioritized_at,
                 prioritized_detection_taxa=prioritized_taxa,
             )
+            # An unchanged selection means state.last_sha256 matches, and that
+            # is only ever recorded after a successful panel update, so the
+            # current plate is verifiably on the panel; without this report a
+            # single-species catalog would go stale despite being correct.
             _report_display_success(config.controller_url)
             return {
                 "display_update": "unchanged",

@@ -400,34 +400,41 @@ def safe_record_recovery(
 
 def check_display_heartbeat(config: AppConfig, *, now: datetime | None = None) -> dict[str, object]:
     current = (now or datetime.now(UTC)).astimezone(UTC).replace(microsecond=0)
-    # Completed display updates are the strongest signal; nodes that predate
-    # the success report fall back to their catalog fetches.
-    seen_at, warning = _read_display_heartbeat(display_success_path(config), "succeeded_at")
-    signal = "display-update"
-    if seen_at is None:
-        seen_at, fetch_warning = _read_display_heartbeat(
-            display_heartbeat_path(config), "fetched_at"
-        )
-        signal = "catalog-fetch"
-        warning = warning or fetch_warning
-    if seen_at is None:
+    success_at, success_warning = _read_display_heartbeat(
+        display_success_path(config), "succeeded_at"
+    )
+    fetched_at, fetch_warning = _read_display_heartbeat(
+        display_heartbeat_path(config), "fetched_at"
+    )
+    warning = success_warning or fetch_warning
+    if success_at is None and fetched_at is None:
         missing: dict[str, object] = {"checked": False, "stale": None}
         if warning is not None:
             missing["warning"] = warning
         return missing
     threshold = display_stale_threshold(config)
-    stale = current - seen_at > threshold
+    if success_at is not None:
+        signal = "display-update"
+        seen_at = success_at
+        stale = current - success_at > threshold
+        described = f"completed a display update at {success_at.isoformat()}"
+    else:
+        # Fetches without a single completed update mean every cycle fails
+        # after the catalog download; the incident failure threshold absorbs
+        # the window between a node's first fetch and its first success.
+        assert fetched_at is not None
+        signal = "catalog-fetch"
+        seen_at = fetched_at
+        stale = True
+        described = f"fetched the catalog at {fetched_at.isoformat()} but never completed an update"
     if stale:
-        described = (
-            "completed a display update" if signal == "display-update" else "fetched the catalog"
-        )
         notice = safe_record_degradation(
             config,
             key="display-heartbeat",
             title="Display updates are stale",
             body=(
-                f"The display node last {described} at {seen_at.isoformat()}. "
-                "The frame may be showing an old plate; check its power and network."
+                f"The display node last {described}. The frame may be showing "
+                "an old plate; check its power, network, and panel."
             ),
             event=NotificationEvent.DISPLAY_STALE,
             now=current,

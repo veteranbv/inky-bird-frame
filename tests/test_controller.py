@@ -863,6 +863,12 @@ class ControllerTests(unittest.TestCase):
             self.assertTrue(failure_results[0]["terminal"])
 
     def test_corrupt_profile_cache_quarantines_species_and_cycle_continues(self) -> None:
+        self._assert_corrupt_profile_cache_is_quarantined(b"{}")
+
+    def test_non_utf8_profile_cache_quarantines_species_and_cycle_continues(self) -> None:
+        self._assert_corrupt_profile_cache_is_quarantined(b'{"taxon_id": 9083, "\xff\xfe')
+
+    def _assert_corrupt_profile_cache_is_quarantined(self, corrupt_payload: bytes) -> None:
         corrupt = BirdSpecies(9083, "Northern Cardinal", "Cardinalis cardinalis", 2, "test")
         healthy = BirdSpecies(7513, "Carolina Wren", "Thryothorus ludovicianus", 3, "test")
         location = ZipLocation("12345", "Exampleville", "XY", 1.0, 2.0)
@@ -918,7 +924,7 @@ class ControllerTests(unittest.TestCase):
             config = load_config(config_path)
             profiles = config.controller.state_dir / "profiles"
             (profiles / "9083").mkdir(parents=True)
-            (profiles / "9083" / "profile.json").write_text("{}")
+            (profiles / "9083" / "profile.json").write_bytes(corrupt_payload)
             (profiles / "7513").mkdir(parents=True)
             (profiles / "7513" / "profile.json").write_text(json.dumps(wren_profile))
             with (
