@@ -95,12 +95,14 @@ currently active on the display:
 
 ```bash
 inky-bird-frame seed --config /path/to/config.toml \
-  --window last-year --species-limit 500 --dry-run
+  --source inaturalist --window last-year --species-limit 500 --dry-run
 inky-bird-frame seed --config /path/to/config.toml \
-  --window last-year --species-limit 500
+  --source inaturalist --window last-year --species-limit 500
 ```
 
-The configured radius is used unless `--radius-km` is provided. Repeating a seed
+The configured source is used unless `--source` is provided. eBird cannot query
+beyond 30 days, so historical seeds must use iNaturalist. The configured radius
+is used unless `--radius-km` is provided. Repeating a seed
 is idempotent: approved, terminal, and already queued taxa are not added again.
 Current observations remain ahead of seed-only taxa during generation.
 

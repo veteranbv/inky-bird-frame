@@ -160,7 +160,7 @@ is needed to flash the two cards. No HDMI cable, keyboard, mouse, right-angle
 cable, or display-node enclosure is required for normal operation.
 
 The controller requires Python 3.11 or newer, Codex CLI authenticated with a
-ChatGPT subscription, and network access to Codex, iNaturalist,
+ChatGPT subscription, and network access to Codex, iNaturalist, optional eBird,
 Zippopotam.us, and configured research sources. The display node requires
 Python 3.11 or newer with Pimoroni's Inky package and network access to the
 controller HTTP service.
@@ -211,7 +211,8 @@ uv run inky-bird-frame refresh --config config.toml
 uv run inky-bird-frame generate --config config.toml
 
 # Queue a broader one-time set without changing the active display window.
-uv run inky-bird-frame seed --config config.toml --window last-year --species-limit 500
+uv run inky-bird-frame seed --config config.toml --source inaturalist \
+  --window last-year --species-limit 500
 
 # Inspect approved, pending, and failed work.
 uv run inky-bird-frame status --config config.toml
@@ -225,17 +226,21 @@ uv run inky-bird-frame catalog-publish --config config.toml --dry-run
 uv run inky-bird-frame catalog-publish --config config.toml
 ```
 
+Discovery sources are `inaturalist`, `ebird`, and `combined`. eBird supplies
+bird-specific public sightings; every eBird result is exact-matched to an
+iNaturalist species before the existing licensed-reference pipeline accepts it.
 Observation windows are `last-day`, `last-week`, `last-30-days`, `last-year`,
-and `all-time`. Discovery distance is configured in kilometers with `radius_km`.
-Discovery admits only species-rank iNaturalist results, excluding unresolved
-genera, families, and other aggregate taxa from generation.
+and `all-time`; eBird modes support the first three and a maximum 50 km radius.
+See [Discovery sources](docs/discovery.md) for credentials, merging, failure
+handling, privacy, and provider limitations.
 Rotation modes are `sequential`, `shuffle`, `shuffle_bag`, and `weighted`.
 `shuffle` keeps its existing shuffled-round behavior. `shuffle_bag` persists a
 separate bag: it displays each currently active bird at most once before a
 refill, adds newly active birds to the current bag immediately, prunes inactive
 birds, and avoids a repeat at the refill boundary when alternatives exist.
-`weighted` uses local observation counts and avoids displaying the same bird
-twice in succession when alternatives are available.
+`weighted` uses iNaturalist observation counts where available; eBird-only
+species receive a presence weight of one. It avoids immediate repeats when
+alternatives are available.
 Recovery and operator-override commands are documented in
 [`docs/operations.md`](docs/operations.md).
 

@@ -1,21 +1,28 @@
 from __future__ import annotations
 
 import unittest
-from datetime import date
+from datetime import UTC, date, datetime
+from pathlib import Path
+from tempfile import TemporaryDirectory
 from unittest.mock import MagicMock, patch
 from urllib.parse import parse_qs, urlsplit
 
 from inky_bird_frame.birds import (
+    EbirdSpecies,
     ObservationWindow,
     date_range_for_window,
+    fetch_ebird_observations,
     fetch_inaturalist_birds,
     fetch_taxon_context,
     parse_birdnet_taxon,
+    parse_ebird_observations,
     parse_inaturalist_species_counts,
     parse_inaturalist_taxon,
+    parse_inaturalist_taxon_match,
     parse_observation_window,
+    resolve_ebird_species,
 )
-from inky_bird_frame.errors import DataSourceError
+from inky_bird_frame.errors import DataSourceError, TaxonomyMatchError
 
 
 class InaturalistParsingTests(unittest.TestCase):
@@ -184,6 +191,114 @@ class InaturalistParsingTests(unittest.TestCase):
                 },
                 expected,
             )
+
+
+class EbirdTests(unittest.TestCase):
+    def test_parse_observations_keeps_complete_unique_species(self) -> None:
+        payload = [
+            {
+                "speciesCode": "easblu",
+                "comName": "Eastern Bluebird",
+                "sciName": "Sialia sialis",
+                "obsDt": "2026-07-12 08:15",
+            },
+            {
+                "speciesCode": "easblu",
+                "comName": "Eastern Bluebird",
+                "sciName": "Sialia sialis",
+                "obsDt": "2026-07-11 10:00",
+            },
+            {"speciesCode": "bad"},
+        ]
+
+        species = parse_ebird_observations(payload)
+
+        self.assertEqual(len(species), 1)
+        self.assertEqual(species[0].species_code, "easblu")
+
+    @patch("inky_bird_frame.birds.get_json", return_value=[])
+    def test_fetch_observations_uses_bounded_query_and_secret_header(
+        self, get_json: MagicMock
+    ) -> None:
+        fetch_ebird_observations(
+            latitude=38.12345,
+            longitude=-77.98765,
+            radius_km=11,
+            limit=50,
+            window=ObservationWindow.LAST_30_DAYS,
+            api_key="secret-token",
+        )
+
+        url = get_json.call_args.args[0]
+        params = parse_qs(urlsplit(url).query)
+        self.assertEqual(params["lat"], ["38.12"])
+        self.assertEqual(params["lng"], ["-77.99"])
+        self.assertEqual(params["dist"], ["11"])
+        self.assertEqual(params["back"], ["30"])
+        self.assertEqual(params["cat"], ["species"])
+        self.assertEqual(get_json.call_args.kwargs["headers"], {"X-eBirdApiToken": "secret-token"})
+        self.assertNotIn("secret-token", url)
+
+    def test_taxon_match_requires_one_exact_active_bird_species(self) -> None:
+        payload = {
+            "results": [
+                {
+                    "id": 12942,
+                    "preferred_common_name": "Eastern Bluebird",
+                    "name": "Sialia sialis",
+                    "rank": "species",
+                    "is_active": True,
+                    "iconic_taxon_name": "Aves",
+                },
+                {
+                    "id": 1,
+                    "preferred_common_name": "Other bird",
+                    "name": "Sialia currucoides",
+                    "rank": "species",
+                    "is_active": True,
+                    "iconic_taxon_name": "Aves",
+                },
+            ]
+        }
+
+        species = parse_inaturalist_taxon_match(payload, "Sialia sialis")
+
+        self.assertEqual(species.taxon_id, 12942)
+        self.assertEqual(species.sources, ("eBird",))
+
+    def test_resolution_uses_cached_exact_mapping(self) -> None:
+        observation = EbirdSpecies(
+            "easblu", "Eastern Bluebird", "Sialia sialis", "2026-07-12 08:15"
+        )
+        with TemporaryDirectory() as temporary:
+            cache = Path(temporary) / "crosswalk.json"
+            cache.write_text(
+                '{"schema_version":1,"entries":{"easblu":'
+                '{"scientific_name":"Sialia sialis","common_name":"Eastern Bluebird",'
+                '"taxon_id":12942}}}'
+            )
+            with patch("inky_bird_frame.birds.fetch_inaturalist_taxon_match") as fetch:
+                result = resolve_ebird_species([observation], cache)
+
+        fetch.assert_not_called()
+        self.assertEqual(result.species[0].taxon_id, 12942)
+        self.assertEqual(result.unresolved, [])
+
+    def test_unresolved_mapping_is_deferred_and_cached(self) -> None:
+        observation = EbirdSpecies("split", "Split Bird", "Avis split", "2026-07-12")
+        now = datetime(2026, 7, 12, tzinfo=UTC)
+        with TemporaryDirectory() as temporary:
+            cache = Path(temporary) / "crosswalk.json"
+            with patch(
+                "inky_bird_frame.birds.fetch_inaturalist_taxon_match",
+                side_effect=TaxonomyMatchError("no exact match"),
+            ) as fetch:
+                first = resolve_ebird_species([observation], cache, now=now)
+                second = resolve_ebird_species([observation], cache, now=now)
+
+        self.assertEqual(fetch.call_count, 1)
+        self.assertEqual(first.unresolved, [observation])
+        self.assertEqual(second.unresolved, [observation])
 
 
 if __name__ == "__main__":

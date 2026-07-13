@@ -66,6 +66,8 @@ class CliTests(unittest.TestCase):
                 "instance.toml",
                 "--window",
                 "last-year",
+                "--source",
+                "inaturalist",
                 "--radius-km",
                 "16",
                 "--species-limit",
@@ -75,6 +77,7 @@ class CliTests(unittest.TestCase):
         )
 
         self.assertEqual(args.window, "last-year")
+        self.assertEqual(args.source, "inaturalist")
         self.assertEqual(args.radius_km, 16)
         self.assertEqual(args.species_limit, 500)
         self.assertTrue(args.dry_run)

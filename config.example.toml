@@ -1,4 +1,7 @@
 [discovery]
+# iNaturalist needs no credentials and supports every window. eBird provides bird-specific
+# recent sightings but requires a personal API key. combined queries both independently.
+source = "inaturalist"
 # This location is used only to discover species. It is never rendered on a plate.
 zip_code = "12345"
 # Eight kilometers is approximately five miles: local enough to feel relevant while
@@ -10,6 +13,10 @@ species_limit = 50
 # Thirty days balances seasonal relevance with coverage. Shorter windows can be sparse;
 # last-year and all-time are better suited to one-time catalog seeding.
 window = "last-30-days"
+# eBird and combined support last-day, last-week, and last-30-days, with a maximum 50 km
+# radius. Keep a real key only in this private mode-0600 file, or name an injected variable.
+# ebird_api_key = "YOUR_PERSONAL_EBIRD_API_KEY"
+# ebird_api_key_env = "EBIRD_API_KEY"
 
 [controller]
 workspace_dir = "."
