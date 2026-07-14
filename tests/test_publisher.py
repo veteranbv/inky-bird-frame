@@ -558,6 +558,7 @@ class PublisherTests(unittest.TestCase):
             remote, checkout = _initialize_remote(root)
             config = load_config(_write_config(root, checkout))
             _create_species(config.controller.catalog_dir, 1, "Example Bird")
+            (config.controller.catalog_dir / ".staging").mkdir()
 
             def fake_gh(
                 _publication: object,

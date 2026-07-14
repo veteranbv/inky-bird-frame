@@ -863,6 +863,19 @@ class ControllerTests(unittest.TestCase):
             self.assertEqual(failure_results[0]["error"], "cached references are invalid")
             self.assertTrue(failure_results[0]["terminal"])
 
+    def test_malformed_reference_entry_raises_species_state_error(self) -> None:
+        species = BirdSpecies(9083, "Northern Cardinal", "Cardinalis cardinalis", 2, "test")
+        with TemporaryDirectory() as temporary:
+            config_path = Path(temporary) / "config.toml"
+            config_path.write_text(CONFIG)
+            config = load_config(config_path)
+            manifest = config.controller.state_dir / "references" / "9083" / "references.json"
+            manifest.parent.mkdir(parents=True)
+            manifest.write_text(json.dumps({"references": ["not-an-object"]}))
+
+            with self.assertRaisesRegex(SpeciesStateError, "Invalid reference manifest"):
+                load_or_fetch_references(config, species)
+
     def test_non_utf8_reference_manifest_raises_species_state_error(self) -> None:
         species = BirdSpecies(9083, "Northern Cardinal", "Cardinalis cardinalis", 2, "test")
         with TemporaryDirectory() as temporary:

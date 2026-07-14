@@ -209,6 +209,8 @@ class ServerTests(unittest.TestCase):
             active_catalog_path.write_text(json.dumps(active))
             with _serving(catalog_dir, active_catalog_path, state_dir) as port:
                 plain_status, _, _ = _get(port, "/v1/catalog")
+                _get(port, "/v1/catalog?not_reports_success=1")
+                _get(port, "/v1/catalog?reports_success=10")
                 plain_written = (state_dir / "display-last-fetch.json").exists()
                 status, _, body = _get(port, "/v1/catalog?reports_success=1")
             heartbeat = json.loads((state_dir / "display-last-fetch.json").read_text())

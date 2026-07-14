@@ -333,14 +333,13 @@ def _same_candidate(manifest: dict[str, object], existing: dict[str, object]) ->
     )
 
 
-def _destination_assets_intact(existing: dict[str, object], destination: Path) -> bool:
-    entries = _asset_manifest_entries(existing)
-    if entries is None:
+def _valid_destination_entry(destination: Path, catalog_dir: Path) -> bool:
+    # Full manifest-entry validation covers required fields and asset
+    # checksums, so the pending copy is only dropped for a complete approval.
+    try:
+        _manifest_entry(destination / "manifest.json", catalog_dir)
+    except (CatalogError, OSError):
         return False
-    for filename, digest in entries:
-        asset_path = destination / filename
-        if not asset_path.is_file() or sha256_file(asset_path) != digest:
-            return False
     return True
 
 
@@ -371,7 +370,7 @@ def approve_candidate(state_dir: Path, catalog_dir: Path, taxon_id: int) -> Cata
             raise CatalogError(
                 f"Taxon {taxon_id} is already approved; use an explicit replacement workflow"
             )
-        elif _destination_assets_intact(existing, destination):
+        elif _valid_destination_entry(destination, catalog_dir):
             shutil.rmtree(source)
             entries = rebuild_catalog_index(catalog_dir)
             return next(entry for entry in entries if entry.taxon_id == taxon_id)

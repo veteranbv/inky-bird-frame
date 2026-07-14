@@ -8,7 +8,7 @@ from contextlib import suppress
 from http import HTTPStatus
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
-from urllib.parse import unquote, urlsplit
+from urllib.parse import parse_qs, unquote, urlsplit
 
 from .catalog import read_json, rebuild_catalog_index, utc_now
 from .config import ControllerConfig
@@ -76,7 +76,7 @@ class CatalogRequestHandler(BaseHTTPRequestHandler):
             self._send_json(HTTPStatus.OK, payload)
             # Only display nodes send the marker; a curl or monitor fetch must
             # not refresh the liveness signal.
-            if "reports_success=1" in split.query:
+            if parse_qs(split.query).get("reports_success") == ["1"]:
                 with suppress(OSError):
                     write_json_atomic(
                         self.state_dir / "display-last-fetch.json",

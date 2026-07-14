@@ -629,7 +629,10 @@ def load_or_fetch_references(config: AppConfig, species: BirdSpecies) -> list[Re
             raise SpeciesStateError(f"Invalid reference manifest: {manifest_path}") from exc
         if not isinstance(raw, dict) or not isinstance(raw.get("references"), list):
             raise SpeciesStateError(f"Invalid reference manifest: {manifest_path}")
-        references = [_reference_from_dict(item) for item in raw["references"]]
+        try:
+            references = [_reference_from_dict(item) for item in raw["references"]]
+        except CatalogError as exc:
+            raise SpeciesStateError(f"Invalid reference manifest: {manifest_path}") from exc
         missing = [
             item.filename for item in references if not (directory / item.filename).is_file()
         ]
