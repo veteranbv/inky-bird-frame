@@ -286,32 +286,6 @@ def clear_catalog_staging(catalog_dir: Path, name: str | None = None) -> None:
             staging.rmdir()
 
 
-def _asset_manifest_entries(
-    manifest: dict[str, object],
-) -> tuple[tuple[str, str], tuple[str, str]] | None:
-    assets = manifest.get("assets")
-    if not isinstance(assets, dict):
-        return None
-    entries: list[tuple[str, str]] = []
-    for name in ("portrait", "display"):
-        asset = assets.get(name)
-        if not isinstance(asset, dict):
-            return None
-        filename = asset.get("filename")
-        digest = asset.get("sha256")
-        if not isinstance(filename, str) or not isinstance(digest, str):
-            return None
-        entries.append((filename, digest))
-    return entries[0], entries[1]
-
-
-def _asset_checksums(manifest: dict[str, object]) -> tuple[str, str] | None:
-    entries = _asset_manifest_entries(manifest)
-    if entries is None:
-        return None
-    return entries[0][1], entries[1][1]
-
-
 def _existing_destination_manifest(destination: Path) -> dict[str, object] | None:
     existing_path = destination / "manifest.json"
     if not existing_path.is_file():
@@ -324,13 +298,13 @@ def _existing_destination_manifest(destination: Path) -> dict[str, object] | Non
 
 
 def _same_candidate(manifest: dict[str, object], existing: dict[str, object]) -> bool:
-    checksums = _asset_checksums(manifest)
-    return (
-        existing.get("status") == "approved"
-        and existing.get("taxon_id") == manifest.get("taxon_id")
-        and checksums is not None
-        and _asset_checksums(existing) == checksums
-    )
+    # Crash debris is a byte-for-byte copy of the pending candidate apart from
+    # the approval fields; anything else must go through explicit replacement
+    # so an intentional correction is never silently discarded.
+    ignored = ("status", "approved_at")
+    pending_view = {key: value for key, value in manifest.items() if key not in ignored}
+    existing_view = {key: value for key, value in existing.items() if key not in ignored}
+    return existing.get("status") == "approved" and pending_view == existing_view
 
 
 def _valid_destination_entry(destination: Path, catalog_dir: Path) -> bool:

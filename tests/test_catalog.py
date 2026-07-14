@@ -226,7 +226,7 @@ class CatalogTests(unittest.TestCase):
             with self.assertRaisesRegex(CatalogError, "Invalid JSON"):
                 read_json(path)
 
-    def test_destination_with_incomplete_manifest_fields_is_reapproved(self) -> None:
+    def test_destination_with_differing_manifest_preserves_pending_and_raises(self) -> None:
         species = BirdSpecies(7513, "Carolina Wren", "Thryothorus ludovicianus", 5, "test")
         review = QualityReview(True, 4, 4, 4, 4, True, ())
         with TemporaryDirectory() as temporary:
@@ -236,7 +236,8 @@ class CatalogTests(unittest.TestCase):
             candidate = make_candidate(state, species, review)
             manifest = json.loads((candidate / "manifest.json").read_text())
             manifest["status"] = "approved"
-            del manifest["scientific_name"]
+            manifest["approved_at"] = "2026-07-10T00:00:00+00:00"
+            manifest["common_name"] = "Corrected Wren"
 
             destination = catalog / "species" / "7513-carolina-wren"
             destination.mkdir(parents=True)
@@ -244,14 +245,11 @@ class CatalogTests(unittest.TestCase):
             shutil.copy(candidate / "portrait.png", destination / "portrait.png")
             shutil.copy(candidate / "display.png", destination / "display.png")
 
-            entry = approve_candidate(state, catalog, species.taxon_id)
+            with self.assertRaisesRegex(CatalogError, "explicit replacement workflow"):
+                approve_candidate(state, catalog, species.taxon_id)
 
-            self.assertEqual(entry.scientific_name, "Thryothorus ludovicianus")
-            self.assertFalse(candidate.exists())
-            self.assertEqual(
-                [item.taxon_id for item in read_catalog_entries(catalog)],
-                [species.taxon_id],
-            )
+            self.assertTrue(candidate.exists())
+            self.assertTrue((destination / "manifest.json").exists())
 
     def test_conflicting_destination_still_requires_explicit_replacement(self) -> None:
         species = BirdSpecies(7513, "Carolina Wren", "Thryothorus ludovicianus", 5, "test")
