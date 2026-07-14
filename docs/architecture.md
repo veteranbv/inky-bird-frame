@@ -60,8 +60,19 @@ The controller also exposes a read-only HTTP catalog:
 - `GET /v1/catalog`
 - `GET /v1/assets/<catalog-relative-path>`
 
+`/health` reports approved and active species counts from the last built
+catalog index and never rebuilds it, so a health check answers cheaply at any
+catalog size. The server also records the time of the last `/v1/catalog`
+fetch in `display-last-fetch.json` and of the last display-reported completed
+update (`GET /v1/display-success`) in `display-last-success.json`, both under
+`state_dir`; the notifications cycle uses them to raise the display-staleness
+events described in
+[`notifications.md`](notifications.md#events-and-noise-controls).
+
 Native installations use launchd or systemd to schedule the controller's
-one-shot commands. Docker installations run the same commands through one
+one-shot commands. Generated systemd serve and display units carry basic
+sandboxing directives such as `NoNewPrivileges` and `PrivateTmp`. Docker
+installations run the same commands through one
 serial scheduler process. A scheduler job failure is isolated to that job and
 its next interval; generation remains disabled after scheduler startup until a
 refresh succeeds. The HTTP server runs without Codex or GitHub authentication,
@@ -140,8 +151,9 @@ controller state.
 
 Reference acquisition accepts only iNaturalist research-grade photos marked
 CC0 or CC BY, uses distinct observers, records attribution and source URLs, and
-requires an 800-pixel minimum edge. Reference bitmaps stay in ignored controller
-state and are not redistributed in the catalog.
+requires an 800-pixel minimum edge. Outbound fetches accept only HTTP(S) URLs
+and enforce a bounded response size. Reference bitmaps stay in ignored
+controller state and are not redistributed in the catalog.
 
 ## Deterministic and generative work
 

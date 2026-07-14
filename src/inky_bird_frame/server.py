@@ -4,18 +4,32 @@ from __future__ import annotations
 
 import json
 import mimetypes
+from contextlib import suppress
 from http import HTTPStatus
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
-from urllib.parse import unquote, urlsplit
+from urllib.parse import parse_qs, unquote, urlsplit
 
-from .catalog import read_json, rebuild_catalog_index
+from .catalog import read_json, rebuild_catalog_index, utc_now
 from .config import ControllerConfig
+from .errors import CatalogError
+from .http import write_json_atomic
+
+
+def _species_count(path: Path) -> int:
+    try:
+        value = read_json(path)
+    except CatalogError:
+        return 0
+    if isinstance(value, dict) and isinstance(value.get("species"), list):
+        return len(value["species"])
+    return 0
 
 
 class CatalogRequestHandler(BaseHTTPRequestHandler):
     catalog_dir: Path
     active_catalog_path: Path
+    state_dir: Path
 
     def _send_json(self, status: HTTPStatus, payload: object) -> None:
         body = json.dumps(payload, sort_keys=True).encode()
@@ -37,39 +51,56 @@ class CatalogRequestHandler(BaseHTTPRequestHandler):
         self.wfile.write(body)
 
     def do_GET(self) -> None:  # noqa: N802 - BaseHTTPRequestHandler API
-        request_path = urlsplit(self.path).path
+        split = urlsplit(self.path)
+        request_path = split.path
         if request_path == "/health":
-            entries = rebuild_catalog_index(self.catalog_dir)
-            active_count = 0
-            if self.active_catalog_path.is_file():
-                active = read_json(self.active_catalog_path)
-                if isinstance(active, dict) and isinstance(active.get("species"), list):
-                    active_count = len(active["species"])
             self._send_json(
                 HTTPStatus.OK,
                 {
                     "ok": True,
-                    "approved_species": len(entries),
-                    "active_species": active_count,
+                    "approved_species": _species_count(self.catalog_dir / "index.json"),
+                    "active_species": _species_count(self.active_catalog_path),
                     "schema_version": 1,
                 },
             )
             return
         if request_path == "/v1/catalog":
-            if not self.active_catalog_path.is_file():
+            try:
+                payload = read_json(self.active_catalog_path)
+            except CatalogError:
                 self._send_json(
                     HTTPStatus.SERVICE_UNAVAILABLE,
                     {"ok": False, "error": "active catalog unavailable", "schema_version": 1},
                 )
                 return
-            self._send_json(HTTPStatus.OK, read_json(self.active_catalog_path))
+            self._send_json(HTTPStatus.OK, payload)
+            # Only display nodes send the marker; a curl or monitor fetch must
+            # not refresh the liveness signal.
+            if parse_qs(split.query).get("reports_success") == ["1"]:
+                with suppress(OSError):
+                    write_json_atomic(
+                        self.state_dir / "display-last-fetch.json",
+                        {"schema_version": 1, "fetched_at": utc_now()},
+                    )
+            return
+        if request_path == "/v1/display-success":
+            self._send_json(HTTPStatus.OK, {"ok": True, "schema_version": 1})
+            with suppress(OSError):
+                write_json_atomic(
+                    self.state_dir / "display-last-success.json",
+                    {"schema_version": 1, "succeeded_at": utc_now()},
+                )
             return
         prefix = "/v1/assets/"
         if request_path.startswith(prefix):
             relative = Path(unquote(request_path.removeprefix(prefix)))
             root = self.catalog_dir.resolve()
             candidate = (root / relative).resolve()
-            if not candidate.is_relative_to(root) or not candidate.is_file():
+            if (
+                any(part.startswith(".") for part in relative.parts)
+                or not candidate.is_relative_to(root)
+                or not candidate.is_file()
+            ):
                 self._send_json(HTTPStatus.NOT_FOUND, {"ok": False, "error": "not found"})
                 return
             self._send_file(candidate)
@@ -85,15 +116,23 @@ class CatalogRequestHandler(BaseHTTPRequestHandler):
         )
 
 
+def rebuild_index_logging_failures(catalog_dir: Path) -> None:
+    try:
+        rebuild_catalog_index(catalog_dir)
+    except (CatalogError, OSError) as exc:
+        print(json.dumps({"event": "catalog_index_rebuild_failed", "error": str(exc)}))
+
+
 def serve_catalog(config: ControllerConfig) -> None:
     config.catalog_dir.mkdir(parents=True, exist_ok=True)
-    rebuild_catalog_index(config.catalog_dir)
+    rebuild_index_logging_failures(config.catalog_dir)
     handler = type(
         "ConfiguredCatalogRequestHandler",
         (CatalogRequestHandler,),
         {
             "catalog_dir": config.catalog_dir,
             "active_catalog_path": config.state_dir / "active-catalog.json",
+            "state_dir": config.state_dir,
         },
     )
     server = ThreadingHTTPServer((config.bind_host, config.port), handler)

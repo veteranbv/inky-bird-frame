@@ -37,6 +37,10 @@ class CatalogError(InkyBirdFrameError):
     """Raised when catalog data is missing, invalid, or inconsistent."""
 
 
+class SpeciesStateError(CatalogError):
+    """Raised when cached state for a single species is invalid."""
+
+
 class CatalogPublishError(InkyBirdFrameError):
     """Raised when an approved catalog cannot be published safely."""
 

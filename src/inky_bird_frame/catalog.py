@@ -7,15 +7,15 @@ import hashlib
 import json
 import shutil
 from collections.abc import Iterator
-from contextlib import contextmanager
+from contextlib import contextmanager, suppress
 from dataclasses import dataclass
 from datetime import UTC, datetime
 from pathlib import Path
-from tempfile import NamedTemporaryFile
 from typing import cast
 
 from .birds import BirdSpecies
 from .errors import CatalogError
+from .http import write_json_atomic
 from .images import slugify
 from .models import QualityReview, ReferencePhoto, SpeciesProfileData
 
@@ -78,30 +78,12 @@ def sha256_file(path: Path) -> str:
     return digest.hexdigest()
 
 
-def write_json_atomic(path: Path, value: object) -> None:
-    path.parent.mkdir(parents=True, exist_ok=True)
-    with NamedTemporaryFile(
-        "w",
-        encoding="utf-8",
-        dir=path.parent,
-        prefix=f".{path.name}.",
-        suffix=".tmp",
-        delete=False,
-    ) as handle:
-        handle.write(json.dumps(value, indent=2, sort_keys=True) + "\n")
-        temporary = Path(handle.name)
-    try:
-        temporary.replace(path)
-    finally:
-        temporary.unlink(missing_ok=True)
-
-
 def read_json(path: Path) -> object:
     try:
         return cast(object, json.loads(path.read_text()))
     except FileNotFoundError as exc:
         raise CatalogError(f"Catalog file not found: {path}") from exc
-    except json.JSONDecodeError as exc:
+    except (json.JSONDecodeError, UnicodeDecodeError) as exc:
         raise CatalogError(f"Invalid JSON in catalog file: {path}") from exc
 
 
@@ -292,13 +274,56 @@ def is_bounded_generation(generation: object) -> bool:
     )
 
 
+def clear_catalog_staging(catalog_dir: Path, name: str | None = None) -> None:
+    staging = catalog_dir / ".staging"
+    target = staging if name is None else staging / name
+    if target.is_symlink() or target.is_file():
+        target.unlink()
+    elif target.is_dir():
+        shutil.rmtree(target)
+    if name is not None:
+        with suppress(OSError):
+            staging.rmdir()
+
+
+def _existing_destination_manifest(destination: Path) -> dict[str, object] | None:
+    existing_path = destination / "manifest.json"
+    if not existing_path.is_file():
+        return None
+    try:
+        existing = read_json(existing_path)
+    except CatalogError:
+        return None
+    return existing if isinstance(existing, dict) else None
+
+
+def _same_candidate(manifest: dict[str, object], existing: dict[str, object]) -> bool:
+    # Crash debris is a byte-for-byte copy of the pending candidate apart from
+    # the approval fields; anything else must go through explicit replacement
+    # so an intentional correction is never silently discarded.
+    ignored = ("status", "approved_at")
+    pending_view = {key: value for key, value in manifest.items() if key not in ignored}
+    existing_view = {key: value for key, value in existing.items() if key not in ignored}
+    return existing.get("status") == "approved" and pending_view == existing_view
+
+
+def _valid_destination_entry(destination: Path, catalog_dir: Path) -> bool:
+    # Full manifest-entry validation covers required fields and asset
+    # checksums, so the pending copy is only dropped for a complete approval.
+    try:
+        _manifest_entry(destination / "manifest.json", catalog_dir)
+    except (CatalogError, OSError):
+        return False
+    return True
+
+
 def approve_candidate(state_dir: Path, catalog_dir: Path, taxon_id: int) -> CatalogEntry:
     source = find_taxon_directory(state_dir / "pending", taxon_id)
     if source is None:
         raise CatalogError(f"No pending candidate exists for taxon {taxon_id}")
     manifest_path = source / "manifest.json"
     manifest = read_json(manifest_path)
-    if not isinstance(manifest, dict) or manifest.get("status") != "pending":
+    if not isinstance(manifest, dict) or manifest.get("status") not in ("pending", "approved"):
         raise CatalogError(f"Candidate manifest is not pending: {manifest_path}")
     review = manifest.get("quality_review")
     if not isinstance(review, dict) or review.get("passed") is not True:
@@ -308,17 +333,36 @@ def approve_candidate(state_dir: Path, catalog_dir: Path, taxon_id: int) -> Cata
     if not isinstance(slug, str):
         raise CatalogError("Candidate manifest has no slug")
     destination = catalog_dir / "species" / f"{taxon_id}-{slug}"
+    clear_catalog_staging(catalog_dir, destination.name)
     if destination.exists():
-        raise CatalogError(
-            f"Taxon {taxon_id} is already approved; use an explicit replacement workflow"
-        )
+        existing = _existing_destination_manifest(destination)
+        if existing is None:
+            # No readable manifest is never a valid approval, only debris from
+            # an interrupted legacy copy: discard it and approve again.
+            shutil.rmtree(destination)
+        elif not _same_candidate(manifest, existing):
+            raise CatalogError(
+                f"Taxon {taxon_id} is already approved; use an explicit replacement workflow"
+            )
+        elif _valid_destination_entry(destination, catalog_dir):
+            shutil.rmtree(source)
+            entries = rebuild_catalog_index(catalog_dir)
+            return next(entry for entry in entries if entry.taxon_id == taxon_id)
+        else:
+            # Same candidate but an incomplete copy: discard it and approve again.
+            shutil.rmtree(destination)
 
     approved_manifest = dict(manifest)
     approved_manifest["status"] = "approved"
     approved_manifest["approved_at"] = utc_now()
-    write_json_atomic(manifest_path, approved_manifest)
+    staged = catalog_dir / ".staging" / destination.name
+    shutil.copytree(source, staged)
+    write_json_atomic(staged / "manifest.json", approved_manifest)
     destination.parent.mkdir(parents=True, exist_ok=True)
-    shutil.copytree(source, destination)
+    staged.rename(destination)
+    # An empty .staging directory would fail the publish root allowlist.
+    with suppress(OSError):
+        staged.parent.rmdir()
     shutil.rmtree(source)
     entries = rebuild_catalog_index(catalog_dir)
     return next(entry for entry in entries if entry.taxon_id == taxon_id)

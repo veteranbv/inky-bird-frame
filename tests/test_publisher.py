@@ -10,9 +10,10 @@ from unittest.mock import patch
 
 from PIL import Image, PngImagePlugin
 
-from inky_bird_frame.catalog import rebuild_catalog_index, sha256_file, write_json_atomic
+from inky_bird_frame.catalog import rebuild_catalog_index, sha256_file
 from inky_bird_frame.config import PublicCatalogConfig, load_config
 from inky_bird_frame.errors import CatalogPublishError
+from inky_bird_frame.http import write_json_atomic
 from inky_bird_frame.publisher import (
     _remote_repository,
     _validate_checkout,
@@ -557,6 +558,7 @@ class PublisherTests(unittest.TestCase):
             remote, checkout = _initialize_remote(root)
             config = load_config(_write_config(root, checkout))
             _create_species(config.controller.catalog_dir, 1, "Example Bird")
+            (config.controller.catalog_dir / ".staging").mkdir()
 
             def fake_gh(
                 _publication: object,

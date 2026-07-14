@@ -57,6 +57,21 @@ Each destination has its own `events` list:
 | `recovered` | A previously reported transient degradation succeeds again |
 | `publication_error` | Public catalog publication crosses the degradation threshold |
 | `publication_recovered` | Public catalog publication succeeds after a reported degradation |
+| `display_stale` | No display node has fetched the active catalog for three rotation intervals, with a 60-minute minimum |
+| `display_recovered` | Display catalog fetches resume after a `display_stale` notice |
+
+The controller's HTTP server records the display's most recent catalog fetch
+in `display-last-fetch.json` and, when the display reports a completed update
+through `GET /v1/display-success`, the completion time in
+`display-last-success.json`, both under `state_dir`. Staleness is measured
+against completed updates: `display_stale` is raised when no update has
+completed for three times `schedule.rotation_minutes` (minimum 60 minutes),
+and also when a current display node keeps fetching the catalog without ever
+completing an update, so a panel that fails before its first success is still
+detected. Only display nodes refresh these signals; other catalog readers
+never mask a silent display. Display nodes that predate success reporting
+write no heartbeat and are not monitored until they are updated, so update
+display nodes first. `display_recovered` is sent once updates resume.
 
 Routine successes do not notify. Transient failures notify only after
 `degradation_failure_threshold` consecutive failures or

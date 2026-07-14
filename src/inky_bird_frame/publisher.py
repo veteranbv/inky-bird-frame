@@ -20,6 +20,7 @@ from .catalog import (
     CatalogEntry,
     catalog_index_data,
     catalog_state_lock,
+    clear_catalog_staging,
     has_passing_sourced_review,
     is_bounded_generation,
     read_catalog_entries,
@@ -605,6 +606,8 @@ def run_catalog_publish(config: AppConfig, *, dry_run: bool = False) -> dict[str
         with TemporaryDirectory(prefix="publish-", dir=work_parent) as temporary:
             source_snapshot = Path(temporary) / "source-catalog"
             with catalog_state_lock(config.controller.state_dir):
+                # Approval staging debris would fail the snapshot root check.
+                clear_catalog_staging(config.controller.catalog_dir)
                 try:
                     shutil.copytree(
                         config.controller.catalog_dir,

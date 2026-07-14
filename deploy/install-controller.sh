@@ -48,6 +48,23 @@ restore_catalog_publisher_schedule() {
   rmdir "${recovery_dir}"
 }
 
+restore_previous_agent() {
+  local label=$1
+  local plist="${agents_dir}/com.inky-bird-frame.${label}.plist"
+  local backup="${plist_backup_dir}/com.inky-bird-frame.${label}.plist"
+  if [ ! -f "${backup}" ]; then
+    return 0
+  fi
+  # A loaded label here is the failed replacement; put the saved agent back.
+  launchctl bootout "gui/${uid}/com.inky-bird-frame.${label}" 2>/dev/null || true
+  cp "${backup}" "${plist}" || return 0
+  if [ "${label}" = "catalog-publish" ]; then
+    restore_catalog_publisher_schedule "${uid}" || true
+  else
+    launchctl bootstrap "gui/${uid}" "${plist}" || true
+  fi
+}
+
 if [ ! -f "${config_path}" ]; then
   echo "Controller configuration is missing: ${config_path}" >&2
   exit 1
@@ -68,6 +85,57 @@ if [ "${root}" != "${app_dir}" ]; then
 fi
 
 "${uv_bin}" sync --project "${app_dir}" --python "${python_version}" --extra controller --locked
+
+uid=$(id -u)
+plist_backup_dir=$(mktemp -d "${support_dir}/launchd-restore.XXXXXX")
+previously_loaded_labels=()
+installation_complete=false
+was_previously_loaded() {
+  local target=$1
+  local loaded
+  if [ "${#previously_loaded_labels[@]}" -gt 0 ]; then
+    for loaded in "${previously_loaded_labels[@]}"; do
+      if [ "${loaded}" = "${target}" ]; then
+        return 0
+      fi
+    done
+  fi
+  return 1
+}
+
+cleanup() {
+  status=$?
+  trap - EXIT
+  if [ "${installation_complete}" != true ]; then
+    for label in serve refresh generate catalog-publish notifications; do
+      if was_previously_loaded "${label}"; then
+        restore_previous_agent "${label}"
+      else
+        # Not running before this install: undo any half-installed agent.
+        launchctl bootout "gui/${uid}/com.inky-bird-frame.${label}" 2>/dev/null || true
+        if [ -f "${plist_backup_dir}/com.inky-bird-frame.${label}.plist" ]; then
+          cp "${plist_backup_dir}/com.inky-bird-frame.${label}.plist" \
+            "${agents_dir}/com.inky-bird-frame.${label}.plist" || true
+        else
+          rm -f "${agents_dir}/com.inky-bird-frame.${label}.plist"
+        fi
+      fi
+    done
+  fi
+  rm -rf "${plist_backup_dir}"
+  exit "${status}"
+}
+trap cleanup EXIT
+
+for label in serve refresh generate catalog-publish notifications; do
+  if launchctl print "gui/${uid}/com.inky-bird-frame.${label}" >/dev/null 2>&1; then
+    previously_loaded_labels+=("${label}")
+  fi
+  plist="${agents_dir}/com.inky-bird-frame.${label}.plist"
+  if [ -f "${plist}" ]; then
+    cp "${plist}" "${plist_backup_dir}/"
+  fi
+done
 
 "${app_dir}/.venv/bin/python" - \
   "${serve_plist}" "${refresh_plist}" "${generation_plist}" "${catalog_publish_plist}" \
@@ -211,7 +279,6 @@ else:
     notifications_path.unlink(missing_ok=True)
 PY
 
-uid=$(id -u)
 if [ -f "${catalog_publish_plist}" ]; then
   publisher_was_loaded=false
   if launchctl print "gui/${uid}/com.inky-bird-frame.catalog-publish" >/dev/null 2>&1; then
@@ -228,12 +295,10 @@ if [ -f "${catalog_publish_plist}" ]; then
 fi
 
 launchctl bootout "gui/${uid}/com.inky-bird-frame.serve" 2>/dev/null || true
-launchctl bootout "gui/${uid}/com.inky-bird-frame.controller-cycle" 2>/dev/null || true
 launchctl bootout "gui/${uid}/com.inky-bird-frame.refresh" 2>/dev/null || true
 launchctl bootout "gui/${uid}/com.inky-bird-frame.generate" 2>/dev/null || true
 launchctl bootout "gui/${uid}/com.inky-bird-frame.catalog-publish" 2>/dev/null || true
 launchctl bootout "gui/${uid}/com.inky-bird-frame.notifications" 2>/dev/null || true
-rm -f "${legacy_cycle_plist}"
 launchctl bootstrap "gui/${uid}" "${serve_plist}"
 launchctl bootstrap "gui/${uid}" "${refresh_plist}"
 launchctl bootstrap "gui/${uid}" "${generation_plist}"
@@ -253,6 +318,11 @@ if [ -f "${notifications_plist}" ]; then
   launchctl print "gui/${uid}/com.inky-bird-frame.notifications" >/dev/null
 fi
 
+installation_complete=true
+# Remove the legacy single-agent layout only after the new agents verified,
+# so a failed upgrade leaves the previous controller runnable.
+launchctl bootout "gui/${uid}/com.inky-bird-frame.controller-cycle" 2>/dev/null || true
+rm -f "${legacy_cycle_plist}"
 echo "Controller installed from ${root} into ${app_dir}."
 echo "Configuration: ${config_path}"
 echo "Logs: ${log_dir}"

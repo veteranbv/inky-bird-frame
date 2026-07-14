@@ -131,6 +131,118 @@ class DisplayNodeTests(unittest.TestCase):
         self.assertEqual(state["schema_version"], 3)
         get_bytes.assert_called_once()
 
+    def test_checksum_mismatch_fails_without_display_or_state_advance(self) -> None:
+        payload = catalog_payload({1: b"one"})
+        with TemporaryDirectory() as temporary:
+            state_path = Path(temporary) / "state.json"
+            config = DisplayNodeConfig("http://controller.test", Path(temporary))
+            with (
+                patch("inky_bird_frame.display_node.get_json", return_value=payload),
+                patch("inky_bird_frame.display_node.get_bytes", return_value=b"tampered"),
+                patch("inky_bird_frame.display_node.show_on_inky") as show_on_inky,
+                self.assertRaisesRegex(CatalogError, "checksum mismatch"),
+            ):
+                run_display_cycle(config)
+
+            self.assertFalse(state_path.exists())
+        show_on_inky.assert_not_called()
+
+    def test_successful_cycle_reports_display_success(self) -> None:
+        payload = catalog_payload({1: b"one"})
+        requested: list[str] = []
+
+        def fake_get_json(url: str, timeout: float) -> object:
+            requested.append(url)
+            return payload if "/v1/catalog" in url else {"ok": True}
+
+        with TemporaryDirectory() as temporary:
+            config = DisplayNodeConfig("http://controller.test", Path(temporary))
+            with (
+                patch("inky_bird_frame.display_node.get_json", side_effect=fake_get_json),
+                patch("inky_bird_frame.display_node.get_bytes", return_value=b"one"),
+                patch("inky_bird_frame.display_node.show_on_inky", return_value=(1600, 1200)),
+            ):
+                run_display_cycle(config)
+
+        self.assertEqual(requested[-1], "http://controller.test/v1/display-success")
+
+    def test_failed_cycle_does_not_report_display_success(self) -> None:
+        payload = catalog_payload({1: b"one"})
+        requested: list[str] = []
+
+        def fake_get_json(url: str, timeout: float) -> object:
+            requested.append(url)
+            return payload
+
+        with TemporaryDirectory() as temporary:
+            config = DisplayNodeConfig("http://controller.test", Path(temporary))
+            with (
+                patch("inky_bird_frame.display_node.get_json", side_effect=fake_get_json),
+                patch("inky_bird_frame.display_node.get_bytes", return_value=b"tampered"),
+                patch("inky_bird_frame.display_node.show_on_inky"),
+                self.assertRaisesRegex(CatalogError, "checksum mismatch"),
+            ):
+                run_display_cycle(config)
+
+        self.assertEqual([url for url in requested if url.endswith("/v1/display-success")], [])
+
+    def test_successful_cycle_evicts_stale_cache_for_same_taxon_only(self) -> None:
+        images = {1: b"one"}
+        payload = catalog_payload(images)
+        digest = hashlib.sha256(images[1]).hexdigest()
+        with TemporaryDirectory() as temporary:
+            cache_dir = Path(temporary) / "cache"
+            cache_dir.mkdir(parents=True)
+            stale = cache_dir / "1-oldhash00000.png"
+            stale.write_bytes(b"stale")
+            other_taxon = cache_dir / "13-otherhash00.png"
+            other_taxon.write_bytes(b"other")
+            config = DisplayNodeConfig("http://controller.test", Path(temporary))
+            with (
+                patch("inky_bird_frame.display_node.get_json", return_value=payload),
+                patch("inky_bird_frame.display_node.get_bytes", side_effect=asset_response(images)),
+                patch("inky_bird_frame.display_node.show_on_inky", return_value=(1600, 1200)),
+            ):
+                result = run_display_cycle(config)
+
+            self.assertEqual(result["display_update"], "sent")
+            self.assertFalse(stale.exists())
+            self.assertTrue(other_taxon.exists())
+            self.assertTrue((cache_dir / f"1-{digest[:12]}.png").exists())
+
+    def test_unicode_display_path_is_percent_encoded_in_asset_url(self) -> None:
+        image = b"unicode-plate"
+        payload = {
+            "schema_version": 1,
+            "species": [
+                {
+                    "taxon_id": 4711,
+                    "common_name": "Piopío",
+                    "scientific_name": "Turnagra capensis",
+                    "slug": "piopío",
+                    "portrait_path": "species/4711-piopío/portrait.png",
+                    "portrait_sha256": "b" * 64,
+                    "display_path": "species/4711-piopío/display.png",
+                    "display_sha256": hashlib.sha256(image).hexdigest(),
+                    "approved_at": "2026-07-09T00:00:00+00:00",
+                }
+            ],
+        }
+        with TemporaryDirectory() as temporary:
+            config = DisplayNodeConfig("http://controller.test", Path(temporary))
+            with (
+                patch("inky_bird_frame.display_node.get_json", return_value=payload),
+                patch("inky_bird_frame.display_node.get_bytes", return_value=image) as get_bytes,
+                patch("inky_bird_frame.display_node.show_on_inky", return_value=(1600, 1200)),
+            ):
+                result = run_display_cycle(config)
+
+        self.assertEqual(result["display_update"], "sent")
+        self.assertEqual(
+            get_bytes.call_args.args[0],
+            "http://controller.test/v1/assets/species/4711-piop%C3%ADo/display.png",
+        )
+
     def test_shuffle_bag_persists_across_cycles_without_replacement(self) -> None:
         images = {1: b"one", 2: b"two", 3: b"three"}
         payload = catalog_payload(images)
@@ -425,7 +537,7 @@ class DisplayNodeTests(unittest.TestCase):
             parse_catalog_entries(payload)
 
         species[0]["latest_detection_at"] = "2026-07-13T08:10:00"
-        with self.assertRaisesRegex(CatalogError, "timezone"):
+        with self.assertRaisesRegex(CatalogError, "latest detection timestamp"):
             parse_catalog_entries(payload)
 
     def test_rejects_duplicate_or_empty_catalogs(self) -> None:

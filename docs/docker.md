@@ -21,6 +21,14 @@ The controller and scheduler use the same commands as a native installation.
 One failed scheduled job is logged and retried later without stopping the HTTP
 service or unrelated jobs.
 
+`bootstrap` runs `catalog sync --source-catalog /app/catalog --catalog
+/data/catalog --state-dir /data/var/controller`. The sync is add-only: it
+validates the bundled public catalog, copies only species missing from the
+persistent catalog, rebuilds the index, and holds the controller state lock so
+it cannot overwrite an approved plate or race a running cycle. The
+[operations guide](operations.md#copy-species-between-catalogs) describes the
+command in general.
+
 ## Before you begin
 
 You need:

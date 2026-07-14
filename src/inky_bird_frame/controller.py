@@ -31,12 +31,13 @@ from .catalog import (
     approved_taxon_ids,
     candidate_directory,
     catalog_state_lock,
+    clear_catalog_staging,
     find_taxon_directory,
     has_passing_sourced_review,
     is_bounded_generation,
     rebuild_catalog_index,
+    utc_now,
     write_candidate_manifest,
-    write_json_atomic,
 )
 from .codex_runner import CodexRunner, parse_species_profile
 from .config import AppConfig, DiscoveryProvider, discovery_source_label
@@ -48,14 +49,17 @@ from .errors import (
     InsufficientReferencesError,
     MissingDependencyError,
     QualityReviewError,
+    SpeciesStateError,
 )
 from .geo import ZipLocation, lookup_us_zip
+from .http import write_json_atomic
 from .images import prepare_generated_plate
 from .models import ReferencePhoto, SpeciesProfileData
 from .prompts import PROMPT_VERSION
 from .references import download_references, fetch_reference_candidates
 from .research import ResearchBudget
 from .retry import RetryStore
+from .timeutil import parse_utc_timestamp
 
 
 @dataclass(frozen=True)
@@ -411,7 +415,7 @@ def _write_generation_queue(config: AppConfig, species: list[BirdSpecies]) -> No
         _generation_queue_path(config),
         {
             "schema_version": 2,
-            "updated_at": datetime.now(UTC).replace(microsecond=0).isoformat(),
+            "updated_at": utc_now(),
             "species": [_species_payload(item) for item in species],
         },
     )
@@ -500,7 +504,7 @@ def _write_active_catalog(config: AppConfig, species_list: list[BirdSpecies]) ->
         _active_catalog_path(config),
         {
             "schema_version": 1,
-            "generated_at": datetime.now(UTC).replace(microsecond=0).isoformat(),
+            "generated_at": utc_now(),
             "species": active,
         },
     )
@@ -575,12 +579,9 @@ def _read_discovery_snapshot(config: AppConfig) -> DiscoverySnapshot:
         or not isinstance(species_raw, list)
     ):
         raise CatalogError(f"Invalid discovery state: {path}")
-    try:
-        refreshed = datetime.fromisoformat(refreshed_at)
-    except ValueError as exc:
-        raise CatalogError(f"Invalid discovery timestamp: {path}") from exc
-    if refreshed.tzinfo is None:
-        raise CatalogError(f"Discovery timestamp has no timezone: {path}")
+    refreshed = parse_utc_timestamp(refreshed_at)
+    if refreshed is None:
+        raise CatalogError(f"Invalid discovery timestamp: {path}")
 
     species = _parse_species_list(species_raw, path)
     return DiscoverySnapshot(refreshed, place_name, state, species)
@@ -624,16 +625,19 @@ def load_or_fetch_references(config: AppConfig, species: BirdSpecies) -> list[Re
     if manifest_path.is_file():
         try:
             raw = json.loads(manifest_path.read_text())
-        except json.JSONDecodeError as exc:
-            raise CatalogError(f"Invalid reference manifest: {manifest_path}") from exc
+        except (json.JSONDecodeError, UnicodeDecodeError) as exc:
+            raise SpeciesStateError(f"Invalid reference manifest: {manifest_path}") from exc
         if not isinstance(raw, dict) or not isinstance(raw.get("references"), list):
-            raise CatalogError(f"Invalid reference manifest: {manifest_path}")
-        references = [_reference_from_dict(item) for item in raw["references"]]
+            raise SpeciesStateError(f"Invalid reference manifest: {manifest_path}")
+        try:
+            references = [_reference_from_dict(item) for item in raw["references"]]
+        except CatalogError as exc:
+            raise SpeciesStateError(f"Invalid reference manifest: {manifest_path}") from exc
         missing = [
             item.filename for item in references if not (directory / item.filename).is_file()
         ]
         if missing:
-            raise CatalogError(f"Reference files are missing: {', '.join(missing)}")
+            raise SpeciesStateError(f"Reference files are missing: {', '.join(missing)}")
         return references
 
     candidates = fetch_reference_candidates(
@@ -672,12 +676,12 @@ def load_or_create_profile(
     if cached:
         try:
             raw = json.loads(cache_path.read_text())
-        except json.JSONDecodeError as exc:
-            raise CatalogError(f"Invalid cached species profile: {cache_path}") from exc
+        except (json.JSONDecodeError, UnicodeDecodeError) as exc:
+            raise SpeciesStateError(f"Invalid cached species profile: {cache_path}") from exc
         try:
             profile = parse_species_profile(raw, config.research.allowed_domains)
         except GenerationError as exc:
-            raise CatalogError(f"Invalid cached species profile: {cache_path}") from exc
+            raise SpeciesStateError(f"Invalid cached species profile: {cache_path}") from exc
     else:
         if not config.research.enabled:
             raise GenerationError(
@@ -703,7 +707,7 @@ def load_or_create_profile(
         or profile["common_name"] != species.common_name
         or profile["scientific_name"] != species.scientific_name
     ):
-        raise CatalogError(
+        raise SpeciesStateError(
             f"Cached species profile identity does not match taxon {species.taxon_id}"
         )
     write_json_atomic(output_path, profile)
@@ -821,7 +825,7 @@ def record_failure(state_dir: Path, species: BirdSpecies, error: InkyBirdFrameEr
         {
             "schema_version": 1,
             "status": "failed",
-            "failed_at": datetime.now(UTC).replace(microsecond=0).isoformat(),
+            "failed_at": utc_now(),
             "taxon_id": species.taxon_id,
             "common_name": species.common_name,
             "scientific_name": species.scientific_name,
@@ -834,6 +838,7 @@ def record_failure(state_dir: Path, species: BirdSpecies, error: InkyBirdFrameEr
 
 def approve_passing_candidates(config: AppConfig) -> list[dict[str, object]]:
     published: list[dict[str, object]] = []
+    clear_catalog_staging(config.controller.catalog_dir)
     pending_root = config.controller.state_dir / "pending"
     for manifest_path in sorted(pending_root.glob("*/manifest.json")):
         try:
@@ -954,7 +959,21 @@ def run_generation_cycle(config: AppConfig) -> dict[str, object]:
                         "terminal": True,
                     }
                 )
-            except (CatalogError, MissingDependencyError):
+            except MissingDependencyError:
+                raise
+            except SpeciesStateError as exc:
+                retry_store.clear(species.taxon_id)
+                failure_path = record_failure(config.controller.state_dir, species, exc)
+                failures.append(
+                    {
+                        "taxon_id": species.taxon_id,
+                        "common_name": species.common_name,
+                        "error": str(exc),
+                        "failure": str(failure_path),
+                        "terminal": True,
+                    }
+                )
+            except CatalogError:
                 raise
             except InkyBirdFrameError as exc:
                 retry = retry_store.record_failure(

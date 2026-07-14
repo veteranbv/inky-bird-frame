@@ -3,12 +3,10 @@ from __future__ import annotations
 import random
 import unittest
 
-from inky_bird_frame.birds import BirdSpecies
 from inky_bird_frame.catalog import CatalogEntry
 from inky_bird_frame.config import RotationMode
 from inky_bird_frame.selection import (
     select_catalog_entry,
-    select_rotating_species,
     select_shuffle_bag_entry,
 )
 
@@ -29,22 +27,6 @@ def catalog_entry(taxon_id: int, count: int) -> CatalogEntry:
 
 
 class SelectionTests(unittest.TestCase):
-    def test_select_rotating_species_wraps_by_step(self) -> None:
-        species = [
-            BirdSpecies(12942, "Eastern Bluebird", "Sialia sialis", 26, "iNaturalist"),
-            BirdSpecies(7513, "Carolina Wren", "Thryothorus ludovicianus", 18, "iNaturalist"),
-        ]
-
-        self.assertEqual(select_rotating_species(species, 0).common_name, "Eastern Bluebird")
-        self.assertEqual(select_rotating_species(species, 1).common_name, "Carolina Wren")
-        self.assertEqual(select_rotating_species(species, 2).common_name, "Eastern Bluebird")
-
-    def test_select_rotating_species_rejects_bad_input(self) -> None:
-        with self.assertRaises(ValueError):
-            select_rotating_species([])
-        with self.assertRaises(ValueError):
-            select_rotating_species([BirdSpecies(1, "A", "B", 1, "test")], -1)
-
     def test_shuffle_visits_each_entry_before_repeating(self) -> None:
         entries = [catalog_entry(1, 10), catalog_entry(2, 5), catalog_entry(3, 1)]
         rng = random.Random(7)

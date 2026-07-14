@@ -44,6 +44,7 @@ from .errors import InkyBirdFrameError
 from .images import prepare_uploaded_image
 from .installation import InstallationRole, doctor, setup
 from .notifications import (
+    check_display_heartbeat,
     dispatch_notifications,
     notification_status,
     requeue_dead_letters,
@@ -358,6 +359,10 @@ def retry_command(args: argparse.Namespace) -> int:
         cleared_cached_profile = profile_cache.exists()
         if cleared_cached_profile:
             sources.append(profile_cache)
+        reference_cache = config.controller.state_dir / "references" / str(args.taxon_id)
+        cleared_cached_references = reference_cache.exists()
+        if cleared_cached_references:
+            sources.append(reference_cache)
         archive = config.controller.state_dir / "archive"
         archive.mkdir(parents=True, exist_ok=True)
         moved: list[str] = []
@@ -377,6 +382,7 @@ def retry_command(args: argparse.Namespace) -> int:
             "archived": moved,
             "cleared_deferred_retry": deferred,
             "cleared_cached_profile": cleared_cached_profile,
+            "cleared_cached_references": cleared_cached_references,
         }
     )
     return 0
@@ -562,7 +568,9 @@ def notifications_test_command(args: argparse.Namespace) -> int:
 
 
 def notifications_dispatch_command(args: argparse.Namespace) -> int:
-    print_result(dispatch_notifications(_config(args)))
+    config = _config(args)
+    display_heartbeat = check_display_heartbeat(config)
+    print_result({**dispatch_notifications(config), "display_heartbeat": display_heartbeat})
     return 0
 
 

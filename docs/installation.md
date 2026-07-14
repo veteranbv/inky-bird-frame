@@ -72,6 +72,11 @@ Do not expose the configured controller port to the public internet. The
 built-in server is an unauthenticated, read-only LAN service. Use a VPN or an
 authenticated TLS reverse proxy if traffic must cross an untrusted network.
 
+The example configuration sets `controller.bind_host = "0.0.0.0"`, which
+listens on every interface of the controller host. On a multi-homed
+controller, set `bind_host` to the specific LAN address the display uses so
+the service is not offered on other networks.
+
 ## 1. Install the controller
 
 Choose the macOS or Linux path below. Keep the source checkout. Future updates
@@ -232,7 +237,9 @@ curl --fail --silent "http://127.0.0.1:8793/health"
 The health response must have `"ok": true`. `approved_species` is the reusable
 catalog size. `active_species` is the approved subset currently observed in the
 configured window and radius. It may initially be zero in a region whose birds
-have not been generated yet.
+have not been generated yet. Both counts are read from the last built catalog
+index rather than a fresh catalog scan, so the endpoint stays fast as the
+catalog grows.
 
 ## 2. Prepare the display Pi
 
@@ -461,16 +468,28 @@ points the Pimoroni environment at the managed runtime. The
 explicit source directory ensures each update installs the checkout that was
 just pulled rather than the previous managed copy.
 
+When the controller and display are updated separately, update display nodes
+first. The active catalog wire format is `schema_version: 1`, and a display
+node refuses a catalog with a newer schema version: the cycle fails closed
+and the panel keeps its last image until the display is updated.
+
 Docker controller updates pull a published image and recreate the services. See
 the [Docker update instructions](docker.md#update) for version pinning and
 rollback.
 
 ## Uninstall
 
-Uninstalling services does not delete configuration, catalogs, generated art,
-or display state.
+From the source checkout, run the uninstall script that matches the role and
+platform. Each script removes the installed services and timers but preserves
+private configuration, controller state, catalogs, and generated art:
 
-On a systemd controller:
+```bash
+./deploy/uninstall-controller.sh           # macOS controller
+./deploy/uninstall-controller-systemd.sh   # Linux controller
+./deploy/uninstall-display-local.sh        # display node
+```
+
+The equivalent manual removal follows. On a systemd controller:
 
 ```bash
 for unit in \

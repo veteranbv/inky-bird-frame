@@ -254,6 +254,25 @@ class ConfigTests(unittest.TestCase):
             with self.assertRaisesRegex(ConfigurationError, "must not exceed 100"):
                 load_config(path)
 
+    def test_rejects_controller_port_above_tcp_maximum(self) -> None:
+        with TemporaryDirectory() as temporary:
+            path = Path(temporary) / "config.toml"
+            path.write_text(CONFIG.replace("port = 8793", "port = 70000"))
+
+            with self.assertRaisesRegex(
+                ConfigurationError, "port must be an integer less than or equal to 65535"
+            ):
+                load_config(path)
+
+    def test_accepts_controller_port_at_tcp_maximum(self) -> None:
+        with TemporaryDirectory() as temporary:
+            path = Path(temporary) / "config.toml"
+            path.write_text(CONFIG.replace("port = 8793", "port = 65535"))
+
+            config = load_config(path)
+
+        self.assertEqual(config.controller.port, 65535)
+
     def test_rejects_invalid_zip(self) -> None:
         with TemporaryDirectory() as temporary:
             path = Path(temporary) / "config.toml"
@@ -403,6 +422,30 @@ insufficient_references_retry_minutes = 1440""",
         self.assertEqual(
             config.notifications.destinations[0].events,
             (NotificationEvent.GENERATION_APPROVED, NotificationEvent.TERMINAL_ERROR),
+        )
+
+    def test_notification_destinations_accept_display_heartbeat_events(self) -> None:
+        configured = (
+            CONFIG
+            + """
+
+[notifications]
+enabled = true
+
+[[notifications.destinations]]
+name = "pushover"
+url = "pover://user@token"
+events = ["display_stale", "display_recovered"]
+"""
+        )
+        with TemporaryDirectory() as temporary:
+            path = Path(temporary) / "config.toml"
+            path.write_text(configured)
+            config = load_config(path)
+
+        self.assertEqual(
+            config.notifications.destinations[0].events,
+            (NotificationEvent.DISPLAY_STALE, NotificationEvent.DISPLAY_RECOVERED),
         )
 
     def test_research_requires_two_distinct_allowed_domains(self) -> None:

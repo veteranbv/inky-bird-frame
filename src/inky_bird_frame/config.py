@@ -64,6 +64,8 @@ class NotificationEvent(StrEnum):
     RECOVERED = "recovered"
     PUBLICATION_ERROR = "publication_error"
     PUBLICATION_RECOVERED = "publication_recovered"
+    DISPLAY_STALE = "display_stale"
+    DISPLAY_RECOVERED = "display_recovered"
 
 
 ALL_NOTIFICATION_EVENTS = tuple(NotificationEvent)
@@ -209,10 +211,14 @@ def _string(section: dict[str, object], name: str) -> str:
     return value.strip()
 
 
-def _integer(section: dict[str, object], name: str, *, minimum: int = 1) -> int:
+def _integer(
+    section: dict[str, object], name: str, *, minimum: int = 1, maximum: int | None = None
+) -> int:
     value = section.get(name)
     if not isinstance(value, int) or isinstance(value, bool) or value < minimum:
         raise ConfigurationError(f"{name} must be an integer greater than or equal to {minimum}")
+    if maximum is not None and value > maximum:
+        raise ConfigurationError(f"{name} must be an integer less than or equal to {maximum}")
     return value
 
 
@@ -518,7 +524,7 @@ def load_config(path: Path, *, load_secrets: bool = True) -> AppConfig:
             state_dir=_path(_string(controller, "state_dir"), base_dir),
             codex_path=_executable_path(_string(controller, "codex_path"), base_dir),
             bind_host=_string(controller, "bind_host"),
-            port=_integer(controller, "port"),
+            port=_integer(controller, "port", maximum=65535),
             references_per_species=_integer(controller, "references_per_species"),
             generations_per_cycle=_integer(controller, "generations_per_cycle"),
             max_generation_attempts=_optional_integer(
