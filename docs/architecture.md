@@ -90,10 +90,12 @@ The display node does not discover birds or generate art. Each timer cycle:
    rotation. `shuffle_bag` keeps its own remaining and shown lists, so a newly
    active species joins the current bag without restoring species already
    shown;
-3. downloads the display asset;
+3. downloads the canonical display asset;
 4. verifies its SHA-256 checksum;
-5. writes it to a local cache atomically; and
-6. updates the Inky panel before advancing state.
+5. writes it to a local cache atomically;
+6. fits it without cropping when the detected panel uses the 800x480 geometry;
+   and
+7. updates the Inky panel before advancing state.
 
 Display cycles use a nonblocking local process lock. A cycle that cannot obtain
 the lock fails without changing state, and failed panel updates also leave the
@@ -102,6 +104,11 @@ prior selection state intact.
 This pull model keeps display addressing out of controller state and limits the
 node to a read-only catalog relationship. If refresh, generation, or controller
 access fails, the current e-paper image remains visible.
+
+The controller records one aggregate display fetch heartbeat and one aggregate
+successful-update heartbeat. The supported topology is therefore one active
+display node per controller; per-panel health for multiple simultaneous nodes
+would require a separate identity and monitoring design.
 
 ### Catalog publisher
 

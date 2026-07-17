@@ -17,6 +17,7 @@ from urllib.parse import urlsplit, urlunsplit
 from .config import AppConfig, DiscoveryProvider, load_config
 from .errors import ConfigurationError, InkyBirdFrameError, InstallationError
 from .http import get_json
+from .images import SUPPORTED_HARDWARE_SIZES
 
 SUDO_AUTHORIZATION_TIMEOUT_SECONDS = 300
 INSTALLER_TIMEOUT_SECONDS = 3600
@@ -502,12 +503,16 @@ def _display_hardware_check() -> DiagnosticCheck:
             detail=result.stderr or output,
             remediation="Check the 40-pin connection, SPI/I2C settings, and the Inky Python extra.",
         )
-    if output == "1600x1200":
-        return _pass("inky_hardware", "Detected the supported 1600x1200 Inky display")
+    supported_outputs = {f"{width}x{height}" for width, height in SUPPORTED_HARDWARE_SIZES}
+    if output in supported_outputs:
+        return _pass("inky_hardware", f"Detected the supported {output} Inky display")
     return _fail(
         "inky_hardware",
         f"Detected unsupported Inky geometry: {output or 'unknown'}",
-        remediation="This release supports the 13.3-inch PIM774 1600x1200 panel.",
+        remediation=(
+            "This release supports the 7.3-inch PIM773 800x480 and "
+            "13.3-inch PIM774 1600x1200 panels."
+        ),
     )
 
 

@@ -118,8 +118,8 @@
   <text x="380.0" y="1374" style="font-family:'Inter',-apple-system,'Segoe UI',sans-serif;font-size:20.5px;font-weight:400;" fill="#9198a1">the rotation mode.</text>
   <circle cx="653.0" cy="1270" r="4" fill="#f0668b"/>
   <text x="668.0" y="1276" style="font-family:'Inter',-apple-system,'Segoe UI',sans-serif;font-size:21.5px;font-weight:600;" fill="#e6edf3">Show</text>
-  <text x="668.0" y="1314" style="font-family:'Inter',-apple-system,'Segoe UI',sans-serif;font-size:20.5px;font-weight:400;" fill="#9198a1">Send the 1600 × 1200</text>
-  <text x="668.0" y="1344" style="font-family:'Inter',-apple-system,'Segoe UI',sans-serif;font-size:20.5px;font-weight:400;" fill="#9198a1">PNG to the Inky panel</text>
+  <text x="668.0" y="1314" style="font-family:'Inter',-apple-system,'Segoe UI',sans-serif;font-size:20.5px;font-weight:400;" fill="#9198a1">Fit the approved PNG</text>
+  <text x="668.0" y="1344" style="font-family:'Inter',-apple-system,'Segoe UI',sans-serif;font-size:20.5px;font-weight:400;" fill="#9198a1">to the detected panel</text>
   <text x="668.0" y="1374" style="font-family:'Inter',-apple-system,'Segoe UI',sans-serif;font-size:20.5px;font-weight:400;" fill="#9198a1">over 40-pin GPIO/SPI.</text>
   <line x1="340.0" y1="1258" x2="340.0" y2="1404" stroke="#3d444d" stroke-width="1"/>
   <line x1="628.0" y1="1258" x2="628.0" y2="1404" stroke="#3d444d" stroke-width="1"/>

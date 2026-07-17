@@ -15,6 +15,7 @@ from inky_bird_frame.installation import (
     CommandResult,
     DiagnosticCheck,
     InstallationRole,
+    _display_hardware_check,
     _health_url,
     controller_systemd_units,
     display_systemd_units,
@@ -55,6 +56,31 @@ rotation_mode = "shuffle_bag"
 
 
 class InstallationTests(unittest.TestCase):
+    def test_display_hardware_check_accepts_both_supported_geometries(self) -> None:
+        for geometry in ("1600x1200", "800x480"):
+            with (
+                self.subTest(geometry=geometry),
+                patch(
+                    "inky_bird_frame.installation._run",
+                    return_value=CommandResult(0, geometry, ""),
+                ),
+            ):
+                check = _display_hardware_check()
+
+            self.assertEqual(check.status, CheckStatus.PASS)
+            self.assertIn(geometry, check.summary)
+
+    def test_display_hardware_check_rejects_unknown_geometry(self) -> None:
+        with patch(
+            "inky_bird_frame.installation._run",
+            return_value=CommandResult(0, "600x400", ""),
+        ):
+            check = _display_hardware_check()
+
+        self.assertEqual(check.status, CheckStatus.FAIL)
+        self.assertIn("PIM773", check.remediation or "")
+        self.assertIn("PIM774", check.remediation or "")
+
     def test_controller_systemd_units_quote_paths_and_use_configured_schedules(self) -> None:
         with TemporaryDirectory() as temporary:
             root = Path(temporary)

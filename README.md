@@ -104,6 +104,13 @@ an opening that leaves the Pi, microSD card, and power connector accessible. The
 Pi connects directly to the display and does not need a separate case. A
 right-angle power cable is not required.
 
+For a smaller build, substitute the supported 7.3-inch PIM773. Its active area
+is approximately 6.30 x 3.78 inches and its board is approximately 6.86 x 4.85
+inches. The display node fits each complete canonical plate onto its 800x480
+canvas without cropping or stretching, leaving narrow paper-colored margins.
+Choose and verify a frame and mat against the physical panel before cutting;
+the 12 x 16 inch frame and dimensions above are specific to PIM774.
+
 ### A reuse-first build
 
 The frame pictured below was built from parts already on hand: an Inky
@@ -156,8 +163,10 @@ Zippopotam.us, and configured research sources. The display node requires
 Python 3.11 or newer with Pimoroni's Inky package and network access to the
 controller HTTP service.
 
-The panel reports a `1600x1200` landscape canvas. Plates are authored at
-`1200x1600` and rotated left for a portrait-mounted frame.
+PIM774 reports a `1600x1200` landscape canvas and PIM773 reports `800x480`.
+Plates remain authored at `1200x1600` and stored as canonical `1600x1200`
+display assets. The display node preserves PIM774 output and automatically fits
+the complete plate onto PIM773 without cropping or stretching.
 
 ## Install
 
@@ -174,7 +183,7 @@ Both guides take you through the display Pi after the controller is healthy.
 Installation follows five checkpoints:
 
 1. prepare and diagnose the controller;
-2. flash the display Pi and attach PIM774;
+2. flash the display Pi and attach PIM773 or PIM774;
 3. show the included Eastern Bluebird without Codex or a controller;
 4. prove the Pi can reach the controller; and
 5. enable live rotation and automatic generation.
@@ -266,7 +275,8 @@ for setup examples, event controls, retry behavior, and secret handling.
 Every approved species lives under `catalog/species/<taxon-id>-<slug>/`:
 
 - `portrait.png`: location-neutral `1200x1600` source plate
-- `display.png`: hardware-ready `1600x1200` image
+- `display.png`: canonical `1600x1200` landscape image; PIM773 display nodes
+  fit it locally to `800x480`
 - `manifest.json`: facts, research and review sources, reference provenance,
   quality scores, generation metadata, and SHA-256 checksums
 - `profile.json`: factual species profile matching the manifest, when produced

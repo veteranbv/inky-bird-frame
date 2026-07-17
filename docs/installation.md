@@ -26,17 +26,24 @@ section.
 | Role | Recommended | Supported | Notes |
 | --- | --- | --- | --- |
 | Controller | Existing Apple silicon Mac or Ubuntu Server 24.04 LTS computer | macOS with launchd; 64-bit Ubuntu 24.04 with systemd; 64-bit Raspberry Pi OS Bookworm or later with systemd | A Raspberry Pi 4 with 4GB is the smallest recommended dedicated controller. Docker installation is documented separately. |
-| Display | Raspberry Pi Zero 2 W with pre-soldered 40-pin header and Raspberry Pi OS Lite 64-bit | Raspberry Pi OS Bookworm or later on a 40-pin Raspberry Pi | This release supports the Pimoroni Inky Impression 13.3 inch PIM774 at 1600x1200. |
+| Display | Raspberry Pi Zero 2 W with pre-soldered 40-pin header and Raspberry Pi OS Lite 64-bit | Raspberry Pi OS Bookworm or later on a 40-pin Raspberry Pi | Supports the 7.3-inch PIM773 at 800x480 and 13.3-inch PIM774 at 1600x1200. |
 
 The setup command detects launchd or systemd, but detection does not mean every
 operating system has been tested. Other systems may work. Contributions that
 document and test them are welcome.
 
-Pimoroni lists PIM774 as compatible with every 40-pin Raspberry Pi, including
-Zero variants. A Zero without a header requires soldering. The Zero 2 W has a
-64-bit processor and built-in 2.4 GHz Wi-Fi. See the
-[PIM774 product page](https://shop.pimoroni.com/products/inky-impression) and
+Pimoroni lists PIM773 and PIM774 as compatible with every 40-pin Raspberry Pi,
+including Zero variants. A Zero without a header requires soldering. The Zero
+2 W has a 64-bit processor and built-in 2.4 GHz Wi-Fi. See the
+[Inky Impression product page](https://shop.pimoroni.com/products/inky-impression) and
 [Raspberry Pi Zero 2 W specifications](https://www.raspberrypi.com/products/raspberry-pi-zero-2-w/).
+The application reads the panel geometry from Pimoroni's EEPROM; no display
+model or resolution setting belongs in `config.toml`.
+
+The supported topology remains one active display node per controller. Multiple
+nodes can read the same catalog, but the controller's fetch and success
+heartbeats describe the display role as a whole rather than identifying each
+physical panel independently.
 
 ## Before you begin
 
@@ -275,7 +282,7 @@ ip address show
 ip route
 ```
 
-### Attach PIM774
+### Attach PIM773 or PIM774
 
 Shut down and disconnect power before handling the boards:
 
@@ -289,10 +296,10 @@ sudo poweroff
 Pimoroni hardware documentation supplied with the panel.*
 
 Hold the Inky board by its edges. Align the Pi's complete 40-pin header with the
-PIM774 connector, press it straight into place, and secure the Pi with the
-included standoffs. Do not press on the glass panel. Pimoroni ships the display
-assembled with the required mounting hardware and documents that no soldering
-is needed when the Pi already has a 40-pin header.
+Inky connector, press it straight into place, and secure the Pi with the
+included standoffs. Do not press on the glass panel. Pimoroni ships both
+supported displays assembled with the required mounting hardware and documents
+that no soldering is needed when the Pi already has a 40-pin header.
 
 Reconnect power and SSH back in.
 
@@ -326,10 +333,14 @@ cd inky-bird-frame
   catalog/species/12942-eastern-bluebird/display.png
 ```
 
-The included Eastern Bluebird should appear in portrait orientation. A PIM774
-refresh normally takes tens of seconds and may take longer when cold. Do not
-continue until this test succeeds; it isolates the Pi, Python environment,
-40-pin connection, and display from every controller dependency.
+The included Eastern Bluebird should appear in portrait orientation. PIM774
+uses the canonical image unchanged. PIM773 automatically contains the complete
+plate on its wider 800x480 aspect ratio with paper-colored margins, which appear
+above and below the plate when the panel is portrait-mounted. It does not crop
+or stretch the illustration or notes. A refresh normally takes tens of seconds
+and may take longer when cold. Do not continue until this test succeeds; it
+isolates the Pi, Python environment, 40-pin connection, and display from every
+controller dependency.
 
 ## 3. Connect the display to the controller
 
@@ -541,7 +552,7 @@ ID, status, summary, and remediation. Continue with the focused runbook in
 - [Raspberry Pi Imager](https://www.raspberrypi.com/software/),
   [Raspberry Pi OS](https://www.raspberrypi.com/documentation/computers/os.html),
   and [SSH setup](https://www.raspberrypi.com/documentation/computers/remote-access.html)
-- [Pimoroni PIM774 hardware](https://shop.pimoroni.com/products/inky-impression)
+- [Pimoroni PIM773 and PIM774 hardware](https://shop.pimoroni.com/products/inky-impression)
   and [Inky Python installation](https://github.com/pimoroni/inky#installation)
 - [Apple launchd jobs](https://developer.apple.com/library/archive/documentation/MacOSX/Conceptual/BPSystemStartup/Chapters/CreatingLaunchdJobs.html)
 - [systemd service control](https://www.freedesktop.org/software/systemd/man/latest/systemctl.html)
