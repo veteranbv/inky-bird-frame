@@ -49,6 +49,11 @@ uv run inky-bird-frame catalog validate --catalog catalog
 - Public pull requests run only on GitHub-hosted runners.
 - Deployment is manual, owner-gated, and runs only from `main` on the trusted
   controller runner.
+- Exception: `site-deploy-hook.yml` may POST the owner's Cloudflare Pages
+  deploy hook when `catalog/**` changes on `main`. It deploys nothing from
+  this repo and touches no runner secrets beyond the hook URL; it only asks
+  henrysowell.com to rebuild its gallery from the already-reviewed committed
+  catalog. Merging to `main` is the owner gate.
 - Container publication runs only from trusted `main`, a repository release,
   or an owner-started workflow. Pull requests never publish packages.
 - Never expose or copy a ChatGPT/Codex login into GitHub Actions.
