@@ -259,7 +259,7 @@ only; they never enter the approved catalog or rotation.
 - Checksum mismatch: the display refuses the asset and preserves current state.
 - Catalog publication failure: inspect `catalog-publish.log` for the structured
   command error; `catalog-publish.error.log` is reserved for process-level
-  diagnostics. Run `gh auth status --active --hostname github.com` as the
+  diagnostics. Run `gh auth status --hostname github.com` as the
   controller service account, then fix authentication, remote divergence, or the
   reported validation problem. Confirm recovery with `catalog-publish --dry-run`
   before rerunning `catalog-publish`. Local approval and display rotation continue

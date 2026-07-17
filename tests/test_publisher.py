@@ -6,7 +6,7 @@ import subprocess
 import unittest
 from pathlib import Path
 from tempfile import TemporaryDirectory
-from unittest.mock import patch
+from unittest.mock import call, patch
 
 from PIL import Image, PngImagePlugin
 
@@ -207,7 +207,7 @@ class PublisherTests(unittest.TestCase):
             ):
                 _validate_checkout(checkout, publication)
 
-    def test_checkout_checks_active_github_authentication_before_owner_identity(self) -> None:
+    def test_checkout_reports_github_authentication_failure_after_api_error(self) -> None:
         with TemporaryDirectory() as temporary:
             checkout = Path(temporary) / "checkout"
             subprocess.run(["git", "init", str(checkout)], check=True, capture_output=True)
@@ -228,19 +228,33 @@ class PublisherTests(unittest.TestCase):
             with (
                 patch(
                     "inky_bird_frame.publisher._gh",
-                    side_effect=CatalogPublishError("gh auth failed: token is invalid"),
+                    side_effect=[
+                        CatalogPublishError("gh api failed: invalid response"),
+                        subprocess.CompletedProcess(
+                            ["gh", "auth"],
+                            1,
+                            "",
+                            "The token in hosts.yml is invalid.",
+                        ),
+                    ],
                 ) as github,
-                self.assertRaisesRegex(CatalogPublishError, "token is invalid"),
+                self.assertRaisesRegex(CatalogPublishError, "token in hosts.yml is invalid"),
             ):
                 _validate_checkout(checkout, publication)
 
-            github.assert_called_once_with(
-                publication,
-                "auth",
-                "status",
-                "--active",
-                "--hostname",
-                "github.com",
+            self.assertEqual(
+                github.call_args_list,
+                [
+                    call(publication, "api", "user", "--jq", ".login"),
+                    call(
+                        publication,
+                        "auth",
+                        "status",
+                        "--hostname",
+                        "github.com",
+                        check=False,
+                    ),
+                ],
             )
 
     def test_repository_seed_catalog_is_publishable(self) -> None:

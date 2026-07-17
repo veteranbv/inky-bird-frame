@@ -118,7 +118,7 @@ standard-output log:
 
 ```bash
 tail -n 100 "$HOME/Library/Application Support/Inky Bird Frame/logs/catalog-publish.log"
-gh auth status --active --hostname github.com
+gh auth status --hostname github.com
 inky-bird-frame catalog-publish --config /path/to/config.toml --dry-run
 ```
 

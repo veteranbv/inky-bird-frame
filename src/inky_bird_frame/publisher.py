@@ -431,8 +431,9 @@ def _gh(
     publication: PublicCatalogConfig,
     *arguments: str,
     input_text: str | None = None,
+    check: bool = True,
 ) -> subprocess.CompletedProcess[str]:
-    return _run([str(publication.gh_path), *arguments], input_text=input_text)
+    return _run([str(publication.gh_path), *arguments], input_text=input_text, check=check)
 
 
 def _remote_repository(remote_url: str) -> str | None:
@@ -457,9 +458,24 @@ def _validate_checkout(checkout: Path, publication: PublicCatalogConfig) -> str:
     if remote_repository is None or remote_repository.casefold() != repository.casefold():
         raise CatalogPublishError("Catalog remote does not match the configured repository")
 
-    _gh(publication, "auth", "status", "--active", "--hostname", "github.com")
     owner = repository.split("/", maxsplit=1)[0]
-    authenticated = _gh(publication, "api", "user", "--jq", ".login").stdout.strip()
+    try:
+        authenticated = _gh(publication, "api", "user", "--jq", ".login").stdout.strip()
+    except CatalogPublishError as exc:
+        auth_status = _gh(
+            publication,
+            "auth",
+            "status",
+            "--hostname",
+            "github.com",
+            check=False,
+        )
+        if auth_status.returncode != 0:
+            detail = _redact_command_output(auth_status.stderr or auth_status.stdout)
+            raise CatalogPublishError(
+                f"GitHub CLI authentication check failed: {detail or 'unknown error'}"
+            ) from exc
+        raise
     if authenticated.casefold() != owner.casefold():
         raise CatalogPublishError(f"GitHub CLI must be authenticated as repository owner {owner!r}")
     return repository
