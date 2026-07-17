@@ -207,6 +207,42 @@ class PublisherTests(unittest.TestCase):
             ):
                 _validate_checkout(checkout, publication)
 
+    def test_checkout_checks_active_github_authentication_before_owner_identity(self) -> None:
+        with TemporaryDirectory() as temporary:
+            checkout = Path(temporary) / "checkout"
+            subprocess.run(["git", "init", str(checkout)], check=True, capture_output=True)
+            _run_git(
+                checkout,
+                "remote",
+                "add",
+                "origin",
+                "https://github.com/example/inky-bird-frame.git",
+            )
+            publication = PublicCatalogConfig(
+                enabled=True,
+                checkout_dir=checkout,
+                repository="example/inky-bird-frame",
+                gh_path=Path("/usr/bin/false"),
+            )
+
+            with (
+                patch(
+                    "inky_bird_frame.publisher._gh",
+                    side_effect=CatalogPublishError("gh auth failed: token is invalid"),
+                ) as github,
+                self.assertRaisesRegex(CatalogPublishError, "token is invalid"),
+            ):
+                _validate_checkout(checkout, publication)
+
+            github.assert_called_once_with(
+                publication,
+                "auth",
+                "status",
+                "--active",
+                "--hostname",
+                "github.com",
+            )
+
     def test_repository_seed_catalog_is_publishable(self) -> None:
         catalog = Path(__file__).parents[1] / "catalog"
 

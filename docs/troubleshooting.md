@@ -111,6 +111,22 @@ not block later queue entries. Terminal factual or visual failures require an
 explicit `retry TAXON_ID` after investigation. See
 [`operations.md`](operations.md#failure-recovery).
 
+### Catalog publication fails
+
+Inspect the structured command result first. On macOS it is written to the
+standard-output log:
+
+```bash
+tail -n 100 "$HOME/Library/Application Support/Inky Bird Frame/logs/catalog-publish.log"
+gh auth status --active --hostname github.com
+inky-bird-frame catalog-publish --config /path/to/config.toml --dry-run
+```
+
+Run GitHub CLI as the same OS account that owns the publisher service. The
+`.error.log` file contains process-level diagnostics, not ordinary structured
+command failures. After correcting authentication or repository state, require
+the dry-run to pass before running an immediate publication cycle.
+
 ## Display node
 
 ### The Pi is not reachable after imaging

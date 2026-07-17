@@ -457,6 +457,7 @@ def _validate_checkout(checkout: Path, publication: PublicCatalogConfig) -> str:
     if remote_repository is None or remote_repository.casefold() != repository.casefold():
         raise CatalogPublishError("Catalog remote does not match the configured repository")
 
+    _gh(publication, "auth", "status", "--active", "--hostname", "github.com")
     owner = repository.split("/", maxsplit=1)[0]
     authenticated = _gh(publication, "api", "user", "--jq", ".login").stdout.strip()
     if authenticated.casefold() != owner.casefold():
