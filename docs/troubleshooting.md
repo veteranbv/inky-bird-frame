@@ -163,8 +163,9 @@ the Pimoroni environment:
   'from inky.auto import auto; d=auto(); print(d.width, d.height)'
 ```
 
-The supported result is `1600 1200`. If import fails, rerun Pimoroni's installer
-and reinstall this project's `inky` extra into that same environment.
+The supported results are `800 480` for PIM773 and `1600 1200` for PIM774. If
+import fails, rerun Pimoroni's installer and reinstall this project's `inky`
+extra into that same environment.
 
 ### The included image is rotated incorrectly
 
@@ -176,7 +177,8 @@ Use the committed `display.png`, not `portrait.png`:
 ```
 
 The catalog's display asset is already rotated left for a portrait-mounted
-PIM774. Do not add a second OS-level rotation.
+panel. PIM773 fitting preserves that orientation automatically. Do not add a
+second OS-level rotation.
 
 ### The Pi reaches Wi-Fi but not the controller
 

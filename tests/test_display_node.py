@@ -7,6 +7,7 @@ import unittest
 from collections.abc import Callable
 from pathlib import Path
 from tempfile import TemporaryDirectory
+from types import SimpleNamespace
 from unittest.mock import patch
 
 from inky_bird_frame.config import DisplayNodeConfig, RotationMode
@@ -43,6 +44,14 @@ def asset_response(images: dict[int, bytes]) -> Callable[[str, float], bytes]:
 
 
 class DisplayNodeTests(unittest.TestCase):
+    def setUp(self) -> None:
+        self.display = SimpleNamespace(width=1600, height=1200)
+        patcher = patch(
+            "inky_bird_frame.display_node.detect_inky_display", return_value=self.display
+        )
+        patcher.start()
+        self.addCleanup(patcher.stop)
+
     def test_downloads_verifies_displays_then_skips_unchanged_single_plate(self) -> None:
         image = b"display-image"
         digest = hashlib.sha256(image).hexdigest()
@@ -112,7 +121,13 @@ class DisplayNodeTests(unittest.TestCase):
             state_dir = Path(temporary)
             state_dir.mkdir(parents=True, exist_ok=True)
             (state_dir / "state.json").write_text(
-                json.dumps({"next_index": 0, "last_sha256": first_digest})
+                json.dumps(
+                    {
+                        "next_index": 0,
+                        "last_sha256": first_digest,
+                        "last_display_size": [1600, 1200],
+                    }
+                )
             )
             config = DisplayNodeConfig("http://controller.test", state_dir)
             with (
@@ -185,6 +200,21 @@ class DisplayNodeTests(unittest.TestCase):
                 run_display_cycle(config)
 
         self.assertEqual([url for url in requested if url.endswith("/v1/display-success")], [])
+
+    def test_unsupported_hardware_fails_before_controller_fetch(self) -> None:
+        with TemporaryDirectory() as temporary:
+            config = DisplayNodeConfig("http://controller.test", Path(temporary))
+            with (
+                patch(
+                    "inky_bird_frame.display_node.detect_inky_display",
+                    side_effect=ValueError("unsupported Inky display size"),
+                ),
+                patch("inky_bird_frame.display_node.get_json") as get_json,
+                self.assertRaisesRegex(ValueError, "unsupported Inky display size"),
+            ):
+                run_display_cycle(config)
+
+        get_json.assert_not_called()
 
     def test_successful_cycle_evicts_stale_cache_for_same_taxon_only(self) -> None:
         images = {1: b"one"}
@@ -346,6 +376,24 @@ class DisplayNodeTests(unittest.TestCase):
             state_path.write_text(json.dumps({"schema_version": 3}))
             with self.assertRaises(CatalogError):
                 _read_state(state_path)
+            state_path.write_text(
+                json.dumps(
+                    {
+                        "schema_version": 3,
+                        "next_index": 0,
+                        "last_sha256": "",
+                        "last_taxon_id": None,
+                        "shuffle_remaining": [],
+                        "shuffle_bag_remaining": [],
+                        "shuffle_bag_seen": [],
+                        "last_prioritized_detection_at": None,
+                        "prioritized_detection_taxa": [],
+                        "last_display_size": [800, True],
+                    }
+                )
+            )
+            with self.assertRaises(CatalogError):
+                _read_state(state_path)
             state_path.write_text(json.dumps({"shuffle_bag_remaining": [1, 1]}))
             with self.assertRaises(CatalogError):
                 _read_state(state_path)
@@ -358,6 +406,40 @@ class DisplayNodeTests(unittest.TestCase):
 
         self.assertEqual(legacy.next_index, 1)
         self.assertEqual(legacy.shuffle_remaining, (2,))
+        self.assertIsNone(legacy.last_display_size)
+
+    def test_panel_geometry_change_forces_refresh_then_persists_new_size(self) -> None:
+        images = {1: b"one"}
+        payload = catalog_payload(images)
+
+        def displayed_size(_path: Path, *, display: SimpleNamespace) -> tuple[int, int]:
+            return display.width, display.height
+
+        with TemporaryDirectory() as temporary:
+            state_path = Path(temporary) / "state.json"
+            config = DisplayNodeConfig("http://controller.test", Path(temporary))
+            with (
+                patch("inky_bird_frame.display_node.get_json", return_value=payload),
+                patch(
+                    "inky_bird_frame.display_node.get_bytes", side_effect=asset_response(images)
+                ) as get_bytes,
+                patch(
+                    "inky_bird_frame.display_node.show_on_inky", side_effect=displayed_size
+                ) as show_on_inky,
+            ):
+                first = run_display_cycle(config)
+                self.display.width = 800
+                self.display.height = 480
+                second = run_display_cycle(config)
+                third = run_display_cycle(config)
+                state = json.loads(state_path.read_text())
+
+        self.assertEqual(first["display_update"], "sent")
+        self.assertEqual(second["display_update"], "sent")
+        self.assertEqual(third["display_update"], "unchanged")
+        self.assertEqual(get_bytes.call_count, 2)
+        self.assertEqual(show_on_inky.call_count, 2)
+        self.assertEqual(state["last_display_size"], [800, 480])
 
     def test_latest_detection_preempts_rotation_once_then_newer_detection_preempts(self) -> None:
         images = {1: b"one", 2: b"two", 3: b"three"}

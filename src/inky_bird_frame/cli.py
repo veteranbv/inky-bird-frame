@@ -927,7 +927,9 @@ def build_parser() -> argparse.ArgumentParser:
     prepare_parser.add_argument("--display", action="store_true")
     prepare_parser.set_defaults(func=prepare_image_command)
 
-    display_parser = subparsers.add_parser("display-image", help="Send a 1600x1200 image to Inky")
+    display_parser = subparsers.add_parser(
+        "display-image", help="Send a canonical 1600x1200 image to a supported Inky"
+    )
     display_parser.add_argument("image", type=Path)
     display_parser.set_defaults(func=display_image_command)
     return parser

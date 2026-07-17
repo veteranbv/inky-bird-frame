@@ -16,7 +16,7 @@ from urllib.parse import quote
 
 from .catalog import CatalogEntry
 from .config import DisplayNodeConfig, RotationMode
-from .display import show_on_inky
+from .display import detect_inky_display, show_on_inky
 from .errors import CatalogError, DataSourceError
 from .http import get_bytes, get_json, write_bytes_atomic, write_json_atomic
 from .selection import select_catalog_entry, select_shuffle_bag_entry
@@ -35,6 +35,7 @@ class DisplayState:
     shuffle_bag_seen: tuple[int, ...] = ()
     last_prioritized_detection_at: str | None = None
     prioritized_detection_taxa: tuple[int, ...] = ()
+    last_display_size: tuple[int, int] | None = None
 
 
 @contextmanager
@@ -161,6 +162,18 @@ def _state_taxon_ids(raw: object, path: Path) -> tuple[int, ...]:
     return tuple(raw)
 
 
+def _state_display_size(raw: object, path: Path) -> tuple[int, int] | None:
+    if raw is None:
+        return None
+    if (
+        not isinstance(raw, list)
+        or len(raw) != 2
+        or any(not isinstance(item, int) or isinstance(item, bool) or item <= 0 for item in raw)
+    ):
+        raise CatalogError(f"Invalid display-node state: {path}")
+    return raw[0], raw[1]
+
+
 def _read_state(path: Path) -> DisplayState:
     if not path.is_file():
         return DisplayState()
@@ -177,18 +190,18 @@ def _read_state(path: Path) -> DisplayState:
         or schema_version not in {1, 2, DISPLAY_STATE_SCHEMA_VERSION}
     ):
         raise CatalogError(f"Invalid display-node state: {path}")
+    required_fields = (
+        "next_index",
+        "last_sha256",
+        "last_taxon_id",
+        "shuffle_remaining",
+        "shuffle_bag_remaining",
+        "shuffle_bag_seen",
+        "last_prioritized_detection_at",
+        "prioritized_detection_taxa",
+    )
     if schema_version == DISPLAY_STATE_SCHEMA_VERSION and any(
-        name not in raw
-        for name in (
-            "next_index",
-            "last_sha256",
-            "last_taxon_id",
-            "shuffle_remaining",
-            "shuffle_bag_remaining",
-            "shuffle_bag_seen",
-            "last_prioritized_detection_at",
-            "prioritized_detection_taxa",
-        )
+        name not in raw for name in required_fields
     ):
         raise CatalogError(f"Invalid display-node state: {path}")
     next_index = raw.get("next_index", 0)
@@ -199,6 +212,7 @@ def _read_state(path: Path) -> DisplayState:
     shuffle_bag_seen = _state_taxon_ids(raw.get("shuffle_bag_seen", []), path)
     last_prioritized_detection_at = raw.get("last_prioritized_detection_at")
     prioritized_detection_taxa = _state_taxon_ids(raw.get("prioritized_detection_taxa", []), path)
+    last_display_size = _state_display_size(raw.get("last_display_size"), path)
     if (
         not isinstance(next_index, int)
         or isinstance(next_index, bool)
@@ -232,6 +246,7 @@ def _read_state(path: Path) -> DisplayState:
         shuffle_bag_seen=shuffle_bag_seen,
         last_prioritized_detection_at=last_prioritized_detection_at,
         prioritized_detection_taxa=prioritized_detection_taxa,
+        last_display_size=last_display_size,
     )
 
 
@@ -246,6 +261,7 @@ def _write_state(
     last_sha256: str,
     last_prioritized_detection_at: str | None,
     prioritized_detection_taxa: list[int],
+    last_display_size: tuple[int, int],
 ) -> None:
     write_json_atomic(
         path,
@@ -259,6 +275,7 @@ def _write_state(
             "shuffle_bag_seen": shuffle_bag_seen,
             "last_prioritized_detection_at": last_prioritized_detection_at,
             "prioritized_detection_taxa": prioritized_detection_taxa,
+            "last_display_size": last_display_size,
         },
     )
 
@@ -305,6 +322,8 @@ def run_display_cycle(
         # refreshing the controller-side heartbeat and staleness alerts fire.
         state_path = config.state_dir / "state.json"
         state = _read_state(state_path)
+        display = detect_inky_display()
+        display_size = (display.width, display.height)
         catalog_payload = get_json(f"{config.controller_url}/v1/catalog?reports_success=1", 20.0)
         entries = parse_catalog_entries(catalog_payload)
         shuffle_remaining = list(state.shuffle_remaining)
@@ -365,7 +384,11 @@ def run_display_cycle(
                 shuffle_remaining=shuffle_remaining,
                 rng=rng,
             )
-        if selected.display_sha256 == state.last_sha256 and not force:
+        if (
+            selected.display_sha256 == state.last_sha256
+            and display_size == state.last_display_size
+            and not force
+        ):
             _write_state(
                 state_path,
                 selected=selected,
@@ -376,6 +399,7 @@ def run_display_cycle(
                 last_sha256=state.last_sha256,
                 last_prioritized_detection_at=prioritized_at,
                 prioritized_detection_taxa=prioritized_taxa,
+                last_display_size=display_size,
             )
             # An unchanged selection means state.last_sha256 matches, and that
             # is only ever recorded after a successful panel update, so the
@@ -398,7 +422,7 @@ def run_display_cycle(
             )
         image_path = config.state_dir / "cache" / f"{selected.taxon_id}-{actual_hash[:12]}.png"
         write_bytes_atomic(image_path, image_bytes)
-        display_size = show_on_inky(image_path)
+        display_size = show_on_inky(image_path, display=display)
         _write_state(
             state_path,
             selected=selected,
@@ -409,6 +433,7 @@ def run_display_cycle(
             last_sha256=actual_hash,
             last_prioritized_detection_at=prioritized_at,
             prioritized_detection_taxa=prioritized_taxa,
+            last_display_size=display_size,
         )
         _evict_stale_cache_entries(image_path, selected.taxon_id)
         _report_display_success(config.controller_url)

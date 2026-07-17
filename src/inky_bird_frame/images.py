@@ -9,7 +9,10 @@ from .errors import MissingDependencyError
 
 PORTRAIT_SIZE: Final = (1200, 1600)
 HARDWARE_SIZE: Final = (1600, 1200)
+COMPACT_HARDWARE_SIZE: Final = (800, 480)
+SUPPORTED_HARDWARE_SIZES: Final = frozenset({HARDWARE_SIZE, COMPACT_HARDWARE_SIZE})
 ROTATION_DEGREES: Final = 90
+PAPER_COLOR: Final = (238, 222, 184)
 
 
 def slugify(value: str) -> str:
@@ -29,7 +32,7 @@ def prepare_uploaded_image(
     source_path: Path,
     output_dir: Path,
     *,
-    paper_color: tuple[int, int, int] = (238, 222, 184),
+    paper_color: tuple[int, int, int] = PAPER_COLOR,
 ) -> tuple[Path, Path]:
     try:
         from PIL import Image, ImageOps

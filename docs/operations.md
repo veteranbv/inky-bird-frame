@@ -92,11 +92,12 @@ replaying the historical window. Set the option to `false` to use
 `rotation_mode` for every update.
 
 Approved plates use the project's canonical 1200x1600 portrait and 1600x1200
-display assets. This geometry is a catalog contract so committed plates remain
-portable across installations using the supported panel. Controller and display
-state paths remain TOML configuration. Installer bootstrap paths, including the
-TOML path itself, remain environment variables because the installer must find
-the configuration before it can load it.
+display assets. This geometry remains the catalog contract. PIM774 consumes the
+display asset unchanged; a PIM773 display node contains the full asset on its
+800x480 canvas with paper-colored margins and no crop or stretch. Controller
+and display state paths remain TOML configuration. Installer bootstrap paths,
+including the TOML path itself, remain environment variables because the
+installer must find the configuration before it can load it.
 
 ## Seed a broader catalog
 
