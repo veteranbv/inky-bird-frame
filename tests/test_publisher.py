@@ -6,7 +6,7 @@ import subprocess
 import unittest
 from pathlib import Path
 from tempfile import TemporaryDirectory
-from unittest.mock import patch
+from unittest.mock import call, patch
 
 from PIL import Image, PngImagePlugin
 
@@ -206,6 +206,56 @@ class PublisherTests(unittest.TestCase):
                 self.assertRaisesRegex(CatalogPublishError, "repository owner 'example'"),
             ):
                 _validate_checkout(checkout, publication)
+
+    def test_checkout_reports_github_authentication_failure_after_api_error(self) -> None:
+        with TemporaryDirectory() as temporary:
+            checkout = Path(temporary) / "checkout"
+            subprocess.run(["git", "init", str(checkout)], check=True, capture_output=True)
+            _run_git(
+                checkout,
+                "remote",
+                "add",
+                "origin",
+                "https://github.com/example/inky-bird-frame.git",
+            )
+            publication = PublicCatalogConfig(
+                enabled=True,
+                checkout_dir=checkout,
+                repository="example/inky-bird-frame",
+                gh_path=Path("/usr/bin/false"),
+            )
+
+            with (
+                patch(
+                    "inky_bird_frame.publisher._gh",
+                    side_effect=[
+                        CatalogPublishError("gh api failed: invalid response"),
+                        subprocess.CompletedProcess(
+                            ["gh", "auth"],
+                            1,
+                            "",
+                            "The token in hosts.yml is invalid.",
+                        ),
+                    ],
+                ) as github,
+                self.assertRaisesRegex(CatalogPublishError, "token in hosts.yml is invalid"),
+            ):
+                _validate_checkout(checkout, publication)
+
+            self.assertEqual(
+                github.call_args_list,
+                [
+                    call(publication, "api", "user", "--jq", ".login"),
+                    call(
+                        publication,
+                        "auth",
+                        "status",
+                        "--hostname",
+                        "github.com",
+                        check=False,
+                    ),
+                ],
+            )
 
     def test_repository_seed_catalog_is_publishable(self) -> None:
         catalog = Path(__file__).parents[1] / "catalog"

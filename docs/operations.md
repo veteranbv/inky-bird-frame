@@ -257,10 +257,13 @@ only; they never enter the approved catalog or rotation.
 - Controller unavailable: the current e-paper image remains visible. Display
   state is not advanced.
 - Checksum mismatch: the display refuses the asset and preserves current state.
-- Catalog publication failure: inspect `catalog-publish.error.log`. Fix repository
-  authentication, remote divergence, or the reported validation problem, then
-  rerun `catalog-publish`. Local approval and display rotation continue while
-  public publication is unavailable.
+- Catalog publication failure: inspect `catalog-publish.log` for the structured
+  command error; `catalog-publish.error.log` is reserved for process-level
+  diagnostics. Run `gh auth status --hostname github.com` as the
+  controller service account, then fix authentication, remote divergence, or the
+  reported validation problem. Confirm recovery with `catalog-publish --dry-run`
+  before rerunning `catalog-publish`. Local approval and display rotation continue
+  while public publication is unavailable.
 
 ## Runtime state retention
 
