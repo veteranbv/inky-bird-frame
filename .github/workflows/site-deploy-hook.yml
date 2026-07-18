@@ -1,0 +1,28 @@
+name: site-deploy-hook
+
+# When a reviewed species lands in the catalog, ping the Cloudflare Pages
+# deploy hook for henrysowell.com so the public gallery rebuilds. The hook
+# URL is a secret because anyone holding it can trigger builds.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "catalog/**"
+
+permissions: {}
+
+jobs:
+  trigger-site-rebuild:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger henrysowell.com rebuild
+        env:
+          DEPLOY_HOOK_URL: ${{ secrets.HENRYSOWELL_COM_DEPLOY_HOOK }}
+        run: |
+          if [ -z "$DEPLOY_HOOK_URL" ]; then
+            echo "HENRYSOWELL_COM_DEPLOY_HOOK secret is not set; skipping." >&2
+            exit 0
+          fi
+          curl -fsS -X POST "$DEPLOY_HOOK_URL" > /dev/null
+          echo "Deploy hook fired."
