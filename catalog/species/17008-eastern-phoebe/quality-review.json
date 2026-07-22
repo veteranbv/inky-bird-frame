@@ -1,0 +1,28 @@
+{
+  "anatomy_accuracy": 4,
+  "composition_quality": 5,
+  "findings": [
+    "Species identity is correct: the plate depicts an Eastern Phoebe, Sayornis phoebe, family Tyrannidae.",
+    "All displayed measurements match Cornell's published ranges: length 14\u201317 cm (5.5\u20136.7 in), weight 16\u201321 g (0.6\u20130.7 oz), and wingspan 26\u201328 cm (10.2\u201311.0 in). Audubon publishes closely overlapping ranges.",
+    "The written field marks are accurate and appropriately nuanced: large often-peaked head, darker sooty head and pale throat, plain gray-brown upperparts, weak or absent adult wingbars, pale underparts that may show yellow, short dark bill, and medium-length roughly square tail.",
+    "The illustration agrees well with the reference photographs in overall shape, upright posture, dark head, pale throat and belly, plain wings, short dark bill, dark eye without an obvious eye-ring, and long dark tail.",
+    "The main bird has one head, one beak, two legs, one tail, and normal paired-wing anatomy; the far wing is naturally hidden by the side-profile pose. The separate lower head and feather are clearly supplemental studies, not duplicated anatomy on the main bird.",
+    "Minor anatomical limitation: the gripping toes are crowded and somewhat loop-like, reducing clarity of normal anisodactyl foot structure. The eye is also slightly oversized and unusually glossy for a scientific illustration, but neither issue materially affects identification.",
+    "Typography is legible, correctly spelled, and consistently arranged. The unlabeled tick scale is decorative rather than quantitatively interpretable, but it makes no false numerical claim.",
+    "No place name, ZIP code, coordinates, map, or local-observation detail appears."
+  ],
+  "location_free": true,
+  "passed": true,
+  "species_accuracy": 5,
+  "text_accuracy": 5,
+  "verification_sources": [
+    {
+      "title": "Eastern Phoebe Identification \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Eastern_Phoebe/id"
+    },
+    {
+      "title": "Eastern Phoebe \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/eastern-phoebe"
+    }
+  ]
+}

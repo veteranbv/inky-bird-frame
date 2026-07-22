@@ -1,0 +1,150 @@
+{
+  "approved_at": "2026-07-22T09:23:14+00:00",
+  "assets": {
+    "display": {
+      "filename": "display.png",
+      "sha256": "267a48b9bbf104def5dd2e6a24f89105d4214c37943464ace0cb78da8640d0ce"
+    },
+    "portrait": {
+      "filename": "portrait.png",
+      "sha256": "4f63a0118c0176bd87a320ddfba79c1e0ce9238b0595fc4f8bb526a2d5700423"
+    }
+  },
+  "common_name": "Eastern Phoebe",
+  "generation": {
+    "attempt": 1,
+    "generated_at": "2026-07-22T09:23:14+00:00",
+    "generator": "Codex subscription / built-in gpt-image-2",
+    "max_attempts": 3,
+    "prompt_version": "field-journal-v2"
+  },
+  "profile": {
+    "behavior": "Usually solitary; sits upright on low, exposed perches, repeatedly pumps its tail, and makes short sallies to catch flying insects, often returning to a nearby perch. Builds a mud-and-moss cup nest beneath a protective overhang.",
+    "common_name": "Eastern Phoebe",
+    "family": "Tyrannidae",
+    "field_marks": [
+      "Large, often slightly peaked head",
+      "Sooty gray-brown head contrasting with a paler throat",
+      "Plain gray-brown back and wings with no strong adult wingbars",
+      "Whitish to pale yellow-washed underparts",
+      "Short, thin, dark insect-catching bill",
+      "Medium-long, dark, nearly square-tipped tail"
+    ],
+    "habitat": "Open woodland, woodland edges, brushy clearings, stream margins, farms, and other semi-open settings with low perches; nests on sheltered rock ledges or beneath overhangs on structures.",
+    "measurements": {
+      "length": "14\u201317 cm (5.5\u20136.7 in)",
+      "weight": "16\u201321 g (0.6\u20130.7 oz)",
+      "wingspan": "26\u201328 cm (10.2\u201311.0 in)"
+    },
+    "palette": [
+      "sooty gray-brown",
+      "olive-gray",
+      "off-white",
+      "pale yellow",
+      "charcoal black"
+    ],
+    "scientific_name": "Sayornis phoebe",
+    "sources": [
+      {
+        "title": "Eastern Phoebe Identification \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Eastern_Phoebe/id"
+      },
+      {
+        "title": "Eastern Phoebe Life History \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Eastern_Phoebe/lifehistory"
+      },
+      {
+        "title": "Eastern Phoebe \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/eastern-phoebe"
+      }
+    ],
+    "taxon_id": 17008
+  },
+  "quality_review": {
+    "anatomy_accuracy": 4,
+    "composition_quality": 5,
+    "findings": [
+      "Species identity is correct: the plate depicts an Eastern Phoebe, Sayornis phoebe, family Tyrannidae.",
+      "All displayed measurements match Cornell's published ranges: length 14\u201317 cm (5.5\u20136.7 in), weight 16\u201321 g (0.6\u20130.7 oz), and wingspan 26\u201328 cm (10.2\u201311.0 in). Audubon publishes closely overlapping ranges.",
+      "The written field marks are accurate and appropriately nuanced: large often-peaked head, darker sooty head and pale throat, plain gray-brown upperparts, weak or absent adult wingbars, pale underparts that may show yellow, short dark bill, and medium-length roughly square tail.",
+      "The illustration agrees well with the reference photographs in overall shape, upright posture, dark head, pale throat and belly, plain wings, short dark bill, dark eye without an obvious eye-ring, and long dark tail.",
+      "The main bird has one head, one beak, two legs, one tail, and normal paired-wing anatomy; the far wing is naturally hidden by the side-profile pose. The separate lower head and feather are clearly supplemental studies, not duplicated anatomy on the main bird.",
+      "Minor anatomical limitation: the gripping toes are crowded and somewhat loop-like, reducing clarity of normal anisodactyl foot structure. The eye is also slightly oversized and unusually glossy for a scientific illustration, but neither issue materially affects identification.",
+      "Typography is legible, correctly spelled, and consistently arranged. The unlabeled tick scale is decorative rather than quantitatively interpretable, but it makes no false numerical claim.",
+      "No place name, ZIP code, coordinates, map, or local-observation detail appears."
+    ],
+    "location_free": true,
+    "passed": true,
+    "species_accuracy": 5,
+    "text_accuracy": 5,
+    "verification_sources": [
+      {
+        "title": "Eastern Phoebe Identification \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Eastern_Phoebe/id"
+      },
+      {
+        "title": "Eastern Phoebe \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/eastern-phoebe"
+      }
+    ]
+  },
+  "references": [
+    {
+      "attribution": "(c) phiditude, some rights reserved (CC BY)",
+      "filename": "01-98339126.jpg",
+      "height": 2048,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/98339126/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 61451269,
+      "observer": "phiditude",
+      "photo_id": 98339126,
+      "sha256": "c37cd332cafad630d982817165fd2040cb2f810a3e46e49e4f44fdefed6423d0",
+      "source_url": "https://www.inaturalist.org/observations/61451269",
+      "width": 1536
+    },
+    {
+      "attribution": "(c) Katie Kucera, some rights reserved (CC BY)",
+      "filename": "02-663858231.jpg",
+      "height": 1365,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/663858231/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 363671573,
+      "observer": "kkucera",
+      "photo_id": 663858231,
+      "sha256": "5a8b345c51eda09591e628d371b10d856ccfc0829b9e14ad876423c4c95a0ae7",
+      "source_url": "https://www.inaturalist.org/observations/363671573",
+      "width": 2048
+    },
+    {
+      "attribution": "no rights reserved",
+      "filename": "03-523243793.jpg",
+      "height": 1536,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/523243793/large.jpg",
+      "license_code": "cc0",
+      "observation_id": 290845958,
+      "observer": "k-simpkins",
+      "photo_id": 523243793,
+      "sha256": "66bb9fc4db084c55031c39e14535112f98ca50077d679c4bba2e06f9fcc4e60e",
+      "source_url": "https://www.inaturalist.org/observations/290845958",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) Sean Vanderluit, some rights reserved (CC BY)",
+      "filename": "04-176518584.jpg",
+      "height": 1699,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/176518584/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 105233020,
+      "observer": "seanvanderluit",
+      "photo_id": 176518584,
+      "sha256": "2c721f2f7541956583d3b876c85e5cc9c48c7537995acb170d43aaa0f0c47859",
+      "source_url": "https://www.inaturalist.org/observations/105233020",
+      "width": 2048
+    }
+  ],
+  "schema_version": 1,
+  "scientific_name": "Sayornis phoebe",
+  "slug": "eastern-phoebe",
+  "status": "approved",
+  "taxon_id": 17008
+}
