@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-13T07:34:12+00:00",
+  "generated_at": "2026-07-22T09:23:14+00:00",
   "schema_version": 1,
   "species": [
     {
@@ -243,6 +243,17 @@
       "scientific_name": "Tyrannus tyrannus",
       "slug": "eastern-kingbird",
       "taxon_id": 16782
+    },
+    {
+      "approved_at": "2026-07-22T09:23:14+00:00",
+      "common_name": "Eastern Phoebe",
+      "display_path": "species/17008-eastern-phoebe/display.png",
+      "display_sha256": "267a48b9bbf104def5dd2e6a24f89105d4214c37943464ace0cb78da8640d0ce",
+      "portrait_path": "species/17008-eastern-phoebe/portrait.png",
+      "portrait_sha256": "4f63a0118c0176bd87a320ddfba79c1e0ce9238b0595fc4f8bb526a2d5700423",
+      "scientific_name": "Sayornis phoebe",
+      "slug": "eastern-phoebe",
+      "taxon_id": 17008
     },
     {
       "approved_at": "2026-07-13T04:11:52+00:00",

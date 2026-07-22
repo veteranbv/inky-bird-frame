@@ -1,0 +1,42 @@
+{
+  "behavior": "Usually solitary; sits upright on low, exposed perches, repeatedly pumps its tail, and makes short sallies to catch flying insects, often returning to a nearby perch. Builds a mud-and-moss cup nest beneath a protective overhang.",
+  "common_name": "Eastern Phoebe",
+  "family": "Tyrannidae",
+  "field_marks": [
+    "Large, often slightly peaked head",
+    "Sooty gray-brown head contrasting with a paler throat",
+    "Plain gray-brown back and wings with no strong adult wingbars",
+    "Whitish to pale yellow-washed underparts",
+    "Short, thin, dark insect-catching bill",
+    "Medium-long, dark, nearly square-tipped tail"
+  ],
+  "habitat": "Open woodland, woodland edges, brushy clearings, stream margins, farms, and other semi-open settings with low perches; nests on sheltered rock ledges or beneath overhangs on structures.",
+  "measurements": {
+    "length": "14\u201317 cm (5.5\u20136.7 in)",
+    "weight": "16\u201321 g (0.6\u20130.7 oz)",
+    "wingspan": "26\u201328 cm (10.2\u201311.0 in)"
+  },
+  "palette": [
+    "sooty gray-brown",
+    "olive-gray",
+    "off-white",
+    "pale yellow",
+    "charcoal black"
+  ],
+  "scientific_name": "Sayornis phoebe",
+  "sources": [
+    {
+      "title": "Eastern Phoebe Identification \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Eastern_Phoebe/id"
+    },
+    {
+      "title": "Eastern Phoebe Life History \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Eastern_Phoebe/lifehistory"
+    },
+    {
+      "title": "Eastern Phoebe \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/eastern-phoebe"
+    }
+  ],
+  "taxon_id": 17008
+}
