@@ -1,0 +1,153 @@
+{
+  "approved_at": "2026-07-23T21:10:05+00:00",
+  "assets": {
+    "display": {
+      "filename": "display.png",
+      "sha256": "1f9eb150806ada80a185b710de8b012e14dbe12fbbaeb5794c5e445d904c3624"
+    },
+    "portrait": {
+      "filename": "portrait.png",
+      "sha256": "a1d4afc295b234c4574aa0dc5bbed2e5bd4140b527daf24e31ab15705e25412e"
+    }
+  },
+  "common_name": "Monk Parakeet",
+  "generation": {
+    "attempt": 1,
+    "generated_at": "2026-07-23T21:10:05+00:00",
+    "generator": "Codex subscription / built-in gpt-image-2",
+    "max_attempts": 3,
+    "prompt_version": "field-journal-v2"
+  },
+  "profile": {
+    "behavior": "Highly social and noisy; travels and feeds in flocks, eating seeds, nuts, fruits, and greens in trees or on the ground. Builds bulky communal stick nests with separate chambers and flies directly with rapid wingbeats.",
+    "common_name": "Monk Parakeet",
+    "family": "Psittacidae",
+    "field_marks": [
+      "Bright-green upperparts with a paler yellow-green belly",
+      "Gray forehead, face, throat, and breast with a scalloped texture",
+      "Stout, pale-pink hooked bill and dark-brown eye",
+      "Gray legs and feet",
+      "Pointed green wings with blue outer flight feathers",
+      "Large-headed profile with a long, tapered green tail"
+    ],
+    "habitat": "Dry, open savannas and grasslands with scattered trees, scrub forest, and palm groves; also adaptable to farmland, orchards, and urban or suburban areas with trees or elevated structures for nesting.",
+    "measurements": {
+      "length": "28\u201330 cm (11\u201311.8 in)",
+      "weight": "90\u2013140 g (3.2\u20134.9 oz)",
+      "wingspan": "48\u201352 cm (18.9\u201320.5 in)"
+    },
+    "palette": [
+      "bright leaf green",
+      "soft gray",
+      "yellow-green",
+      "flight-feather blue",
+      "pale shell pink"
+    ],
+    "scientific_name": "Myiopsitta monachus",
+    "sources": [
+      {
+        "title": "Monk Parakeet Identification \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Monk_Parakeet/id"
+      },
+      {
+        "title": "Monk Parakeet \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/monk-parakeet"
+      },
+      {
+        "title": "Myiopsitta monachus \u2014 Animal Diversity Web",
+        "url": "https://animaldiversity.org/accounts/Myiopsitta_monachus/"
+      }
+    ],
+    "taxon_id": 19349
+  },
+  "quality_review": {
+    "anatomy_accuracy": 4,
+    "composition_quality": 5,
+    "findings": [
+      "The primary bird is anatomically coherent: one head, one hooked beak, two legs, two wings with the far wing concealed by the profile view, and one long tail. The detached head and wing at the bottom are clearly separate detail studies, not duplicated anatomy.",
+      "The illustration matches Monk Parakeet identity in the reference photographs and live descriptions: green upperparts, extensive gray forehead/face/throat/breast, scalloped breast feathering, paler yellow-green underparts, pale pinkish hooked bill, brown eye, gray feet, blue outer flight feathers, large head, pointed wings, and long tapered tail.",
+      "The feet and curved claws are plausible for a parrot, although the profile and overlapping toes make the full zygodactyl arrangement less explicit than ideal; this is the only notable anatomical limitation.",
+      "The displayed length, wingspan, and weight agree exactly with Audubon's live account. Animal Diversity Web independently supports an approximately 11\u201313-inch length. Cornell's live identification page currently conflicts by listing length as 45\u201353 cm and weight as 90\u2013120 g; the candidate follows the mutually consistent Audubon and Animal Diversity Web length evidence and Audubon's complete measurement set.",
+      "The habitat, diet, flocking, noise, communal multi-chamber stick nests, direct flight, and rapid wingbeats are supported by the inspected live pages. No material text error was found.",
+      "All visible names are correct: Monk Parakeet, Myiopsitta monachus, and Psittacidae.",
+      "No place name, ZIP code, coordinates, map, or local-observation detail appears in the candidate."
+    ],
+    "location_free": true,
+    "passed": true,
+    "species_accuracy": 5,
+    "text_accuracy": 5,
+    "verification_sources": [
+      {
+        "title": "Monk Parakeet Identification \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Monk_Parakeet/id"
+      },
+      {
+        "title": "Monk Parakeet \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/monk-parakeet"
+      },
+      {
+        "title": "Myiopsitta monachus \u2014 Animal Diversity Web",
+        "url": "https://animaldiversity.org/accounts/Myiopsitta_monachus/"
+      }
+    ]
+  },
+  "references": [
+    {
+      "attribution": "(c) Jonathan Layman, some rights reserved (CC BY)",
+      "filename": "01-148362440.jpeg",
+      "height": 1536,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/148362440/large.jpeg",
+      "license_code": "cc-by",
+      "observation_id": 89818382,
+      "observer": "jlayman",
+      "photo_id": 148362440,
+      "sha256": "f1eaec2e2defd40372eb1710b5a6abfa4efe32ff58be0f8d4b3f94ddf437cace",
+      "source_url": "https://www.inaturalist.org/observations/89818382",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) nbasargin, some rights reserved (CC BY)",
+      "filename": "02-409239203.jpg",
+      "height": 2048,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/409239203/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 230475935,
+      "observer": "nbasargin",
+      "photo_id": 409239203,
+      "sha256": "be1fa853e3c9fff188433a4e3137ca35d48232ce56744c8dbd0aa60151f51aac",
+      "source_url": "https://www.inaturalist.org/observations/230475935",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) Tatyana Sova, some rights reserved (CC BY)",
+      "filename": "03-419619138.jpg",
+      "height": 1300,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/419619138/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 235910233,
+      "observer": "tatyanasova",
+      "photo_id": 419619138,
+      "sha256": "81e1611b304ade3d838ac9218ad573c6800b8249daac7ab624b7430e1d5db6c8",
+      "source_url": "https://www.inaturalist.org/observations/235910233",
+      "width": 1114
+    },
+    {
+      "attribution": "no rights reserved",
+      "filename": "04-11369728.jpg",
+      "height": 2048,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/11369728/large.jpg",
+      "license_code": "cc0",
+      "observation_id": 8517459,
+      "observer": "milotictanja",
+      "photo_id": 11369728,
+      "sha256": "224ce20f3258515dbc09f953fa2e3de8860da71516b4a2828166c01431de46dd",
+      "source_url": "https://www.inaturalist.org/observations/8517459",
+      "width": 1536
+    }
+  ],
+  "schema_version": 1,
+  "scientific_name": "Myiopsitta monachus",
+  "slug": "monk-parakeet",
+  "status": "approved",
+  "taxon_id": 19349
+}

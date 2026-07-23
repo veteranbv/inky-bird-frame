@@ -1,0 +1,42 @@
+{
+  "behavior": "Highly social and noisy; travels and feeds in flocks, eating seeds, nuts, fruits, and greens in trees or on the ground. Builds bulky communal stick nests with separate chambers and flies directly with rapid wingbeats.",
+  "common_name": "Monk Parakeet",
+  "family": "Psittacidae",
+  "field_marks": [
+    "Bright-green upperparts with a paler yellow-green belly",
+    "Gray forehead, face, throat, and breast with a scalloped texture",
+    "Stout, pale-pink hooked bill and dark-brown eye",
+    "Gray legs and feet",
+    "Pointed green wings with blue outer flight feathers",
+    "Large-headed profile with a long, tapered green tail"
+  ],
+  "habitat": "Dry, open savannas and grasslands with scattered trees, scrub forest, and palm groves; also adaptable to farmland, orchards, and urban or suburban areas with trees or elevated structures for nesting.",
+  "measurements": {
+    "length": "28\u201330 cm (11\u201311.8 in)",
+    "weight": "90\u2013140 g (3.2\u20134.9 oz)",
+    "wingspan": "48\u201352 cm (18.9\u201320.5 in)"
+  },
+  "palette": [
+    "bright leaf green",
+    "soft gray",
+    "yellow-green",
+    "flight-feather blue",
+    "pale shell pink"
+  ],
+  "scientific_name": "Myiopsitta monachus",
+  "sources": [
+    {
+      "title": "Monk Parakeet Identification \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Monk_Parakeet/id"
+    },
+    {
+      "title": "Monk Parakeet \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/monk-parakeet"
+    },
+    {
+      "title": "Myiopsitta monachus \u2014 Animal Diversity Web",
+      "url": "https://animaldiversity.org/accounts/Myiopsitta_monachus/"
+    }
+  ],
+  "taxon_id": 19349
+}
