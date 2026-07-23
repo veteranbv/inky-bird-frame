@@ -1,0 +1,42 @@
+{
+  "behavior": "Conspicuous, intelligent ground-foraging omnivore; walks and hops with the tail often raised, caches food, gives harsh alarm chatter, and commonly travels in pairs, family parties, or larger roosting groups. Flight is usually low, with rapid wingbeats alternating with glides.",
+  "common_name": "Eurasian Magpie",
+  "family": "Corvidae",
+  "field_marks": [
+    "Bold black-and-white plumage with a white belly and scapular patches",
+    "Dark wings and tail show iridescent blue-green or violet gloss",
+    "Very long, graduated tail makes up more than half the adult's length",
+    "Short, rounded wings reveal large white primary patches in flight",
+    "Stout, straight black bill and dark-brown eye",
+    "Black legs and feet"
+  ],
+  "habitat": "Open and semiopen landscapes with scattered trees, including farmland, woodland edges, parks, gardens, and other developed areas. Generally avoids dense forest, extensive wetlands, and treeless country.",
+  "measurements": {
+    "length": "46\u201350 cm",
+    "weight": "185\u2013268 g",
+    "wingspan": "52\u201362 cm"
+  },
+  "palette": [
+    "glossy black",
+    "clean white",
+    "iridescent blue",
+    "metallic green",
+    "violet"
+  ],
+  "scientific_name": "Pica pica",
+  "sources": [
+    {
+      "title": "Eurasian Magpie Identification \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Eurasian_Magpie/id"
+    },
+    {
+      "title": "Eurasian Magpie Life History \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Eurasian_Magpie/lifehistory"
+    },
+    {
+      "title": "Eurasian magpie \u2014 Wikipedia",
+      "url": "https://en.wikipedia.org/wiki/Eurasian_magpie"
+    }
+  ],
+  "taxon_id": 891696
+}

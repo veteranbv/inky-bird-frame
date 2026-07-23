@@ -1,0 +1,31 @@
+{
+  "anatomy_accuracy": 5,
+  "composition_quality": 5,
+  "findings": [
+    "The principal bird is anatomically coherent: one head, one straight black beak, two normally attached wings with the far wing naturally obscured in the lateral pose, two legs with plausible anisodactyl feet, and one long graduated tail. The separate head and spread-wing studies are clearly auxiliary insets, not duplicated anatomy on the principal bird.",
+    "Species identity is strongly consistent with Eurasian Magpie: bold black-and-white plumage, white belly and scapular area, dark-brown eye, black bill and legs, short rounded wing with white primary panels, blue-green wing gloss, and an exceptionally long iridescent tail all agree with the reference photographs and live identification sources.",
+    "The displayed length of 46\u201350 cm and weight of 185\u2013268 g exactly match the current All About Birds measurements. The 52\u201362 cm wingspan matches the nominate-adult range reported by Wikipedia. Wikipedia gives narrower, sex-specific length and weight figures, so published measurement conventions differ, but the plate's values are directly supported and are not materially erroneous.",
+    "The habitat, diet, food caching, ground-foraging posture, alarm behavior, social grouping, and low flight alternating rapid wingbeats with glides agree with the inspected All About Birds life-history page.",
+    "All visible field-mark statements are supported. The palette is appropriately descriptive rather than implying five discrete pigment colors.",
+    "Minor presentation issue: the right-hand graduated scale has no explicit unit label and is not clearly identified as decorative or diagrammatic, although it does not contradict the written measurements.",
+    "No place name, ZIP code, coordinates, map, observation locality, or other local-observation detail appears on the candidate plate."
+  ],
+  "location_free": true,
+  "passed": true,
+  "species_accuracy": 5,
+  "text_accuracy": 5,
+  "verification_sources": [
+    {
+      "title": "Eurasian Magpie Identification \u2014 All About Birds, Cornell Lab of Ornithology",
+      "url": "https://www.allaboutbirds.org/guide/Eurasian_Magpie/id"
+    },
+    {
+      "title": "Eurasian Magpie Life History \u2014 All About Birds, Cornell Lab of Ornithology",
+      "url": "https://www.allaboutbirds.org/guide/Eurasian_Magpie/lifehistory"
+    },
+    {
+      "title": "Eurasian magpie \u2014 Wikipedia",
+      "url": "https://en.wikipedia.org/wiki/Eurasian_magpie"
+    }
+  ]
+}
