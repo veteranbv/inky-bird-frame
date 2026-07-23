@@ -83,7 +83,7 @@ chmod 600 config.toml controller.env .env
 
 Edit `config.toml`. At minimum:
 
-1. replace the example ZIP code;
+1. replace the example discovery location;
 2. choose one or more discovery sources;
 3. set `display_node.controller_url` to the address the display Pi will use;
 4. leave `public_catalog.enabled = false` unless you own the catalog

@@ -51,7 +51,7 @@ from .errors import (
     QualityReviewError,
     SpeciesStateError,
 )
-from .geo import ZipLocation, lookup_us_zip
+from .geo import DiscoveryLocation, resolve_discovery_location
 from .http import write_json_atomic
 from .images import prepare_generated_plate
 from .models import ReferencePhoto, SpeciesProfileData
@@ -92,7 +92,7 @@ class ProviderStatus:
 
 @dataclass(frozen=True)
 class DiscoveryResult:
-    location: ZipLocation | None
+    location: DiscoveryLocation | None
     species: list[BirdSpecies]
     providers: list[ProviderStatus]
     unresolved: list[EbirdSpecies | BirdWeatherSpecies]
@@ -152,7 +152,7 @@ def discover_species(
     providers: list[ProviderStatus] = []
     provider_species: list[list[BirdSpecies]] = []
     unresolved: list[EbirdSpecies | BirdWeatherSpecies] = []
-    location: ZipLocation | None = None
+    location: DiscoveryLocation | None = None
 
     location_provider_names: list[str] = []
     if DiscoveryProvider.INATURALIST in selected_sources:
@@ -161,10 +161,10 @@ def discover_species(
         location_provider_names.append("ebird")
     if location_provider_names:
         try:
-            location = lookup_us_zip(config.discovery.zip_code)
+            location = resolve_discovery_location(config.discovery)
         except DataSourceError as exc:
             providers.extend(
-                ProviderStatus(name, "error", 0, error=f"ZIP lookup failed: {exc}")
+                ProviderStatus(name, "error", 0, error=f"Location lookup failed: {exc}")
                 for name in location_provider_names
             )
 

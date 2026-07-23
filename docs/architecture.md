@@ -151,7 +151,7 @@ eligible. Approved art is never replaced implicitly.
 
 ## Privacy and licensing
 
-The private ZIP code and observation window influence the generation queue and
+The private discovery location and observation window influence the generation queue and
 active rotation. They are not passed to image generation and are not stored in
 catalog manifests. Observation snapshots and counts stay in ignored
 controller state.

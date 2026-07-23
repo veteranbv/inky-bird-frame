@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import math
 import tomllib
 from collections.abc import Iterable
 from dataclasses import dataclass, field
@@ -81,11 +82,17 @@ def parse_rotation_mode(value: str) -> RotationMode:
 
 @dataclass(frozen=True)
 class DiscoveryConfig:
-    zip_code: str
+    zip_code: str | None
+    postal_code: str | None
+    country_code: str | None
+    latitude: float | None
+    longitude: float | None
     radius_km: int
     species_limit: int
     observation_window: ObservationWindow
     sources: tuple[DiscoveryProvider, ...] = (DiscoveryProvider.INATURALIST,)
+    geoapify_api_key: str | None = field(default=None, repr=False)
+    geoapify_api_key_env: str | None = field(default=None, repr=False)
     ebird_api_key: str | None = field(default=None, repr=False)
     ebird_api_key_env: str | None = field(default=None, repr=False)
     birdweather_token: str | None = field(default=None, repr=False)
@@ -245,6 +252,16 @@ def _optional_boolean(section: dict[str, object], name: str, *, default: bool) -
     return value
 
 
+def _number(section: dict[str, object], name: str, *, minimum: float, maximum: float) -> float:
+    value = section.get(name)
+    if isinstance(value, bool) or not isinstance(value, (int, float)):
+        raise ConfigurationError(f"{name} must be a number")
+    parsed = float(value)
+    if not math.isfinite(parsed) or not minimum <= parsed <= maximum:
+        raise ConfigurationError(f"{name} must be between {minimum:g} and {maximum:g}")
+    return parsed
+
+
 def _string_tuple(
     section: dict[str, object], name: str, *, default: Iterable[str] = ()
 ) -> tuple[str, ...]:
@@ -387,10 +404,6 @@ def load_config(path: Path, *, load_secrets: bool = True) -> AppConfig:
     notifications = _optional_section(raw, "notifications")
     base_dir = path.parent.resolve()
 
-    zip_code = _string(discovery, "zip_code")
-    if not zip_code.isdigit() or len(zip_code) != 5:
-        raise ConfigurationError("zip_code must be a five digit US ZIP code")
-
     window_value = _string(discovery, "window")
     try:
         window = parse_observation_window(window_value)
@@ -414,6 +427,55 @@ def load_config(path: Path, *, load_secrets: bool = True) -> AppConfig:
         except KeyError as exc:
             allowed = ", ".join(LEGACY_DISCOVERY_SOURCES)
             raise ConfigurationError(f"discovery source must be one of: {allowed}") from exc
+
+    has_zip_code = "zip_code" in discovery
+    has_postal_code = "postal_code" in discovery
+    has_latitude = "latitude" in discovery
+    has_longitude = "longitude" in discovery
+    if has_latitude != has_longitude:
+        raise ConfigurationError("discovery.latitude and discovery.longitude must be set together")
+    location_modes = sum((has_zip_code, has_postal_code, has_latitude))
+    if location_modes > 1:
+        raise ConfigurationError(
+            "Choose one discovery location: zip_code, postal_code, or latitude and longitude"
+        )
+    location_required = bool(
+        {DiscoveryProvider.INATURALIST, DiscoveryProvider.EBIRD}.intersection(discovery_sources)
+    )
+    if location_required and location_modes == 0:
+        raise ConfigurationError(
+            "iNaturalist and eBird discovery require zip_code, postal_code, "
+            "or latitude and longitude"
+        )
+
+    zip_code = _string(discovery, "zip_code") if has_zip_code else None
+    if zip_code is not None and (not zip_code.isdigit() or len(zip_code) != 5):
+        raise ConfigurationError("zip_code must be a five digit US ZIP code")
+    postal_code = _string(discovery, "postal_code") if has_postal_code else None
+    if postal_code is not None:
+        country_code = _string(discovery, "country_code").casefold()
+        if len(country_code) != 2 or not country_code.isascii() or not country_code.isalpha():
+            raise ConfigurationError("country_code must be a two-letter ISO 3166-1 code")
+    else:
+        country_code = None
+        if "country_code" in discovery:
+            raise ConfigurationError("country_code requires postal_code")
+    latitude = _number(discovery, "latitude", minimum=-90, maximum=90) if has_latitude else None
+    longitude = (
+        _number(discovery, "longitude", minimum=-180, maximum=180) if has_longitude else None
+    )
+    geoapify_api_key, geoapify_api_key_env = _private_value(
+        discovery,
+        "geoapify_api_key",
+        required=postal_code is not None,
+        provider_name="Geoapify postal-code",
+        load_secret=load_secrets,
+    )
+    if postal_code is None and (
+        "geoapify_api_key" in discovery or "geoapify_api_key_env" in discovery
+    ):
+        raise ConfigurationError("geoapify_api_key requires postal_code")
+
     radius_km = _integer(discovery, "radius_km")
     species_limit = _integer(discovery, "species_limit")
     if radius_km <= 0:
@@ -510,9 +572,15 @@ def load_config(path: Path, *, load_secrets: bool = True) -> AppConfig:
         discovery=DiscoveryConfig(
             sources=discovery_sources,
             zip_code=zip_code,
+            postal_code=postal_code,
+            country_code=country_code,
+            latitude=latitude,
+            longitude=longitude,
             radius_km=radius_km,
             species_limit=species_limit,
             observation_window=window,
+            geoapify_api_key=geoapify_api_key,
+            geoapify_api_key_env=geoapify_api_key_env,
             ebird_api_key=ebird_api_key,
             ebird_api_key_env=ebird_api_key_env,
             birdweather_token=birdweather_token,

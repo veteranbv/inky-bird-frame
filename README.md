@@ -50,7 +50,7 @@ an existing Mac, Linux computer, Raspberry Pi 4 or 5, or Docker host. A Pi Zero
 2 W is a good display node, but it is not recommended for Codex generation.
 
 Discovery location is private controller configuration. Approved plates and
-manifests contain no ZIP code, coordinates, observation dates, local place
+manifests contain no postal code, coordinates, observation dates, local place
 names, network details, or machine paths. A plate generated for one installation
 can therefore be reused by every installation.
 

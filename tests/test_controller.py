@@ -40,13 +40,13 @@ from inky_bird_frame.errors import (
     QualityReviewError,
     SpeciesStateError,
 )
-from inky_bird_frame.geo import ZipLocation
+from inky_bird_frame.geo import DiscoveryLocation
 from inky_bird_frame.models import QualityReview, SpeciesProfileData
 from inky_bird_frame.prompts import PROMPT_VERSION
 from inky_bird_frame.retry import RetryStore
 
 
-def discovery_result(location: ZipLocation, species: list[BirdSpecies]) -> DiscoveryResult:
+def discovery_result(location: DiscoveryLocation, species: list[BirdSpecies]) -> DiscoveryResult:
     return DiscoveryResult(
         location=location,
         species=species,
@@ -172,13 +172,15 @@ class ControllerTests(unittest.TestCase):
     def test_seed_queues_distinct_unapproved_species_without_changing_discovery(self) -> None:
         approved = BirdSpecies(1, "Approved Bird", "Avis approved", 4, "iNaturalist")
         queued = BirdSpecies(2, "Queued Bird", "Avis queued", 3, "iNaturalist")
-        location = ZipLocation("12345", "Exampleville", "XY", 1.0, 2.0)
+        location = DiscoveryLocation("12345", "Exampleville", "XY", 1.0, 2.0)
         with TemporaryDirectory() as temporary:
             config_path = Path(temporary) / "config.toml"
             config_path.write_text(CONFIG)
             config = load_config(config_path)
             with (
-                patch("inky_bird_frame.controller.lookup_us_zip", return_value=location),
+                patch(
+                    "inky_bird_frame.controller.resolve_discovery_location", return_value=location
+                ),
                 patch(
                     "inky_bird_frame.controller.fetch_inaturalist_birds",
                     return_value=[approved, queued],
@@ -203,7 +205,7 @@ class ControllerTests(unittest.TestCase):
 
     def test_seed_dry_run_does_not_create_controller_state(self) -> None:
         species = BirdSpecies(2, "New Bird", "Avis nova", 1, "eBird")
-        location = ZipLocation("12345", "Exampleville", "XY", 1.0, 2.0)
+        location = DiscoveryLocation("12345", "Exampleville", "XY", 1.0, 2.0)
         with TemporaryDirectory() as temporary:
             config_path = Path(temporary) / "config.toml"
             config_path.write_text(CONFIG)
@@ -505,7 +507,7 @@ class ControllerTests(unittest.TestCase):
         unapproved = BirdSpecies(
             7513, "Carolina Wren", "Thryothorus ludovicianus", 4, "iNaturalist"
         )
-        location = ZipLocation("12345", "Exampleville", "XY", 1.0, 2.0)
+        location = DiscoveryLocation("12345", "Exampleville", "XY", 1.0, 2.0)
         approved = CatalogEntry(
             12942,
             "Eastern Bluebird",
@@ -547,7 +549,7 @@ class ControllerTests(unittest.TestCase):
     def test_refresh_preserves_approved_catalog_order(self) -> None:
         first = BirdSpecies(1, "Alpha Bird", "Alpha avis", 2, "iNaturalist")
         second = BirdSpecies(2, "Beta Bird", "Beta avis", 9, "iNaturalist")
-        location = ZipLocation("12345", "Exampleville", "XY", 1.0, 2.0)
+        location = DiscoveryLocation("12345", "Exampleville", "XY", 1.0, 2.0)
         approved = [
             CatalogEntry(
                 species.taxon_id,
@@ -584,7 +586,7 @@ class ControllerTests(unittest.TestCase):
 
     def test_transient_source_failure_remains_eligible(self) -> None:
         species = BirdSpecies(9083, "Northern Cardinal", "Cardinalis cardinalis", 2, "test")
-        location = ZipLocation("12345", "Exampleville", "XY", 1.0, 2.0)
+        location = DiscoveryLocation("12345", "Exampleville", "XY", 1.0, 2.0)
         with TemporaryDirectory() as temporary:
             config_path = Path(temporary) / "config.toml"
             config_path.write_text(CONFIG)
@@ -608,7 +610,7 @@ class ControllerTests(unittest.TestCase):
 
     def test_cycle_publishes_a_previously_reviewed_pending_candidate(self) -> None:
         species = BirdSpecies(9083, "Northern Cardinal", "Cardinalis cardinalis", 2, "test")
-        location = ZipLocation("12345", "Exampleville", "XY", 1.0, 2.0)
+        location = DiscoveryLocation("12345", "Exampleville", "XY", 1.0, 2.0)
         review = QualityReview(
             True,
             5,
@@ -661,7 +663,7 @@ class ControllerTests(unittest.TestCase):
 
     def test_cycle_does_not_auto_publish_a_legacy_pending_candidate(self) -> None:
         species = BirdSpecies(9083, "Northern Cardinal", "Cardinalis cardinalis", 2, "test")
-        location = ZipLocation("12345", "Exampleville", "XY", 1.0, 2.0)
+        location = DiscoveryLocation("12345", "Exampleville", "XY", 1.0, 2.0)
         review = QualityReview(True, 5, 4, 5, 5, True, ())
         with TemporaryDirectory() as temporary:
             config_path = Path(temporary) / "config.toml"
@@ -694,7 +696,7 @@ class ControllerTests(unittest.TestCase):
 
     def test_insufficient_references_are_deferred_without_blocking_queue(self) -> None:
         species = BirdSpecies(9083, "Northern Cardinal", "Cardinalis cardinalis", 2, "test")
-        location = ZipLocation("12345", "Exampleville", "XY", 1.0, 2.0)
+        location = DiscoveryLocation("12345", "Exampleville", "XY", 1.0, 2.0)
         with TemporaryDirectory() as temporary:
             config_path = Path(temporary) / "config.toml"
             config_path.write_text(CONFIG)
@@ -802,7 +804,7 @@ class ControllerTests(unittest.TestCase):
 
     def test_runtime_generation_failure_remains_eligible(self) -> None:
         species = BirdSpecies(9083, "Northern Cardinal", "Cardinalis cardinalis", 2, "test")
-        location = ZipLocation("12345", "Exampleville", "XY", 1.0, 2.0)
+        location = DiscoveryLocation("12345", "Exampleville", "XY", 1.0, 2.0)
         with TemporaryDirectory() as temporary:
             config_path = Path(temporary) / "config.toml"
             config_path.write_text(CONFIG)
@@ -831,7 +833,7 @@ class ControllerTests(unittest.TestCase):
 
     def test_catalog_wide_error_still_aborts_the_cycle(self) -> None:
         species = BirdSpecies(9083, "Northern Cardinal", "Cardinalis cardinalis", 2, "test")
-        location = ZipLocation("12345", "Exampleville", "XY", 1.0, 2.0)
+        location = DiscoveryLocation("12345", "Exampleville", "XY", 1.0, 2.0)
         with TemporaryDirectory() as temporary:
             config_path = Path(temporary) / "config.toml"
             config_path.write_text(CONFIG)
@@ -853,7 +855,7 @@ class ControllerTests(unittest.TestCase):
 
     def test_catalog_failure_is_terminal_for_species_without_aborting_cycle(self) -> None:
         species = BirdSpecies(9083, "Northern Cardinal", "Cardinalis cardinalis", 2, "test")
-        location = ZipLocation("12345", "Exampleville", "XY", 1.0, 2.0)
+        location = DiscoveryLocation("12345", "Exampleville", "XY", 1.0, 2.0)
         with TemporaryDirectory() as temporary:
             config_path = Path(temporary) / "config.toml"
             config_path.write_text(CONFIG)
@@ -912,7 +914,7 @@ class ControllerTests(unittest.TestCase):
     def _assert_corrupt_profile_cache_is_quarantined(self, corrupt_payload: bytes) -> None:
         corrupt = BirdSpecies(9083, "Northern Cardinal", "Cardinalis cardinalis", 2, "test")
         healthy = BirdSpecies(7513, "Carolina Wren", "Thryothorus ludovicianus", 3, "test")
-        location = ZipLocation("12345", "Exampleville", "XY", 1.0, 2.0)
+        location = DiscoveryLocation("12345", "Exampleville", "XY", 1.0, 2.0)
         review = QualityReview(
             True,
             5,
@@ -994,7 +996,7 @@ class ControllerTests(unittest.TestCase):
 
     def test_cycle_recovers_legacy_orphan_approved_pending_candidate(self) -> None:
         species = BirdSpecies(9083, "Northern Cardinal", "Cardinalis cardinalis", 2, "test")
-        location = ZipLocation("12345", "Exampleville", "XY", 1.0, 2.0)
+        location = DiscoveryLocation("12345", "Exampleville", "XY", 1.0, 2.0)
         review = QualityReview(
             True,
             5,
@@ -1049,7 +1051,7 @@ class ControllerTests(unittest.TestCase):
 
     def test_exhausted_quality_review_becomes_terminal(self) -> None:
         species = BirdSpecies(9083, "Northern Cardinal", "Cardinalis cardinalis", 2, "test")
-        location = ZipLocation("12345", "Exampleville", "XY", 1.0, 2.0)
+        location = DiscoveryLocation("12345", "Exampleville", "XY", 1.0, 2.0)
         with TemporaryDirectory() as temporary:
             config_path = Path(temporary) / "config.toml"
             config_path.write_text(CONFIG)
@@ -1185,7 +1187,7 @@ class DiscoveryProviderTests(unittest.TestCase):
             )
             config = load_config(config_path)
             with (
-                patch("inky_bird_frame.controller.lookup_us_zip") as lookup,
+                patch("inky_bird_frame.controller.resolve_discovery_location") as lookup,
                 patch(
                     "inky_bird_frame.controller.fetch_birdweather_species",
                     return_value=[detection],
@@ -1225,7 +1227,7 @@ class DiscoveryProviderTests(unittest.TestCase):
             config = load_config(config_path)
             with (
                 patch(
-                    "inky_bird_frame.controller.lookup_us_zip",
+                    "inky_bird_frame.controller.resolve_discovery_location",
                     side_effect=DataSourceError("ZIP service unavailable"),
                 ),
                 patch("inky_bird_frame.controller.fetch_inaturalist_birds") as inaturalist,
@@ -1267,8 +1269,8 @@ class DiscoveryProviderTests(unittest.TestCase):
             config = load_config(config_path)
             with (
                 patch(
-                    "inky_bird_frame.controller.lookup_us_zip",
-                    return_value=ZipLocation("12345", "Exampleville", "XY", 1.0, 2.0),
+                    "inky_bird_frame.controller.resolve_discovery_location",
+                    return_value=DiscoveryLocation("12345", "Exampleville", "XY", 1.0, 2.0),
                 ),
                 patch(
                     "inky_bird_frame.controller.fetch_inaturalist_birds",
@@ -1308,8 +1310,8 @@ class DiscoveryProviderTests(unittest.TestCase):
             with (
                 patch.dict("os.environ", {"TEST_EBIRD_KEY": "secret"}),
                 patch(
-                    "inky_bird_frame.controller.lookup_us_zip",
-                    return_value=ZipLocation("12345", "Exampleville", "XY", 1.0, 2.0),
+                    "inky_bird_frame.controller.resolve_discovery_location",
+                    return_value=DiscoveryLocation("12345", "Exampleville", "XY", 1.0, 2.0),
                 ),
                 patch(
                     "inky_bird_frame.controller.fetch_ebird_observations",
@@ -1336,7 +1338,7 @@ class DiscoveryProviderTests(unittest.TestCase):
             )
             config = load_config(config_path)
             with (
-                patch("inky_bird_frame.controller.lookup_us_zip") as lookup,
+                patch("inky_bird_frame.controller.resolve_discovery_location") as lookup,
                 self.assertRaisesRegex(ValueError, "up to 30 days"),
             ):
                 discover_species(config, window=ObservationWindow.LAST_YEAR)
@@ -1358,8 +1360,8 @@ class DiscoveryProviderTests(unittest.TestCase):
             config = load_config(config_path)
             with (
                 patch(
-                    "inky_bird_frame.controller.lookup_us_zip",
-                    return_value=ZipLocation("12345", "Exampleville", "XY", 1.0, 2.0),
+                    "inky_bird_frame.controller.resolve_discovery_location",
+                    return_value=DiscoveryLocation("12345", "Exampleville", "XY", 1.0, 2.0),
                 ),
                 patch(
                     "inky_bird_frame.controller.fetch_inaturalist_birds",
@@ -1394,8 +1396,8 @@ class DiscoveryProviderTests(unittest.TestCase):
             config = load_config(config_path)
             with (
                 patch(
-                    "inky_bird_frame.controller.lookup_us_zip",
-                    return_value=ZipLocation("12345", "Exampleville", "XY", 1.0, 2.0),
+                    "inky_bird_frame.controller.resolve_discovery_location",
+                    return_value=DiscoveryLocation("12345", "Exampleville", "XY", 1.0, 2.0),
                 ),
                 patch(
                     "inky_bird_frame.controller.fetch_inaturalist_birds",

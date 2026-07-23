@@ -110,9 +110,15 @@ def discover_command(args: argparse.Namespace) -> int:
         {
             "location": (
                 {
-                    "zip_code": location.zip_code,
+                    "zip_code": (
+                        location.postal_code if location.geocoder == "zippopotam" else None
+                    ),
+                    "postal_code": location.postal_code,
+                    "country_code": location.country_code,
                     "place_name": location.place_name,
                     "state": location.state,
+                    "geocoder": location.geocoder,
+                    "geocoder_attribution": location.geocoder_attribution,
                 }
                 if location is not None
                 else None
@@ -505,6 +511,14 @@ def catalog_validate_command(args: argparse.Namespace) -> int:
 def config_validate_command(args: argparse.Namespace) -> int:
     config = _config(args)
     destinations = validate_notification_destinations(config)
+    if config.discovery.latitude is not None:
+        location_mode = "coordinates"
+    elif config.discovery.postal_code is not None:
+        location_mode = "geoapify"
+    elif config.discovery.zip_code is not None:
+        location_mode = "zippopotam"
+    else:
+        location_mode = None
     print_result(
         {
             "config": str(args.config),
@@ -512,6 +526,8 @@ def config_validate_command(args: argparse.Namespace) -> int:
             "discovery": {
                 "source": discovery_source_label(config.discovery.sources),
                 "sources": [provider.value for provider in config.discovery.sources],
+                "location_mode": location_mode,
+                "geoapify_configured": config.discovery.geoapify_api_key is not None,
                 "ebird_configured": config.discovery.ebird_api_key is not None,
                 "birdweather_configured": config.discovery.birdweather_token is not None,
                 "window": config.discovery.observation_window.value,

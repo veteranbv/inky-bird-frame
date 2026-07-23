@@ -18,6 +18,44 @@ automate Merlin.
 Select any combination with a TOML array. Each configured provider runs
 independently.
 
+## Configure a discovery location
+
+iNaturalist and eBird need a point and radius. Choose exactly one location
+form; BirdWeather-only setups need none.
+
+Direct coordinates are the provider-independent option. They work worldwide,
+do not disclose a postal code to a geocoder, and cannot become ambiguous:
+
+```toml
+[discovery]
+latitude = 51.501009
+longitude = -0.141588
+```
+
+For postal-code convenience, use [Geoapify's Postcode API](https://apidocs.geoapify.com/docs/postcode/).
+It supports ISO 3166-1 alpha-2 country codes and international postal formats.
+Create a Geoapify key and keep it in the private configuration:
+
+```toml
+[discovery]
+postal_code = "SW1A 1AA"
+country_code = "gb"
+geoapify_api_key = "your-private-api-key"
+```
+
+For commands you run yourself, `geoapify_api_key_env = "GEOAPIFY_API_KEY"` is
+also supported. Managed LaunchAgent and systemd services do not inherit your
+installation shell, so use the direct key in their mode-`0600` configuration.
+Geoapify receives the configured country and postal code. The application
+requires an exact country/postal-code match and rejects multiple coordinate
+results rather than guessing. Geoapify permits stored results and requires
+attribution; discovery output includes both Geoapify and source attribution.
+
+Existing `zip_code = "12345"` configurations remain supported unchanged through
+Zippopotam's US endpoint and need no key. This compatibility path is US-only;
+new worldwide configurations should use coordinates or Geoapify. No discovery
+location is written to a public catalog or rendered on a plate.
+
 Request a personal key from [eBird](https://ebird.org/api/keygen). Store it in
 the private configuration:
 
@@ -49,7 +87,6 @@ station authentication token into the private controller configuration:
 ```toml
 [discovery]
 sources = ["birdweather"]
-zip_code = "12345"
 radius_km = 8
 species_limit = 50
 window = "last-30-days"
@@ -65,9 +102,8 @@ do not inherit the installation shell environment.
 The token authenticates one station. The application uses BirdWeather's
 documented station-species endpoint, requests only the `avian` classification,
 and uses the selected time window. It does not query nearby BirdWeather
-stations or infer a station from the configured ZIP code. The ZIP remains a
-required controller setting for compatibility and for location-based providers,
-but it does not select or filter BirdWeather station detections.
+stations or infer a station from a discovery location. A BirdWeather-only
+configuration does not require coordinates or a postal code.
 
 ### Supported boundary
 

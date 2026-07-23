@@ -281,6 +281,136 @@ class ConfigTests(unittest.TestCase):
             with self.assertRaises(ConfigurationError):
                 load_config(path)
 
+    def test_loads_geoapify_postal_location(self) -> None:
+        configured = CONFIG.replace(
+            'zip_code = "12345"',
+            'postal_code = "SW1A 1AA"\n'
+            'country_code = "GB"\n'
+            'geoapify_api_key_env = "TEST_GEOAPIFY_KEY"',
+        )
+        with TemporaryDirectory() as temporary:
+            path = Path(temporary) / "config.toml"
+            path.write_text(configured)
+            with patch.dict("os.environ", {"TEST_GEOAPIFY_KEY": "secret"}):
+                config = load_config(path)
+
+        self.assertIsNone(config.discovery.zip_code)
+        self.assertEqual(config.discovery.postal_code, "SW1A 1AA")
+        self.assertEqual(config.discovery.country_code, "gb")
+        self.assertEqual(config.discovery.geoapify_api_key, "secret")
+        self.assertEqual(config.discovery.geoapify_api_key_env, "TEST_GEOAPIFY_KEY")
+        self.assertNotIn("secret", repr(config.discovery))
+
+    def test_geoapify_postal_location_requires_key(self) -> None:
+        configured = CONFIG.replace(
+            'zip_code = "12345"',
+            'postal_code = "SW1A 1AA"\ncountry_code = "gb"',
+        )
+        with TemporaryDirectory() as temporary:
+            path = Path(temporary) / "config.toml"
+            path.write_text(configured)
+
+            with self.assertRaisesRegex(ConfigurationError, "requires geoapify_api_key"):
+                load_config(path)
+
+    def test_nonsecret_load_preserves_geoapify_environment_declaration(self) -> None:
+        configured = CONFIG.replace(
+            'zip_code = "12345"',
+            'postal_code = "SW1A 1AA"\n'
+            'country_code = "gb"\n'
+            'geoapify_api_key_env = "TEST_GEOAPIFY_KEY"',
+        )
+        with TemporaryDirectory() as temporary:
+            path = Path(temporary) / "config.toml"
+            path.write_text(configured)
+            with patch.dict("os.environ", {}, clear=True):
+                config = load_config(path, load_secrets=False)
+
+        self.assertIsNone(config.discovery.geoapify_api_key)
+        self.assertEqual(config.discovery.geoapify_api_key_env, "TEST_GEOAPIFY_KEY")
+
+    def test_rejects_invalid_country_code(self) -> None:
+        configured = CONFIG.replace(
+            'zip_code = "12345"',
+            'postal_code = "SW1A 1AA"\ncountry_code = "GBR"\ngeoapify_api_key = "secret"',
+        )
+        with TemporaryDirectory() as temporary:
+            path = Path(temporary) / "config.toml"
+            path.write_text(configured)
+
+            with self.assertRaisesRegex(ConfigurationError, "two-letter ISO"):
+                load_config(path)
+
+    def test_loads_coordinate_location(self) -> None:
+        configured = CONFIG.replace(
+            'zip_code = "12345"',
+            "latitude = 51.501009\nlongitude = -0.141588",
+        )
+        with TemporaryDirectory() as temporary:
+            path = Path(temporary) / "config.toml"
+            path.write_text(configured)
+            config = load_config(path)
+
+        self.assertEqual(config.discovery.latitude, 51.501009)
+        self.assertEqual(config.discovery.longitude, -0.141588)
+        self.assertIsNone(config.discovery.postal_code)
+
+    def test_rejects_partial_coordinate_location(self) -> None:
+        configured = CONFIG.replace('zip_code = "12345"', "latitude = 51.501009")
+        with TemporaryDirectory() as temporary:
+            path = Path(temporary) / "config.toml"
+            path.write_text(configured)
+
+            with self.assertRaisesRegex(ConfigurationError, "must be set together"):
+                load_config(path)
+
+    def test_rejects_out_of_range_coordinates(self) -> None:
+        configured = CONFIG.replace(
+            'zip_code = "12345"',
+            "latitude = 91.0\nlongitude = -0.141588",
+        )
+        with TemporaryDirectory() as temporary:
+            path = Path(temporary) / "config.toml"
+            path.write_text(configured)
+
+            with self.assertRaisesRegex(ConfigurationError, "latitude must be between -90 and 90"):
+                load_config(path)
+
+    def test_rejects_multiple_location_modes(self) -> None:
+        configured = CONFIG.replace(
+            'zip_code = "12345"',
+            'zip_code = "12345"\nlatitude = 1.0\nlongitude = 2.0',
+        )
+        with TemporaryDirectory() as temporary:
+            path = Path(temporary) / "config.toml"
+            path.write_text(configured)
+
+            with self.assertRaisesRegex(ConfigurationError, "Choose one discovery location"):
+                load_config(path)
+
+    def test_birdweather_only_does_not_require_location(self) -> None:
+        configured = CONFIG.replace(
+            'zip_code = "12345"\n',
+            'source = "birdweather"\nbirdweather_token = "station-secret"\n',
+        )
+        with TemporaryDirectory() as temporary:
+            path = Path(temporary) / "config.toml"
+            path.write_text(configured)
+            config = load_config(path)
+
+        self.assertIsNone(config.discovery.zip_code)
+        self.assertIsNone(config.discovery.postal_code)
+        self.assertIsNone(config.discovery.latitude)
+
+    def test_location_based_discovery_requires_location(self) -> None:
+        configured = CONFIG.replace('zip_code = "12345"\n', "")
+        with TemporaryDirectory() as temporary:
+            path = Path(temporary) / "config.toml"
+            path.write_text(configured)
+
+            with self.assertRaisesRegex(ConfigurationError, "require zip_code"):
+                load_config(path)
+
     def test_resolves_bare_codex_name_from_path(self) -> None:
         with TemporaryDirectory() as temporary:
             path = Path(temporary) / "config.toml"

@@ -460,16 +460,23 @@ class PublisherTests(unittest.TestCase):
                 validate_catalog_additions(base, candidate)
 
     def test_rejects_private_manifest_fields(self) -> None:
-        with TemporaryDirectory() as temporary:
-            catalog = Path(temporary) / "catalog"
-            directory = _create_species(catalog, 1, "Example Bird")
-            manifest_path = directory / "manifest.json"
-            manifest = json.loads(manifest_path.read_text())
-            manifest["zip_code"] = "12345"
-            write_json_atomic(manifest_path, manifest)
+        for field in (
+            "zip_code",
+            "postal_code",
+            "country_code",
+            "geocoder",
+            "geocoder_attribution",
+        ):
+            with self.subTest(field=field), TemporaryDirectory() as temporary:
+                catalog = Path(temporary) / "catalog"
+                directory = _create_species(catalog, 1, "Example Bird")
+                manifest_path = directory / "manifest.json"
+                manifest = json.loads(manifest_path.read_text())
+                manifest[field] = "private"
+                write_json_atomic(manifest_path, manifest)
 
-            with self.assertRaisesRegex(CatalogPublishError, "Private field"):
-                validate_public_catalog(catalog)
+                with self.assertRaisesRegex(CatalogPublishError, "Private field"):
+                    validate_public_catalog(catalog)
 
     def test_rejects_unexpected_catalog_root_files(self) -> None:
         with TemporaryDirectory() as temporary:
