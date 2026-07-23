@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-23T23:28:08+00:00",
+  "generated_at": "2026-07-23T23:43:48+00:00",
   "schema_version": 1,
   "species": [
     {
@@ -210,6 +210,17 @@
       "scientific_name": "Upupa epops",
       "slug": "common-hoopoe",
       "taxon_id": 20969
+    },
+    {
+      "approved_at": "2026-07-23T23:43:48+00:00",
+      "common_name": "Common Nightingale",
+      "display_path": "species/13079-common-nightingale/display.png",
+      "display_sha256": "87d1048a8d298821f1ae9bcdc5584345de4cf543c5e7120a43b9e4c1ff00547f",
+      "portrait_path": "species/13079-common-nightingale/portrait.png",
+      "portrait_sha256": "9eea75bd163c8f4121116e899cb6831c194864f4328b927906ae39f58dab0f61",
+      "scientific_name": "Luscinia megarhynchos",
+      "slug": "common-nightingale",
+      "taxon_id": 13079
     },
     {
       "approved_at": "2026-07-10T13:46:39+00:00",

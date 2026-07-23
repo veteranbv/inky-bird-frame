@@ -1,0 +1,151 @@
+{
+  "approved_at": "2026-07-23T23:43:48+00:00",
+  "assets": {
+    "display": {
+      "filename": "display.png",
+      "sha256": "87d1048a8d298821f1ae9bcdc5584345de4cf543c5e7120a43b9e4c1ff00547f"
+    },
+    "portrait": {
+      "filename": "portrait.png",
+      "sha256": "9eea75bd163c8f4121116e899cb6831c194864f4328b927906ae39f58dab0f61"
+    }
+  },
+  "common_name": "Common Nightingale",
+  "generation": {
+    "attempt": 2,
+    "generated_at": "2026-07-23T23:43:48+00:00",
+    "generator": "Codex subscription / built-in gpt-image-2",
+    "max_attempts": 3,
+    "prompt_version": "field-journal-v2"
+  },
+  "profile": {
+    "behavior": "Secretive and often solitary outside the breeding season, usually remaining low in dense cover and foraging on or near the ground for insects and other invertebrates; berries and other fruit are also taken seasonally. Males deliver a powerful, varied song by day and night during the breeding season and defend territories with song and pursuit.",
+    "common_name": "Common Nightingale",
+    "family": "Muscicapidae",
+    "field_marks": [
+      "Plain warm-brown upperparts and unmarked folded wings",
+      "Broad rusty-chestnut tail contrasting with the browner back",
+      "Pale buff-to-whitish throat, breast, and belly",
+      "Large dark eye with a narrow pale eye-ring",
+      "Slim, straight dark bill with a warmer base to the lower mandible",
+      "Compact, upright proportions with slender pinkish-brown legs"
+    ],
+    "habitat": "Dense low scrub, tangled thickets, woodland edges, and young or open woodland with a shaded understory and patches of bare ground; nests are placed on or near the ground within thick vegetation.",
+    "measurements": {
+      "length": "14\u201317 cm",
+      "weight": "18\u201323 g",
+      "wingspan": "20\u201324 cm"
+    },
+    "palette": [
+      "warm brown",
+      "rusty chestnut",
+      "sandy buff",
+      "cream white",
+      "black"
+    ],
+    "scientific_name": "Luscinia megarhynchos",
+    "sources": [
+      {
+        "title": "Luscinia megarhynchos \u2014 Animal Diversity Web",
+        "url": "https://animaldiversity.org/accounts/Luscinia_megarhynchos/"
+      },
+      {
+        "title": "Common Nightingale \u2014 eBird",
+        "url": "https://ebird.org/species/comnig1"
+      },
+      {
+        "title": "Common nightingale \u2014 Wikipedia",
+        "url": "https://en.wikipedia.org/wiki/Common_nightingale"
+      }
+    ],
+    "taxon_id": 13079
+  },
+  "quality_review": {
+    "anatomy_accuracy": 4,
+    "composition_quality": 5,
+    "findings": [
+      "Minor anatomical issue: the feet and strongly curved claws are somewhat oversized relative to the attached field-reference birds, but remain structurally plausible.",
+      "Minor rendering issue: the pale eye-ring is slightly brighter and more conspicuous than in most reference photos.",
+      "The isolated head and wing studies are clearly supplemental details, not extra appendages on the primary bird; the primary bird has one head, one beak, two anatomically implied wings, two legs, and one tail.",
+      "No material species-identification or text errors were found. Names, family, measurements, habitat, behavior, and visible field marks are supported by the checked sources and reference photos.",
+      "No place name, ZIP code, coordinates, map, or local-observation detail appears."
+    ],
+    "location_free": true,
+    "passed": true,
+    "species_accuracy": 5,
+    "text_accuracy": 5,
+    "verification_sources": [
+      {
+        "title": "Common Nightingale \u2014 Birds of the World",
+        "url": "https://birdsoftheworld.org/bow/species/comnig1/cur/introduction"
+      },
+      {
+        "title": "Luscinia megarhynchos \u2014 Animal Diversity Web",
+        "url": "https://animaldiversity.org/accounts/Luscinia_megarhynchos/"
+      },
+      {
+        "title": "Common nightingale \u2014 Wikipedia",
+        "url": "https://en.wikipedia.org/wiki/Common_nightingale"
+      }
+    ]
+  },
+  "references": [
+    {
+      "attribution": "(c) \u041e\u043b\u0435\u0441\u044f, some rights reserved (CC BY)",
+      "filename": "01-673268089.jpg",
+      "height": 2035,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/673268089/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 368473438,
+      "observer": "little-grey-bird",
+      "photo_id": 673268089,
+      "sha256": "ee7375f77b875f031067eea7497ddf0be3de0f3e1b381f71b5e294b8d4a63e49",
+      "source_url": "https://www.inaturalist.org/observations/368473438",
+      "width": 1509
+    },
+    {
+      "attribution": "(c) rober025, some rights reserved (CC BY)",
+      "filename": "02-132710274.jpeg",
+      "height": 1365,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/132710274/large.jpeg",
+      "license_code": "cc-by",
+      "observation_id": 80943993,
+      "observer": "rober025",
+      "photo_id": 132710274,
+      "sha256": "18c6613350c36e384c77fa86f4cd05d2387f3f8bc7d95f13e9a6233210111b9d",
+      "source_url": "https://www.inaturalist.org/observations/80943993",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) Codrin Bucur, some rights reserved (CC BY)",
+      "filename": "03-279121865.jpg",
+      "height": 1365,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/279121865/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 161483028,
+      "observer": "codrin_bucur",
+      "photo_id": 279121865,
+      "sha256": "49a4860686a0b87b498fc6c1014c6ca1e9729a0f7d918923283a143a50f457d1",
+      "source_url": "https://www.inaturalist.org/observations/161483028",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) SteveM4560, some rights reserved (CC BY)",
+      "filename": "04-668820594.jpg",
+      "height": 1801,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/668820594/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 366284672,
+      "observer": "stevem4560",
+      "photo_id": 668820594,
+      "sha256": "05de4ff46c233c973b39786ec584762edeb8740fe7cfb0700dc95c3103a48eb8",
+      "source_url": "https://www.inaturalist.org/observations/366284672",
+      "width": 1290
+    }
+  ],
+  "schema_version": 1,
+  "scientific_name": "Luscinia megarhynchos",
+  "slug": "common-nightingale",
+  "status": "approved",
+  "taxon_id": 13079
+}
