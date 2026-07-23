@@ -1,0 +1,32 @@
+{
+  "anatomy_accuracy": 4,
+  "composition_quality": 5,
+  "findings": [
+    "The plate correctly identifies Little Egret as Egretta garzetta in family Ardeidae.",
+    "The stated 55\u201365 cm length, 88\u2013106 cm wingspan, and 350\u2013550 g weight match the reviewed Wikipedia species account. Audubon gives narrower upper limits of 95 cm and 510 g, so the measurement range is source-dependent rather than plainly erroneous.",
+    "The white plumage, long dark dagger-like bill, yellow iris, dark facial skin, blackish legs, contrasting yellow feet, folded wing, and short tail support Little Egret and agree with the supplied white-morph references.",
+    "The dark-morph statement is broadly valid, but Birds of the World adds important geographic nuance: dark morphs characterize E. g. dimorpha, while they are exceptionally rare in the widespread nominate form.",
+    "Minor visual inaccuracies keep the anatomy and species rendering below top score: the principal bird is somewhat fuller-bodied and thicker-necked than the especially sleek field references, its feet and toes appear slightly oversized, and the short tail is weakly separated from the folded wing.",
+    "The principal specimen has one head, one beak, two anatomically implied wings with the far wing occluded in profile, two legs, and one tail. The separate wing and head studies are clearly presented as detail vignettes, not additional anatomy on the principal bird.",
+    "All visible habitat and behavior claims are consistent with the reviewed accounts; no material spelling or taxonomic error was found.",
+    "No place name, ZIP code, coordinates, map, or local-observation detail appears. The unlabeled marginal ruler contains no location information."
+  ],
+  "location_free": true,
+  "passed": true,
+  "species_accuracy": 4,
+  "text_accuracy": 4,
+  "verification_sources": [
+    {
+      "title": "Little Egret \u2014 Birds of the World",
+      "url": "https://birdsoftheworld.org/bow/species/litegr/cur/introduction"
+    },
+    {
+      "title": "Little Egret \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/little-egret"
+    },
+    {
+      "title": "Little egret \u2014 Wikipedia",
+      "url": "https://en.wikipedia.org/wiki/Little_egret"
+    }
+  ]
+}

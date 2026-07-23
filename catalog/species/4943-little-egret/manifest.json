@@ -1,0 +1,149 @@
+{
+  "approved_at": "2026-07-23T23:08:30+00:00",
+  "assets": {
+    "display": {
+      "filename": "display.png",
+      "sha256": "aaf8d5516b6451a7b1f723b16c832035390d852ff9bffbc0d2772770d34c368a"
+    },
+    "portrait": {
+      "filename": "portrait.png",
+      "sha256": "9847eae58129e0f29429c4c1b5a7333be1991394b9ff8ea96c8623d6be822393"
+    }
+  },
+  "common_name": "Little Egret",
+  "generation": {
+    "attempt": 1,
+    "generated_at": "2026-07-23T23:08:30+00:00",
+    "generator": "Codex subscription / built-in gpt-image-2",
+    "max_attempts": 3,
+    "prompt_version": "field-journal-v2"
+  },
+  "profile": {
+    "behavior": "Forages in shallow water by standing, stalking, running, or stirring the bottom with its feet, then striking at small aquatic prey. Often occurs singly or in loose groups and nests or roosts communally.",
+    "common_name": "Little Egret",
+    "family": "Ardeidae",
+    "field_marks": [
+      "Small, slender heron with a long neck and compact body",
+      "Usually all-white plumage; occasional dark morph is bluish slate-gray",
+      "Long, thin, dark bill",
+      "Yellow iris with dark lores",
+      "Long blackish legs with contrasting yellow feet",
+      "Long folded wings taper toward a short tail"
+    ],
+    "habitat": "Open fresh, brackish, and coastal wetlands, including lakeshores, rivers, marshes, estuaries, lagoons, mudflats, mangroves, flooded fields, and other shallow waters rich in small fish.",
+    "measurements": {
+      "length": "55\u201365 cm",
+      "weight": "350\u2013550 g",
+      "wingspan": "88\u2013106 cm"
+    },
+    "palette": [
+      "white",
+      "black",
+      "yellow",
+      "slate gray"
+    ],
+    "scientific_name": "Egretta garzetta",
+    "sources": [
+      {
+        "title": "Little Egret \u2014 eBird",
+        "url": "https://ebird.org/species/litegr"
+      },
+      {
+        "title": "Little egret \u2014 Wikipedia",
+        "url": "https://en.wikipedia.org/wiki/Little_egret"
+      }
+    ],
+    "taxon_id": 4943
+  },
+  "quality_review": {
+    "anatomy_accuracy": 4,
+    "composition_quality": 5,
+    "findings": [
+      "The plate correctly identifies Little Egret as Egretta garzetta in family Ardeidae.",
+      "The stated 55\u201365 cm length, 88\u2013106 cm wingspan, and 350\u2013550 g weight match the reviewed Wikipedia species account. Audubon gives narrower upper limits of 95 cm and 510 g, so the measurement range is source-dependent rather than plainly erroneous.",
+      "The white plumage, long dark dagger-like bill, yellow iris, dark facial skin, blackish legs, contrasting yellow feet, folded wing, and short tail support Little Egret and agree with the supplied white-morph references.",
+      "The dark-morph statement is broadly valid, but Birds of the World adds important geographic nuance: dark morphs characterize E. g. dimorpha, while they are exceptionally rare in the widespread nominate form.",
+      "Minor visual inaccuracies keep the anatomy and species rendering below top score: the principal bird is somewhat fuller-bodied and thicker-necked than the especially sleek field references, its feet and toes appear slightly oversized, and the short tail is weakly separated from the folded wing.",
+      "The principal specimen has one head, one beak, two anatomically implied wings with the far wing occluded in profile, two legs, and one tail. The separate wing and head studies are clearly presented as detail vignettes, not additional anatomy on the principal bird.",
+      "All visible habitat and behavior claims are consistent with the reviewed accounts; no material spelling or taxonomic error was found.",
+      "No place name, ZIP code, coordinates, map, or local-observation detail appears. The unlabeled marginal ruler contains no location information."
+    ],
+    "location_free": true,
+    "passed": true,
+    "species_accuracy": 4,
+    "text_accuracy": 4,
+    "verification_sources": [
+      {
+        "title": "Little Egret \u2014 Birds of the World",
+        "url": "https://birdsoftheworld.org/bow/species/litegr/cur/introduction"
+      },
+      {
+        "title": "Little Egret \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/little-egret"
+      },
+      {
+        "title": "Little egret \u2014 Wikipedia",
+        "url": "https://en.wikipedia.org/wiki/Little_egret"
+      }
+    ]
+  },
+  "references": [
+    {
+      "attribution": "(c) Afsar Nayakkan, some rights reserved (CC BY)",
+      "filename": "01-472509175.jpeg",
+      "height": 1370,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/472509175/large.jpeg",
+      "license_code": "cc-by",
+      "observation_id": 263057515,
+      "observer": "afsarnayakkan",
+      "photo_id": 472509175,
+      "sha256": "4ae083c0fbe527aa4dd2097850e894a16006606cca5a63d74e660712c61c81c5",
+      "source_url": "https://www.inaturalist.org/observations/263057515",
+      "width": 1580
+    },
+    {
+      "attribution": "(c) SteveM4560, some rights reserved (CC BY)",
+      "filename": "02-565774265.jpg",
+      "height": 1536,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/565774265/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 313303797,
+      "observer": "stevem4560",
+      "photo_id": 565774265,
+      "sha256": "d3a0488e673937295a43e4b36cb4e173fa302a306d975a71ad78fcd68a26822f",
+      "source_url": "https://www.inaturalist.org/observations/313303797",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) Adrien Nouailhane, some rights reserved (CC BY)",
+      "filename": "03-149356329.jpeg",
+      "height": 1365,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/149356329/large.jpeg",
+      "license_code": "cc-by",
+      "observation_id": 90374208,
+      "observer": "adrinou",
+      "photo_id": 149356329,
+      "sha256": "617266340c0374be7c8e6e28ca29c473cdaa810026209ea59db2133b96313be8",
+      "source_url": "https://www.inaturalist.org/observations/90374208",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) Zara, some rights reserved (CC BY)",
+      "filename": "04-455449496.jpeg",
+      "height": 1536,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/455449496/large.jpeg",
+      "license_code": "cc-by",
+      "observation_id": 254293185,
+      "observer": "zara_n",
+      "photo_id": 455449496,
+      "sha256": "7ceeec702cb150ab4d31624d80d355032ae25e5248033a3eee96fc50947c72f1",
+      "source_url": "https://www.inaturalist.org/observations/254293185",
+      "width": 2048
+    }
+  ],
+  "schema_version": 1,
+  "scientific_name": "Egretta garzetta",
+  "slug": "little-egret",
+  "status": "approved",
+  "taxon_id": 4943
+}
