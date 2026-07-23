@@ -1,0 +1,145 @@
+{
+  "approved_at": "2026-07-23T22:07:10+00:00",
+  "assets": {
+    "display": {
+      "filename": "display.png",
+      "sha256": "7b430497c09f184758517d4c1ab7f667800c5af76924040385b893d81c98b7f5"
+    },
+    "portrait": {
+      "filename": "portrait.png",
+      "sha256": "d0d21409ec818604a7689ad19ee6e7b475c4d66447bc37bf8b7f17a02099943e"
+    }
+  },
+  "common_name": "Eurasian Blackbird",
+  "generation": {
+    "attempt": 1,
+    "generated_at": "2026-07-23T22:07:10+00:00",
+    "generator": "Codex subscription / built-in gpt-image-2",
+    "max_attempts": 3,
+    "prompt_version": "field-journal-v2"
+  },
+  "profile": {
+    "behavior": "Diurnal and territorial; forages mainly on the ground with short runs and hops, searching soil and leaf litter for earthworms and other invertebrates while also eating fruit and seeds. Often sings from an elevated perch. Populations may be resident or seasonally migratory.",
+    "common_name": "Eurasian Blackbird",
+    "family": "Turdidae",
+    "field_marks": [
+      "Adult male glossy black overall, including wings and long tail",
+      "Bright orange-yellow bill and narrow yellow eye-ring on adult male",
+      "Female sooty brown with a paler throat and lightly mottled breast",
+      "Rounded, compact thrush body with a relatively long tail",
+      "Dark brownish-black legs and feet"
+    ],
+    "habitat": "Woodland and woodland edges with dense undergrowth, as well as hedgerows, scrub, farmland, parks, and gardens; commonly uses open ground beside dense cover for feeding.",
+    "measurements": {
+      "length": "23.5\u201329 cm",
+      "weight": "80\u2013125 g",
+      "wingspan": "34\u201338 cm"
+    },
+    "palette": [
+      "coal black",
+      "sooty brown",
+      "orange-yellow",
+      "golden yellow",
+      "dark brown"
+    ],
+    "scientific_name": "Turdus merula",
+    "sources": [
+      {
+        "title": "Turdus merula \u2014 Animal Diversity Web",
+        "url": "https://animaldiversity.org/accounts/Turdus_merula/"
+      },
+      {
+        "title": "Common blackbird \u2014 Wikipedia",
+        "url": "https://en.wikipedia.org/wiki/Common_blackbird"
+      }
+    ],
+    "taxon_id": 12716
+  },
+  "quality_review": {
+    "anatomy_accuracy": 4,
+    "composition_quality": 5,
+    "findings": [
+      "Verified identity: the adult-male portrait matches Turdus merula in glossy black plumage, orange-yellow bill, yellow eye-ring, compact thrush form, dark legs, and relatively long tail.",
+      "Verified measurements: length 23.5\u201329 cm and weight 80\u2013125 g are supported by Wikipedia; wingspan 34\u201338 cm and weight 80\u2013125 g are supported by Animal Diversity Web.",
+      "Verified taxonomy and text: Eurasian Blackbird, Turdus merula, and family Turdidae are correct. The habitat, behavior, diet, migration, song-perch, and male/female field-mark statements are consistent with the inspected sources.",
+      "The main bird has one head, one beak, two anatomically implied wings with the far wing occluded by the side-on pose, two legs, and one tail. The separate lower wing and head are clearly comparative detail studies, not duplicated anatomy on the main bird.",
+      "Minor anatomical issue: the main portrait\u2019s toes and joints are somewhat oversized and crowded compared with the reference photographs, though the legs and feet remain recognizably avian and do not contain a material duplication.",
+      "Minor proportional issue: the illustrated bill is slightly longer and more needle-pointed than in most attached reference photographs, but its color and overall form remain diagnostic for an adult male Eurasian Blackbird.",
+      "The plate is clean, balanced, legible, and uncropped, with useful wing, head, palette, and scale studies.",
+      "No place name, ZIP code, coordinates, map, or local-observation detail appears."
+    ],
+    "location_free": true,
+    "passed": true,
+    "species_accuracy": 5,
+    "text_accuracy": 5,
+    "verification_sources": [
+      {
+        "title": "Turdus merula (common blackbird) \u2014 Animal Diversity Web",
+        "url": "https://animaldiversity.org/accounts/Turdus_merula/"
+      },
+      {
+        "title": "Common blackbird \u2014 Wikipedia",
+        "url": "https://en.wikipedia.org/wiki/Common_blackbird"
+      }
+    ]
+  },
+  "references": [
+    {
+      "attribution": "(c) Alexis Tinker-Tsavalas, some rights reserved (CC BY)",
+      "filename": "01-31623386.jpeg",
+      "height": 1538,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/31623386/large.jpeg",
+      "license_code": "cc-by",
+      "observation_id": 20490738,
+      "observer": "alexis_orion",
+      "photo_id": 31623386,
+      "sha256": "bf79c67268208d38735903cc1bcd611f2a992e1ce06fa378390d5da370493314",
+      "source_url": "https://www.inaturalist.org/observations/20490738",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) Shaun Lee, some rights reserved (CC BY)",
+      "filename": "02-238560671.jpg",
+      "height": 1366,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/238560671/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 139475151,
+      "observer": "shaun-lee",
+      "photo_id": 238560671,
+      "sha256": "0f706a1aea4ccffde61eb27faa19b24f7570339c4033307dd4af55595f96d8c2",
+      "source_url": "https://www.inaturalist.org/observations/139475151",
+      "width": 2048
+    },
+    {
+      "attribution": "no rights reserved",
+      "filename": "03-562068590.jpg",
+      "height": 2048,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/562068590/large.jpg",
+      "license_code": "cc0",
+      "observation_id": 311366441,
+      "observer": "scottdex",
+      "photo_id": 562068590,
+      "sha256": "d4d8b97785cbeb524fa867ada084ce317d85e33976c83b7517f313a85d4fda51",
+      "source_url": "https://www.inaturalist.org/observations/311366441",
+      "width": 1534
+    },
+    {
+      "attribution": "(c) Codrin Bucur, some rights reserved (CC BY)",
+      "filename": "04-186757278.jpeg",
+      "height": 1366,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/186757278/large.jpeg",
+      "license_code": "cc-by",
+      "observation_id": 110684075,
+      "observer": "codrin_bucur",
+      "photo_id": 186757278,
+      "sha256": "47d8c54030dc0ff9c07b3438770142605247b83a43773459747856c4506348e1",
+      "source_url": "https://www.inaturalist.org/observations/110684075",
+      "width": 2048
+    }
+  ],
+  "schema_version": 1,
+  "scientific_name": "Turdus merula",
+  "slug": "eurasian-blackbird",
+  "status": "approved",
+  "taxon_id": 12716
+}

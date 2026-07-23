@@ -1,0 +1,28 @@
+{
+  "anatomy_accuracy": 4,
+  "composition_quality": 5,
+  "findings": [
+    "Verified identity: the adult-male portrait matches Turdus merula in glossy black plumage, orange-yellow bill, yellow eye-ring, compact thrush form, dark legs, and relatively long tail.",
+    "Verified measurements: length 23.5\u201329 cm and weight 80\u2013125 g are supported by Wikipedia; wingspan 34\u201338 cm and weight 80\u2013125 g are supported by Animal Diversity Web.",
+    "Verified taxonomy and text: Eurasian Blackbird, Turdus merula, and family Turdidae are correct. The habitat, behavior, diet, migration, song-perch, and male/female field-mark statements are consistent with the inspected sources.",
+    "The main bird has one head, one beak, two anatomically implied wings with the far wing occluded by the side-on pose, two legs, and one tail. The separate lower wing and head are clearly comparative detail studies, not duplicated anatomy on the main bird.",
+    "Minor anatomical issue: the main portrait\u2019s toes and joints are somewhat oversized and crowded compared with the reference photographs, though the legs and feet remain recognizably avian and do not contain a material duplication.",
+    "Minor proportional issue: the illustrated bill is slightly longer and more needle-pointed than in most attached reference photographs, but its color and overall form remain diagnostic for an adult male Eurasian Blackbird.",
+    "The plate is clean, balanced, legible, and uncropped, with useful wing, head, palette, and scale studies.",
+    "No place name, ZIP code, coordinates, map, or local-observation detail appears."
+  ],
+  "location_free": true,
+  "passed": true,
+  "species_accuracy": 5,
+  "text_accuracy": 5,
+  "verification_sources": [
+    {
+      "title": "Turdus merula (common blackbird) \u2014 Animal Diversity Web",
+      "url": "https://animaldiversity.org/accounts/Turdus_merula/"
+    },
+    {
+      "title": "Common blackbird \u2014 Wikipedia",
+      "url": "https://en.wikipedia.org/wiki/Common_blackbird"
+    }
+  ]
+}
