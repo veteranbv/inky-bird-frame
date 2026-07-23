@@ -64,6 +64,7 @@ _PRIVATE_KEYS = frozenset(
         "zip_code",
     }
 )
+_PRIVATE_KEY_IDENTIFIERS = frozenset(key.replace("_", "") for key in _PRIVATE_KEYS)
 _WINDOWS_ABSOLUTE_PATH = re.compile(r"^[A-Za-z]:[\\/]")
 _WINDOWS_UNC_PATH = re.compile(r"^(?:\\\\|//)[^\\/]")
 _CREDENTIALS_IN_URL = re.compile(r"(https?://)[^/@\s]+@")
@@ -96,7 +97,8 @@ def _check_json_privacy(value: object, source: Path) -> None:
         for key, child in value.items():
             if not isinstance(key, str):
                 raise CatalogPublishError(f"JSON object has a non-string key: {source}")
-            if key.casefold() in _PRIVATE_KEYS:
+            identifier = re.sub(r"[^a-z0-9]", "", key.casefold())
+            if identifier in _PRIVATE_KEY_IDENTIFIERS:
                 raise CatalogPublishError(f"Private field {key!r} found in {source}")
             _check_json_privacy(child, source)
         return

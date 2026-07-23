@@ -470,6 +470,10 @@ class PublisherTests(unittest.TestCase):
             "geoapify_api_key_env",
             "apiKey",
             "api_key",
+            "postalCode",
+            "countryCode",
+            "geocoderAttribution",
+            "geoapifyApiKey",
         ):
             with self.subTest(field=field), TemporaryDirectory() as temporary:
                 catalog = Path(temporary) / "catalog"
