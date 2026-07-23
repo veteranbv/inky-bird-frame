@@ -14,6 +14,17 @@ from .models import ReferencePhoto
 
 ALLOWED_LICENSES: Final = ("cc0", "cc-by")
 MIN_REFERENCE_EDGE: Final = 800
+REFERENCE_FIELDS: Final = (
+    "id",
+    "uri",
+    "user.login",
+    "photos.id",
+    "photos.attribution",
+    "photos.license_code",
+    "photos.url",
+    "photos.original_dimensions.width",
+    "photos.original_dimensions.height",
+)
 
 
 @dataclass(frozen=True)
@@ -144,9 +155,10 @@ def fetch_reference_candidates(
             "order_by": "votes",
             "order": "desc",
             "per_page": str(max(30, count * 10)),
+            "fields": ",".join(REFERENCE_FIELDS),
         }
     )
-    payload = get_json(f"https://api.inaturalist.org/v1/observations?{params}", timeout_seconds)
+    payload = get_json(f"https://api.inaturalist.org/v2/observations?{params}", timeout_seconds)
     return parse_reference_candidates(payload, count)
 
 
