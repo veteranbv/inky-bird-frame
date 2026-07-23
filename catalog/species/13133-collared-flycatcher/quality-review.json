@@ -1,0 +1,34 @@
+{
+  "anatomy_accuracy": 4,
+  "composition_quality": 5,
+  "findings": [
+    "The main breeding-male portrait is correctly identifiable by its black upperparts, white underparts, complete white collar, white forehead patch, large white wing patch, dark tail, compact proportions, pointed flycatcher bill, dark eye, and slender slate-gray legs.",
+    "The pale-to-white rump is less conspicuous in the main portrait than it is in the male reference photograph and eBird description, though a narrow pale area is present near the folded wing and tail base.",
+    "The centimeter ruler is not clearly tied to a standard bill-tip-to-tail-tip measurement; its horizontal guides bracket the bird's vertical projection, so it should not be interpreted as a precise verification of the printed length.",
+    "The printed identity, family, length, wingspan, weight, habitat, diet, nesting behavior, and field-mark statements are consistent with the inspected sources and reference photographs; no material text error was found.",
+    "The primary bird is anatomically coherent with one head, one beak, two wings, two legs, and one tail; the separate head and wing drawings are clearly supplemental detail studies rather than additional birds.",
+    "No place name, ZIP code, coordinates, map, or local-observation detail appears."
+  ],
+  "location_free": true,
+  "passed": true,
+  "species_accuracy": 5,
+  "text_accuracy": 4,
+  "verification_sources": [
+    {
+      "title": "Collared Flycatcher \u2014 eBird",
+      "url": "https://ebird.org/species/colfly1"
+    },
+    {
+      "title": "Collared Flycatcher \u2014 Birds of the World",
+      "url": "https://birdsoftheworld.org/bow/species/colfly1/cur/introduction"
+    },
+    {
+      "title": "Collared flycatcher \u2014 Wikipedia",
+      "url": "https://en.wikipedia.org/wiki/Collared_flycatcher"
+    },
+    {
+      "title": "Halsbandschn\u00e4pper \u2014 German Wikipedia",
+      "url": "https://de.wikipedia.org/wiki/Halsbandschn%C3%A4pper"
+    }
+  ]
+}

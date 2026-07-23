@@ -1,0 +1,156 @@
+{
+  "approved_at": "2026-07-23T23:57:30+00:00",
+  "assets": {
+    "display": {
+      "filename": "display.png",
+      "sha256": "13ac672f7632fef327701379f34bc1bb912f48f355ec8ea7d85948f68f507afe"
+    },
+    "portrait": {
+      "filename": "portrait.png",
+      "sha256": "82dc484fad5ed014296ef8a8e768b19a67f3e91d7a061949b350c16fb2567b7a"
+    }
+  },
+  "common_name": "Collared Flycatcher",
+  "generation": {
+    "attempt": 2,
+    "generated_at": "2026-07-23T23:57:30+00:00",
+    "generator": "Codex subscription / built-in gpt-image-2",
+    "max_attempts": 3,
+    "prompt_version": "field-journal-v2"
+  },
+  "profile": {
+    "behavior": "An active insectivore that watches from exposed perches, makes short aerial sallies for flying prey, and also gleans caterpillars and other invertebrates from foliage; berries are taken occasionally. It nests in tree cavities and readily uses nest boxes.",
+    "common_name": "Collared Flycatcher",
+    "family": "Muscicapidae",
+    "field_marks": [
+      "Small, compact, relatively large-headed flycatcher with an upright perching stance.",
+      "Short, blackish bill is broad at the base and sharply pointed; eye is large and dark.",
+      "Legs and feet are slender and slate gray.",
+      "Breeding male is black above and white below, with a complete white collar and bold white forehead patch.",
+      "Large white wing patch and pale-to-white rump contrast strongly with the dark wings.",
+      "Tail is fairly long and mostly dark; females and immature birds are gray-brown above but retain a prominent white wing patch."
+    ],
+    "habitat": "Mature deciduous and other broad-leaved woodland with old, cavity-bearing trees; also wooded parks, gardens, orchards, and open woodland. Nonbreeding birds use broad-leaved woodland, including miombo.",
+    "measurements": {
+      "length": "12\u201313.5 cm",
+      "weight": "10\u201317 g",
+      "wingspan": "22\u201324 cm"
+    },
+    "palette": [
+      "jet black",
+      "clean white",
+      "pale gray-brown",
+      "slate gray",
+      "cool blue-gray"
+    ],
+    "scientific_name": "Ficedula albicollis",
+    "sources": [
+      {
+        "title": "Collared Flycatcher \u2014 eBird",
+        "url": "https://ebird.org/species/colfly1"
+      },
+      {
+        "title": "Collared flycatcher \u2014 Wikipedia",
+        "url": "https://en.wikipedia.org/wiki/Collared_flycatcher"
+      },
+      {
+        "title": "Ficedula albicollis \u2014 Italian Wikipedia",
+        "url": "https://it.wikipedia.org/wiki/Ficedula_albicollis"
+      }
+    ],
+    "taxon_id": 13133
+  },
+  "quality_review": {
+    "anatomy_accuracy": 4,
+    "composition_quality": 5,
+    "findings": [
+      "The main breeding-male portrait is correctly identifiable by its black upperparts, white underparts, complete white collar, white forehead patch, large white wing patch, dark tail, compact proportions, pointed flycatcher bill, dark eye, and slender slate-gray legs.",
+      "The pale-to-white rump is less conspicuous in the main portrait than it is in the male reference photograph and eBird description, though a narrow pale area is present near the folded wing and tail base.",
+      "The centimeter ruler is not clearly tied to a standard bill-tip-to-tail-tip measurement; its horizontal guides bracket the bird's vertical projection, so it should not be interpreted as a precise verification of the printed length.",
+      "The printed identity, family, length, wingspan, weight, habitat, diet, nesting behavior, and field-mark statements are consistent with the inspected sources and reference photographs; no material text error was found.",
+      "The primary bird is anatomically coherent with one head, one beak, two wings, two legs, and one tail; the separate head and wing drawings are clearly supplemental detail studies rather than additional birds.",
+      "No place name, ZIP code, coordinates, map, or local-observation detail appears."
+    ],
+    "location_free": true,
+    "passed": true,
+    "species_accuracy": 5,
+    "text_accuracy": 4,
+    "verification_sources": [
+      {
+        "title": "Collared Flycatcher \u2014 eBird",
+        "url": "https://ebird.org/species/colfly1"
+      },
+      {
+        "title": "Collared Flycatcher \u2014 Birds of the World",
+        "url": "https://birdsoftheworld.org/bow/species/colfly1/cur/introduction"
+      },
+      {
+        "title": "Collared flycatcher \u2014 Wikipedia",
+        "url": "https://en.wikipedia.org/wiki/Collared_flycatcher"
+      },
+      {
+        "title": "Halsbandschn\u00e4pper \u2014 German Wikipedia",
+        "url": "https://de.wikipedia.org/wiki/Halsbandschn%C3%A4pper"
+      }
+    ]
+  },
+  "references": [
+    {
+      "attribution": "no rights reserved",
+      "filename": "01-668411113.jpg",
+      "height": 1711,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/668411113/large.jpg",
+      "license_code": "cc0",
+      "observation_id": 366073942,
+      "observer": "terolinjama",
+      "photo_id": 668411113,
+      "sha256": "10b7431f5ca0dcd6047963e62694d933f6a4a9344a1bc3e0e0a5ac97a56e5645",
+      "source_url": "https://www.inaturalist.org/observations/366073942",
+      "width": 2048
+    },
+    {
+      "attribution": "no rights reserved",
+      "filename": "02-306159647.jpeg",
+      "height": 1357,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/306159647/large.jpeg",
+      "license_code": "cc0",
+      "observation_id": 176123713,
+      "observer": "radrat",
+      "photo_id": 306159647,
+      "sha256": "ada1b7884913f295580709031bc777f009b535c2d2ee75e12d73d03f20f6730a",
+      "source_url": "https://www.inaturalist.org/observations/176123713",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) Julia Moning, some rights reserved (CC BY)",
+      "filename": "03-192245176.jpeg",
+      "height": 1365,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/192245176/large.jpeg",
+      "license_code": "cc-by",
+      "observation_id": 113810882,
+      "observer": "birdingjulia",
+      "photo_id": 192245176,
+      "sha256": "f8252588f088bd044c3dddb7a02a2a66f9fb4f99892246ff7b8eb374983ea6f2",
+      "source_url": "https://www.inaturalist.org/observations/113810882",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) Christoph Moning, some rights reserved (CC BY)",
+      "filename": "04-134248565.jpeg",
+      "height": 1281,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/134248565/large.jpeg",
+      "license_code": "cc-by",
+      "observation_id": 81831349,
+      "observer": "christoph_moning",
+      "photo_id": 134248565,
+      "sha256": "497fa2fddce36f87ee792cf8e7197f360153e3d26edbb6e5678bf03cafac0f90",
+      "source_url": "https://www.inaturalist.org/observations/81831349",
+      "width": 2048
+    }
+  ],
+  "schema_version": 1,
+  "scientific_name": "Ficedula albicollis",
+  "slug": "collared-flycatcher",
+  "status": "approved",
+  "taxon_id": 13133
+}
