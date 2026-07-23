@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import json
 import unittest
-from datetime import UTC, datetime, timedelta
+from datetime import UTC, date, datetime, timedelta
 from pathlib import Path
 from tempfile import TemporaryDirectory
 from typing import cast
@@ -11,6 +11,7 @@ from unittest.mock import patch
 from inky_bird_frame.birds import (
     BirdSpecies,
     BirdWeatherSpecies,
+    DateRange,
     EbirdResolution,
     EbirdSpecies,
     ObservationWindow,
@@ -228,6 +229,51 @@ class ControllerTests(unittest.TestCase):
         self.assertEqual(result["added_count"], 1)
         self.assertFalse(state_exists)
         self.assertFalse(discover.call_args.kwargs["persist_taxonomy_cache"])
+
+    def test_historical_seed_uses_coordinate_override_without_mutating_config(self) -> None:
+        species = BirdSpecies(2, "Trip Bird", "Avis itineris", 3, "iNaturalist")
+        date_range = DateRange(date(2026, 7, 13), date(2026, 7, 16))
+        with TemporaryDirectory() as temporary:
+            config_path = Path(temporary) / "config.toml"
+            config_path.write_text(CONFIG)
+            config = load_config(config_path)
+            with (
+                patch(
+                    "inky_bird_frame.controller.fetch_inaturalist_birds",
+                    return_value=[species],
+                ) as fetch,
+                patch("inky_bird_frame.controller.approved_taxon_ids", return_value=set()),
+            ):
+                result = enqueue_seed_species(
+                    config,
+                    date_range=date_range,
+                    latitude=33.6407,
+                    longitude=-84.4277,
+                    sources=(DiscoveryProvider.INATURALIST,),
+                    radius_km=11,
+                    dry_run=True,
+                )
+
+        self.assertEqual(result["start_date"], "2026-07-13")
+        self.assertEqual(result["end_date"], "2026-07-16")
+        self.assertIsNone(result["window"])
+        self.assertEqual(fetch.call_args.kwargs["latitude"], 33.6407)
+        self.assertEqual(fetch.call_args.kwargs["longitude"], -84.4277)
+        self.assertEqual(fetch.call_args.kwargs["date_range"], date_range)
+        self.assertEqual(config.discovery.zip_code, "12345")
+
+    def test_historical_seed_rejects_provider_without_exact_date_semantics(self) -> None:
+        with TemporaryDirectory() as temporary:
+            config_path = Path(temporary) / "config.toml"
+            config_path.write_text(CONFIG)
+            config = load_config(config_path)
+            with self.assertRaisesRegex(ValueError, "require --source inaturalist"):
+                enqueue_seed_species(
+                    config,
+                    date_range=DateRange(date(2026, 7, 13), date(2026, 7, 16)),
+                    sources=(DiscoveryProvider.EBIRD,),
+                    dry_run=True,
+                )
 
     def test_generation_prioritizes_current_species_before_seed_queue(self) -> None:
         current = BirdSpecies(1, "Current Bird", "Avis current", 4, "iNaturalist")

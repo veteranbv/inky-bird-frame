@@ -17,6 +17,7 @@ from typing import cast
 from .birds import (
     BirdSpecies,
     BirdWeatherSpecies,
+    DateRange,
     EbirdSpecies,
     ObservationWindow,
     fetch_birdweather_species,
@@ -132,6 +133,9 @@ def discover_species(
     *,
     sources: tuple[DiscoveryProvider, ...] | None = None,
     window: ObservationWindow | None = None,
+    date_range: DateRange | None = None,
+    latitude: float | None = None,
+    longitude: float | None = None,
     radius_km: int | None = None,
     species_limit: int | None = None,
     persist_taxonomy_cache: bool = True,
@@ -140,6 +144,10 @@ def discover_species(
     selected_window = window or config.discovery.observation_window
     selected_radius = radius_km if radius_km is not None else config.discovery.radius_km
     selected_limit = species_limit if species_limit is not None else config.discovery.species_limit
+    if (latitude is None) != (longitude is None):
+        raise ValueError("latitude and longitude must be provided together")
+    if date_range is not None and selected_sources != (DiscoveryProvider.INATURALIST,):
+        raise ValueError("explicit date ranges require --source inaturalist")
     if DiscoveryProvider.EBIRD in selected_sources:
         if selected_window in {ObservationWindow.LAST_YEAR, ObservationWindow.ALL_TIME}:
             raise ValueError("eBird discovery supports observation windows up to 30 days")
@@ -161,7 +169,14 @@ def discover_species(
         location_provider_names.append("ebird")
     if location_provider_names:
         try:
-            location = resolve_discovery_location(config.discovery)
+            if latitude is None and longitude is None:
+                location = resolve_discovery_location(config.discovery)
+            else:
+                location = resolve_discovery_location(
+                    config.discovery,
+                    latitude=latitude,
+                    longitude=longitude,
+                )
         except DataSourceError as exc:
             providers.extend(
                 ProviderStatus(name, "error", 0, error=f"Location lookup failed: {exc}")
@@ -176,6 +191,7 @@ def discover_species(
                 radius_km=selected_radius,
                 limit=selected_limit,
                 window=selected_window,
+                date_range=date_range,
             )
         except DataSourceError as exc:
             providers.append(ProviderStatus("inaturalist", "error", 0, error=str(exc)))
@@ -424,12 +440,19 @@ def _write_generation_queue(config: AppConfig, species: list[BirdSpecies]) -> No
 def enqueue_seed_species(
     config: AppConfig,
     *,
-    window: ObservationWindow,
+    window: ObservationWindow | None = None,
+    date_range: DateRange | None = None,
+    latitude: float | None = None,
+    longitude: float | None = None,
     sources: tuple[DiscoveryProvider, ...] | None = None,
     radius_km: int | None = None,
     species_limit: int | None = None,
     dry_run: bool = False,
 ) -> dict[str, object]:
+    if (window is None) == (date_range is None):
+        raise ValueError("provide either an observation window or an explicit date range")
+    if date_range is not None and (date_range.start is None or date_range.end is None):
+        raise ValueError("explicit date range requires both start and end dates")
     radius = radius_km if radius_km is not None else config.discovery.radius_km
     limit = species_limit if species_limit is not None else config.discovery.species_limit
     if radius <= 0:
@@ -443,6 +466,9 @@ def enqueue_seed_species(
             config,
             sources=sources,
             window=window,
+            date_range=date_range,
+            latitude=latitude,
+            longitude=longitude,
             radius_km=radius,
             species_limit=limit,
             persist_taxonomy_cache=not dry_run,
@@ -470,7 +496,17 @@ def enqueue_seed_species(
             _write_generation_queue(config, queued)
 
     return {
-        "window": window.value,
+        "window": window.value if window is not None else None,
+        "start_date": (
+            date_range.start.isoformat()
+            if date_range is not None and date_range.start is not None
+            else None
+        ),
+        "end_date": (
+            date_range.end.isoformat()
+            if date_range is not None and date_range.end is not None
+            else None
+        ),
         "source": discovery_source_label(sources or config.discovery.sources),
         "sources": [provider.value for provider in (sources or config.discovery.sources)],
         "radius_km": radius,

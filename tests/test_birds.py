@@ -10,6 +10,7 @@ from urllib.parse import parse_qs, urlsplit
 from inky_bird_frame.birds import (
     BirdSpecies,
     BirdWeatherSpecies,
+    DateRange,
     EbirdSpecies,
     ObservationWindow,
     date_range_for_window,
@@ -89,6 +90,28 @@ class InaturalistParsingTests(unittest.TestCase):
         params = parse_qs(urlsplit(url).query)
         self.assertEqual(params["rank"], ["species"])
         self.assertEqual(params["per_page"], ["50"])
+
+    @patch("inky_bird_frame.birds.get_json", return_value={"results": []})
+    def test_fetch_species_counts_uses_explicit_inclusive_dates(self, get_json: MagicMock) -> None:
+        fetch_inaturalist_birds(
+            latitude=33.6407,
+            longitude=-84.4277,
+            radius_km=11,
+            limit=500,
+            date_range=DateRange(date(2026, 7, 13), date(2026, 7, 16)),
+        )
+
+        params = parse_qs(urlsplit(get_json.call_args.args[0]).query)
+        self.assertEqual(params["d1"], ["2026-07-13"])
+        self.assertEqual(params["d2"], ["2026-07-16"])
+        self.assertEqual(params["radius"], ["11"])
+        self.assertEqual(get_json.call_args.kwargs["error_label"], "iNaturalist API")
+
+    def test_date_range_rejects_partial_or_reversed_dates(self) -> None:
+        with self.assertRaisesRegex(ValueError, "both start and end"):
+            DateRange(date(2026, 7, 13), None)
+        with self.assertRaisesRegex(ValueError, "on or before"):
+            DateRange(date(2026, 7, 16), date(2026, 7, 13))
 
     def test_date_range_for_window(self) -> None:
         today = date(2026, 7, 9)

@@ -6,12 +6,13 @@ import stat
 import unittest
 from argparse import Namespace
 from contextlib import redirect_stdout
+from datetime import date
 from pathlib import Path
 from tempfile import TemporaryDirectory
 from types import SimpleNamespace
 from unittest.mock import patch
 
-from inky_bird_frame.birds import BirdSpecies
+from inky_bird_frame.birds import BirdSpecies, DateRange
 from inky_bird_frame.cli import (
     build_parser,
     catalog_sync_command,
@@ -156,6 +157,58 @@ class CliTests(unittest.TestCase):
         self.assertEqual(args.radius_km, 16)
         self.assertEqual(args.species_limit, 500)
         self.assertTrue(args.dry_run)
+
+    def test_seed_supports_historical_dates_and_coordinates(self) -> None:
+        args = build_parser().parse_args(
+            [
+                "seed",
+                "--config",
+                "instance.toml",
+                "--start-date",
+                "2026-07-13",
+                "--end-date",
+                "2026-07-16",
+                "--source",
+                "inaturalist",
+                "--latitude",
+                "33.6407",
+                "--longitude",
+                "-84.4277",
+                "--radius-km",
+                "11",
+                "--dry-run",
+            ]
+        )
+        with (
+            patch("inky_bird_frame.cli._config", return_value=SimpleNamespace()),
+            patch("inky_bird_frame.cli.enqueue_seed_species", return_value={}) as enqueue,
+            redirect_stdout(io.StringIO()),
+        ):
+            seed_command(args)
+
+        self.assertEqual(
+            enqueue.call_args.kwargs["date_range"],
+            DateRange(start=date(2026, 7, 13), end=date(2026, 7, 16)),
+        )
+        self.assertEqual(enqueue.call_args.kwargs["latitude"], 33.6407)
+        self.assertEqual(enqueue.call_args.kwargs["longitude"], -84.4277)
+        self.assertIsNone(enqueue.call_args.kwargs["window"])
+
+    def test_seed_rejects_incomplete_date_or_coordinate_pairs(self) -> None:
+        common = {
+            "source": ["inaturalist"],
+            "window": None,
+            "start_date": "2026-07-13",
+            "end_date": None,
+            "latitude": 33.6407,
+            "longitude": -84.4277,
+        }
+        with self.assertRaisesRegex(ValueError, "start-date and --end-date"):
+            seed_command(Namespace(**common))
+
+        common.update(end_date="2026-07-16", longitude=None)
+        with self.assertRaisesRegex(ValueError, "latitude and --longitude"):
+            seed_command(Namespace(**common))
 
     def test_species_output_preserves_legacy_source(self) -> None:
         species = BirdSpecies(12942, "Eastern Bluebird", "Sialia sialis", 3, "iNaturalist")

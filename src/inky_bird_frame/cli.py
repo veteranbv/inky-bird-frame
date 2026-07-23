@@ -10,10 +10,11 @@ import signal
 import sys
 import threading
 from contextlib import nullcontext
+from datetime import date
 from pathlib import Path
 from tempfile import NamedTemporaryFile
 
-from .birds import BirdSpecies, ObservationWindow, parse_observation_window
+from .birds import BirdSpecies, DateRange, ObservationWindow, parse_observation_window
 from .catalog import (
     approve_candidate,
     catalog_state_lock,
@@ -311,10 +312,28 @@ def seed_command(args: argparse.Namespace) -> int:
     source_values = args.source
     if source_values is not None and len(source_values) != len(set(source_values)):
         raise ValueError("--source must not repeat a provider")
+    if (args.latitude is None) != (args.longitude is None):
+        raise ValueError("--latitude and --longitude must be provided together")
+    if args.window is not None and args.end_date is not None:
+        raise ValueError("--end-date cannot be combined with --window")
+    date_range = None
+    if args.start_date is not None:
+        if args.end_date is None:
+            raise ValueError("--start-date and --end-date must be provided together")
+        try:
+            date_range = DateRange(
+                start=date.fromisoformat(args.start_date),
+                end=date.fromisoformat(args.end_date),
+            )
+        except ValueError as exc:
+            raise ValueError(f"invalid ISO date range: {exc}") from exc
     print_result(
         enqueue_seed_species(
             _config(args),
-            window=parse_observation_window(args.window),
+            window=parse_observation_window(args.window) if args.window is not None else None,
+            date_range=date_range,
+            latitude=args.latitude,
+            longitude=args.longitude,
             sources=(
                 tuple(DiscoveryProvider(value) for value in source_values)
                 if source_values is not None
@@ -784,11 +803,13 @@ def build_parser() -> argparse.ArgumentParser:
         help="Queue distinct species from a broader observation window for generation",
     )
     add_config_argument(seed_parser)
-    seed_parser.add_argument(
+    seed_period = seed_parser.add_mutually_exclusive_group(required=True)
+    seed_period.add_argument(
         "--window",
-        required=True,
         choices=[window.value for window in ObservationWindow],
     )
+    seed_period.add_argument("--start-date", help="Inclusive observation date (YYYY-MM-DD)")
+    seed_parser.add_argument("--end-date", help="Inclusive observation date (YYYY-MM-DD)")
     seed_parser.add_argument(
         "--source",
         action="append",
@@ -796,6 +817,8 @@ def build_parser() -> argparse.ArgumentParser:
         help="Override discovery with one provider; repeat to select multiple providers",
     )
     seed_parser.add_argument("--radius-km", type=int)
+    seed_parser.add_argument("--latitude", type=float)
+    seed_parser.add_argument("--longitude", type=float)
     seed_parser.add_argument("--species-limit", type=int)
     seed_parser.add_argument("--dry-run", action="store_true")
     seed_parser.set_defaults(func=seed_command)
