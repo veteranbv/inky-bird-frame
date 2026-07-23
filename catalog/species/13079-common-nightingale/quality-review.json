@@ -1,0 +1,29 @@
+{
+  "anatomy_accuracy": 4,
+  "composition_quality": 5,
+  "findings": [
+    "Minor anatomical issue: the feet and strongly curved claws are somewhat oversized relative to the attached field-reference birds, but remain structurally plausible.",
+    "Minor rendering issue: the pale eye-ring is slightly brighter and more conspicuous than in most reference photos.",
+    "The isolated head and wing studies are clearly supplemental details, not extra appendages on the primary bird; the primary bird has one head, one beak, two anatomically implied wings, two legs, and one tail.",
+    "No material species-identification or text errors were found. Names, family, measurements, habitat, behavior, and visible field marks are supported by the checked sources and reference photos.",
+    "No place name, ZIP code, coordinates, map, or local-observation detail appears."
+  ],
+  "location_free": true,
+  "passed": true,
+  "species_accuracy": 5,
+  "text_accuracy": 5,
+  "verification_sources": [
+    {
+      "title": "Common Nightingale \u2014 Birds of the World",
+      "url": "https://birdsoftheworld.org/bow/species/comnig1/cur/introduction"
+    },
+    {
+      "title": "Luscinia megarhynchos \u2014 Animal Diversity Web",
+      "url": "https://animaldiversity.org/accounts/Luscinia_megarhynchos/"
+    },
+    {
+      "title": "Common nightingale \u2014 Wikipedia",
+      "url": "https://en.wikipedia.org/wiki/Common_nightingale"
+    }
+  ]
+}

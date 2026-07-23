@@ -1,0 +1,42 @@
+{
+  "behavior": "Secretive and often solitary outside the breeding season, usually remaining low in dense cover and foraging on or near the ground for insects and other invertebrates; berries and other fruit are also taken seasonally. Males deliver a powerful, varied song by day and night during the breeding season and defend territories with song and pursuit.",
+  "common_name": "Common Nightingale",
+  "family": "Muscicapidae",
+  "field_marks": [
+    "Plain warm-brown upperparts and unmarked folded wings",
+    "Broad rusty-chestnut tail contrasting with the browner back",
+    "Pale buff-to-whitish throat, breast, and belly",
+    "Large dark eye with a narrow pale eye-ring",
+    "Slim, straight dark bill with a warmer base to the lower mandible",
+    "Compact, upright proportions with slender pinkish-brown legs"
+  ],
+  "habitat": "Dense low scrub, tangled thickets, woodland edges, and young or open woodland with a shaded understory and patches of bare ground; nests are placed on or near the ground within thick vegetation.",
+  "measurements": {
+    "length": "14\u201317 cm",
+    "weight": "18\u201323 g",
+    "wingspan": "20\u201324 cm"
+  },
+  "palette": [
+    "warm brown",
+    "rusty chestnut",
+    "sandy buff",
+    "cream white",
+    "black"
+  ],
+  "scientific_name": "Luscinia megarhynchos",
+  "sources": [
+    {
+      "title": "Luscinia megarhynchos \u2014 Animal Diversity Web",
+      "url": "https://animaldiversity.org/accounts/Luscinia_megarhynchos/"
+    },
+    {
+      "title": "Common Nightingale \u2014 eBird",
+      "url": "https://ebird.org/species/comnig1"
+    },
+    {
+      "title": "Common nightingale \u2014 Wikipedia",
+      "url": "https://en.wikipedia.org/wiki/Common_nightingale"
+    }
+  ],
+  "taxon_id": 13079
+}
