@@ -69,7 +69,9 @@ candidate:
 
 A failed review becomes corrective input for the next attempt. Attempts are
 bounded by configuration, and exhausted work stops for inspection rather than
-publishing. Once a taxon passes, it is never regenerated implicitly.
+publishing. A deliberate `retry` refreshes the cached research and carries the
+final review findings into the first new attempt. Once a taxon passes, it is
+never regenerated implicitly.
 
 Regular application code handles selection, licensing rules, checksums, image
 dimensions, rotation, publishing, downloads, and display state. Codex handles

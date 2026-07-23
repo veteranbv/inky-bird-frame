@@ -752,7 +752,13 @@ def load_or_create_profile(
     return profile, output_path
 
 
-def generate_candidate(config: AppConfig, species: BirdSpecies, workspace: Path) -> Path:
+def generate_candidate(
+    config: AppConfig,
+    species: BirdSpecies,
+    workspace: Path,
+    *,
+    initial_correction_findings: tuple[str, ...] = (),
+) -> Path:
     state_dir = config.controller.state_dir
     if species.taxon_id in approved_taxon_ids(config.controller.catalog_dir):
         raise CatalogError(f"Taxon {species.taxon_id} is already approved")
@@ -785,7 +791,7 @@ def generate_candidate(config: AppConfig, species: BirdSpecies, workspace: Path)
             profile_output_path,
             logs / "01-profile.log",
         )
-        correction_findings: tuple[str, ...] = ()
+        correction_findings = initial_correction_findings
         history: list[dict[str, object]] = []
         for attempt in range(1, config.controller.max_generation_attempts + 1):
             attempt_dir = work / f"attempt-{attempt:02d}"
@@ -942,7 +948,16 @@ def run_generation_cycle(config: AppConfig) -> dict[str, object]:
                 continue
             attempted_count += 1
             try:
-                generate_candidate(config, species, config.controller.workspace_dir)
+                guidance = retry_store.quality_guidance(species.taxon_id)
+                if guidance is None:
+                    generate_candidate(config, species, config.controller.workspace_dir)
+                else:
+                    generate_candidate(
+                        config,
+                        species,
+                        config.controller.workspace_dir,
+                        initial_correction_findings=guidance.findings,
+                    )
                 with catalog_state_lock(config.controller.state_dir):
                     entry = approve_candidate(
                         config.controller.state_dir,
@@ -957,6 +972,7 @@ def run_generation_cycle(config: AppConfig) -> dict[str, object]:
                     }
                 )
                 retry_store.clear(species.taxon_id)
+                retry_store.clear_quality_guidance(species.taxon_id)
             except InsufficientReferencesError as exc:
                 retry = retry_store.record_failure(
                     species.taxon_id,
@@ -994,6 +1010,7 @@ def run_generation_cycle(config: AppConfig) -> dict[str, object]:
                 )
             except QualityReviewError as exc:
                 retry_store.clear(species.taxon_id)
+                retry_store.clear_quality_guidance(species.taxon_id)
                 failure_path = record_failure(config.controller.state_dir, species, exc)
                 failures.append(
                     {

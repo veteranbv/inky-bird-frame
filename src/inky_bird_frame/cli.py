@@ -41,7 +41,7 @@ from .controller import (
 )
 from .display import show_on_inky
 from .display_node import run_display_cycle
-from .errors import InkyBirdFrameError
+from .errors import InkyBirdFrameError, SpeciesStateError
 from .images import prepare_uploaded_image
 from .installation import InstallationRole, doctor, setup
 from .notifications import (
@@ -365,12 +365,39 @@ def reject_command(args: argparse.Namespace) -> int:
     return 0
 
 
+def _latest_quality_findings(failed_directories: list[Path]) -> tuple[str, ...]:
+    if not failed_directories:
+        return ()
+    attempts = sorted(failed_directories[-1].glob("attempt-*"))
+    if not attempts:
+        return ()
+    review_path = attempts[-1] / "quality-review.json"
+    if not review_path.is_file():
+        return ()
+    try:
+        review = json.loads(review_path.read_text())
+    except (json.JSONDecodeError, UnicodeDecodeError) as exc:
+        raise SpeciesStateError(f"Invalid quality review: {review_path}") from exc
+    if not isinstance(review, dict) or review.get("passed") is not False:
+        raise SpeciesStateError(f"Invalid failed quality review: {review_path}")
+    findings = review.get("findings")
+    if not isinstance(findings, list) or any(
+        not isinstance(finding, str) or not finding.strip() for finding in findings
+    ):
+        raise SpeciesStateError(f"Invalid quality review findings: {review_path}")
+    return tuple(findings)
+
+
 def retry_command(args: argparse.Namespace) -> int:
     config = _config(args)
     with exclusive_cycle_lock(config.controller.state_dir):
         if find_taxon_directory(config.controller.state_dir / "pending", args.taxon_id):
             raise ValueError("Pending candidates must be approved or rejected before retrying")
-        sources = list((config.controller.state_dir / "failed").glob(f"{args.taxon_id}-*"))
+        failed_directories = sorted(
+            (config.controller.state_dir / "failed").glob(f"{args.taxon_id}-*")
+        )
+        quality_findings = _latest_quality_findings(failed_directories)
+        sources = list(failed_directories)
         rejected = find_taxon_directory(config.controller.state_dir / "rejected", args.taxon_id)
         if rejected is not None:
             sources.append(rejected)
@@ -400,6 +427,9 @@ def retry_command(args: argparse.Namespace) -> int:
             shutil.move(str(source), destination)
             moved.append(str(destination))
         retry_store.clear(args.taxon_id)
+        guidance = retry_store.quality_guidance(args.taxon_id)
+        if quality_findings:
+            guidance = retry_store.set_quality_guidance(args.taxon_id, quality_findings)
     print_result(
         {
             "taxon_id": args.taxon_id,
@@ -408,6 +438,9 @@ def retry_command(args: argparse.Namespace) -> int:
             "cleared_deferred_retry": deferred,
             "cleared_cached_profile": cleared_cached_profile,
             "cleared_cached_references": cleared_cached_references,
+            "preserved_quality_findings_count": (
+                len(guidance.findings) if guidance is not None else 0
+            ),
         }
     )
     return 0

@@ -5,7 +5,8 @@ from datetime import UTC, datetime, timedelta
 from pathlib import Path
 from tempfile import TemporaryDirectory
 
-from inky_bird_frame.retry import RetryStore
+from inky_bird_frame.errors import CatalogError
+from inky_bird_frame.retry import RetryGuidance, RetryStore
 
 
 class RetryStoreTests(unittest.TestCase):
@@ -50,6 +51,44 @@ class RetryStoreTests(unittest.TestCase):
 
         self.assertEqual(record.next_attempt_at, now + timedelta(days=7))
         self.assertIsNone(store.get(42))
+
+    def test_quality_guidance_is_durable_and_independent_from_backoff(self) -> None:
+        now = datetime(2026, 7, 10, tzinfo=UTC)
+        with TemporaryDirectory() as temporary:
+            path = Path(temporary) / "retries.json"
+            store = RetryStore(path)
+            store.record_failure(
+                42,
+                RuntimeError("temporary"),
+                now=now,
+                initial_minutes=30,
+                maximum_minutes=60,
+            )
+            guidance = store.set_quality_guidance(42, ("Correct the scale",))
+            store.clear(42)
+            reloaded = RetryStore(path)
+
+            self.assertEqual(
+                guidance,
+                RetryGuidance(taxon_id=42, findings=("Correct the scale",)),
+            )
+            self.assertIsNone(reloaded.get(42))
+            self.assertEqual(reloaded.quality_guidance(42), guidance)
+
+            reloaded.clear_quality_guidance(42)
+
+            self.assertIsNone(RetryStore(path).quality_guidance(42))
+
+    def test_invalid_quality_guidance_is_rejected(self) -> None:
+        with TemporaryDirectory() as temporary:
+            path = Path(temporary) / "retries.json"
+            path.write_text(
+                '{"schema_version":1,"records":[],"quality_guidance":'
+                '[{"taxon_id":42,"findings":[]}]}'
+            )
+
+            with self.assertRaisesRegex(CatalogError, "Invalid retry quality guidance"):
+                RetryStore(path)
 
 
 if __name__ == "__main__":
