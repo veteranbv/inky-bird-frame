@@ -27,7 +27,7 @@ from inky_bird_frame.cli import (
     species_to_dict,
 )
 from inky_bird_frame.config import DiscoveryProvider
-from inky_bird_frame.controller import exclusive_cycle_lock
+from inky_bird_frame.controller import REVIEW_FAILURE_FALLBACK, exclusive_cycle_lock
 from inky_bird_frame.errors import (
     ConfigurationError,
     DataSourceError,
@@ -392,7 +392,10 @@ rotation_mode = "shuffle_bag"
             state_dir = Path(temporary)
             failed = state_dir / "failed/42-example-bird"
             failed.mkdir(parents=True)
-            review = failed / "attempt-03/quality-review.json"
+            old_review = failed / "attempt-99/quality-review.json"
+            old_review.parent.mkdir()
+            old_review.write_text(json.dumps({"passed": False, "findings": ["Outdated finding"]}))
+            review = failed / "attempt-100/quality-review.json"
             review.parent.mkdir()
             review.write_text(
                 json.dumps({"passed": False, "findings": ["Correct the ruler scale"]})
@@ -422,6 +425,26 @@ rotation_mode = "shuffle_bag"
         self.assertIsNotNone(guidance)
         if guidance is not None:
             self.assertEqual(guidance.findings, ("Correct the ruler scale",))
+
+    def test_retry_preserves_fallback_for_empty_quality_findings(self) -> None:
+        with TemporaryDirectory() as temporary:
+            state_dir = Path(temporary)
+            review = state_dir / "failed/42-example-bird/attempt-01/quality-review.json"
+            review.parent.mkdir(parents=True)
+            review.write_text(json.dumps({"passed": False, "findings": []}))
+            config = SimpleNamespace(controller=SimpleNamespace(state_dir=state_dir))
+            output = io.StringIO()
+
+            with patch("inky_bird_frame.cli._config", return_value=config), redirect_stdout(output):
+                retry_command(Namespace(taxon_id=42))
+
+            result = json.loads(output.getvalue())["data"]
+            guidance = RetryStore(state_dir / "generation-retries.json").quality_guidance(42)
+
+        self.assertEqual(result["preserved_quality_findings_count"], 1)
+        self.assertIsNotNone(guidance)
+        if guidance is not None:
+            self.assertEqual(guidance.findings, (REVIEW_FAILURE_FALLBACK,))
 
     def test_retry_rejects_malformed_quality_review_before_archiving(self) -> None:
         with TemporaryDirectory() as temporary:

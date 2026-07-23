@@ -31,6 +31,7 @@ from .config import (
     load_config,
 )
 from .controller import (
+    REVIEW_FAILURE_FALLBACK,
     discover_species,
     enqueue_seed_species,
     exclusive_cycle_lock,
@@ -368,10 +369,18 @@ def reject_command(args: argparse.Namespace) -> int:
 def _latest_quality_findings(failed_directories: list[Path]) -> tuple[str, ...]:
     if not failed_directories:
         return ()
-    attempts = sorted(failed_directories[-1].glob("attempt-*"))
+    attempts: list[tuple[int, Path]] = []
+    for attempt_path in failed_directories[-1].glob("attempt-*"):
+        try:
+            attempt_number = int(attempt_path.name.removeprefix("attempt-"))
+        except ValueError as exc:
+            raise SpeciesStateError(f"Invalid generation attempt: {attempt_path}") from exc
+        if attempt_number <= 0 or not attempt_path.is_dir():
+            raise SpeciesStateError(f"Invalid generation attempt: {attempt_path}")
+        attempts.append((attempt_number, attempt_path))
     if not attempts:
         return ()
-    review_path = attempts[-1] / "quality-review.json"
+    review_path = max(attempts, key=lambda item: item[0])[1] / "quality-review.json"
     if not review_path.is_file():
         return ()
     try:
@@ -385,7 +394,7 @@ def _latest_quality_findings(failed_directories: list[Path]) -> tuple[str, ...]:
         not isinstance(finding, str) or not finding.strip() for finding in findings
     ):
         raise SpeciesStateError(f"Invalid quality review findings: {review_path}")
-    return tuple(findings)
+    return tuple(findings) or (REVIEW_FAILURE_FALLBACK,)
 
 
 def retry_command(args: argparse.Namespace) -> int:

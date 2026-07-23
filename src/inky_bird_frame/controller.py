@@ -62,6 +62,8 @@ from .research import ResearchBudget
 from .retry import RetryStore
 from .timeutil import parse_utc_timestamp
 
+REVIEW_FAILURE_FALLBACK = "The previous attempt did not meet every automated review threshold."
+
 
 @dataclass(frozen=True)
 class DiscoverySnapshot:
@@ -846,9 +848,7 @@ def generate_candidate(
                     raise CatalogError(f"Pending destination already exists: {destination}")
                 shutil.copytree(attempt_dir, destination)
                 return destination
-            correction_findings = review.findings or (
-                "The previous attempt did not meet every automated review threshold.",
-            )
+            correction_findings = review.findings or (REVIEW_FAILURE_FALLBACK,)
 
         failed = state_dir / "failed" / f"{species.taxon_id}-{_timestamp()}"
         failed.parent.mkdir(parents=True, exist_ok=True)
