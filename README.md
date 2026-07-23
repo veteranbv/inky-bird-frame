@@ -218,6 +218,13 @@ uv run inky-bird-frame generate --config config.toml
 uv run inky-bird-frame seed --config config.toml --source inaturalist \
   --window last-year --species-limit 500
 
+# Queue species from one historical place and inclusive date range without
+# changing the configured discovery location or active display window.
+uv run inky-bird-frame seed --config config.toml --source inaturalist \
+  --latitude 40.7128 --longitude -74.0060 --radius-km 11 \
+  --start-date 2026-04-01 --end-date 2026-04-03 \
+  --species-limit 500 --dry-run
+
 # Inspect approved, pending, and failed work.
 uv run inky-bird-frame status --config config.toml
 

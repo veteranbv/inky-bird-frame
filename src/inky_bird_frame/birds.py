@@ -89,6 +89,12 @@ class DateRange:
     start: date | None
     end: date | None
 
+    def __post_init__(self) -> None:
+        if (self.start is None) != (self.end is None):
+            raise ValueError("date range requires both start and end dates")
+        if self.start is not None and self.end is not None and self.start > self.end:
+            raise ValueError("start date must be on or before end date")
+
     def as_query_params(self) -> dict[str, str]:
         params: dict[str, str] = {}
         if self.start is not None:
@@ -170,6 +176,7 @@ def fetch_inaturalist_birds(
     radius_km: int,
     limit: int,
     window: ObservationWindow = ObservationWindow.ALL_TIME,
+    date_range: DateRange | None = None,
     today: date | None = None,
     timeout_seconds: float = 10.0,
 ) -> list[BirdSpecies]:
@@ -188,7 +195,8 @@ def fetch_inaturalist_birds(
         "photos": "true",
         "per_page": str(limit),
     }
-    query_params.update(date_range_for_window(window, today).as_query_params())
+    selected_dates = date_range or date_range_for_window(window, today)
+    query_params.update(selected_dates.as_query_params())
     params = urlencode(query_params)
     payload = get_json(
         f"https://api.inaturalist.org/v1/observations/species_counts?{params}",

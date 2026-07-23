@@ -112,9 +112,21 @@ inky-bird-frame seed --config /path/to/config.toml \
   --source inaturalist --window last-year --species-limit 500
 ```
 
+To seed a historical trip or event, preview an inclusive iNaturalist date range
+around a command-scoped coordinate before applying the same command:
+
+```bash
+inky-bird-frame seed --config /path/to/config.toml \
+  --source inaturalist --latitude 40.7128 --longitude -74.0060 \
+  --radius-km 11 --start-date 2026-04-01 --end-date 2026-04-03 \
+  --species-limit 500 --dry-run
+```
+
 The configured source is used unless `--source` is provided. eBird cannot query
-beyond 30 days, so historical seeds must use iNaturalist. The configured radius
-is used unless `--radius-km` is provided. Repeating a seed
+beyond 30 days or guarantee arbitrary coordinate-radius historical windows, so
+exact date ranges require iNaturalist. `--latitude` and `--longitude` must be
+provided together and do not change the configured location. The configured
+radius is used unless `--radius-km` is provided. Repeating a seed
 is idempotent: approved, terminal, and already queued taxa are not added again.
 Current observations remain ahead of seed-only taxa during generation.
 

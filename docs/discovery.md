@@ -183,6 +183,23 @@ inky-bird-frame seed --config /path/to/config.toml \
   --source inaturalist --window last-year --species-limit 500
 ```
 
+For an exact historical place-and-time window, provide both coordinates and
+both inclusive ISO dates. This command-scoped location does not alter the
+configured discovery location:
+
+```bash
+inky-bird-frame seed --config /path/to/config.toml \
+  --source inaturalist --latitude 40.7128 --longitude -74.0060 \
+  --radius-km 11 --start-date 2026-04-01 --end-date 2026-04-03 \
+  --species-limit 500 --dry-run
+```
+
+Exact date ranges require iNaturalist because the other configured providers
+cannot guarantee the same coordinate-radius historical query semantics. Run
+without `--dry-run` only after reviewing the structured result. The seed stores
+distinct taxa in the generation queue, not raw observation records or the
+command-scoped coordinates.
+
 Repeat `--source` for a multi-provider seed, for example `--source inaturalist
 --source ebird`. CLI overrides accept concrete providers rather than legacy
 group aliases.

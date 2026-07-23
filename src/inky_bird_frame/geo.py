@@ -196,7 +196,26 @@ def lookup_geoapify_postcode(
     return parse_geoapify_postcode_response(postal_code, country_code, payload)
 
 
-def resolve_discovery_location(config: DiscoveryConfig) -> DiscoveryLocation:
+def resolve_discovery_location(
+    config: DiscoveryConfig,
+    *,
+    latitude: float | None = None,
+    longitude: float | None = None,
+) -> DiscoveryLocation:
+    if (latitude is None) != (longitude is None):
+        raise ValueError("latitude and longitude must be provided together")
+    if latitude is not None and longitude is not None:
+        valid_latitude = _valid_coordinate(latitude, minimum=-90, maximum=90)
+        valid_longitude = _valid_coordinate(longitude, minimum=-180, maximum=180)
+        if valid_latitude is None or valid_longitude is None:
+            raise ValueError("latitude or longitude is outside the valid range")
+        return DiscoveryLocation(
+            postal_code=None,
+            place_name="",
+            state="",
+            latitude=valid_latitude,
+            longitude=valid_longitude,
+        )
     if config.latitude is not None and config.longitude is not None:
         return DiscoveryLocation(
             postal_code=None,
