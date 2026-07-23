@@ -3,8 +3,16 @@
 # nearby public sightings, and BirdWeather provides detections from one authenticated station.
 # Legacy singular source values remain accepted for compatibility. See docs/discovery.md.
 sources = ["inaturalist"]
-# This location is used only to discover species. It is never rendered on a plate.
+# Choose exactly one location form for iNaturalist or eBird. The legacy five-digit US
+# zip_code remains the no-key path. For any country, use latitude/longitude directly,
+# or use postal_code + country_code with a private Geoapify key. See docs/discovery.md.
 zip_code = "12345"
+# latitude = 0.0
+# longitude = 0.0
+# postal_code = "YOUR_POSTAL_CODE"
+# country_code = "XX"
+# geoapify_api_key = "YOUR_PRIVATE_GEOAPIFY_API_KEY"
+# geoapify_api_key_env = "GEOAPIFY_API_KEY"
 # Eight kilometers is approximately five miles: local enough to feel relevant while
 # usually covering enough observations for variety. Increase it in sparsely observed areas.
 radius_km = 8

@@ -55,7 +55,7 @@ You need:
 - a GitHub connection to clone this public repository;
 - a ChatGPT plan that includes Codex, or an OpenAI API key with separate API
   billing;
-- a five-digit US ZIP code for discovery; and
+- coordinates, or a supported postal-code lookup, for location-based discovery; and
 - administrative access on both computers.
 
 The controller requires Python 3.11 or newer, `git`, `rsync`, `uv`, and Codex
@@ -65,7 +65,7 @@ CLI. The display requires `git`, `rsync`, and Pimoroni's Python environment.
 
 | From | To | Purpose |
 | --- | --- | --- |
-| Controller | Internet HTTPS (TCP 443) | Codex, configured observation services, ZIP lookup, licensed references, and configured research sources |
+| Controller | Internet HTTPS (TCP 443) | Codex, configured observation services and geocoder, licensed references, and configured research sources |
 | Display node | Configured controller TCP port (8793 in the supplied example) | Read-only health, catalog, and image downloads |
 | Setup computer | Display node SSH (TCP 22) | Installation, updates, and troubleshooting |
 
@@ -121,7 +121,8 @@ open -t "$HOME/Library/Application Support/Inky Bird Frame/config.toml"
 
 At minimum, set:
 
-- `discovery.zip_code`;
+- one discovery location from `zip_code`, `postal_code` plus `country_code`, or
+  `latitude` plus `longitude` when iNaturalist or eBird is enabled;
 - `controller.codex_path` to the output of `command -v codex`;
 - `display_node.controller_url` to a name or address the Pi can reach, such as
   `http://bird-controller.local:8793`; and
@@ -345,7 +346,7 @@ controller dependency.
 ## 3. Connect the display to the controller
 
 Create a private display configuration. Do not copy the controller's private
-file because it may contain notification credentials and a private ZIP code.
+file because it may contain credentials and a private discovery location.
 
 ```bash
 cd "$HOME/inky-bird-frame"
@@ -439,7 +440,7 @@ blank the frame.
 
 | Section | Used by | Purpose |
 | --- | --- | --- |
-| `[discovery]` | Controller | Providers, credentials, ZIP, radius, observation window, and species cap |
+| `[discovery]` | Controller | Providers, credentials, location, radius, observation window, and species cap |
 | `[controller]` | Controller | Persistent paths, Codex executable, HTTP bind, and generation bounds |
 | `[research]` | Controller | Bounded fallback research policy and approved domains |
 | `[notifications]` | Controller | Optional Apprise destinations, events, retries, and noise controls |

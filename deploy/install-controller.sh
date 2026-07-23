@@ -164,6 +164,8 @@ from inky_bird_frame.publisher import sync_public_catalog
 executable = app_dir / ".venv/bin/inky-bird-frame"
 config = load_config(config_path)
 environment_credentials = []
+if config.discovery.geoapify_api_key_env:
+    environment_credentials.append("geoapify_api_key_env")
 if DiscoveryProvider.EBIRD in config.discovery.sources and config.discovery.ebird_api_key_env:
     environment_credentials.append("ebird_api_key_env")
 if (

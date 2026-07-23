@@ -79,7 +79,7 @@ inky-bird-frame discover --config /path/to/config.toml
 inky-bird-frame refresh --config /path/to/config.toml
 ```
 
-Check DNS, outbound HTTPS, the ZIP code, and the controller clock. For eBird,
+Check DNS, outbound HTTPS, the configured location, and the controller clock. For eBird,
 also run `config validate` and confirm that the personal API key is available.
 A multi-provider refresh reports each provider independently and continues when
 at least one configured provider is healthy. A refresh failure does not remove
