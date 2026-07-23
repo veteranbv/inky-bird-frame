@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-23T23:18:04+00:00",
+  "generated_at": "2026-07-23T23:28:08+00:00",
   "schema_version": 1,
   "species": [
     {
@@ -793,6 +793,17 @@
       "scientific_name": "Melospiza melodia",
       "slug": "song-sparrow",
       "taxon_id": 9100
+    },
+    {
+      "approved_at": "2026-07-23T23:28:08+00:00",
+      "common_name": "Spotted Flycatcher",
+      "display_path": "species/12971-spotted-flycatcher/display.png",
+      "display_sha256": "cbfef12b96e7cd1a73d7eb2eccb922f8a03d8d5832b3939e79ffa2008fad88ea",
+      "portrait_path": "species/12971-spotted-flycatcher/portrait.png",
+      "portrait_sha256": "481b40f37a3ab052c84bc7b6c299738412d7d447e93026fe49183cf127c27f3a",
+      "scientific_name": "Muscicapa striata",
+      "slug": "spotted-flycatcher",
+      "taxon_id": 12971
     },
     {
       "approved_at": "2026-07-13T07:14:52+00:00",
