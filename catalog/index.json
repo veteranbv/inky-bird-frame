@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-23T23:43:48+00:00",
+  "generated_at": "2026-07-23T23:57:30+00:00",
   "schema_version": 1,
   "species": [
     {
@@ -188,6 +188,17 @@
       "scientific_name": "Spizella passerina",
       "slug": "chipping-sparrow",
       "taxon_id": 9135
+    },
+    {
+      "approved_at": "2026-07-23T23:57:30+00:00",
+      "common_name": "Collared Flycatcher",
+      "display_path": "species/13133-collared-flycatcher/display.png",
+      "display_sha256": "13ac672f7632fef327701379f34bc1bb912f48f355ec8ea7d85948f68f507afe",
+      "portrait_path": "species/13133-collared-flycatcher/portrait.png",
+      "portrait_sha256": "82dc484fad5ed014296ef8a8e768b19a67f3e91d7a061949b350c16fb2567b7a",
+      "scientific_name": "Ficedula albicollis",
+      "slug": "collared-flycatcher",
+      "taxon_id": 13133
     },
     {
       "approved_at": "2026-07-23T13:10:32+00:00",

@@ -1,0 +1,42 @@
+{
+  "behavior": "An active insectivore that watches from exposed perches, makes short aerial sallies for flying prey, and also gleans caterpillars and other invertebrates from foliage; berries are taken occasionally. It nests in tree cavities and readily uses nest boxes.",
+  "common_name": "Collared Flycatcher",
+  "family": "Muscicapidae",
+  "field_marks": [
+    "Small, compact, relatively large-headed flycatcher with an upright perching stance.",
+    "Short, blackish bill is broad at the base and sharply pointed; eye is large and dark.",
+    "Legs and feet are slender and slate gray.",
+    "Breeding male is black above and white below, with a complete white collar and bold white forehead patch.",
+    "Large white wing patch and pale-to-white rump contrast strongly with the dark wings.",
+    "Tail is fairly long and mostly dark; females and immature birds are gray-brown above but retain a prominent white wing patch."
+  ],
+  "habitat": "Mature deciduous and other broad-leaved woodland with old, cavity-bearing trees; also wooded parks, gardens, orchards, and open woodland. Nonbreeding birds use broad-leaved woodland, including miombo.",
+  "measurements": {
+    "length": "12\u201313.5 cm",
+    "weight": "10\u201317 g",
+    "wingspan": "22\u201324 cm"
+  },
+  "palette": [
+    "jet black",
+    "clean white",
+    "pale gray-brown",
+    "slate gray",
+    "cool blue-gray"
+  ],
+  "scientific_name": "Ficedula albicollis",
+  "sources": [
+    {
+      "title": "Collared Flycatcher \u2014 eBird",
+      "url": "https://ebird.org/species/colfly1"
+    },
+    {
+      "title": "Collared flycatcher \u2014 Wikipedia",
+      "url": "https://en.wikipedia.org/wiki/Collared_flycatcher"
+    },
+    {
+      "title": "Ficedula albicollis \u2014 Italian Wikipedia",
+      "url": "https://it.wikipedia.org/wiki/Ficedula_albicollis"
+    }
+  ],
+  "taxon_id": 13133
+}
