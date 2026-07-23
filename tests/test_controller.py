@@ -737,14 +737,17 @@ class ControllerTests(unittest.TestCase):
 
         class FakeRunner:
             corrections: list[tuple[str, ...]] = []
+            generated_paths: list[Path] = []
+            review_paths: list[Path] = []
             reviews = iter((failed_review, passed_review))
 
-            def __init__(self, _executable: Path, _workspace: Path) -> None:
-                pass
+            def __init__(self, _executable: Path, workspace: Path) -> None:
+                self.workspace = workspace.resolve()
 
             def create_profile(self, *_args: object, **_kwargs: object) -> SpeciesProfileData:
                 output_path = _args[-2]
                 assert isinstance(output_path, Path)
+                assert not output_path.resolve().is_relative_to(self.workspace)
                 output_path.write_text(json.dumps(PROFILE))
                 return PROFILE
 
@@ -753,11 +756,17 @@ class ControllerTests(unittest.TestCase):
                 correction = _args[-1]
                 assert isinstance(output_path, Path)
                 assert isinstance(correction, tuple)
+                self.generated_paths.append(output_path)
+                assert output_path.resolve().is_relative_to(self.workspace)
                 self.corrections.append(correction)
                 output_path.write_bytes(b"generated")
                 return output_path
 
             def review_plate(self, *_args: object, **_kwargs: object) -> QualityReview:
+                portrait_path = _args[3]
+                assert isinstance(portrait_path, Path)
+                self.review_paths.append(portrait_path)
+                assert not portrait_path.resolve().is_relative_to(self.workspace)
                 return next(self.reviews)
 
         def prepare(_source: Path, portrait: Path, display: Path) -> None:
@@ -766,8 +775,11 @@ class ControllerTests(unittest.TestCase):
 
         with TemporaryDirectory() as temporary:
             config_path = Path(temporary) / "config.toml"
-            config_path.write_text(CONFIG)
+            config_path.write_text(
+                CONFIG.replace('workspace_dir = "."', 'workspace_dir = "workspace"')
+            )
             config = load_config(config_path)
+            config.controller.workspace_dir.mkdir()
             with (
                 patch("inky_bird_frame.controller.load_or_fetch_references", return_value=[]),
                 patch("inky_bird_frame.controller.fetch_taxon_context"),
@@ -781,6 +793,8 @@ class ControllerTests(unittest.TestCase):
             )
 
         self.assertEqual(FakeRunner.corrections, [(), ("Crest is too short",)])
+        self.assertEqual(len(FakeRunner.generated_paths), 2)
+        self.assertEqual(len(FakeRunner.review_paths), 2)
         self.assertEqual(manifest["generation"]["attempt"], 2)
         self.assertEqual(manifest["status"], "pending")
         self.assertFalse((candidate / "attempt-history.json").exists())
