@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-23T21:20:28+00:00",
+  "generated_at": "2026-07-23T21:46:02+00:00",
   "schema_version": 1,
   "species": [
     {
@@ -309,6 +309,17 @@
       "scientific_name": "Contopus virens",
       "slug": "eastern-wood-pewee",
       "taxon_id": 16100
+    },
+    {
+      "approved_at": "2026-07-23T21:46:02+00:00",
+      "common_name": "Eurasian Magpie",
+      "display_path": "species/891696-eurasian-magpie/display.png",
+      "display_sha256": "742bc6c29deced0dc86f209a77f6e3ea52b50e3ee56bf39220baca68ea2e87f8",
+      "portrait_path": "species/891696-eurasian-magpie/portrait.png",
+      "portrait_sha256": "3bccd4ef9264471d01623156e3359386f3906b91bf1c2e66c22b59b65db47eda",
+      "scientific_name": "Pica pica",
+      "slug": "eurasian-magpie",
+      "taxon_id": 891696
     },
     {
       "approved_at": "2026-07-13T04:34:30+00:00",

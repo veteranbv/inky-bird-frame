@@ -1,0 +1,153 @@
+{
+  "approved_at": "2026-07-23T21:46:02+00:00",
+  "assets": {
+    "display": {
+      "filename": "display.png",
+      "sha256": "742bc6c29deced0dc86f209a77f6e3ea52b50e3ee56bf39220baca68ea2e87f8"
+    },
+    "portrait": {
+      "filename": "portrait.png",
+      "sha256": "3bccd4ef9264471d01623156e3359386f3906b91bf1c2e66c22b59b65db47eda"
+    }
+  },
+  "common_name": "Eurasian Magpie",
+  "generation": {
+    "attempt": 1,
+    "generated_at": "2026-07-23T21:46:02+00:00",
+    "generator": "Codex subscription / built-in gpt-image-2",
+    "max_attempts": 3,
+    "prompt_version": "field-journal-v2"
+  },
+  "profile": {
+    "behavior": "Conspicuous, intelligent ground-foraging omnivore; walks and hops with the tail often raised, caches food, gives harsh alarm chatter, and commonly travels in pairs, family parties, or larger roosting groups. Flight is usually low, with rapid wingbeats alternating with glides.",
+    "common_name": "Eurasian Magpie",
+    "family": "Corvidae",
+    "field_marks": [
+      "Bold black-and-white plumage with a white belly and scapular patches",
+      "Dark wings and tail show iridescent blue-green or violet gloss",
+      "Very long, graduated tail makes up more than half the adult's length",
+      "Short, rounded wings reveal large white primary patches in flight",
+      "Stout, straight black bill and dark-brown eye",
+      "Black legs and feet"
+    ],
+    "habitat": "Open and semiopen landscapes with scattered trees, including farmland, woodland edges, parks, gardens, and other developed areas. Generally avoids dense forest, extensive wetlands, and treeless country.",
+    "measurements": {
+      "length": "46\u201350 cm",
+      "weight": "185\u2013268 g",
+      "wingspan": "52\u201362 cm"
+    },
+    "palette": [
+      "glossy black",
+      "clean white",
+      "iridescent blue",
+      "metallic green",
+      "violet"
+    ],
+    "scientific_name": "Pica pica",
+    "sources": [
+      {
+        "title": "Eurasian Magpie Identification \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Eurasian_Magpie/id"
+      },
+      {
+        "title": "Eurasian Magpie Life History \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Eurasian_Magpie/lifehistory"
+      },
+      {
+        "title": "Eurasian magpie \u2014 Wikipedia",
+        "url": "https://en.wikipedia.org/wiki/Eurasian_magpie"
+      }
+    ],
+    "taxon_id": 891696
+  },
+  "quality_review": {
+    "anatomy_accuracy": 5,
+    "composition_quality": 5,
+    "findings": [
+      "The principal bird is anatomically coherent: one head, one straight black beak, two normally attached wings with the far wing naturally obscured in the lateral pose, two legs with plausible anisodactyl feet, and one long graduated tail. The separate head and spread-wing studies are clearly auxiliary insets, not duplicated anatomy on the principal bird.",
+      "Species identity is strongly consistent with Eurasian Magpie: bold black-and-white plumage, white belly and scapular area, dark-brown eye, black bill and legs, short rounded wing with white primary panels, blue-green wing gloss, and an exceptionally long iridescent tail all agree with the reference photographs and live identification sources.",
+      "The displayed length of 46\u201350 cm and weight of 185\u2013268 g exactly match the current All About Birds measurements. The 52\u201362 cm wingspan matches the nominate-adult range reported by Wikipedia. Wikipedia gives narrower, sex-specific length and weight figures, so published measurement conventions differ, but the plate's values are directly supported and are not materially erroneous.",
+      "The habitat, diet, food caching, ground-foraging posture, alarm behavior, social grouping, and low flight alternating rapid wingbeats with glides agree with the inspected All About Birds life-history page.",
+      "All visible field-mark statements are supported. The palette is appropriately descriptive rather than implying five discrete pigment colors.",
+      "Minor presentation issue: the right-hand graduated scale has no explicit unit label and is not clearly identified as decorative or diagrammatic, although it does not contradict the written measurements.",
+      "No place name, ZIP code, coordinates, map, observation locality, or other local-observation detail appears on the candidate plate."
+    ],
+    "location_free": true,
+    "passed": true,
+    "species_accuracy": 5,
+    "text_accuracy": 5,
+    "verification_sources": [
+      {
+        "title": "Eurasian Magpie Identification \u2014 All About Birds, Cornell Lab of Ornithology",
+        "url": "https://www.allaboutbirds.org/guide/Eurasian_Magpie/id"
+      },
+      {
+        "title": "Eurasian Magpie Life History \u2014 All About Birds, Cornell Lab of Ornithology",
+        "url": "https://www.allaboutbirds.org/guide/Eurasian_Magpie/lifehistory"
+      },
+      {
+        "title": "Eurasian magpie \u2014 Wikipedia",
+        "url": "https://en.wikipedia.org/wiki/Eurasian_magpie"
+      }
+    ]
+  },
+  "references": [
+    {
+      "attribution": "(c) bitsnbirds, some rights reserved (CC BY)",
+      "filename": "01-199815492.jpeg",
+      "height": 1536,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/199815492/large.jpeg",
+      "license_code": "cc-by",
+      "observation_id": 118281033,
+      "observer": "bitsnbirds",
+      "photo_id": 199815492,
+      "sha256": "61cdd4b51d37f87af61a5a9d8048becf4bd3b51ad2e3cc41189478168d6a2767",
+      "source_url": "https://www.inaturalist.org/observations/118281033",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) Noa, some rights reserved (CC BY)",
+      "filename": "02-229929247.jpeg",
+      "height": 1930,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/229929247/large.jpeg",
+      "license_code": "cc-by",
+      "observation_id": 134852858,
+      "observer": "aminoa",
+      "photo_id": 229929247,
+      "sha256": "e52df91ce7ae4ed7439b621715bf5f381f457f6a5b82554f20335a64318e648d",
+      "source_url": "https://www.inaturalist.org/observations/134852858",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) euqirneto, some rights reserved (CC BY)",
+      "filename": "03-130771798.jpg",
+      "height": 2048,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/130771798/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 79823526,
+      "observer": "euqirneto",
+      "photo_id": 130771798,
+      "sha256": "72541762418eac04b0b5a2dbbd8f98064e96ad46a6a269967eef23e188074afb",
+      "source_url": "https://www.inaturalist.org/observations/79823526",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) Diego Gonz\u00e1lez Dopico, some rights reserved (CC BY)",
+      "filename": "04-623410013.jpg",
+      "height": 1280,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/623410013/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 342345198,
+      "observer": "diegodgd",
+      "photo_id": 623410013,
+      "sha256": "2705ad92da7fa37b7e6e0fc7a9296ad63b6c4f3e996707184b1f1ca5fbd1f561",
+      "source_url": "https://www.inaturalist.org/observations/342345198",
+      "width": 2048
+    }
+  ],
+  "schema_version": 1,
+  "scientific_name": "Pica pica",
+  "slug": "eurasian-magpie",
+  "status": "approved",
+  "taxon_id": 891696
+}
