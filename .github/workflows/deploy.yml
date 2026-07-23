@@ -31,7 +31,9 @@ jobs:
         env:
           # The launchd runner has a system-only PATH; uv is installed by Homebrew.
           UV_BIN: /opt/homebrew/bin/uv
-        run: ./deploy/install-controller.sh
+        # Run in the controller's GUI launchd domain so keychain-backed GitHub
+        # CLI credentials are available without exporting a token into Actions.
+        run: ./deploy/install-controller-via-launchd.sh
 
       - name: Deploy display node
         if: inputs.deploy_display_node
