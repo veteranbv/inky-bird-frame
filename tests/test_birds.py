@@ -105,6 +105,7 @@ class InaturalistParsingTests(unittest.TestCase):
         self.assertEqual(params["d1"], ["2026-07-13"])
         self.assertEqual(params["d2"], ["2026-07-16"])
         self.assertEqual(params["radius"], ["11"])
+        self.assertEqual(get_json.call_args.kwargs["error_label"], "iNaturalist API")
 
     def test_date_range_rejects_partial_or_reversed_dates(self) -> None:
         with self.assertRaisesRegex(ValueError, "both start and end"):

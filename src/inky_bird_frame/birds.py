@@ -201,6 +201,7 @@ def fetch_inaturalist_birds(
     payload = get_json(
         f"https://api.inaturalist.org/v1/observations/species_counts?{params}",
         timeout_seconds,
+        error_label="iNaturalist API",
     )
     return parse_inaturalist_species_counts(payload)
 
