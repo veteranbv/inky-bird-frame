@@ -341,6 +341,18 @@ class ConfigTests(unittest.TestCase):
             with self.assertRaisesRegex(ConfigurationError, "two-letter ISO"):
                 load_config(path)
 
+    def test_rejects_country_code_that_expands_during_case_folding(self) -> None:
+        configured = CONFIG.replace(
+            'zip_code = "12345"',
+            'postal_code = "10115"\ncountry_code = "ß"\ngeoapify_api_key = "secret"',
+        )
+        with TemporaryDirectory() as temporary:
+            path = Path(temporary) / "config.toml"
+            path.write_text(configured)
+
+            with self.assertRaisesRegex(ConfigurationError, "two-letter ISO"):
+                load_config(path)
+
     def test_loads_coordinate_location(self) -> None:
         configured = CONFIG.replace(
             'zip_code = "12345"',

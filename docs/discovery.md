@@ -28,8 +28,8 @@ do not disclose a postal code to a geocoder, and cannot become ambiguous:
 
 ```toml
 [discovery]
-latitude = 51.501009
-longitude = -0.141588
+latitude = 0.0
+longitude = 0.0
 ```
 
 For postal-code convenience, use [Geoapify's Postcode API](https://apidocs.geoapify.com/docs/postcode/).
@@ -38,9 +38,9 @@ Create a Geoapify key and keep it in the private configuration:
 
 ```toml
 [discovery]
-postal_code = "SW1A 1AA"
-country_code = "gb"
-geoapify_api_key = "your-private-api-key"
+postal_code = "YOUR_POSTAL_CODE"
+country_code = "XX"
+geoapify_api_key = "YOUR_PRIVATE_GEOAPIFY_API_KEY"
 ```
 
 For commands you run yourself, `geoapify_api_key_env = "GEOAPIFY_API_KEY"` is

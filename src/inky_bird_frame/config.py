@@ -453,9 +453,14 @@ def load_config(path: Path, *, load_secrets: bool = True) -> AppConfig:
         raise ConfigurationError("zip_code must be a five digit US ZIP code")
     postal_code = _string(discovery, "postal_code") if has_postal_code else None
     if postal_code is not None:
-        country_code = _string(discovery, "country_code").casefold()
-        if len(country_code) != 2 or not country_code.isascii() or not country_code.isalpha():
+        raw_country_code = _string(discovery, "country_code")
+        if (
+            len(raw_country_code) != 2
+            or not raw_country_code.isascii()
+            or not raw_country_code.isalpha()
+        ):
             raise ConfigurationError("country_code must be a two-letter ISO 3166-1 code")
+        country_code = raw_country_code.lower()
     else:
         country_code = None
         if "country_code" in discovery:
