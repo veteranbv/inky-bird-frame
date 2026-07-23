@@ -1,0 +1,37 @@
+{
+  "behavior": "Forages in shallow water by standing, stalking, running, or stirring the bottom with its feet, then striking at small aquatic prey. Often occurs singly or in loose groups and nests or roosts communally.",
+  "common_name": "Little Egret",
+  "family": "Ardeidae",
+  "field_marks": [
+    "Small, slender heron with a long neck and compact body",
+    "Usually all-white plumage; occasional dark morph is bluish slate-gray",
+    "Long, thin, dark bill",
+    "Yellow iris with dark lores",
+    "Long blackish legs with contrasting yellow feet",
+    "Long folded wings taper toward a short tail"
+  ],
+  "habitat": "Open fresh, brackish, and coastal wetlands, including lakeshores, rivers, marshes, estuaries, lagoons, mudflats, mangroves, flooded fields, and other shallow waters rich in small fish.",
+  "measurements": {
+    "length": "55\u201365 cm",
+    "weight": "350\u2013550 g",
+    "wingspan": "88\u2013106 cm"
+  },
+  "palette": [
+    "white",
+    "black",
+    "yellow",
+    "slate gray"
+  ],
+  "scientific_name": "Egretta garzetta",
+  "sources": [
+    {
+      "title": "Little Egret \u2014 eBird",
+      "url": "https://ebird.org/species/litegr"
+    },
+    {
+      "title": "Little egret \u2014 Wikipedia",
+      "url": "https://en.wikipedia.org/wiki/Little_egret"
+    }
+  ],
+  "taxon_id": 4943
+}

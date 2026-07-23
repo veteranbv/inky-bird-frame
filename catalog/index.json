@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-23T22:49:55+00:00",
+  "generated_at": "2026-07-23T23:08:30+00:00",
   "schema_version": 1,
   "species": [
     {
@@ -496,6 +496,17 @@
       "scientific_name": "Charadrius vociferus",
       "slug": "killdeer",
       "taxon_id": 4793
+    },
+    {
+      "approved_at": "2026-07-23T23:08:30+00:00",
+      "common_name": "Little Egret",
+      "display_path": "species/4943-little-egret/display.png",
+      "display_sha256": "aaf8d5516b6451a7b1f723b16c832035390d852ff9bffbc0d2772770d34c368a",
+      "portrait_path": "species/4943-little-egret/portrait.png",
+      "portrait_sha256": "9847eae58129e0f29429c4c1b5a7333be1991394b9ff8ea96c8623d6be822393",
+      "scientific_name": "Egretta garzetta",
+      "slug": "little-egret",
+      "taxon_id": 4943
     },
     {
       "approved_at": "2026-07-10T17:55:25+00:00",
