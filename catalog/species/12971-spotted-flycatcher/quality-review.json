@@ -1,0 +1,36 @@
+{
+  "anatomy_accuracy": 5,
+  "composition_quality": 4,
+  "findings": [
+    "Species identity is correct: the gray-brown upperparts, pale underparts, streaked crown/throat/upper breast, long folded wings, relatively long tail, dark eye, pointed broad-based bill, and short dark legs agree with the reference photographs and live species accounts.",
+    "The main figure is anatomically coherent, with one head, one beak, two wings (the far wing is naturally occluded in the lateral pose), two legs, and one tail. The separate head and wing studies are clearly presented as anatomical insets, not attached duplicates.",
+    "The common name, scientific name, and family are correct.",
+    "The stated measurements are supportable: configured live pages give length around 13.5\u201315 cm, wingspan approximately 23\u201325.5 cm, and commonly cited mass of 14\u201320 g. The displayed 13.5\u201315 cm, 23\u201325 cm, and 14\u201320 g ranges are accurate.",
+    "The habitat, upright-perching and sallying behavior, repeated return to a perch, and migratory status agree with the live accounts.",
+    "All six written field-mark claims are consistent with the verified descriptions and attached references. No material plumage, proportion, bill, eye, wing, tail, leg, or foot error was found.",
+    "Minor presentation issue: the vertical tick scale has no numbers or units, so it is decorative rather than scientifically interpretable.",
+    "No place name, ZIP code, coordinates, map, or local-observation detail appears."
+  ],
+  "location_free": true,
+  "passed": true,
+  "species_accuracy": 5,
+  "text_accuracy": 5,
+  "verification_sources": [
+    {
+      "title": "Spotted Flycatcher \u2014 eBird",
+      "url": "https://ebird.org/species/spofly1/CZ-PR"
+    },
+    {
+      "title": "Spotted Flycatcher \u2014 Birds of the World",
+      "url": "https://birdsoftheworld.org/bow/species/spofly1/cur/introduction"
+    },
+    {
+      "title": "Spotted flycatcher \u2014 Wikipedia",
+      "url": "https://en.wikipedia.org/wiki/Spotted_flycatcher"
+    },
+    {
+      "title": "Mucho\u0142\u00f3wka szara \u2014 Wikipedia",
+      "url": "https://pl.wikipedia.org/wiki/Mucho%C5%82%C3%B3wka_szara"
+    }
+  ]
+}

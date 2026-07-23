@@ -1,0 +1,42 @@
+{
+  "behavior": "Often perches upright in the open, making short sallies to catch flying insects and frequently returning to the same perch; migratory.",
+  "common_name": "Spotted Flycatcher",
+  "family": "Muscicapidae",
+  "field_marks": [
+    "Slim bird with an upright stance, long wings, and a relatively long tail",
+    "Dull gray-brown upperparts with narrow pale edging on wing and tail feathers",
+    "Off-white underparts with fine brown streaking across the throat and upper breast",
+    "Brown-streaked crown with a subtle pale area around the eye",
+    "Large dark eye and a broad-based, sharply pointed black bill",
+    "Short, dark legs and feet"
+  ],
+  "habitat": "Open deciduous and mixed woodland with clearings or scattered trees; also scrub, parkland, large gardens, orchards, and plantations.",
+  "measurements": {
+    "length": "13.5\u201315 cm",
+    "weight": "14\u201320 g",
+    "wingspan": "23\u201325 cm"
+  },
+  "palette": [
+    "gray-brown",
+    "off-white",
+    "dark brown",
+    "black",
+    "pale buff"
+  ],
+  "scientific_name": "Muscicapa striata",
+  "sources": [
+    {
+      "title": "Spotted Flycatcher \u2014 eBird",
+      "url": "https://ebird.org/species/spofly1"
+    },
+    {
+      "title": "Spotted flycatcher \u2014 Wikipedia",
+      "url": "https://en.wikipedia.org/wiki/Spotted_flycatcher"
+    },
+    {
+      "title": "Muscicapa striata \u2014 Wikipedia (Spanish)",
+      "url": "https://es.wikipedia.org/wiki/Muscicapa_striata"
+    }
+  ],
+  "taxon_id": 12971
+}
