@@ -466,6 +466,8 @@ class PublisherTests(unittest.TestCase):
             "country_code",
             "geocoder",
             "geocoder_attribution",
+            "geoapify_api_key",
+            "geoapify_api_key_env",
         ):
             with self.subTest(field=field), TemporaryDirectory() as temporary:
                 catalog = Path(temporary) / "catalog"

@@ -250,6 +250,26 @@ display_startup_delay_seconds = 30
                 ):
                     setup(InstallationRole.CONTROLLER, config, apply=False)
 
+    def test_managed_controller_rejects_geoapify_environment_credential(self) -> None:
+        with TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            codex = root / "codex"
+            codex.touch(mode=0o700)
+            config = write_config(root, codex)
+            config.write_text(
+                config.read_text().replace(
+                    'zip_code = "12345"',
+                    'postal_code = "SW1A 1AA"\n'
+                    'country_code = "gb"\n'
+                    'geoapify_api_key_env = "TEST_PROVIDER_TOKEN"',
+                )
+            )
+            with (
+                patch.dict("os.environ", {"TEST_PROVIDER_TOKEN": "secret"}),
+                self.assertRaisesRegex(InstallationError, "geoapify_api_key_env"),
+            ):
+                setup(InstallationRole.CONTROLLER, config, apply=False)
+
     def test_setup_uses_explicit_source_checkout(self) -> None:
         with TemporaryDirectory() as temporary:
             root = Path(temporary)

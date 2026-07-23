@@ -49,6 +49,8 @@ _PRIVATE_KEYS = frozenset(
         "country_code",
         "geocoder",
         "geocoder_attribution",
+        "geoapify_api_key",
+        "geoapify_api_key_env",
         "latitude",
         "longitude",
         "observation_count",

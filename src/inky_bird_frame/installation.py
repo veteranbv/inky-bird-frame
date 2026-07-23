@@ -644,6 +644,8 @@ def setup(
     config = load_config(config_path)
     if role is InstallationRole.CONTROLLER:
         environment_credentials: list[str] = []
+        if config.discovery.geoapify_api_key_env is not None:
+            environment_credentials.append("geoapify_api_key_env")
         if (
             DiscoveryProvider.EBIRD in config.discovery.sources
             and config.discovery.ebird_api_key_env is not None
