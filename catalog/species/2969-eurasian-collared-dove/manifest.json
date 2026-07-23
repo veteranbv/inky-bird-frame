@@ -1,0 +1,157 @@
+{
+  "approved_at": "2026-07-23T22:49:55+00:00",
+  "assets": {
+    "display": {
+      "filename": "display.png",
+      "sha256": "277e81d27c1ca6d6993423ae57a6b684ffe67eaa0777dab2c7813bc8cc1f56c5"
+    },
+    "portrait": {
+      "filename": "portrait.png",
+      "sha256": "6f8b25cf1c3a96b0dc2706cd98bbcbebee3a1adb77478f723ebea69ca22aa4e2"
+    }
+  },
+  "common_name": "Eurasian Collared-Dove",
+  "generation": {
+    "attempt": 1,
+    "generated_at": "2026-07-23T22:49:55+00:00",
+    "generator": "Codex subscription / built-in gpt-image-2",
+    "max_attempts": 3,
+    "prompt_version": "field-journal-v2"
+  },
+  "profile": {
+    "behavior": "Mostly forages while walking on the ground, taking seeds and spilled grain, often in flocks outside the breeding season. Commonly perches on wires, poles, and tall trees. Males give a repeated three-syllable coo and perform a steep climbing flight followed by a gliding, tail-spread descent.",
+    "common_name": "Eurasian Collared-Dove",
+    "family": "Columbidae",
+    "field_marks": [
+      "Pale gray-buff body with slightly darker sandy-brown wings",
+      "Narrow black crescent across the back of the neck",
+      "Small rounded head, thin dark bill, and dark reddish eye",
+      "Pink legs and feet",
+      "Broad, slightly rounded wings with darker tips",
+      "Long, square-tipped tail with broad white outer and terminal patches"
+    ],
+    "habitat": "Open and semi-open habitats, especially suburbs, farmyards, fields, wood edges, and dry country with scattered trees. Often occurs where seed or grain is readily available and generally avoids dense forest.",
+    "measurements": {
+      "length": "29\u201332 cm",
+      "weight": "150\u2013200 g",
+      "wingspan": "46\u201348 cm"
+    },
+    "palette": [
+      "warm gray",
+      "sandy brown",
+      "black",
+      "white",
+      "dusty pink"
+    ],
+    "scientific_name": "Streptopelia decaocto",
+    "sources": [
+      {
+        "title": "Eurasian Collared-Dove Identification \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Eurasian_Collared-Dove/id"
+      },
+      {
+        "title": "Eurasian Collared-Dove Life History \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Eurasian_Collared-Dove/lifehistory"
+      },
+      {
+        "title": "Eurasian Collared-Dove \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/eurasian-collared-dove"
+      }
+    ],
+    "taxon_id": 2969
+  },
+  "quality_review": {
+    "anatomy_accuracy": 5,
+    "composition_quality": 4,
+    "findings": [
+      "Species identity and taxonomy are correct: Eurasian Collared-Dove, Streptopelia decaocto, family Columbidae.",
+      "The main specimen has one head, one beak, two anatomically consistent wings, two legs with plausible dove feet, and one tail. The separate head and wing drawings are clearly labeled detail studies rather than malformed duplicate anatomy.",
+      "Overall proportions and field marks agree with the references: plump body, small rounded head, slim dark bill, pale gray-buff plumage, darker sandy upperwings, black nape crescent, pinkish legs, dark wingtips, and a long square-ended tail with white outer and terminal areas.",
+      "Minor species-rendering issue: the main bird's neck crescent is more broken and feather-edged than the clean, narrow half-collar shown in the photographs and source descriptions.",
+      "Minor species-rendering issue: the illustrated iris is broader and more orange-red than the narrow reddish-brown rim usually visible around the large dark pupil.",
+      "The white outer and terminal tail patches are present but less broad and conspicuous than the annotation and source descriptions suggest; this is partly defensible because the plate shows the tail principally from above.",
+      "The printed measurements exactly match Audubon's current values: length 29\u201332 cm, wingspan 46\u201348 cm, and weight 150\u2013200 g. Cornell currently gives a narrower and materially different set\u201429\u201330 cm, 35 cm, and 140\u2013180 g\u2014so the plate's values are defensible but specifically reflect Audubon rather than a consensus range.",
+      "The habitat, feeding, flocking, perching, three-syllable call, and climbing-then-gliding display statements agree with the inspected Cornell and Audubon pages.",
+      "All visible names, labels, prose, units, and palette terms are legible and correctly spelled.",
+      "Minor composition issue: several annotation leaders stop noticeably short of the illustrated feature, and the 0\u201332 cm ruler is not explicitly identified as decorative or tied to the bird's rendered scale.",
+      "No place name, ZIP code, coordinates, map, or local-observation detail appears."
+    ],
+    "location_free": true,
+    "passed": true,
+    "species_accuracy": 4,
+    "text_accuracy": 4,
+    "verification_sources": [
+      {
+        "title": "Eurasian Collared-Dove Identification \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Eurasian_Collared-Dove/id"
+      },
+      {
+        "title": "Eurasian Collared-Dove Life History \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Eurasian_Collared-Dove/lifehistory"
+      },
+      {
+        "title": "Eurasian Collared-Dove \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/eurasian-collared-dove"
+      }
+    ]
+  },
+  "references": [
+    {
+      "attribution": "(c) Radu Teodoreanu, some rights reserved (CC BY)",
+      "filename": "01-614430450.jpg",
+      "height": 1365,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/614430450/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 337930388,
+      "observer": "ra_teo",
+      "photo_id": 614430450,
+      "sha256": "86b5da5f1c7ae2a1c730c1e8222c27e9a6999e7b9ffa91325a4944c45efb396a",
+      "source_url": "https://www.inaturalist.org/observations/337930388",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) Gianni Del Bufalo bygdb, some rights reserved (CC BY)",
+      "filename": "02-260565462.jpeg",
+      "height": 2048,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/260565462/large.jpeg",
+      "license_code": "cc-by",
+      "observation_id": 151050106,
+      "observer": "gianni_del_bufalo",
+      "photo_id": 260565462,
+      "sha256": "83b6dfe8fed94b7bd2ebb17fc6ee31780257debc97f26cdef73915b34cb3ab9c",
+      "source_url": "https://www.inaturalist.org/observations/151050106",
+      "width": 1365
+    },
+    {
+      "attribution": "(c) Pablo F. Dom\u00ednguez, some rights reserved (CC BY)",
+      "filename": "03-474451593.jpeg",
+      "height": 1099,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/474451593/large.jpeg",
+      "license_code": "cc-by",
+      "observation_id": 264043479,
+      "observer": "amantedesaurios",
+      "photo_id": 474451593,
+      "sha256": "b60e2712ed358a08ecfd8f35ca220e89f4caa25a0cdb30ecb628e4f68c81335a",
+      "source_url": "https://www.inaturalist.org/observations/264043479",
+      "width": 1151
+    },
+    {
+      "attribution": "(c) zebedeugalinha, some rights reserved (CC BY)",
+      "filename": "04-453514613.jpeg",
+      "height": 1536,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/453514613/large.jpeg",
+      "license_code": "cc-by",
+      "observation_id": 253298182,
+      "observer": "zebedeugalinha",
+      "photo_id": 453514613,
+      "sha256": "474ab9f9c1829a0f8cce9dc971870818f15071984f6f7513334fa1911bad517b",
+      "source_url": "https://www.inaturalist.org/observations/253298182",
+      "width": 2048
+    }
+  ],
+  "schema_version": 1,
+  "scientific_name": "Streptopelia decaocto",
+  "slug": "eurasian-collared-dove",
+  "status": "approved",
+  "taxon_id": 2969
+}

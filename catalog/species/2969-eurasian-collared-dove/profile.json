@@ -1,0 +1,42 @@
+{
+  "behavior": "Mostly forages while walking on the ground, taking seeds and spilled grain, often in flocks outside the breeding season. Commonly perches on wires, poles, and tall trees. Males give a repeated three-syllable coo and perform a steep climbing flight followed by a gliding, tail-spread descent.",
+  "common_name": "Eurasian Collared-Dove",
+  "family": "Columbidae",
+  "field_marks": [
+    "Pale gray-buff body with slightly darker sandy-brown wings",
+    "Narrow black crescent across the back of the neck",
+    "Small rounded head, thin dark bill, and dark reddish eye",
+    "Pink legs and feet",
+    "Broad, slightly rounded wings with darker tips",
+    "Long, square-tipped tail with broad white outer and terminal patches"
+  ],
+  "habitat": "Open and semi-open habitats, especially suburbs, farmyards, fields, wood edges, and dry country with scattered trees. Often occurs where seed or grain is readily available and generally avoids dense forest.",
+  "measurements": {
+    "length": "29\u201332 cm",
+    "weight": "150\u2013200 g",
+    "wingspan": "46\u201348 cm"
+  },
+  "palette": [
+    "warm gray",
+    "sandy brown",
+    "black",
+    "white",
+    "dusty pink"
+  ],
+  "scientific_name": "Streptopelia decaocto",
+  "sources": [
+    {
+      "title": "Eurasian Collared-Dove Identification \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Eurasian_Collared-Dove/id"
+    },
+    {
+      "title": "Eurasian Collared-Dove Life History \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Eurasian_Collared-Dove/lifehistory"
+    },
+    {
+      "title": "Eurasian Collared-Dove \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/eurasian-collared-dove"
+    }
+  ],
+  "taxon_id": 2969
+}
