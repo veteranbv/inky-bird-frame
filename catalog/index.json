@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-23T21:10:05+00:00",
+  "generated_at": "2026-07-23T21:20:28+00:00",
   "schema_version": 1,
   "species": [
     {
@@ -199,6 +199,17 @@
       "scientific_name": "Quiscalus quiscula",
       "slug": "common-grackle",
       "taxon_id": 9602
+    },
+    {
+      "approved_at": "2026-07-23T21:20:28+00:00",
+      "common_name": "Common Hoopoe",
+      "display_path": "species/20969-common-hoopoe/display.png",
+      "display_sha256": "3f5d444390624c02d7b3f2efcfaacfb43275564bd1f53ca1a94887f95ce73d41",
+      "portrait_path": "species/20969-common-hoopoe/portrait.png",
+      "portrait_sha256": "cb2ba57442d65780841ad0e596b2f415e101b8ec47fdcc6825ccf439b186ed07",
+      "scientific_name": "Upupa epops",
+      "slug": "common-hoopoe",
+      "taxon_id": 20969
     },
     {
       "approved_at": "2026-07-10T13:46:39+00:00",

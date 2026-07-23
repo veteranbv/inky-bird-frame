@@ -1,0 +1,30 @@
+{
+  "anatomy_accuracy": 4,
+  "composition_quality": 5,
+  "findings": [
+    "The primary specimen is anatomically coherent: one head, one bill, two wings with the far wing naturally occluded, two legs, and one tail. The separate lower head and wing are clearly presented as detail studies, not extra appendages.",
+    "Minor anatomical stylization: the eye is somewhat oversized, while the fully raised crest, tail, and folded-wing barring are slightly exaggerated relative to the reference photographs. These do not obscure identification.",
+    "The cinnamon-buff plumage, black-tipped erectile crest, long slender downcurved bill, bold black-and-white wings, dark tail with a broad white band, dark eye, and short gray-brown legs agree with Common Hoopoe.",
+    "Common name, scientific name, family, measurements, habitat, behavior, field marks, and palette are accurate. The stated 25\u201332 cm length, 44\u201348 cm wingspan, and 46\u201389 g weight match the verified species account.",
+    "The centimeter ruler is decorative or ambiguous because it is not aligned with the diagonal bill-to-tail axis; it should not be interpreted as a precise scale measurement.",
+    "No place name, ZIP code, coordinates, map, or local-observation detail appears."
+  ],
+  "location_free": true,
+  "passed": true,
+  "species_accuracy": 5,
+  "text_accuracy": 5,
+  "verification_sources": [
+    {
+      "title": "Eurasian Hoopoe \u2014 eBird",
+      "url": "https://ebird.org/species/hoopoe/UZ"
+    },
+    {
+      "title": "Eurasian hoopoe \u2014 Wikipedia",
+      "url": "https://en.wikipedia.org/wiki/Eurasian_hoopoe"
+    },
+    {
+      "title": "Upupa epops (common hoopoe) \u2014 Animal Diversity Web",
+      "url": "https://animaldiversity.org/accounts/Upupa_epops/"
+    }
+  ]
+}

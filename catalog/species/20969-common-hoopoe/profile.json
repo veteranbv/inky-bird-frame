@@ -1,0 +1,38 @@
+{
+  "behavior": "Usually forages alone on the ground, walking over open patches and probing soil with its long bill for insects and larvae. Flight is fast and undulating with deep wingbeats; the crest is often raised after landing. Nests in cavities.",
+  "common_name": "Common Hoopoe",
+  "family": "Upupidae",
+  "field_marks": [
+    "Warm cinnamon-buff head, neck, and breast",
+    "Tall erectile cinnamon crest with black tips",
+    "Very long, slender, downcurved dark bill",
+    "Broad, rounded wings boldly barred black and white",
+    "Black tail crossed by a broad white band",
+    "Dark eye and short gray-brown legs"
+  ],
+  "habitat": "Semiopen country with bare or lightly vegetated ground for feeding and nearby cavities for nesting, including grassland, heath, farmland, orchards, savanna, wooded steppe, lawns, and forest clearings.",
+  "measurements": {
+    "length": "25\u201332 cm",
+    "weight": "46\u201389 g",
+    "wingspan": "44\u201348 cm"
+  },
+  "palette": [
+    "cinnamon orange",
+    "warm buff",
+    "black",
+    "white",
+    "slate gray"
+  ],
+  "scientific_name": "Upupa epops",
+  "sources": [
+    {
+      "title": "Eurasian Hoopoe \u2014 eBird",
+      "url": "https://ebird.org/species/hoopoe/UZ"
+    },
+    {
+      "title": "Eurasian hoopoe \u2014 Wikipedia",
+      "url": "https://en.wikipedia.org/wiki/Eurasian_hoopoe"
+    }
+  ],
+  "taxon_id": 20969
+}
