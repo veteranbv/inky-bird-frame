@@ -1,6 +1,6 @@
 [project]
 name = "inky-bird-frame"
-version = "0.1.2"
+version = "0.2.0"
 description = "Generate and display reusable bird field-journal plates"
 readme = "README.md"
 requires-python = ">=3.11"
