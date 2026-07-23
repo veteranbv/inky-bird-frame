@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-23T13:02:45+00:00",
+  "generated_at": "2026-07-23T13:15:22+00:00",
   "schema_version": 1,
   "species": [
     {
@@ -190,6 +190,17 @@
       "taxon_id": 9135
     },
     {
+      "approved_at": "2026-07-23T13:10:32+00:00",
+      "common_name": "Common Grackle",
+      "display_path": "species/9602-common-grackle/display.png",
+      "display_sha256": "b53369948ef1947db561eab90214b6ec6bc8881138cf27c6dc9518e2f43652e8",
+      "portrait_path": "species/9602-common-grackle/portrait.png",
+      "portrait_sha256": "c51e841a9f8c3980c328f46845e793261636f18c63134addfda4146185dde2e6",
+      "scientific_name": "Quiscalus quiscula",
+      "slug": "common-grackle",
+      "taxon_id": 9602
+    },
+    {
       "approved_at": "2026-07-10T13:46:39+00:00",
       "common_name": "Common Raven",
       "display_path": "species/8010-common-raven/display.png",
@@ -210,6 +221,17 @@
       "scientific_name": "Geothlypis trichas",
       "slug": "common-yellowthroat",
       "taxon_id": 9721
+    },
+    {
+      "approved_at": "2026-07-23T13:15:22+00:00",
+      "common_name": "Cooper's Hawk",
+      "display_path": "species/1579017-cooper-s-hawk/display.png",
+      "display_sha256": "97aaa0119a34dec07c5615cfd3c033c6e4c269cf670a1971cea7009da0554c1b",
+      "portrait_path": "species/1579017-cooper-s-hawk/portrait.png",
+      "portrait_sha256": "194ad8053b14ef5ebed10bde130e3fa2b48dc1d96afae085cd8e9f295ac5e863",
+      "scientific_name": "Astur cooperii",
+      "slug": "cooper-s-hawk",
+      "taxon_id": 1579017
     },
     {
       "approved_at": "2026-07-10T03:40:16+00:00",

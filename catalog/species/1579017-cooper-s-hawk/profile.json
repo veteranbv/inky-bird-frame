@@ -1,0 +1,46 @@
+{
+  "behavior": "Diurnal, usually solitary ambush predator; watches from concealed perches, then pursues birds and small mammals with rapid, agile flight through vegetation. Typical flight alternates a few stiff wingbeats with short glides.",
+  "common_name": "Cooper's Hawk",
+  "family": "Accipitridae",
+  "field_marks": [
+    "Large head, broad shoulders, and long, lean body",
+    "Short, broad, rounded wings with a very long, rounded tail",
+    "Steely blue-gray upperparts and warm rusty-barred underparts in adults",
+    "Dark cap contrasting with a paler nape; adult eyes red to orange",
+    "Tail crossed by broad dark bands and tipped with white",
+    "Dark hooked bill; yellow legs with strong black talons"
+  ],
+  "habitat": "Forests, open woodlands, wooded edges, riparian groves, parks, and other tree-rich suburban habitats.",
+  "measurements": {
+    "length": "37\u201345 cm (14.6\u201317.7 in)",
+    "weight": "220\u2013680 g (7.8\u201324.0 oz)",
+    "wingspan": "62\u201390 cm (24.4\u201335.4 in)"
+  },
+  "palette": [
+    "steely blue-gray",
+    "rusty red",
+    "charcoal black",
+    "white",
+    "yellow"
+  ],
+  "scientific_name": "Astur cooperii",
+  "sources": [
+    {
+      "title": "Cooper's Hawk Identification \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/coopers_hawk/id"
+    },
+    {
+      "title": "Cooper's Hawk Life History \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Coopers_Hawk/lifehistory"
+    },
+    {
+      "title": "Accipiter cooperii \u2014 Animal Diversity Web",
+      "url": "https://animaldiversity.org/accounts/Accipiter_cooperii/"
+    },
+    {
+      "title": "Cooper's Hawk \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/coopers-hawk"
+    }
+  ],
+  "taxon_id": 1579017
+}

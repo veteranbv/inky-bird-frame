@@ -1,0 +1,34 @@
+{
+  "anatomy_accuracy": 4,
+  "composition_quality": 4,
+  "findings": [
+    "The adult male is identifiable as a Common Grackle: lanky blackbird proportions, long legs and tail, pale-yellow eye, glossy blue-purple head, bronzy-iridescent body, and long heavy bill agree with the references and live identification pages.",
+    "Taxonomy is correct: Common Grackle, Quiscalus quiscula, family Icteridae.",
+    "All printed measurements are correct: length 28\u201334 cm (11.0\u201313.4 in), wingspan 36\u201346 cm (14.2\u201318.1 in), and weight 74\u2013142 g (2.6\u20135.0 oz).",
+    "The habitat, behavior, and six written field marks are consistent with the verified sources.",
+    "Minor anatomical issue: the bill is somewhat too deep, blunt, and pale gray compared with the slimmer, darker bill in the field photographs.",
+    "Minor anatomical issue: the feet and strongly hooked claws are oversized and slightly raptorial relative to the reference birds.",
+    "Minor field-mark issue: the illustrated tail is broadly fanned rather than clearly showing the species' typical narrow, keeled or shallow-V profile.",
+    "The main bird has one head, one beak, two wings with the far wing largely obscured by the lateral pose, two legs, and one tail; no duplicated or missing anatomy is evident.",
+    "The auxiliary wing study is cropped tightly at the left edge, slightly weakening an otherwise clear, balanced, and legible composition.",
+    "No visible factual text is materially erroneous, and no place name, ZIP code, coordinates, map, or local-observation detail appears."
+  ],
+  "location_free": true,
+  "passed": true,
+  "species_accuracy": 4,
+  "text_accuracy": 5,
+  "verification_sources": [
+    {
+      "title": "Common Grackle Identification \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Common_Grackle/id"
+    },
+    {
+      "title": "Common Grackle \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/common-grackle"
+    },
+    {
+      "title": "Quiscalus quiscula \u2014 Animal Diversity Web",
+      "url": "https://animaldiversity.org/accounts/Quiscalus_quiscula/"
+    }
+  ]
+}
