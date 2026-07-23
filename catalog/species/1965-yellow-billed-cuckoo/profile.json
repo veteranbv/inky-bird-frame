@@ -1,0 +1,46 @@
+{
+  "behavior": "Usually solitary or in pairs; forages slowly and often sits motionless within foliage before gleaning caterpillars and other insects or making short aerial sallies. A long-distance migrant with swift, direct flight and deep, pointed-wing beats.",
+  "common_name": "Yellow-billed Cuckoo",
+  "family": "Cuculidae",
+  "field_marks": [
+    "Long, slim body with a very long rounded tail",
+    "Grayish warm-brown upperparts and clean whitish underparts",
+    "Mostly yellow, slightly downcurved bill with a dark upper ridge",
+    "Yellow eye-ring with a subtle dark facial mask",
+    "Rufous-chestnut panels in the wings",
+    "Dark undertail marked with large white spots"
+  ],
+  "habitat": "Dense deciduous woodland, forest edges, leafy thickets, second growth, overgrown orchards, and streamside groves, usually where thick cover is broken by gaps or clearings.",
+  "measurements": {
+    "length": "26\u201330 cm (10.2\u201311.8 in)",
+    "weight": "55\u201365 g (1.9\u20132.3 oz)",
+    "wingspan": "38\u201343 cm (15.0\u201316.9 in)"
+  },
+  "palette": [
+    "warm gray-brown",
+    "clean white",
+    "golden yellow",
+    "rufous chestnut",
+    "charcoal black"
+  ],
+  "scientific_name": "Coccyzus americanus",
+  "sources": [
+    {
+      "title": "Yellow-billed Cuckoo Identification \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Yellow-billed_Cuckoo/id"
+    },
+    {
+      "title": "Yellow-billed Cuckoo Life History \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Yellow-billed_Cuckoo/lifehistory"
+    },
+    {
+      "title": "Yellow-billed Cuckoo \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/yellow-billed-cuckoo"
+    },
+    {
+      "title": "Coccyzus americanus \u2014 Animal Diversity Web",
+      "url": "https://animaldiversity.org/accounts/Coccyzus_americanus/"
+    }
+  ],
+  "taxon_id": 1965
+}

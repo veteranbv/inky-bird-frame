@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-22T09:23:14+00:00",
+  "generated_at": "2026-07-23T13:02:45+00:00",
   "schema_version": 1,
   "species": [
     {
@@ -771,6 +771,17 @@
       "scientific_name": "Hylocichla mustelina",
       "slug": "wood-thrush",
       "taxon_id": 13270
+    },
+    {
+      "approved_at": "2026-07-23T13:02:45+00:00",
+      "common_name": "Yellow-billed Cuckoo",
+      "display_path": "species/1965-yellow-billed-cuckoo/display.png",
+      "display_sha256": "abb12fa9374176135ab3f85c242f47b31e0b83d3dd4a687fe698e9cbdfc0abee",
+      "portrait_path": "species/1965-yellow-billed-cuckoo/portrait.png",
+      "portrait_sha256": "bd2c8a4c6a8498c303e88c5642cef92dd2d16c886246fde08dc063b1c3ed5a31",
+      "scientific_name": "Coccyzus americanus",
+      "slug": "yellow-billed-cuckoo",
+      "taxon_id": 1965
     },
     {
       "approved_at": "2026-07-10T18:34:41+00:00",

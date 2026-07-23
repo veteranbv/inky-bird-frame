@@ -1,0 +1,33 @@
+{
+  "anatomy_accuracy": 4,
+  "composition_quality": 4,
+  "findings": [
+    "Species identity is correct: the long tail, warm-brown upperparts, whitish underparts, yellow eye-ring, blackish facial mask, mostly yellow bill with dark upper mandible, rufous wing panel, and white-marked dark undertail identify Yellow-billed Cuckoo (Coccyzus americanus).",
+    "All measurements are independently verified: length 26\u201330 cm (10.2\u201311.8 in), wingspan 38\u201343 cm (15.0\u201316.9 in), and weight 55\u201365 g (1.9\u20132.3 oz).",
+    "The common name, scientific name, family, habitat, migration, foraging behavior, and listed field marks are accurate; no material text errors were found.",
+    "The main complete bird has one head, one beak, two wings, two legs, and one tail. The additional head and detached wing are clearly diagnostic inset studies rather than anatomical duplications.",
+    "Minor visual issue: the main bird is somewhat fuller-bodied and rounder-headed than the notably slim, flat-headed bird shown in the references.",
+    "Minor visual issue: the undertail is rendered as a narrow black strip with oval white marks beside extensive brown feathers; the diagnostic underside is more characteristically broadly black with large white spots or bands.",
+    "Minor anatomy issue: the feet are stylized and their zygodactyl arrangement\u2014four toes, with two directed forward and two backward\u2014is not clearly legible.",
+    "Minor composition issue: the three measurement lines are presented without labels identifying length, wingspan, and weight, although their order and values match the verified data.",
+    "No place name, ZIP code, coordinates, map, or local-observation detail appears."
+  ],
+  "location_free": true,
+  "passed": true,
+  "species_accuracy": 4,
+  "text_accuracy": 5,
+  "verification_sources": [
+    {
+      "title": "Yellow-billed Cuckoo Identification \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Yellow-billed_Cuckoo/id"
+    },
+    {
+      "title": "Yellow-billed Cuckoo \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/yellow-billed-cuckoo"
+    },
+    {
+      "title": "Coccyzus americanus \u2014 Animal Diversity Web",
+      "url": "https://animaldiversity.org/accounts/Coccyzus_americanus/"
+    }
+  ]
+}

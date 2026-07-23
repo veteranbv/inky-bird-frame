@@ -1,0 +1,159 @@
+{
+  "approved_at": "2026-07-23T13:02:45+00:00",
+  "assets": {
+    "display": {
+      "filename": "display.png",
+      "sha256": "abb12fa9374176135ab3f85c242f47b31e0b83d3dd4a687fe698e9cbdfc0abee"
+    },
+    "portrait": {
+      "filename": "portrait.png",
+      "sha256": "bd2c8a4c6a8498c303e88c5642cef92dd2d16c886246fde08dc063b1c3ed5a31"
+    }
+  },
+  "common_name": "Yellow-billed Cuckoo",
+  "generation": {
+    "attempt": 1,
+    "generated_at": "2026-07-23T13:02:45+00:00",
+    "generator": "Codex subscription / built-in gpt-image-2",
+    "max_attempts": 3,
+    "prompt_version": "field-journal-v2"
+  },
+  "profile": {
+    "behavior": "Usually solitary or in pairs; forages slowly and often sits motionless within foliage before gleaning caterpillars and other insects or making short aerial sallies. A long-distance migrant with swift, direct flight and deep, pointed-wing beats.",
+    "common_name": "Yellow-billed Cuckoo",
+    "family": "Cuculidae",
+    "field_marks": [
+      "Long, slim body with a very long rounded tail",
+      "Grayish warm-brown upperparts and clean whitish underparts",
+      "Mostly yellow, slightly downcurved bill with a dark upper ridge",
+      "Yellow eye-ring with a subtle dark facial mask",
+      "Rufous-chestnut panels in the wings",
+      "Dark undertail marked with large white spots"
+    ],
+    "habitat": "Dense deciduous woodland, forest edges, leafy thickets, second growth, overgrown orchards, and streamside groves, usually where thick cover is broken by gaps or clearings.",
+    "measurements": {
+      "length": "26\u201330 cm (10.2\u201311.8 in)",
+      "weight": "55\u201365 g (1.9\u20132.3 oz)",
+      "wingspan": "38\u201343 cm (15.0\u201316.9 in)"
+    },
+    "palette": [
+      "warm gray-brown",
+      "clean white",
+      "golden yellow",
+      "rufous chestnut",
+      "charcoal black"
+    ],
+    "scientific_name": "Coccyzus americanus",
+    "sources": [
+      {
+        "title": "Yellow-billed Cuckoo Identification \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Yellow-billed_Cuckoo/id"
+      },
+      {
+        "title": "Yellow-billed Cuckoo Life History \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Yellow-billed_Cuckoo/lifehistory"
+      },
+      {
+        "title": "Yellow-billed Cuckoo \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/yellow-billed-cuckoo"
+      },
+      {
+        "title": "Coccyzus americanus \u2014 Animal Diversity Web",
+        "url": "https://animaldiversity.org/accounts/Coccyzus_americanus/"
+      }
+    ],
+    "taxon_id": 1965
+  },
+  "quality_review": {
+    "anatomy_accuracy": 4,
+    "composition_quality": 4,
+    "findings": [
+      "Species identity is correct: the long tail, warm-brown upperparts, whitish underparts, yellow eye-ring, blackish facial mask, mostly yellow bill with dark upper mandible, rufous wing panel, and white-marked dark undertail identify Yellow-billed Cuckoo (Coccyzus americanus).",
+      "All measurements are independently verified: length 26\u201330 cm (10.2\u201311.8 in), wingspan 38\u201343 cm (15.0\u201316.9 in), and weight 55\u201365 g (1.9\u20132.3 oz).",
+      "The common name, scientific name, family, habitat, migration, foraging behavior, and listed field marks are accurate; no material text errors were found.",
+      "The main complete bird has one head, one beak, two wings, two legs, and one tail. The additional head and detached wing are clearly diagnostic inset studies rather than anatomical duplications.",
+      "Minor visual issue: the main bird is somewhat fuller-bodied and rounder-headed than the notably slim, flat-headed bird shown in the references.",
+      "Minor visual issue: the undertail is rendered as a narrow black strip with oval white marks beside extensive brown feathers; the diagnostic underside is more characteristically broadly black with large white spots or bands.",
+      "Minor anatomy issue: the feet are stylized and their zygodactyl arrangement\u2014four toes, with two directed forward and two backward\u2014is not clearly legible.",
+      "Minor composition issue: the three measurement lines are presented without labels identifying length, wingspan, and weight, although their order and values match the verified data.",
+      "No place name, ZIP code, coordinates, map, or local-observation detail appears."
+    ],
+    "location_free": true,
+    "passed": true,
+    "species_accuracy": 4,
+    "text_accuracy": 5,
+    "verification_sources": [
+      {
+        "title": "Yellow-billed Cuckoo Identification \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Yellow-billed_Cuckoo/id"
+      },
+      {
+        "title": "Yellow-billed Cuckoo \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/yellow-billed-cuckoo"
+      },
+      {
+        "title": "Coccyzus americanus \u2014 Animal Diversity Web",
+        "url": "https://animaldiversity.org/accounts/Coccyzus_americanus/"
+      }
+    ]
+  },
+  "references": [
+    {
+      "attribution": "(c) kirk gardner, some rights reserved (CC BY)",
+      "filename": "01-33263626.jpeg",
+      "height": 1635,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/33263626/large.jpeg",
+      "license_code": "cc-by",
+      "observation_id": 21496317,
+      "observer": "kirk_gardner",
+      "photo_id": 33263626,
+      "sha256": "fbf5082a12fa3790f8f25ab0a67997289c8bc382f4cac3cc5c756c29ae4de813",
+      "source_url": "https://www.inaturalist.org/observations/21496317",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) Bernadette Kavanaugh, some rights reserved (CC BY)",
+      "filename": "02-449713229.jpeg",
+      "height": 1633,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/449713229/large.jpeg",
+      "license_code": "cc-by",
+      "observation_id": 251345278,
+      "observer": "birdadette",
+      "photo_id": 449713229,
+      "sha256": "7f0eefb8e78b6634e45d9323f59e203e40c71b996f3c06c265597951b1113622",
+      "source_url": "https://www.inaturalist.org/observations/251345278",
+      "width": 2048
+    },
+    {
+      "attribution": "no rights reserved",
+      "filename": "03-143702666.jpg",
+      "height": 1289,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/143702666/large.jpg",
+      "license_code": "cc0",
+      "observation_id": 87187250,
+      "observer": "wildreturn",
+      "photo_id": 143702666,
+      "sha256": "4386ed8da2b455fbcc6913f70e3d5ade16225011ff363834f83804de661d883a",
+      "source_url": "https://www.inaturalist.org/observations/87187250",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) Doug Brush, some rights reserved (CC BY)",
+      "filename": "04-43959802.jpeg",
+      "height": 1365,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/43959802/large.jpeg",
+      "license_code": "cc-by",
+      "observation_id": 28210573,
+      "observer": "brushdk",
+      "photo_id": 43959802,
+      "sha256": "9c8c9007ffaaeeeee19ad4c515e6b26cf7148e13d0a0c62d06c9793356b077bb",
+      "source_url": "https://www.inaturalist.org/observations/28210573",
+      "width": 2048
+    }
+  ],
+  "schema_version": 1,
+  "scientific_name": "Coccyzus americanus",
+  "slug": "yellow-billed-cuckoo",
+  "status": "approved",
+  "taxon_id": 1965
+}
