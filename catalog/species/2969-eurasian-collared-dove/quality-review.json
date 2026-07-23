@@ -1,0 +1,35 @@
+{
+  "anatomy_accuracy": 5,
+  "composition_quality": 4,
+  "findings": [
+    "Species identity and taxonomy are correct: Eurasian Collared-Dove, Streptopelia decaocto, family Columbidae.",
+    "The main specimen has one head, one beak, two anatomically consistent wings, two legs with plausible dove feet, and one tail. The separate head and wing drawings are clearly labeled detail studies rather than malformed duplicate anatomy.",
+    "Overall proportions and field marks agree with the references: plump body, small rounded head, slim dark bill, pale gray-buff plumage, darker sandy upperwings, black nape crescent, pinkish legs, dark wingtips, and a long square-ended tail with white outer and terminal areas.",
+    "Minor species-rendering issue: the main bird's neck crescent is more broken and feather-edged than the clean, narrow half-collar shown in the photographs and source descriptions.",
+    "Minor species-rendering issue: the illustrated iris is broader and more orange-red than the narrow reddish-brown rim usually visible around the large dark pupil.",
+    "The white outer and terminal tail patches are present but less broad and conspicuous than the annotation and source descriptions suggest; this is partly defensible because the plate shows the tail principally from above.",
+    "The printed measurements exactly match Audubon's current values: length 29\u201332 cm, wingspan 46\u201348 cm, and weight 150\u2013200 g. Cornell currently gives a narrower and materially different set\u201429\u201330 cm, 35 cm, and 140\u2013180 g\u2014so the plate's values are defensible but specifically reflect Audubon rather than a consensus range.",
+    "The habitat, feeding, flocking, perching, three-syllable call, and climbing-then-gliding display statements agree with the inspected Cornell and Audubon pages.",
+    "All visible names, labels, prose, units, and palette terms are legible and correctly spelled.",
+    "Minor composition issue: several annotation leaders stop noticeably short of the illustrated feature, and the 0\u201332 cm ruler is not explicitly identified as decorative or tied to the bird's rendered scale.",
+    "No place name, ZIP code, coordinates, map, or local-observation detail appears."
+  ],
+  "location_free": true,
+  "passed": true,
+  "species_accuracy": 4,
+  "text_accuracy": 4,
+  "verification_sources": [
+    {
+      "title": "Eurasian Collared-Dove Identification \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Eurasian_Collared-Dove/id"
+    },
+    {
+      "title": "Eurasian Collared-Dove Life History \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Eurasian_Collared-Dove/lifehistory"
+    },
+    {
+      "title": "Eurasian Collared-Dove \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/eurasian-collared-dove"
+    }
+  ]
+}

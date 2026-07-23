@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-23T22:07:10+00:00",
+  "generated_at": "2026-07-23T22:49:55+00:00",
   "schema_version": 1,
   "species": [
     {
@@ -320,6 +320,17 @@
       "scientific_name": "Turdus merula",
       "slug": "eurasian-blackbird",
       "taxon_id": 12716
+    },
+    {
+      "approved_at": "2026-07-23T22:49:55+00:00",
+      "common_name": "Eurasian Collared-Dove",
+      "display_path": "species/2969-eurasian-collared-dove/display.png",
+      "display_sha256": "277e81d27c1ca6d6993423ae57a6b684ffe67eaa0777dab2c7813bc8cc1f56c5",
+      "portrait_path": "species/2969-eurasian-collared-dove/portrait.png",
+      "portrait_sha256": "6f8b25cf1c3a96b0dc2706cd98bbcbebee3a1adb77478f723ebea69ca22aa4e2",
+      "scientific_name": "Streptopelia decaocto",
+      "slug": "eurasian-collared-dove",
+      "taxon_id": 2969
     },
     {
       "approved_at": "2026-07-23T21:46:02+00:00",
