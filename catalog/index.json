@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-23T23:08:30+00:00",
+  "generated_at": "2026-07-23T23:18:04+00:00",
   "schema_version": 1,
   "species": [
     {
@@ -331,6 +331,17 @@
       "scientific_name": "Streptopelia decaocto",
       "slug": "eurasian-collared-dove",
       "taxon_id": 2969
+    },
+    {
+      "approved_at": "2026-07-23T23:18:04+00:00",
+      "common_name": "Eurasian Jay",
+      "display_path": "species/8088-eurasian-jay/display.png",
+      "display_sha256": "3d89ebeb09f0bfc6cb3dbe2e37240b4af120f4385a773cc7f794a5d09b26f9f3",
+      "portrait_path": "species/8088-eurasian-jay/portrait.png",
+      "portrait_sha256": "526c6b643887abb17ba07c825a3b23dc9c7693af04d6732a74155a4995d1d2d2",
+      "scientific_name": "Garrulus glandarius",
+      "slug": "eurasian-jay",
+      "taxon_id": 8088
     },
     {
       "approved_at": "2026-07-23T21:46:02+00:00",

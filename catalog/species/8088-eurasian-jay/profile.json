@@ -1,0 +1,46 @@
+{
+  "behavior": "Intelligent, often wary woodland corvid that forages in trees and on the ground. Omnivorous, with a strong habit of collecting and burying acorns; also eats other seeds, fruit, invertebrates, eggs, and small vertebrates. Usually resident but may disperse when food crops fail. Gives harsh, rasping alarm calls and readily mimics other sounds.",
+  "common_name": "Eurasian Jay",
+  "family": "Corvidae",
+  "field_marks": [
+    "Stocky, medium-sized corvid with broad, rounded wings and a long black tail",
+    "Pinkish-brown to rufous-brown body plumage",
+    "Variable crown, often pale with black streaking, above a bold black moustache stripe",
+    "Bright azure-blue shoulder panel finely barred with black",
+    "Strong black-and-white wing pattern and a conspicuous white rump",
+    "Stout black bill, pale grayish eye, and sturdy pinkish-brown legs"
+  ],
+  "habitat": "Woodland and forest with dense tree and shrub cover, especially oak-rich mixed or deciduous woods; also coniferous forest, wooded parks, orchards, and large gardens. Usually avoids extensive open ground.",
+  "measurements": {
+    "length": "32\u201335 cm",
+    "weight": "102\u2013204 g",
+    "wingspan": "52\u201358 cm"
+  },
+  "palette": [
+    "pinkish rufous-brown",
+    "azure blue",
+    "black",
+    "white",
+    "soft gray"
+  ],
+  "scientific_name": "Garrulus glandarius",
+  "sources": [
+    {
+      "title": "Birds of the World \u2014 Eurasian Jay: Plumages, Molts, and Structure",
+      "url": "https://birdsoftheworld.org/bow/species/eurjay1/cur/appearance"
+    },
+    {
+      "title": "Animal Diversity Web \u2014 Garrulus glandarius",
+      "url": "https://animaldiversity.org/accounts/Garrulus_glandarius/"
+    },
+    {
+      "title": "eBird \u2014 Eurasian Jay",
+      "url": "https://ebird.org/species/eurjay1"
+    },
+    {
+      "title": "Wikipedia \u2014 Eurasian jay",
+      "url": "https://en.wikipedia.org/wiki/Eurasian_jay"
+    }
+  ],
+  "taxon_id": 8088
+}

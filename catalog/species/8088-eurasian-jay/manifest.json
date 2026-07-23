@@ -1,0 +1,158 @@
+{
+  "approved_at": "2026-07-23T23:18:04+00:00",
+  "assets": {
+    "display": {
+      "filename": "display.png",
+      "sha256": "3d89ebeb09f0bfc6cb3dbe2e37240b4af120f4385a773cc7f794a5d09b26f9f3"
+    },
+    "portrait": {
+      "filename": "portrait.png",
+      "sha256": "526c6b643887abb17ba07c825a3b23dc9c7693af04d6732a74155a4995d1d2d2"
+    }
+  },
+  "common_name": "Eurasian Jay",
+  "generation": {
+    "attempt": 1,
+    "generated_at": "2026-07-23T23:18:04+00:00",
+    "generator": "Codex subscription / built-in gpt-image-2",
+    "max_attempts": 3,
+    "prompt_version": "field-journal-v2"
+  },
+  "profile": {
+    "behavior": "Intelligent, often wary woodland corvid that forages in trees and on the ground. Omnivorous, with a strong habit of collecting and burying acorns; also eats other seeds, fruit, invertebrates, eggs, and small vertebrates. Usually resident but may disperse when food crops fail. Gives harsh, rasping alarm calls and readily mimics other sounds.",
+    "common_name": "Eurasian Jay",
+    "family": "Corvidae",
+    "field_marks": [
+      "Stocky, medium-sized corvid with broad, rounded wings and a long black tail",
+      "Pinkish-brown to rufous-brown body plumage",
+      "Variable crown, often pale with black streaking, above a bold black moustache stripe",
+      "Bright azure-blue shoulder panel finely barred with black",
+      "Strong black-and-white wing pattern and a conspicuous white rump",
+      "Stout black bill, pale grayish eye, and sturdy pinkish-brown legs"
+    ],
+    "habitat": "Woodland and forest with dense tree and shrub cover, especially oak-rich mixed or deciduous woods; also coniferous forest, wooded parks, orchards, and large gardens. Usually avoids extensive open ground.",
+    "measurements": {
+      "length": "32\u201335 cm",
+      "weight": "102\u2013204 g",
+      "wingspan": "52\u201358 cm"
+    },
+    "palette": [
+      "pinkish rufous-brown",
+      "azure blue",
+      "black",
+      "white",
+      "soft gray"
+    ],
+    "scientific_name": "Garrulus glandarius",
+    "sources": [
+      {
+        "title": "Birds of the World \u2014 Eurasian Jay: Plumages, Molts, and Structure",
+        "url": "https://birdsoftheworld.org/bow/species/eurjay1/cur/appearance"
+      },
+      {
+        "title": "Animal Diversity Web \u2014 Garrulus glandarius",
+        "url": "https://animaldiversity.org/accounts/Garrulus_glandarius/"
+      },
+      {
+        "title": "eBird \u2014 Eurasian Jay",
+        "url": "https://ebird.org/species/eurjay1"
+      },
+      {
+        "title": "Wikipedia \u2014 Eurasian jay",
+        "url": "https://en.wikipedia.org/wiki/Eurasian_jay"
+      }
+    ],
+    "taxon_id": 8088
+  },
+  "quality_review": {
+    "anatomy_accuracy": 5,
+    "composition_quality": 5,
+    "findings": [
+      "Species identity is correct: the plate depicts Eurasian Jay (Garrulus glandarius), family Corvidae.",
+      "The main bird has one head, one beak, two wings (the far wing is naturally obscured in the profile pose), two legs, and one tail; no duplicated or malformed anatomy is evident. The detached wing and head at the bottom are clearly labeled-style detail studies, not extra anatomy on the bird.",
+      "Plumage is broadly accurate: pinkish-rufous body, pale black-streaked crown, bold black moustache, pale grayish iris, stout dark bill, black tail, white rump, and contrasting black, white, and blue folded-wing pattern agree with the references and live sources.",
+      "Minor species-detail issue: the main illustration's blue-and-black barred covert panel is substantially oversized and elongated downward. Field photographs show a smaller, more compact shoulder/upperwing patch; the detached wing study repeats the oversized treatment.",
+      "Minor species-detail issue: the folded-wing pattern is somewhat simplified, with unusually broad white and blue sections compared with the more compact, complex pattern in the reference photographs. These do not prevent confident identification.",
+      "All printed taxonomy, measurements, habitat, behavior, diet, vocalization, and field-mark statements are supported. Birds of the World gives length 32\u201335 cm, wingspan 52\u201358 cm, and subspecies-level masses spanning 102\u2013204 g.",
+      "No place name, ZIP code, coordinates, map, or local-observation detail appears.",
+      "The layout is clear, legible, balanced, and appropriate for a scientific field-journal plate; the main illustration, detail studies, text, palette, and scale-like margin do not overlap materially."
+    ],
+    "location_free": true,
+    "passed": true,
+    "species_accuracy": 4,
+    "text_accuracy": 5,
+    "verification_sources": [
+      {
+        "title": "Birds of the World \u2014 Eurasian Jay: Plumages, Molts, and Structure",
+        "url": "https://birdsoftheworld.org/bow/species/eurjay1/cur/appearance"
+      },
+      {
+        "title": "eBird \u2014 Eurasian Jay",
+        "url": "https://ebird.org/species/eurjay1"
+      },
+      {
+        "title": "Animal Diversity Web \u2014 Garrulus glandarius",
+        "url": "https://animaldiversity.org/accounts/Garrulus_glandarius/"
+      }
+    ]
+  },
+  "references": [
+    {
+      "attribution": "(c) Helen Bovill, some rights reserved (CC BY)",
+      "filename": "01-492663943.jpeg",
+      "height": 1804,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/492663943/large.jpeg",
+      "license_code": "cc-by",
+      "observation_id": 273999502,
+      "observer": "helenbhull",
+      "photo_id": 492663943,
+      "sha256": "0d7a1e5bf07b962e4e8449a9e91798e496e2646867419572d018a55aaf879d2c",
+      "source_url": "https://www.inaturalist.org/observations/273999502",
+      "width": 1804
+    },
+    {
+      "attribution": "(c) Rhys, some rights reserved (CC BY)",
+      "filename": "02-626375216.jpg",
+      "height": 1536,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/626375216/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 343819178,
+      "observer": "rhys-outsidelens",
+      "photo_id": 626375216,
+      "sha256": "800d69d84e51054a2d5164f964e4bd20311996444fb1e6807b6c815a800929aa",
+      "source_url": "https://www.inaturalist.org/observations/343819178",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) SteveM4560, some rights reserved (CC BY)",
+      "filename": "03-463532929.jpeg",
+      "height": 1536,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/463532929/large.jpeg",
+      "license_code": "cc-by",
+      "observation_id": 258365889,
+      "observer": "stevem4560",
+      "photo_id": 463532929,
+      "sha256": "761fd5d6117f3a96e251de874a08b7b67a9e3ee144d7ed3ae8b86728214c6f36",
+      "source_url": "https://www.inaturalist.org/observations/258365889",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) Yavuz Korkmaz, some rights reserved (CC BY)",
+      "filename": "04-62237800.jpg",
+      "height": 2041,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/62237800/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 39245057,
+      "observer": "yavutza",
+      "photo_id": 62237800,
+      "sha256": "42e86fe08d8ac843fd9e832353156b10de630dc40da3be8733d3b378785109fb",
+      "source_url": "https://www.inaturalist.org/observations/39245057",
+      "width": 1458
+    }
+  ],
+  "schema_version": 1,
+  "scientific_name": "Garrulus glandarius",
+  "slug": "eurasian-jay",
+  "status": "approved",
+  "taxon_id": 8088
+}
