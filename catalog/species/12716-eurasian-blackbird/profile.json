@@ -1,0 +1,37 @@
+{
+  "behavior": "Diurnal and territorial; forages mainly on the ground with short runs and hops, searching soil and leaf litter for earthworms and other invertebrates while also eating fruit and seeds. Often sings from an elevated perch. Populations may be resident or seasonally migratory.",
+  "common_name": "Eurasian Blackbird",
+  "family": "Turdidae",
+  "field_marks": [
+    "Adult male glossy black overall, including wings and long tail",
+    "Bright orange-yellow bill and narrow yellow eye-ring on adult male",
+    "Female sooty brown with a paler throat and lightly mottled breast",
+    "Rounded, compact thrush body with a relatively long tail",
+    "Dark brownish-black legs and feet"
+  ],
+  "habitat": "Woodland and woodland edges with dense undergrowth, as well as hedgerows, scrub, farmland, parks, and gardens; commonly uses open ground beside dense cover for feeding.",
+  "measurements": {
+    "length": "23.5\u201329 cm",
+    "weight": "80\u2013125 g",
+    "wingspan": "34\u201338 cm"
+  },
+  "palette": [
+    "coal black",
+    "sooty brown",
+    "orange-yellow",
+    "golden yellow",
+    "dark brown"
+  ],
+  "scientific_name": "Turdus merula",
+  "sources": [
+    {
+      "title": "Turdus merula \u2014 Animal Diversity Web",
+      "url": "https://animaldiversity.org/accounts/Turdus_merula/"
+    },
+    {
+      "title": "Common blackbird \u2014 Wikipedia",
+      "url": "https://en.wikipedia.org/wiki/Common_blackbird"
+    }
+  ],
+  "taxon_id": 12716
+}
