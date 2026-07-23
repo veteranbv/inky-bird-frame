@@ -1,0 +1,148 @@
+{
+  "approved_at": "2026-07-23T21:20:28+00:00",
+  "assets": {
+    "display": {
+      "filename": "display.png",
+      "sha256": "3f5d444390624c02d7b3f2efcfaacfb43275564bd1f53ca1a94887f95ce73d41"
+    },
+    "portrait": {
+      "filename": "portrait.png",
+      "sha256": "cb2ba57442d65780841ad0e596b2f415e101b8ec47fdcc6825ccf439b186ed07"
+    }
+  },
+  "common_name": "Common Hoopoe",
+  "generation": {
+    "attempt": 1,
+    "generated_at": "2026-07-23T21:20:28+00:00",
+    "generator": "Codex subscription / built-in gpt-image-2",
+    "max_attempts": 3,
+    "prompt_version": "field-journal-v2"
+  },
+  "profile": {
+    "behavior": "Usually forages alone on the ground, walking over open patches and probing soil with its long bill for insects and larvae. Flight is fast and undulating with deep wingbeats; the crest is often raised after landing. Nests in cavities.",
+    "common_name": "Common Hoopoe",
+    "family": "Upupidae",
+    "field_marks": [
+      "Warm cinnamon-buff head, neck, and breast",
+      "Tall erectile cinnamon crest with black tips",
+      "Very long, slender, downcurved dark bill",
+      "Broad, rounded wings boldly barred black and white",
+      "Black tail crossed by a broad white band",
+      "Dark eye and short gray-brown legs"
+    ],
+    "habitat": "Semiopen country with bare or lightly vegetated ground for feeding and nearby cavities for nesting, including grassland, heath, farmland, orchards, savanna, wooded steppe, lawns, and forest clearings.",
+    "measurements": {
+      "length": "25\u201332 cm",
+      "weight": "46\u201389 g",
+      "wingspan": "44\u201348 cm"
+    },
+    "palette": [
+      "cinnamon orange",
+      "warm buff",
+      "black",
+      "white",
+      "slate gray"
+    ],
+    "scientific_name": "Upupa epops",
+    "sources": [
+      {
+        "title": "Eurasian Hoopoe \u2014 eBird",
+        "url": "https://ebird.org/species/hoopoe/UZ"
+      },
+      {
+        "title": "Eurasian hoopoe \u2014 Wikipedia",
+        "url": "https://en.wikipedia.org/wiki/Eurasian_hoopoe"
+      }
+    ],
+    "taxon_id": 20969
+  },
+  "quality_review": {
+    "anatomy_accuracy": 4,
+    "composition_quality": 5,
+    "findings": [
+      "The primary specimen is anatomically coherent: one head, one bill, two wings with the far wing naturally occluded, two legs, and one tail. The separate lower head and wing are clearly presented as detail studies, not extra appendages.",
+      "Minor anatomical stylization: the eye is somewhat oversized, while the fully raised crest, tail, and folded-wing barring are slightly exaggerated relative to the reference photographs. These do not obscure identification.",
+      "The cinnamon-buff plumage, black-tipped erectile crest, long slender downcurved bill, bold black-and-white wings, dark tail with a broad white band, dark eye, and short gray-brown legs agree with Common Hoopoe.",
+      "Common name, scientific name, family, measurements, habitat, behavior, field marks, and palette are accurate. The stated 25\u201332 cm length, 44\u201348 cm wingspan, and 46\u201389 g weight match the verified species account.",
+      "The centimeter ruler is decorative or ambiguous because it is not aligned with the diagonal bill-to-tail axis; it should not be interpreted as a precise scale measurement.",
+      "No place name, ZIP code, coordinates, map, or local-observation detail appears."
+    ],
+    "location_free": true,
+    "passed": true,
+    "species_accuracy": 5,
+    "text_accuracy": 5,
+    "verification_sources": [
+      {
+        "title": "Eurasian Hoopoe \u2014 eBird",
+        "url": "https://ebird.org/species/hoopoe/UZ"
+      },
+      {
+        "title": "Eurasian hoopoe \u2014 Wikipedia",
+        "url": "https://en.wikipedia.org/wiki/Eurasian_hoopoe"
+      },
+      {
+        "title": "Upupa epops (common hoopoe) \u2014 Animal Diversity Web",
+        "url": "https://animaldiversity.org/accounts/Upupa_epops/"
+      }
+    ]
+  },
+  "references": [
+    {
+      "attribution": "(c) Dmitry Ivanov, some rights reserved (CC BY)",
+      "filename": "01-540368634.jpg",
+      "height": 1365,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/540368634/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 299928082,
+      "observer": "ivanovdg19",
+      "photo_id": 540368634,
+      "sha256": "ee460048f5c8361b8086f5db0bdd5079c0529ecfe41546b072a18aa1ff7f58c3",
+      "source_url": "https://www.inaturalist.org/observations/299928082",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) Diego Gonz\u00e1lez Dopico, some rights reserved (CC BY)",
+      "filename": "02-466801141.jpg",
+      "height": 2040,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/466801141/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 250060194,
+      "observer": "diegodgd",
+      "photo_id": 466801141,
+      "sha256": "b6b2f7278c613a237e3280ca1d831be49a3e7545f4124e2a7b39c637ed5bce9a",
+      "source_url": "https://www.inaturalist.org/observations/250060194",
+      "width": 1632
+    },
+    {
+      "attribution": "(c) SteveM4560, some rights reserved (CC BY)",
+      "filename": "03-370268686.jpg",
+      "height": 1536,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/370268686/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 209231854,
+      "observer": "stevem4560",
+      "photo_id": 370268686,
+      "sha256": "603a17a92eb7791c44ea4583606b20c8d58aaf6763b32080716ffb9109c6b25e",
+      "source_url": "https://www.inaturalist.org/observations/209231854",
+      "width": 2048
+    },
+    {
+      "attribution": "no rights reserved",
+      "filename": "04-170557559.jpeg",
+      "height": 1536,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/170557559/large.jpeg",
+      "license_code": "cc0",
+      "observation_id": 102071671,
+      "observer": "stephenmatthews",
+      "photo_id": 170557559,
+      "sha256": "c73fd87a70b9fa50cc29122dc9c73b29007f471088cb3290617fe83be2cb1572",
+      "source_url": "https://www.inaturalist.org/observations/102071671",
+      "width": 2048
+    }
+  ],
+  "schema_version": 1,
+  "scientific_name": "Upupa epops",
+  "slug": "common-hoopoe",
+  "status": "approved",
+  "taxon_id": 20969
+}
