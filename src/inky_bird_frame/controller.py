@@ -727,7 +727,10 @@ def generate_candidate(config: AppConfig, species: BirdSpecies, workspace: Path)
     reference_root = state_dir / "references" / str(species.taxon_id)
     reference_paths = [reference_root / reference.filename for reference in references]
     runner = CodexRunner(config.controller.codex_path, workspace)
-    work_parent = state_dir / "work"
+    # Codex runs with workspace-write sandboxing, so every path it must create
+    # needs to live below the configured workspace. The trusted controller
+    # process copies a passing candidate into state after Codex exits.
+    work_parent = workspace.resolve() / ".inky-bird-frame-work"
     work_parent.mkdir(parents=True, exist_ok=True)
 
     with TemporaryDirectory(prefix=f"{species.taxon_id}-", dir=work_parent) as temporary:

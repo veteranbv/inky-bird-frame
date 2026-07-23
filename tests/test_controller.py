@@ -737,10 +737,11 @@ class ControllerTests(unittest.TestCase):
 
         class FakeRunner:
             corrections: list[tuple[str, ...]] = []
+            generated_paths: list[Path] = []
             reviews = iter((failed_review, passed_review))
 
-            def __init__(self, _executable: Path, _workspace: Path) -> None:
-                pass
+            def __init__(self, _executable: Path, workspace: Path) -> None:
+                self.workspace = workspace.resolve()
 
             def create_profile(self, *_args: object, **_kwargs: object) -> SpeciesProfileData:
                 output_path = _args[-2]
@@ -753,6 +754,8 @@ class ControllerTests(unittest.TestCase):
                 correction = _args[-1]
                 assert isinstance(output_path, Path)
                 assert isinstance(correction, tuple)
+                self.generated_paths.append(output_path)
+                assert output_path.resolve().is_relative_to(self.workspace)
                 self.corrections.append(correction)
                 output_path.write_bytes(b"generated")
                 return output_path
@@ -781,6 +784,7 @@ class ControllerTests(unittest.TestCase):
             )
 
         self.assertEqual(FakeRunner.corrections, [(), ("Crest is too short",)])
+        self.assertEqual(len(FakeRunner.generated_paths), 2)
         self.assertEqual(manifest["generation"]["attempt"], 2)
         self.assertEqual(manifest["status"], "pending")
         self.assertFalse((candidate / "attempt-history.json").exists())
