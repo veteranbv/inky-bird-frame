@@ -1,0 +1,42 @@
+{
+  "behavior": "A gregarious, noisy ground forager that walks or struts while pecking for food. Often forms large mixed flocks, roosts high in trees or on exposed perches, and flies directly with stiff wingbeats.",
+  "common_name": "Common Grackle",
+  "family": "Icteridae",
+  "field_marks": [
+    "Large, lanky blackbird with long legs",
+    "Long, heavy bill with a slight downward curve",
+    "Bright pale-yellow eye in adults",
+    "Glossy blue-purple head with iridescent body sheen",
+    "Long, graduated tail often held in a shallow V",
+    "Long tail makes the wings appear comparatively short"
+  ],
+  "habitat": "Open and semi-open habitats with scattered trees, including woodland edges, meadows, marshes, agricultural fields, parks, and suburban lawns; generally avoids extensive unbroken forest.",
+  "measurements": {
+    "length": "28\u201334 cm (11.0\u201313.4 in)",
+    "weight": "74\u2013142 g (2.6\u20135.0 oz)",
+    "wingspan": "36\u201346 cm (14.2\u201318.1 in)"
+  },
+  "palette": [
+    "glossy black",
+    "deep purple",
+    "iridescent blue",
+    "bronze-brown",
+    "pale yellow"
+  ],
+  "scientific_name": "Quiscalus quiscula",
+  "sources": [
+    {
+      "title": "Common Grackle Identification \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Common_Grackle/id"
+    },
+    {
+      "title": "Common Grackle Life History \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/common_grackle/lifehistory"
+    },
+    {
+      "title": "Common Grackle \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/common-grackle"
+    }
+  ],
+  "taxon_id": 9602
+}

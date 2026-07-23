@@ -1,0 +1,30 @@
+{
+  "anatomy_accuracy": 4,
+  "composition_quality": 5,
+  "findings": [
+    "The central bird is anatomically coherent and has exactly one head, one hooked beak, two wings (the far wing is only partly visible), two legs, and one tail; the feet and black talons are plausibly arranged around the perch.",
+    "The plate convincingly depicts an adult Cooper's Hawk: large head, contrasting dark cap and paler nape, red-orange iris, blue-gray upperparts, yellow legs, and a long rounded tail with broad dark bands and a pale terminal tip agree with the references and live identification sources.",
+    "The main illustration's underpart pattern is the clearest minor weakness: it appears as coarse pale chevrons or scallops over a largely rusty ground, whereas adults characteristically show finer, denser reddish horizontal barring over pale underparts.",
+    "The body is slightly stockier and more barrel-chested than the stated long, lean form, though the broad shoulders, short rounded folded wings, and very long tail remain recognizable and species-consistent.",
+    "The common name, current scientific name Astur cooperii, family Accipitridae, and all three printed measurement ranges agree with the current Cornell and Audubon pages. The combined ranges correctly span their sex-specific measurements.",
+    "The printed field marks and color palette are otherwise accurate. No place name, ZIP code, coordinates, map, locality label, or observation detail appears."
+  ],
+  "location_free": true,
+  "passed": true,
+  "species_accuracy": 4,
+  "text_accuracy": 5,
+  "verification_sources": [
+    {
+      "title": "Cooper's Hawk Identification \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/coopers_hawk/id"
+    },
+    {
+      "title": "Cooper's Hawk \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/coopers-hawk"
+    },
+    {
+      "title": "Accipiter cooperii (Cooper's hawk) \u2014 Animal Diversity Web",
+      "url": "https://animaldiversity.org/accounts/Accipiter_cooperii/"
+    }
+  ]
+}

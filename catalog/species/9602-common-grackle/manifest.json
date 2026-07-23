@@ -1,0 +1,156 @@
+{
+  "approved_at": "2026-07-23T13:10:32+00:00",
+  "assets": {
+    "display": {
+      "filename": "display.png",
+      "sha256": "b53369948ef1947db561eab90214b6ec6bc8881138cf27c6dc9518e2f43652e8"
+    },
+    "portrait": {
+      "filename": "portrait.png",
+      "sha256": "c51e841a9f8c3980c328f46845e793261636f18c63134addfda4146185dde2e6"
+    }
+  },
+  "common_name": "Common Grackle",
+  "generation": {
+    "attempt": 1,
+    "generated_at": "2026-07-23T13:10:32+00:00",
+    "generator": "Codex subscription / built-in gpt-image-2",
+    "max_attempts": 3,
+    "prompt_version": "field-journal-v2"
+  },
+  "profile": {
+    "behavior": "A gregarious, noisy ground forager that walks or struts while pecking for food. Often forms large mixed flocks, roosts high in trees or on exposed perches, and flies directly with stiff wingbeats.",
+    "common_name": "Common Grackle",
+    "family": "Icteridae",
+    "field_marks": [
+      "Large, lanky blackbird with long legs",
+      "Long, heavy bill with a slight downward curve",
+      "Bright pale-yellow eye in adults",
+      "Glossy blue-purple head with iridescent body sheen",
+      "Long, graduated tail often held in a shallow V",
+      "Long tail makes the wings appear comparatively short"
+    ],
+    "habitat": "Open and semi-open habitats with scattered trees, including woodland edges, meadows, marshes, agricultural fields, parks, and suburban lawns; generally avoids extensive unbroken forest.",
+    "measurements": {
+      "length": "28\u201334 cm (11.0\u201313.4 in)",
+      "weight": "74\u2013142 g (2.6\u20135.0 oz)",
+      "wingspan": "36\u201346 cm (14.2\u201318.1 in)"
+    },
+    "palette": [
+      "glossy black",
+      "deep purple",
+      "iridescent blue",
+      "bronze-brown",
+      "pale yellow"
+    ],
+    "scientific_name": "Quiscalus quiscula",
+    "sources": [
+      {
+        "title": "Common Grackle Identification \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Common_Grackle/id"
+      },
+      {
+        "title": "Common Grackle Life History \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/common_grackle/lifehistory"
+      },
+      {
+        "title": "Common Grackle \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/common-grackle"
+      }
+    ],
+    "taxon_id": 9602
+  },
+  "quality_review": {
+    "anatomy_accuracy": 4,
+    "composition_quality": 4,
+    "findings": [
+      "The adult male is identifiable as a Common Grackle: lanky blackbird proportions, long legs and tail, pale-yellow eye, glossy blue-purple head, bronzy-iridescent body, and long heavy bill agree with the references and live identification pages.",
+      "Taxonomy is correct: Common Grackle, Quiscalus quiscula, family Icteridae.",
+      "All printed measurements are correct: length 28\u201334 cm (11.0\u201313.4 in), wingspan 36\u201346 cm (14.2\u201318.1 in), and weight 74\u2013142 g (2.6\u20135.0 oz).",
+      "The habitat, behavior, and six written field marks are consistent with the verified sources.",
+      "Minor anatomical issue: the bill is somewhat too deep, blunt, and pale gray compared with the slimmer, darker bill in the field photographs.",
+      "Minor anatomical issue: the feet and strongly hooked claws are oversized and slightly raptorial relative to the reference birds.",
+      "Minor field-mark issue: the illustrated tail is broadly fanned rather than clearly showing the species' typical narrow, keeled or shallow-V profile.",
+      "The main bird has one head, one beak, two wings with the far wing largely obscured by the lateral pose, two legs, and one tail; no duplicated or missing anatomy is evident.",
+      "The auxiliary wing study is cropped tightly at the left edge, slightly weakening an otherwise clear, balanced, and legible composition.",
+      "No visible factual text is materially erroneous, and no place name, ZIP code, coordinates, map, or local-observation detail appears."
+    ],
+    "location_free": true,
+    "passed": true,
+    "species_accuracy": 4,
+    "text_accuracy": 5,
+    "verification_sources": [
+      {
+        "title": "Common Grackle Identification \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Common_Grackle/id"
+      },
+      {
+        "title": "Common Grackle \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/common-grackle"
+      },
+      {
+        "title": "Quiscalus quiscula \u2014 Animal Diversity Web",
+        "url": "https://animaldiversity.org/accounts/Quiscalus_quiscula/"
+      }
+    ]
+  },
+  "references": [
+    {
+      "attribution": "no rights reserved",
+      "filename": "01-260412819.jpeg",
+      "height": 1366,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/260412819/large.jpeg",
+      "license_code": "cc0",
+      "observation_id": 150969498,
+      "observer": "andywilson",
+      "photo_id": 260412819,
+      "sha256": "dbc30ad16f2c8edf3e19b1cb1521ef88aee94691289e8668df0c8f3843e98717",
+      "source_url": "https://www.inaturalist.org/observations/150969498",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) Carrie Seltzer, some rights reserved (CC BY)",
+      "filename": "02-377496437.jpg",
+      "height": 1459,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/377496437/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 213601154,
+      "observer": "carrieseltzer",
+      "photo_id": 377496437,
+      "sha256": "2f6f5dd326f72071d84f4a86b422f5232076eb1c3813d50bea386363727d3444",
+      "source_url": "https://www.inaturalist.org/observations/213601154",
+      "width": 1679
+    },
+    {
+      "attribution": "(c) Shaun Coleman, some rights reserved (CC BY)",
+      "filename": "03-358304157.jpg",
+      "height": 1366,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/358304157/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 202846748,
+      "observer": "shaunpatc",
+      "photo_id": 358304157,
+      "sha256": "68d6bb1317b651c5c9c890b4bb1da55ca7e3b86887ed11fac3a3e0f1091ed218",
+      "source_url": "https://www.inaturalist.org/observations/202846748",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) Blake Ross, some rights reserved (CC BY)",
+      "filename": "04-248627078.jpg",
+      "height": 1346,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/248627078/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 144811864,
+      "observer": "blakemross",
+      "photo_id": 248627078,
+      "sha256": "d1b9867a2bbf1426922a84ee27e8123b10e09dc8bb30eda3f55317dfe9e079ed",
+      "source_url": "https://www.inaturalist.org/observations/144811864",
+      "width": 2048
+    }
+  ],
+  "schema_version": 1,
+  "scientific_name": "Quiscalus quiscula",
+  "slug": "common-grackle",
+  "status": "approved",
+  "taxon_id": 9602
+}

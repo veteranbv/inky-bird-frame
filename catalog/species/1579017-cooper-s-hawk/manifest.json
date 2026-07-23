@@ -1,0 +1,156 @@
+{
+  "approved_at": "2026-07-23T13:15:22+00:00",
+  "assets": {
+    "display": {
+      "filename": "display.png",
+      "sha256": "97aaa0119a34dec07c5615cfd3c033c6e4c269cf670a1971cea7009da0554c1b"
+    },
+    "portrait": {
+      "filename": "portrait.png",
+      "sha256": "194ad8053b14ef5ebed10bde130e3fa2b48dc1d96afae085cd8e9f295ac5e863"
+    }
+  },
+  "common_name": "Cooper's Hawk",
+  "generation": {
+    "attempt": 1,
+    "generated_at": "2026-07-23T13:15:22+00:00",
+    "generator": "Codex subscription / built-in gpt-image-2",
+    "max_attempts": 3,
+    "prompt_version": "field-journal-v2"
+  },
+  "profile": {
+    "behavior": "Diurnal, usually solitary ambush predator; watches from concealed perches, then pursues birds and small mammals with rapid, agile flight through vegetation. Typical flight alternates a few stiff wingbeats with short glides.",
+    "common_name": "Cooper's Hawk",
+    "family": "Accipitridae",
+    "field_marks": [
+      "Large head, broad shoulders, and long, lean body",
+      "Short, broad, rounded wings with a very long, rounded tail",
+      "Steely blue-gray upperparts and warm rusty-barred underparts in adults",
+      "Dark cap contrasting with a paler nape; adult eyes red to orange",
+      "Tail crossed by broad dark bands and tipped with white",
+      "Dark hooked bill; yellow legs with strong black talons"
+    ],
+    "habitat": "Forests, open woodlands, wooded edges, riparian groves, parks, and other tree-rich suburban habitats.",
+    "measurements": {
+      "length": "37\u201345 cm (14.6\u201317.7 in)",
+      "weight": "220\u2013680 g (7.8\u201324.0 oz)",
+      "wingspan": "62\u201390 cm (24.4\u201335.4 in)"
+    },
+    "palette": [
+      "steely blue-gray",
+      "rusty red",
+      "charcoal black",
+      "white",
+      "yellow"
+    ],
+    "scientific_name": "Astur cooperii",
+    "sources": [
+      {
+        "title": "Cooper's Hawk Identification \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/coopers_hawk/id"
+      },
+      {
+        "title": "Cooper's Hawk Life History \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Coopers_Hawk/lifehistory"
+      },
+      {
+        "title": "Accipiter cooperii \u2014 Animal Diversity Web",
+        "url": "https://animaldiversity.org/accounts/Accipiter_cooperii/"
+      },
+      {
+        "title": "Cooper's Hawk \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/coopers-hawk"
+      }
+    ],
+    "taxon_id": 1579017
+  },
+  "quality_review": {
+    "anatomy_accuracy": 4,
+    "composition_quality": 5,
+    "findings": [
+      "The central bird is anatomically coherent and has exactly one head, one hooked beak, two wings (the far wing is only partly visible), two legs, and one tail; the feet and black talons are plausibly arranged around the perch.",
+      "The plate convincingly depicts an adult Cooper's Hawk: large head, contrasting dark cap and paler nape, red-orange iris, blue-gray upperparts, yellow legs, and a long rounded tail with broad dark bands and a pale terminal tip agree with the references and live identification sources.",
+      "The main illustration's underpart pattern is the clearest minor weakness: it appears as coarse pale chevrons or scallops over a largely rusty ground, whereas adults characteristically show finer, denser reddish horizontal barring over pale underparts.",
+      "The body is slightly stockier and more barrel-chested than the stated long, lean form, though the broad shoulders, short rounded folded wings, and very long tail remain recognizable and species-consistent.",
+      "The common name, current scientific name Astur cooperii, family Accipitridae, and all three printed measurement ranges agree with the current Cornell and Audubon pages. The combined ranges correctly span their sex-specific measurements.",
+      "The printed field marks and color palette are otherwise accurate. No place name, ZIP code, coordinates, map, locality label, or observation detail appears."
+    ],
+    "location_free": true,
+    "passed": true,
+    "species_accuracy": 4,
+    "text_accuracy": 5,
+    "verification_sources": [
+      {
+        "title": "Cooper's Hawk Identification \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/coopers_hawk/id"
+      },
+      {
+        "title": "Cooper's Hawk \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/coopers-hawk"
+      },
+      {
+        "title": "Accipiter cooperii (Cooper's hawk) \u2014 Animal Diversity Web",
+        "url": "https://animaldiversity.org/accounts/Accipiter_cooperii/"
+      }
+    ]
+  },
+  "references": [
+    {
+      "attribution": "(c) Becky Matsubara, some rights reserved (CC BY)",
+      "filename": "01-43282408.jpg",
+      "height": 1229,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/43282408/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 27793926,
+      "observer": "rebeccamatsubara",
+      "photo_id": 43282408,
+      "sha256": "22272a572b6118751b4acfc1684b08c92a4bc59c41fe84a774fbb41c85ff3639",
+      "source_url": "https://www.inaturalist.org/observations/27793926",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) Annika Lindqvist, some rights reserved (CC BY)",
+      "filename": "02-32948726.jpeg",
+      "height": 1562,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/32948726/large.jpeg",
+      "license_code": "cc-by",
+      "observation_id": 21306664,
+      "observer": "annikaml",
+      "photo_id": 32948726,
+      "sha256": "44d06228d4b4195dfe2ee3d3065f2c8a1f4b19e4cb5439e41bd5d3f6f980a682",
+      "source_url": "https://www.inaturalist.org/observations/21306664",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) Shirley Zundell, some rights reserved (CC BY)",
+      "filename": "03-52268108.jpeg",
+      "height": 1448,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/52268108/large.jpeg",
+      "license_code": "cc-by",
+      "observation_id": 33285493,
+      "observer": "sdz456",
+      "photo_id": 52268108,
+      "sha256": "1f9012798895d975a4eea9c91b652bb38b919f4ace52d70c051a793ff2dc5254",
+      "source_url": "https://www.inaturalist.org/observations/33285493",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) Kevin Floyd, some rights reserved (CC BY)",
+      "filename": "04-116718831.jpeg",
+      "height": 1536,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/116718831/large.jpeg",
+      "license_code": "cc-by",
+      "observation_id": 71669486,
+      "observer": "kevinfloyd",
+      "photo_id": 116718831,
+      "sha256": "127df539eeccbe70237801fc9f45cc238ee35583211882e35df6639eaeb056a3",
+      "source_url": "https://www.inaturalist.org/observations/71669486",
+      "width": 2048
+    }
+  ],
+  "schema_version": 1,
+  "scientific_name": "Astur cooperii",
+  "slug": "cooper-s-hawk",
+  "status": "approved",
+  "taxon_id": 1579017
+}
