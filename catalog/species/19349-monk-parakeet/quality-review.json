@@ -1,0 +1,31 @@
+{
+  "anatomy_accuracy": 4,
+  "composition_quality": 5,
+  "findings": [
+    "The primary bird is anatomically coherent: one head, one hooked beak, two legs, two wings with the far wing concealed by the profile view, and one long tail. The detached head and wing at the bottom are clearly separate detail studies, not duplicated anatomy.",
+    "The illustration matches Monk Parakeet identity in the reference photographs and live descriptions: green upperparts, extensive gray forehead/face/throat/breast, scalloped breast feathering, paler yellow-green underparts, pale pinkish hooked bill, brown eye, gray feet, blue outer flight feathers, large head, pointed wings, and long tapered tail.",
+    "The feet and curved claws are plausible for a parrot, although the profile and overlapping toes make the full zygodactyl arrangement less explicit than ideal; this is the only notable anatomical limitation.",
+    "The displayed length, wingspan, and weight agree exactly with Audubon's live account. Animal Diversity Web independently supports an approximately 11\u201313-inch length. Cornell's live identification page currently conflicts by listing length as 45\u201353 cm and weight as 90\u2013120 g; the candidate follows the mutually consistent Audubon and Animal Diversity Web length evidence and Audubon's complete measurement set.",
+    "The habitat, diet, flocking, noise, communal multi-chamber stick nests, direct flight, and rapid wingbeats are supported by the inspected live pages. No material text error was found.",
+    "All visible names are correct: Monk Parakeet, Myiopsitta monachus, and Psittacidae.",
+    "No place name, ZIP code, coordinates, map, or local-observation detail appears in the candidate."
+  ],
+  "location_free": true,
+  "passed": true,
+  "species_accuracy": 5,
+  "text_accuracy": 5,
+  "verification_sources": [
+    {
+      "title": "Monk Parakeet Identification \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Monk_Parakeet/id"
+    },
+    {
+      "title": "Monk Parakeet \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/monk-parakeet"
+    },
+    {
+      "title": "Myiopsitta monachus \u2014 Animal Diversity Web",
+      "url": "https://animaldiversity.org/accounts/Myiopsitta_monachus/"
+    }
+  ]
+}

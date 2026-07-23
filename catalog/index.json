@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-23T13:15:22+00:00",
+  "generated_at": "2026-07-23T21:10:05+00:00",
   "schema_version": 1,
   "species": [
     {
@@ -485,6 +485,17 @@
       "scientific_name": "Anas platyrhynchos",
       "slug": "mallard",
       "taxon_id": 6930
+    },
+    {
+      "approved_at": "2026-07-23T21:10:05+00:00",
+      "common_name": "Monk Parakeet",
+      "display_path": "species/19349-monk-parakeet/display.png",
+      "display_sha256": "1f9eb150806ada80a185b710de8b012e14dbe12fbbaeb5794c5e445d904c3624",
+      "portrait_path": "species/19349-monk-parakeet/portrait.png",
+      "portrait_sha256": "a1d4afc295b234c4574aa0dc5bbed2e5bd4140b527daf24e31ab15705e25412e",
+      "scientific_name": "Myiopsitta monachus",
+      "slug": "monk-parakeet",
+      "taxon_id": 19349
     },
     {
       "approved_at": "2026-07-10T05:04:19+00:00",
