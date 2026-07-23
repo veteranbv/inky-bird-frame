@@ -727,11 +727,14 @@ def generate_candidate(config: AppConfig, species: BirdSpecies, workspace: Path)
     reference_root = state_dir / "references" / str(species.taxon_id)
     reference_paths = [reference_root / reference.filename for reference in references]
     runner = CodexRunner(config.controller.codex_path, workspace)
-    # Codex runs with workspace-write sandboxing, so every path it must create
-    # needs to live below the configured workspace. The trusted controller
-    # process copies a passing candidate into state after Codex exits.
-    work_parent = workspace.resolve() / ".inky-bird-frame-work"
+    work_parent = state_dir / "work"
     work_parent.mkdir(parents=True, exist_ok=True)
+    # The image tool copies its bitmap from inside Codex, so that one output
+    # must live below the workspace-write sandbox root. Keep profiles, review
+    # inputs, and candidate staging in controller state where Codex cannot
+    # mutate them, then let the trusted parent process prepare the bitmap.
+    generation_parent = workspace.resolve() / ".inky-bird-frame-generation"
+    generation_parent.mkdir(parents=True, exist_ok=True)
 
     with TemporaryDirectory(prefix=f"{species.taxon_id}-", dir=work_parent) as temporary:
         work = Path(temporary)
@@ -751,20 +754,23 @@ def generate_candidate(config: AppConfig, species: BirdSpecies, workspace: Path)
         for attempt in range(1, config.controller.max_generation_attempts + 1):
             attempt_dir = work / f"attempt-{attempt:02d}"
             attempt_dir.mkdir()
-            generated_path = attempt_dir / "generated.png"
-            runner.generate_plate(
-                species,
-                profile,
-                references,
-                reference_paths,
-                generated_path,
-                logs / f"02-generation-attempt-{attempt:02d}.log",
-                correction_findings,
-            )
             portrait_path = attempt_dir / "portrait.png"
             display_path = attempt_dir / "display.png"
-            prepare_generated_plate(generated_path, portrait_path, display_path)
-            generated_path.unlink()
+            with TemporaryDirectory(
+                prefix=f"{species.taxon_id}-attempt-{attempt:02d}-",
+                dir=generation_parent,
+            ) as generation_temporary:
+                generated_path = Path(generation_temporary) / "generated.png"
+                runner.generate_plate(
+                    species,
+                    profile,
+                    references,
+                    reference_paths,
+                    generated_path,
+                    logs / f"02-generation-attempt-{attempt:02d}.log",
+                    correction_findings,
+                )
+                prepare_generated_plate(generated_path, portrait_path, display_path)
 
             review = runner.review_plate(
                 species,
