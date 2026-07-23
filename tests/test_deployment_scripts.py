@@ -13,6 +13,7 @@ def _controller_installers() -> list[str]:
 
 def test_controller_installers_use_provider_lists_for_managed_credentials() -> None:
     for script in _controller_installers():
+        assert 'environment_credentials.append("geoapify_api_key_env")' in script
         assert "DiscoveryProvider.EBIRD in config.discovery.sources" in script
         assert "DiscoveryProvider.BIRDWEATHER in config.discovery.sources" in script
         assert "config.discovery.source." not in script

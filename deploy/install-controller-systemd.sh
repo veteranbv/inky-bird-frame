@@ -98,6 +98,8 @@ unit_dir, root, app_dir, config_path, home = map(Path, sys.argv[1:6])
 user = sys.argv[6]
 config = load_config(config_path)
 environment_credentials = []
+if config.discovery.geoapify_api_key_env:
+    environment_credentials.append("geoapify_api_key_env")
 if DiscoveryProvider.EBIRD in config.discovery.sources and config.discovery.ebird_api_key_env:
     environment_credentials.append("ebird_api_key_env")
 if (

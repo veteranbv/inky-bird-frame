@@ -7,10 +7,10 @@ sources = ["inaturalist"]
 # zip_code remains the no-key path. For any country, use latitude/longitude directly,
 # or use postal_code + country_code with a private Geoapify key. See docs/discovery.md.
 zip_code = "12345"
-# latitude = 38.0
-# longitude = -77.0
-# postal_code = "SW1A 1AA"
-# country_code = "gb"
+# latitude = 0.0
+# longitude = 0.0
+# postal_code = "YOUR_POSTAL_CODE"
+# country_code = "XX"
 # geoapify_api_key = "YOUR_PRIVATE_GEOAPIFY_API_KEY"
 # geoapify_api_key_env = "GEOAPIFY_API_KEY"
 # Eight kilometers is approximately five miles: local enough to feel relevant while

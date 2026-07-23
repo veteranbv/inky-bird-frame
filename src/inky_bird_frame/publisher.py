@@ -42,6 +42,8 @@ _ALLOWED_SPECIES_FILES = frozenset(
 )
 _PRIVATE_KEYS = frozenset(
     {
+        "api_key",
+        "apikey",
         "catalog_dir",
         "checkout_dir",
         "controller_url",
