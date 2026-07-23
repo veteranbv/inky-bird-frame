@@ -109,6 +109,22 @@ def test_macos_controller_installer_restores_previously_loaded_agents_on_failure
     assert 'rm -rf "${plist_backup_dir}"' in script
 
 
+def test_actions_controller_installer_uses_gui_launchd_without_exporting_tokens() -> None:
+    root = Path(__file__).resolve().parents[1]
+    script = (root / "deploy" / "install-controller-via-launchd.sh").read_text()
+    workflow = (root / ".github" / "workflows" / "deploy.yml").read_text()
+
+    assert 'launchctl bootstrap "gui/${uid}" "${plist_path}"' in script
+    assert 'launchctl bootout "gui/${uid}/${label}"' in script
+    assert '"RunAtLoad": True' in script
+    assert '"KeepAlive"' not in script
+    assert '"${root}/deploy/install-controller.sh"' in script
+    assert "GH_TOKEN" not in script
+    assert "GITHUB_TOKEN" not in script
+    assert "./deploy/install-controller-via-launchd.sh" in workflow
+    assert "./deploy/install-controller.sh\n" not in workflow
+
+
 def test_local_display_installer_uses_configured_schedule_and_verifies_timer() -> None:
     script = (
         Path(__file__).resolve().parents[1] / "deploy" / "install-display-local.sh"

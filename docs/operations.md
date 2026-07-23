@@ -195,7 +195,13 @@ LaunchAgent only when `[public_catalog].enabled` is true.
 ## Maintainer deployment on macOS
 
 The optional owner-only deployment workflow uses the included macOS controller
-installer. Its trusted runner reads display connection details from
+installer. The self-hosted Actions runner dispatches that installer as a
+one-shot job in the controller user's GUI launchd domain. This is the same
+security context as the catalog publisher, so the existing keychain-backed
+GitHub CLI credential remains available without copying it into an Actions
+secret or environment variable.
+
+The trusted runner reads display connection details from
 `~/Library/Application Support/Inky Bird Frame/deployment.env`:
 
 ```bash
