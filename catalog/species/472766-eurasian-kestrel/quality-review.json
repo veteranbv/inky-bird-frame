@@ -1,0 +1,27 @@
+{
+  "anatomy_accuracy": 4,
+  "composition_quality": 5,
+  "findings": [
+    "Species identity is consistent with an adult male Eurasian/Common Kestrel: blue-gray head and tail, rusty spotted upperparts, buff streaked underparts, dark malar stripe, yellow bare parts, dark bill and eye, and a broad dark terminal tail band all match the references and live sources.",
+    "The principal bird has exactly one head, one beak, two wings, two legs, and one tail; the second head and spread wing are clearly anatomical study insets rather than extra parts attached to the bird.",
+    "The isolated wing inset looks slightly broader and rounder than the characteristically long, pointed wing seen in the flight-reference photographs. This is a minor representational weakness, not a material species error.",
+    "The bill, eyes, leg placement, feet, talons, tail length, and overall falcon proportions are coherent. The bill's tomial tooth is not clearly rendered, but the short hooked profile remains credible.",
+    "The printed measurements are supported by the Wikipedia account: 32\u201339 cm long, 65\u201382 cm wingspan, and combined adult-sex weight extremes of 136\u2013314 g. Animal Diversity Web gives narrower figures of 30\u201336 cm, 70\u201380 cm, and 150\u2013190 g, so the sources differ, but the plate's values are not demonstrably erroneous.",
+    "The taxonomy, habitat, behavior, and listed field marks agree with the inspected sources. The weight range would be more scientifically informative if divided into male and female ranges, but its combined endpoints are accurate.",
+    "All visible wording is legible and correctly spelled. No place name, ZIP code, coordinates, map, or local-observation detail appears."
+  ],
+  "location_free": true,
+  "passed": true,
+  "species_accuracy": 5,
+  "text_accuracy": 5,
+  "verification_sources": [
+    {
+      "title": "Falco tinnunculus (common kestrel) \u2014 Animal Diversity Web",
+      "url": "https://animaldiversity.org/accounts/Falco_tinnunculus/"
+    },
+    {
+      "title": "Common kestrel \u2014 Wikipedia",
+      "url": "https://en.wikipedia.org/wiki/Common_kestrel"
+    }
+  ]
+}

@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-24T00:32:37+00:00",
+  "generated_at": "2026-07-24T00:41:10+00:00",
   "schema_version": 1,
   "species": [
     {
@@ -375,6 +375,17 @@
       "scientific_name": "Garrulus glandarius",
       "slug": "eurasian-jay",
       "taxon_id": 8088
+    },
+    {
+      "approved_at": "2026-07-24T00:41:10+00:00",
+      "common_name": "Eurasian Kestrel",
+      "display_path": "species/472766-eurasian-kestrel/display.png",
+      "display_sha256": "69c45eb95825fb0b77229f595a8e41f7668abd9d55f6e7485199020c77452369",
+      "portrait_path": "species/472766-eurasian-kestrel/portrait.png",
+      "portrait_sha256": "ed67c64e4a511b8d094f83cd60a515e2a6c9bae2258ac5a58d974d1b788d8237",
+      "scientific_name": "Falco tinnunculus",
+      "slug": "eurasian-kestrel",
+      "taxon_id": 472766
     },
     {
       "approved_at": "2026-07-23T21:46:02+00:00",
