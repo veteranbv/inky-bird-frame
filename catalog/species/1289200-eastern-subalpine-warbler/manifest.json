@@ -1,0 +1,166 @@
+{
+  "approved_at": "2026-07-24T00:57:16+00:00",
+  "assets": {
+    "display": {
+      "filename": "display.png",
+      "sha256": "26f8c57f319820577ed39e9966f6e4f6d164a506666647b66b4742f2e67920a6"
+    },
+    "portrait": {
+      "filename": "portrait.png",
+      "sha256": "5ffdd78d3744280a2a7ff2084751e8c185658d22aba08d4124fb45891c339455"
+    }
+  },
+  "common_name": "Eastern Subalpine Warbler",
+  "generation": {
+    "attempt": 2,
+    "generated_at": "2026-07-24T00:57:16+00:00",
+    "generator": "Codex subscription / built-in gpt-image-2",
+    "max_attempts": 3,
+    "prompt_version": "field-journal-v2"
+  },
+  "profile": {
+    "behavior": "Active but often concealed in dense scrub; makes short flights between bushes and forages mainly for insects and larvae, adding berries and fruit outside the breeding season. Males sing a rapid, rattling series from exposed shrub tops and sometimes in song flight. The cup nest is placed low in dense vegetation.",
+    "common_name": "Eastern Subalpine Warbler",
+    "family": "Sylviidae",
+    "field_marks": [
+      "Small, slim body with a proportionately long tail",
+      "Fine, pointed bill with a dark upper edge and paler lower mandible",
+      "Male blue-gray head and back with a darker face",
+      "Male brick-red throat and breast above a largely white belly",
+      "Broad white moustachial stripe and reddish-orange eye-ring in adult male",
+      "Female brown-gray above and whitish below, often with a soft pink wash"
+    ],
+    "habitat": "Dense scrub and maquis, bushy slopes, thickets, scrubby open country, and open woodland with scattered trees; nesting cover is typically low and dense.",
+    "measurements": {
+      "length": "12\u201313 cm",
+      "weight": "7\u201316 g",
+      "wingspan": "18\u201320 cm"
+    },
+    "palette": [
+      "blue-gray",
+      "brick red",
+      "warm brown",
+      "white",
+      "sandy beige"
+    ],
+    "scientific_name": "Curruca cantillans",
+    "sources": [
+      {
+        "title": "Eastern Subalpine Warbler \u2014 eBird",
+        "url": "https://ebird.org/species/easwar1"
+      },
+      {
+        "title": "Eastern Subalpine Warbler \u2014 Birds of the World",
+        "url": "https://birdsoftheworld.org/bow/species/easwar1/cur/introduction"
+      },
+      {
+        "title": "Eastern subalpine warbler \u2014 Wikipedia",
+        "url": "https://en.wikipedia.org/wiki/Eastern_subalpine_warbler"
+      },
+      {
+        "title": "Sylvia cantillans \u2014 Spanish Wikipedia",
+        "url": "https://es.wikipedia.org/wiki/Sylvia_cantillans"
+      },
+      {
+        "title": "Pokrzewka w\u0105sata \u2014 Polish Wikipedia",
+        "url": "https://pl.wikipedia.org/wiki/Pokrzewka_w%C4%85sata"
+      }
+    ],
+    "taxon_id": 1289200
+  },
+  "quality_review": {
+    "anatomy_accuracy": 5,
+    "composition_quality": 4,
+    "findings": [
+      "The unnumbered ruler at the right has no units or defined scale, so it cannot substantiate the printed measurements.",
+      "The caption \u201cWing-pattern (diagnostic)\u201d is weakly supported and potentially misleading: the illustrated wing lacks an annotated species-specific character, while current identification guidance emphasizes the darker face, broad white moustache, whiter belly, and vocalizations.",
+      "All other visible claims are consistent with the checked sources. The adult-male plumage, proportions, bill, eye-ring, tail, legs, feet, taxonomy, measurements, habitat, and diet are credible. The main bird has one head, one beak, two anatomically coherent wings with the far wing naturally obscured, two legs, and one tail.",
+      "No place name, ZIP code, coordinates, map, or local-observation detail appears."
+    ],
+    "location_free": true,
+    "passed": true,
+    "species_accuracy": 5,
+    "text_accuracy": 4,
+    "verification_sources": [
+      {
+        "title": "Eastern Subalpine Warbler \u2014 eBird",
+        "url": "https://ebird.org/species/easwar1"
+      },
+      {
+        "title": "Eastern Subalpine Warbler \u2014 Birds of the World",
+        "url": "https://birdsoftheworld.org/bow/species/easwar1/cur/introduction?lang=es"
+      },
+      {
+        "title": "Eastern subalpine warbler \u2014 Wikipedia",
+        "url": "https://en.wikipedia.org/wiki/Eastern_subalpine_warbler"
+      },
+      {
+        "title": "Sylvia cantillans \u2014 Spanish Wikipedia",
+        "url": "https://es.wikipedia.org/wiki/Sylvia_cantillans"
+      },
+      {
+        "title": "Pokrzewka w\u0105sata \u2014 Polish Wikipedia",
+        "url": "https://pl.wikipedia.org/wiki/Pokrzewka_w%C4%85sata"
+      }
+    ]
+  },
+  "references": [
+    {
+      "attribution": "no rights reserved",
+      "filename": "01-11417915.jpeg",
+      "height": 1536,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/11417915/large.jpeg",
+      "license_code": "cc0",
+      "observation_id": 8546374,
+      "observer": "francescocecere",
+      "photo_id": 11417915,
+      "sha256": "3424735acf83872ae900dc343ff129c071e81f609898bfa10e884c80aa0de2c9",
+      "source_url": "https://www.inaturalist.org/observations/8546374",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) Lukas Zangl, some rights reserved (CC BY)",
+      "filename": "02-134263511.jpg",
+      "height": 1080,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/134263511/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 81692435,
+      "observer": "luksza",
+      "photo_id": 134263511,
+      "sha256": "ecdd253321f84bf8523df35352d97fcfb1e99a3420c709ce8e3589516a134843",
+      "source_url": "https://www.inaturalist.org/observations/81692435",
+      "width": 1620
+    },
+    {
+      "attribution": "(c) Vsevolod Rudyi, some rights reserved (CC BY)",
+      "filename": "03-205496473.jpg",
+      "height": 833,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/205496473/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 121442311,
+      "observer": "ruseva",
+      "photo_id": 205496473,
+      "sha256": "6370d06668f2d77efb5874c7d08cf49529b3b2298abc971626cf2545c4d8c750",
+      "source_url": "https://www.inaturalist.org/observations/121442311",
+      "width": 1249
+    },
+    {
+      "attribution": "no rights reserved",
+      "filename": "04-267349143.jpg",
+      "height": 1198,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/267349143/large.jpg",
+      "license_code": "cc0",
+      "observation_id": 154716066,
+      "observer": "oecophylla",
+      "photo_id": 267349143,
+      "sha256": "bada7ca9053ef9dd5c7f03be850d04195ab4490656c6d1d41034fd80cdb9470e",
+      "source_url": "https://www.inaturalist.org/observations/154716066",
+      "width": 1625
+    }
+  ],
+  "schema_version": 1,
+  "scientific_name": "Curruca cantillans",
+  "slug": "eastern-subalpine-warbler",
+  "status": "approved",
+  "taxon_id": 1289200
+}
