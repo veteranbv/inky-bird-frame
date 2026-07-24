@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-24T01:59:12+00:00",
+  "generated_at": "2026-07-24T02:09:43+00:00",
   "schema_version": 1,
   "species": [
     {
@@ -980,6 +980,17 @@
       "scientific_name": "Zonotrichia albicollis",
       "slug": "white-throated-sparrow",
       "taxon_id": 9184
+    },
+    {
+      "approved_at": "2026-07-24T02:09:43+00:00",
+      "common_name": "Willet",
+      "display_path": "species/144491-willet/display.png",
+      "display_sha256": "d6c330d4fe4e8ab6aecb74978dd906ce02691700cbe1d03b49a15d21ee16d36f",
+      "portrait_path": "species/144491-willet/portrait.png",
+      "portrait_sha256": "59492e6df3a3c5008a0ec20fb42412ac5137d7d42ad24df2bc716550894c0526",
+      "scientific_name": "Tringa semipalmata",
+      "slug": "willet",
+      "taxon_id": 144491
     },
     {
       "approved_at": "2026-07-13T07:24:31+00:00",

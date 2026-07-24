@@ -1,0 +1,33 @@
+{
+  "anatomy_accuracy": 4,
+  "composition_quality": 5,
+  "findings": [
+    "The full-body bird has one head, one beak, two legs, one tail, and normal shorebird anatomy; one folded wing is visible while the opposite wing is naturally occluded by the profile view.",
+    "The separate wing and head illustrations read clearly as conventional detail studies rather than duplicated anatomy.",
+    "The robust body, long heavy straight bill, bluish-gray legs, gray-brown plumage, short tail, and diagnostic black-and-white flight-wing pattern agree with the reference photographs and live identification sources.",
+    "The common name, scientific name, and family are correct.",
+    "All displayed measurements exactly match Audubon's published ranges. Cornell gives a slightly broader alternative range but does not contradict the displayed values.",
+    "The habitat, feeding behavior, vocal behavior, and every listed field mark are supported by the reviewed sources.",
+    "The main bird's lightly mottled plumage is plausible for a Western breeding bird or transitional plumage, though it is less strongly barred than a typical Eastern breeding adult.",
+    "No place name, ZIP code, coordinates, map, range map, or local-observation detail appears.",
+    "No material species, anatomy, composition, or text error was found."
+  ],
+  "location_free": true,
+  "passed": true,
+  "species_accuracy": 5,
+  "text_accuracy": 5,
+  "verification_sources": [
+    {
+      "title": "Willet Identification \u2014 All About Birds, Cornell Lab of Ornithology",
+      "url": "https://www.allaboutbirds.org/guide/Willet/id"
+    },
+    {
+      "title": "Willet \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/willet"
+    },
+    {
+      "title": "Willet \u2014 Wikipedia",
+      "url": "https://en.wikipedia.org/wiki/Willet"
+    }
+  ]
+}
