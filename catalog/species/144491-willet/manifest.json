@@ -1,0 +1,155 @@
+{
+  "approved_at": "2026-07-24T02:09:43+00:00",
+  "assets": {
+    "display": {
+      "filename": "display.png",
+      "sha256": "d6c330d4fe4e8ab6aecb74978dd906ce02691700cbe1d03b49a15d21ee16d36f"
+    },
+    "portrait": {
+      "filename": "portrait.png",
+      "sha256": "59492e6df3a3c5008a0ec20fb42412ac5137d7d42ad24df2bc716550894c0526"
+    }
+  },
+  "common_name": "Willet",
+  "generation": {
+    "attempt": 1,
+    "generated_at": "2026-07-24T02:09:43+00:00",
+    "generator": "Codex subscription / built-in gpt-image-2",
+    "max_attempts": 3,
+    "prompt_version": "field-journal-v2"
+  },
+  "profile": {
+    "behavior": "Walks deliberately along wet shorelines and in shallow water, probing mud or sand with its bill or picking aquatic invertebrates from the surface; often forages alone and gives loud, ringing calls when disturbed or in flight.",
+    "common_name": "Willet",
+    "family": "Scolopacidae",
+    "field_marks": [
+      "Large, robust shorebird with a bulky body",
+      "Long, straight, heavy dark bill, distinctly longer than the head",
+      "Long, sturdy blue-gray legs",
+      "Gray-brown upperparts with paler underparts; breeding plumage is more mottled and barred",
+      "Bold black-and-white wing stripe exposed in flight",
+      "Short, squared tail and broad, rounded wings"
+    ],
+    "habitat": "Open beaches, mudflats, marshes, tidal estuaries, bayshores, and rocky coasts; breeding habitat also includes freshwater marshes, wet meadows, and grasslands near shallow wetlands.",
+    "measurements": {
+      "length": "36\u201340 cm (14.2\u201315.7 in)",
+      "weight": "200\u2013320 g (7.1\u201311.3 oz)",
+      "wingspan": "69\u201376 cm (27\u201330 in)"
+    },
+    "palette": [
+      "gray-brown",
+      "soft gray",
+      "white",
+      "black",
+      "blue-gray"
+    ],
+    "scientific_name": "Tringa semipalmata",
+    "sources": [
+      {
+        "title": "Willet Identification \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Willet/id"
+      },
+      {
+        "title": "Willet Life History \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Willet/lifehistory"
+      },
+      {
+        "title": "Willet \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/willet"
+      }
+    ],
+    "taxon_id": 144491
+  },
+  "quality_review": {
+    "anatomy_accuracy": 4,
+    "composition_quality": 5,
+    "findings": [
+      "The full-body bird has one head, one beak, two legs, one tail, and normal shorebird anatomy; one folded wing is visible while the opposite wing is naturally occluded by the profile view.",
+      "The separate wing and head illustrations read clearly as conventional detail studies rather than duplicated anatomy.",
+      "The robust body, long heavy straight bill, bluish-gray legs, gray-brown plumage, short tail, and diagnostic black-and-white flight-wing pattern agree with the reference photographs and live identification sources.",
+      "The common name, scientific name, and family are correct.",
+      "All displayed measurements exactly match Audubon's published ranges. Cornell gives a slightly broader alternative range but does not contradict the displayed values.",
+      "The habitat, feeding behavior, vocal behavior, and every listed field mark are supported by the reviewed sources.",
+      "The main bird's lightly mottled plumage is plausible for a Western breeding bird or transitional plumage, though it is less strongly barred than a typical Eastern breeding adult.",
+      "No place name, ZIP code, coordinates, map, range map, or local-observation detail appears.",
+      "No material species, anatomy, composition, or text error was found."
+    ],
+    "location_free": true,
+    "passed": true,
+    "species_accuracy": 5,
+    "text_accuracy": 5,
+    "verification_sources": [
+      {
+        "title": "Willet Identification \u2014 All About Birds, Cornell Lab of Ornithology",
+        "url": "https://www.allaboutbirds.org/guide/Willet/id"
+      },
+      {
+        "title": "Willet \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/willet"
+      },
+      {
+        "title": "Willet \u2014 Wikipedia",
+        "url": "https://en.wikipedia.org/wiki/Willet"
+      }
+    ]
+  },
+  "references": [
+    {
+      "attribution": "(c) Daniel Pineda Vera, some rights reserved (CC BY)",
+      "filename": "01-248931016.jpg",
+      "height": 1365,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/248931016/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 144968376,
+      "observer": "el_neotropico",
+      "photo_id": 248931016,
+      "sha256": "c849fbafd8967f2e40cb7fc7871886c677835a5092c64db41b26c5f4ff9d6847",
+      "source_url": "https://www.inaturalist.org/observations/144968376",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) Kalvin Chan, some rights reserved (CC BY)",
+      "filename": "02-498139920.jpg",
+      "height": 1368,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/498139920/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 277428449,
+      "observer": "kalvinchan",
+      "photo_id": 498139920,
+      "sha256": "30a4ef177c8d1077667e8d55775b71797257d5c07d09048dd80135df23ea02c4",
+      "source_url": "https://www.inaturalist.org/observations/277428449",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) Becca, some rights reserved (CC BY)",
+      "filename": "03-640266079.jpg",
+      "height": 2048,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/640266079/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 350887942,
+      "observer": "mcbeccers",
+      "photo_id": 640266079,
+      "sha256": "3a07c9f33607d065a6522a8668a726f40fcff9b0a69d111f8333940ccef2339e",
+      "source_url": "https://www.inaturalist.org/observations/350887942",
+      "width": 1638
+    },
+    {
+      "attribution": "no rights reserved",
+      "filename": "04-339539307.jpg",
+      "height": 1367,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/339539307/large.jpg",
+      "license_code": "cc0",
+      "observation_id": 193294096,
+      "observer": "rawcomposition",
+      "photo_id": 339539307,
+      "sha256": "cccb7d627b7e9d4863ed4c1e51dfc777a4b4853bd759deb0215c837db7964237",
+      "source_url": "https://www.inaturalist.org/observations/193294096",
+      "width": 2048
+    }
+  ],
+  "schema_version": 1,
+  "scientific_name": "Tringa semipalmata",
+  "slug": "willet",
+  "status": "approved",
+  "taxon_id": 144491
+}

@@ -1,0 +1,42 @@
+{
+  "behavior": "Walks deliberately along wet shorelines and in shallow water, probing mud or sand with its bill or picking aquatic invertebrates from the surface; often forages alone and gives loud, ringing calls when disturbed or in flight.",
+  "common_name": "Willet",
+  "family": "Scolopacidae",
+  "field_marks": [
+    "Large, robust shorebird with a bulky body",
+    "Long, straight, heavy dark bill, distinctly longer than the head",
+    "Long, sturdy blue-gray legs",
+    "Gray-brown upperparts with paler underparts; breeding plumage is more mottled and barred",
+    "Bold black-and-white wing stripe exposed in flight",
+    "Short, squared tail and broad, rounded wings"
+  ],
+  "habitat": "Open beaches, mudflats, marshes, tidal estuaries, bayshores, and rocky coasts; breeding habitat also includes freshwater marshes, wet meadows, and grasslands near shallow wetlands.",
+  "measurements": {
+    "length": "36\u201340 cm (14.2\u201315.7 in)",
+    "weight": "200\u2013320 g (7.1\u201311.3 oz)",
+    "wingspan": "69\u201376 cm (27\u201330 in)"
+  },
+  "palette": [
+    "gray-brown",
+    "soft gray",
+    "white",
+    "black",
+    "blue-gray"
+  ],
+  "scientific_name": "Tringa semipalmata",
+  "sources": [
+    {
+      "title": "Willet Identification \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Willet/id"
+    },
+    {
+      "title": "Willet Life History \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Willet/lifehistory"
+    },
+    {
+      "title": "Willet \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/willet"
+    }
+  ],
+  "taxon_id": 144491
+}
