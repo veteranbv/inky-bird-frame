@@ -70,6 +70,7 @@ def _load_review_gate() -> ReviewGateModule:
 
 def _state_with_commit(*, pushed: str | None, committed: str) -> dict[str, object]:
     return {
+        "state": "OPEN",
         "commits": {
             "nodes": [
                 {
@@ -916,6 +917,45 @@ def test_engagement_poll_refreshes_head_time_from_updated_pr_state(
     monkeypatch.setattr(review_gate, "POLL_BUDGET_SECONDS", 1)
     times = iter([0.0, 0.0])
     monkeypatch.setattr("review_gate_under_test.time.monotonic", lambda: next(times))
+    monkeypatch.setattr("review_gate_under_test.time.sleep", lambda _seconds: None)
+
+    assert review_gate.main() == 0
+
+
+def test_gate_exits_when_pr_is_already_merged(monkeypatch: pytest.MonkeyPatch) -> None:
+    review_gate = _load_review_gate()
+    state = _state_with_commit(
+        pushed="2026-06-15T11:59:00Z",
+        committed="2026-06-01T12:00:00Z",
+    )
+    state["state"] = "MERGED"
+
+    monkeypatch.setattr(review_gate, "fetch_pr_state", lambda _repo, _pr: state)
+    monkeypatch.setenv("GITHUB_REPOSITORY", "owner/repo")
+    monkeypatch.setenv("PR_NUMBER", "123")
+
+    assert review_gate.main() == 0
+
+
+def test_gate_exits_when_pr_merges_during_polling(monkeypatch: pytest.MonkeyPatch) -> None:
+    review_gate = _load_review_gate()
+    initial = _state_with_commit(
+        pushed="2026-06-15T11:59:00Z",
+        committed="2026-06-01T12:00:00Z",
+    )
+    merged = _state_with_commit(
+        pushed="2026-06-15T11:59:00Z",
+        committed="2026-06-01T12:00:00Z",
+    )
+    merged["state"] = "MERGED"
+    states = iter((initial, merged))
+
+    monkeypatch.setattr(review_gate, "fetch_pr_state", lambda _repo, _pr: next(states))
+    monkeypatch.setenv("GITHUB_REPOSITORY", "owner/repo")
+    monkeypatch.setenv("PR_NUMBER", "123")
+    monkeypatch.setattr(review_gate, "POLL_INTERVAL_SECONDS", 0)
+    monkeypatch.setattr(review_gate, "POLL_BUDGET_SECONDS", 1)
+    monkeypatch.setattr("review_gate_under_test.time.monotonic", lambda: 0.0)
     monkeypatch.setattr("review_gate_under_test.time.sleep", lambda _seconds: None)
 
     assert review_gate.main() == 0
