@@ -429,13 +429,15 @@ class ControllerTests(unittest.TestCase):
                     }
                 )
             )
-            RetryStore(config.controller.state_dir / "generation-retries.json").record_failure(
+            retry_store = RetryStore(config.controller.state_dir / "generation-retries.json")
+            retry_store.record_failure(
                 retrying.taxon_id,
                 DataSourceError("temporary"),
                 now=datetime.now(UTC) - timedelta(minutes=31),
                 initial_minutes=30,
                 maximum_minutes=60,
             )
+            retry_store.set_quality_guidance(first.taxon_id, ("Keep the wing angle accurate",))
             with (
                 patch("inky_bird_frame.controller.approved_taxon_ids", return_value=set()),
                 patch("inky_bird_frame.controller.generate_candidate"),
@@ -443,10 +445,14 @@ class ControllerTests(unittest.TestCase):
                 patch("inky_bird_frame.controller._write_active_catalog", return_value=0),
             ):
                 result = run_generation_cycle(config)
+            first_guidance = RetryStore(
+                config.controller.state_dir / "generation-retries.json"
+            ).quality_guidance(first.taxon_id)
 
         self.assertEqual(result["attempted_count"], 1)
         self.assertEqual(result["deferred_count"], 0)
         self.assertEqual(result["outstanding_retry_count"], 1)
+        self.assertIsNone(first_guidance)
 
     def test_overlapping_refresh_is_rejected_before_discovery(self) -> None:
         with TemporaryDirectory() as temporary:
@@ -747,6 +753,10 @@ class ControllerTests(unittest.TestCase):
             config_path = Path(temporary) / "config.toml"
             config_path.write_text(CONFIG)
             config = load_config(config_path)
+            config.controller.state_dir.mkdir(parents=True)
+            RetryStore(
+                config.controller.state_dir / "generation-retries.json"
+            ).set_quality_guidance(species.taxon_id, ("Keep the bill proportion accurate",))
             with (
                 patch(
                     "inky_bird_frame.controller.discover_species",
@@ -757,6 +767,9 @@ class ControllerTests(unittest.TestCase):
                 generate.side_effect = InsufficientReferencesError("only 1 of 4 references")
                 result = run_controller_cycle(config)
             terminal_failures = list((config.controller.state_dir / "failed").glob("9083-*"))
+            guidance = RetryStore(
+                config.controller.state_dir / "generation-retries.json"
+            ).quality_guidance(species.taxon_id)
 
         self.assertEqual(terminal_failures, [])
         failures = result["failures"]
@@ -765,6 +778,11 @@ class ControllerTests(unittest.TestCase):
             self.assertFalse(failures[0]["terminal"])
             self.assertIn("retry_at", failures[0])
         self.assertEqual(result["deferred_count"], 1)
+        self.assertIsNotNone(guidance)
+        self.assertEqual(
+            generate.call_args.kwargs["initial_correction_findings"],
+            ("Keep the bill proportion accurate",),
+        )
 
     def test_failed_review_is_corrected_and_passing_attempt_is_staged(self) -> None:
         species = BirdSpecies(9083, "Northern Cardinal", "Cardinalis cardinalis", 2, "test")
@@ -834,13 +852,21 @@ class ControllerTests(unittest.TestCase):
                 patch("inky_bird_frame.controller.CodexRunner", FakeRunner),
                 patch("inky_bird_frame.controller.prepare_generated_plate", side_effect=prepare),
             ):
-                candidate = generate_candidate(config, species, config.controller.workspace_dir)
+                candidate = generate_candidate(
+                    config,
+                    species,
+                    config.controller.workspace_dir,
+                    initial_correction_findings=("Preserve the previous scale correction",),
+                )
             manifest = json.loads((candidate / "manifest.json").read_text())
             private_histories = list(
                 (config.controller.state_dir / "runs").glob("*/attempt-history.json")
             )
 
-        self.assertEqual(FakeRunner.corrections, [(), ("Crest is too short",)])
+        self.assertEqual(
+            FakeRunner.corrections,
+            [("Preserve the previous scale correction",), ("Crest is too short",)],
+        )
         self.assertEqual(len(FakeRunner.generated_paths), 2)
         self.assertEqual(len(FakeRunner.review_paths), 2)
         self.assertEqual(manifest["generation"]["attempt"], 2)
@@ -855,6 +881,10 @@ class ControllerTests(unittest.TestCase):
             config_path = Path(temporary) / "config.toml"
             config_path.write_text(CONFIG)
             config = load_config(config_path)
+            config.controller.state_dir.mkdir(parents=True)
+            RetryStore(
+                config.controller.state_dir / "generation-retries.json"
+            ).set_quality_guidance(species.taxon_id, ("Correct the ruler scale",))
             with (
                 patch(
                     "inky_bird_frame.controller.discover_species",
@@ -866,6 +896,9 @@ class ControllerTests(unittest.TestCase):
                 result = run_controller_cycle(config)
 
             failures = list((config.controller.state_dir / "failed").glob("9083-*"))
+            guidance = RetryStore(
+                config.controller.state_dir / "generation-retries.json"
+            ).quality_guidance(species.taxon_id)
 
         self.assertEqual(failures, [])
         self.assertEqual(result["eligible_count"], 1)
@@ -876,6 +909,11 @@ class ControllerTests(unittest.TestCase):
         if isinstance(first_failure, dict):
             self.assertEqual(first_failure["error"], "profile failed")
             self.assertFalse(first_failure["terminal"])
+        self.assertIsNotNone(guidance)
+        self.assertEqual(
+            generate.call_args.kwargs["initial_correction_findings"],
+            ("Correct the ruler scale",),
+        )
 
     def test_catalog_wide_error_still_aborts_the_cycle(self) -> None:
         species = BirdSpecies(9083, "Northern Cardinal", "Cardinalis cardinalis", 2, "test")
@@ -1102,6 +1140,10 @@ class ControllerTests(unittest.TestCase):
             config_path = Path(temporary) / "config.toml"
             config_path.write_text(CONFIG)
             config = load_config(config_path)
+            config.controller.state_dir.mkdir(parents=True)
+            RetryStore(
+                config.controller.state_dir / "generation-retries.json"
+            ).set_quality_guidance(species.taxon_id, ("Correct the ruler scale",))
             with (
                 patch(
                     "inky_bird_frame.controller.discover_species",
@@ -1113,12 +1155,20 @@ class ControllerTests(unittest.TestCase):
                 result = run_controller_cycle(config)
 
             failures = list((config.controller.state_dir / "failed").glob("9083-*"))
+            guidance = RetryStore(
+                config.controller.state_dir / "generation-retries.json"
+            ).quality_guidance(species.taxon_id)
 
         self.assertEqual(len(failures), 1)
         failure_results = result["failures"]
         self.assertIsInstance(failure_results, list)
         if isinstance(failure_results, list):
             self.assertTrue(failure_results[0]["terminal"])
+        self.assertIsNone(guidance)
+        self.assertEqual(
+            generate.call_args.kwargs["initial_correction_findings"],
+            ("Correct the ruler scale",),
+        )
 
 
 class DiscoveryProviderTests(unittest.TestCase):

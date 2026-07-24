@@ -35,14 +35,23 @@ class RetryRecord:
         }
 
 
+@dataclass(frozen=True)
+class RetryGuidance:
+    taxon_id: int
+    findings: tuple[str, ...]
+
+    def as_dict(self) -> dict[str, object]:
+        return {"taxon_id": self.taxon_id, "findings": list(self.findings)}
+
+
 class RetryStore:
     def __init__(self, path: Path) -> None:
         self.path = path
-        self._records = self._read()
+        self._records, self._quality_guidance = self._read()
 
-    def _read(self) -> dict[int, RetryRecord]:
+    def _read(self) -> tuple[dict[int, RetryRecord], dict[int, RetryGuidance]]:
         if not self.path.exists():
-            return {}
+            return {}, {}
         try:
             raw = json.loads(self.path.read_text())
         except json.JSONDecodeError as exc:
@@ -58,7 +67,16 @@ class RetryStore:
             if record.taxon_id in parsed:
                 raise CatalogError(f"Duplicate taxon in retry state: {self.path}")
             parsed[record.taxon_id] = record
-        return parsed
+        raw_guidance = raw.get("quality_guidance", [])
+        if not isinstance(raw_guidance, list):
+            raise CatalogError(f"Invalid retry state: {self.path}")
+        guidance: dict[int, RetryGuidance] = {}
+        for item in raw_guidance:
+            entry = _parse_guidance(item, self.path)
+            if entry.taxon_id in guidance:
+                raise CatalogError(f"Duplicate quality guidance in retry state: {self.path}")
+            guidance[entry.taxon_id] = entry
+        return parsed, guidance
 
     def get(self, taxon_id: int) -> RetryRecord | None:
         return self._records.get(taxon_id)
@@ -101,6 +119,22 @@ class RetryStore:
         if self._records.pop(taxon_id, None) is not None:
             self._write()
 
+    def quality_guidance(self, taxon_id: int) -> RetryGuidance | None:
+        return self._quality_guidance.get(taxon_id)
+
+    def set_quality_guidance(self, taxon_id: int, findings: tuple[str, ...]) -> RetryGuidance:
+        guidance = _parse_guidance(
+            {"taxon_id": taxon_id, "findings": list(findings)},
+            self.path,
+        )
+        self._quality_guidance[taxon_id] = guidance
+        self._write()
+        return guidance
+
+    def clear_quality_guidance(self, taxon_id: int) -> None:
+        if self._quality_guidance.pop(taxon_id, None) is not None:
+            self._write()
+
     def deferred(self, taxon_ids: set[int], now: datetime) -> list[RetryRecord]:
         return sorted(
             (
@@ -129,6 +163,12 @@ class RetryStore:
                 "records": [
                     record.as_dict()
                     for record in sorted(self._records.values(), key=lambda item: item.taxon_id)
+                ],
+                "quality_guidance": [
+                    guidance.as_dict()
+                    for guidance in sorted(
+                        self._quality_guidance.values(), key=lambda item: item.taxon_id
+                    )
                 ],
             },
         )
@@ -170,3 +210,20 @@ def _parse_record(raw: object, source: Path) -> RetryRecord:
         last_failed_at=_parse_datetime(raw.get("last_failed_at"), source),
         next_attempt_at=_parse_datetime(raw.get("next_attempt_at"), source),
     )
+
+
+def _parse_guidance(raw: object, source: Path) -> RetryGuidance:
+    if not isinstance(raw, dict):
+        raise CatalogError(f"Invalid retry quality guidance: {source}")
+    taxon_id = raw.get("taxon_id")
+    findings = raw.get("findings")
+    if (
+        not isinstance(taxon_id, int)
+        or isinstance(taxon_id, bool)
+        or taxon_id <= 0
+        or not isinstance(findings, list)
+        or not findings
+        or any(not isinstance(finding, str) or not finding.strip() for finding in findings)
+    ):
+        raise CatalogError(f"Invalid retry quality guidance: {source}")
+    return RetryGuidance(taxon_id=taxon_id, findings=tuple(findings))

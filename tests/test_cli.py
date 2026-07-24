@@ -27,8 +27,14 @@ from inky_bird_frame.cli import (
     species_to_dict,
 )
 from inky_bird_frame.config import DiscoveryProvider
-from inky_bird_frame.controller import exclusive_cycle_lock
-from inky_bird_frame.errors import ConfigurationError, DataSourceError, GenerationError
+from inky_bird_frame.controller import REVIEW_FAILURE_FALLBACK, exclusive_cycle_lock
+from inky_bird_frame.errors import (
+    ConfigurationError,
+    DataSourceError,
+    GenerationError,
+    SpeciesStateError,
+)
+from inky_bird_frame.retry import RetryStore
 
 
 class CliTests(unittest.TestCase):
@@ -386,6 +392,14 @@ rotation_mode = "shuffle_bag"
             state_dir = Path(temporary)
             failed = state_dir / "failed/42-example-bird"
             failed.mkdir(parents=True)
+            old_review = failed / "attempt-99/quality-review.json"
+            old_review.parent.mkdir()
+            old_review.write_text(json.dumps({"passed": False, "findings": ["Outdated finding"]}))
+            review = failed / "attempt-100/quality-review.json"
+            review.parent.mkdir()
+            review.write_text(
+                json.dumps({"passed": False, "findings": ["Correct the ruler scale"]})
+            )
             profile = state_dir / "profiles/42/profile.json"
             profile.parent.mkdir(parents=True)
             profile.write_text("{}")
@@ -399,6 +413,7 @@ rotation_mode = "shuffle_bag"
                 retry_command(Namespace(taxon_id=42))
 
             result = json.loads(output.getvalue())["data"]
+            guidance = RetryStore(state_dir / "generation-retries.json").quality_guidance(42)
             profile_exists = profile.exists() or references.exists()
             archived_profile_exists = (state_dir / "archive/42/profile.json").exists()
 
@@ -406,6 +421,48 @@ rotation_mode = "shuffle_bag"
         self.assertTrue(result["cleared_cached_references"])
         self.assertFalse(profile_exists)
         self.assertTrue(archived_profile_exists)
+        self.assertEqual(result["preserved_quality_findings_count"], 1)
+        self.assertIsNotNone(guidance)
+        if guidance is not None:
+            self.assertEqual(guidance.findings, ("Correct the ruler scale",))
+
+    def test_retry_preserves_fallback_for_empty_quality_findings(self) -> None:
+        with TemporaryDirectory() as temporary:
+            state_dir = Path(temporary)
+            review = state_dir / "failed/42-example-bird/attempt-01/quality-review.json"
+            review.parent.mkdir(parents=True)
+            review.write_text(json.dumps({"passed": False, "findings": []}))
+            config = SimpleNamespace(controller=SimpleNamespace(state_dir=state_dir))
+            output = io.StringIO()
+
+            with patch("inky_bird_frame.cli._config", return_value=config), redirect_stdout(output):
+                retry_command(Namespace(taxon_id=42))
+
+            result = json.loads(output.getvalue())["data"]
+            guidance = RetryStore(state_dir / "generation-retries.json").quality_guidance(42)
+
+        self.assertEqual(result["preserved_quality_findings_count"], 1)
+        self.assertIsNotNone(guidance)
+        if guidance is not None:
+            self.assertEqual(guidance.findings, (REVIEW_FAILURE_FALLBACK,))
+
+    def test_retry_rejects_malformed_quality_review_before_archiving(self) -> None:
+        with TemporaryDirectory() as temporary:
+            state_dir = Path(temporary)
+            failed = state_dir / "failed/42-example-bird"
+            review = failed / "attempt-03/quality-review.json"
+            review.parent.mkdir(parents=True)
+            review.write_text("not json")
+            config = SimpleNamespace(controller=SimpleNamespace(state_dir=state_dir))
+
+            with (
+                patch("inky_bird_frame.cli._config", return_value=config),
+                self.assertRaisesRegex(SpeciesStateError, "Invalid quality review"),
+            ):
+                retry_command(Namespace(taxon_id=42))
+
+            self.assertTrue(failed.is_dir())
+            self.assertFalse((state_dir / "archive").exists())
 
     def test_retry_is_excluded_by_running_generation_cycle(self) -> None:
         with TemporaryDirectory() as temporary:

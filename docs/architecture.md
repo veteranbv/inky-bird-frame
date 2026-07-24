@@ -147,7 +147,9 @@ unchanged. The next scheduled cycle retries from the current remote branch.
 | eligible | No terminal state exists | Yes |
 
 `retry TAXON_ID` archives rejected or failed state and makes that taxon
-eligible. Approved art is never replaced implicitly.
+eligible. For failed quality reviews, it also retains the final findings as
+durable input to the first new generation attempt while refreshing cached
+research. Approved art is never replaced implicitly.
 
 ## Privacy and licensing
 

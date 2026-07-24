@@ -272,7 +272,11 @@ only; they never enter the approved catalog or rotation.
   pages. The taxon is deferred automatically and later queue items continue.
 - Generated image or text defect: the controller feeds review findings into a
   new attempt automatically. After all configured attempts fail, inspect the
-  retained artifacts and use `retry` for a deliberate new cycle.
+  retained artifacts and use `retry` for a deliberate new cycle. The command
+  refreshes cached references and profile data while preserving the final
+  review findings for the first regenerated plate. Transient source failures
+  retain that guidance until generation reaches a successful or terminal
+  quality result.
 - Controller unavailable: the current e-paper image remains visible. Display
   state is not advanced.
 - Checksum mismatch: the display refuses the asset and preserves current state.
