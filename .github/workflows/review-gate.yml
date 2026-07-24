@@ -29,7 +29,8 @@ on:
 # One run per head SHA, never cancelled: a cancelled conclusion on the
 # current head blocks required-status evaluation (the auto-merge stall this
 # group previously caused). Runs for superseded heads exit early on their
-  # own. review_gate.py returns success as soon as it sees the PR head move,
+# own. review_gate.py returns success as soon as it sees the PR head move or
+# the PR merge, because a post-merge timeout cannot protect the completed merge,
 # so CI minutes stay bounded without cancel-in-progress.
 concurrency:
   group: review-gate-${{ github.event.pull_request.number }}-${{ github.event.pull_request.head.sha }}

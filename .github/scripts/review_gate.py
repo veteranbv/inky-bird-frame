@@ -23,7 +23,9 @@ Gating model (hybrid; see PR #71 discussion):
 Engagement (polling): after the repository owner requests Codex review and
 names the exact head SHA, the script waits up to POLL_BUDGET_SECONDS for Codex
 to engage via review, clean comment, or reaction. Contributor activity and
-automatic review alone cannot satisfy the gate.
+automatic review alone cannot satisfy the gate. If the PR is already merged,
+the gate exits successfully because it can no longer protect the merge and a
+post-merge timeout would only report a false failure.
 
 Run locally for debugging:
     GH_TOKEN=$(gh auth token) \\
@@ -84,6 +86,7 @@ GRAPHQL_QUERY: Final = """
 query($owner: String!, $repo: String!, $pr: Int!) {
   repository(owner: $owner, name: $repo) {
     pullRequest(number: $pr) {
+      state
       headRefOid
       commits(last: 1) {
         nodes {
@@ -784,6 +787,9 @@ def main() -> int:
         return 2
 
     state = fetch_pr_state(repo, pr)
+    if state.get("state") == "MERGED":
+        print(f"PR #{pr} is already merged; review gate is no longer applicable.", flush=True)
+        return 0
     owner_login = repo.split("/", 1)[0]
     head_sha = state.get("headRefOid")
     if not isinstance(head_sha, str):
@@ -842,6 +848,12 @@ def main() -> int:
             # engagement can't be confirmed, the timeout fails closed.
             print("PR state fetch failed; retrying next interval.", flush=True)
             continue
+        if state.get("state") == "MERGED":
+            print(
+                f"PR #{pr} merged while waiting; review gate is no longer applicable.",
+                flush=True,
+            )
+            return 0
         # A new push supersedes this run: the workflow fires a fresh run for
         # the new head (concurrency no longer cancels, so this early exit is
         # what bounds CI minutes). Exiting 0 is safe — required checks are
