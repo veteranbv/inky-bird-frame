@@ -1,0 +1,152 @@
+{
+  "approved_at": "2026-07-24T01:33:53+00:00",
+  "assets": {
+    "display": {
+      "filename": "display.png",
+      "sha256": "7ac801d5597f527025ebb9b3b8316828b9399f383ad662151ada7be597d8144a"
+    },
+    "portrait": {
+      "filename": "portrait.png",
+      "sha256": "50408fbb6a9fed8795bb0a8735ea20d260bceade3df8d1c618372b1802cc8952"
+    }
+  },
+  "common_name": "Laughing Gull",
+  "generation": {
+    "attempt": 3,
+    "generated_at": "2026-07-24T01:33:53+00:00",
+    "generator": "Codex subscription / built-in gpt-image-2",
+    "max_attempts": 3,
+    "prompt_version": "field-journal-v2"
+  },
+  "profile": {
+    "behavior": "A social, opportunistic forager that walks, wades, swims, surface-dips, and sometimes plunges for food; also scavenges and steals catches from other birds. Often gathers in flocks, nests colonially, and gives loud, nasal, laugh-like calls.",
+    "common_name": "Laughing Gull",
+    "family": "Laridae",
+    "field_marks": [
+      "Medium-sized, slender gull with fairly long, pointed wings and long legs",
+      "Breeding adult has a crisp black hood with narrow white crescents around the dark eye",
+      "Fairly long reddish bill with a subtly drooping tip",
+      "Medium-to-dark gray back and upperwings contrasting with white underparts",
+      "Black outer primaries and wingtips with little white; tail is white",
+      "Nonbreeding adult has a white head with dusky gray smudging behind the eye; legs are dusky red to black"
+    ],
+    "habitat": "Primarily coastal beaches, tidal flats, salt marshes, bays, mangroves, and nearshore waters; also uses piers, fields, and landfills near the coast. Nests colonially on sandy or vegetated islands, beaches, and saltmarshes.",
+    "measurements": {
+      "length": "39\u201346 cm (15.3\u201318.1 in)",
+      "weight": "203\u2013371 g (7.2\u201313.1 oz)",
+      "wingspan": "92\u2013120 cm (36.2\u201347.2 in)"
+    },
+    "palette": [
+      "black",
+      "white",
+      "slate gray",
+      "deep red"
+    ],
+    "scientific_name": "Leucophaeus atricilla",
+    "sources": [
+      {
+        "title": "Laughing Gull Identification \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Laughing_Gull/id"
+      },
+      {
+        "title": "Laughing Gull Life History \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Laughing_Gull/lifehistory"
+      },
+      {
+        "title": "Laughing Gull \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/laughing-gull"
+      }
+    ],
+    "taxon_id": 144514
+  },
+  "quality_review": {
+    "anatomy_accuracy": 4,
+    "composition_quality": 4,
+    "findings": [
+      "The principal illustration is correctly identifiable as an adult Laughing Gull in breeding plumage: black hood, narrow white eye crescents, dark eye, reddish slightly drooping bill, medium-gray upperparts, white underparts, dark primaries with limited white, white tail, and dark reddish legs all agree with the references and live identification sources.",
+      "The displayed measurements exactly match the current Cornell All About Birds values: length 39\u201346 cm, weight 203\u2013371 g, and wingspan 92\u2013120 cm. Audubon publishes somewhat different ranges, but this represents source variation rather than a transcription error.",
+      "The common name, scientific name, family, habitat, behavior, palette labels, and written field marks are accurate and legible. No material spelling, unit-conversion, or taxonomy errors were found.",
+      "The main specimen has one head, one beak, two legs, one tail, and normal two-wing anatomy; only the near folded wing is delineated because of the lateral pose. The separate head and wing at the bottom read clearly as anatomical detail studies rather than duplicated parts on the specimen.",
+      "Minor anatomy issue: the feet are simplified, and the interdigital webbing expected on a gull is not clearly depicted.",
+      "Minor composition issue: the lower-left wing study is abruptly cropped by the page edge, though it remains useful and does not interfere with the principal specimen or text.",
+      "No place name, ZIP code, coordinates, map, locality label, or local-observation detail appears."
+    ],
+    "location_free": true,
+    "passed": true,
+    "species_accuracy": 5,
+    "text_accuracy": 5,
+    "verification_sources": [
+      {
+        "title": "Laughing Gull Identification \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Laughing_Gull/id"
+      },
+      {
+        "title": "Laughing Gull \u2014 eBird",
+        "url": "https://ebird.org/species/laugul"
+      },
+      {
+        "title": "Laughing Gull \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/laughing-gull"
+      }
+    ]
+  },
+  "references": [
+    {
+      "attribution": "(c) Jared Shorma, some rights reserved (CC BY)",
+      "filename": "01-380868920.jpeg",
+      "height": 1536,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/380868920/large.jpeg",
+      "license_code": "cc-by",
+      "observation_id": 215438139,
+      "observer": "blazeclaw",
+      "photo_id": 380868920,
+      "sha256": "55e73dc022084c42324482b7f1ba23fba76a94a85f0cee02f83bfa5ab22259e2",
+      "source_url": "https://www.inaturalist.org/observations/215438139",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) Tyler Ekholm, some rights reserved (CC BY)",
+      "filename": "02-430809933.jpeg",
+      "height": 1131,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/430809933/large.jpeg",
+      "license_code": "cc-by",
+      "observation_id": 241707261,
+      "observer": "chickenparmesan24",
+      "photo_id": 430809933,
+      "sha256": "335afad576bc8aa4165abefc352d1d39a2c8df18a62d6766d8ac679568d83c83",
+      "source_url": "https://www.inaturalist.org/observations/241707261",
+      "width": 1316
+    },
+    {
+      "attribution": "(c) Shiva Shenoy, some rights reserved (CC BY)",
+      "filename": "03-267238127.jpg",
+      "height": 1152,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/267238127/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 154649196,
+      "observer": "shivashenoy",
+      "photo_id": 267238127,
+      "sha256": "d9d1ad58210c55a000cdacb7d693f2c0746a882b48771da5cc529dfa64990800",
+      "source_url": "https://www.inaturalist.org/observations/154649196",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) Tom\u00e1s Tamagno, some rights reserved (CC BY)",
+      "filename": "04-572693063.jpg",
+      "height": 1536,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/572693063/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 316954802,
+      "observer": "ttamagno",
+      "photo_id": 572693063,
+      "sha256": "2ce8e66d716449d63dd2982f0c20a14668260d8be42797bcc9abb0b0d1598514",
+      "source_url": "https://www.inaturalist.org/observations/316954802",
+      "width": 2048
+    }
+  ],
+  "schema_version": 1,
+  "scientific_name": "Leucophaeus atricilla",
+  "slug": "laughing-gull",
+  "status": "approved",
+  "taxon_id": 144514
+}

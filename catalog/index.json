@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-24T01:16:55+00:00",
+  "generated_at": "2026-07-24T01:33:53+00:00",
   "schema_version": 1,
   "species": [
     {
@@ -573,6 +573,17 @@
       "scientific_name": "Charadrius vociferus",
       "slug": "killdeer",
       "taxon_id": 4793
+    },
+    {
+      "approved_at": "2026-07-24T01:33:53+00:00",
+      "common_name": "Laughing Gull",
+      "display_path": "species/144514-laughing-gull/display.png",
+      "display_sha256": "7ac801d5597f527025ebb9b3b8316828b9399f383ad662151ada7be597d8144a",
+      "portrait_path": "species/144514-laughing-gull/portrait.png",
+      "portrait_sha256": "50408fbb6a9fed8795bb0a8735ea20d260bceade3df8d1c618372b1802cc8952",
+      "scientific_name": "Leucophaeus atricilla",
+      "slug": "laughing-gull",
+      "taxon_id": 144514
     },
     {
       "approved_at": "2026-07-23T23:08:30+00:00",

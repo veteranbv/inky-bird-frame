@@ -1,0 +1,31 @@
+{
+  "anatomy_accuracy": 4,
+  "composition_quality": 4,
+  "findings": [
+    "The principal illustration is correctly identifiable as an adult Laughing Gull in breeding plumage: black hood, narrow white eye crescents, dark eye, reddish slightly drooping bill, medium-gray upperparts, white underparts, dark primaries with limited white, white tail, and dark reddish legs all agree with the references and live identification sources.",
+    "The displayed measurements exactly match the current Cornell All About Birds values: length 39\u201346 cm, weight 203\u2013371 g, and wingspan 92\u2013120 cm. Audubon publishes somewhat different ranges, but this represents source variation rather than a transcription error.",
+    "The common name, scientific name, family, habitat, behavior, palette labels, and written field marks are accurate and legible. No material spelling, unit-conversion, or taxonomy errors were found.",
+    "The main specimen has one head, one beak, two legs, one tail, and normal two-wing anatomy; only the near folded wing is delineated because of the lateral pose. The separate head and wing at the bottom read clearly as anatomical detail studies rather than duplicated parts on the specimen.",
+    "Minor anatomy issue: the feet are simplified, and the interdigital webbing expected on a gull is not clearly depicted.",
+    "Minor composition issue: the lower-left wing study is abruptly cropped by the page edge, though it remains useful and does not interfere with the principal specimen or text.",
+    "No place name, ZIP code, coordinates, map, locality label, or local-observation detail appears."
+  ],
+  "location_free": true,
+  "passed": true,
+  "species_accuracy": 5,
+  "text_accuracy": 5,
+  "verification_sources": [
+    {
+      "title": "Laughing Gull Identification \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Laughing_Gull/id"
+    },
+    {
+      "title": "Laughing Gull \u2014 eBird",
+      "url": "https://ebird.org/species/laugul"
+    },
+    {
+      "title": "Laughing Gull \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/laughing-gull"
+    }
+  ]
+}
