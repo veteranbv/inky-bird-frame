@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-24T01:33:53+00:00",
+  "generated_at": "2026-07-24T01:59:12+00:00",
   "schema_version": 1,
   "species": [
     {
@@ -111,6 +111,17 @@
       "scientific_name": "Polioptila caerulea",
       "slug": "blue-gray-gnatcatcher",
       "taxon_id": 7493
+    },
+    {
+      "approved_at": "2026-07-24T01:59:12+00:00",
+      "common_name": "Boat-tailed Grackle",
+      "display_path": "species/9601-boat-tailed-grackle/display.png",
+      "display_sha256": "8348329b065508a3a30135d073a48ffab7c61244c41bd89a6283145b903e9231",
+      "portrait_path": "species/9601-boat-tailed-grackle/portrait.png",
+      "portrait_sha256": "ee6a23a8c10cdb127053108d40b8de4d20516c2ba03663e89a57ba036fd08595",
+      "scientific_name": "Quiscalus major",
+      "slug": "boat-tailed-grackle",
+      "taxon_id": 9601
     },
     {
       "approved_at": "2026-07-10T17:37:41+00:00",

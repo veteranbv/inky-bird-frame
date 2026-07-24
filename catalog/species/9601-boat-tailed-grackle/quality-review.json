@@ -1,0 +1,32 @@
+{
+  "anatomy_accuracy": 4,
+  "composition_quality": 4,
+  "findings": [
+    "The adult-male illustration is identifiable as Boat-tailed Grackle: rounded crown, long pointed dark bill, glossy black plumage with blue-green/purple iridescence, long legs, yellow iris, and an exceptionally long tail.",
+    "The principal bird has one head, one beak, two anatomically implied wings with the far wing naturally occluded, two legs, and one tail. The detached head and wing are clearly supplementary studies, not duplicated anatomy.",
+    "The folded tail is somewhat narrow and flat-looking; the species\u2019 diagnostic broad, V- or keel-shaped tail is less evident than in the references.",
+    "The feet are simplified, but no clearly impossible toe, joint, or limb arrangement is present.",
+    "Common name, scientific name, family, habitat, behavior, plumage, sexual dimorphism, bill, eye-color variation, and wingspan are supported by the live sources.",
+    "The displayed measurements exactly match All About Birds. Audubon reports different, sex-specific ranges\u2014especially a longer and heavier male range\u2014so the plate would be scientifically stronger if it identified its measurement authority or separated the sexes.",
+    "The right-hand ruler lacks units and numerical labels, so it is decorative rather than a usable scientific scale.",
+    "No place name, ZIP code, coordinates, map, or local-observation detail appears."
+  ],
+  "location_free": true,
+  "passed": true,
+  "species_accuracy": 4,
+  "text_accuracy": 4,
+  "verification_sources": [
+    {
+      "title": "Boat-tailed Grackle Identification \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Boat-tailed_Grackle/id"
+    },
+    {
+      "title": "Boat-tailed Grackle \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/boat-tailed-grackle"
+    },
+    {
+      "title": "Boat-tailed Grackle \u2014 eBird",
+      "url": "https://ebird.org/species/botgra"
+    }
+  ]
+}
