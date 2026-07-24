@@ -1,0 +1,33 @@
+{
+  "anatomy_accuracy": 4,
+  "composition_quality": 5,
+  "findings": [
+    "Species identity is convincing: the large, thick-set swift, extremely long pointed wings, brown upperparts, white throat and belly, and intervening dark breast band agree with the references and live sources.",
+    "The common name, scientific name, and family are correct.",
+    "The stated 20\u201322 cm length and 54\u201360 cm wingspan are directly supported. The 67\u2013128 g weight range is defensible only as the extremes across subspecies, as the plate notes; it should not be read as the usual range of one population.",
+    "The bird has one head, one beak, two folded wings, two legs, and one shallow-forked tail. The separate head and wing studies are clearly anatomical insets rather than additional birds.",
+    "The feet and strongly hooked claws are somewhat oversized and conspicuous for a swift, although the vertical clinging posture is behaviorally appropriate and the legs remain short.",
+    "The extensive pale-edged, scalloped feathering resembles juvenile plumage, as seen in a supplied reference, but the plate does not identify the age class.",
+    "The phrase \u201ctiny dark bill and eye\u201d is imprecise: the bill is tiny, but the eye is relatively conspicuous and is not a useful \u201ctiny\u201d field mark. The illustration itself depicts the eye more accurately than the wording.",
+    "All other visible habitat, behavior, plumage, wing, and tail claims are consistent with the checked sources.",
+    "No place name, ZIP code, coordinates, map, or local-observation detail appears."
+  ],
+  "location_free": true,
+  "passed": true,
+  "species_accuracy": 4,
+  "text_accuracy": 4,
+  "verification_sources": [
+    {
+      "title": "Tachymarptis melba (alpine swift) \u2014 Animal Diversity Web",
+      "url": "https://animaldiversity.org/accounts/Tachymarptis_melba/"
+    },
+    {
+      "title": "Alpine swift \u2014 Wikipedia",
+      "url": "https://en.wikipedia.org/wiki/Alpine_swift"
+    },
+    {
+      "title": "Alpine Swift \u2014 Birds of the World",
+      "url": "https://birdsoftheworld.org/bow/species/alpswi1/cur/multimedia?media=audio"
+    }
+  ]
+}
