@@ -1,0 +1,42 @@
+{
+  "behavior": "An agile, vocal seed-eater that often hangs from seedheads and uses its pointed bill to extract seeds. Usually forages in pairs or small groups while breeding, forms larger flocks outside the breeding season, and flies with an undulating motion.",
+  "common_name": "European Goldfinch",
+  "family": "Fringillidae",
+  "field_marks": [
+    "Small, compact finch with a long, pointed pale bill and dark eye",
+    "Scarlet-red face bordered by a sharply patterned black-and-white head",
+    "Warm buff-brown back and flanks contrasting with whitish underparts",
+    "Black wings crossed by a broad, vivid yellow bar and marked with small white spots",
+    "Strongly notched black tail with white markings",
+    "Slender pinkish-flesh legs and feet"
+  ],
+  "habitat": "Open and lightly wooded country, including woodland edges, orchards, hedgerows, gardens, parks, meadows, grasslands, and weedy fields rich in seed-bearing plants.",
+  "measurements": {
+    "length": "12\u201313 cm",
+    "weight": "14\u201319 g",
+    "wingspan": "21\u201325 cm"
+  },
+  "palette": [
+    "scarlet red",
+    "golden yellow",
+    "jet black",
+    "ivory white",
+    "warm buff-brown"
+  ],
+  "scientific_name": "Carduelis carduelis",
+  "sources": [
+    {
+      "title": "European Goldfinch Life History \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/European_Goldfinch/lifehistory"
+    },
+    {
+      "title": "European Goldfinch Identification \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/European_Goldfinch/id"
+    },
+    {
+      "title": "European goldfinch \u2014 Wikipedia",
+      "url": "https://en.wikipedia.org/wiki/European_goldfinch"
+    }
+  ],
+  "taxon_id": 9398
+}
