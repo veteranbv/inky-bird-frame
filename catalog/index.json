@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-24T00:26:51+00:00",
+  "generated_at": "2026-07-24T00:32:37+00:00",
   "schema_version": 1,
   "species": [
     {
@@ -804,6 +804,17 @@
       "scientific_name": "Pheucticus ludovicianus",
       "slug": "rose-breasted-grosbeak",
       "taxon_id": 10271
+    },
+    {
+      "approved_at": "2026-07-24T00:32:37+00:00",
+      "common_name": "Rose-ringed Parakeet",
+      "display_path": "species/18911-rose-ringed-parakeet/display.png",
+      "display_sha256": "891b0b9d3825b11b38bc9f0695c80f1d0f093a8d20d7ab7d62802a434e8e61ea",
+      "portrait_path": "species/18911-rose-ringed-parakeet/portrait.png",
+      "portrait_sha256": "82445f86fb55c7bb4bbf26922dbb9b6372d81a5c7e640894f9f72a89c515486b",
+      "scientific_name": "Psittacula krameri",
+      "slug": "rose-ringed-parakeet",
+      "taxon_id": 18911
     },
     {
       "approved_at": "2026-07-10T18:51:24+00:00",

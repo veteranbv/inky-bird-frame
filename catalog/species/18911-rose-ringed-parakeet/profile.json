@@ -1,0 +1,38 @@
+{
+  "behavior": "Social, diurnal and arboreal; gathers in noisy flocks and shared roosts, flies directly, forages mainly on seeds and grains with fruit, nectar and some insects, and nests in existing tree cavities.",
+  "common_name": "Rose-ringed Parakeet",
+  "family": "Psittaculidae",
+  "field_marks": [
+    "Pale leaf-green plumage with slightly lighter underparts.",
+    "Exceptionally long, narrow, pointed blue-green tail.",
+    "Thick, strongly hooked reddish bill.",
+    "Pale eye bordered by a narrow orange-red eye-ring.",
+    "Adult male has a black chin and collar edged rose-pink; females and immatures lack the complete ring.",
+    "Pointed, darker-green wings and pale gray feet."
+  ],
+  "habitat": "An adaptable species of forests and woodlands, savannas and grasslands, agricultural areas, wetlands, and tree-rich urban or suburban settings.",
+  "measurements": {
+    "length": "36\u201340 cm",
+    "weight": "100\u2013140 g",
+    "wingspan": "45\u201350 cm"
+  },
+  "palette": [
+    "leaf green",
+    "lime green",
+    "blue-green",
+    "rose pink",
+    "crimson red"
+  ],
+  "scientific_name": "Psittacula krameri",
+  "sources": [
+    {
+      "title": "Rose-ringed Parakeet \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/rose-ringed-parakeet"
+    },
+    {
+      "title": "Psittacula krameri \u2014 Animal Diversity Web",
+      "url": "https://animaldiversity.org/accounts/Psittacula_krameri/"
+    }
+  ],
+  "taxon_id": 18911
+}

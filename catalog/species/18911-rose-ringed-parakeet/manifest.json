@@ -1,0 +1,150 @@
+{
+  "approved_at": "2026-07-24T00:32:37+00:00",
+  "assets": {
+    "display": {
+      "filename": "display.png",
+      "sha256": "891b0b9d3825b11b38bc9f0695c80f1d0f093a8d20d7ab7d62802a434e8e61ea"
+    },
+    "portrait": {
+      "filename": "portrait.png",
+      "sha256": "82445f86fb55c7bb4bbf26922dbb9b6372d81a5c7e640894f9f72a89c515486b"
+    }
+  },
+  "common_name": "Rose-ringed Parakeet",
+  "generation": {
+    "attempt": 1,
+    "generated_at": "2026-07-24T00:32:37+00:00",
+    "generator": "Codex subscription / built-in gpt-image-2",
+    "max_attempts": 3,
+    "prompt_version": "field-journal-v2"
+  },
+  "profile": {
+    "behavior": "Social, diurnal and arboreal; gathers in noisy flocks and shared roosts, flies directly, forages mainly on seeds and grains with fruit, nectar and some insects, and nests in existing tree cavities.",
+    "common_name": "Rose-ringed Parakeet",
+    "family": "Psittaculidae",
+    "field_marks": [
+      "Pale leaf-green plumage with slightly lighter underparts.",
+      "Exceptionally long, narrow, pointed blue-green tail.",
+      "Thick, strongly hooked reddish bill.",
+      "Pale eye bordered by a narrow orange-red eye-ring.",
+      "Adult male has a black chin and collar edged rose-pink; females and immatures lack the complete ring.",
+      "Pointed, darker-green wings and pale gray feet."
+    ],
+    "habitat": "An adaptable species of forests and woodlands, savannas and grasslands, agricultural areas, wetlands, and tree-rich urban or suburban settings.",
+    "measurements": {
+      "length": "36\u201340 cm",
+      "weight": "100\u2013140 g",
+      "wingspan": "45\u201350 cm"
+    },
+    "palette": [
+      "leaf green",
+      "lime green",
+      "blue-green",
+      "rose pink",
+      "crimson red"
+    ],
+    "scientific_name": "Psittacula krameri",
+    "sources": [
+      {
+        "title": "Rose-ringed Parakeet \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/rose-ringed-parakeet"
+      },
+      {
+        "title": "Psittacula krameri \u2014 Animal Diversity Web",
+        "url": "https://animaldiversity.org/accounts/Psittacula_krameri/"
+      }
+    ],
+    "taxon_id": 18911
+  },
+  "quality_review": {
+    "anatomy_accuracy": 4,
+    "composition_quality": 5,
+    "findings": [
+      "The central bird is unmistakably an adult male Rose-ringed Parakeet: pale-green plumage, red hooked upper bill, black chin, rose-and-black collar, pointed wings, and exceptionally long blue-green tail agree with the references and live sources.",
+      "Audubon directly confirms the displayed measurements of 36\u201340 cm length, 45\u201350 cm wingspan, and 100\u2013140 g weight.",
+      "Measurement ranges vary among sources and subspecies: Animal Diversity Web gives 38\u201342 cm, while Wikipedia gives 37\u201343 cm and substantially lower weights for African birds. The plate\u2019s figures are supported by Audubon but should not be interpreted as exhaustive species-wide limits.",
+      "The eye is the principal visual weakness: the plate emphasizes an orange iris with a pale outer border, whereas the reference photographs more clearly show a pale iris surrounded by a narrow orange-red orbital ring.",
+      "The feet are plausibly gray parrot feet, but the characteristic two-forward/two-back toe arrangement is not crisply resolved in the perched pose.",
+      "The central bird has one head, one beak, two anatomically implied wings with the far wing naturally occluded, two legs, and one tail. The separate head and wing studies are clearly explanatory vignettes rather than duplicated anatomy.",
+      "The typography, ruler, palette, diagnostic studies, and balanced layout form a polished and legible scientific field-journal composition.",
+      "No place name, ZIP code, coordinates, map, range graphic, or local-observation detail appears."
+    ],
+    "location_free": true,
+    "passed": true,
+    "species_accuracy": 4,
+    "text_accuracy": 4,
+    "verification_sources": [
+      {
+        "title": "Rose-ringed Parakeet \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/rose-ringed-parakeet"
+      },
+      {
+        "title": "Psittacula krameri \u2014 Animal Diversity Web",
+        "url": "https://animaldiversity.org/accounts/Psittacula_krameri/"
+      },
+      {
+        "title": "Rose-ringed parakeet \u2014 Wikipedia",
+        "url": "https://en.wikipedia.org/wiki/Rose-ringed_parakeet"
+      }
+    ]
+  },
+  "references": [
+    {
+      "attribution": "(c) Ben Machado, some rights reserved (CC BY)",
+      "filename": "01-105189664.jpeg",
+      "height": 2048,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/105189664/large.jpeg",
+      "license_code": "cc-by",
+      "observation_id": 65363712,
+      "observer": "bennypoo",
+      "photo_id": 105189664,
+      "sha256": "dd673c52cc5c3bba0e7e7184209509c7237cc18677ca2893b2dce9f58e40ef58",
+      "source_url": "https://www.inaturalist.org/observations/65363712",
+      "width": 1536
+    },
+    {
+      "attribution": "no rights reserved",
+      "filename": "02-353636237.jpeg",
+      "height": 1365,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/353636237/large.jpeg",
+      "license_code": "cc0",
+      "observation_id": 200438564,
+      "observer": "ross291",
+      "photo_id": 353636237,
+      "sha256": "269ec977dd872cd82e4759368e5579ec7947d282510aad542d14df11f95cc5e4",
+      "source_url": "https://www.inaturalist.org/observations/200438564",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) Thomas Koffel, some rights reserved (CC BY)",
+      "filename": "03-9182831.jpeg",
+      "height": 1200,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/9182831/large.jpeg",
+      "license_code": "cc-by",
+      "observation_id": 7135687,
+      "observer": "tkoffel",
+      "photo_id": 9182831,
+      "sha256": "c73093f89c5560ea8dd3c8ca646396b8c6b7e8356a9ae7e3232f0a9b9d728f0b",
+      "source_url": "https://www.inaturalist.org/observations/7135687",
+      "width": 1600
+    },
+    {
+      "attribution": "(c) Owen, some rights reserved (CC BY)",
+      "filename": "04-646210642.jpg",
+      "height": 1365,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/646210642/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 354208420,
+      "observer": "owentat",
+      "photo_id": 646210642,
+      "sha256": "f15586acdbcc355f063ff2a01ef6fdabe0dfbf548429209222151be83e9d6361",
+      "source_url": "https://www.inaturalist.org/observations/354208420",
+      "width": 2048
+    }
+  ],
+  "schema_version": 1,
+  "scientific_name": "Psittacula krameri",
+  "slug": "rose-ringed-parakeet",
+  "status": "approved",
+  "taxon_id": 18911
+}
