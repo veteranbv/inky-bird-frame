@@ -1,0 +1,32 @@
+{
+  "anatomy_accuracy": 4,
+  "composition_quality": 5,
+  "findings": [
+    "The central bird is unmistakably an adult male Rose-ringed Parakeet: pale-green plumage, red hooked upper bill, black chin, rose-and-black collar, pointed wings, and exceptionally long blue-green tail agree with the references and live sources.",
+    "Audubon directly confirms the displayed measurements of 36\u201340 cm length, 45\u201350 cm wingspan, and 100\u2013140 g weight.",
+    "Measurement ranges vary among sources and subspecies: Animal Diversity Web gives 38\u201342 cm, while Wikipedia gives 37\u201343 cm and substantially lower weights for African birds. The plate\u2019s figures are supported by Audubon but should not be interpreted as exhaustive species-wide limits.",
+    "The eye is the principal visual weakness: the plate emphasizes an orange iris with a pale outer border, whereas the reference photographs more clearly show a pale iris surrounded by a narrow orange-red orbital ring.",
+    "The feet are plausibly gray parrot feet, but the characteristic two-forward/two-back toe arrangement is not crisply resolved in the perched pose.",
+    "The central bird has one head, one beak, two anatomically implied wings with the far wing naturally occluded, two legs, and one tail. The separate head and wing studies are clearly explanatory vignettes rather than duplicated anatomy.",
+    "The typography, ruler, palette, diagnostic studies, and balanced layout form a polished and legible scientific field-journal composition.",
+    "No place name, ZIP code, coordinates, map, range graphic, or local-observation detail appears."
+  ],
+  "location_free": true,
+  "passed": true,
+  "species_accuracy": 4,
+  "text_accuracy": 4,
+  "verification_sources": [
+    {
+      "title": "Rose-ringed Parakeet \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/rose-ringed-parakeet"
+    },
+    {
+      "title": "Psittacula krameri \u2014 Animal Diversity Web",
+      "url": "https://animaldiversity.org/accounts/Psittacula_krameri/"
+    },
+    {
+      "title": "Rose-ringed parakeet \u2014 Wikipedia",
+      "url": "https://en.wikipedia.org/wiki/Rose-ringed_parakeet"
+    }
+  ]
+}
