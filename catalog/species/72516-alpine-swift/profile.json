@@ -1,0 +1,38 @@
+{
+  "behavior": "Highly aerial and social; catches flying insects on the wing, drinks in flight, and often forages in groups. Flight is rapid and powerful, with deep, relatively slow wingbeats. Clings to vertical surfaces and nests colonially in cavities.",
+  "common_name": "Alpine Swift",
+  "family": "Apodidae",
+  "field_marks": [
+    "Large, thick-set swift with very long, broad-based, sharply pointed wings",
+    "Dark olive- to umber-brown upperparts with blackish wingtips",
+    "White throat and bold oval white belly patch",
+    "Broad dark breast band separating the white throat and belly",
+    "Short tail with a shallow fork",
+    "Tiny dark bill and eye; very short dark legs, usually concealed in flight"
+  ],
+  "habitat": "Open airspace around rocky mountains, cliffs, gorges, and sea cliffs; nests and roosts in cavities on vertical rock faces and human-made structures.",
+  "measurements": {
+    "length": "20\u201322 cm",
+    "weight": "67\u2013128 g",
+    "wingspan": "54\u201360 cm"
+  },
+  "palette": [
+    "umber brown",
+    "olive brown",
+    "gray-brown",
+    "warm white",
+    "charcoal black"
+  ],
+  "scientific_name": "Tachymarptis melba",
+  "sources": [
+    {
+      "title": "Tachymarptis melba (alpine swift) \u2014 Animal Diversity Web",
+      "url": "https://animaldiversity.org/accounts/Tachymarptis_melba/"
+    },
+    {
+      "title": "Alpine swift \u2014 Wikipedia",
+      "url": "https://en.wikipedia.org/wiki/Alpine_swift"
+    }
+  ],
+  "taxon_id": 72516
+}

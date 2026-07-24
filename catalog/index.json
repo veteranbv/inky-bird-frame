@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-23T23:57:30+00:00",
+  "generated_at": "2026-07-24T00:12:59+00:00",
   "schema_version": 1,
   "species": [
     {
@@ -12,6 +12,17 @@
       "scientific_name": "Empidonax virescens",
       "slug": "acadian-flycatcher",
       "taxon_id": 16638
+    },
+    {
+      "approved_at": "2026-07-24T00:12:59+00:00",
+      "common_name": "Alpine Swift",
+      "display_path": "species/72516-alpine-swift/display.png",
+      "display_sha256": "d588ad6c312d09bae090962b1750f79c1bf9e4f5e71224e6fc13f8d8a7aa8f16",
+      "portrait_path": "species/72516-alpine-swift/portrait.png",
+      "portrait_sha256": "d2033b9e0969757c9ae9cefd78939a0b4f646c813e581b9701b749287aca8e54",
+      "scientific_name": "Tachymarptis melba",
+      "slug": "alpine-swift",
+      "taxon_id": 72516
     },
     {
       "approved_at": "2026-07-13T02:30:59+00:00",

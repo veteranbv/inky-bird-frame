@@ -1,0 +1,151 @@
+{
+  "approved_at": "2026-07-24T00:12:59+00:00",
+  "assets": {
+    "display": {
+      "filename": "display.png",
+      "sha256": "d588ad6c312d09bae090962b1750f79c1bf9e4f5e71224e6fc13f8d8a7aa8f16"
+    },
+    "portrait": {
+      "filename": "portrait.png",
+      "sha256": "d2033b9e0969757c9ae9cefd78939a0b4f646c813e581b9701b749287aca8e54"
+    }
+  },
+  "common_name": "Alpine Swift",
+  "generation": {
+    "attempt": 2,
+    "generated_at": "2026-07-24T00:12:59+00:00",
+    "generator": "Codex subscription / built-in gpt-image-2",
+    "max_attempts": 3,
+    "prompt_version": "field-journal-v2"
+  },
+  "profile": {
+    "behavior": "Highly aerial and social; catches flying insects on the wing, drinks in flight, and often forages in groups. Flight is rapid and powerful, with deep, relatively slow wingbeats. Clings to vertical surfaces and nests colonially in cavities.",
+    "common_name": "Alpine Swift",
+    "family": "Apodidae",
+    "field_marks": [
+      "Large, thick-set swift with very long, broad-based, sharply pointed wings",
+      "Dark olive- to umber-brown upperparts with blackish wingtips",
+      "White throat and bold oval white belly patch",
+      "Broad dark breast band separating the white throat and belly",
+      "Short tail with a shallow fork",
+      "Tiny dark bill and eye; very short dark legs, usually concealed in flight"
+    ],
+    "habitat": "Open airspace around rocky mountains, cliffs, gorges, and sea cliffs; nests and roosts in cavities on vertical rock faces and human-made structures.",
+    "measurements": {
+      "length": "20\u201322 cm",
+      "weight": "67\u2013128 g",
+      "wingspan": "54\u201360 cm"
+    },
+    "palette": [
+      "umber brown",
+      "olive brown",
+      "gray-brown",
+      "warm white",
+      "charcoal black"
+    ],
+    "scientific_name": "Tachymarptis melba",
+    "sources": [
+      {
+        "title": "Tachymarptis melba (alpine swift) \u2014 Animal Diversity Web",
+        "url": "https://animaldiversity.org/accounts/Tachymarptis_melba/"
+      },
+      {
+        "title": "Alpine swift \u2014 Wikipedia",
+        "url": "https://en.wikipedia.org/wiki/Alpine_swift"
+      }
+    ],
+    "taxon_id": 72516
+  },
+  "quality_review": {
+    "anatomy_accuracy": 4,
+    "composition_quality": 5,
+    "findings": [
+      "Species identity is convincing: the large, thick-set swift, extremely long pointed wings, brown upperparts, white throat and belly, and intervening dark breast band agree with the references and live sources.",
+      "The common name, scientific name, and family are correct.",
+      "The stated 20\u201322 cm length and 54\u201360 cm wingspan are directly supported. The 67\u2013128 g weight range is defensible only as the extremes across subspecies, as the plate notes; it should not be read as the usual range of one population.",
+      "The bird has one head, one beak, two folded wings, two legs, and one shallow-forked tail. The separate head and wing studies are clearly anatomical insets rather than additional birds.",
+      "The feet and strongly hooked claws are somewhat oversized and conspicuous for a swift, although the vertical clinging posture is behaviorally appropriate and the legs remain short.",
+      "The extensive pale-edged, scalloped feathering resembles juvenile plumage, as seen in a supplied reference, but the plate does not identify the age class.",
+      "The phrase \u201ctiny dark bill and eye\u201d is imprecise: the bill is tiny, but the eye is relatively conspicuous and is not a useful \u201ctiny\u201d field mark. The illustration itself depicts the eye more accurately than the wording.",
+      "All other visible habitat, behavior, plumage, wing, and tail claims are consistent with the checked sources.",
+      "No place name, ZIP code, coordinates, map, or local-observation detail appears."
+    ],
+    "location_free": true,
+    "passed": true,
+    "species_accuracy": 4,
+    "text_accuracy": 4,
+    "verification_sources": [
+      {
+        "title": "Tachymarptis melba (alpine swift) \u2014 Animal Diversity Web",
+        "url": "https://animaldiversity.org/accounts/Tachymarptis_melba/"
+      },
+      {
+        "title": "Alpine swift \u2014 Wikipedia",
+        "url": "https://en.wikipedia.org/wiki/Alpine_swift"
+      },
+      {
+        "title": "Alpine Swift \u2014 Birds of the World",
+        "url": "https://birdsoftheworld.org/bow/species/alpswi1/cur/multimedia?media=audio"
+      }
+    ]
+  },
+  "references": [
+    {
+      "attribution": "no rights reserved",
+      "filename": "01-290021827.jpg",
+      "height": 1266,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/290021827/large.jpg",
+      "license_code": "cc0",
+      "observation_id": 167421169,
+      "observer": "mirela88",
+      "photo_id": 290021827,
+      "sha256": "daa78179aaaf1f64c44b29bad9e7ee5c97fa7e4ff0b0ba01268d8608b93a0361",
+      "source_url": "https://www.inaturalist.org/observations/167421169",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) Karim Haddad, some rights reserved (CC BY)",
+      "filename": "02-78329760.jpeg",
+      "height": 2048,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/78329760/large.jpeg",
+      "license_code": "cc-by",
+      "observation_id": 49344144,
+      "observer": "karimhaddad",
+      "photo_id": 78329760,
+      "sha256": "a5f82ac4971f1c843c3d9fceed21cfadeeff23ec2d641bfc6879b999e680a59e",
+      "source_url": "https://www.inaturalist.org/observations/49344144",
+      "width": 1536
+    },
+    {
+      "attribution": "(c) Donald Davesne, some rights reserved (CC BY)",
+      "filename": "03-212516912.jpg",
+      "height": 917,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/212516912/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 125323556,
+      "observer": "donalddavesne",
+      "photo_id": 212516912,
+      "sha256": "73f6d7afca1f10dd48acf3e7d80c6aac27b167a681796b34500f20a77c3900bc",
+      "source_url": "https://www.inaturalist.org/observations/125323556",
+      "width": 1379
+    },
+    {
+      "attribution": "(c) Afsar Nayakkan, some rights reserved (CC BY)",
+      "filename": "04-442277402.jpeg",
+      "height": 1522,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/442277402/large.jpeg",
+      "license_code": "cc-by",
+      "observation_id": 247612263,
+      "observer": "afsarnayakkan",
+      "photo_id": 442277402,
+      "sha256": "222f5a3a8f3136a94a8f4f5f3d6a00a49c191570f8f383157783b673c8ce6086",
+      "source_url": "https://www.inaturalist.org/observations/247612263",
+      "width": 1565
+    }
+  ],
+  "schema_version": 1,
+  "scientific_name": "Tachymarptis melba",
+  "slug": "alpine-swift",
+  "status": "approved",
+  "taxon_id": 72516
+}
