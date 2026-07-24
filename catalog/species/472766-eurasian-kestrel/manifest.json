@@ -1,0 +1,145 @@
+{
+  "approved_at": "2026-07-24T00:41:10+00:00",
+  "assets": {
+    "display": {
+      "filename": "display.png",
+      "sha256": "69c45eb95825fb0b77229f595a8e41f7668abd9d55f6e7485199020c77452369"
+    },
+    "portrait": {
+      "filename": "portrait.png",
+      "sha256": "ed67c64e4a511b8d094f83cd60a515e2a6c9bae2258ac5a58d974d1b788d8237"
+    }
+  },
+  "common_name": "Eurasian Kestrel",
+  "generation": {
+    "attempt": 1,
+    "generated_at": "2026-07-24T00:41:10+00:00",
+    "generator": "Codex subscription / built-in gpt-image-2",
+    "max_attempts": 3,
+    "prompt_version": "field-journal-v2"
+  },
+  "profile": {
+    "behavior": "Diurnal and usually solitary; hunts from exposed perches or by hovering over open ground, then drops steeply onto small prey.",
+    "common_name": "Eurasian Kestrel",
+    "family": "Falconidae",
+    "field_marks": [
+      "Slim, small falcon with long pointed wings",
+      "Long tail with a broad dark terminal band",
+      "Rusty-chestnut upperparts marked with black spots or bars",
+      "Buff underparts with dark streaks or spots",
+      "Distinct dark malar stripe below each eye",
+      "Yellow cere, eye-ring, and legs; dark hooked bill and eyes"
+    ],
+    "habitat": "Open country such as grassland, farmland, heath, scrub, and marsh edges; also uses lightly wooded and built environments where elevated perches and nesting ledges overlook vegetation.",
+    "measurements": {
+      "length": "32\u201339 cm",
+      "weight": "136\u2013314 g",
+      "wingspan": "65\u201382 cm"
+    },
+    "palette": [
+      "rusty chestnut",
+      "blue-gray",
+      "warm buff",
+      "blackish brown",
+      "golden yellow"
+    ],
+    "scientific_name": "Falco tinnunculus",
+    "sources": [
+      {
+        "title": "Falco tinnunculus (common kestrel) \u2014 Animal Diversity Web",
+        "url": "https://animaldiversity.org/accounts/Falco_tinnunculus/"
+      },
+      {
+        "title": "Common kestrel \u2014 Wikipedia",
+        "url": "https://en.wikipedia.org/wiki/Common_kestrel"
+      }
+    ],
+    "taxon_id": 472766
+  },
+  "quality_review": {
+    "anatomy_accuracy": 4,
+    "composition_quality": 5,
+    "findings": [
+      "Species identity is consistent with an adult male Eurasian/Common Kestrel: blue-gray head and tail, rusty spotted upperparts, buff streaked underparts, dark malar stripe, yellow bare parts, dark bill and eye, and a broad dark terminal tail band all match the references and live sources.",
+      "The principal bird has exactly one head, one beak, two wings, two legs, and one tail; the second head and spread wing are clearly anatomical study insets rather than extra parts attached to the bird.",
+      "The isolated wing inset looks slightly broader and rounder than the characteristically long, pointed wing seen in the flight-reference photographs. This is a minor representational weakness, not a material species error.",
+      "The bill, eyes, leg placement, feet, talons, tail length, and overall falcon proportions are coherent. The bill's tomial tooth is not clearly rendered, but the short hooked profile remains credible.",
+      "The printed measurements are supported by the Wikipedia account: 32\u201339 cm long, 65\u201382 cm wingspan, and combined adult-sex weight extremes of 136\u2013314 g. Animal Diversity Web gives narrower figures of 30\u201336 cm, 70\u201380 cm, and 150\u2013190 g, so the sources differ, but the plate's values are not demonstrably erroneous.",
+      "The taxonomy, habitat, behavior, and listed field marks agree with the inspected sources. The weight range would be more scientifically informative if divided into male and female ranges, but its combined endpoints are accurate.",
+      "All visible wording is legible and correctly spelled. No place name, ZIP code, coordinates, map, or local-observation detail appears."
+    ],
+    "location_free": true,
+    "passed": true,
+    "species_accuracy": 5,
+    "text_accuracy": 5,
+    "verification_sources": [
+      {
+        "title": "Falco tinnunculus (common kestrel) \u2014 Animal Diversity Web",
+        "url": "https://animaldiversity.org/accounts/Falco_tinnunculus/"
+      },
+      {
+        "title": "Common kestrel \u2014 Wikipedia",
+        "url": "https://en.wikipedia.org/wiki/Common_kestrel"
+      }
+    ]
+  },
+  "references": [
+    {
+      "attribution": "(c) \u0414\u043c\u0438\u0442\u0440\u0438\u0439 \u041a\u043e\u0448\u0435\u043b\u0435\u0432, some rights reserved (CC BY)",
+      "filename": "01-638011679.jpg",
+      "height": 1536,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/638011679/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 349725257,
+      "observer": "dmitry_birder",
+      "photo_id": 638011679,
+      "sha256": "2aafdbbc63b29c4e1cb0320f55c29a5f2553b9fb9e5f41f019c02744ca40df09",
+      "source_url": "https://www.inaturalist.org/observations/349725257",
+      "width": 2048
+    },
+    {
+      "attribution": "no rights reserved",
+      "filename": "02-511790572.jpg",
+      "height": 1903,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/511790572/large.jpg",
+      "license_code": "cc0",
+      "observation_id": 284754857,
+      "observer": "theblacktoad",
+      "photo_id": 511790572,
+      "sha256": "b6882f30840b9f4a50a9d2caf43c95b7f5acb4e4c0e6cdd2504118bd939a399c",
+      "source_url": "https://www.inaturalist.org/observations/284754857",
+      "width": 1170
+    },
+    {
+      "attribution": "no rights reserved",
+      "filename": "03-255957127.jpeg",
+      "height": 1169,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/255957127/large.jpeg",
+      "license_code": "cc0",
+      "observation_id": 148613413,
+      "observer": "bidu",
+      "photo_id": 255957127,
+      "sha256": "a86f8b61cc80e81fc728cc32ce0bc9ad5da9c3d82467e15da784a0a62d8cf8f7",
+      "source_url": "https://www.inaturalist.org/observations/148613413",
+      "width": 1522
+    },
+    {
+      "attribution": "(c) Codrin Bucur, some rights reserved (CC BY)",
+      "filename": "04-187660947.jpeg",
+      "height": 1160,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/187660947/large.jpeg",
+      "license_code": "cc-by",
+      "observation_id": 111181813,
+      "observer": "codrin_bucur",
+      "photo_id": 187660947,
+      "sha256": "cbaae5df0dead0b0da1269a2f946628aca2de2cff240552447f5f5b2e61f1762",
+      "source_url": "https://www.inaturalist.org/observations/111181813",
+      "width": 1737
+    }
+  ],
+  "schema_version": 1,
+  "scientific_name": "Falco tinnunculus",
+  "slug": "eurasian-kestrel",
+  "status": "approved",
+  "taxon_id": 472766
+}
