@@ -1,0 +1,42 @@
+{
+  "behavior": "Diurnal and territorial; climbs trunks and large limbs, drums and excavates cavities, catches insects both from wood and in midair, forages on the ground, and caches nuts, seeds, fruit, and insects in crevices.",
+  "common_name": "Red-headed Woodpecker",
+  "family": "Picidae",
+  "field_marks": [
+    "Adult has an entirely crimson-red head, neck, and throat.",
+    "Black back, wings, and short stiff tail contrast sharply with the head and belly.",
+    "Large white inner-wing and rump patches create a bold black-and-white pattern.",
+    "Underparts are clean white and largely unmarked.",
+    "Large rounded head with a long, straight, chisel-shaped gray bill and dark eye.",
+    "Immature birds have a gray-brown head and back, with dark bars or spots on the white wing patches."
+  ],
+  "habitat": "Open woodland, savanna, forest edges, clearings, orchards, parkland, farmland, and wetlands with standing dead trees; nesting depends strongly on snags or dead limbs, while mature nut-producing woods are important in winter.",
+  "measurements": {
+    "length": "19\u201323 cm",
+    "weight": "56\u201391 g",
+    "wingspan": "42 cm"
+  },
+  "palette": [
+    "crimson red \u2014 adult head and throat",
+    "inky black \u2014 back, wings, and tail",
+    "clean white \u2014 belly, rump, and wing patches",
+    "slate gray \u2014 bill, legs, and feet",
+    "gray-brown \u2014 immature head and back"
+  ],
+  "scientific_name": "Melanerpes erythrocephalus",
+  "sources": [
+    {
+      "title": "Red-headed Woodpecker Identification \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Red-headed_Woodpecker/id"
+    },
+    {
+      "title": "Red-headed Woodpecker Life History \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Red-headed_Woodpecker/lifehistory"
+    },
+    {
+      "title": "Melanerpes erythrocephalus \u2014 Animal Diversity Web",
+      "url": "https://animaldiversity.org/accounts/Melanerpes_erythrocephalus/"
+    }
+  ],
+  "taxon_id": 18204
+}

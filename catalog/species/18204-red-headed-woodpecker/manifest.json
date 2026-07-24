@@ -1,0 +1,153 @@
+{
+  "approved_at": "2026-07-24T01:16:55+00:00",
+  "assets": {
+    "display": {
+      "filename": "display.png",
+      "sha256": "e816ac9a6154e7cf40b99ef84553ad8a77a4fa868091f7df92e6dbdbf7be4419"
+    },
+    "portrait": {
+      "filename": "portrait.png",
+      "sha256": "e021c80b7ceeb5b085d52abb2855d1278f5a44d87fcc015e1a724e7d1dbcab9d"
+    }
+  },
+  "common_name": "Red-headed Woodpecker",
+  "generation": {
+    "attempt": 2,
+    "generated_at": "2026-07-24T01:16:55+00:00",
+    "generator": "Codex subscription / built-in gpt-image-2",
+    "max_attempts": 3,
+    "prompt_version": "field-journal-v2"
+  },
+  "profile": {
+    "behavior": "Diurnal and territorial; climbs trunks and large limbs, drums and excavates cavities, catches insects both from wood and in midair, forages on the ground, and caches nuts, seeds, fruit, and insects in crevices.",
+    "common_name": "Red-headed Woodpecker",
+    "family": "Picidae",
+    "field_marks": [
+      "Adult has an entirely crimson-red head, neck, and throat.",
+      "Black back, wings, and short stiff tail contrast sharply with the head and belly.",
+      "Large white inner-wing and rump patches create a bold black-and-white pattern.",
+      "Underparts are clean white and largely unmarked.",
+      "Large rounded head with a long, straight, chisel-shaped gray bill and dark eye.",
+      "Immature birds have a gray-brown head and back, with dark bars or spots on the white wing patches."
+    ],
+    "habitat": "Open woodland, savanna, forest edges, clearings, orchards, parkland, farmland, and wetlands with standing dead trees; nesting depends strongly on snags or dead limbs, while mature nut-producing woods are important in winter.",
+    "measurements": {
+      "length": "19\u201323 cm",
+      "weight": "56\u201391 g",
+      "wingspan": "42 cm"
+    },
+    "palette": [
+      "crimson red \u2014 adult head and throat",
+      "inky black \u2014 back, wings, and tail",
+      "clean white \u2014 belly, rump, and wing patches",
+      "slate gray \u2014 bill, legs, and feet",
+      "gray-brown \u2014 immature head and back"
+    ],
+    "scientific_name": "Melanerpes erythrocephalus",
+    "sources": [
+      {
+        "title": "Red-headed Woodpecker Identification \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Red-headed_Woodpecker/id"
+      },
+      {
+        "title": "Red-headed Woodpecker Life History \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Red-headed_Woodpecker/lifehistory"
+      },
+      {
+        "title": "Melanerpes erythrocephalus \u2014 Animal Diversity Web",
+        "url": "https://animaldiversity.org/accounts/Melanerpes_erythrocephalus/"
+      }
+    ],
+    "taxon_id": 18204
+  },
+  "quality_review": {
+    "anatomy_accuracy": 4,
+    "composition_quality": 5,
+    "findings": [
+      "The adult plumage correctly shows an entirely red head, neck, and throat; black back and wings; clean white underparts; a large white wing patch; and a black, stiff-looking tail. These marks agree with the reference photographs and live species accounts.",
+      "The rounded head and straight, chisel-shaped gray bill are species-appropriate. The eye is somewhat oversized and its pale iris ring makes it look less uniformly dark than in the field photographs, but this is a minor stylistic issue rather than a species error.",
+      "The main bird has one head, one beak, two folded wings, two legs, and one tail. The feet are somewhat crowded where they grip the branch, so the zygodactyl toe arrangement is not especially clear, but there are no duplicated or missing limbs.",
+      "The stated measurements\u201419\u201323 cm long, 56\u201391 g, and 42 cm wingspan\u2014exactly match Cornell's live identification account. Animal Diversity Web gives differing ranges of 21\u201325 cm and 33\u201337 cm, indicating source variation rather than an unsupported plate value.",
+      "The juvenile description, habitat, territorial and diurnal behavior, aerial and ground foraging, cavity excavation, and food caching claims are supported by the inspected sources.",
+      "The scientific name Melanerpes erythrocephalus, common name, and family Picidae are correct.",
+      "No spelling, labeling, or material factual errors were found. No place name, ZIP code, coordinates, map, range graphic, or local-observation detail appears."
+    ],
+    "location_free": true,
+    "passed": true,
+    "species_accuracy": 5,
+    "text_accuracy": 5,
+    "verification_sources": [
+      {
+        "title": "Red-headed Woodpecker Identification \u2014 All About Birds, Cornell Lab of Ornithology",
+        "url": "https://www.allaboutbirds.org/guide/Red-headed_Woodpecker/id"
+      },
+      {
+        "title": "Red-headed Woodpecker \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/red-headed-woodpecker"
+      },
+      {
+        "title": "Melanerpes erythrocephalus \u2014 Animal Diversity Web",
+        "url": "https://animaldiversity.org/accounts/Melanerpes_erythrocephalus/"
+      }
+    ]
+  },
+  "references": [
+    {
+      "attribution": "(c) Louise Woodrich, some rights reserved (CC BY)",
+      "filename": "01-48557520.jpeg",
+      "height": 1365,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/48557520/large.jpeg",
+      "license_code": "cc-by",
+      "observation_id": 31050786,
+      "observer": "louiseinva",
+      "photo_id": 48557520,
+      "sha256": "8d9c62fce6b79c145e7faf83c38f734a4560d8693b30e60d149a91655811768e",
+      "source_url": "https://www.inaturalist.org/observations/31050786",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) Brandon McCracken, some rights reserved (CC BY)",
+      "filename": "02-58293673.jpeg",
+      "height": 2048,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/58293673/large.jpeg",
+      "license_code": "cc-by",
+      "observation_id": 36829816,
+      "observer": "bmac922",
+      "photo_id": 58293673,
+      "sha256": "3e8428f62a66dd2433e766a85f8c4291c8b0124ec76fb61d412e14e24066e0d5",
+      "source_url": "https://www.inaturalist.org/observations/36829816",
+      "width": 996
+    },
+    {
+      "attribution": "(c) Matthew Gerke, some rights reserved (CC BY)",
+      "filename": "03-364972674.jpeg",
+      "height": 2048,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/364972674/large.jpeg",
+      "license_code": "cc-by",
+      "observation_id": 206355384,
+      "observer": "matgerke",
+      "photo_id": 364972674,
+      "sha256": "b53c75dbf03e379fd6e73170eedeee9f798ab20e594c86c2b579de74425f9d5c",
+      "source_url": "https://www.inaturalist.org/observations/206355384",
+      "width": 2048
+    },
+    {
+      "attribution": "no rights reserved",
+      "filename": "04-442872907.jpeg",
+      "height": 1793,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/442872907/large.jpeg",
+      "license_code": "cc0",
+      "observation_id": 247914558,
+      "observer": "shannon_j",
+      "photo_id": 442872907,
+      "sha256": "5732e10cce1277e805f2fa7b81bed183ee46f46ff10ee5fb5d269c40ab201782",
+      "source_url": "https://www.inaturalist.org/observations/247914558",
+      "width": 1345
+    }
+  ],
+  "schema_version": 1,
+  "scientific_name": "Melanerpes erythrocephalus",
+  "slug": "red-headed-woodpecker",
+  "status": "approved",
+  "taxon_id": 18204
+}

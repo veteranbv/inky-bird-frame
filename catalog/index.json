@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-24T00:57:16+00:00",
+  "generated_at": "2026-07-24T01:16:55+00:00",
   "schema_version": 1,
   "species": [
     {
@@ -782,6 +782,17 @@
       "scientific_name": "Vireo olivaceus",
       "slug": "red-eyed-vireo",
       "taxon_id": 891704
+    },
+    {
+      "approved_at": "2026-07-24T01:16:55+00:00",
+      "common_name": "Red-headed Woodpecker",
+      "display_path": "species/18204-red-headed-woodpecker/display.png",
+      "display_sha256": "e816ac9a6154e7cf40b99ef84553ad8a77a4fa868091f7df92e6dbdbf7be4419",
+      "portrait_path": "species/18204-red-headed-woodpecker/portrait.png",
+      "portrait_sha256": "e021c80b7ceeb5b085d52abb2855d1278f5a44d87fcc015e1a724e7d1dbcab9d",
+      "scientific_name": "Melanerpes erythrocephalus",
+      "slug": "red-headed-woodpecker",
+      "taxon_id": 18204
     },
     {
       "approved_at": "2026-07-12T20:44:31+00:00",

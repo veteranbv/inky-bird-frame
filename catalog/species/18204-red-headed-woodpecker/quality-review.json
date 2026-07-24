@@ -1,0 +1,31 @@
+{
+  "anatomy_accuracy": 4,
+  "composition_quality": 5,
+  "findings": [
+    "The adult plumage correctly shows an entirely red head, neck, and throat; black back and wings; clean white underparts; a large white wing patch; and a black, stiff-looking tail. These marks agree with the reference photographs and live species accounts.",
+    "The rounded head and straight, chisel-shaped gray bill are species-appropriate. The eye is somewhat oversized and its pale iris ring makes it look less uniformly dark than in the field photographs, but this is a minor stylistic issue rather than a species error.",
+    "The main bird has one head, one beak, two folded wings, two legs, and one tail. The feet are somewhat crowded where they grip the branch, so the zygodactyl toe arrangement is not especially clear, but there are no duplicated or missing limbs.",
+    "The stated measurements\u201419\u201323 cm long, 56\u201391 g, and 42 cm wingspan\u2014exactly match Cornell's live identification account. Animal Diversity Web gives differing ranges of 21\u201325 cm and 33\u201337 cm, indicating source variation rather than an unsupported plate value.",
+    "The juvenile description, habitat, territorial and diurnal behavior, aerial and ground foraging, cavity excavation, and food caching claims are supported by the inspected sources.",
+    "The scientific name Melanerpes erythrocephalus, common name, and family Picidae are correct.",
+    "No spelling, labeling, or material factual errors were found. No place name, ZIP code, coordinates, map, range graphic, or local-observation detail appears."
+  ],
+  "location_free": true,
+  "passed": true,
+  "species_accuracy": 5,
+  "text_accuracy": 5,
+  "verification_sources": [
+    {
+      "title": "Red-headed Woodpecker Identification \u2014 All About Birds, Cornell Lab of Ornithology",
+      "url": "https://www.allaboutbirds.org/guide/Red-headed_Woodpecker/id"
+    },
+    {
+      "title": "Red-headed Woodpecker \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/red-headed-woodpecker"
+    },
+    {
+      "title": "Melanerpes erythrocephalus \u2014 Animal Diversity Web",
+      "url": "https://animaldiversity.org/accounts/Melanerpes_erythrocephalus/"
+    }
+  ]
+}
