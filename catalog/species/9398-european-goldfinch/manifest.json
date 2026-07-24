@@ -1,0 +1,154 @@
+{
+  "approved_at": "2026-07-24T00:26:51+00:00",
+  "assets": {
+    "display": {
+      "filename": "display.png",
+      "sha256": "f315f9e92a47715a3b42c5ad7559860ea9b50c2be9136d46c91461324d07af67"
+    },
+    "portrait": {
+      "filename": "portrait.png",
+      "sha256": "618cb23d098743ac6919456e1baa0d6c6fa8805ac7fd4387a536034dddd09217"
+    }
+  },
+  "common_name": "European Goldfinch",
+  "generation": {
+    "attempt": 3,
+    "generated_at": "2026-07-24T00:26:51+00:00",
+    "generator": "Codex subscription / built-in gpt-image-2",
+    "max_attempts": 3,
+    "prompt_version": "field-journal-v2"
+  },
+  "profile": {
+    "behavior": "An agile, vocal seed-eater that often hangs from seedheads and uses its pointed bill to extract seeds. Usually forages in pairs or small groups while breeding, forms larger flocks outside the breeding season, and flies with an undulating motion.",
+    "common_name": "European Goldfinch",
+    "family": "Fringillidae",
+    "field_marks": [
+      "Small, compact finch with a long, pointed pale bill and dark eye",
+      "Scarlet-red face bordered by a sharply patterned black-and-white head",
+      "Warm buff-brown back and flanks contrasting with whitish underparts",
+      "Black wings crossed by a broad, vivid yellow bar and marked with small white spots",
+      "Strongly notched black tail with white markings",
+      "Slender pinkish-flesh legs and feet"
+    ],
+    "habitat": "Open and lightly wooded country, including woodland edges, orchards, hedgerows, gardens, parks, meadows, grasslands, and weedy fields rich in seed-bearing plants.",
+    "measurements": {
+      "length": "12\u201313 cm",
+      "weight": "14\u201319 g",
+      "wingspan": "21\u201325 cm"
+    },
+    "palette": [
+      "scarlet red",
+      "golden yellow",
+      "jet black",
+      "ivory white",
+      "warm buff-brown"
+    ],
+    "scientific_name": "Carduelis carduelis",
+    "sources": [
+      {
+        "title": "European Goldfinch Life History \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/European_Goldfinch/lifehistory"
+      },
+      {
+        "title": "European Goldfinch Identification \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/European_Goldfinch/id"
+      },
+      {
+        "title": "European goldfinch \u2014 Wikipedia",
+        "url": "https://en.wikipedia.org/wiki/European_goldfinch"
+      }
+    ],
+    "taxon_id": 9398
+  },
+  "quality_review": {
+    "anatomy_accuracy": 4,
+    "composition_quality": 4,
+    "findings": [
+      "Species identity is correct: the adult\u2019s red face, sharply contrasting black-and-white head, warm brown upperparts, whitish underparts, black wings with a broad yellow band, and notched black-and-white tail match the reference photographs and live identification sources.",
+      "The principal bird has one head, one pale pointed beak, two folded wings with the far wing largely occluded, two legs, two feet, and one tail. The supplementary head and wing drawings are clearly labeled studies rather than malformed additional anatomy.",
+      "Bill, eye, wing, tail, leg, and foot placement are anatomically coherent. Minor issue: the illustrated bill is slightly deeper and less slender than the characteristically long, tweezerlike bill shown in the references, and the feet are somewhat oversized and heavy.",
+      "The common name, scientific name, and family are correct. The stated 12\u201313 cm length, 21\u201325 cm wingspan, and 14\u201319 g weight match published average measurements. Minor issue: the plate does not label these as averages; All About Birds currently gives broader observed ranges of 10.6\u201314.7 cm and 10.8\u201330 g.",
+      "The habitat, seed-extraction behavior, acrobatic feeding, breeding-season pair or small-group foraging, larger nonbreeding flocks, vocal behavior, and undulating flight are supported by the live sources.",
+      "All six written field marks accurately describe adult European Goldfinch plumage and structure. The palette labels also correspond to the depicted diagnostic colors.",
+      "The layout is attractive, legible, and scientifically useful. Minor composition issues are that the ruler-like scale has no units or numeric labels and the leader lines between the two lower studies are somewhat ambiguous.",
+      "No place name, ZIP code, coordinates, map, or local-observation detail appears. \u201cEuropean\u201d occurs only as part of the established common name."
+    ],
+    "location_free": true,
+    "passed": true,
+    "species_accuracy": 5,
+    "text_accuracy": 4,
+    "verification_sources": [
+      {
+        "title": "European Goldfinch Identification \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/European_Goldfinch/id"
+      },
+      {
+        "title": "European Goldfinch Life History \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/European_Goldfinch/lifehistory"
+      },
+      {
+        "title": "European goldfinch \u2014 Wikipedia",
+        "url": "https://en.wikipedia.org/wiki/European_goldfinch"
+      }
+    ]
+  },
+  "references": [
+    {
+      "attribution": "(c) Susan Marley, some rights reserved (CC BY)",
+      "filename": "01-178913176.jpeg",
+      "height": 1536,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/178913176/large.jpeg",
+      "license_code": "cc-by",
+      "observation_id": 106499018,
+      "observer": "susan_marley",
+      "photo_id": 178913176,
+      "sha256": "25dd6e12a7ccbdf79da315ba315cc1c0da8a3bee57798dc85a4acca3a42295e4",
+      "source_url": "https://www.inaturalist.org/observations/106499018",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) Gergely Nigg, some rights reserved (CC BY)",
+      "filename": "02-125319716.jpg",
+      "height": 1365,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/125319716/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 76629051,
+      "observer": "naturebynigg",
+      "photo_id": 125319716,
+      "sha256": "ff6bbf14d61e743601498c20b82eb10297063a79fec01bc5974e2cc2d2ab7f8e",
+      "source_url": "https://www.inaturalist.org/observations/76629051",
+      "width": 2048
+    },
+    {
+      "attribution": "no rights reserved",
+      "filename": "03-591219445.jpg",
+      "height": 1365,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/591219445/large.jpg",
+      "license_code": "cc0",
+      "observation_id": 326440802,
+      "observer": "jack12347",
+      "photo_id": 591219445,
+      "sha256": "4acc661f93b5a3cdf7fdf5cfe84851fdd27ead610589adb5515cd65099a0e72e",
+      "source_url": "https://www.inaturalist.org/observations/326440802",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) Christoph Moning, some rights reserved (CC BY)",
+      "filename": "04-110176937.jpeg",
+      "height": 1283,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/110176937/large.jpeg",
+      "license_code": "cc-by",
+      "observation_id": 68095260,
+      "observer": "christoph_moning",
+      "photo_id": 110176937,
+      "sha256": "c805bb3b120d31c55031f7140fed76803443beed914ded1aa5ee768a42ae7952",
+      "source_url": "https://www.inaturalist.org/observations/68095260",
+      "width": 2048
+    }
+  ],
+  "schema_version": 1,
+  "scientific_name": "Carduelis carduelis",
+  "slug": "european-goldfinch",
+  "status": "approved",
+  "taxon_id": 9398
+}

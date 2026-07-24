@@ -1,0 +1,32 @@
+{
+  "anatomy_accuracy": 4,
+  "composition_quality": 4,
+  "findings": [
+    "Species identity is correct: the adult\u2019s red face, sharply contrasting black-and-white head, warm brown upperparts, whitish underparts, black wings with a broad yellow band, and notched black-and-white tail match the reference photographs and live identification sources.",
+    "The principal bird has one head, one pale pointed beak, two folded wings with the far wing largely occluded, two legs, two feet, and one tail. The supplementary head and wing drawings are clearly labeled studies rather than malformed additional anatomy.",
+    "Bill, eye, wing, tail, leg, and foot placement are anatomically coherent. Minor issue: the illustrated bill is slightly deeper and less slender than the characteristically long, tweezerlike bill shown in the references, and the feet are somewhat oversized and heavy.",
+    "The common name, scientific name, and family are correct. The stated 12\u201313 cm length, 21\u201325 cm wingspan, and 14\u201319 g weight match published average measurements. Minor issue: the plate does not label these as averages; All About Birds currently gives broader observed ranges of 10.6\u201314.7 cm and 10.8\u201330 g.",
+    "The habitat, seed-extraction behavior, acrobatic feeding, breeding-season pair or small-group foraging, larger nonbreeding flocks, vocal behavior, and undulating flight are supported by the live sources.",
+    "All six written field marks accurately describe adult European Goldfinch plumage and structure. The palette labels also correspond to the depicted diagnostic colors.",
+    "The layout is attractive, legible, and scientifically useful. Minor composition issues are that the ruler-like scale has no units or numeric labels and the leader lines between the two lower studies are somewhat ambiguous.",
+    "No place name, ZIP code, coordinates, map, or local-observation detail appears. \u201cEuropean\u201d occurs only as part of the established common name."
+  ],
+  "location_free": true,
+  "passed": true,
+  "species_accuracy": 5,
+  "text_accuracy": 4,
+  "verification_sources": [
+    {
+      "title": "European Goldfinch Identification \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/European_Goldfinch/id"
+    },
+    {
+      "title": "European Goldfinch Life History \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/European_Goldfinch/lifehistory"
+    },
+    {
+      "title": "European goldfinch \u2014 Wikipedia",
+      "url": "https://en.wikipedia.org/wiki/European_goldfinch"
+    }
+  ]
+}

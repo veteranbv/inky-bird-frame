@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-24T00:12:59+00:00",
+  "generated_at": "2026-07-24T00:26:51+00:00",
   "schema_version": 1,
   "species": [
     {
@@ -386,6 +386,17 @@
       "scientific_name": "Pica pica",
       "slug": "eurasian-magpie",
       "taxon_id": 891696
+    },
+    {
+      "approved_at": "2026-07-24T00:26:51+00:00",
+      "common_name": "European Goldfinch",
+      "display_path": "species/9398-european-goldfinch/display.png",
+      "display_sha256": "f315f9e92a47715a3b42c5ad7559860ea9b50c2be9136d46c91461324d07af67",
+      "portrait_path": "species/9398-european-goldfinch/portrait.png",
+      "portrait_sha256": "618cb23d098743ac6919456e1baa0d6c6fa8805ac7fd4387a536034dddd09217",
+      "scientific_name": "Carduelis carduelis",
+      "slug": "european-goldfinch",
+      "taxon_id": 9398
     },
     {
       "approved_at": "2026-07-13T04:34:30+00:00",
