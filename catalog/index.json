@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-24T00:41:10+00:00",
+  "generated_at": "2026-07-24T00:57:16+00:00",
   "schema_version": 1,
   "species": [
     {
@@ -320,6 +320,17 @@
       "scientific_name": "Sayornis phoebe",
       "slug": "eastern-phoebe",
       "taxon_id": 17008
+    },
+    {
+      "approved_at": "2026-07-24T00:57:16+00:00",
+      "common_name": "Eastern Subalpine Warbler",
+      "display_path": "species/1289200-eastern-subalpine-warbler/display.png",
+      "display_sha256": "26f8c57f319820577ed39e9966f6e4f6d164a506666647b66b4742f2e67920a6",
+      "portrait_path": "species/1289200-eastern-subalpine-warbler/portrait.png",
+      "portrait_sha256": "5ffdd78d3744280a2a7ff2084751e8c185658d22aba08d4124fb45891c339455",
+      "scientific_name": "Curruca cantillans",
+      "slug": "eastern-subalpine-warbler",
+      "taxon_id": 1289200
     },
     {
       "approved_at": "2026-07-13T04:11:52+00:00",

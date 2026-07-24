@@ -1,0 +1,36 @@
+{
+  "anatomy_accuracy": 5,
+  "composition_quality": 4,
+  "findings": [
+    "The unnumbered ruler at the right has no units or defined scale, so it cannot substantiate the printed measurements.",
+    "The caption \u201cWing-pattern (diagnostic)\u201d is weakly supported and potentially misleading: the illustrated wing lacks an annotated species-specific character, while current identification guidance emphasizes the darker face, broad white moustache, whiter belly, and vocalizations.",
+    "All other visible claims are consistent with the checked sources. The adult-male plumage, proportions, bill, eye-ring, tail, legs, feet, taxonomy, measurements, habitat, and diet are credible. The main bird has one head, one beak, two anatomically coherent wings with the far wing naturally obscured, two legs, and one tail.",
+    "No place name, ZIP code, coordinates, map, or local-observation detail appears."
+  ],
+  "location_free": true,
+  "passed": true,
+  "species_accuracy": 5,
+  "text_accuracy": 4,
+  "verification_sources": [
+    {
+      "title": "Eastern Subalpine Warbler \u2014 eBird",
+      "url": "https://ebird.org/species/easwar1"
+    },
+    {
+      "title": "Eastern Subalpine Warbler \u2014 Birds of the World",
+      "url": "https://birdsoftheworld.org/bow/species/easwar1/cur/introduction?lang=es"
+    },
+    {
+      "title": "Eastern subalpine warbler \u2014 Wikipedia",
+      "url": "https://en.wikipedia.org/wiki/Eastern_subalpine_warbler"
+    },
+    {
+      "title": "Sylvia cantillans \u2014 Spanish Wikipedia",
+      "url": "https://es.wikipedia.org/wiki/Sylvia_cantillans"
+    },
+    {
+      "title": "Pokrzewka w\u0105sata \u2014 Polish Wikipedia",
+      "url": "https://pl.wikipedia.org/wiki/Pokrzewka_w%C4%85sata"
+    }
+  ]
+}
