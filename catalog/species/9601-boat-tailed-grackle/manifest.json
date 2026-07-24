@@ -1,0 +1,154 @@
+{
+  "approved_at": "2026-07-24T01:59:12+00:00",
+  "assets": {
+    "display": {
+      "filename": "display.png",
+      "sha256": "8348329b065508a3a30135d073a48ffab7c61244c41bd89a6283145b903e9231"
+    },
+    "portrait": {
+      "filename": "portrait.png",
+      "sha256": "ee6a23a8c10cdb127053108d40b8de4d20516c2ba03663e89a57ba036fd08595"
+    }
+  },
+  "common_name": "Boat-tailed Grackle",
+  "generation": {
+    "attempt": 1,
+    "generated_at": "2026-07-24T01:59:12+00:00",
+    "generator": "Codex subscription / built-in gpt-image-2",
+    "max_attempts": 3,
+    "prompt_version": "field-journal-v2"
+  },
+  "profile": {
+    "behavior": "Gregarious and often colonial, with communal roosts. Walks on shorelines and through shallow water, rapidly probing and pecking for aquatic prey, insects, seeds, and other opportunistic foods. Displaying males fluff their plumage, spread the tail, flutter the wings, and point the bill upward while calling.",
+    "common_name": "Boat-tailed Grackle",
+    "family": "Icteridae",
+    "field_marks": [
+      "Large, lanky blackbird with a rounded crown and long dark legs",
+      "Long, pointed black bill",
+      "Adult male glossy black with blue-green to purple iridescence",
+      "Very long, broad tail often held in a V or keel shape",
+      "Female smaller and brown, with russet underparts and darker wings and tail",
+      "Adult iris varies from dark brown to pale yellow"
+    ],
+    "habitat": "Primarily salt marshes, tidal shorelines, mudflats, beaches, and flooded fields; also occurs around freshwater marshes and lakes in parts of its range. Usually remains close to water and may forage in nearby open or developed areas.",
+    "measurements": {
+      "length": "26\u201337 cm (10.2\u201314.6 in)",
+      "weight": "93\u2013239 g (3.3\u20138.4 oz)",
+      "wingspan": "39\u201350 cm (15.3\u201319.7 in)"
+    },
+    "palette": [
+      "black",
+      "blue-green",
+      "deep purple",
+      "russet brown",
+      "pale yellow"
+    ],
+    "scientific_name": "Quiscalus major",
+    "sources": [
+      {
+        "title": "Boat-tailed Grackle Identification \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Boat-tailed_Grackle/id"
+      },
+      {
+        "title": "Boat-tailed Grackle Life History \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Boat-tailed_Grackle/lifehistory"
+      },
+      {
+        "title": "Boat-tailed Grackle \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/boat-tailed-grackle"
+      }
+    ],
+    "taxon_id": 9601
+  },
+  "quality_review": {
+    "anatomy_accuracy": 4,
+    "composition_quality": 4,
+    "findings": [
+      "The adult-male illustration is identifiable as Boat-tailed Grackle: rounded crown, long pointed dark bill, glossy black plumage with blue-green/purple iridescence, long legs, yellow iris, and an exceptionally long tail.",
+      "The principal bird has one head, one beak, two anatomically implied wings with the far wing naturally occluded, two legs, and one tail. The detached head and wing are clearly supplementary studies, not duplicated anatomy.",
+      "The folded tail is somewhat narrow and flat-looking; the species\u2019 diagnostic broad, V- or keel-shaped tail is less evident than in the references.",
+      "The feet are simplified, but no clearly impossible toe, joint, or limb arrangement is present.",
+      "Common name, scientific name, family, habitat, behavior, plumage, sexual dimorphism, bill, eye-color variation, and wingspan are supported by the live sources.",
+      "The displayed measurements exactly match All About Birds. Audubon reports different, sex-specific ranges\u2014especially a longer and heavier male range\u2014so the plate would be scientifically stronger if it identified its measurement authority or separated the sexes.",
+      "The right-hand ruler lacks units and numerical labels, so it is decorative rather than a usable scientific scale.",
+      "No place name, ZIP code, coordinates, map, or local-observation detail appears."
+    ],
+    "location_free": true,
+    "passed": true,
+    "species_accuracy": 4,
+    "text_accuracy": 4,
+    "verification_sources": [
+      {
+        "title": "Boat-tailed Grackle Identification \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Boat-tailed_Grackle/id"
+      },
+      {
+        "title": "Boat-tailed Grackle \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/boat-tailed-grackle"
+      },
+      {
+        "title": "Boat-tailed Grackle \u2014 eBird",
+        "url": "https://ebird.org/species/botgra"
+      }
+    ]
+  },
+  "references": [
+    {
+      "attribution": "(c) Karen Szafrajda, some rights reserved (CC BY)",
+      "filename": "01-435306769.jpg",
+      "height": 1296,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/435306769/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 244066341,
+      "observer": "kszafrajda",
+      "photo_id": 435306769,
+      "sha256": "efd94b565d63f95af73113bc410f20587fea0e1f920beb18026b400a60f86b29",
+      "source_url": "https://www.inaturalist.org/observations/244066341",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) Tom Kennedy, some rights reserved (CC BY)",
+      "filename": "02-172503139.jpeg",
+      "height": 1362,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/172503139/large.jpeg",
+      "license_code": "cc-by",
+      "observation_id": 103110305,
+      "observer": "tomkennedy",
+      "photo_id": 172503139,
+      "sha256": "04218436a47ec951828d06eec4c297fc7e3e92a4153d2d9697e8e623cd049be9",
+      "source_url": "https://www.inaturalist.org/observations/103110305",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) Richard Stovall, some rights reserved (CC BY)",
+      "filename": "03-41675952.jpeg",
+      "height": 1365,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/41675952/large.jpeg",
+      "license_code": "cc-by",
+      "observation_id": 26824975,
+      "observer": "arctic_mongoose",
+      "photo_id": 41675952,
+      "sha256": "5671dea084b777c7de4e0852fc901da8fc0a286d7a4a21ac60de9d29c7a04265",
+      "source_url": "https://www.inaturalist.org/observations/26824975",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) Eridan Xharahi, some rights reserved (CC BY)",
+      "filename": "04-104398236.png",
+      "height": 1414,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/104398236/large.png",
+      "license_code": "cc-by",
+      "observation_id": 64892895,
+      "observer": "eridanxharahi",
+      "photo_id": 104398236,
+      "sha256": "157e6c40a1cc3c6d495db0f608311d7abc8c4462f70200c2edf75da37d10edcb",
+      "source_url": "https://www.inaturalist.org/observations/64892895",
+      "width": 2048
+    }
+  ],
+  "schema_version": 1,
+  "scientific_name": "Quiscalus major",
+  "slug": "boat-tailed-grackle",
+  "status": "approved",
+  "taxon_id": 9601
+}
