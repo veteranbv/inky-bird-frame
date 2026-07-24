@@ -1,0 +1,41 @@
+{
+  "behavior": "A social, opportunistic forager that walks, wades, swims, surface-dips, and sometimes plunges for food; also scavenges and steals catches from other birds. Often gathers in flocks, nests colonially, and gives loud, nasal, laugh-like calls.",
+  "common_name": "Laughing Gull",
+  "family": "Laridae",
+  "field_marks": [
+    "Medium-sized, slender gull with fairly long, pointed wings and long legs",
+    "Breeding adult has a crisp black hood with narrow white crescents around the dark eye",
+    "Fairly long reddish bill with a subtly drooping tip",
+    "Medium-to-dark gray back and upperwings contrasting with white underparts",
+    "Black outer primaries and wingtips with little white; tail is white",
+    "Nonbreeding adult has a white head with dusky gray smudging behind the eye; legs are dusky red to black"
+  ],
+  "habitat": "Primarily coastal beaches, tidal flats, salt marshes, bays, mangroves, and nearshore waters; also uses piers, fields, and landfills near the coast. Nests colonially on sandy or vegetated islands, beaches, and saltmarshes.",
+  "measurements": {
+    "length": "39\u201346 cm (15.3\u201318.1 in)",
+    "weight": "203\u2013371 g (7.2\u201313.1 oz)",
+    "wingspan": "92\u2013120 cm (36.2\u201347.2 in)"
+  },
+  "palette": [
+    "black",
+    "white",
+    "slate gray",
+    "deep red"
+  ],
+  "scientific_name": "Leucophaeus atricilla",
+  "sources": [
+    {
+      "title": "Laughing Gull Identification \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Laughing_Gull/id"
+    },
+    {
+      "title": "Laughing Gull Life History \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Laughing_Gull/lifehistory"
+    },
+    {
+      "title": "Laughing Gull \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/laughing-gull"
+    }
+  ],
+  "taxon_id": 144514
+}
