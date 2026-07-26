@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-24T02:09:43+00:00",
+  "generated_at": "2026-07-26T00:58:12+00:00",
   "schema_version": 1,
   "species": [
     {
@@ -782,6 +782,17 @@
       "scientific_name": "Setophaga pinus",
       "slug": "pine-warbler",
       "taxon_id": 145244
+    },
+    {
+      "approved_at": "2026-07-26T00:58:12+00:00",
+      "common_name": "Purple Martin",
+      "display_path": "species/11867-purple-martin/display.png",
+      "display_sha256": "44a176d9eff5f825e6d0c529d67bea9a25a0f5f17cb8e7995b73ef27e47131ff",
+      "portrait_path": "species/11867-purple-martin/portrait.png",
+      "portrait_sha256": "4596211c5ffa76380d12e68ce744de7580c597989956dc916496d0e583745d9a",
+      "scientific_name": "Progne subis",
+      "slug": "purple-martin",
+      "taxon_id": 11867
     },
     {
       "approved_at": "2026-07-10T17:20:07+00:00",
