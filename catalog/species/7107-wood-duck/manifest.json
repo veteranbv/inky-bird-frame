@@ -1,0 +1,167 @@
+{
+  "approved_at": "2026-07-26T01:21:30+00:00",
+  "assets": {
+    "display": {
+      "filename": "display.png",
+      "sha256": "0cf76a7c11171f8047b52abe0e3a83ad5b7b467b7c911718498e12be0132c960"
+    },
+    "portrait": {
+      "filename": "portrait.png",
+      "sha256": "7f3e96633853f7873f9dd6cdfd83f9720c8c515b936c8a972b968fbc6b4ca25d"
+    }
+  },
+  "common_name": "Wood Duck",
+  "generation": {
+    "attempt": 2,
+    "generated_at": "2026-07-26T01:21:30+00:00",
+    "generator": "Codex subscription / built-in gpt-image-2",
+    "max_attempts": 3,
+    "prompt_version": "field-journal-v2"
+  },
+  "profile": {
+    "behavior": "Diurnal dabbling duck that feeds at the surface or by short, shallow dives. Perches and nests in trees, flies adeptly through woods, and often occurs in pairs or small groups.",
+    "common_name": "Wood Duck",
+    "family": "Anatidae",
+    "field_marks": [
+      "Boxy, crested head, slim neck, and long, broad tail",
+      "Male has a glossy green-purple head crossed by bold white stripes",
+      "Bright red eye and red-and-white bill with a dark tip",
+      "Chestnut breast with fine white spotting and pale flanks bordered in black and white",
+      "Female is gray-brown with a white teardrop-shaped eye patch and mottled breast",
+      "Short, broad dark wings with white edging; short-set webbed legs"
+    ],
+    "habitat": "Wooded freshwater wetlands, including swamps, marshes, quiet streams, ponds, and small lakes with trees or dense emergent cover; nests in tree cavities near water.",
+    "measurements": {
+      "length": "47\u201354 cm (18.5\u201321.3 in)",
+      "weight": "454\u2013862 g (16.0\u201330.4 oz)",
+      "wingspan": "66\u201373 cm (26.0\u201328.7 in)"
+    },
+    "palette": [
+      "emerald green",
+      "chestnut brown",
+      "cream white",
+      "charcoal black",
+      "coral red"
+    ],
+    "scientific_name": "Aix sponsa",
+    "sources": [
+      {
+        "title": "Wood Duck Identification \u2014 Cornell Lab of Ornithology",
+        "url": "https://www.allaboutbirds.org/guide/wood_duck/id"
+      },
+      {
+        "title": "Wood Duck Life History \u2014 Cornell Lab of Ornithology",
+        "url": "https://www.allaboutbirds.org/guide/Wood_Duck/lifehistory"
+      },
+      {
+        "title": "Aix sponsa \u2014 Animal Diversity Web",
+        "url": "https://animaldiversity.org/accounts/Aix_sponsa/"
+      },
+      {
+        "title": "Wood Duck \u2014 Smithsonian's National Zoo",
+        "url": "https://nationalzoo.si.edu/animals/wood-duck"
+      }
+    ],
+    "taxon_id": 7107
+  },
+  "quality_review": {
+    "anatomy_accuracy": 4,
+    "composition_quality": 4,
+    "findings": [
+      "The candidate is correctly identifiable as an adult male Wood Duck (Aix sponsa): the crested iridescent green-purple head, bold white facial stripes, red eye, red-and-white dark-tipped bill, chestnut spotted breast, pale flanks with black-and-white borders, dark back, and long tail agree with the reference photographs and live identification sources.",
+      "The common name, scientific name, and family Anatidae are correct.",
+      "The printed measurements exactly match Cornell's live values: length 47\u201354 cm, weight 454\u2013862 g, and wingspan 66\u201373 cm. Other permitted sources publish somewhat different ranges, but none makes the displayed Cornell ranges erroneous.",
+      "The habitat and behavior text is supported by the live sources, including wooded freshwater wetlands, cavity nesting near water, tree perching, agile flight through woods, dabbling or short shallow dives, and occurrence in small groups.",
+      "The main specimen has one head, one beak, two anatomically implied wings with the far wing occluded in profile, two legs, and one tail. The detached head and wing are clearly presented as separate detail studies rather than extra anatomy.",
+      "Minor anatomical issue: the illustrated bill is slightly too narrow, pointed, and hook-like compared with the broader, flatter bill and rounded black nail visible in the reference photographs.",
+      "Minor anatomical issue: the tail is more sharply tapered than the species' characteristically long, broad, thick, or square-tipped tail.",
+      "Minor presentation issue: the 0\u201350 cm vertical scale measures crown-to-ground standing height, while the cited 47\u201354 cm measurement is conventional total body length; without a label explaining this distinction, the scale can be misinterpreted.",
+      "No place name, ZIP code, coordinates, map, or local-observation detail appears."
+    ],
+    "location_free": true,
+    "passed": true,
+    "species_accuracy": 5,
+    "text_accuracy": 5,
+    "verification_sources": [
+      {
+        "title": "Wood Duck Identification \u2014 Cornell Lab of Ornithology",
+        "url": "https://www.allaboutbirds.org/guide/Wood_Duck/id"
+      },
+      {
+        "title": "Wood Duck Life History \u2014 Cornell Lab of Ornithology",
+        "url": "https://www.allaboutbirds.org/guide/Wood_Duck/lifehistory"
+      },
+      {
+        "title": "Aix sponsa \u2014 Animal Diversity Web",
+        "url": "https://animaldiversity.org/accounts/Aix_sponsa/"
+      },
+      {
+        "title": "Wood duck \u2014 Smithsonian's National Zoo",
+        "url": "https://nationalzoo.si.edu/animals/wood-duck"
+      },
+      {
+        "title": "Wood Duck \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/wood-duck"
+      }
+    ]
+  },
+  "references": [
+    {
+      "attribution": "(c) Alexis Tinker-Tsavalas, some rights reserved (CC BY)",
+      "filename": "01-75956702.jpeg",
+      "height": 865,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/75956702/large.jpeg",
+      "license_code": "cc-by",
+      "observation_id": 47883634,
+      "observer": "alexis_orion",
+      "photo_id": 75956702,
+      "sha256": "1cf34baca55e0a8215710b81531c13434fa71d221e2219ceca6b1d7810001217",
+      "source_url": "https://www.inaturalist.org/observations/47883634",
+      "width": 1186
+    },
+    {
+      "attribution": "(c) Adrienne van den Beemt, some rights reserved (CC BY)",
+      "filename": "02-355078425.jpg",
+      "height": 2048,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/355078425/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 201177190,
+      "observer": "mmmmbugs",
+      "photo_id": 355078425,
+      "sha256": "2b33b2443236f3b4a6f3fed62505d1280f4f4478c708f6d9bb81d9a036f020a1",
+      "source_url": "https://www.inaturalist.org/observations/201177190",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) Andrew Lai, some rights reserved (CC BY)",
+      "filename": "03-597535322.jpg",
+      "height": 1365,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/597535322/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 329621459,
+      "observer": "andrewlai530",
+      "photo_id": 597535322,
+      "sha256": "752c9b51385f4c98bf19cc3fb6be8187cd8ece9a8ae1fa31cff1d3248039c5a4",
+      "source_url": "https://www.inaturalist.org/observations/329621459",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) Matt Felperin, some rights reserved (CC BY)",
+      "filename": "04-357513228.jpg",
+      "height": 931,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/357513228/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 202430260,
+      "observer": "mattyfelp",
+      "photo_id": 357513228,
+      "sha256": "5772484fe2360fe8ef56542c2802cbdf148ea3f4951c788221103fedf6cc6d22",
+      "source_url": "https://www.inaturalist.org/observations/202430260",
+      "width": 1395
+    }
+  ],
+  "schema_version": 1,
+  "scientific_name": "Aix sponsa",
+  "slug": "wood-duck",
+  "status": "approved",
+  "taxon_id": 7107
+}

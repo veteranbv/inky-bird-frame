@@ -1,0 +1,46 @@
+{
+  "behavior": "Diurnal dabbling duck that feeds at the surface or by short, shallow dives. Perches and nests in trees, flies adeptly through woods, and often occurs in pairs or small groups.",
+  "common_name": "Wood Duck",
+  "family": "Anatidae",
+  "field_marks": [
+    "Boxy, crested head, slim neck, and long, broad tail",
+    "Male has a glossy green-purple head crossed by bold white stripes",
+    "Bright red eye and red-and-white bill with a dark tip",
+    "Chestnut breast with fine white spotting and pale flanks bordered in black and white",
+    "Female is gray-brown with a white teardrop-shaped eye patch and mottled breast",
+    "Short, broad dark wings with white edging; short-set webbed legs"
+  ],
+  "habitat": "Wooded freshwater wetlands, including swamps, marshes, quiet streams, ponds, and small lakes with trees or dense emergent cover; nests in tree cavities near water.",
+  "measurements": {
+    "length": "47\u201354 cm (18.5\u201321.3 in)",
+    "weight": "454\u2013862 g (16.0\u201330.4 oz)",
+    "wingspan": "66\u201373 cm (26.0\u201328.7 in)"
+  },
+  "palette": [
+    "emerald green",
+    "chestnut brown",
+    "cream white",
+    "charcoal black",
+    "coral red"
+  ],
+  "scientific_name": "Aix sponsa",
+  "sources": [
+    {
+      "title": "Wood Duck Identification \u2014 Cornell Lab of Ornithology",
+      "url": "https://www.allaboutbirds.org/guide/wood_duck/id"
+    },
+    {
+      "title": "Wood Duck Life History \u2014 Cornell Lab of Ornithology",
+      "url": "https://www.allaboutbirds.org/guide/Wood_Duck/lifehistory"
+    },
+    {
+      "title": "Aix sponsa \u2014 Animal Diversity Web",
+      "url": "https://animaldiversity.org/accounts/Aix_sponsa/"
+    },
+    {
+      "title": "Wood Duck \u2014 Smithsonian's National Zoo",
+      "url": "https://nationalzoo.si.edu/animals/wood-duck"
+    }
+  ],
+  "taxon_id": 7107
+}
