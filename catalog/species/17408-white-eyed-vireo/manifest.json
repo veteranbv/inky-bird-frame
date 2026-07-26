@@ -1,0 +1,156 @@
+{
+  "approved_at": "2026-07-26T01:07:36+00:00",
+  "assets": {
+    "display": {
+      "filename": "display.png",
+      "sha256": "3b029d8593abfb98b0968bb9df8f2001bd70dd9242c93d359beebefa65571a7e"
+    },
+    "portrait": {
+      "filename": "portrait.png",
+      "sha256": "93b0147755aa29cc30d095dbea6e5dae2b795e227614c0ca088207e304330428"
+    }
+  },
+  "common_name": "White-eyed Vireo",
+  "generation": {
+    "attempt": 1,
+    "generated_at": "2026-07-26T01:07:35+00:00",
+    "generator": "Codex subscription / built-in gpt-image-2",
+    "max_attempts": 3,
+    "prompt_version": "field-journal-v2"
+  },
+  "profile": {
+    "behavior": "A deliberate understory foliage-gleaner that moves with short hops and brief flights, often pausing to tilt its head before picking or hovering for insects. It also eats fruit outside the breeding season, remains territorial, and frequently sings from dense cover.",
+    "common_name": "White-eyed Vireo",
+    "family": "Vireonidae",
+    "field_marks": [
+      "Bright white adult iris framed by bold yellow spectacles",
+      "Gray head contrasting with olive-green upperparts",
+      "Thick, dark, straight bill with a slightly hooked tip",
+      "Whitish throat and belly with yellow-washed flanks",
+      "Dark wings crossed by two distinct white wing bars",
+      "Dark legs and a moderately long, olive-edged tail"
+    ],
+    "habitat": "Dense scrub and low tangled vegetation, including bramble thickets, woodland edges, second-growth forest, overgrown fields, and streamside or wetland thickets.",
+    "measurements": {
+      "length": "12\u201315 cm (5\u20136 in)",
+      "weight": "10\u201314 g (0.3\u20130.5 oz)",
+      "wingspan": "18\u201320 cm (7\u20138 in)"
+    },
+    "palette": [
+      "olive green",
+      "lemon yellow",
+      "soft gray",
+      "white",
+      "charcoal black"
+    ],
+    "scientific_name": "Vireo griseus",
+    "sources": [
+      {
+        "title": "White-eyed Vireo Identification \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/White-eyed_Vireo/id"
+      },
+      {
+        "title": "White-eyed Vireo Life History \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/White-eyed_Vireo/lifehistory"
+      },
+      {
+        "title": "White-eyed Vireo \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/white-eyed-vireo"
+      },
+      {
+        "title": "Vireo griseus \u2014 Animal Diversity Web",
+        "url": "https://animaldiversity.org/accounts/Vireo_griseus/"
+      }
+    ],
+    "taxon_id": 17408
+  },
+  "quality_review": {
+    "anatomy_accuracy": 5,
+    "composition_quality": 5,
+    "findings": [
+      "The central bird is a convincing adult White-eyed Vireo: white iris, bold yellow spectacles, gray head, olive upperparts, whitish underparts with yellow-washed flanks, dark wings with two white bars, dark legs, and an olive-edged tail agree with the reference photographs and live identification sources.",
+      "The compact passerine proportions, thick neck, slightly hooked dark bill, perching feet, wings, legs, and tail are anatomically coherent. The central bird has one head, one beak, two wings\u2014with the far wing naturally occluded in profile\u2014two legs, and one tail; the detached head and wing are clearly supplemental study insets.",
+      "The displayed weight of 10\u201314 g is supported by both Audubon and Cornell. The displayed length of 12\u201315 cm and wingspan of 18\u201320 cm are supported directly by Audubon and are consistent with Animal Diversity Web averages of 12.7 cm and 19 cm.",
+      "There is a nonmaterial measurement-source discrepancy: Cornell currently gives 11\u201313 cm length and 17 cm wingspan, narrower than the Audubon ranges printed on the plate. The plate is therefore defensible, but its measurement convention should remain tied to Audubon rather than presented as universal agreement.",
+      "The common name, scientific name, family, habitat, feeding behavior, fruit consumption, territorial behavior, and singing-from-understory claims are supported by the inspected sources.",
+      "No place name, ZIP code, coordinates, map, range graphic, or local-observation detail appears."
+    ],
+    "location_free": true,
+    "passed": true,
+    "species_accuracy": 5,
+    "text_accuracy": 4,
+    "verification_sources": [
+      {
+        "title": "White-eyed Vireo Identification \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/White-eyed_Vireo/id"
+      },
+      {
+        "title": "White-eyed Vireo \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/white-eyed-vireo"
+      },
+      {
+        "title": "Vireo griseus \u2014 Animal Diversity Web",
+        "url": "https://animaldiversity.org/accounts/Vireo_griseus/"
+      }
+    ]
+  },
+  "references": [
+    {
+      "attribution": "(c) skitterbug, some rights reserved (CC BY)",
+      "filename": "01-54157333.jpg",
+      "height": 1301,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/54157333/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 34412942,
+      "observer": "skitterbug",
+      "photo_id": 54157333,
+      "sha256": "8f7d499cdabaa4199d9bfa7de13e4a1580f27b41aaac9d87c63120488438eb53",
+      "source_url": "https://www.inaturalist.org/observations/34412942",
+      "width": 1445
+    },
+    {
+      "attribution": "(c) Cody Stricker, some rights reserved (CC BY)",
+      "filename": "02-272653025.jpeg",
+      "height": 1522,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/272653025/large.jpeg",
+      "license_code": "cc-by",
+      "observation_id": 157721295,
+      "observer": "codystricker",
+      "photo_id": 272653025,
+      "sha256": "4616d70ca5e9e70ceb3d6e1958638449746f6910dd9023da086e930f67282922",
+      "source_url": "https://www.inaturalist.org/observations/157721295",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) tcantrell52, some rights reserved (CC BY)",
+      "filename": "03-392166186.jpg",
+      "height": 2048,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/392166186/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 221448012,
+      "observer": "tcantrell52",
+      "photo_id": 392166186,
+      "sha256": "ff843062c356af911ab25fabef039e054044685ddf9bc7d08f37f7b843ea7a3e",
+      "source_url": "https://www.inaturalist.org/observations/221448012",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) Cricket Raspet, some rights reserved (CC BY)",
+      "filename": "04-625763581.jpg",
+      "height": 1380,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/625763581/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 343517086,
+      "observer": "chilipossum",
+      "photo_id": 625763581,
+      "sha256": "45e7c387faaf7baf0e0e403c40bb0234b0a04414466b6c71219ab771193c34b9",
+      "source_url": "https://www.inaturalist.org/observations/343517086",
+      "width": 2048
+    }
+  ],
+  "schema_version": 1,
+  "scientific_name": "Vireo griseus",
+  "slug": "white-eyed-vireo",
+  "status": "approved",
+  "taxon_id": 17408
+}

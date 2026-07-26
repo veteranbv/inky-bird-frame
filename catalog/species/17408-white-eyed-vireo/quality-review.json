@@ -1,0 +1,30 @@
+{
+  "anatomy_accuracy": 5,
+  "composition_quality": 5,
+  "findings": [
+    "The central bird is a convincing adult White-eyed Vireo: white iris, bold yellow spectacles, gray head, olive upperparts, whitish underparts with yellow-washed flanks, dark wings with two white bars, dark legs, and an olive-edged tail agree with the reference photographs and live identification sources.",
+    "The compact passerine proportions, thick neck, slightly hooked dark bill, perching feet, wings, legs, and tail are anatomically coherent. The central bird has one head, one beak, two wings\u2014with the far wing naturally occluded in profile\u2014two legs, and one tail; the detached head and wing are clearly supplemental study insets.",
+    "The displayed weight of 10\u201314 g is supported by both Audubon and Cornell. The displayed length of 12\u201315 cm and wingspan of 18\u201320 cm are supported directly by Audubon and are consistent with Animal Diversity Web averages of 12.7 cm and 19 cm.",
+    "There is a nonmaterial measurement-source discrepancy: Cornell currently gives 11\u201313 cm length and 17 cm wingspan, narrower than the Audubon ranges printed on the plate. The plate is therefore defensible, but its measurement convention should remain tied to Audubon rather than presented as universal agreement.",
+    "The common name, scientific name, family, habitat, feeding behavior, fruit consumption, territorial behavior, and singing-from-understory claims are supported by the inspected sources.",
+    "No place name, ZIP code, coordinates, map, range graphic, or local-observation detail appears."
+  ],
+  "location_free": true,
+  "passed": true,
+  "species_accuracy": 5,
+  "text_accuracy": 4,
+  "verification_sources": [
+    {
+      "title": "White-eyed Vireo Identification \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/White-eyed_Vireo/id"
+    },
+    {
+      "title": "White-eyed Vireo \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/white-eyed-vireo"
+    },
+    {
+      "title": "Vireo griseus \u2014 Animal Diversity Web",
+      "url": "https://animaldiversity.org/accounts/Vireo_griseus/"
+    }
+  ]
+}

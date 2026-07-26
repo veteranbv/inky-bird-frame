@@ -1,0 +1,46 @@
+{
+  "behavior": "A deliberate understory foliage-gleaner that moves with short hops and brief flights, often pausing to tilt its head before picking or hovering for insects. It also eats fruit outside the breeding season, remains territorial, and frequently sings from dense cover.",
+  "common_name": "White-eyed Vireo",
+  "family": "Vireonidae",
+  "field_marks": [
+    "Bright white adult iris framed by bold yellow spectacles",
+    "Gray head contrasting with olive-green upperparts",
+    "Thick, dark, straight bill with a slightly hooked tip",
+    "Whitish throat and belly with yellow-washed flanks",
+    "Dark wings crossed by two distinct white wing bars",
+    "Dark legs and a moderately long, olive-edged tail"
+  ],
+  "habitat": "Dense scrub and low tangled vegetation, including bramble thickets, woodland edges, second-growth forest, overgrown fields, and streamside or wetland thickets.",
+  "measurements": {
+    "length": "12\u201315 cm (5\u20136 in)",
+    "weight": "10\u201314 g (0.3\u20130.5 oz)",
+    "wingspan": "18\u201320 cm (7\u20138 in)"
+  },
+  "palette": [
+    "olive green",
+    "lemon yellow",
+    "soft gray",
+    "white",
+    "charcoal black"
+  ],
+  "scientific_name": "Vireo griseus",
+  "sources": [
+    {
+      "title": "White-eyed Vireo Identification \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/White-eyed_Vireo/id"
+    },
+    {
+      "title": "White-eyed Vireo Life History \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/White-eyed_Vireo/lifehistory"
+    },
+    {
+      "title": "White-eyed Vireo \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/white-eyed-vireo"
+    },
+    {
+      "title": "Vireo griseus \u2014 Animal Diversity Web",
+      "url": "https://animaldiversity.org/accounts/Vireo_griseus/"
+    }
+  ],
+  "taxon_id": 17408
+}

@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-26T00:58:12+00:00",
+  "generated_at": "2026-07-26T01:07:36+00:00",
   "schema_version": 1,
   "species": [
     {
@@ -980,6 +980,17 @@
       "scientific_name": "Sitta carolinensis",
       "slug": "white-breasted-nuthatch",
       "taxon_id": 14801
+    },
+    {
+      "approved_at": "2026-07-26T01:07:36+00:00",
+      "common_name": "White-eyed Vireo",
+      "display_path": "species/17408-white-eyed-vireo/display.png",
+      "display_sha256": "3b029d8593abfb98b0968bb9df8f2001bd70dd9242c93d359beebefa65571a7e",
+      "portrait_path": "species/17408-white-eyed-vireo/portrait.png",
+      "portrait_sha256": "93b0147755aa29cc30d095dbea6e5dae2b795e227614c0ca088207e304330428",
+      "scientific_name": "Vireo griseus",
+      "slug": "white-eyed-vireo",
+      "taxon_id": 17408
     },
     {
       "approved_at": "2026-07-10T03:29:00+00:00",
