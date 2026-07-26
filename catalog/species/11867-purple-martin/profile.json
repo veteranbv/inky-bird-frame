@@ -1,0 +1,46 @@
+{
+  "behavior": "Fast, agile aerial insectivore that alternates quick wingbeats with glides, catches prey in flight, and often feeds and roosts in flocks. A colonial cavity nester and long-distance migrant.",
+  "common_name": "Purple Martin",
+  "family": "Hirundinidae",
+  "field_marks": [
+    "Very large, broad-chested swallow",
+    "Long, tapered, pointed wings",
+    "Short, distinctly notched or forked tail",
+    "Stout, slightly hooked dark bill with dark eyes and legs",
+    "Adult male iridescent dark blue-purple with brown-black wings and tail",
+    "Female and immature gray above and across the chest with a whitish, variably speckled belly"
+  ],
+  "habitat": "Open and semi-open habitats, especially near water, including fields, wetlands, shorelines, farms, and developed areas. Nests colonially in cavities such as tree holes, building or cliff crevices, and artificial houses or gourds.",
+  "measurements": {
+    "length": "19\u201320 cm (7.5\u20137.9 in)",
+    "weight": "45\u201360 g (1.6\u20132.1 oz)",
+    "wingspan": "39\u201341 cm (15.3\u201316.1 in)"
+  },
+  "palette": [
+    "iridescent blue-purple",
+    "brown-black",
+    "slate gray",
+    "whitish",
+    "dark brown"
+  ],
+  "scientific_name": "Progne subis",
+  "sources": [
+    {
+      "title": "Purple Martin Identification \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Purple_Martin/id"
+    },
+    {
+      "title": "Purple Martin Life History \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Purple_Martin/lifehistory"
+    },
+    {
+      "title": "Purple Martin \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/purple-martin"
+    },
+    {
+      "title": "Progne subis \u2014 Animal Diversity Web",
+      "url": "https://animaldiversity.org/accounts/Progne_subis/"
+    }
+  ],
+  "taxon_id": 11867
+}

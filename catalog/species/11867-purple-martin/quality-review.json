@@ -1,0 +1,31 @@
+{
+  "anatomy_accuracy": 4,
+  "composition_quality": 5,
+  "findings": [
+    "The candidate depicts an identifiable adult male Purple Martin: iridescent dark blue-purple body, brown-black wings and tail, broad chest, small head, dark eye, stout slightly hooked bill, and long tapered wings agree with the references and live identification sources.",
+    "The main bird has one head, one beak, two wings\u2014the far wing is naturally concealed by the side-on pose\u2014two legs, two feet, and one forked tail. No duplicated or extraneous body parts are present.",
+    "The feet and tightly curled claws are somewhat simplified and oversized, but remain anatomically coherent for a perched swallow.",
+    "The detached wing study appears slightly broader and less sharply pointed than a Purple Martin's characteristically long, tapered wing. The main illustration conveys the wing shape more accurately.",
+    "The illustrated tail fork is slightly deeper and more elongated-looking than the typically short, moderately notched or forked Purple Martin tail, but not enough to create a material species error.",
+    "The common name, scientific name, family, length, weight, and wingspan are accurate. The habitat, cavity-nesting, migration, aerial-foraging, flocking, sexual-plumage, bill, wing, and tail statements are supported by the inspected sources.",
+    "No place name, ZIP code, coordinates, map, range map, or local-observation detail appears on the plate."
+  ],
+  "location_free": true,
+  "passed": true,
+  "species_accuracy": 4,
+  "text_accuracy": 5,
+  "verification_sources": [
+    {
+      "title": "Purple Martin Identification \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Purple_Martin/id"
+    },
+    {
+      "title": "Purple Martin \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/purple-martin"
+    },
+    {
+      "title": "Progne subis \u2014 Animal Diversity Web",
+      "url": "https://animaldiversity.org/accounts/Progne_subis/"
+    }
+  ]
+}

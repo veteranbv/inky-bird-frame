@@ -1,0 +1,157 @@
+{
+  "approved_at": "2026-07-26T00:58:12+00:00",
+  "assets": {
+    "display": {
+      "filename": "display.png",
+      "sha256": "44a176d9eff5f825e6d0c529d67bea9a25a0f5f17cb8e7995b73ef27e47131ff"
+    },
+    "portrait": {
+      "filename": "portrait.png",
+      "sha256": "4596211c5ffa76380d12e68ce744de7580c597989956dc916496d0e583745d9a"
+    }
+  },
+  "common_name": "Purple Martin",
+  "generation": {
+    "attempt": 1,
+    "generated_at": "2026-07-26T00:58:12+00:00",
+    "generator": "Codex subscription / built-in gpt-image-2",
+    "max_attempts": 3,
+    "prompt_version": "field-journal-v2"
+  },
+  "profile": {
+    "behavior": "Fast, agile aerial insectivore that alternates quick wingbeats with glides, catches prey in flight, and often feeds and roosts in flocks. A colonial cavity nester and long-distance migrant.",
+    "common_name": "Purple Martin",
+    "family": "Hirundinidae",
+    "field_marks": [
+      "Very large, broad-chested swallow",
+      "Long, tapered, pointed wings",
+      "Short, distinctly notched or forked tail",
+      "Stout, slightly hooked dark bill with dark eyes and legs",
+      "Adult male iridescent dark blue-purple with brown-black wings and tail",
+      "Female and immature gray above and across the chest with a whitish, variably speckled belly"
+    ],
+    "habitat": "Open and semi-open habitats, especially near water, including fields, wetlands, shorelines, farms, and developed areas. Nests colonially in cavities such as tree holes, building or cliff crevices, and artificial houses or gourds.",
+    "measurements": {
+      "length": "19\u201320 cm (7.5\u20137.9 in)",
+      "weight": "45\u201360 g (1.6\u20132.1 oz)",
+      "wingspan": "39\u201341 cm (15.3\u201316.1 in)"
+    },
+    "palette": [
+      "iridescent blue-purple",
+      "brown-black",
+      "slate gray",
+      "whitish",
+      "dark brown"
+    ],
+    "scientific_name": "Progne subis",
+    "sources": [
+      {
+        "title": "Purple Martin Identification \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Purple_Martin/id"
+      },
+      {
+        "title": "Purple Martin Life History \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Purple_Martin/lifehistory"
+      },
+      {
+        "title": "Purple Martin \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/purple-martin"
+      },
+      {
+        "title": "Progne subis \u2014 Animal Diversity Web",
+        "url": "https://animaldiversity.org/accounts/Progne_subis/"
+      }
+    ],
+    "taxon_id": 11867
+  },
+  "quality_review": {
+    "anatomy_accuracy": 4,
+    "composition_quality": 5,
+    "findings": [
+      "The candidate depicts an identifiable adult male Purple Martin: iridescent dark blue-purple body, brown-black wings and tail, broad chest, small head, dark eye, stout slightly hooked bill, and long tapered wings agree with the references and live identification sources.",
+      "The main bird has one head, one beak, two wings\u2014the far wing is naturally concealed by the side-on pose\u2014two legs, two feet, and one forked tail. No duplicated or extraneous body parts are present.",
+      "The feet and tightly curled claws are somewhat simplified and oversized, but remain anatomically coherent for a perched swallow.",
+      "The detached wing study appears slightly broader and less sharply pointed than a Purple Martin's characteristically long, tapered wing. The main illustration conveys the wing shape more accurately.",
+      "The illustrated tail fork is slightly deeper and more elongated-looking than the typically short, moderately notched or forked Purple Martin tail, but not enough to create a material species error.",
+      "The common name, scientific name, family, length, weight, and wingspan are accurate. The habitat, cavity-nesting, migration, aerial-foraging, flocking, sexual-plumage, bill, wing, and tail statements are supported by the inspected sources.",
+      "No place name, ZIP code, coordinates, map, range map, or local-observation detail appears on the plate."
+    ],
+    "location_free": true,
+    "passed": true,
+    "species_accuracy": 4,
+    "text_accuracy": 5,
+    "verification_sources": [
+      {
+        "title": "Purple Martin Identification \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Purple_Martin/id"
+      },
+      {
+        "title": "Purple Martin \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/purple-martin"
+      },
+      {
+        "title": "Progne subis \u2014 Animal Diversity Web",
+        "url": "https://animaldiversity.org/accounts/Progne_subis/"
+      }
+    ]
+  },
+  "references": [
+    {
+      "attribution": "(c) B. Phalan, some rights reserved (CC BY)",
+      "filename": "01-13564925.jpg",
+      "height": 1403,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/13564925/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 9894296,
+      "observer": "deboas",
+      "photo_id": 13564925,
+      "sha256": "fd46cd08166586d50825184f6df8bff90d0cf2f3c361bfdaa782834c8c95e15c",
+      "source_url": "https://www.inaturalist.org/observations/9894296",
+      "width": 1871
+    },
+    {
+      "attribution": "no rights reserved",
+      "filename": "02-122564315.jpeg",
+      "height": 1536,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/122564315/large.jpeg",
+      "license_code": "cc0",
+      "observation_id": 74952409,
+      "observer": "andy71",
+      "photo_id": 122564315,
+      "sha256": "da9686c5bb7de66b93c1f1f961d123da821fad921fbebe2c6ccbd280bac52d84",
+      "source_url": "https://www.inaturalist.org/observations/74952409",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) Leila Dasher, some rights reserved (CC BY)",
+      "filename": "03-358459804.jpg",
+      "height": 1377,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/358459804/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 202930737,
+      "observer": "supertiger",
+      "photo_id": 358459804,
+      "sha256": "bb62fd581cb8e2a9fd7e8af52df857ca29968f3b8c1dc94c65bb62bed1a05f8f",
+      "source_url": "https://www.inaturalist.org/observations/202930737",
+      "width": 1836
+    },
+    {
+      "attribution": "(c) William Petrie, some rights reserved (CC BY)",
+      "filename": "04-214173259.jpeg",
+      "height": 2048,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/214173259/large.jpeg",
+      "license_code": "cc-by",
+      "observation_id": 126240654,
+      "observer": "wfpetrie",
+      "photo_id": 214173259,
+      "sha256": "296ed00cd9eb13947b6455b5fc74116c248427f70d5f78911d949a70fb3cac0e",
+      "source_url": "https://www.inaturalist.org/observations/126240654",
+      "width": 2048
+    }
+  ],
+  "schema_version": 1,
+  "scientific_name": "Progne subis",
+  "slug": "purple-martin",
+  "status": "approved",
+  "taxon_id": 11867
+}
