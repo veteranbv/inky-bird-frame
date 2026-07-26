@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-26T01:07:36+00:00",
+  "generated_at": "2026-07-26T01:21:30+00:00",
   "schema_version": 1,
   "species": [
     {
@@ -1013,6 +1013,17 @@
       "scientific_name": "Tringa semipalmata",
       "slug": "willet",
       "taxon_id": 144491
+    },
+    {
+      "approved_at": "2026-07-26T01:21:30+00:00",
+      "common_name": "Wood Duck",
+      "display_path": "species/7107-wood-duck/display.png",
+      "display_sha256": "0cf76a7c11171f8047b52abe0e3a83ad5b7b467b7c911718498e12be0132c960",
+      "portrait_path": "species/7107-wood-duck/portrait.png",
+      "portrait_sha256": "7f3e96633853f7873f9dd6cdfd83f9720c8c515b936c8a972b968fbc6b4ca25d",
+      "scientific_name": "Aix sponsa",
+      "slug": "wood-duck",
+      "taxon_id": 7107
     },
     {
       "approved_at": "2026-07-13T07:24:31+00:00",

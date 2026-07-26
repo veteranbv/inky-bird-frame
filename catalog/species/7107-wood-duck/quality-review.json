@@ -1,0 +1,41 @@
+{
+  "anatomy_accuracy": 4,
+  "composition_quality": 4,
+  "findings": [
+    "The candidate is correctly identifiable as an adult male Wood Duck (Aix sponsa): the crested iridescent green-purple head, bold white facial stripes, red eye, red-and-white dark-tipped bill, chestnut spotted breast, pale flanks with black-and-white borders, dark back, and long tail agree with the reference photographs and live identification sources.",
+    "The common name, scientific name, and family Anatidae are correct.",
+    "The printed measurements exactly match Cornell's live values: length 47\u201354 cm, weight 454\u2013862 g, and wingspan 66\u201373 cm. Other permitted sources publish somewhat different ranges, but none makes the displayed Cornell ranges erroneous.",
+    "The habitat and behavior text is supported by the live sources, including wooded freshwater wetlands, cavity nesting near water, tree perching, agile flight through woods, dabbling or short shallow dives, and occurrence in small groups.",
+    "The main specimen has one head, one beak, two anatomically implied wings with the far wing occluded in profile, two legs, and one tail. The detached head and wing are clearly presented as separate detail studies rather than extra anatomy.",
+    "Minor anatomical issue: the illustrated bill is slightly too narrow, pointed, and hook-like compared with the broader, flatter bill and rounded black nail visible in the reference photographs.",
+    "Minor anatomical issue: the tail is more sharply tapered than the species' characteristically long, broad, thick, or square-tipped tail.",
+    "Minor presentation issue: the 0\u201350 cm vertical scale measures crown-to-ground standing height, while the cited 47\u201354 cm measurement is conventional total body length; without a label explaining this distinction, the scale can be misinterpreted.",
+    "No place name, ZIP code, coordinates, map, or local-observation detail appears."
+  ],
+  "location_free": true,
+  "passed": true,
+  "species_accuracy": 5,
+  "text_accuracy": 5,
+  "verification_sources": [
+    {
+      "title": "Wood Duck Identification \u2014 Cornell Lab of Ornithology",
+      "url": "https://www.allaboutbirds.org/guide/Wood_Duck/id"
+    },
+    {
+      "title": "Wood Duck Life History \u2014 Cornell Lab of Ornithology",
+      "url": "https://www.allaboutbirds.org/guide/Wood_Duck/lifehistory"
+    },
+    {
+      "title": "Aix sponsa \u2014 Animal Diversity Web",
+      "url": "https://animaldiversity.org/accounts/Aix_sponsa/"
+    },
+    {
+      "title": "Wood duck \u2014 Smithsonian's National Zoo",
+      "url": "https://nationalzoo.si.edu/animals/wood-duck"
+    },
+    {
+      "title": "Wood Duck \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/wood-duck"
+    }
+  ]
+}
