@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-26T01:21:30+00:00",
+  "generated_at": "2026-07-29T00:36:48+00:00",
   "schema_version": 1,
   "species": [
     {
@@ -1046,6 +1046,17 @@
       "scientific_name": "Coccyzus americanus",
       "slug": "yellow-billed-cuckoo",
       "taxon_id": 1965
+    },
+    {
+      "approved_at": "2026-07-29T00:36:48+00:00",
+      "common_name": "Yellow-breasted Chat",
+      "display_path": "species/10243-yellow-breasted-chat/display.png",
+      "display_sha256": "7890ff5f2ab0666fda416602c0bfa6202fdece654ffa2f5b11a09d6bce7ffd88",
+      "portrait_path": "species/10243-yellow-breasted-chat/portrait.png",
+      "portrait_sha256": "11233badfe3e40d96a0e621a2273e72141dc60e1c9177400f5a5766fe3e995e1",
+      "scientific_name": "Icteria virens",
+      "slug": "yellow-breasted-chat",
+      "taxon_id": 10243
     },
     {
       "approved_at": "2026-07-10T18:34:41+00:00",
