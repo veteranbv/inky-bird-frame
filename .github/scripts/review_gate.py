@@ -23,9 +23,16 @@ Gating model (hybrid; see PR #71 discussion):
 Engagement (polling): after the repository owner requests Codex review and
 names the exact head SHA, the script waits up to POLL_BUDGET_SECONDS for Codex
 to engage via review, clean comment, or reaction. Contributor activity and
-automatic review alone cannot satisfy the gate. If the PR is already merged,
-the gate exits successfully because it can no longer protect the merge and a
-post-merge timeout would only report a false failure.
+automatic review alone cannot satisfy the gate. If the PR is no longer open
+(merged or closed), the gate exits successfully: it can no longer protect a
+merge, and a post-terminal timeout would only leave a stale failed suite that
+blocks the PR if it is later reopened on the same head.
+
+Dismissed reviews: dismissing a review is the human saying "disregard this
+review," so a DISMISSED review's findings never gate and it never scopes the
+fresh-review filter. It still counts as engagement — the bot demonstrably
+evaluated the head, and dropping engagement on dismissal would strand the
+gate waiting for a bot that already responded.
 
 Run locally for debugging:
     GH_TOKEN=$(gh auth token) \\
@@ -97,6 +104,7 @@ query($owner: String!, $repo: String!, $pr: Int!) {
         pageInfo { hasNextPage }
         nodes {
           databaseId
+          state
           submittedAt
           body
           author { login }
@@ -467,6 +475,23 @@ def engaged_bots(
     return engaged
 
 
+def _dismissed_review_ids(state: dict[str, object]) -> set[int]:
+    """Review IDs whose review has been dismissed. Used when collecting
+    findings and choosing the fresh-review scope; deliberately NOT used
+    for engagement (see module docstring)."""
+    ids: set[int] = set()
+    reviews_obj = state.get("reviews")
+    if not isinstance(reviews_obj, dict):
+        return ids
+    for r in reviews_obj.get("nodes") or []:
+        if not isinstance(r, dict):
+            continue
+        rid = r.get("databaseId")
+        if r.get("state") == "DISMISSED" and isinstance(rid, int):
+            ids.add(rid)
+    return ids
+
+
 def _latest_review_id_on_head(
     state: dict[str, object],
     bot_login: str,
@@ -488,6 +513,8 @@ def _latest_review_id_on_head(
         if not isinstance(r, dict):
             continue
         if _author_login(r) != bot_login:
+            continue
+        if r.get("state") == "DISMISSED":
             continue
         rid = r.get("databaseId")
         has_blocking_findings = isinstance(rid, int) and rid in blocking_review_ids
@@ -635,6 +662,8 @@ def _latest_review_time_on_head(
             continue
         if _author_login(r) != bot_login:
             continue
+        if r.get("state") == "DISMISSED":
+            continue
         review_id = r.get("databaseId")
         has_blocking_findings = isinstance(review_id, int) and review_id in blocking_review_ids
         if (
@@ -689,6 +718,7 @@ def collect_findings(
     latest_per_bot: dict[str, int | None] = {
         login: _latest_review_id_on_head(state, login, head_sha) for login in BOT_LABELS
     }
+    dismissed_review_ids = _dismissed_review_ids(state)
 
     findings: list[Finding] = []
     threads_obj = state.get("reviewThreads")
@@ -708,16 +738,18 @@ def collect_findings(
             login = _author_login(c)
             if login not in BOT_LABELS:
                 continue
+            review_ref = c.get("pullRequestReview")
+            comment_rid = review_ref.get("databaseId") if isinstance(review_ref, dict) else None
+            # A dismissed review's findings never gate.
+            if comment_rid is not None and comment_rid in dismissed_review_ids:
+                continue
             # Mode 1: Codex declared head clean via 👍 reaction.
             if login == CODEX_LOGIN and codex_clean:
                 continue
             # Mode 2: bot has a fresh review on head — scope to its comments.
             latest_rid = latest_per_bot.get(login)
-            if latest_rid is not None:
-                review_ref = c.get("pullRequestReview")
-                comment_rid = review_ref.get("databaseId") if isinstance(review_ref, dict) else None
-                if comment_rid != latest_rid:
-                    continue
+            if latest_rid is not None and comment_rid != latest_rid:
+                continue
             # Mode 3: no fresh signal — fall through, count all of bot's comments.
 
             body = c.get("body")
@@ -787,8 +819,12 @@ def main() -> int:
         return 2
 
     state = fetch_pr_state(repo, pr)
-    if state.get("state") == "MERGED":
-        print(f"PR #{pr} is already merged; review gate is no longer applicable.", flush=True)
+    pr_state = state.get("state")
+    if isinstance(pr_state, str) and pr_state != "OPEN":
+        print(
+            f"PR #{pr} is {pr_state.lower()}; review gate is no longer applicable.",
+            flush=True,
+        )
         return 0
     owner_login = repo.split("/", 1)[0]
     head_sha = state.get("headRefOid")
@@ -848,9 +884,11 @@ def main() -> int:
             # engagement can't be confirmed, the timeout fails closed.
             print("PR state fetch failed; retrying next interval.", flush=True)
             continue
-        if state.get("state") == "MERGED":
+        pr_state = state.get("state")
+        if isinstance(pr_state, str) and pr_state != "OPEN":
             print(
-                f"PR #{pr} merged while waiting; review gate is no longer applicable.",
+                f"PR #{pr} became {pr_state.lower()} while waiting; "
+                "review gate is no longer applicable.",
                 flush=True,
             )
             return 0

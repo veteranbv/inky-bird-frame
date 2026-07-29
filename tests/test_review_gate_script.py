@@ -961,6 +961,195 @@ def test_gate_exits_when_pr_merges_during_polling(monkeypatch: pytest.MonkeyPatc
     assert review_gate.main() == 0
 
 
+def _state_with_review_findings(
+    head_sha: str,
+    reviews: list[dict[str, object]],
+    thread_comments: list[dict[str, object]],
+) -> dict[str, object]:
+    """PR state with the given reviews and one unresolved thread."""
+    return {
+        "state": "OPEN",
+        "headRefOid": head_sha,
+        "commits": {
+            "nodes": [
+                {
+                    "commit": {
+                        "oid": head_sha,
+                        "pushedDate": "2026-06-15T11:00:00Z",
+                        "committedDate": "2026-06-15T10:00:00Z",
+                    }
+                }
+            ]
+        },
+        "reviews": {"nodes": reviews},
+        "reviewThreads": {
+            "nodes": [
+                {
+                    "isResolved": False,
+                    "comments": {"nodes": thread_comments},
+                }
+            ]
+        },
+        "comments": {"nodes": []},
+        "reactions": {"nodes": []},
+    }
+
+
+def _codex_review(
+    review_id: int,
+    head_sha: str,
+    submitted: str,
+    state: str = "COMMENTED",
+) -> dict[str, object]:
+    return {
+        "databaseId": review_id,
+        "state": state,
+        "submittedAt": submitted,
+        "body": _full_codex_review_body(head_sha),
+        "author": {"login": "chatgpt-codex-connector"},
+        "commit": {"oid": head_sha},
+    }
+
+
+def _codex_finding_comment(review_id: int, comment_id: int) -> dict[str, object]:
+    return {
+        "databaseId": comment_id,
+        "author": {"login": "chatgpt-codex-connector"},
+        "body": "**![P1 Badge](https://img.shields.io/badge/P1-orange)** Broken thing",
+        "path": "src/thing.py",
+        "line": 10,
+        "originalLine": 10,
+        "pullRequestReview": {"databaseId": review_id},
+    }
+
+
+def test_dismissed_review_findings_do_not_gate() -> None:
+    review_gate = _load_review_gate()
+    state = _state_with_review_findings(
+        "abcdef1234567890abcdef1234567890abcdef12",
+        reviews=[
+            _codex_review(
+                1,
+                "abcdef1234567890abcdef1234567890abcdef12",
+                "2026-06-15T12:00:00Z",
+                state="DISMISSED",
+            )
+        ],
+        thread_comments=[_codex_finding_comment(1, 11)],
+    )
+
+    findings = review_gate.collect_findings(state, "abcdef1234567890abcdef1234567890abcdef12", None)
+
+    assert findings == []
+
+
+def test_dismissing_newest_review_does_not_clear_older_active_findings() -> None:
+    review_gate = _load_review_gate()
+    # Review 1 is active with an unresolved blocking finding; review 2 is a
+    # newer review on the same head that was dismissed. The dismissal must
+    # neither gate on review 2's comments nor supersede review 1's finding.
+    state = _state_with_review_findings(
+        "abcdef1234567890abcdef1234567890abcdef12",
+        reviews=[
+            _codex_review(1, "abcdef1234567890abcdef1234567890abcdef12", "2026-06-15T12:00:00Z"),
+            _codex_review(
+                2,
+                "abcdef1234567890abcdef1234567890abcdef12",
+                "2026-06-15T13:00:00Z",
+                state="DISMISSED",
+            ),
+        ],
+        thread_comments=[
+            _codex_finding_comment(1, 11),
+            _codex_finding_comment(2, 22),
+        ],
+    )
+
+    findings = review_gate.collect_findings(state, "abcdef1234567890abcdef1234567890abcdef12", None)
+
+    assert len(findings) == 1
+
+
+def test_fresh_active_review_still_supersedes_older_findings() -> None:
+    review_gate = _load_review_gate()
+    # An ACTIVE newer review scopes findings to itself (existing Mode 2
+    # behavior must survive the dismissal filter).
+    state = _state_with_review_findings(
+        "abcdef1234567890abcdef1234567890abcdef12",
+        reviews=[
+            _codex_review(1, "abcdef1234567890abcdef1234567890abcdef12", "2026-06-15T12:00:00Z"),
+            _codex_review(2, "abcdef1234567890abcdef1234567890abcdef12", "2026-06-15T13:00:00Z"),
+        ],
+        thread_comments=[_codex_finding_comment(1, 11)],
+    )
+
+    findings = review_gate.collect_findings(state, "abcdef1234567890abcdef1234567890abcdef12", None)
+
+    assert findings == []
+
+
+def test_dismissed_review_still_counts_as_engagement() -> None:
+    review_gate = _load_review_gate()
+    state = _state_with_review_findings(
+        "abcdef1234567890abcdef1234567890abcdef12",
+        reviews=[
+            _codex_review(
+                1,
+                "abcdef1234567890abcdef1234567890abcdef12",
+                "2026-06-15T12:00:00Z",
+                state="DISMISSED",
+            )
+        ],
+        thread_comments=[],
+    )
+
+    head_time = review_gate._head_time(state, "abcdef1234567890abcdef1234567890abcdef12")
+    engaged = review_gate.engaged_bots(
+        state, "owner/repo", "abcdef1234567890abcdef1234567890abcdef12", head_time
+    )
+
+    assert review_gate.CODEX_LOGIN in engaged
+
+
+def test_gate_exits_when_pr_is_closed(monkeypatch: pytest.MonkeyPatch) -> None:
+    review_gate = _load_review_gate()
+    state = _state_with_commit(
+        pushed="2026-06-15T11:59:00Z",
+        committed="2026-06-01T12:00:00Z",
+    )
+    state["state"] = "CLOSED"
+
+    monkeypatch.setattr(review_gate, "fetch_pr_state", lambda _repo, _pr: state)
+    monkeypatch.setenv("GITHUB_REPOSITORY", "owner/repo")
+    monkeypatch.setenv("PR_NUMBER", "123")
+
+    assert review_gate.main() == 0
+
+
+def test_gate_exits_when_pr_closes_during_polling(monkeypatch: pytest.MonkeyPatch) -> None:
+    review_gate = _load_review_gate()
+    initial = _state_with_commit(
+        pushed="2026-06-15T11:59:00Z",
+        committed="2026-06-01T12:00:00Z",
+    )
+    closed = _state_with_commit(
+        pushed="2026-06-15T11:59:00Z",
+        committed="2026-06-01T12:00:00Z",
+    )
+    closed["state"] = "CLOSED"
+    states = iter((initial, closed))
+
+    monkeypatch.setattr(review_gate, "fetch_pr_state", lambda _repo, _pr: next(states))
+    monkeypatch.setenv("GITHUB_REPOSITORY", "owner/repo")
+    monkeypatch.setenv("PR_NUMBER", "123")
+    monkeypatch.setattr(review_gate, "POLL_INTERVAL_SECONDS", 0)
+    monkeypatch.setattr(review_gate, "POLL_BUDGET_SECONDS", 1)
+    monkeypatch.setattr("review_gate_under_test.time.monotonic", lambda: 0.0)
+    monkeypatch.setattr("review_gate_under_test.time.sleep", lambda _seconds: None)
+
+    assert review_gate.main() == 0
+
+
 def test_pagination_overflow_includes_nested_thread_comments() -> None:
     review_gate = _load_review_gate()
     state = {
