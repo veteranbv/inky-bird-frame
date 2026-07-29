@@ -1,0 +1,42 @@
+{
+  "behavior": "Usually secretive, skulking quietly in low, dense vegetation. Gleans insects and spiders from foliage, also eating berries and other fruit. During the breeding season, males sing varied whistles, cackles, rattles, and gurgles from exposed perches and may perform exaggerated display flights.",
+  "common_name": "Yellow-breasted Chat",
+  "family": "Icteriidae",
+  "field_marks": [
+    "Bright yellow throat and breast contrasting with a white lower belly",
+    "Olive-gray upperparts with olive-brown, rounded wings",
+    "Bold white spectacles around the dark eye and a white mustache stripe",
+    "Thick, dark bill set on a large gray head",
+    "Bulky, broad-chested body with a long olive-brown tail",
+    "Dark gray legs and feet"
+  ],
+  "habitat": "Dense thickets, scrub, bramble tangles, forest edges and clearings, streamside shrubbery, and wetland margins; during migration and winter, favors similarly low, dense vegetation, scrub, and woodland edges.",
+  "measurements": {
+    "length": "18\u201320 cm (7.1\u20137.9 in)",
+    "weight": "23\u201336 g (0.8\u20131.3 oz)",
+    "wingspan": "25\u201328 cm (9.8\u201311 in)"
+  },
+  "palette": [
+    "bright yellow",
+    "olive green",
+    "slate gray",
+    "white",
+    "charcoal black"
+  ],
+  "scientific_name": "Icteria virens",
+  "sources": [
+    {
+      "title": "Yellow-breasted Chat Identification \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Yellow-breasted_Chat/id"
+    },
+    {
+      "title": "Yellow-breasted Chat Life History \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Yellow-breasted_Chat/lifehistory"
+    },
+    {
+      "title": "Yellow-breasted Chat \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/yellow-breasted-chat"
+    }
+  ],
+  "taxon_id": 10243
+}

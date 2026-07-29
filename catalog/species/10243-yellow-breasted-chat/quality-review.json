@@ -1,0 +1,31 @@
+{
+  "anatomy_accuracy": 4,
+  "composition_quality": 5,
+  "findings": [
+    "Species identity is correct: the large gray head, heavy dark bill, bright yellow throat and breast, white lower belly, olive upperparts, white spectacles and malar stripe, bulky chest, rounded wing, and long tail match the reference photographs and verified descriptions.",
+    "The main bird has one head, one beak, two wings with the far wing naturally obscured by the profile pose, two legs, and one tail. No duplicated or malformed body parts are present.",
+    "The feet and claws are slightly oversized and heavier-looking than in the field-reference photographs, but their arrangement and branch grip remain anatomically coherent.",
+    "The printed measurements\u201418\u201320 cm length, 25\u201328 cm wingspan, and 23\u201336 g weight\u2014exactly match Audubon's published ranges. Cornell gives narrower representative measurements, which does not invalidate the Audubon-supported ranges.",
+    "The common name, scientific name, family Icteriidae, habitat, diet, skulking behavior, varied vocalizations, display flights, and all listed field marks are supported by the inspected source pages.",
+    "All visible text is legible and internally consistent. The ruler, detail insets, palette, and main portrait form a clear scientific field-journal composition.",
+    "No place name, ZIP code, coordinates, map, range graphic, observation locality, or other local-observation detail appears on the candidate plate."
+  ],
+  "location_free": true,
+  "passed": true,
+  "species_accuracy": 5,
+  "text_accuracy": 5,
+  "verification_sources": [
+    {
+      "title": "Yellow-breasted Chat Identification \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Yellow-breasted_Chat/id"
+    },
+    {
+      "title": "Yellow-breasted Chat \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/yellow-breasted-chat"
+    },
+    {
+      "title": "Yellow-breasted Chat \u2014 Birds of the World",
+      "url": "https://birdsoftheworld.org/bow/species/yebcha/cur/introduction"
+    }
+  ]
+}

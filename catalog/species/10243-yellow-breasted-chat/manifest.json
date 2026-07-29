@@ -1,0 +1,153 @@
+{
+  "approved_at": "2026-07-29T00:36:48+00:00",
+  "assets": {
+    "display": {
+      "filename": "display.png",
+      "sha256": "7890ff5f2ab0666fda416602c0bfa6202fdece654ffa2f5b11a09d6bce7ffd88"
+    },
+    "portrait": {
+      "filename": "portrait.png",
+      "sha256": "11233badfe3e40d96a0e621a2273e72141dc60e1c9177400f5a5766fe3e995e1"
+    }
+  },
+  "common_name": "Yellow-breasted Chat",
+  "generation": {
+    "attempt": 2,
+    "generated_at": "2026-07-29T00:36:48+00:00",
+    "generator": "Codex subscription / built-in gpt-image-2",
+    "max_attempts": 3,
+    "prompt_version": "field-journal-v2"
+  },
+  "profile": {
+    "behavior": "Usually secretive, skulking quietly in low, dense vegetation. Gleans insects and spiders from foliage, also eating berries and other fruit. During the breeding season, males sing varied whistles, cackles, rattles, and gurgles from exposed perches and may perform exaggerated display flights.",
+    "common_name": "Yellow-breasted Chat",
+    "family": "Icteriidae",
+    "field_marks": [
+      "Bright yellow throat and breast contrasting with a white lower belly",
+      "Olive-gray upperparts with olive-brown, rounded wings",
+      "Bold white spectacles around the dark eye and a white mustache stripe",
+      "Thick, dark bill set on a large gray head",
+      "Bulky, broad-chested body with a long olive-brown tail",
+      "Dark gray legs and feet"
+    ],
+    "habitat": "Dense thickets, scrub, bramble tangles, forest edges and clearings, streamside shrubbery, and wetland margins; during migration and winter, favors similarly low, dense vegetation, scrub, and woodland edges.",
+    "measurements": {
+      "length": "18\u201320 cm (7.1\u20137.9 in)",
+      "weight": "23\u201336 g (0.8\u20131.3 oz)",
+      "wingspan": "25\u201328 cm (9.8\u201311 in)"
+    },
+    "palette": [
+      "bright yellow",
+      "olive green",
+      "slate gray",
+      "white",
+      "charcoal black"
+    ],
+    "scientific_name": "Icteria virens",
+    "sources": [
+      {
+        "title": "Yellow-breasted Chat Identification \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Yellow-breasted_Chat/id"
+      },
+      {
+        "title": "Yellow-breasted Chat Life History \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Yellow-breasted_Chat/lifehistory"
+      },
+      {
+        "title": "Yellow-breasted Chat \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/yellow-breasted-chat"
+      }
+    ],
+    "taxon_id": 10243
+  },
+  "quality_review": {
+    "anatomy_accuracy": 4,
+    "composition_quality": 5,
+    "findings": [
+      "Species identity is correct: the large gray head, heavy dark bill, bright yellow throat and breast, white lower belly, olive upperparts, white spectacles and malar stripe, bulky chest, rounded wing, and long tail match the reference photographs and verified descriptions.",
+      "The main bird has one head, one beak, two wings with the far wing naturally obscured by the profile pose, two legs, and one tail. No duplicated or malformed body parts are present.",
+      "The feet and claws are slightly oversized and heavier-looking than in the field-reference photographs, but their arrangement and branch grip remain anatomically coherent.",
+      "The printed measurements\u201418\u201320 cm length, 25\u201328 cm wingspan, and 23\u201336 g weight\u2014exactly match Audubon's published ranges. Cornell gives narrower representative measurements, which does not invalidate the Audubon-supported ranges.",
+      "The common name, scientific name, family Icteriidae, habitat, diet, skulking behavior, varied vocalizations, display flights, and all listed field marks are supported by the inspected source pages.",
+      "All visible text is legible and internally consistent. The ruler, detail insets, palette, and main portrait form a clear scientific field-journal composition.",
+      "No place name, ZIP code, coordinates, map, range graphic, observation locality, or other local-observation detail appears on the candidate plate."
+    ],
+    "location_free": true,
+    "passed": true,
+    "species_accuracy": 5,
+    "text_accuracy": 5,
+    "verification_sources": [
+      {
+        "title": "Yellow-breasted Chat Identification \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Yellow-breasted_Chat/id"
+      },
+      {
+        "title": "Yellow-breasted Chat \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/yellow-breasted-chat"
+      },
+      {
+        "title": "Yellow-breasted Chat \u2014 Birds of the World",
+        "url": "https://birdsoftheworld.org/bow/species/yebcha/cur/introduction"
+      }
+    ]
+  },
+  "references": [
+    {
+      "attribution": "no rights reserved",
+      "filename": "01-381604184.jpeg",
+      "height": 1366,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/381604184/large.jpeg",
+      "license_code": "cc0",
+      "observation_id": 215816277,
+      "observer": "andywilson",
+      "photo_id": 381604184,
+      "sha256": "469405e0ecac7a78a7ae470f244057d53710824222abe7d762a9f591d36d1780",
+      "source_url": "https://www.inaturalist.org/observations/215816277",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) Rudyard, some rights reserved (CC BY)",
+      "filename": "02-17327130.jpeg",
+      "height": 1028,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/17327130/large.jpeg",
+      "license_code": "cc-by",
+      "observation_id": 12081710,
+      "observer": "rudyard",
+      "photo_id": 17327130,
+      "sha256": "8d65101913d7e3e12c0f561506fe35cb7a4baf23aeb75706519ca065deea336e",
+      "source_url": "https://www.inaturalist.org/observations/12081710",
+      "width": 1373
+    },
+    {
+      "attribution": "(c) Millie Basden, some rights reserved (CC BY)",
+      "filename": "03-274702905.jpeg",
+      "height": 1409,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/274702905/large.jpeg",
+      "license_code": "cc-by",
+      "observation_id": 158998535,
+      "observer": "milliebasden",
+      "photo_id": 274702905,
+      "sha256": "31cd447f7475e17d044dcc45e49efddf5da17ba721f0ee8f03494932f846421d",
+      "source_url": "https://www.inaturalist.org/observations/158998535",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) Dan Vickers, some rights reserved (CC BY)",
+      "filename": "04-551610394.jpg",
+      "height": 2048,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/551610394/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 305908908,
+      "observer": "kodiakgarden",
+      "photo_id": 551610394,
+      "sha256": "6ed0b7f9ad02dfc710ad6eb120169d35b88cb47f2f5ab53d78ad8254a410836c",
+      "source_url": "https://www.inaturalist.org/observations/305908908",
+      "width": 2048
+    }
+  ],
+  "schema_version": 1,
+  "scientific_name": "Icteria virens",
+  "slug": "yellow-breasted-chat",
+  "status": "approved",
+  "taxon_id": 10243
+}
