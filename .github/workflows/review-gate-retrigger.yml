@@ -1,7 +1,8 @@
 name: review-gate-retrigger
 
 # Re-evaluates the required `review-gate` check when Codex submits, edits, or
-# dismisses a review. Instead of running the gate directly (which
+# dismisses a review, or when one of its inline finding comments is edited or
+# deleted. Instead of running the gate directly (which
 # would create a second check suite on the head SHA — any non-success
 # conclusion there blocks required-status evaluation; see review-gate.yml),
 # this re-runs the existing pull_request-event gate job IN PLACE. A re-run is
@@ -11,10 +12,17 @@ name: review-gate-retrigger
 #
 # This workflow is NOT a required check, so its own conclusions (including
 # cancellations from the concurrency group below) can never block a merge.
+#
+# `pull_request_review_comment` matters because Codex's blocking markers live
+# in review-thread comments, not review bodies: editing or deleting an inline
+# finding emits only this event, and without it the gate would keep a stale
+# verdict until an unrelated rerun.
 
 on:
   pull_request_review:
     types: [submitted, edited, dismissed]
+  pull_request_review_comment:
+    types: [edited, deleted]
   issue_comment:
     types: [created, edited]
 
@@ -31,14 +39,20 @@ permissions:
 
 jobs:
   retrigger:
-    # Bot reviews, Codex clean comments, and exact-head owner review requests
-    # can change the gate's verdict. Owner issue comments run in the base
-    # repository, so they can re-run the base workflow for fork PR heads.
+    # Bot reviews, Codex clean comments, edits to Codex's inline findings,
+    # and exact-head owner review requests can change the gate's verdict.
+    # All of these events run in the BASE repository with a base-repo token
+    # (actions: write), including for fork PR heads — a delayed Codex review
+    # on a fork PR must be able to replace the gate's stale timeout verdict,
+    # so no same-repo guard is applied.
     if: >-
       (
         github.event_name == 'pull_request_review'
-        && github.event.pull_request.head.repo.full_name == github.repository
         && github.event.review.user.login == 'chatgpt-codex-connector[bot]'
+      )
+      || (
+        github.event_name == 'pull_request_review_comment'
+        && github.event.comment.user.login == 'chatgpt-codex-connector[bot]'
       )
       || (
         github.event_name == 'issue_comment'
