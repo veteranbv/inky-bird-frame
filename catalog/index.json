@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-29T00:36:48+00:00",
+  "generated_at": "2026-07-30T20:13:16+00:00",
   "schema_version": 1,
   "species": [
     {
@@ -56,6 +56,17 @@
       "scientific_name": "Turdus migratorius",
       "slug": "american-robin",
       "taxon_id": 12727
+    },
+    {
+      "approved_at": "2026-07-30T20:13:16+00:00",
+      "common_name": "Bald Eagle",
+      "display_path": "species/5305-bald-eagle/display.png",
+      "display_sha256": "5308beac2fa5c27c787d2a33583a180adaacfe95945196e8c66f105fb282bae6",
+      "portrait_path": "species/5305-bald-eagle/portrait.png",
+      "portrait_sha256": "9d3f361771d6a64b6caf2c6da84a99286cd197db0a44889cb10da0859489775d",
+      "scientific_name": "Haliaeetus leucocephalus",
+      "slug": "bald-eagle",
+      "taxon_id": 5305
     },
     {
       "approved_at": "2026-07-13T02:45:02+00:00",
