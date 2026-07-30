@@ -1,0 +1,45 @@
+{
+  "behavior": "Powerful soaring and gliding flier that also uses slow, heavy wingbeats. An opportunistic predator and scavenger that feeds chiefly on fish, but also takes birds and mammals, eats carrion, and steals prey from other birds. Often solitary or paired, but may gather where food is concentrated.",
+  "common_name": "Bald Eagle",
+  "family": "Accipitridae",
+  "field_marks": [
+    "Massive, heavy-bodied raptor with a large projecting head and long, hooked bill",
+    "Adults have a snowy-white head and tail contrasting sharply with dark-brown body and wings",
+    "Bright yellow bill and legs, pale yellow eyes, and black talons",
+    "Long, very broad wings held flat when soaring, with separated primary tips",
+    "Immatures are brown overall with irregular white mottling on the body, wings, and tail"
+  ],
+  "habitat": "Large lakes, reservoirs, rivers, marshes, estuaries, and coasts, especially where abundant fish and tall mature trees provide feeding, nesting, and perching sites; also forages in open uplands and around carrion.",
+  "measurements": {
+    "length": "71\u201396 cm",
+    "weight": "3.0\u20136.3 kg",
+    "wingspan": "1.78\u20132.29 m"
+  },
+  "palette": [
+    "snowy white",
+    "dark chocolate brown",
+    "golden yellow",
+    "pale straw-yellow",
+    "black"
+  ],
+  "scientific_name": "Haliaeetus leucocephalus",
+  "sources": [
+    {
+      "title": "Bald Eagle Identification \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/bald_eagle/id"
+    },
+    {
+      "title": "Bald Eagle Life History \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/bald_eagle/lifehistory"
+    },
+    {
+      "title": "Bald Eagle \u2014 Smithsonian's National Zoo and Conservation Biology Institute",
+      "url": "https://nationalzoo.si.edu/animals/bald-eagle"
+    },
+    {
+      "title": "Haliaeetus leucocephalus \u2014 Animal Diversity Web",
+      "url": "https://animaldiversity.org/accounts/Haliaeetus_leucocephalus/"
+    }
+  ],
+  "taxon_id": 5305
+}

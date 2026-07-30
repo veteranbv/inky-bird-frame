@@ -1,0 +1,31 @@
+{
+  "anatomy_accuracy": 4,
+  "composition_quality": 5,
+  "findings": [
+    "The adult bird is correctly identifiable as a Bald Eagle: snowy-white head and tail, dark-brown body and wings, large projecting head, yellow hooked bill, pale-yellow iris, yellow unfeathered lower legs and feet, and black talons agree with the references and live sources.",
+    "The main bird has one head, one beak, two wings\u2014the far folded wing is substantially obscured by the profile pose\u2014two legs, and one tail. The tightly overlapping feet make individual toe paths somewhat ambiguous, which is a minor anatomical-clarity issue, but there is no clear duplicated or missing appendage.",
+    "The folded-wing proportions, separated primaries in the wing inset, heavy body, bill profile, eye placement, and adult plumage distribution are species-appropriate. The main tail is slightly narrow and pointed compared with the broader tail visible in the field photographs, but remains plausible for a closed tail viewed obliquely.",
+    "Length 71\u201396 cm and weight 3.0\u20136.3 kg match Cornell's published measurements. Wingspan 1.78\u20132.29 m matches Animal Diversity Web; Cornell lists 204 cm as a representative wingspan, while Smithsonian gives a broader maximum of 2.6 m, so the displayed range is supported rather than erroneous.",
+    "The habitat, diet, scavenging, prey piracy, soaring, slow wingbeats, social aggregation, adult field marks, immature mottling, taxonomy, and palette claims are consistent with the inspected sources. No material spelling, taxonomy, measurement, or biological error was found.",
+    "The ruler is visually attractive but mildly ambiguous because it resembles a standing-height scale, whereas standard bird length is measured from bill tip to tail tip. The written measurement itself is correct.",
+    "No place name, ZIP code, coordinates, map, range map, or local-observation detail appears."
+  ],
+  "location_free": true,
+  "passed": true,
+  "species_accuracy": 5,
+  "text_accuracy": 5,
+  "verification_sources": [
+    {
+      "title": "Bald Eagle Identification \u2014 All About Birds, Cornell Lab of Ornithology",
+      "url": "https://www.allaboutbirds.org/guide/Bald_Eagle/id"
+    },
+    {
+      "title": "Bald eagle \u2014 Smithsonian's National Zoo and Conservation Biology Institute",
+      "url": "https://nationalzoo.si.edu/animals/bald-eagle"
+    },
+    {
+      "title": "Haliaeetus leucocephalus \u2014 Animal Diversity Web",
+      "url": "https://animaldiversity.org/accounts/Haliaeetus_leucocephalus/"
+    }
+  ]
+}
