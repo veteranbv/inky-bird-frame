@@ -1,0 +1,42 @@
+{
+  "behavior": "Usually solitary; walks quickly along the water\u2019s edge with a nearly constant tail-bobbing teeter, darts or probes for small prey, and flies low with rapid, shallow wingbeats alternating with brief glides.",
+  "common_name": "Spotted Sandpiper",
+  "family": "Scolopacidae",
+  "field_marks": [
+    "Small, forward-leaning shorebird with a rounded breast and body tapering to a longish tail",
+    "Straight bill slightly shorter than the head; orange with a dark tip in breeding plumage and paler outside breeding season",
+    "Dark eye accented by a pale eyebrow and narrow dark eye line",
+    "Brown to gray-brown upperparts; folded wings are long and a thin white wing stripe shows in flight",
+    "Breeding adults have bold dark spots across bright white underparts; nonbreeding birds are largely unspotted below",
+    "Slender yellowish to flesh-colored legs"
+  ],
+  "habitat": "Edges of fresh or salt water, especially rocky or pebbly shores, streambanks, rivers, ponds, lakes, marshes, beaches, mudflats, and estuaries; nesting areas combine shoreline, semiopen ground, and nearby dense vegetation.",
+  "measurements": {
+    "length": "18\u201320 cm (7.1\u20137.9 in)",
+    "weight": "34\u201350 g (1.2\u20131.8 oz)",
+    "wingspan": "37\u201340 cm (14.6\u201315.8 in)"
+  },
+  "palette": [
+    "warm brown",
+    "gray-brown",
+    "bright white",
+    "charcoal black",
+    "orange-yellow"
+  ],
+  "scientific_name": "Actitis macularius",
+  "sources": [
+    {
+      "title": "Spotted Sandpiper Identification \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/spotted_sandpiper/id"
+    },
+    {
+      "title": "Spotted Sandpiper \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/spotted-sandpiper"
+    },
+    {
+      "title": "Actitis macularius \u2014 Animal Diversity Web",
+      "url": "https://animaldiversity.org/accounts/Actitis_macularius/"
+    }
+  ],
+  "taxon_id": 72458
+}
