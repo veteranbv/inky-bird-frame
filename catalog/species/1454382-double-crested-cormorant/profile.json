@@ -1,0 +1,42 @@
+{
+  "behavior": "Surface-dives and pursues fish underwater, propelled by its webbed feet. Gregarious and often rests on exposed perches with wings spread to dry; swims low in the water and commonly flies in shifting lines or V-formations.",
+  "common_name": "Double-crested Cormorant",
+  "family": "Phalacrocoracidae",
+  "field_marks": [
+    "Dark brown-black body plumage with bronzy, scaled-looking wing coverts",
+    "Small head and long, kinked neck on a heavy, low-slung body",
+    "Long gray bill with a strongly hooked tip, orange-yellow facial skin, and a blue-green eye",
+    "Short black legs with large, fully webbed black feet",
+    "Broad, dark wings",
+    "Long, stiff, wedge-shaped tail"
+  ],
+  "habitat": "Freshwater and marine habitats, including lakes, ponds, rivers, lagoons, estuaries, and coasts; requires nearby exposed perches and trees, rocks, reefs, or ground sites for colonial nesting.",
+  "measurements": {
+    "length": "70\u201390 cm (27.6\u201335.4 in)",
+    "weight": "1.2\u20132.5 kg (42.3\u201388.2 oz)",
+    "wingspan": "114\u2013123 cm (44.9\u201348.4 in)"
+  },
+  "palette": [
+    "brown-black",
+    "bronze-brown",
+    "orange-yellow",
+    "blue-green",
+    "charcoal gray"
+  ],
+  "scientific_name": "Nannopterum auritum",
+  "sources": [
+    {
+      "title": "Double-crested Cormorant Identification \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Double-crested_Cormorant/id"
+    },
+    {
+      "title": "Double-crested Cormorant Life History \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Double-crested_Cormorant/lifehistory"
+    },
+    {
+      "title": "Phalacrocorax auritus \u2014 Animal Diversity Web",
+      "url": "https://animaldiversity.org/accounts/Phalacrocorax_auritus/"
+    }
+  ],
+  "taxon_id": 1454382
+}
