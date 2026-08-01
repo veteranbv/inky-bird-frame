@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-30T20:13:16+00:00",
+  "generated_at": "2026-08-01T00:27:51+00:00",
   "schema_version": 1,
   "species": [
     {
@@ -936,6 +936,17 @@
       "scientific_name": "Muscicapa striata",
       "slug": "spotted-flycatcher",
       "taxon_id": 12971
+    },
+    {
+      "approved_at": "2026-08-01T00:27:51+00:00",
+      "common_name": "Spotted Sandpiper",
+      "display_path": "species/72458-spotted-sandpiper/display.png",
+      "display_sha256": "a5444048672d9c51b305eddebbcebd227f4d2574209dee5dbc2a7163e94d72e2",
+      "portrait_path": "species/72458-spotted-sandpiper/portrait.png",
+      "portrait_sha256": "29b62ed47dc84c9e8424781ae77073bc7eea706005aed34f420f44433195dadf",
+      "scientific_name": "Actitis macularius",
+      "slug": "spotted-sandpiper",
+      "taxon_id": 72458
     },
     {
       "approved_at": "2026-07-13T07:14:52+00:00",

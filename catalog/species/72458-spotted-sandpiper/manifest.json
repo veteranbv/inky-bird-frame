@@ -1,0 +1,157 @@
+{
+  "approved_at": "2026-08-01T00:27:51+00:00",
+  "assets": {
+    "display": {
+      "filename": "display.png",
+      "sha256": "a5444048672d9c51b305eddebbcebd227f4d2574209dee5dbc2a7163e94d72e2"
+    },
+    "portrait": {
+      "filename": "portrait.png",
+      "sha256": "29b62ed47dc84c9e8424781ae77073bc7eea706005aed34f420f44433195dadf"
+    }
+  },
+  "common_name": "Spotted Sandpiper",
+  "generation": {
+    "attempt": 1,
+    "generated_at": "2026-08-01T00:27:51+00:00",
+    "generator": "Codex subscription / built-in gpt-image-2",
+    "max_attempts": 3,
+    "prompt_version": "field-journal-v2"
+  },
+  "profile": {
+    "behavior": "Usually solitary; walks quickly along the water\u2019s edge with a nearly constant tail-bobbing teeter, darts or probes for small prey, and flies low with rapid, shallow wingbeats alternating with brief glides.",
+    "common_name": "Spotted Sandpiper",
+    "family": "Scolopacidae",
+    "field_marks": [
+      "Small, forward-leaning shorebird with a rounded breast and body tapering to a longish tail",
+      "Straight bill slightly shorter than the head; orange with a dark tip in breeding plumage and paler outside breeding season",
+      "Dark eye accented by a pale eyebrow and narrow dark eye line",
+      "Brown to gray-brown upperparts; folded wings are long and a thin white wing stripe shows in flight",
+      "Breeding adults have bold dark spots across bright white underparts; nonbreeding birds are largely unspotted below",
+      "Slender yellowish to flesh-colored legs"
+    ],
+    "habitat": "Edges of fresh or salt water, especially rocky or pebbly shores, streambanks, rivers, ponds, lakes, marshes, beaches, mudflats, and estuaries; nesting areas combine shoreline, semiopen ground, and nearby dense vegetation.",
+    "measurements": {
+      "length": "18\u201320 cm (7.1\u20137.9 in)",
+      "weight": "34\u201350 g (1.2\u20131.8 oz)",
+      "wingspan": "37\u201340 cm (14.6\u201315.8 in)"
+    },
+    "palette": [
+      "warm brown",
+      "gray-brown",
+      "bright white",
+      "charcoal black",
+      "orange-yellow"
+    ],
+    "scientific_name": "Actitis macularius",
+    "sources": [
+      {
+        "title": "Spotted Sandpiper Identification \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/spotted_sandpiper/id"
+      },
+      {
+        "title": "Spotted Sandpiper \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/spotted-sandpiper"
+      },
+      {
+        "title": "Actitis macularius \u2014 Animal Diversity Web",
+        "url": "https://animaldiversity.org/accounts/Actitis_macularius/"
+      }
+    ],
+    "taxon_id": 72458
+  },
+  "quality_review": {
+    "anatomy_accuracy": 4,
+    "composition_quality": 4,
+    "findings": [
+      "The candidate correctly depicts a breeding-adult Spotted Sandpiper: brown upperparts, densely spotted white underparts, orange bill with a dark tip, pale supercilium, dark eye line, longish tail, and slender flesh-yellow legs agree with the reference photographs and live identification sources.",
+      "The displayed length, weight, and wingspan exactly match Cornell's published ranges; Animal Diversity Web independently corroborates the 34\u201350 g weight and 37\u201340 cm wingspan. Audubon publishes a broader weight range and a slightly different wingspan range, reflecting source variation rather than an error in the plate.",
+      "All visible identification, plumage, habitat, and behavior statements are materially accurate. The common name, scientific name, and family are also correct.",
+      "The primary bird has one head, one beak, two legs, one tail, and the normal two-wing anatomy; only the near folded wing is visibly resolved in profile, while the separate lower-left wing is clearly an anatomical study rather than an extra appendage.",
+      "Minor anatomical clarity issue: the crossed feet make the toe arrangement difficult to parse, and the legs appear slightly elongated compared with several reference photographs, but there is no material deformity or incorrect limb count.",
+      "Minor composition issue: the vertical 0\u201320 cm ruler has no stated scale relationship to the horizontally posed bird, so it could be misread as a life-size scale. Labeling the plate \u201cnot to scale\u201d or removing the ruler would improve scientific clarity.",
+      "No place name, ZIP code, coordinates, map, or local-observation detail appears."
+    ],
+    "location_free": true,
+    "passed": true,
+    "species_accuracy": 5,
+    "text_accuracy": 5,
+    "verification_sources": [
+      {
+        "title": "Spotted Sandpiper Identification \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Spotted_Sandpiper/id"
+      },
+      {
+        "title": "Actitis macularius \u2014 Animal Diversity Web",
+        "url": "https://animaldiversity.org/accounts/Actitis_macularius/"
+      },
+      {
+        "title": "Spotted Sandpiper \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/spotted-sandpiper"
+      },
+      {
+        "title": "Spotted Sandpiper \u2014 eBird",
+        "url": "https://ebird.org/species/sposan"
+      }
+    ]
+  },
+  "references": [
+    {
+      "attribution": "no rights reserved",
+      "filename": "01-131308007.jpg",
+      "height": 1536,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/131308007/large.jpg",
+      "license_code": "cc0",
+      "observation_id": 80133181,
+      "observer": "k-simpkins",
+      "photo_id": 131308007,
+      "sha256": "2cd143e1982c7e1d8c07813202a3a19347cb8158a7ffeead42e574688f142c6c",
+      "source_url": "https://www.inaturalist.org/observations/80133181",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) Sebasti\u00e1n de Jes\u00fas Herrera Buenfil, some rights reserved (CC BY)",
+      "filename": "02-179293637.jpeg",
+      "height": 1080,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/179293637/large.jpeg",
+      "license_code": "cc-by",
+      "observation_id": 106696814,
+      "observer": "sebastian_hb",
+      "photo_id": 179293637,
+      "sha256": "61db26dc5fd837cba8b454d6ad8adc67313c41d27dc312d5f6b1bb136768088d",
+      "source_url": "https://www.inaturalist.org/observations/106696814",
+      "width": 1387
+    },
+    {
+      "attribution": "(c) Jonathan Eisen, some rights reserved (CC BY)",
+      "filename": "03-171383619.jpg",
+      "height": 915,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/171383619/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 102514010,
+      "observer": "phylogenomics",
+      "photo_id": 171383619,
+      "sha256": "8b13503394da4b1ec030a9f72fb0ab8226d0050fb93774d074a749142a7eee03",
+      "source_url": "https://www.inaturalist.org/observations/102514010",
+      "width": 1374
+    },
+    {
+      "attribution": "(c) Ryan Elliott, some rights reserved (CC BY)",
+      "filename": "04-47619410.jpg",
+      "height": 1778,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/47619410/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 30478396,
+      "observer": "ryan_elliott",
+      "photo_id": 47619410,
+      "sha256": "90f627e8f8ab1c56751b52accb958b8a345f0b56acb63afd4ee8f9b7d8e472e3",
+      "source_url": "https://www.inaturalist.org/observations/30478396",
+      "width": 1778
+    }
+  ],
+  "schema_version": 1,
+  "scientific_name": "Actitis macularius",
+  "slug": "spotted-sandpiper",
+  "status": "approved",
+  "taxon_id": 72458
+}

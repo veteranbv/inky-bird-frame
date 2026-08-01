@@ -1,0 +1,35 @@
+{
+  "anatomy_accuracy": 4,
+  "composition_quality": 4,
+  "findings": [
+    "The candidate correctly depicts a breeding-adult Spotted Sandpiper: brown upperparts, densely spotted white underparts, orange bill with a dark tip, pale supercilium, dark eye line, longish tail, and slender flesh-yellow legs agree with the reference photographs and live identification sources.",
+    "The displayed length, weight, and wingspan exactly match Cornell's published ranges; Animal Diversity Web independently corroborates the 34\u201350 g weight and 37\u201340 cm wingspan. Audubon publishes a broader weight range and a slightly different wingspan range, reflecting source variation rather than an error in the plate.",
+    "All visible identification, plumage, habitat, and behavior statements are materially accurate. The common name, scientific name, and family are also correct.",
+    "The primary bird has one head, one beak, two legs, one tail, and the normal two-wing anatomy; only the near folded wing is visibly resolved in profile, while the separate lower-left wing is clearly an anatomical study rather than an extra appendage.",
+    "Minor anatomical clarity issue: the crossed feet make the toe arrangement difficult to parse, and the legs appear slightly elongated compared with several reference photographs, but there is no material deformity or incorrect limb count.",
+    "Minor composition issue: the vertical 0\u201320 cm ruler has no stated scale relationship to the horizontally posed bird, so it could be misread as a life-size scale. Labeling the plate \u201cnot to scale\u201d or removing the ruler would improve scientific clarity.",
+    "No place name, ZIP code, coordinates, map, or local-observation detail appears."
+  ],
+  "location_free": true,
+  "passed": true,
+  "species_accuracy": 5,
+  "text_accuracy": 5,
+  "verification_sources": [
+    {
+      "title": "Spotted Sandpiper Identification \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Spotted_Sandpiper/id"
+    },
+    {
+      "title": "Actitis macularius \u2014 Animal Diversity Web",
+      "url": "https://animaldiversity.org/accounts/Actitis_macularius/"
+    },
+    {
+      "title": "Spotted Sandpiper \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/spotted-sandpiper"
+    },
+    {
+      "title": "Spotted Sandpiper \u2014 eBird",
+      "url": "https://ebird.org/species/sposan"
+    }
+  ]
+}
