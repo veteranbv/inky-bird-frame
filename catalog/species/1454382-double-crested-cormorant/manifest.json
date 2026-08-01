@@ -1,0 +1,152 @@
+{
+  "approved_at": "2026-08-01T19:27:44+00:00",
+  "assets": {
+    "display": {
+      "filename": "display.png",
+      "sha256": "c7b09567e88358653e9deb258adfaf3ad654f6701130f24b825cb35931d82578"
+    },
+    "portrait": {
+      "filename": "portrait.png",
+      "sha256": "da7469e45ef33422a5744254a3fad06a61851f62167e0630de166eeebfc6f8ed"
+    }
+  },
+  "common_name": "Double-crested Cormorant",
+  "generation": {
+    "attempt": 1,
+    "generated_at": "2026-08-01T19:27:44+00:00",
+    "generator": "Codex subscription / built-in gpt-image-2",
+    "max_attempts": 3,
+    "prompt_version": "field-journal-v2"
+  },
+  "profile": {
+    "behavior": "Surface-dives and pursues fish underwater, propelled by its webbed feet. Gregarious and often rests on exposed perches with wings spread to dry; swims low in the water and commonly flies in shifting lines or V-formations.",
+    "common_name": "Double-crested Cormorant",
+    "family": "Phalacrocoracidae",
+    "field_marks": [
+      "Dark brown-black body plumage with bronzy, scaled-looking wing coverts",
+      "Small head and long, kinked neck on a heavy, low-slung body",
+      "Long gray bill with a strongly hooked tip, orange-yellow facial skin, and a blue-green eye",
+      "Short black legs with large, fully webbed black feet",
+      "Broad, dark wings",
+      "Long, stiff, wedge-shaped tail"
+    ],
+    "habitat": "Freshwater and marine habitats, including lakes, ponds, rivers, lagoons, estuaries, and coasts; requires nearby exposed perches and trees, rocks, reefs, or ground sites for colonial nesting.",
+    "measurements": {
+      "length": "70\u201390 cm (27.6\u201335.4 in)",
+      "weight": "1.2\u20132.5 kg (42.3\u201388.2 oz)",
+      "wingspan": "114\u2013123 cm (44.9\u201348.4 in)"
+    },
+    "palette": [
+      "brown-black",
+      "bronze-brown",
+      "orange-yellow",
+      "blue-green",
+      "charcoal gray"
+    ],
+    "scientific_name": "Nannopterum auritum",
+    "sources": [
+      {
+        "title": "Double-crested Cormorant Identification \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Double-crested_Cormorant/id"
+      },
+      {
+        "title": "Double-crested Cormorant Life History \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Double-crested_Cormorant/lifehistory"
+      },
+      {
+        "title": "Phalacrocorax auritus \u2014 Animal Diversity Web",
+        "url": "https://animaldiversity.org/accounts/Phalacrocorax_auritus/"
+      }
+    ],
+    "taxon_id": 1454382
+  },
+  "quality_review": {
+    "anatomy_accuracy": 5,
+    "composition_quality": 4,
+    "findings": [
+      "Species identity is correct: the dark brown-black plumage, bronzy scaled-looking coverts, long kinked neck, heavy body, hooked bill, orange-yellow facial skin, aquamarine eye, large webbed feet, broad wing, and long wedge-shaped tail agree with the reference photographs and live identification sources.",
+      "The illustrated bird has one head, one beak, two wings, two legs, and one tail; the detached head and wing are clearly supplementary studies rather than extra attached anatomy.",
+      "The common name, current scientific name Nannopterum auritum, family Phalacrocoracidae, measurements, habitat, behavior, and all listed field marks are supported by the verification sources. No material factual or spelling errors were found.",
+      "The absence of paired head crests is valid for a nonbreeding adult, although the plate does not label the plumage stage or mention that the namesake crests appear only during breeding season.",
+      "Minor composition issue: the ruler-like graphic has no units or numerical labels and therefore cannot communicate an actual scale.",
+      "No place name, ZIP code, coordinates, map, or local-observation detail appears."
+    ],
+    "location_free": true,
+    "passed": true,
+    "species_accuracy": 5,
+    "text_accuracy": 5,
+    "verification_sources": [
+      {
+        "title": "Double-crested Cormorant Identification \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Double-crested_Cormorant/id"
+      },
+      {
+        "title": "Double-crested Cormorant \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/double-crested-cormorant"
+      },
+      {
+        "title": "Phalacrocorax auritus \u2014 Animal Diversity Web",
+        "url": "https://animaldiversity.org/accounts/Phalacrocorax_auritus/"
+      }
+    ]
+  },
+  "references": [
+    {
+      "attribution": "(c) Josiah Londer\u00e9e, some rights reserved (CC BY)",
+      "filename": "01-369134793.jpeg",
+      "height": 1356,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/369134793/large.jpeg",
+      "license_code": "cc-by",
+      "observation_id": 208623826,
+      "observer": "gatorhawk",
+      "photo_id": 369134793,
+      "sha256": "e1dc0eb0da35ee9a12f17533e78a9b4b024e3ec349046067fb05743d330f0b98",
+      "source_url": "https://www.inaturalist.org/observations/208623826",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) Peter Abrahamsen, some rights reserved (CC BY)",
+      "filename": "02-255454786.jpg",
+      "height": 1536,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/255454786/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 148352422,
+      "observer": "rainhead",
+      "photo_id": 255454786,
+      "sha256": "9056274bc87a9c045f74d4a54a08826352173caac5f4c1d8ec5925737ee9e278",
+      "source_url": "https://www.inaturalist.org/observations/148352422",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) Isaac Krone, some rights reserved (CC BY)",
+      "filename": "03-179325608.jpg",
+      "height": 934,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/179325608/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 106714305,
+      "observer": "isaac_krone",
+      "photo_id": 179325608,
+      "sha256": "52e049bff29824d8b41b05c9b610b0858aa3795f27070f33123ff64f2bd9e3b7",
+      "source_url": "https://www.inaturalist.org/observations/106714305",
+      "width": 1400
+    },
+    {
+      "attribution": "(c) Alexis Tinker-Tsavalas, some rights reserved (CC BY)",
+      "filename": "04-23524935.jpg",
+      "height": 1536,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/23524935/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 15750943,
+      "observer": "alexis_orion",
+      "photo_id": 23524935,
+      "sha256": "64067381245fa048d861248f6ab3de65704d31263f365b00c67637dffc2cf495",
+      "source_url": "https://www.inaturalist.org/observations/15750943",
+      "width": 2048
+    }
+  ],
+  "schema_version": 1,
+  "scientific_name": "Nannopterum auritum",
+  "slug": "double-crested-cormorant",
+  "status": "approved",
+  "taxon_id": 1454382
+}

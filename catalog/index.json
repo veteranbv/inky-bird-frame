@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-01T00:27:51+00:00",
+  "generated_at": "2026-08-01T19:27:44+00:00",
   "schema_version": 1,
   "species": [
     {
@@ -298,6 +298,17 @@
       "scientific_name": "Astur cooperii",
       "slug": "cooper-s-hawk",
       "taxon_id": 1579017
+    },
+    {
+      "approved_at": "2026-08-01T19:27:44+00:00",
+      "common_name": "Double-crested Cormorant",
+      "display_path": "species/1454382-double-crested-cormorant/display.png",
+      "display_sha256": "c7b09567e88358653e9deb258adfaf3ad654f6701130f24b825cb35931d82578",
+      "portrait_path": "species/1454382-double-crested-cormorant/portrait.png",
+      "portrait_sha256": "da7469e45ef33422a5744254a3fad06a61851f62167e0630de166eeebfc6f8ed",
+      "scientific_name": "Nannopterum auritum",
+      "slug": "double-crested-cormorant",
+      "taxon_id": 1454382
     },
     {
       "approved_at": "2026-07-10T03:40:16+00:00",
