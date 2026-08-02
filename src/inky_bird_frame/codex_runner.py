@@ -70,6 +70,7 @@ REVIEW_SCHEMA: Final[dict[str, object]] = {
         "composition_quality": {"type": "integer", "minimum": 1, "maximum": 5},
         "location_free": {"type": "boolean"},
         "findings": {"type": "array", "items": {"type": "string"}},
+        "correction_findings": {"type": "array", "items": {"type": "string"}},
         "verification_sources": {
             "type": "array",
             "items": {
@@ -88,6 +89,7 @@ REVIEW_SCHEMA: Final[dict[str, object]] = {
         "composition_quality",
         "location_free",
         "findings",
+        "correction_findings",
         "verification_sources",
     ],
     "additionalProperties": False,
@@ -206,15 +208,26 @@ class CodexRunner:
         output_path: Path,
         log_path: Path,
         correction_findings: tuple[str, ...] = (),
+        *,
+        correction_source_path: Path | None = None,
     ) -> Path:
         output_path.parent.mkdir(parents=True, exist_ok=True)
         command = self._base_command(writable=True)
+        if correction_source_path is not None:
+            command.extend(["--image", str(correction_source_path.resolve())])
         for image in reference_paths:
             command.extend(["--image", str(image.resolve())])
         command.extend(["-"])
         self._run(
             command,
-            plate_prompt(species, profile, references, output_path, correction_findings),
+            plate_prompt(
+                species,
+                profile,
+                references,
+                output_path,
+                correction_findings,
+                has_correction_source=correction_source_path is not None,
+            ),
             log_path,
         )
         if not output_path.is_file() or output_path.stat().st_size == 0:
@@ -349,6 +362,24 @@ def _parse_review(raw: object, allowed_domains: tuple[str, ...] | None = None) -
     text_accuracy = _score(raw, "text_accuracy")
     composition_quality = _score(raw, "composition_quality")
     findings = tuple(_string_list(raw.get("findings"), "findings", 0))
+    correction_findings = tuple(
+        _string_list(raw.get("correction_findings"), "correction_findings", 0)
+    )
+    requires_correction = not (
+        reported_pass
+        and location_free
+        and min(
+            species_accuracy,
+            anatomy_accuracy,
+            text_accuracy,
+            composition_quality,
+        )
+        >= 4
+    )
+    if requires_correction and not correction_findings:
+        raise GenerationError("Failed Codex reviews must include correction_findings")
+    if not requires_correction and correction_findings:
+        raise GenerationError("Passing Codex reviews must not include correction_findings")
     sources = raw.get("verification_sources")
     if not isinstance(sources, list):
         raise GenerationError("Codex review verification_sources must be a list")
@@ -397,4 +428,5 @@ def _parse_review(raw: object, allowed_domains: tuple[str, ...] | None = None) -
         location_free=location_free,
         findings=findings,
         verification_sources=tuple(verification_sources),
+        correction_findings=correction_findings,
     )

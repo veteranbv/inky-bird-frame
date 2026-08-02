@@ -39,11 +39,15 @@ then:
 4. generates a plate through the built-in `$imagegen` skill;
 5. prepares portrait and display assets;
 6. runs an independent, sourced Codex factual and visual review;
-7. regenerates failed reviews with corrective findings, within a configured
+7. edits failed plates with actionable corrective findings, within a configured
    attempt limit;
 8. atomically publishes passing output through the pending queue; and
 9. immediately rebuilds the private active catalog from the latest observation
    snapshot.
+
+Plate rulers are vertical schematic body-length keys: they show the sourced
+range and units, are labeled as not to scale, remain separate from the specimen,
+and never claim that display pixels reproduce physical size.
 
 Transient per-taxon failures are written to a durable retry schedule with capped
 exponential backoff. Deferred taxa are skipped without consuming the successful
@@ -147,9 +151,12 @@ unchanged. The next scheduled cycle retries from the current remote branch.
 | eligible | No terminal state exists | Yes |
 
 `retry TAXON_ID` archives rejected or failed state and makes that taxon
-eligible. For failed quality reviews, it also retains the final findings as
-durable input to the first new generation attempt while refreshing cached
-research. Approved art is never replaced implicitly.
+eligible. For failed quality reviews, it retains the final actionable
+corrections as durable input to the first new generation attempt while
+refreshing cached research. `retry TAXON_ID --source-attempt N` additionally
+selects a retained portrait as the edit base. The archive-relative source path
+stays in private retry state, and the passing manifest records its SHA-256 for
+provenance. Approved art is never replaced implicitly.
 
 ## Privacy and licensing
 

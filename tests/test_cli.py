@@ -243,6 +243,15 @@ class CliTests(unittest.TestCase):
         self.assertEqual(str(dispatch.config), "instance.toml")
         self.assertEqual(str(retry.config), "instance.toml")
 
+    def test_retry_parser_accepts_selected_source_attempt(self) -> None:
+        retry = build_parser().parse_args(
+            ["retry", "42", "--source-attempt", "3", "--config", "instance.toml"]
+        )
+
+        self.assertEqual(retry.taxon_id, 42)
+        self.assertEqual(retry.source_attempt, 3)
+        self.assertEqual(str(retry.config), "instance.toml")
+
     def test_notifications_dispatch_checks_display_heartbeat(self) -> None:
         output = io.StringIO()
         with (
@@ -445,6 +454,62 @@ rotation_mode = "shuffle_bag"
         self.assertIsNotNone(guidance)
         if guidance is not None:
             self.assertEqual(guidance.findings, (REVIEW_FAILURE_FALLBACK,))
+
+    def test_retry_preserves_selected_attempt_as_correction_source(self) -> None:
+        with TemporaryDirectory() as temporary:
+            state_dir = Path(temporary)
+            failed = state_dir / "failed/42-example-bird"
+            for attempt, correction in ((1, "Fix the tail"), (2, "Fix the wing")):
+                attempt_dir = failed / f"attempt-{attempt:02d}"
+                attempt_dir.mkdir(parents=True)
+                (attempt_dir / "portrait.png").write_bytes(f"portrait-{attempt}".encode())
+                (attempt_dir / "quality-review.json").write_text(
+                    json.dumps(
+                        {
+                            "passed": False,
+                            "findings": ["Verified correct trait", correction],
+                            "correction_findings": [correction],
+                        }
+                    )
+                )
+            config = SimpleNamespace(controller=SimpleNamespace(state_dir=state_dir))
+            output = io.StringIO()
+
+            with patch("inky_bird_frame.cli._config", return_value=config), redirect_stdout(output):
+                retry_command(Namespace(taxon_id=42, source_attempt=1))
+
+            result = json.loads(output.getvalue())["data"]
+            guidance = RetryStore(state_dir / "generation-retries.json").quality_guidance(42)
+            source_bytes = (
+                (state_dir / guidance.source_plate).read_bytes()
+                if guidance is not None and guidance.source_plate is not None
+                else None
+            )
+
+        self.assertTrue(result["preserved_correction_source"])
+        self.assertEqual(result["source_attempt"], 1)
+        self.assertIsNotNone(guidance)
+        if guidance is not None:
+            self.assertEqual(guidance.findings, ("Fix the tail",))
+            self.assertIsNotNone(guidance.source_plate)
+        self.assertEqual(source_bytes, b"portrait-1")
+
+    def test_retry_rejects_missing_source_attempt_before_archiving(self) -> None:
+        with TemporaryDirectory() as temporary:
+            state_dir = Path(temporary)
+            review = state_dir / "failed/42-example-bird/attempt-01/quality-review.json"
+            review.parent.mkdir(parents=True)
+            review.write_text(json.dumps({"passed": False, "findings": ["Fix the tail"]}))
+            config = SimpleNamespace(controller=SimpleNamespace(state_dir=state_dir))
+
+            with (
+                patch("inky_bird_frame.cli._config", return_value=config),
+                self.assertRaisesRegex(ValueError, "choose one of: 1"),
+            ):
+                retry_command(Namespace(taxon_id=42, source_attempt=2))
+
+            self.assertTrue((state_dir / "failed/42-example-bird").is_dir())
+            self.assertFalse((state_dir / "archive").exists())
 
     def test_retry_rejects_malformed_quality_review_before_archiving(self) -> None:
         with TemporaryDirectory() as temporary:

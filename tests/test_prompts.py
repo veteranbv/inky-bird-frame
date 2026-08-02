@@ -77,6 +77,40 @@ class PromptTests(unittest.TestCase):
         self.assertIn("Correct the wing bars", prompt)
         self.assertIn("Create a new image", prompt)
 
+    def test_plate_prompt_edits_source_and_uses_schematic_ruler(self) -> None:
+        species = BirdSpecies(12942, "Eastern Bluebird", "Sialia sialis", 26, "iNaturalist")
+        profile = SpeciesProfileData(
+            taxon_id=12942,
+            common_name="Eastern Bluebird",
+            scientific_name="Sialia sialis",
+            family="Turdidae",
+            measurements={"length": "7 in", "wingspan": "12 in", "weight": "1 oz"},
+            field_marks=["blue head", "blue back", "rufous breast", "white belly"],
+            habitat="Open woodland",
+            behavior="Drops from perches to forage",
+            palette=["blue", "rufous", "white"],
+            sources=[
+                {"title": "A", "url": "https://example.test/a"},
+                {"title": "B", "url": "https://example.test/b"},
+            ],
+        )
+
+        prompt = plate_prompt(
+            species,
+            profile,
+            [],
+            Path("candidate.png"),
+            ("Shorten the tail",),
+            has_correction_source=True,
+        )
+
+        self.assertIn("Use case: precise-object-edit", prompt)
+        self.assertIn("Image 1 is the previous plate and the edit target", prompt)
+        self.assertIn("Do not shrink the bird", prompt)
+        self.assertIn("BODY LENGTH: 7 in", prompt)
+        self.assertIn("SCHEMATIC — NOT TO SCALE", prompt)
+        self.assertNotIn("Do not copy or lightly edit", prompt)
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -271,12 +271,15 @@ only; they never enter the approved catalog or rotation.
 - Unsuitable licensed references: inspect the reference manifest and source
   pages. The taxon is deferred automatically and later queue items continue.
 - Generated image or text defect: the controller feeds review findings into a
-  new attempt automatically. After all configured attempts fail, inspect the
-  retained artifacts and use `retry` for a deliberate new cycle. The command
-  refreshes cached references and profile data while preserving the final
-  review findings for the first regenerated plate. Transient source failures
-  retain that guidance until generation reaches a successful or terminal
-  quality result.
+  targeted edit of the previous attempt automatically. The reviewer keeps its
+  complete findings for audit but returns only concrete required changes as
+  correction input. After all configured attempts fail, inspect the retained
+  artifacts and use `retry TAXON_ID --source-attempt N` when a specific attempt
+  is a strong edit base. The command archives that portrait, refreshes cached
+  references and profile data, and preserves the selected attempt's corrections
+  for the first edit. Omit `--source-attempt` when no retained image should be
+  reused. Transient source failures retain the guidance and edit source until
+  generation reaches a successful or terminal quality result.
 - Controller unavailable: the current e-paper image remains visible. Display
   state is not advanced.
 - Checksum mismatch: the display refuses the asset and preserves current state.

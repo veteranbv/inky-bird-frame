@@ -592,6 +592,18 @@ class PublisherTests(unittest.TestCase):
             with self.assertRaisesRegex(CatalogPublishError, "lacks a publishable quality review"):
                 validate_public_catalog(catalog)
 
+    def test_rejects_invalid_correction_source_checksum(self) -> None:
+        with TemporaryDirectory() as temporary:
+            catalog = Path(temporary) / "catalog"
+            directory = _create_species(catalog, 1, "Example Bird")
+            manifest_path = directory / "manifest.json"
+            manifest = json.loads(manifest_path.read_text())
+            manifest["generation"]["correction_source_sha256"] = "invalid"
+            write_json_atomic(manifest_path, manifest)
+
+            with self.assertRaisesRegex(CatalogPublishError, "lacks a publishable quality review"):
+                validate_public_catalog(catalog)
+
     def test_rejects_manifest_asset_path_traversal_before_reading_it(self) -> None:
         with TemporaryDirectory() as temporary:
             catalog = Path(temporary) / "catalog"
