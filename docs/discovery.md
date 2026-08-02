@@ -171,6 +171,8 @@ its configured rotation. This is display priority, not a confidence claim or a
 live event stream: the timestamp advances only when the controller refreshes
 the station summary, and recording-only detection limitations still apply.
 Configure `display_node.prioritize_latest_detection = false` to disable it.
+The `discover` command includes `latest_detection_at` on species entries when a
+configured provider supplies that timestamp and omits the field otherwise.
 
 ## Limits and data use
 
