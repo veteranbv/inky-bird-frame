@@ -1,0 +1,39 @@
+{
+  "anatomy_accuracy": 5,
+  "composition_quality": 5,
+  "correction_findings": [],
+  "findings": [
+    "Species identity is correct: the plate\u2019s Brown-headed Nuthatch, scientific name Sitta pusilla, and family Sittidae agree with eBird and Cornell, and the illustrated bird matches the attached field-reference photographs.",
+    "The principal bird has one head, one straight pointed beak, two anatomically plausible wings with the far wing occluded by the profile view, two legs with gripping feet, and one short tail. The separate head and wing are clearly presented as detail studies rather than extra attached anatomy.",
+    "Plumage is species-accurate: warm brown cap reaching the eye, pale cheek and underparts, slate-blue-gray back, darker flight feathers, dark eye, and a subtle pale nape area. The compact body, short neck, rounded wing, and short tail also match the references.",
+    "Bill, eye, legs, toes, and curved claws are coherent and appropriately proportioned for a bark-clinging nuthatch. No duplicated, missing, or materially malformed attached body part is apparent.",
+    "All listed field marks are supported by the live sources and references. The added small white nape spot is also diagnostic and is explicitly supported by Cornell and Audubon.",
+    "The habitat, bark-foraging behavior, zigzag movement, bark-chip tool use, seed caching, social grouping, and cavity nesting or roosting claims are supported by Cornell and Audubon.",
+    "The displayed measurements exactly match Audubon: length 11\u201312 cm, wingspan 17\u201319 cm, and weight 8\u201311 g. Cornell currently gives narrower figures of 10\u201311 cm, 16\u201318 cm, and approximately 10 g, so the plate reflects a legitimate source difference rather than an unsupported measurement.",
+    "The common name, scientific name, family, measurement units and conversions, scale disclaimer, headings, and descriptive prose are legible and free of material spelling or factual errors.",
+    "The composition reads clearly as a scientific field-journal plate: the main profile dominates, supplementary studies are separated, the scale is explicitly labeled schematic and not to scale, and the palette corresponds to the bird\u2019s principal colors.",
+    "No place name, ZIP code, coordinates, map, range graphic, observation identifier, or local-observation detail appears."
+  ],
+  "location_free": true,
+  "passed": true,
+  "species_accuracy": 5,
+  "text_accuracy": 4,
+  "verification_sources": [
+    {
+      "title": "Brown-headed Nuthatch Identification \u2014 Cornell Lab of Ornithology",
+      "url": "https://www.allaboutbirds.org/guide/Brown-headed_Nuthatch/id"
+    },
+    {
+      "title": "Brown-headed Nuthatch Life History \u2014 Cornell Lab of Ornithology",
+      "url": "https://www.allaboutbirds.org/guide/Brown-headed_Nuthatch/lifehistory"
+    },
+    {
+      "title": "Brown-headed Nuthatch \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/brown-headed-nuthatch"
+    },
+    {
+      "title": "Brown-headed Nuthatch \u2014 eBird",
+      "url": "https://ebird.org/species/bnhnut"
+    }
+  ]
+}

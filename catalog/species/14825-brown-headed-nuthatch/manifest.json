@@ -1,0 +1,161 @@
+{
+  "approved_at": "2026-08-02T21:09:01+00:00",
+  "assets": {
+    "display": {
+      "filename": "display.png",
+      "sha256": "84a6e2cc008c96e100ed51fbcf46883a38c14f57835ce7102f6981037b99825e"
+    },
+    "portrait": {
+      "filename": "portrait.png",
+      "sha256": "ee3c66be40c7e33b6679281a23886ec506b86e4da387b99ee0341d06dfd9cb46"
+    }
+  },
+  "common_name": "Brown-headed Nuthatch",
+  "generation": {
+    "attempt": 2,
+    "correction_source_sha256": "851fc0d0441a9103231018d86159e3d2288c5f79d68eec3f1112d2e07248423d",
+    "generated_at": "2026-08-02T21:09:01+00:00",
+    "generator": "Codex subscription / built-in gpt-image-2",
+    "max_attempts": 3,
+    "prompt_version": "field-journal-v3"
+  },
+  "profile": {
+    "behavior": "Agile bark forager that zigzags along trunks and branches, probing crevices and sometimes using bark chips as tools. Often travels in pairs or family groups, caches seeds, and nests or roosts in tree cavities.",
+    "common_name": "Brown-headed Nuthatch",
+    "family": "Sittidae",
+    "field_marks": [
+      "Warm brown cap extending to the dark eye above a pale cheek",
+      "Blue-gray back and rounded wings with darker flight feathers",
+      "Whitish throat and underparts, often washed pale buff",
+      "Straight, pointed, blackish chisel-like bill",
+      "Tiny, round-bodied profile with a short, square-tipped tail",
+      "Dark gray legs with strong feet and curved claws for gripping bark"
+    ],
+    "habitat": "Open, mature pine woodland with a sparse understory and standing dead or decaying trees for nesting; less frequent in mixed pine-hardwood forest.",
+    "measurements": {
+      "length": "11\u201312 cm (4.3\u20134.7 in)",
+      "weight": "8\u201311 g (0.3\u20130.4 oz)",
+      "wingspan": "17\u201319 cm (6.7\u20137.5 in)"
+    },
+    "palette": [
+      "warm chestnut brown",
+      "slate blue-gray",
+      "soft gray-white",
+      "charcoal black"
+    ],
+    "scientific_name": "Sitta pusilla",
+    "sources": [
+      {
+        "title": "Brown-headed Nuthatch Identification \u2014 Cornell Lab of Ornithology",
+        "url": "https://www.allaboutbirds.org/guide/Brown-headed_Nuthatch/id"
+      },
+      {
+        "title": "Brown-headed Nuthatch Life History \u2014 Cornell Lab of Ornithology",
+        "url": "https://www.allaboutbirds.org/guide/Brown-headed_Nuthatch/lifehistory"
+      },
+      {
+        "title": "Brown-headed Nuthatch \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/brown-headed-nuthatch"
+      }
+    ],
+    "taxon_id": 14825
+  },
+  "quality_review": {
+    "anatomy_accuracy": 5,
+    "composition_quality": 5,
+    "correction_findings": [],
+    "findings": [
+      "Species identity is correct: the plate\u2019s Brown-headed Nuthatch, scientific name Sitta pusilla, and family Sittidae agree with eBird and Cornell, and the illustrated bird matches the attached field-reference photographs.",
+      "The principal bird has one head, one straight pointed beak, two anatomically plausible wings with the far wing occluded by the profile view, two legs with gripping feet, and one short tail. The separate head and wing are clearly presented as detail studies rather than extra attached anatomy.",
+      "Plumage is species-accurate: warm brown cap reaching the eye, pale cheek and underparts, slate-blue-gray back, darker flight feathers, dark eye, and a subtle pale nape area. The compact body, short neck, rounded wing, and short tail also match the references.",
+      "Bill, eye, legs, toes, and curved claws are coherent and appropriately proportioned for a bark-clinging nuthatch. No duplicated, missing, or materially malformed attached body part is apparent.",
+      "All listed field marks are supported by the live sources and references. The added small white nape spot is also diagnostic and is explicitly supported by Cornell and Audubon.",
+      "The habitat, bark-foraging behavior, zigzag movement, bark-chip tool use, seed caching, social grouping, and cavity nesting or roosting claims are supported by Cornell and Audubon.",
+      "The displayed measurements exactly match Audubon: length 11\u201312 cm, wingspan 17\u201319 cm, and weight 8\u201311 g. Cornell currently gives narrower figures of 10\u201311 cm, 16\u201318 cm, and approximately 10 g, so the plate reflects a legitimate source difference rather than an unsupported measurement.",
+      "The common name, scientific name, family, measurement units and conversions, scale disclaimer, headings, and descriptive prose are legible and free of material spelling or factual errors.",
+      "The composition reads clearly as a scientific field-journal plate: the main profile dominates, supplementary studies are separated, the scale is explicitly labeled schematic and not to scale, and the palette corresponds to the bird\u2019s principal colors.",
+      "No place name, ZIP code, coordinates, map, range graphic, observation identifier, or local-observation detail appears."
+    ],
+    "location_free": true,
+    "passed": true,
+    "species_accuracy": 5,
+    "text_accuracy": 4,
+    "verification_sources": [
+      {
+        "title": "Brown-headed Nuthatch Identification \u2014 Cornell Lab of Ornithology",
+        "url": "https://www.allaboutbirds.org/guide/Brown-headed_Nuthatch/id"
+      },
+      {
+        "title": "Brown-headed Nuthatch Life History \u2014 Cornell Lab of Ornithology",
+        "url": "https://www.allaboutbirds.org/guide/Brown-headed_Nuthatch/lifehistory"
+      },
+      {
+        "title": "Brown-headed Nuthatch \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/brown-headed-nuthatch"
+      },
+      {
+        "title": "Brown-headed Nuthatch \u2014 eBird",
+        "url": "https://ebird.org/species/bnhnut"
+      }
+    ]
+  },
+  "references": [
+    {
+      "attribution": "(c) skitterbug, some rights reserved (CC BY)",
+      "filename": "01-52312739.jpg",
+      "height": 1843,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/52312739/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 21984739,
+      "observer": "skitterbug",
+      "photo_id": 52312739,
+      "sha256": "eccb480f14a4ea3b65e669561de56a822ab50c8b62dd5a95d367f2b9c5681ebb",
+      "source_url": "https://www.inaturalist.org/observations/21984739",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) Donald Davesne, some rights reserved (CC BY)",
+      "filename": "02-536971738.jpg",
+      "height": 1365,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/536971738/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 298125707,
+      "observer": "donalddavesne",
+      "photo_id": 536971738,
+      "sha256": "8e9ad3072e4b54ebf221f91023cedc3a41de7dd1f226ca5d2e59600c1e11a186",
+      "source_url": "https://www.inaturalist.org/observations/298125707",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) Leila Dasher, some rights reserved (CC BY)",
+      "filename": "03-379545739.jpg",
+      "height": 2048,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/379545739/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 214714888,
+      "observer": "supertiger",
+      "photo_id": 379545739,
+      "sha256": "e30feafec945d3220d9b404d6a4648fa559561d047174590a04ecdd6e849199b",
+      "source_url": "https://www.inaturalist.org/observations/214714888",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) David George, some rights reserved (CC BY)",
+      "filename": "04-194448121.jpeg",
+      "height": 1536,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/194448121/large.jpeg",
+      "license_code": "cc-by",
+      "observation_id": 115195911,
+      "observer": "davidgeorge",
+      "photo_id": 194448121,
+      "sha256": "807caad0be7f0895532a0067ab46a70262e62c29d101e254168728be26b952ad",
+      "source_url": "https://www.inaturalist.org/observations/115195911",
+      "width": 2048
+    }
+  ],
+  "schema_version": 1,
+  "scientific_name": "Sitta pusilla",
+  "slug": "brown-headed-nuthatch",
+  "status": "approved",
+  "taxon_id": 14825
+}
