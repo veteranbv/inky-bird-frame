@@ -28,6 +28,11 @@ from .birds import (
     resolve_ebird_species,
 )
 from .catalog import (
+    CatalogEntry,
+    CollectionEntry,
+    CollectionOrigin,
+    CollectionState,
+    add_collection_taxa,
     approve_candidate,
     approved_taxon_ids,
     candidate_directory,
@@ -36,10 +41,15 @@ from .catalog import (
     find_taxon_directory,
     has_passing_sourced_review,
     is_bounded_generation,
+    read_catalog_entries,
+    read_collection,
+    read_collection_state,
     rebuild_catalog_index,
+    remove_collection_taxa,
     sha256_file,
     utc_now,
     write_candidate_manifest,
+    write_collection,
 )
 from .codex_runner import CodexRunner, parse_species_profile
 from .config import AppConfig, DiscoveryProvider, discovery_source_label
@@ -100,6 +110,26 @@ class DiscoveryResult:
     species: list[BirdSpecies]
     providers: list[ProviderStatus]
     unresolved: list[EbirdSpecies | BirdWeatherSpecies]
+
+
+@dataclass(frozen=True)
+class TerminalQueueEntry:
+    species: BirdSpecies
+    state: str
+    paths: tuple[Path, ...]
+
+    def as_dict(self) -> dict[str, object]:
+        return {
+            **_species_payload(self.species),
+            "terminal_state": self.state,
+            "paths": [str(path) for path in self.paths],
+        }
+
+
+@dataclass(frozen=True)
+class GenerationQueuePartition:
+    actionable: list[BirdSpecies]
+    terminal_blocked: list[TerminalQueueEntry]
 
 
 @contextmanager
@@ -440,6 +470,20 @@ def _write_generation_queue(config: AppConfig, species: list[BirdSpecies]) -> No
     )
 
 
+def _migrate_legacy_seed_queue(
+    state: CollectionState,
+    queued_species: list[BirdSpecies],
+) -> tuple[list[CollectionEntry], list[CollectionEntry], str, bool]:
+    if state.legacy_seed_queue_migrated_at is not None:
+        return state.entries, [], state.legacy_seed_queue_migrated_at, False
+    updated, added = add_collection_taxa(
+        state.entries,
+        {species.taxon_id for species in queued_species},
+        CollectionOrigin.HISTORICAL_SEED,
+    )
+    return updated, added, utc_now(), True
+
+
 def enqueue_seed_species(
     config: AppConfig,
     *,
@@ -477,26 +521,45 @@ def enqueue_seed_species(
             persist_taxonomy_cache=not dry_run,
         )
         discovered = discovery.species
-        approved = approved_taxon_ids(config.controller.catalog_dir)
-        existing = [
-            species for species in read_generation_queue(config) if species.taxon_id not in approved
-        ]
-        eligible = [
-            species
-            for species in discovered
-            if species.taxon_id not in approved
-            and not _has_terminal_state(config.controller.state_dir, species.taxon_id)
-        ]
-        queued_by_taxon = {species.taxon_id: species for species in existing}
-        added: list[BirdSpecies] = []
-        for species in eligible:
-            if species.taxon_id in queued_by_taxon:
-                continue
-            queued_by_taxon[species.taxon_id] = species
-            added.append(species)
-        queued = list(queued_by_taxon.values())
-        if not dry_run:
-            _write_generation_queue(config, queued)
+        state_lock = nullcontext() if dry_run else catalog_state_lock(config.controller.state_dir)
+        with state_lock:
+            approved = approved_taxon_ids(config.controller.catalog_dir)
+            legacy_queue = read_generation_queue(config)
+            existing = [species for species in legacy_queue if species.taxon_id not in approved]
+            eligible = [
+                species
+                for species in discovered
+                if species.taxon_id not in approved
+                and not _has_terminal_state(config.controller.state_dir, species.taxon_id)
+            ]
+            queued_by_taxon = {species.taxon_id: species for species in existing}
+            added: list[BirdSpecies] = []
+            for species in eligible:
+                if species.taxon_id in queued_by_taxon:
+                    continue
+                queued_by_taxon[species.taxon_id] = species
+                added.append(species)
+            queued = list(queued_by_taxon.values())
+            collection, migrated_legacy_queue, migrated_at, migration_applied = (
+                _migrate_legacy_seed_queue(
+                    read_collection_state(config.controller.state_dir),
+                    legacy_queue,
+                )
+            )
+            collection, collection_added = add_collection_taxa(
+                collection,
+                {species.taxon_id for species in discovered},
+                CollectionOrigin.HISTORICAL_SEED,
+            )
+            if not dry_run:
+                _write_generation_queue(config, queued)
+                if migration_applied or collection_added:
+                    write_collection(
+                        config.controller.state_dir,
+                        collection,
+                        legacy_seed_queue_migrated_at=migrated_at,
+                    )
+                _write_active_catalog(config, _current_discovery_species(config))
 
     return {
         "window": window.value if window is not None else None,
@@ -519,25 +582,39 @@ def enqueue_seed_species(
         "eligible_count": len(eligible),
         "added_count": len(added),
         "queued_count": len(queued),
+        "migrated_legacy_queue_count": len(migrated_legacy_queue),
+        "migrated_legacy_queue_taxon_ids": [entry.taxon_id for entry in migrated_legacy_queue],
+        "collection_added_count": len(collection_added),
+        "collection_count": len(collection),
         "dry_run": dry_run,
         "added": [_species_payload(species) for species in added],
+        "collection_added_taxon_ids": [entry.taxon_id for entry in collection_added],
         "providers": [provider.as_dict() for provider in discovery.providers],
         "unresolved_count": len(discovery.unresolved),
     }
 
 
-def _write_active_catalog(config: AppConfig, species_list: list[BirdSpecies]) -> int:
-    approved = rebuild_catalog_index(config.controller.catalog_dir)
+def _write_active_catalog(
+    config: AppConfig,
+    species_list: list[BirdSpecies],
+    *,
+    approved: list[CatalogEntry] | None = None,
+) -> int:
+    approved_entries = (
+        approved if approved is not None else rebuild_catalog_index(config.controller.catalog_dir)
+    )
     observed = {species.taxon_id: species for species in species_list}
+    collection_taxa = {entry.taxon_id for entry in read_collection(config.controller.state_dir)}
     active: list[dict[str, object]] = []
-    for entry in approved:
+    for entry in approved_entries:
         species = observed.get(entry.taxon_id)
-        if species is None:
+        if species is None and entry.taxon_id not in collection_taxa:
             continue
         value = entry.as_dict()
-        value["observation_count"] = species.observation_count
-        if species.latest_detection_at is not None:
-            value["latest_detection_at"] = species.latest_detection_at
+        if species is not None:
+            value["observation_count"] = species.observation_count
+            if species.latest_detection_at is not None:
+                value["latest_detection_at"] = species.latest_detection_at
         active.append(value)
     write_json_atomic(
         _active_catalog_path(config),
@@ -624,6 +701,158 @@ def _read_discovery_snapshot(config: AppConfig) -> DiscoverySnapshot:
 
     species = _parse_species_list(species_raw, path)
     return DiscoverySnapshot(refreshed, place_name, state, species)
+
+
+def _current_discovery_species(config: AppConfig) -> list[BirdSpecies]:
+    if not _snapshot_path(config).exists():
+        return []
+    return _read_discovery_snapshot(config).species
+
+
+def _collection_summary(
+    entries: list[CollectionEntry],
+    approved: list[CatalogEntry],
+    observed: list[BirdSpecies],
+    *,
+    legacy_seed_queue_migrated_at: str | None,
+) -> dict[str, object]:
+    approved_by_taxon = {entry.taxon_id: entry for entry in approved}
+    observed_taxa = {species.taxon_id for species in observed}
+    collection_taxa = {entry.taxon_id for entry in entries}
+    active_taxa = set(approved_by_taxon) & (observed_taxa | collection_taxa)
+    members: list[dict[str, object]] = []
+    for entry in entries:
+        approved_entry = approved_by_taxon.get(entry.taxon_id)
+        member = {
+            **entry.as_dict(),
+            "approved": approved_entry is not None,
+            "observed": entry.taxon_id in observed_taxa,
+            "active": entry.taxon_id in active_taxa,
+        }
+        if approved_entry is not None:
+            member["common_name"] = approved_entry.common_name
+            member["scientific_name"] = approved_entry.scientific_name
+        members.append(member)
+    return {
+        "collection_count": len(entries),
+        "approved_member_count": sum(entry.taxon_id in approved_by_taxon for entry in entries),
+        "active_approved_count": len(active_taxa),
+        "legacy_seed_queue_migrated": legacy_seed_queue_migrated_at is not None,
+        "legacy_seed_queue_migrated_at": legacy_seed_queue_migrated_at,
+        "members": members,
+    }
+
+
+def collection_status(
+    config: AppConfig, *, approved: list[CatalogEntry] | None = None
+) -> dict[str, object]:
+    state = read_collection_state(config.controller.state_dir)
+    return _collection_summary(
+        state.entries,
+        approved if approved is not None else read_catalog_entries(config.controller.catalog_dir),
+        _current_discovery_species(config),
+        legacy_seed_queue_migrated_at=state.legacy_seed_queue_migrated_at,
+    )
+
+
+def _change_collection(
+    config: AppConfig,
+    *,
+    taxon_ids: set[int] | None,
+    origin: CollectionOrigin | None,
+    remove: bool,
+    dry_run: bool,
+) -> dict[str, object]:
+    if taxon_ids is not None and any(
+        not isinstance(taxon_id, int) or isinstance(taxon_id, bool) or taxon_id <= 0
+        for taxon_id in taxon_ids
+    ):
+        raise ValueError("collection taxon IDs must be positive integers")
+    cycle_lock = nullcontext() if dry_run else exclusive_cycle_lock(config.controller.state_dir)
+    with cycle_lock:
+        state_lock = nullcontext() if dry_run else catalog_state_lock(config.controller.state_dir)
+        with state_lock:
+            approved = read_catalog_entries(config.controller.catalog_dir)
+            requested_taxa = (
+                {entry.taxon_id for entry in approved} if taxon_ids is None else taxon_ids
+            )
+            current, migrated_legacy_queue, migrated_at, migration_applied = (
+                _migrate_legacy_seed_queue(
+                    read_collection_state(config.controller.state_dir),
+                    read_generation_queue(config),
+                )
+            )
+            if remove:
+                updated, removed = remove_collection_taxa(current, requested_taxa)
+                added: list[CollectionEntry] = []
+            else:
+                if origin is None:
+                    raise ValueError("collection additions require an origin")
+                updated, added = add_collection_taxa(current, requested_taxa, origin)
+                removed = []
+            observed = _current_discovery_species(config)
+            summary = _collection_summary(
+                updated,
+                approved,
+                observed,
+                legacy_seed_queue_migrated_at=migrated_at,
+            )
+            if not dry_run:
+                if migration_applied or added or removed:
+                    write_collection(
+                        config.controller.state_dir,
+                        updated,
+                        legacy_seed_queue_migrated_at=migrated_at,
+                    )
+                summary["active_approved_count"] = _write_active_catalog(
+                    config,
+                    observed,
+                    approved=approved,
+                )
+    return {
+        **{key: value for key, value in summary.items() if key != "members"},
+        "added_count": len(added),
+        "removed_count": len(removed),
+        "added_taxon_ids": [entry.taxon_id for entry in added],
+        "removed_taxon_ids": [entry.taxon_id for entry in removed],
+        "migrated_legacy_queue_count": len(migrated_legacy_queue),
+        "migrated_legacy_queue_taxon_ids": [entry.taxon_id for entry in migrated_legacy_queue],
+        "dry_run": dry_run,
+    }
+
+
+def import_approved_collection(config: AppConfig, *, dry_run: bool = False) -> dict[str, object]:
+    return _change_collection(
+        config,
+        taxon_ids=None,
+        origin=CollectionOrigin.CATALOG_IMPORT,
+        remove=False,
+        dry_run=dry_run,
+    )
+
+
+def add_collection_member(
+    config: AppConfig, taxon_id: int, *, dry_run: bool = False
+) -> dict[str, object]:
+    return _change_collection(
+        config,
+        taxon_ids={taxon_id},
+        origin=CollectionOrigin.MANUAL,
+        remove=False,
+        dry_run=dry_run,
+    )
+
+
+def remove_collection_member(
+    config: AppConfig, taxon_id: int, *, dry_run: bool = False
+) -> dict[str, object]:
+    return _change_collection(
+        config,
+        taxon_ids={taxon_id},
+        origin=None,
+        remove=True,
+        dry_run=dry_run,
+    )
 
 
 def _reference_from_dict(raw: object) -> ReferencePhoto:
@@ -884,11 +1113,53 @@ def _retry_source_plate(state_dir: Path, relative_path: str | None) -> Path | No
     return source
 
 
+def _terminal_state(state_dir: Path, taxon_id: int) -> tuple[str, tuple[Path, ...]] | None:
+    pending = find_taxon_directory(state_dir / "pending", taxon_id)
+    if pending is not None:
+        state = "pending" if (pending / "manifest.json").is_file() else "incomplete_pending"
+        return state, (pending,)
+    rejected = find_taxon_directory(state_dir / "rejected", taxon_id)
+    if rejected is not None:
+        return "rejected", (rejected,)
+    failed = tuple(sorted((state_dir / "failed").glob(f"{taxon_id}-*")))
+    if failed:
+        return "failed", failed
+    return None
+
+
 def _has_terminal_state(state_dir: Path, taxon_id: int) -> bool:
-    return any(
-        find_taxon_directory(state_dir / category, taxon_id) is not None
-        for category in ("pending", "rejected")
-    ) or bool(list((state_dir / "failed").glob(f"{taxon_id}-*")))
+    return _terminal_state(state_dir, taxon_id) is not None
+
+
+def _partition_generation_queue(
+    state_dir: Path,
+    species_list: list[BirdSpecies],
+    approved: set[int],
+) -> GenerationQueuePartition:
+    actionable: list[BirdSpecies] = []
+    terminal_blocked: list[TerminalQueueEntry] = []
+    for species in species_list:
+        if species.taxon_id in approved:
+            continue
+        terminal = _terminal_state(state_dir, species.taxon_id)
+        if terminal is None:
+            actionable.append(species)
+            continue
+        state, paths = terminal
+        if state == "pending":
+            continue
+        terminal_blocked.append(TerminalQueueEntry(species, state, paths))
+    return GenerationQueuePartition(actionable, terminal_blocked)
+
+
+def read_generation_queue_partition(
+    config: AppConfig, *, approved: set[int] | None = None
+) -> GenerationQueuePartition:
+    return _partition_generation_queue(
+        config.controller.state_dir,
+        read_generation_queue(config),
+        approved if approved is not None else approved_taxon_ids(config.controller.catalog_dir),
+    )
 
 
 def record_failure(state_dir: Path, species: BirdSpecies, error: InkyBirdFrameError) -> Path:
@@ -938,7 +1209,20 @@ def approve_passing_candidates(config: AppConfig) -> list[dict[str, object]]:
 
 def run_generation_cycle(config: AppConfig) -> dict[str, object]:
     with exclusive_cycle_lock(config.controller.state_dir):
+        queued_species = read_generation_queue(config)
         with catalog_state_lock(config.controller.state_dir):
+            collection, migrated_legacy_queue, migrated_at, migration_applied = (
+                _migrate_legacy_seed_queue(
+                    read_collection_state(config.controller.state_dir),
+                    queued_species,
+                )
+            )
+            if migration_applied:
+                write_collection(
+                    config.controller.state_dir,
+                    collection,
+                    legacy_seed_queue_migrated_at=migrated_at,
+                )
             published = approve_passing_candidates(config)
         snapshot = _read_discovery_snapshot(config)
         maximum_age = timedelta(minutes=config.schedule.refresh_minutes * 2)
@@ -947,7 +1231,6 @@ def run_generation_cycle(config: AppConfig) -> dict[str, object]:
                 "Discovery state is stale; a successful refresh is required before generation"
             )
         species_list = snapshot.species
-        queued_species = read_generation_queue(config)
         generation_species = list(species_list)
         observed_taxa = {species.taxon_id for species in species_list}
         generation_species.extend(
@@ -1097,6 +1380,11 @@ def run_generation_cycle(config: AppConfig) -> dict[str, object]:
                 species for species in queued_species if species.taxon_id not in approved_after
             ]
             _write_generation_queue(config, remaining_queue)
+            queue_partition = _partition_generation_queue(
+                config.controller.state_dir,
+                remaining_queue,
+                approved_after,
+            )
         eligible_taxa = {species.taxon_id for species in eligible}
         deferred = retry_store.deferred(eligible_taxa, datetime.now(UTC))
         outstanding_retries = retry_store.outstanding(eligible_taxa)
@@ -1117,7 +1405,11 @@ def run_generation_cycle(config: AppConfig) -> dict[str, object]:
             "deferred_count": len(deferred),
             "deferred": [record.as_dict() for record in deferred],
             "outstanding_retry_count": len(outstanding_retries),
-            "queued_count": len(remaining_queue),
+            "migrated_legacy_queue_count": len(migrated_legacy_queue),
+            "migrated_legacy_queue_taxon_ids": [entry.taxon_id for entry in migrated_legacy_queue],
+            "queued_count": len(queue_partition.actionable),
+            "terminal_blocked_count": len(queue_partition.terminal_blocked),
+            "terminal_blocked": [entry.as_dict() for entry in queue_partition.terminal_blocked],
             "generated": generated,
             "failures": failures,
         }

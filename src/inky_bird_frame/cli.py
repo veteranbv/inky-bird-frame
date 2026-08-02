@@ -32,10 +32,14 @@ from .config import (
 )
 from .controller import (
     REVIEW_FAILURE_FALLBACK,
+    add_collection_member,
+    collection_status,
     discover_species,
     enqueue_seed_species,
     exclusive_cycle_lock,
-    read_generation_queue,
+    import_approved_collection,
+    read_generation_queue_partition,
+    remove_collection_member,
     run_controller_cycle,
     run_generation_cycle,
     run_refresh_cycle,
@@ -351,6 +355,26 @@ def seed_command(args: argparse.Namespace) -> int:
     return 0
 
 
+def collection_list_command(args: argparse.Namespace) -> int:
+    print_result(collection_status(_config(args)))
+    return 0
+
+
+def collection_import_command(args: argparse.Namespace) -> int:
+    print_result(import_approved_collection(_config(args), dry_run=args.dry_run))
+    return 0
+
+
+def collection_add_command(args: argparse.Namespace) -> int:
+    print_result(add_collection_member(_config(args), args.taxon_id, dry_run=args.dry_run))
+    return 0
+
+
+def collection_remove_command(args: argparse.Namespace) -> int:
+    print_result(remove_collection_member(_config(args), args.taxon_id, dry_run=args.dry_run))
+    return 0
+
+
 def approve_command(args: argparse.Namespace) -> int:
     config = _config(args)
     entry = approve_candidate(
@@ -430,7 +454,8 @@ def _retry_quality_guidance(
 def retry_command(args: argparse.Namespace) -> int:
     config = _config(args)
     with exclusive_cycle_lock(config.controller.state_dir):
-        if find_taxon_directory(config.controller.state_dir / "pending", args.taxon_id):
+        pending = find_taxon_directory(config.controller.state_dir / "pending", args.taxon_id)
+        if pending is not None and (pending / "manifest.json").is_file():
             raise ValueError("Pending candidates must be approved or rejected before retrying")
         failed_directories = sorted(
             (config.controller.state_dir / "failed").glob(f"{args.taxon_id}-*")
@@ -440,7 +465,8 @@ def retry_command(args: argparse.Namespace) -> int:
             failed_directories,
             source_attempt,
         )
-        sources = list(failed_directories)
+        sources = [pending] if pending is not None else []
+        sources.extend(failed_directories)
         rejected = find_taxon_directory(config.controller.state_dir / "rejected", args.taxon_id)
         if rejected is not None:
             sources.append(rejected)
@@ -515,7 +541,8 @@ def retry_command(args: argparse.Namespace) -> int:
 def status_command(args: argparse.Namespace) -> int:
     config = _config(args)
     entries = rebuild_catalog_index(config.controller.catalog_dir)
-    queued = read_generation_queue(config)
+    queue = read_generation_queue_partition(config, approved={entry.taxon_id for entry in entries})
+    collection = collection_status(config, approved=entries)
     retries = RetryStore(config.controller.state_dir / "generation-retries.json")
     pending = []
     for path in sorted((config.controller.state_dir / "pending").glob("*/manifest.json")):
@@ -532,8 +559,10 @@ def status_command(args: argparse.Namespace) -> int:
     print_result(
         {
             "approved": [entry.as_dict() for entry in entries],
+            "collection": {key: value for key, value in collection.items() if key != "members"},
             "pending": pending,
-            "queued": [species_to_dict(item) for item in queued],
+            "queued": [species_to_dict(item) for item in queue.actionable],
+            "terminal_blocked": [entry.as_dict() for entry in queue.terminal_blocked],
             "deferred": [record.as_dict() for record in retries.records()],
             "failed": [
                 str(path) for path in sorted((config.controller.state_dir / "failed").glob("*"))
@@ -899,7 +928,7 @@ def build_parser() -> argparse.ArgumentParser:
 
     seed_parser = subparsers.add_parser(
         "seed",
-        help="Queue distinct species from a broader observation window for generation",
+        help="Add broader observations to the private collection and generation queue",
     )
     add_config_argument(seed_parser)
     seed_period = seed_parser.add_mutually_exclusive_group(required=True)
@@ -921,6 +950,38 @@ def build_parser() -> argparse.ArgumentParser:
     seed_parser.add_argument("--species-limit", type=int)
     seed_parser.add_argument("--dry-run", action="store_true")
     seed_parser.set_defaults(func=seed_command)
+
+    collection_parser = subparsers.add_parser(
+        "collection", help="Manage private local display membership"
+    )
+    collection_subparsers = collection_parser.add_subparsers(
+        dest="collection_command", required=True
+    )
+    collection_list_parser = collection_subparsers.add_parser(
+        "list", help="List private collection membership and activation state"
+    )
+    add_config_argument(collection_list_parser)
+    collection_list_parser.set_defaults(func=collection_list_command)
+    collection_import_parser = collection_subparsers.add_parser(
+        "import-approved", help="Explicitly add every currently approved local plate"
+    )
+    add_config_argument(collection_import_parser)
+    collection_import_parser.add_argument("--dry-run", action="store_true")
+    collection_import_parser.set_defaults(func=collection_import_command)
+    collection_add_parser = collection_subparsers.add_parser(
+        "add", help="Add one taxon to the private collection"
+    )
+    add_config_argument(collection_add_parser)
+    collection_add_parser.add_argument("taxon_id", type=int)
+    collection_add_parser.add_argument("--dry-run", action="store_true")
+    collection_add_parser.set_defaults(func=collection_add_command)
+    collection_remove_parser = collection_subparsers.add_parser(
+        "remove", help="Remove one taxon from the private collection"
+    )
+    add_config_argument(collection_remove_parser)
+    collection_remove_parser.add_argument("taxon_id", type=int)
+    collection_remove_parser.add_argument("--dry-run", action="store_true")
+    collection_remove_parser.set_defaults(func=collection_remove_command)
 
     approve_parser = subparsers.add_parser("approve", help="Publish a pending candidate")
     add_config_argument(approve_parser)
