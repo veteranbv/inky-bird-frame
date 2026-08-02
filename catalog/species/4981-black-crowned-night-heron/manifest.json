@@ -1,0 +1,164 @@
+{
+  "approved_at": "2026-08-02T19:02:47+00:00",
+  "assets": {
+    "display": {
+      "filename": "display.png",
+      "sha256": "290629598e1cc65161e4baec898c5e24036c822bf222caabea89cc3a2a16b8e9"
+    },
+    "portrait": {
+      "filename": "portrait.png",
+      "sha256": "c30647bc5518e953b1606af938dfd00271e6a13c802f1b83395133a7136ce729"
+    }
+  },
+  "common_name": "Black-crowned Night Heron",
+  "generation": {
+    "attempt": 1,
+    "generated_at": "2026-08-02T19:02:47+00:00",
+    "generator": "Codex subscription / built-in gpt-image-2",
+    "max_attempts": 3,
+    "prompt_version": "field-journal-v3"
+  },
+  "profile": {
+    "behavior": "Mostly active from dusk through night; stands still or walks slowly in shallow water to grasp prey, roosts socially by day, and nests colonially, though individuals often forage alone.",
+    "common_name": "Black-crowned Night Heron",
+    "family": "Ardeidae",
+    "field_marks": [
+      "Stocky, thick-necked heron with a hunched posture",
+      "Black crown and back on adults",
+      "Pale gray wings with whitish underparts",
+      "Heavy, pointed black bill and red eyes",
+      "Yellow-green legs and long toes",
+      "Broad, rounded wings, short tail, and long white nape plumes on breeding adults"
+    ],
+    "habitat": "Fresh, brackish, and saltwater wetlands, including marshes, swamps, rivers, lake edges, ponds, estuaries, tidal flats, mangroves, canals, and flooded fields, with trees, shrubs, reeds, or other cover for roosting and nesting.",
+    "measurements": {
+      "length": "58\u201366 cm",
+      "weight": "727\u20131,014 g",
+      "wingspan": "115\u2013118 cm"
+    },
+    "palette": [
+      "black",
+      "slate gray",
+      "soft white",
+      "red",
+      "yellow-green"
+    ],
+    "scientific_name": "Nycticorax nycticorax",
+    "sources": [
+      {
+        "title": "Black-crowned Night Heron Identification \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Black-crowned_Night_Heron/id"
+      },
+      {
+        "title": "Black-crowned Night Heron Life History \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Black-crowned_Night_Heron/lifehistory"
+      },
+      {
+        "title": "Black-crowned Night Heron \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/black-crowned-night-heron"
+      },
+      {
+        "title": "Nycticorax nycticorax \u2014 Animal Diversity Web",
+        "url": "https://animaldiversity.org/accounts/Nycticorax_nycticorax/"
+      }
+    ],
+    "taxon_id": 4981
+  },
+  "quality_review": {
+    "anatomy_accuracy": 5,
+    "composition_quality": 5,
+    "correction_findings": [],
+    "findings": [
+      "The primary bird is an anatomically coherent adult: one head, one heavy pointed bill, two normally positioned wings with the far wing largely occluded in profile, two legs with long toes, and one short tail. The separate head and wing are clearly auxiliary detail studies, not duplicated anatomy.",
+      "Species identity is accurate. The stocky, hunched proportions, flat-crowned head, black crown and back, pale-gray wings, whitish underparts, red eye, black bill, yellow-green legs, and white nape plumes closely match the adult reference photographs and live identification sources.",
+      "The common name, scientific name Nycticorax nycticorax, and family Ardeidae are correct.",
+      "The displayed measurements\u201458\u201366 cm length, 727\u20131,014 g weight, and 115\u2013118 cm wingspan\u2014exactly match Cornell's published ranges. The separate body-length label and schematic ruler repeat the correct length range and are explicitly marked not to scale.",
+      "All habitat statements are supported by the verified sources, including fresh, brackish, and saltwater wetlands; marshes, swamps, rivers, lake edges, ponds, estuaries or tidal flats, mangroves, canals, flooded fields, and vegetative cover used for roosting and nesting.",
+      "All behavior statements are supported: chiefly evening-to-early-morning activity, slow or motionless shallow-water foraging, grasping rather than stabbing prey, communal daytime roosting, colonial nesting, and generally solitary foraging.",
+      "All listed field marks are accurate for adults. Broad rounded wings, a short tail, and long white breeding plumes are appropriately represented in the plate and detail studies.",
+      "Typography is legible, the hierarchy is clear, and the main portrait, measurement schematic, anatomical studies, and palette are balanced without obscuring one another.",
+      "No place name, ZIP code, coordinates, map, range graphic, or local-observation detail appears."
+    ],
+    "location_free": true,
+    "passed": true,
+    "species_accuracy": 5,
+    "text_accuracy": 5,
+    "verification_sources": [
+      {
+        "title": "Black-crowned Night Heron Identification \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Black-crowned_Night_Heron/id"
+      },
+      {
+        "title": "Black-crowned Night Heron Life History \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Black-crowned_Night_Heron/lifehistory"
+      },
+      {
+        "title": "Black-crowned Night Heron \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/black-crowned-night-heron"
+      },
+      {
+        "title": "Nycticorax nycticorax \u2014 Animal Diversity Web",
+        "url": "https://animaldiversity.org/accounts/Nycticorax_nycticorax/"
+      }
+    ]
+  },
+  "references": [
+    {
+      "attribution": "(c) \u0410\u043b\u0438\u043d\u0430 \u0423\u0440\u0443\u0441\u043e\u0432\u0430, some rights reserved (CC BY)",
+      "filename": "01-59830179.jpg",
+      "height": 1514,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/59830179/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 37706114,
+      "observer": "urusovaalina",
+      "photo_id": 59830179,
+      "sha256": "b70398004bd2bee511840435c8444bbcfc0c0840ac8cc4d1d02f1e9901a1ee4b",
+      "source_url": "https://www.inaturalist.org/observations/37706114",
+      "width": 2048
+    },
+    {
+      "attribution": "no rights reserved",
+      "filename": "02-49357930.jpg",
+      "height": 1365,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/49357930/large.jpg",
+      "license_code": "cc0",
+      "observation_id": 31532085,
+      "observer": "kylenessen",
+      "photo_id": 49357930,
+      "sha256": "693b1561daba82d8705576e7af32f73021176e16d7c84448c452a67da1fcaebc",
+      "source_url": "https://www.inaturalist.org/observations/31532085",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) Naelin, some rights reserved (CC BY)",
+      "filename": "03-565990241.jpg",
+      "height": 1536,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/565990241/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 313429364,
+      "observer": "naelin",
+      "photo_id": 565990241,
+      "sha256": "92a1487cbf2ad5cb48967f43c6fa0648aae3eb3e863f19b63c96617af106bcf4",
+      "source_url": "https://www.inaturalist.org/observations/313429364",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) Alex, some rights reserved (CC BY)",
+      "filename": "04-531993479.jpg",
+      "height": 1951,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/531993479/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 295510529,
+      "observer": "arlenedevitt",
+      "photo_id": 531993479,
+      "sha256": "02d0b19940fa61f243dcce5b01a2034776f0677cb57b9e492eb939f6933d9095",
+      "source_url": "https://www.inaturalist.org/observations/295510529",
+      "width": 2048
+    }
+  ],
+  "schema_version": 1,
+  "scientific_name": "Nycticorax nycticorax",
+  "slug": "black-crowned-night-heron",
+  "status": "approved",
+  "taxon_id": 4981
+}
