@@ -540,6 +540,27 @@ rotation_mode = "shuffle_bag"
         if guidance is not None:
             self.assertEqual(guidance.findings, ("Correct the ruler scale",))
 
+    def test_retry_allows_recovery_past_incomplete_catalog_directory(self) -> None:
+        with TemporaryDirectory() as temporary:
+            state_dir = Path(temporary)
+            failed = state_dir / "failed/42-example-bird"
+            failed.mkdir(parents=True)
+            catalog_dir = state_dir / "catalog"
+            debris = catalog_dir / "species/42-example-bird"
+            debris.mkdir(parents=True)
+            (debris / "portrait.png").write_bytes(b"incomplete approval")
+            config = controller_config(state_dir, catalog_dir)
+
+            with (
+                patch("inky_bird_frame.cli._config", return_value=config),
+                redirect_stdout(io.StringIO()),
+            ):
+                retry_command(Namespace(taxon_id=42))
+
+            archived = (state_dir / "archive/42-example-bird").is_dir()
+
+        self.assertTrue(archived)
+
     def test_retry_preserves_fallback_for_empty_quality_findings(self) -> None:
         with TemporaryDirectory() as temporary:
             state_dir = Path(temporary)
@@ -667,6 +688,9 @@ rotation_mode = "shuffle_bag"
             catalog_dir = state_dir / "catalog"
             approved = catalog_dir / "species/42-example-bird"
             approved.mkdir(parents=True)
+            (approved / "manifest.json").write_text(
+                json.dumps({"taxon_id": 42, "status": "approved"})
+            )
             config = controller_config(state_dir, catalog_dir)
 
             with (
