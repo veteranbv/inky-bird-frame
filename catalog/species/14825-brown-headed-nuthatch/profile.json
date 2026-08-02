@@ -1,0 +1,41 @@
+{
+  "behavior": "Agile bark forager that zigzags along trunks and branches, probing crevices and sometimes using bark chips as tools. Often travels in pairs or family groups, caches seeds, and nests or roosts in tree cavities.",
+  "common_name": "Brown-headed Nuthatch",
+  "family": "Sittidae",
+  "field_marks": [
+    "Warm brown cap extending to the dark eye above a pale cheek",
+    "Blue-gray back and rounded wings with darker flight feathers",
+    "Whitish throat and underparts, often washed pale buff",
+    "Straight, pointed, blackish chisel-like bill",
+    "Tiny, round-bodied profile with a short, square-tipped tail",
+    "Dark gray legs with strong feet and curved claws for gripping bark"
+  ],
+  "habitat": "Open, mature pine woodland with a sparse understory and standing dead or decaying trees for nesting; less frequent in mixed pine-hardwood forest.",
+  "measurements": {
+    "length": "11\u201312 cm (4.3\u20134.7 in)",
+    "weight": "8\u201311 g (0.3\u20130.4 oz)",
+    "wingspan": "17\u201319 cm (6.7\u20137.5 in)"
+  },
+  "palette": [
+    "warm chestnut brown",
+    "slate blue-gray",
+    "soft gray-white",
+    "charcoal black"
+  ],
+  "scientific_name": "Sitta pusilla",
+  "sources": [
+    {
+      "title": "Brown-headed Nuthatch Identification \u2014 Cornell Lab of Ornithology",
+      "url": "https://www.allaboutbirds.org/guide/Brown-headed_Nuthatch/id"
+    },
+    {
+      "title": "Brown-headed Nuthatch Life History \u2014 Cornell Lab of Ornithology",
+      "url": "https://www.allaboutbirds.org/guide/Brown-headed_Nuthatch/lifehistory"
+    },
+    {
+      "title": "Brown-headed Nuthatch \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/brown-headed-nuthatch"
+    }
+  ],
+  "taxon_id": 14825
+}

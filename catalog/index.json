@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-02T19:02:47+00:00",
+  "generated_at": "2026-08-02T21:09:01+00:00",
   "schema_version": 1,
   "species": [
     {
@@ -166,6 +166,17 @@
       "scientific_name": "Molothrus ater",
       "slug": "brown-headed-cowbird",
       "taxon_id": 10373
+    },
+    {
+      "approved_at": "2026-08-02T21:09:01+00:00",
+      "common_name": "Brown-headed Nuthatch",
+      "display_path": "species/14825-brown-headed-nuthatch/display.png",
+      "display_sha256": "84a6e2cc008c96e100ed51fbcf46883a38c14f57835ce7102f6981037b99825e",
+      "portrait_path": "species/14825-brown-headed-nuthatch/portrait.png",
+      "portrait_sha256": "ee3c66be40c7e33b6679281a23886ec506b86e4da387b99ee0341d06dfd9cb46",
+      "scientific_name": "Sitta pusilla",
+      "slug": "brown-headed-nuthatch",
+      "taxon_id": 14825
     },
     {
       "approved_at": "2026-07-10T17:01:12+00:00",
