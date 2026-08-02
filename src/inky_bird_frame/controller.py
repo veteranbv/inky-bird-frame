@@ -977,15 +977,20 @@ def run_generation_cycle(config: AppConfig) -> dict[str, object]:
                 if guidance is None:
                     generate_candidate(config, species, config.controller.workspace_dir)
                 else:
+                    try:
+                        correction_source = _retry_source_plate(
+                            config.controller.state_dir,
+                            guidance.source_plate,
+                        )
+                    except SpeciesStateError:
+                        retry_store.clear_quality_guidance(species.taxon_id)
+                        raise
                     generate_candidate(
                         config,
                         species,
                         config.controller.workspace_dir,
                         initial_correction_findings=guidance.findings,
-                        initial_correction_source=_retry_source_plate(
-                            config.controller.state_dir,
-                            guidance.source_plate,
-                        ),
+                        initial_correction_source=correction_source,
                     )
                 with catalog_state_lock(config.controller.state_dir):
                     entry = approve_candidate(

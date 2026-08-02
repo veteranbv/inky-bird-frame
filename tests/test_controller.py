@@ -465,6 +465,57 @@ class ControllerTests(unittest.TestCase):
             source_plate.resolve(),
         )
 
+    def test_missing_retry_source_clears_unusable_quality_guidance(self) -> None:
+        species = BirdSpecies(1, "First Bird", "Avis first", 4, "iNaturalist")
+        with TemporaryDirectory() as temporary:
+            config_path = Path(temporary) / "config.toml"
+            config_path.write_text(CONFIG)
+            config = load_config(config_path)
+            config.controller.state_dir.mkdir(parents=True)
+            (config.controller.state_dir / "discovery.json").write_text(
+                json.dumps(
+                    {
+                        "schema_version": 1,
+                        "refreshed_at": datetime.now(UTC).isoformat(),
+                        "place_name": "Exampleville",
+                        "state": "XY",
+                        "species": [
+                            {
+                                "taxon_id": species.taxon_id,
+                                "common_name": species.common_name,
+                                "scientific_name": species.scientific_name,
+                                "observation_count": species.observation_count,
+                                "source": species.source,
+                            }
+                        ],
+                    }
+                )
+            )
+            RetryStore(
+                config.controller.state_dir / "generation-retries.json"
+            ).set_quality_guidance(
+                species.taxon_id,
+                ("Keep the wing angle accurate",),
+                source_plate="archive/missing/attempt-01/portrait.png",
+            )
+            with (
+                patch("inky_bird_frame.controller.approved_taxon_ids", return_value=set()),
+                patch("inky_bird_frame.controller.generate_candidate") as generate,
+                patch("inky_bird_frame.controller._write_active_catalog", return_value=0),
+            ):
+                result = run_generation_cycle(config)
+            guidance = RetryStore(
+                config.controller.state_dir / "generation-retries.json"
+            ).quality_guidance(species.taxon_id)
+
+        self.assertIsNone(guidance)
+        generate.assert_not_called()
+        failures = result["failures"]
+        self.assertIsInstance(failures, list)
+        if isinstance(failures, list):
+            self.assertTrue(failures[0]["terminal"])
+            self.assertIn("Invalid retained correction source", failures[0]["error"])
+
     def test_overlapping_refresh_is_rejected_before_discovery(self) -> None:
         with TemporaryDirectory() as temporary:
             config_path = Path(temporary) / "config.toml"

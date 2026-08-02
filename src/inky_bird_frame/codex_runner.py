@@ -365,21 +365,6 @@ def _parse_review(raw: object, allowed_domains: tuple[str, ...] | None = None) -
     correction_findings = tuple(
         _string_list(raw.get("correction_findings"), "correction_findings", 0)
     )
-    requires_correction = not (
-        reported_pass
-        and location_free
-        and min(
-            species_accuracy,
-            anatomy_accuracy,
-            text_accuracy,
-            composition_quality,
-        )
-        >= 4
-    )
-    if requires_correction and not correction_findings:
-        raise GenerationError("Failed Codex reviews must include correction_findings")
-    if not requires_correction and correction_findings:
-        raise GenerationError("Passing Codex reviews must not include correction_findings")
     sources = raw.get("verification_sources")
     if not isinstance(sources, list):
         raise GenerationError("Codex review verification_sources must be a list")
@@ -406,11 +391,15 @@ def _parse_review(raw: object, allowed_domains: tuple[str, ...] | None = None) -
                 url=url,
             )
         )
-    passed = (
+    if len(verification_sources) < 2:
+        raise GenerationError("Codex review must cite at least two verification sources")
+    if len(source_hosts) < 2:
+        raise GenerationError(
+            "Codex review must cite at least two independent verification source domains"
+        )
+    requires_correction = not (
         reported_pass
         and location_free
-        and len(verification_sources) >= 2
-        and len(source_hosts) >= 2
         and min(
             species_accuracy,
             anatomy_accuracy,
@@ -419,8 +408,12 @@ def _parse_review(raw: object, allowed_domains: tuple[str, ...] | None = None) -
         )
         >= 4
     )
+    if requires_correction and not correction_findings:
+        raise GenerationError("Failed Codex reviews must include correction_findings")
+    if not requires_correction and correction_findings:
+        raise GenerationError("Passing Codex reviews must not include correction_findings")
     return QualityReview(
-        passed=passed,
+        passed=not requires_correction,
         species_accuracy=species_accuracy,
         anatomy_accuracy=anatomy_accuracy,
         text_accuracy=text_accuracy,

@@ -271,23 +271,22 @@ class CodexRunnerTests(unittest.TestCase):
         self.assertIn("birds.example, field.example", prompt)
 
     def test_review_requires_two_verification_sources(self) -> None:
-        review = _parse_review(
-            {
-                "passed": True,
-                "species_accuracy": 5,
-                "anatomy_accuracy": 5,
-                "text_accuracy": 5,
-                "composition_quality": 5,
-                "location_free": True,
-                "findings": [],
-                "correction_findings": [],
-                "verification_sources": [
-                    {"title": "Cornell", "url": "https://www.allaboutbirds.org/example"}
-                ],
-            }
-        )
-
-        self.assertFalse(review.passed)
+        with self.assertRaisesRegex(GenerationError, "at least two verification sources"):
+            _parse_review(
+                {
+                    "passed": True,
+                    "species_accuracy": 5,
+                    "anatomy_accuracy": 5,
+                    "text_accuracy": 5,
+                    "composition_quality": 5,
+                    "location_free": True,
+                    "findings": [],
+                    "correction_findings": [],
+                    "verification_sources": [
+                        {"title": "Cornell", "url": "https://www.allaboutbirds.org/example"}
+                    ],
+                }
+            )
 
     def test_review_passes_with_scores_and_two_verification_sources(self) -> None:
         review = _parse_review(
@@ -311,25 +310,29 @@ class CodexRunnerTests(unittest.TestCase):
         self.assertEqual(len(review.verification_sources), 2)
 
     def test_review_requires_two_distinct_verification_urls(self) -> None:
-        review = _parse_review(
-            {
-                "passed": True,
-                "species_accuracy": 5,
-                "anatomy_accuracy": 5,
-                "text_accuracy": 5,
-                "composition_quality": 5,
-                "location_free": True,
-                "findings": [],
-                "correction_findings": [],
-                "verification_sources": [
-                    {"title": "Cornell identification", "url": "https://example.test/bird"},
-                    {"title": "Cornell life history", "url": "https://example.test/bird"},
-                ],
-            }
-        )
-
-        self.assertFalse(review.passed)
-        self.assertEqual(len(review.verification_sources), 1)
+        with self.assertRaisesRegex(GenerationError, "at least two verification sources"):
+            _parse_review(
+                {
+                    "passed": True,
+                    "species_accuracy": 5,
+                    "anatomy_accuracy": 5,
+                    "text_accuracy": 5,
+                    "composition_quality": 5,
+                    "location_free": True,
+                    "findings": [],
+                    "correction_findings": [],
+                    "verification_sources": [
+                        {
+                            "title": "Cornell identification",
+                            "url": "https://example.test/bird",
+                        },
+                        {
+                            "title": "Cornell life history",
+                            "url": "https://example.test/bird",
+                        },
+                    ],
+                }
+            )
 
     def test_noninteractive_command_allows_deployment_workspace(self) -> None:
         with TemporaryDirectory() as temporary:
@@ -364,24 +367,23 @@ class CodexRunnerTests(unittest.TestCase):
             parse_species_profile(profile, ("birds.example",))
 
     def test_review_requires_independent_source_domains(self) -> None:
-        review = _parse_review(
-            {
-                "passed": True,
-                "species_accuracy": 5,
-                "anatomy_accuracy": 5,
-                "text_accuracy": 5,
-                "composition_quality": 5,
-                "location_free": True,
-                "findings": [],
-                "correction_findings": [],
-                "verification_sources": [
-                    {"title": "One", "url": "https://birds.example/one"},
-                    {"title": "Two", "url": "https://birds.example/two"},
-                ],
-            }
-        )
-
-        self.assertFalse(review.passed)
+        with self.assertRaisesRegex(GenerationError, "independent verification source domains"):
+            _parse_review(
+                {
+                    "passed": True,
+                    "species_accuracy": 5,
+                    "anatomy_accuracy": 5,
+                    "text_accuracy": 5,
+                    "composition_quality": 5,
+                    "location_free": True,
+                    "findings": [],
+                    "correction_findings": [],
+                    "verification_sources": [
+                        {"title": "One", "url": "https://birds.example/one"},
+                        {"title": "Two", "url": "https://birds.example/two"},
+                    ],
+                }
+            )
 
     def test_failed_review_requires_actionable_corrections(self) -> None:
         with self.assertRaisesRegex(GenerationError, "must include correction_findings"):

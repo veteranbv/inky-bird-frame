@@ -232,6 +232,7 @@ def approved_taxon_ids(catalog_dir: Path) -> set[int]:
 def has_passing_sourced_review(review: object) -> bool:
     if not isinstance(review, dict):
         return False
+    correction_findings = review.get("correction_findings", [])
     score_fields = (
         "species_accuracy",
         "anatomy_accuracy",
@@ -241,6 +242,8 @@ def has_passing_sourced_review(review: object) -> bool:
     if (
         review.get("passed") is not True
         or review.get("location_free") is not True
+        or not isinstance(correction_findings, list)
+        or bool(correction_findings)
         or any(
             not isinstance(review.get(field), int)
             or isinstance(review.get(field), bool)
