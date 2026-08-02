@@ -7,11 +7,13 @@ import unittest
 from argparse import Namespace
 from contextlib import redirect_stdout
 from datetime import date
+from importlib.metadata import version
 from pathlib import Path
 from tempfile import TemporaryDirectory
 from types import SimpleNamespace
 from unittest.mock import patch
 
+import inky_bird_frame
 from inky_bird_frame.birds import BirdSpecies, DateRange
 from inky_bird_frame.cli import (
     build_parser,
@@ -39,6 +41,9 @@ from inky_bird_frame.retry import RetryStore
 
 
 class CliTests(unittest.TestCase):
+    def test_runtime_version_matches_package_metadata(self) -> None:
+        self.assertEqual(inky_bird_frame.__version__, version("inky-bird-frame"))
+
     def test_status_requires_explicit_config(self) -> None:
         args = build_parser().parse_args(["status", "--config", "instance.toml"])
 
