@@ -73,7 +73,6 @@ class CatalogRequestHandler(BaseHTTPRequestHandler):
                     {"ok": False, "error": "active catalog unavailable", "schema_version": 1},
                 )
                 return
-            self._send_json(HTTPStatus.OK, payload)
             # Only display nodes send the marker; a curl or monitor fetch must
             # not refresh the liveness signal.
             if parse_qs(split.query).get("reports_success") == ["1"]:
@@ -82,6 +81,7 @@ class CatalogRequestHandler(BaseHTTPRequestHandler):
                         self.state_dir / "display-last-fetch.json",
                         {"schema_version": 1, "fetched_at": utc_now()},
                     )
+            self._send_json(HTTPStatus.OK, payload)
             return
         if request_path == "/v1/display-success":
             with suppress(OSError):
