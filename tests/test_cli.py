@@ -223,6 +223,22 @@ class CliTests(unittest.TestCase):
 
         self.assertEqual(payload["source"], "iNaturalist")
         self.assertEqual(payload["sources"], ["iNaturalist"])
+        self.assertNotIn("latest_detection_at", payload)
+
+    def test_species_output_includes_latest_detection_timestamp(self) -> None:
+        timestamp = "2026-08-02T14:21:06-04:00"
+        species = BirdSpecies(
+            145310,
+            "American Goldfinch",
+            "Spinus tristis",
+            3,
+            "BirdWeather",
+            latest_detection_at=timestamp,
+        )
+
+        payload = species_to_dict(species)
+
+        self.assertEqual(payload["latest_detection_at"], timestamp)
 
     def test_seed_rejects_duplicate_source_overrides(self) -> None:
         with self.assertRaisesRegex(ValueError, "must not repeat"):

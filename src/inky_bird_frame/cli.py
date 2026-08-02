@@ -86,7 +86,7 @@ def print_error(exc: Exception) -> None:
 
 
 def species_to_dict(species: BirdSpecies) -> dict[str, object]:
-    return {
+    payload: dict[str, object] = {
         "taxon_id": species.taxon_id,
         "common_name": species.common_name,
         "scientific_name": species.scientific_name,
@@ -94,6 +94,9 @@ def species_to_dict(species: BirdSpecies) -> dict[str, object]:
         "source": species.source,
         "sources": list(species.sources),
     }
+    if species.latest_detection_at is not None:
+        payload["latest_detection_at"] = species.latest_detection_at
+    return payload
 
 
 def _config(args: argparse.Namespace, *, load_secrets: bool = True) -> AppConfig:
