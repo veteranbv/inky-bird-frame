@@ -7,11 +7,13 @@ import unittest
 from argparse import Namespace
 from contextlib import redirect_stdout
 from datetime import date
+from importlib.metadata import version
 from pathlib import Path
 from tempfile import TemporaryDirectory
 from types import SimpleNamespace
 from unittest.mock import patch
 
+import inky_bird_frame
 from inky_bird_frame.birds import BirdSpecies, DateRange
 from inky_bird_frame.cli import (
     build_parser,
@@ -39,6 +41,9 @@ from inky_bird_frame.retry import RetryStore
 
 
 class CliTests(unittest.TestCase):
+    def test_runtime_version_matches_package_metadata(self) -> None:
+        self.assertEqual(inky_bird_frame.__version__, version("inky-bird-frame"))
+
     def test_status_requires_explicit_config(self) -> None:
         args = build_parser().parse_args(["status", "--config", "instance.toml"])
 
@@ -529,6 +534,34 @@ rotation_mode = "shuffle_bag"
         self.assertIsNotNone(guidance)
         if guidance is not None:
             self.assertEqual(guidance.findings, (REVIEW_FAILURE_FALLBACK,))
+
+    def test_retry_reads_findings_from_legacy_null_correction_field(self) -> None:
+        with TemporaryDirectory() as temporary:
+            state_dir = Path(temporary)
+            review = state_dir / "failed/42-example-bird/attempt-01/quality-review.json"
+            review.parent.mkdir(parents=True)
+            review.write_text(
+                json.dumps(
+                    {
+                        "passed": False,
+                        "findings": ["Correct the measurement ranges"],
+                        "correction_findings": None,
+                    }
+                )
+            )
+            config = SimpleNamespace(controller=SimpleNamespace(state_dir=state_dir))
+
+            with (
+                patch("inky_bird_frame.cli._config", return_value=config),
+                redirect_stdout(io.StringIO()),
+            ):
+                retry_command(Namespace(taxon_id=42))
+
+            guidance = RetryStore(state_dir / "generation-retries.json").quality_guidance(42)
+
+        self.assertIsNotNone(guidance)
+        if guidance is not None:
+            self.assertEqual(guidance.findings, ("Correct the measurement ranges",))
 
     def test_retry_archives_incomplete_pending_candidate(self) -> None:
         with TemporaryDirectory() as temporary:
