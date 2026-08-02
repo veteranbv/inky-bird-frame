@@ -220,18 +220,27 @@ uv run inky-bird-frame refresh --config config.toml
 # Generate and review missing plates from the latest refresh.
 uv run inky-bird-frame generate --config config.toml
 
-# Queue a broader one-time set without changing the active display window.
+# Add a broader one-time set to the private collection and queue missing plates.
 uv run inky-bird-frame seed --config config.toml --source inaturalist \
   --window last-year --species-limit 500
 
-# Queue species from one historical place and inclusive date range without
-# changing the configured discovery location or active display window.
+# Add species from one historical place and inclusive date range without
+# changing the configured discovery location or current observation snapshot.
 uv run inky-bird-frame seed --config config.toml --source inaturalist \
   --latitude 40.7128 --longitude -74.0060 --radius-km 11 \
   --start-date 2026-04-01 --end-date 2026-04-03 \
   --species-limit 500 --dry-run
 
-# Inspect approved, pending, and failed work.
+# Preview and explicitly trust every plate already in this local catalog.
+uv run inky-bird-frame collection import-approved --config config.toml --dry-run
+uv run inky-bird-frame collection import-approved --config config.toml
+
+# Inspect or adjust persistent local membership one taxon at a time.
+uv run inky-bird-frame collection list --config config.toml
+uv run inky-bird-frame collection add 12942 --config config.toml
+uv run inky-bird-frame collection remove 12942 --config config.toml --dry-run
+
+# Inspect approved, actionable, deferred, terminal-blocked, and failed work.
 uv run inky-bird-frame status --config config.toml
 
 # Serve the catalog and rotate the next approved plate.
@@ -252,6 +261,14 @@ Choose `last-day`, `last-week`, `last-30-days`, `last-year`, or `all-time` for
 the observation window. Provider limits still apply. The
 [discovery guide](docs/discovery.md) explains credentials, merging, privacy,
 and those limits.
+
+The active display catalog contains approved taxa that are either currently
+observed or members of the private collection. Observation metadata wins when a
+taxon appears in both. Collection-only plates carry no invented observation
+count or detection timestamp. Catalog synchronization never adds collection
+membership by itself; use an observation, `seed`, `collection add`, or the
+explicit one-time `collection import-approved` command to make a new catalog
+taxon locally eligible.
 
 Rotation modes are `sequential`, `shuffle`, `shuffle_bag`, and `weighted`.
 `shuffle_bag` is the default: it shows every active bird once before starting a

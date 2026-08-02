@@ -25,6 +25,7 @@ from inky_bird_frame.cli import (
     seed_command,
     serve_command,
     species_to_dict,
+    status_command,
 )
 from inky_bird_frame.config import DiscoveryProvider
 from inky_bird_frame.controller import REVIEW_FAILURE_FALLBACK, exclusive_cycle_lock
@@ -163,6 +164,64 @@ class CliTests(unittest.TestCase):
         self.assertEqual(args.radius_km, 16)
         self.assertEqual(args.species_limit, 500)
         self.assertTrue(args.dry_run)
+
+    def test_collection_commands_support_explicit_preview_and_mutation(self) -> None:
+        listed = build_parser().parse_args(["collection", "list", "--config", "instance.toml"])
+        imported = build_parser().parse_args(
+            [
+                "collection",
+                "import-approved",
+                "--config",
+                "instance.toml",
+                "--dry-run",
+            ]
+        )
+        added = build_parser().parse_args(["collection", "add", "42", "--config", "instance.toml"])
+        removed = build_parser().parse_args(
+            ["collection", "remove", "42", "--config", "instance.toml", "--dry-run"]
+        )
+
+        self.assertEqual(str(listed.config), "instance.toml")
+        self.assertTrue(imported.dry_run)
+        self.assertEqual(added.taxon_id, 42)
+        self.assertFalse(added.dry_run)
+        self.assertEqual(removed.taxon_id, 42)
+        self.assertTrue(removed.dry_run)
+
+    def test_status_separates_terminal_blocked_queue_entries(self) -> None:
+        actionable = BirdSpecies(1, "Ready Bird", "Avis parata", 2, "iNaturalist")
+        blocked = {
+            "taxon_id": 2,
+            "common_name": "Blocked Bird",
+            "terminal_state": "failed",
+            "paths": ["state/failed/2-blocked-bird"],
+        }
+        queue = SimpleNamespace(
+            actionable=[actionable],
+            terminal_blocked=[SimpleNamespace(as_dict=lambda: blocked)],
+        )
+        with TemporaryDirectory() as temporary:
+            state = Path(temporary)
+            config = SimpleNamespace(
+                controller=SimpleNamespace(catalog_dir=state / "catalog", state_dir=state)
+            )
+            output = io.StringIO()
+            with (
+                patch("inky_bird_frame.cli._config", return_value=config),
+                patch("inky_bird_frame.cli.rebuild_catalog_index", return_value=[]),
+                patch("inky_bird_frame.cli.read_generation_queue_partition", return_value=queue),
+                patch(
+                    "inky_bird_frame.cli.collection_status",
+                    return_value={"collection_count": 0, "members": []},
+                ),
+                redirect_stdout(output),
+            ):
+                status_command(Namespace())
+
+        payload = json.loads(output.getvalue())["data"]
+        self.assertEqual([entry["taxon_id"] for entry in payload["queued"]], [1])
+        self.assertEqual(payload["terminal_blocked"], [blocked])
+        self.assertEqual(payload["collection"], {"collection_count": 0})
 
     def test_seed_supports_historical_dates_and_coordinates(self) -> None:
         args = build_parser().parse_args(

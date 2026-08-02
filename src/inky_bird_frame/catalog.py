@@ -10,6 +10,7 @@ from collections.abc import Iterator
 from contextlib import contextmanager, suppress
 from dataclasses import dataclass
 from datetime import UTC, datetime
+from enum import StrEnum
 from pathlib import Path
 from typing import cast
 
@@ -18,8 +19,30 @@ from .errors import CatalogError
 from .http import write_json_atomic
 from .images import slugify
 from .models import QualityReview, ReferencePhoto, SpeciesProfileData
+from .timeutil import parse_utc_timestamp
 
 SCHEMA_VERSION = 1
+COLLECTION_SCHEMA_VERSION = 1
+
+
+class CollectionOrigin(StrEnum):
+    MANUAL = "manual"
+    CATALOG_IMPORT = "catalog_import"
+    HISTORICAL_SEED = "historical_seed"
+
+
+@dataclass(frozen=True)
+class CollectionEntry:
+    taxon_id: int
+    added_at: str
+    origin: CollectionOrigin
+
+    def as_dict(self) -> dict[str, object]:
+        return {
+            "taxon_id": self.taxon_id,
+            "added_at": self.added_at,
+            "origin": self.origin.value,
+        }
 
 
 @contextmanager
@@ -68,6 +91,95 @@ class CatalogEntry:
 
 def utc_now() -> str:
     return datetime.now(UTC).replace(microsecond=0).isoformat()
+
+
+def read_collection(state_dir: Path) -> list[CollectionEntry]:
+    path = state_dir / "collection.json"
+    if not path.exists():
+        return []
+    raw = read_json(path)
+    if (
+        not isinstance(raw, dict)
+        or set(raw) != {"schema_version", "updated_at", "taxa"}
+        or raw.get("schema_version") != COLLECTION_SCHEMA_VERSION
+        or parse_utc_timestamp(raw.get("updated_at")) is None
+        or not isinstance(raw.get("taxa"), list)
+    ):
+        raise CatalogError(f"Invalid collection state: {path}")
+
+    entries: list[CollectionEntry] = []
+    seen: set[int] = set()
+    for item in cast(list[object], raw["taxa"]):
+        if not isinstance(item, dict) or set(item) != {"taxon_id", "added_at", "origin"}:
+            raise CatalogError(f"Invalid collection entry: {path}")
+        taxon_id = item.get("taxon_id")
+        added_at = item.get("added_at")
+        origin = item.get("origin")
+        if (
+            not isinstance(taxon_id, int)
+            or isinstance(taxon_id, bool)
+            or taxon_id <= 0
+            or taxon_id in seen
+            or not isinstance(added_at, str)
+            or parse_utc_timestamp(added_at) is None
+            or not isinstance(origin, str)
+        ):
+            raise CatalogError(f"Invalid collection entry: {path}")
+        try:
+            parsed_origin = CollectionOrigin(origin)
+        except ValueError as exc:
+            raise CatalogError(f"Invalid collection entry: {path}") from exc
+        seen.add(taxon_id)
+        entries.append(CollectionEntry(taxon_id, added_at, parsed_origin))
+    return sorted(entries, key=lambda entry: entry.taxon_id)
+
+
+def write_collection(state_dir: Path, entries: list[CollectionEntry]) -> None:
+    seen: set[int] = set()
+    for entry in entries:
+        if (
+            not isinstance(entry.taxon_id, int)
+            or isinstance(entry.taxon_id, bool)
+            or entry.taxon_id <= 0
+            or entry.taxon_id in seen
+            or parse_utc_timestamp(entry.added_at) is None
+        ):
+            raise CatalogError("Cannot write invalid collection state")
+        seen.add(entry.taxon_id)
+    write_json_atomic(
+        state_dir / "collection.json",
+        {
+            "schema_version": COLLECTION_SCHEMA_VERSION,
+            "updated_at": utc_now(),
+            "taxa": [entry.as_dict() for entry in sorted(entries, key=lambda item: item.taxon_id)],
+        },
+    )
+
+
+def add_collection_taxa(
+    entries: list[CollectionEntry],
+    taxon_ids: set[int],
+    origin: CollectionOrigin,
+) -> tuple[list[CollectionEntry], list[CollectionEntry]]:
+    if any(
+        not isinstance(taxon_id, int) or isinstance(taxon_id, bool) or taxon_id <= 0
+        for taxon_id in taxon_ids
+    ):
+        raise ValueError("collection taxon IDs must be positive integers")
+    existing_ids = {entry.taxon_id for entry in entries}
+    added_at = utc_now()
+    added = [
+        CollectionEntry(taxon_id, added_at, origin) for taxon_id in sorted(taxon_ids - existing_ids)
+    ]
+    return sorted([*entries, *added], key=lambda entry: entry.taxon_id), added
+
+
+def remove_collection_taxa(
+    entries: list[CollectionEntry], taxon_ids: set[int]
+) -> tuple[list[CollectionEntry], list[CollectionEntry]]:
+    removed = [entry for entry in entries if entry.taxon_id in taxon_ids]
+    remaining = [entry for entry in entries if entry.taxon_id not in taxon_ids]
+    return remaining, removed
 
 
 def sha256_file(path: Path) -> str:

@@ -199,8 +199,16 @@ inky-bird-frame seed --config /path/to/config.toml \
 Exact date ranges require iNaturalist because the other configured providers
 cannot guarantee the same coordinate-radius historical query semantics. Run
 without `--dry-run` only after reviewing the structured result. The seed stores
-distinct taxa in the generation queue, not raw observation records or the
-command-scoped coordinates.
+every distinct taxon as private collection membership and queues only missing,
+non-terminal plates. It stores no raw observation records or command-scoped
+coordinates. Approved seeded taxa become active immediately; unapproved taxa
+become active after a plate passes review and approval.
+
+Collection membership is independent from catalog synchronization. A plate
+added to the public catalog later is not added to the private collection merely
+because it was downloaded. Use `collection import-approved` for an explicit
+point-in-time migration or `collection add TAXON_ID` for one taxon. Current
+observations remain an independent source of active eligibility.
 
 Repeat `--source` for a multi-provider seed, for example `--source inaturalist
 --source ebird`. CLI overrides accept concrete providers rather than legacy

@@ -16,19 +16,33 @@ from inky_bird_frame.birds import (
     EbirdSpecies,
     ObservationWindow,
 )
-from inky_bird_frame.catalog import CatalogEntry, candidate_directory, write_candidate_manifest
+from inky_bird_frame.catalog import (
+    CatalogEntry,
+    CollectionEntry,
+    CollectionOrigin,
+    candidate_directory,
+    read_collection,
+    write_candidate_manifest,
+    write_collection,
+)
 from inky_bird_frame.codex_runner import CodexRunner
 from inky_bird_frame.config import DiscoveryProvider, load_config
 from inky_bird_frame.controller import (
     DiscoveryResult,
     DiscoverySnapshot,
     ProviderStatus,
+    add_collection_member,
+    collection_status,
     discover_species,
     enqueue_seed_species,
+    exclusive_cycle_lock,
     exclusive_refresh_lock,
     generate_candidate,
+    import_approved_collection,
     load_or_create_profile,
     load_or_fetch_references,
+    read_generation_queue_partition,
+    remove_collection_member,
     run_controller_cycle,
     run_generation_cycle,
     run_refresh_cycle,
@@ -173,6 +187,17 @@ class ControllerTests(unittest.TestCase):
     def test_seed_queues_distinct_unapproved_species_without_changing_discovery(self) -> None:
         approved = BirdSpecies(1, "Approved Bird", "Avis approved", 4, "iNaturalist")
         queued = BirdSpecies(2, "Queued Bird", "Avis queued", 3, "iNaturalist")
+        approved_entry = CatalogEntry(
+            1,
+            approved.common_name,
+            approved.scientific_name,
+            "approved-bird",
+            "species/1/portrait.png",
+            "a" * 64,
+            "species/1/display.png",
+            "b" * 64,
+            "2026-07-09T00:00:00+00:00",
+        )
         location = DiscoveryLocation("12345", "Exampleville", "XY", 1.0, 2.0)
         with TemporaryDirectory() as temporary:
             config_path = Path(temporary) / "config.toml"
@@ -187,6 +212,10 @@ class ControllerTests(unittest.TestCase):
                     return_value=[approved, queued],
                 ),
                 patch("inky_bird_frame.controller.approved_taxon_ids", return_value={1}),
+                patch(
+                    "inky_bird_frame.controller.rebuild_catalog_index",
+                    return_value=[approved_entry],
+                ),
             ):
                 result = enqueue_seed_species(
                     config,
@@ -195,14 +224,24 @@ class ControllerTests(unittest.TestCase):
                 )
 
             queue = json.loads((config.controller.state_dir / "generation-queue.json").read_text())
+            collection = json.loads((config.controller.state_dir / "collection.json").read_text())
+            active = json.loads((config.controller.state_dir / "active-catalog.json").read_text())
 
         self.assertEqual(result["discovered_count"], 2)
         self.assertEqual(result["already_approved_count"], 1)
         self.assertEqual(result["added_count"], 1)
+        self.assertEqual(result["collection_added_count"], 2)
+        self.assertEqual(result["collection_count"], 2)
+        self.assertEqual(result["collection_added_taxon_ids"], [1, 2])
         added = cast(list[dict[str, object]], result["added"])
         self.assertEqual(added[0]["source"], "iNaturalist")
         self.assertEqual(queue["species"][0]["taxon_id"], 2)
         self.assertNotIn("zip_code", queue)
+        self.assertEqual([item["taxon_id"] for item in collection["taxa"]], [1, 2])
+        self.assertTrue(all(item["origin"] == "historical_seed" for item in collection["taxa"]))
+        self.assertNotIn("zip_code", collection)
+        self.assertEqual([item["taxon_id"] for item in active["species"]], [1])
+        self.assertNotIn("observation_count", active["species"][0])
 
     def test_seed_dry_run_does_not_create_controller_state(self) -> None:
         species = BirdSpecies(2, "New Bird", "Avis nova", 1, "eBird")
@@ -227,6 +266,7 @@ class ControllerTests(unittest.TestCase):
             state_exists = config.controller.state_dir.exists()
 
         self.assertEqual(result["added_count"], 1)
+        self.assertEqual(result["collection_added_count"], 1)
         self.assertFalse(state_exists)
         self.assertFalse(discover.call_args.kwargs["persist_taxonomy_cache"])
 
@@ -274,6 +314,156 @@ class ControllerTests(unittest.TestCase):
                     sources=(DiscoveryProvider.EBIRD,),
                     dry_run=True,
                 )
+
+    def test_approved_catalog_import_is_explicit_idempotent_and_isolates_later_entries(
+        self,
+    ) -> None:
+        approved = [
+            CatalogEntry(
+                taxon_id,
+                f"Bird {taxon_id}",
+                f"Avis {taxon_id}",
+                f"bird-{taxon_id}",
+                f"species/{taxon_id}/portrait.png",
+                "a" * 64,
+                f"species/{taxon_id}/display.png",
+                "b" * 64,
+                "2026-07-09T00:00:00+00:00",
+            )
+            for taxon_id in (1, 2)
+        ]
+        external = CatalogEntry(
+            3,
+            "External Bird",
+            "Avis externa",
+            "external-bird",
+            "species/3/portrait.png",
+            "a" * 64,
+            "species/3/display.png",
+            "b" * 64,
+            "2026-08-02T00:00:00+00:00",
+        )
+        with TemporaryDirectory() as temporary:
+            config_path = Path(temporary) / "config.toml"
+            config_path.write_text(CONFIG)
+            config = load_config(config_path)
+            with (
+                patch("inky_bird_frame.controller.read_catalog_entries", return_value=approved),
+                patch("inky_bird_frame.controller._write_active_catalog", return_value=2),
+            ):
+                preview = import_approved_collection(config, dry_run=True)
+                state_after_preview = config.controller.state_dir.exists()
+                applied = import_approved_collection(config)
+                repeated = import_approved_collection(config)
+            with patch(
+                "inky_bird_frame.controller.read_catalog_entries",
+                return_value=[*approved, external],
+            ):
+                status = collection_status(config)
+            persisted = read_collection(config.controller.state_dir)
+
+        self.assertFalse(state_after_preview)
+        self.assertEqual(preview["added_count"], 2)
+        self.assertEqual(preview["added_taxon_ids"], [1, 2])
+        self.assertEqual(applied["added_count"], 2)
+        self.assertEqual(repeated["added_count"], 0)
+        self.assertEqual([entry.taxon_id for entry in persisted], [1, 2])
+        self.assertEqual(status["collection_count"], 2)
+        members = cast(list[dict[str, object]], status["members"])
+        self.assertNotIn(3, {member["taxon_id"] for member in members})
+
+    def test_collection_remove_preserves_observation_based_activation(self) -> None:
+        approved = CatalogEntry(
+            1,
+            "Observed Bird",
+            "Avis observata",
+            "observed-bird",
+            "species/1/portrait.png",
+            "a" * 64,
+            "species/1/display.png",
+            "b" * 64,
+            "2026-07-09T00:00:00+00:00",
+        )
+        observed = BirdSpecies(1, "Observed Bird", "Avis observata", 3, "BirdWeather")
+        with TemporaryDirectory() as temporary:
+            config_path = Path(temporary) / "config.toml"
+            config_path.write_text(CONFIG)
+            config = load_config(config_path)
+            write_collection(
+                config.controller.state_dir,
+                [
+                    CollectionEntry(
+                        1,
+                        "2026-08-02T12:00:00+00:00",
+                        CollectionOrigin.MANUAL,
+                    )
+                ],
+            )
+            with (
+                patch(
+                    "inky_bird_frame.controller.read_catalog_entries",
+                    return_value=[approved],
+                ),
+                patch(
+                    "inky_bird_frame.controller._current_discovery_species",
+                    return_value=[observed],
+                ),
+                patch("inky_bird_frame.controller._write_active_catalog", return_value=1),
+            ):
+                result = remove_collection_member(config, 1)
+
+        self.assertEqual(result["removed_count"], 1)
+        self.assertEqual(result["removed_taxon_ids"], [1])
+        self.assertEqual(result["collection_count"], 0)
+        self.assertEqual(result["active_approved_count"], 1)
+
+    def test_collection_mutation_respects_the_controller_cycle_lock(self) -> None:
+        with TemporaryDirectory() as temporary:
+            config_path = Path(temporary) / "config.toml"
+            config_path.write_text(CONFIG)
+            config = load_config(config_path)
+
+            with (
+                exclusive_cycle_lock(config.controller.state_dir),
+                self.assertRaisesRegex(GenerationError, "already running"),
+            ):
+                add_collection_member(config, 1)
+
+    def test_terminal_queue_entries_are_separate_from_actionable_work(self) -> None:
+        actionable = BirdSpecies(1, "Ready Bird", "Avis parata", 2, "iNaturalist")
+        blocked = BirdSpecies(2, "Blocked Bird", "Avis impedita", 1, "iNaturalist")
+        with TemporaryDirectory() as temporary:
+            config_path = Path(temporary) / "config.toml"
+            config_path.write_text(CONFIG)
+            config = load_config(config_path)
+            config.controller.state_dir.mkdir(parents=True)
+            (config.controller.state_dir / "generation-queue.json").write_text(
+                json.dumps(
+                    {
+                        "schema_version": 2,
+                        "updated_at": datetime.now(UTC).isoformat(),
+                        "species": [
+                            {
+                                "taxon_id": species.taxon_id,
+                                "common_name": species.common_name,
+                                "scientific_name": species.scientific_name,
+                                "observation_count": species.observation_count,
+                                "source": species.source,
+                            }
+                            for species in (actionable, blocked)
+                        ],
+                    }
+                )
+            )
+            failed = config.controller.state_dir / "failed/2-blocked-bird"
+            failed.mkdir(parents=True)
+            with patch("inky_bird_frame.controller.approved_taxon_ids", return_value=set()):
+                partition = read_generation_queue_partition(config)
+
+        self.assertEqual([species.taxon_id for species in partition.actionable], [1])
+        self.assertEqual(len(partition.terminal_blocked), 1)
+        self.assertEqual(partition.terminal_blocked[0].species.taxon_id, 2)
+        self.assertEqual(partition.terminal_blocked[0].state, "failed")
 
     def test_generation_prioritizes_current_species_before_seed_queue(self) -> None:
         current = BirdSpecies(1, "Current Bird", "Avis current", 4, "iNaturalist")
@@ -659,6 +849,74 @@ class ControllerTests(unittest.TestCase):
         self.assertEqual(len(snapshot["species"]), 2)
         self.assertEqual(snapshot["species"][0]["source"], "BirdWeather")
         self.assertEqual(snapshot["species"][0]["latest_detection_at"], "2026-07-13T08:10:00-04:00")
+
+    def test_refresh_unions_observations_with_private_collection_without_trusting_catalog(
+        self,
+    ) -> None:
+        observed = BirdSpecies(
+            1,
+            "Observed Bird",
+            "Avis observata",
+            7,
+            "BirdWeather",
+            latest_detection_at="2026-08-02T14:21:06-04:00",
+        )
+        location = DiscoveryLocation("12345", "Exampleville", "XY", 1.0, 2.0)
+        approved = [
+            CatalogEntry(
+                taxon_id,
+                name,
+                scientific_name,
+                name.lower().replace(" ", "-"),
+                f"species/{taxon_id}/portrait.png",
+                "a" * 64,
+                f"species/{taxon_id}/display.png",
+                "b" * 64,
+                "2026-07-09T00:00:00+00:00",
+            )
+            for taxon_id, name, scientific_name in (
+                (1, "Observed Bird", "Avis observata"),
+                (2, "Collected Bird", "Avis collecta"),
+                (3, "Untrusted Bird", "Avis externa"),
+            )
+        ]
+        with TemporaryDirectory() as temporary:
+            config_path = Path(temporary) / "config.toml"
+            config_path.write_text(CONFIG)
+            config = load_config(config_path)
+            write_collection(
+                config.controller.state_dir,
+                [
+                    CollectionEntry(
+                        taxon_id,
+                        "2026-08-02T12:00:00+00:00",
+                        CollectionOrigin.CATALOG_IMPORT,
+                    )
+                    for taxon_id in (1, 2)
+                ],
+            )
+            with (
+                patch(
+                    "inky_bird_frame.controller.discover_species",
+                    return_value=discovery_result(location, [observed]),
+                ),
+                patch(
+                    "inky_bird_frame.controller.rebuild_catalog_index",
+                    return_value=approved,
+                ),
+            ):
+                result = run_refresh_cycle(config)
+            active = json.loads((config.controller.state_dir / "active-catalog.json").read_text())
+
+        self.assertEqual(result["active_approved_count"], 2)
+        self.assertEqual([entry["taxon_id"] for entry in active["species"]], [1, 2])
+        self.assertEqual(active["species"][0]["observation_count"], 7)
+        self.assertEqual(
+            active["species"][0]["latest_detection_at"],
+            "2026-08-02T14:21:06-04:00",
+        )
+        self.assertNotIn("observation_count", active["species"][1])
+        self.assertNotIn("latest_detection_at", active["species"][1])
 
     def test_refresh_preserves_approved_catalog_order(self) -> None:
         first = BirdSpecies(1, "Alpha Bird", "Alpha avis", 2, "iNaturalist")

@@ -26,8 +26,15 @@ An observation refresh:
 2. queries each explicitly configured observation provider independently;
 3. exact-matches external taxonomy to canonical iNaturalist species IDs;
 4. atomically stores the private observation snapshot; and
-5. publishes a private active catalog containing only observed taxa that
-   already have approved plates.
+5. publishes a private active catalog containing approved taxa that are either
+   observed now or retained in the private local collection.
+
+The collection is a private, schema-versioned membership set. It stores only a
+taxon ID, the initial membership origin, and a timestamp. A historical `seed`
+adds every discovered taxon to this set while separately queueing missing
+plates. `collection import-approved` is the explicit migration and trust step
+for an existing catalog; later catalog synchronization does not mutate the
+collection.
 
 A locked generation cycle reads the latest non-stale snapshot and the durable
 seed queue. Current observations take priority over queued seed taxa. The cycle
@@ -43,7 +50,13 @@ then:
    attempt limit;
 8. atomically publishes passing output through the pending queue; and
 9. immediately rebuilds the private active catalog from the latest observation
-   snapshot.
+   snapshot plus collection membership.
+
+For active taxa present in the observation snapshot, provider count and latest
+detection metadata override the location-neutral catalog entry. Collection-only
+taxa omit observation metadata. This preserves active-catalog schema version 1
+and gives weighted rotation its existing neutral fallback weight without
+inventing evidence.
 
 Plate rulers are vertical schematic body-length keys: they show the sourced
 range and units, are labeled as not to scale, remain separate from the specimen,
@@ -148,6 +161,7 @@ unchanged. The next scheduled cycle retries from the current remote branch.
 | rejected | Operator override rejected a candidate | No |
 | failed | Generation exhausted its bounded attempts | No |
 | queued | Broader seed discovery awaits generation | Yes |
+| terminal-blocked | A queued taxon also has rejected or failed state | No |
 | eligible | No terminal state exists | Yes |
 
 `retry TAXON_ID` archives rejected or failed state and makes that taxon
@@ -160,10 +174,11 @@ provenance. Approved art is never replaced implicitly.
 
 ## Privacy and licensing
 
-The private discovery location and observation window influence the generation queue and
-active rotation. They are not passed to image generation and are not stored in
-catalog manifests. Observation snapshots and counts stay in ignored
-controller state.
+The private discovery location and observation window influence the generation
+queue and active rotation. They are not passed to image generation and are not
+stored in catalog manifests. Observation snapshots and counts stay in ignored
+controller state. Collection state records taxon membership only; it never
+stores locations, raw observations, or provider counts.
 
 Reference acquisition accepts only iNaturalist research-grade photos marked
 CC0 or CC BY, uses distinct observers, records attribution and source URLs, and

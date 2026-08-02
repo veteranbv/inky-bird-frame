@@ -244,10 +244,14 @@ curl --fail --silent "http://127.0.0.1:8793/health"
 
 The health response must have `"ok": true`. `approved_species` is the reusable
 catalog size. `active_species` is the approved subset currently observed in the
-configured window and radius. It may initially be zero in a region whose birds
-have not been generated yet. Both counts are read from the last built catalog
-index rather than a fresh catalog scan, so the endpoint stays fast as the
-catalog grows.
+configured window and radius or retained in the private collection. It may
+initially be zero in a region whose birds have not been generated yet. Both
+counts are read from the last built catalog index rather than a fresh catalog
+scan, so the endpoint stays fast as the catalog grows.
+
+An existing controller can explicitly retain every currently approved plate
+after upgrading by previewing and applying `collection import-approved`; see
+the [operations guide](operations.md#seed-and-manage-a-private-collection).
 
 ## 2. Prepare the display Pi
 
@@ -483,7 +487,8 @@ just pulled rather than the previous managed copy.
 When the controller and display are updated separately, update display nodes
 first. The active catalog wire format is `schema_version: 1`, and a display
 node refuses a catalog with a newer schema version: the cycle fails closed
-and the panel keeps its last image until the display is updated.
+and the panel keeps its last image until the display is updated. Private
+collection membership does not change this wire schema.
 
 Docker controller updates pull a published image and recreate the services. See
 the [Docker update instructions](docker.md#update) for version pinning and

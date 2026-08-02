@@ -99,11 +99,12 @@ and display state paths remain TOML configuration. Installer bootstrap paths,
 including the TOML path itself, remain environment variables because the
 installer must find the configuration before it can load it.
 
-## Seed a broader catalog
+## Seed and manage a private collection
 
-The active display window and the generation backlog are separate. Use `seed`
-to enqueue distinct taxa from a broader period without changing which birds are
-currently active on the display:
+The current observation snapshot, private collection, and generation backlog
+are separate state. Use `seed` to add every distinct discovered taxon to the
+private collection and enqueue any missing plate without changing the
+configured discovery location or current observation snapshot:
 
 ```bash
 inky-bird-frame seed --config /path/to/config.toml \
@@ -127,8 +128,57 @@ beyond 30 days or guarantee arbitrary coordinate-radius historical windows, so
 exact date ranges require iNaturalist. `--latitude` and `--longitude` must be
 provided together and do not change the configured location. The configured
 radius is used unless `--radius-km` is provided. Repeating a seed
-is idempotent: approved, terminal, and already queued taxa are not added again.
-Current observations remain ahead of seed-only taxa during generation.
+is idempotent: collection members and queued taxa are not duplicated. Approved
+seeded taxa become active immediately; unapproved taxa remain members while
+their missing plates move through generation. Terminal taxa stay blocked until
+an explicit `retry`. Current observations remain ahead of seed-only taxa during
+generation.
+
+To migrate an existing local catalog, preview and then explicitly import its
+currently approved taxa:
+
+```bash
+inky-bird-frame collection import-approved --config /path/to/config.toml --dry-run
+inky-bird-frame collection import-approved --config /path/to/config.toml
+inky-bird-frame collection list --config /path/to/config.toml
+```
+
+The import is a point-in-time trust decision. Later catalog synchronization does
+not silently add new members. Manage individual taxa with the same previewable
+commands:
+
+```bash
+inky-bird-frame collection add 12942 --config /path/to/config.toml --dry-run
+inky-bird-frame collection add 12942 --config /path/to/config.toml
+inky-bird-frame collection remove 12942 --config /path/to/config.toml --dry-run
+inky-bird-frame collection remove 12942 --config /path/to/config.toml
+```
+
+Removal clears persistent membership but does not suppress a taxon that is also
+in the current observation snapshot. The private `collection.json` stores only
+taxon ID, initial membership origin, and timestamp. It stores no coordinates,
+raw observations, names, or provider counts.
+
+The active catalog contains approved taxa in either current observations or the
+private collection. When both contain a taxon, current observation count and
+latest BirdWeather detection metadata take precedence. Collection-only entries
+omit both fields; weighted rotation uses the display node's existing neutral
+weight of one instead of fabricated evidence.
+
+## Interpret generation status
+
+`status` separates persistent generation work into these views:
+
+- `queued`: unapproved seed-queue taxa still eligible for automatic work;
+- `deferred`: the subset governed by a durable retry schedule after a transient
+  failure; and
+- `terminal_blocked`: queued taxa with rejected or exhausted failed state that
+  require explicit `retry`.
+
+`deferred` can overlap `queued`; it explains when an otherwise actionable taxon
+will be attempted again. `terminal_blocked` never counts toward `queued_count`
+in generation-cycle output. Passing pending candidates remain visible in the
+separate `pending` view and are recovered at the start of a generation cycle.
 
 ## Run a combined cycle
 

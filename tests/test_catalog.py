@@ -9,12 +9,18 @@ from tempfile import TemporaryDirectory
 
 from inky_bird_frame.birds import BirdSpecies
 from inky_bird_frame.catalog import (
+    CollectionEntry,
+    CollectionOrigin,
+    add_collection_taxa,
     approve_candidate,
     candidate_directory,
     read_catalog_entries,
+    read_collection,
     read_json,
     rebuild_catalog_index,
+    remove_collection_taxa,
     write_candidate_manifest,
+    write_collection,
 )
 from inky_bird_frame.errors import CatalogError
 from inky_bird_frame.http import write_json_atomic
@@ -65,6 +71,79 @@ class CatalogTests(unittest.TestCase):
             payload = json.loads(path.read_text())
 
         self.assertIn(payload["value"], range(32))
+
+    def test_collection_round_trip_contains_only_private_membership_metadata(self) -> None:
+        with TemporaryDirectory() as temporary:
+            state = Path(temporary)
+            expected = [
+                CollectionEntry(
+                    12942,
+                    "2026-08-02T12:00:00+00:00",
+                    CollectionOrigin.CATALOG_IMPORT,
+                )
+            ]
+
+            write_collection(state, expected)
+
+            payload = json.loads((state / "collection.json").read_text())
+            actual = read_collection(state)
+
+        self.assertEqual(actual, expected)
+        self.assertEqual(set(payload), {"schema_version", "updated_at", "taxa"})
+        self.assertEqual(
+            set(payload["taxa"][0]),
+            {"taxon_id", "added_at", "origin"},
+        )
+
+    def test_collection_addition_is_idempotent_and_removal_is_explicit(self) -> None:
+        entries, added = add_collection_taxa(
+            [],
+            {2, 1},
+            CollectionOrigin.HISTORICAL_SEED,
+        )
+
+        repeated, repeated_added = add_collection_taxa(
+            entries,
+            {1},
+            CollectionOrigin.MANUAL,
+        )
+        remaining, removed = remove_collection_taxa(repeated, {2})
+
+        self.assertEqual([entry.taxon_id for entry in added], [1, 2])
+        self.assertEqual(repeated, entries)
+        self.assertEqual(repeated_added, [])
+        self.assertEqual(
+            [entry.origin for entry in repeated],
+            [
+                CollectionOrigin.HISTORICAL_SEED,
+                CollectionOrigin.HISTORICAL_SEED,
+            ],
+        )
+        self.assertEqual([entry.taxon_id for entry in remaining], [1])
+        self.assertEqual([entry.taxon_id for entry in removed], [2])
+
+    def test_collection_rejects_unrecognized_state_fields(self) -> None:
+        with TemporaryDirectory() as temporary:
+            state = Path(temporary)
+            (state / "collection.json").write_text(
+                json.dumps(
+                    {
+                        "schema_version": 1,
+                        "updated_at": "2026-08-02T12:00:00+00:00",
+                        "taxa": [
+                            {
+                                "taxon_id": 12942,
+                                "added_at": "2026-08-02T12:00:00+00:00",
+                                "origin": "manual",
+                                "latitude": 35.0,
+                            }
+                        ],
+                    }
+                )
+            )
+
+            with self.assertRaisesRegex(CatalogError, "Invalid collection entry"):
+                read_collection(state)
 
     def test_approved_seed_has_valid_checksums(self) -> None:
         catalog = Path(__file__).parents[1] / "catalog"
