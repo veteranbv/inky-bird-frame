@@ -1,0 +1,46 @@
+{
+  "behavior": "Highly social scavenger that soars in flocks on thermals, alternating strong, rapid wingbeats with short, flat-winged glides. It feeds mainly on carrion, locates food visually or by following other vultures, and roosts communally.",
+  "common_name": "Black Vulture",
+  "family": "Cathartidae",
+  "field_marks": [
+    "Compact, stocky body with broad, fingered wings",
+    "Very short, rounded to square-tipped tail",
+    "Sooty-black plumage overall",
+    "Small, bare, wrinkled dark gray to black head",
+    "Narrow, pale gray, strongly hooked bill with dark eyes",
+    "Silvery-white patches confined to the outer underwings"
+  ],
+  "habitat": "Open and semi-open lowlands within forested landscapes, including grasslands, savannas, scrub, agricultural areas, roadsides, and developed settings. It forages over open ground but usually roosts and nests in wooded cover, cavities, caves, or sheltered structures.",
+  "measurements": {
+    "length": "60\u201368 cm (23.6\u201326.8 in)",
+    "weight": "1.6\u20132.2 kg (56.4\u201377.6 oz)",
+    "wingspan": "137\u2013150 cm (53.9\u201359.1 in)"
+  },
+  "palette": [
+    "sooty black",
+    "charcoal gray",
+    "silver-white",
+    "pale gray",
+    "dusky brown"
+  ],
+  "scientific_name": "Coragyps atratus",
+  "sources": [
+    {
+      "title": "Black Vulture Identification \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/black_vulture/id"
+    },
+    {
+      "title": "Black Vulture Life History \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Black_Vulture/lifehistory"
+    },
+    {
+      "title": "Black Vulture \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/black-vulture"
+    },
+    {
+      "title": "Coragyps atratus \u2014 Animal Diversity Web",
+      "url": "https://animaldiversity.org/accounts/Coragyps_atratus/"
+    }
+  ],
+  "taxon_id": 4765
+}

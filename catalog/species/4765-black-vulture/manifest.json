@@ -1,0 +1,162 @@
+{
+  "approved_at": "2026-08-02T22:46:54+00:00",
+  "assets": {
+    "display": {
+      "filename": "display.png",
+      "sha256": "a9f9901c836343e4c2701171a498b946e2c37a8c158c5c0972a79b521a78df15"
+    },
+    "portrait": {
+      "filename": "portrait.png",
+      "sha256": "055e0a0aba9b8191eec22b3d4af97f2df358768e5e2d95efa712aa6f2cb3ad77"
+    }
+  },
+  "common_name": "Black Vulture",
+  "generation": {
+    "attempt": 2,
+    "correction_source_sha256": "01c545bb393bd158a97cf6883f701d95e9abb88fbfa7014ed2cd996a4437f068",
+    "generated_at": "2026-08-02T22:46:54+00:00",
+    "generator": "Codex subscription / built-in gpt-image-2",
+    "max_attempts": 3,
+    "prompt_version": "field-journal-v3"
+  },
+  "profile": {
+    "behavior": "Highly social scavenger that soars in flocks on thermals, alternating strong, rapid wingbeats with short, flat-winged glides. It feeds mainly on carrion, locates food visually or by following other vultures, and roosts communally.",
+    "common_name": "Black Vulture",
+    "family": "Cathartidae",
+    "field_marks": [
+      "Compact, stocky body with broad, fingered wings",
+      "Very short, rounded to square-tipped tail",
+      "Sooty-black plumage overall",
+      "Small, bare, wrinkled dark gray to black head",
+      "Narrow, pale gray, strongly hooked bill with dark eyes",
+      "Silvery-white patches confined to the outer underwings"
+    ],
+    "habitat": "Open and semi-open lowlands within forested landscapes, including grasslands, savannas, scrub, agricultural areas, roadsides, and developed settings. It forages over open ground but usually roosts and nests in wooded cover, cavities, caves, or sheltered structures.",
+    "measurements": {
+      "length": "60\u201368 cm (23.6\u201326.8 in)",
+      "weight": "1.6\u20132.2 kg (56.4\u201377.6 oz)",
+      "wingspan": "137\u2013150 cm (53.9\u201359.1 in)"
+    },
+    "palette": [
+      "sooty black",
+      "charcoal gray",
+      "silver-white",
+      "pale gray",
+      "dusky brown"
+    ],
+    "scientific_name": "Coragyps atratus",
+    "sources": [
+      {
+        "title": "Black Vulture Identification \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/black_vulture/id"
+      },
+      {
+        "title": "Black Vulture Life History \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Black_Vulture/lifehistory"
+      },
+      {
+        "title": "Black Vulture \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/black-vulture"
+      },
+      {
+        "title": "Coragyps atratus \u2014 Animal Diversity Web",
+        "url": "https://animaldiversity.org/accounts/Coragyps_atratus/"
+      }
+    ],
+    "taxon_id": 4765
+  },
+  "quality_review": {
+    "anatomy_accuracy": 4,
+    "composition_quality": 5,
+    "correction_findings": [],
+    "findings": [
+      "The plate is identifiable as an adult Black Vulture: compact black body, small bare dark-gray head, pale strongly hooked bill, broad fingered wings, short tail, and silvery outer-primary patches agree with the live sources and reference photos.",
+      "The stated length of 60\u201368 cm, weight of 1.6\u20132.2 kg, and wingspan of 137\u2013150 cm exactly match Cornell's published measurements and are independently corroborated by Audubon.",
+      "The common name, scientific name Coragyps atratus, and family Cathartidae are correct.",
+      "The habitat and behavior text is accurate: the species uses open areas near wooded cover, feeds chiefly on carrion, finds food visually or by following other vultures, flies with quick strong flaps and short flat-winged glides, and roosts socially.",
+      "The adult plumage agrees especially well with references 2 and 5. References 3 and 4 show juvenile and leucistic variation and do not contradict the plate's normal-adult treatment.",
+      "The flying inset correctly places the pale patches on the outer underwings and shows broad wings with separated primary \u201cfingers\u201d and a short tail.",
+      "Each full-body bird has one head, one beak, two wings, two legs, and one tail without duplicated or malformed appendages. The lateral main pose naturally obscures part of the far wing and tail.",
+      "The head texture and grasping claws are somewhat more sharply stylized than in the photographs, but the bare wrinkled skin, bill, legs, toes, and overall proportions remain scientifically recognizable and not materially misleading.",
+      "All visible factual text is legible and consistent with the verified sources. The centimeter/inch ruler is explicitly labeled schematic and not to scale.",
+      "No place name, ZIP code, coordinates, map, or local-observation detail appears."
+    ],
+    "location_free": true,
+    "passed": true,
+    "species_accuracy": 4,
+    "text_accuracy": 5,
+    "verification_sources": [
+      {
+        "title": "Black Vulture Identification \u2014 All About Birds, Cornell Lab of Ornithology",
+        "url": "https://www.allaboutbirds.org/guide/Black_Vulture/id"
+      },
+      {
+        "title": "Black Vulture \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/black-vulture"
+      },
+      {
+        "title": "Coragyps atratus \u2014 Animal Diversity Web",
+        "url": "https://animaldiversity.org/accounts/Coragyps_atratus/"
+      }
+    ]
+  },
+  "references": [
+    {
+      "attribution": "(c) Cricket Raspet, some rights reserved (CC BY)",
+      "filename": "01-342659116.jpeg",
+      "height": 1365,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/342659116/large.jpeg",
+      "license_code": "cc-by",
+      "observation_id": 194868533,
+      "observer": "chilipossum",
+      "photo_id": 342659116,
+      "sha256": "ba108da5a734f64c95144746a5054bde9230e6f8381a71fcdcb93d69ee642150",
+      "source_url": "https://www.inaturalist.org/observations/194868533",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) Wendy McCrady, some rights reserved (CC BY)",
+      "filename": "02-272508904.jpg",
+      "height": 1429,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/272508904/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 157630322,
+      "observer": "wendybirds",
+      "photo_id": 272508904,
+      "sha256": "d519d5a87dd67b50ca2ed0da3df00007bf27ea87a4b97a77997bd60fa86eca3f",
+      "source_url": "https://www.inaturalist.org/observations/157630322",
+      "width": 2000
+    },
+    {
+      "attribution": "(c) Luis Mora, some rights reserved (CC BY)",
+      "filename": "03-151610749.jpeg",
+      "height": 1536,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/151610749/large.jpeg",
+      "license_code": "cc-by",
+      "observation_id": 91636383,
+      "observer": "krotalo25",
+      "photo_id": 151610749,
+      "sha256": "bacbe70d473a27ec87a1aa917a53dcc258f1f3826faf3adfee70498da441f370",
+      "source_url": "https://www.inaturalist.org/observations/91636383",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) Carrie Seltzer, some rights reserved (CC BY)",
+      "filename": "04-172050435.jpg",
+      "height": 1969,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/172050435/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 102869022,
+      "observer": "carrieseltzer",
+      "photo_id": 172050435,
+      "sha256": "4cca68ceb0255a0600748cec5b059855c1b650769559244861861c57b7f71d0c",
+      "source_url": "https://www.inaturalist.org/observations/102869022",
+      "width": 2048
+    }
+  ],
+  "schema_version": 1,
+  "scientific_name": "Coragyps atratus",
+  "slug": "black-vulture",
+  "status": "approved",
+  "taxon_id": 4765
+}

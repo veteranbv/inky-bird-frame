@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-02T21:09:01+00:00",
+  "generated_at": "2026-08-02T22:46:54+00:00",
   "schema_version": 1,
   "species": [
     {
@@ -78,6 +78,17 @@
       "scientific_name": "Hirundo rustica",
       "slug": "barn-swallow",
       "taxon_id": 11901
+    },
+    {
+      "approved_at": "2026-08-02T22:46:54+00:00",
+      "common_name": "Black Vulture",
+      "display_path": "species/4765-black-vulture/display.png",
+      "display_sha256": "a9f9901c836343e4c2701171a498b946e2c37a8c158c5c0972a79b521a78df15",
+      "portrait_path": "species/4765-black-vulture/portrait.png",
+      "portrait_sha256": "055e0a0aba9b8191eec22b3d4af97f2df358768e5e2d95efa712aa6f2cb3ad77",
+      "scientific_name": "Coragyps atratus",
+      "slug": "black-vulture",
+      "taxon_id": 4765
     },
     {
       "approved_at": "2026-07-10T14:16:22+00:00",
