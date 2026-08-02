@@ -34,7 +34,8 @@ taxon ID, the initial membership origin, and a timestamp. A historical `seed`
 adds every discovered taxon to this set while separately queueing missing
 plates. `collection import-approved` is the explicit migration and trust step
 for an existing catalog; later catalog synchronization does not mutate the
-collection.
+collection. Before generation can consume work, it idempotently backfills any
+pre-collection seed-queue taxa into membership.
 
 A locked generation cycle reads the latest non-stale snapshot and the durable
 seed queue. Current observations take priority over queued seed taxa. The cycle

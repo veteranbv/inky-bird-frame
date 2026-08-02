@@ -1169,6 +1169,14 @@ def run_generation_cycle(config: AppConfig) -> dict[str, object]:
             )
         species_list = snapshot.species
         queued_species = read_generation_queue(config)
+        with catalog_state_lock(config.controller.state_dir):
+            collection, migrated_collection = add_collection_taxa(
+                read_collection(config.controller.state_dir),
+                {species.taxon_id for species in queued_species},
+                CollectionOrigin.HISTORICAL_SEED,
+            )
+            if migrated_collection:
+                write_collection(config.controller.state_dir, collection)
         generation_species = list(species_list)
         observed_taxa = {species.taxon_id for species in species_list}
         generation_species.extend(
@@ -1343,6 +1351,7 @@ def run_generation_cycle(config: AppConfig) -> dict[str, object]:
             "deferred_count": len(deferred),
             "deferred": [record.as_dict() for record in deferred],
             "outstanding_retry_count": len(outstanding_retries),
+            "migrated_collection_count": len(migrated_collection),
             "queued_count": len(queue_partition.actionable),
             "terminal_blocked_count": len(queue_partition.terminal_blocked),
             "terminal_blocked": [entry.as_dict() for entry in queue_partition.terminal_blocked],

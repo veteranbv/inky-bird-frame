@@ -521,11 +521,15 @@ class ControllerTests(unittest.TestCase):
                 patch("inky_bird_frame.controller.rebuild_catalog_index", return_value=[]),
             ):
                 result = run_generation_cycle(config)
+            collection = read_collection(config.controller.state_dir)
 
         self.assertEqual(attempted, [current.taxon_id, queued.taxon_id])
         self.assertEqual(result["eligible_count"], 2)
         self.assertEqual(result["attempted_count"], 2)
+        self.assertEqual(result["migrated_collection_count"], 1)
         self.assertEqual(result["queued_count"], 1)
+        self.assertEqual([entry.taxon_id for entry in collection], [queued.taxon_id])
+        self.assertEqual(collection[0].origin, CollectionOrigin.HISTORICAL_SEED)
 
     def test_generation_skips_deferred_species_and_attempts_later_work(self) -> None:
         deferred = BirdSpecies(1, "Deferred Bird", "Avis deferred", 4, "iNaturalist")

@@ -144,8 +144,9 @@ inky-bird-frame collection list --config /path/to/config.toml
 ```
 
 The import is a point-in-time trust decision. Later catalog synchronization does
-not silently add new members. Manage individual taxa with the same previewable
-commands:
+not silently add new members. On upgrade, the first generation cycle also
+backfills taxa already present in a pre-0.2.4 seed queue before it can consume
+that queue. Manage individual taxa with the same previewable commands:
 
 ```bash
 inky-bird-frame collection add 12942 --config /path/to/config.toml --dry-run
