@@ -1,0 +1,38 @@
+{
+  "anatomy_accuracy": 5,
+  "composition_quality": 5,
+  "correction_findings": [],
+  "findings": [
+    "The primary bird is an anatomically coherent adult: one head, one heavy pointed bill, two normally positioned wings with the far wing largely occluded in profile, two legs with long toes, and one short tail. The separate head and wing are clearly auxiliary detail studies, not duplicated anatomy.",
+    "Species identity is accurate. The stocky, hunched proportions, flat-crowned head, black crown and back, pale-gray wings, whitish underparts, red eye, black bill, yellow-green legs, and white nape plumes closely match the adult reference photographs and live identification sources.",
+    "The common name, scientific name Nycticorax nycticorax, and family Ardeidae are correct.",
+    "The displayed measurements\u201458\u201366 cm length, 727\u20131,014 g weight, and 115\u2013118 cm wingspan\u2014exactly match Cornell's published ranges. The separate body-length label and schematic ruler repeat the correct length range and are explicitly marked not to scale.",
+    "All habitat statements are supported by the verified sources, including fresh, brackish, and saltwater wetlands; marshes, swamps, rivers, lake edges, ponds, estuaries or tidal flats, mangroves, canals, flooded fields, and vegetative cover used for roosting and nesting.",
+    "All behavior statements are supported: chiefly evening-to-early-morning activity, slow or motionless shallow-water foraging, grasping rather than stabbing prey, communal daytime roosting, colonial nesting, and generally solitary foraging.",
+    "All listed field marks are accurate for adults. Broad rounded wings, a short tail, and long white breeding plumes are appropriately represented in the plate and detail studies.",
+    "Typography is legible, the hierarchy is clear, and the main portrait, measurement schematic, anatomical studies, and palette are balanced without obscuring one another.",
+    "No place name, ZIP code, coordinates, map, range graphic, or local-observation detail appears."
+  ],
+  "location_free": true,
+  "passed": true,
+  "species_accuracy": 5,
+  "text_accuracy": 5,
+  "verification_sources": [
+    {
+      "title": "Black-crowned Night Heron Identification \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Black-crowned_Night_Heron/id"
+    },
+    {
+      "title": "Black-crowned Night Heron Life History \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Black-crowned_Night_Heron/lifehistory"
+    },
+    {
+      "title": "Black-crowned Night Heron \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/black-crowned-night-heron"
+    },
+    {
+      "title": "Nycticorax nycticorax \u2014 Animal Diversity Web",
+      "url": "https://animaldiversity.org/accounts/Nycticorax_nycticorax/"
+    }
+  ]
+}

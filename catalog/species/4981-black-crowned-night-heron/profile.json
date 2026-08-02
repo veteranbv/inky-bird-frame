@@ -1,0 +1,46 @@
+{
+  "behavior": "Mostly active from dusk through night; stands still or walks slowly in shallow water to grasp prey, roosts socially by day, and nests colonially, though individuals often forage alone.",
+  "common_name": "Black-crowned Night Heron",
+  "family": "Ardeidae",
+  "field_marks": [
+    "Stocky, thick-necked heron with a hunched posture",
+    "Black crown and back on adults",
+    "Pale gray wings with whitish underparts",
+    "Heavy, pointed black bill and red eyes",
+    "Yellow-green legs and long toes",
+    "Broad, rounded wings, short tail, and long white nape plumes on breeding adults"
+  ],
+  "habitat": "Fresh, brackish, and saltwater wetlands, including marshes, swamps, rivers, lake edges, ponds, estuaries, tidal flats, mangroves, canals, and flooded fields, with trees, shrubs, reeds, or other cover for roosting and nesting.",
+  "measurements": {
+    "length": "58\u201366 cm",
+    "weight": "727\u20131,014 g",
+    "wingspan": "115\u2013118 cm"
+  },
+  "palette": [
+    "black",
+    "slate gray",
+    "soft white",
+    "red",
+    "yellow-green"
+  ],
+  "scientific_name": "Nycticorax nycticorax",
+  "sources": [
+    {
+      "title": "Black-crowned Night Heron Identification \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Black-crowned_Night_Heron/id"
+    },
+    {
+      "title": "Black-crowned Night Heron Life History \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Black-crowned_Night_Heron/lifehistory"
+    },
+    {
+      "title": "Black-crowned Night Heron \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/black-crowned-night-heron"
+    },
+    {
+      "title": "Nycticorax nycticorax \u2014 Animal Diversity Web",
+      "url": "https://animaldiversity.org/accounts/Nycticorax_nycticorax/"
+    }
+  ],
+  "taxon_id": 4981
+}
