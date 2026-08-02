@@ -436,7 +436,9 @@ def _retry_quality_guidance(
         raise SpeciesStateError(f"Invalid quality review: {review_path}") from exc
     if not isinstance(review, dict) or review.get("passed") is not False:
         raise SpeciesStateError(f"Invalid failed quality review: {review_path}")
-    findings = review.get("correction_findings", review.get("findings"))
+    findings = review.get("correction_findings")
+    if findings is None:
+        findings = review.get("findings")
     if not isinstance(findings, list) or any(
         not isinstance(finding, str) or not finding.strip() for finding in findings
     ):
