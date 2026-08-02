@@ -144,9 +144,12 @@ inky-bird-frame collection list --config /path/to/config.toml
 ```
 
 The import is a point-in-time trust decision. Later catalog synchronization does
-not silently add new members. On upgrade, the first generation cycle also
-backfills taxa already present in a pre-0.2.4 seed queue before it can consume
-that queue. Manage individual taxa with the same previewable commands:
+not silently add new members. On upgrade, the first seed, collection mutation,
+or generation cycle also imports taxa already present in a pre-0.2.4 seed queue
+and records a one-time migration timestamp. Generation performs this step
+before pending approval recovery. The marker prevents later cycles from
+re-adding a taxon after an explicit removal. Manage individual taxa with the
+same previewable commands:
 
 ```bash
 inky-bird-frame collection add 12942 --config /path/to/config.toml --dry-run
@@ -157,8 +160,9 @@ inky-bird-frame collection remove 12942 --config /path/to/config.toml
 
 Removal clears persistent membership but does not suppress a taxon that is also
 in the current observation snapshot. The private `collection.json` stores only
-taxon ID, initial membership origin, and timestamp. It stores no coordinates,
-raw observations, names, or provider counts.
+taxon ID, initial membership origin, membership timestamp, and the one-time
+queue-migration timestamp. It stores no coordinates, raw observations, names,
+or provider counts.
 
 The active catalog contains approved taxa in either current observations or the
 private collection. When both contain a taxon, current observation count and
@@ -173,13 +177,16 @@ weight of one instead of fabricated evidence.
 - `queued`: unapproved seed-queue taxa still eligible for automatic work;
 - `deferred`: the subset governed by a durable retry schedule after a transient
   failure; and
-- `terminal_blocked`: queued taxa with rejected or exhausted failed state that
-  require explicit `retry`.
+- `terminal_blocked`: queued taxa with an incomplete pending directory,
+  rejected state, or exhausted failed state that require explicit `retry`.
 
 `deferred` can overlap `queued`; it explains when an otherwise actionable taxon
 will be attempted again. `terminal_blocked` never counts toward `queued_count`
 in generation-cycle output. Passing pending candidates remain visible in the
 separate `pending` view and are recovered at the start of a generation cycle.
+An interrupted pending directory without a manifest appears as
+`incomplete_pending` under `terminal_blocked`; `retry TAXON_ID` archives the
+partial directory before making the taxon eligible again.
 
 ## Run a combined cycle
 

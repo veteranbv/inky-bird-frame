@@ -22,6 +22,7 @@ from inky_bird_frame.catalog import (
     CollectionOrigin,
     candidate_directory,
     read_collection,
+    read_collection_state,
     write_candidate_manifest,
     write_collection,
 )
@@ -398,6 +399,7 @@ class ControllerTests(unittest.TestCase):
                         CollectionOrigin.MANUAL,
                     )
                 ],
+                legacy_seed_queue_migrated_at="2026-08-02T12:00:00+00:00",
             )
             with (
                 patch(
@@ -417,6 +419,53 @@ class ControllerTests(unittest.TestCase):
         self.assertEqual(result["collection_count"], 0)
         self.assertEqual(result["active_approved_count"], 1)
 
+    def test_collection_remove_is_preserved_after_legacy_queue_migration(self) -> None:
+        queued = BirdSpecies(1, "Queued Bird", "Avis queued", 1, "iNaturalist")
+        with TemporaryDirectory() as temporary:
+            config_path = Path(temporary) / "config.toml"
+            config_path.write_text(CONFIG)
+            config = load_config(config_path)
+            config.controller.state_dir.mkdir(parents=True)
+            (config.controller.state_dir / "generation-queue.json").write_text(
+                json.dumps(
+                    {
+                        "schema_version": 2,
+                        "updated_at": datetime.now(UTC).isoformat(),
+                        "species": [
+                            {
+                                "taxon_id": queued.taxon_id,
+                                "common_name": queued.common_name,
+                                "scientific_name": queued.scientific_name,
+                                "observation_count": queued.observation_count,
+                                "source": queued.source,
+                            }
+                        ],
+                    }
+                )
+            )
+            with (
+                patch("inky_bird_frame.controller.read_catalog_entries", return_value=[]),
+                patch("inky_bird_frame.controller._write_active_catalog", return_value=0),
+            ):
+                removed = remove_collection_member(config, queued.taxon_id)
+            state_after_remove = read_collection_state(config.controller.state_dir)
+            with (
+                patch("inky_bird_frame.controller.approve_passing_candidates", return_value=[]),
+                patch(
+                    "inky_bird_frame.controller._read_discovery_snapshot",
+                    side_effect=DataSourceError("missing"),
+                ),
+                self.assertRaisesRegex(DataSourceError, "missing"),
+            ):
+                run_generation_cycle(config)
+            state_after_generation = read_collection_state(config.controller.state_dir)
+
+        self.assertEqual(removed["migrated_legacy_queue_count"], 1)
+        self.assertEqual(removed["removed_count"], 1)
+        self.assertEqual(state_after_remove.entries, [])
+        self.assertIsNotNone(state_after_remove.legacy_seed_queue_migrated_at)
+        self.assertEqual(state_after_generation, state_after_remove)
+
     def test_collection_mutation_respects_the_controller_cycle_lock(self) -> None:
         with TemporaryDirectory() as temporary:
             config_path = Path(temporary) / "config.toml"
@@ -432,6 +481,8 @@ class ControllerTests(unittest.TestCase):
     def test_terminal_queue_entries_are_separate_from_actionable_work(self) -> None:
         actionable = BirdSpecies(1, "Ready Bird", "Avis parata", 2, "iNaturalist")
         blocked = BirdSpecies(2, "Blocked Bird", "Avis impedita", 1, "iNaturalist")
+        incomplete = BirdSpecies(3, "Incomplete Bird", "Avis incompleta", 1, "iNaturalist")
+        pending = BirdSpecies(4, "Pending Bird", "Avis pendens", 1, "iNaturalist")
         with TemporaryDirectory() as temporary:
             config_path = Path(temporary) / "config.toml"
             config_path.write_text(CONFIG)
@@ -450,20 +501,26 @@ class ControllerTests(unittest.TestCase):
                                 "observation_count": species.observation_count,
                                 "source": species.source,
                             }
-                            for species in (actionable, blocked)
+                            for species in (actionable, blocked, incomplete, pending)
                         ],
                     }
                 )
             )
             failed = config.controller.state_dir / "failed/2-blocked-bird"
             failed.mkdir(parents=True)
+            (config.controller.state_dir / "pending/3-incomplete-bird").mkdir(parents=True)
+            pending_dir = config.controller.state_dir / "pending/4-pending-bird"
+            pending_dir.mkdir(parents=True)
+            (pending_dir / "manifest.json").write_text("{}")
             with patch("inky_bird_frame.controller.approved_taxon_ids", return_value=set()):
                 partition = read_generation_queue_partition(config)
 
         self.assertEqual([species.taxon_id for species in partition.actionable], [1])
-        self.assertEqual(len(partition.terminal_blocked), 1)
+        self.assertEqual(len(partition.terminal_blocked), 2)
         self.assertEqual(partition.terminal_blocked[0].species.taxon_id, 2)
         self.assertEqual(partition.terminal_blocked[0].state, "failed")
+        self.assertEqual(partition.terminal_blocked[1].species.taxon_id, 3)
+        self.assertEqual(partition.terminal_blocked[1].state, "incomplete_pending")
 
     def test_generation_prioritizes_current_species_before_seed_queue(self) -> None:
         current = BirdSpecies(1, "Current Bird", "Avis current", 4, "iNaturalist")
@@ -526,7 +583,8 @@ class ControllerTests(unittest.TestCase):
         self.assertEqual(attempted, [current.taxon_id, queued.taxon_id])
         self.assertEqual(result["eligible_count"], 2)
         self.assertEqual(result["attempted_count"], 2)
-        self.assertEqual(result["migrated_collection_count"], 1)
+        self.assertEqual(result["migrated_legacy_queue_count"], 1)
+        self.assertEqual(result["migrated_legacy_queue_taxon_ids"], [queued.taxon_id])
         self.assertEqual(result["queued_count"], 1)
         self.assertEqual([entry.taxon_id for entry in collection], [queued.taxon_id])
         self.assertEqual(collection[0].origin, CollectionOrigin.HISTORICAL_SEED)
@@ -724,14 +782,36 @@ class ControllerTests(unittest.TestCase):
 
         discover.assert_not_called()
 
-    def test_generation_recovers_pending_before_requiring_discovery(self) -> None:
+    def test_generation_migrates_legacy_queue_before_pending_recovery(self) -> None:
         with TemporaryDirectory() as temporary:
             config_path = Path(temporary) / "config.toml"
             config_path.write_text(CONFIG)
             config = load_config(config_path)
+            queued = BirdSpecies(42, "Legacy Bird", "Avis vetus", 1, "iNaturalist")
+            config.controller.state_dir.mkdir(parents=True)
+            (config.controller.state_dir / "generation-queue.json").write_text(
+                json.dumps(
+                    {
+                        "schema_version": 2,
+                        "updated_at": datetime.now(UTC).isoformat(),
+                        "species": [
+                            {
+                                "taxon_id": queued.taxon_id,
+                                "common_name": queued.common_name,
+                                "scientific_name": queued.scientific_name,
+                                "observation_count": queued.observation_count,
+                                "source": queued.source,
+                            }
+                        ],
+                    }
+                )
+            )
             recovered: list[str] = []
 
             def approve(_config: object) -> list[dict[str, object]]:
+                collection = read_collection_state(config.controller.state_dir)
+                self.assertEqual([entry.taxon_id for entry in collection.entries], [42])
+                self.assertIsNotNone(collection.legacy_seed_queue_migrated_at)
                 recovered.append("approved")
                 return []
 
@@ -898,6 +978,7 @@ class ControllerTests(unittest.TestCase):
                     )
                     for taxon_id in (1, 2)
                 ],
+                legacy_seed_queue_migrated_at="2026-08-02T12:00:00+00:00",
             )
             with (
                 patch(

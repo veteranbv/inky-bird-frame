@@ -454,7 +454,8 @@ def _retry_quality_guidance(
 def retry_command(args: argparse.Namespace) -> int:
     config = _config(args)
     with exclusive_cycle_lock(config.controller.state_dir):
-        if find_taxon_directory(config.controller.state_dir / "pending", args.taxon_id):
+        pending = find_taxon_directory(config.controller.state_dir / "pending", args.taxon_id)
+        if pending is not None and (pending / "manifest.json").is_file():
             raise ValueError("Pending candidates must be approved or rejected before retrying")
         failed_directories = sorted(
             (config.controller.state_dir / "failed").glob(f"{args.taxon_id}-*")
@@ -464,7 +465,8 @@ def retry_command(args: argparse.Namespace) -> int:
             failed_directories,
             source_attempt,
         )
-        sources = list(failed_directories)
+        sources = [pending] if pending is not None else []
+        sources.extend(failed_directories)
         rejected = find_taxon_directory(config.controller.state_dir / "rejected", args.taxon_id)
         if rejected is not None:
             sources.append(rejected)

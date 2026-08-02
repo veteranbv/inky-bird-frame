@@ -45,6 +45,12 @@ class CollectionEntry:
         }
 
 
+@dataclass(frozen=True)
+class CollectionState:
+    entries: list[CollectionEntry]
+    legacy_seed_queue_migrated_at: str | None
+
+
 @contextmanager
 def catalog_state_lock(state_dir: Path) -> Iterator[None]:
     state_dir.mkdir(parents=True, exist_ok=True)
@@ -93,16 +99,26 @@ def utc_now() -> str:
     return datetime.now(UTC).replace(microsecond=0).isoformat()
 
 
-def read_collection(state_dir: Path) -> list[CollectionEntry]:
+def read_collection_state(state_dir: Path) -> CollectionState:
     path = state_dir / "collection.json"
     if not path.exists():
-        return []
+        return CollectionState([], None)
     raw = read_json(path)
     if (
         not isinstance(raw, dict)
-        or set(raw) != {"schema_version", "updated_at", "taxa"}
+        or set(raw)
+        != {
+            "schema_version",
+            "updated_at",
+            "legacy_seed_queue_migrated_at",
+            "taxa",
+        }
         or raw.get("schema_version") != COLLECTION_SCHEMA_VERSION
         or parse_utc_timestamp(raw.get("updated_at")) is None
+        or (
+            raw.get("legacy_seed_queue_migrated_at") is not None
+            and parse_utc_timestamp(raw.get("legacy_seed_queue_migrated_at")) is None
+        )
         or not isinstance(raw.get("taxa"), list)
     ):
         raise CatalogError(f"Invalid collection state: {path}")
@@ -131,10 +147,27 @@ def read_collection(state_dir: Path) -> list[CollectionEntry]:
             raise CatalogError(f"Invalid collection entry: {path}") from exc
         seen.add(taxon_id)
         entries.append(CollectionEntry(taxon_id, added_at, parsed_origin))
-    return sorted(entries, key=lambda entry: entry.taxon_id)
+    return CollectionState(
+        sorted(entries, key=lambda entry: entry.taxon_id),
+        cast(str | None, raw["legacy_seed_queue_migrated_at"]),
+    )
 
 
-def write_collection(state_dir: Path, entries: list[CollectionEntry]) -> None:
+def read_collection(state_dir: Path) -> list[CollectionEntry]:
+    return read_collection_state(state_dir).entries
+
+
+def write_collection(
+    state_dir: Path,
+    entries: list[CollectionEntry],
+    *,
+    legacy_seed_queue_migrated_at: str | None,
+) -> None:
+    if (
+        legacy_seed_queue_migrated_at is not None
+        and parse_utc_timestamp(legacy_seed_queue_migrated_at) is None
+    ):
+        raise CatalogError("Cannot write invalid collection state")
     seen: set[int] = set()
     for entry in entries:
         if (
@@ -151,6 +184,7 @@ def write_collection(state_dir: Path, entries: list[CollectionEntry]) -> None:
         {
             "schema_version": COLLECTION_SCHEMA_VERSION,
             "updated_at": utc_now(),
+            "legacy_seed_queue_migrated_at": legacy_seed_queue_migrated_at,
             "taxa": [entry.as_dict() for entry in sorted(entries, key=lambda item: item.taxon_id)],
         },
     )

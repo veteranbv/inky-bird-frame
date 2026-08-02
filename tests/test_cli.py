@@ -530,6 +530,45 @@ rotation_mode = "shuffle_bag"
         if guidance is not None:
             self.assertEqual(guidance.findings, (REVIEW_FAILURE_FALLBACK,))
 
+    def test_retry_archives_incomplete_pending_candidate(self) -> None:
+        with TemporaryDirectory() as temporary:
+            state_dir = Path(temporary)
+            pending = state_dir / "pending/42-example-bird"
+            pending.mkdir(parents=True)
+            (pending / "portrait.png").write_bytes(b"partial")
+            config = SimpleNamespace(controller=SimpleNamespace(state_dir=state_dir))
+            output = io.StringIO()
+
+            with patch("inky_bird_frame.cli._config", return_value=config), redirect_stdout(output):
+                retry_command(Namespace(taxon_id=42))
+
+            result = json.loads(output.getvalue())["data"]
+            archived = state_dir / "archive/42-example-bird"
+            pending_exists = pending.exists()
+            archived_portrait_exists = (archived / "portrait.png").is_file()
+
+        self.assertEqual(result["status"], "eligible")
+        self.assertEqual(result["archived"], [str(archived)])
+        self.assertFalse(pending_exists)
+        self.assertTrue(archived_portrait_exists)
+
+    def test_retry_rejects_complete_pending_candidate(self) -> None:
+        with TemporaryDirectory() as temporary:
+            state_dir = Path(temporary)
+            pending = state_dir / "pending/42-example-bird"
+            pending.mkdir(parents=True)
+            (pending / "manifest.json").write_text("{}")
+            config = SimpleNamespace(controller=SimpleNamespace(state_dir=state_dir))
+
+            with (
+                patch("inky_bird_frame.cli._config", return_value=config),
+                self.assertRaisesRegex(ValueError, "must be approved or rejected"),
+            ):
+                retry_command(Namespace(taxon_id=42))
+            pending_exists = pending.is_dir()
+
+        self.assertTrue(pending_exists)
+
     def test_retry_preserves_selected_attempt_as_correction_source(self) -> None:
         with TemporaryDirectory() as temporary:
             state_dir = Path(temporary)

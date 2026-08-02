@@ -16,6 +16,7 @@ from inky_bird_frame.catalog import (
     candidate_directory,
     read_catalog_entries,
     read_collection,
+    read_collection_state,
     read_json,
     rebuild_catalog_index,
     remove_collection_taxa,
@@ -83,13 +84,28 @@ class CatalogTests(unittest.TestCase):
                 )
             ]
 
-            write_collection(state, expected)
+            migrated_at = "2026-08-02T12:05:00+00:00"
+            write_collection(
+                state,
+                expected,
+                legacy_seed_queue_migrated_at=migrated_at,
+            )
 
             payload = json.loads((state / "collection.json").read_text())
             actual = read_collection(state)
+            collection_state = read_collection_state(state)
 
         self.assertEqual(actual, expected)
-        self.assertEqual(set(payload), {"schema_version", "updated_at", "taxa"})
+        self.assertEqual(collection_state.legacy_seed_queue_migrated_at, migrated_at)
+        self.assertEqual(
+            set(payload),
+            {
+                "schema_version",
+                "updated_at",
+                "legacy_seed_queue_migrated_at",
+                "taxa",
+            },
+        )
         self.assertEqual(
             set(payload["taxa"][0]),
             {"taxon_id", "added_at", "origin"},
@@ -130,6 +146,7 @@ class CatalogTests(unittest.TestCase):
                     {
                         "schema_version": 1,
                         "updated_at": "2026-08-02T12:00:00+00:00",
+                        "legacy_seed_queue_migrated_at": None,
                         "taxa": [
                             {
                                 "taxon_id": 12942,

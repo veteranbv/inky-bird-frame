@@ -34,12 +34,14 @@ taxon ID, the initial membership origin, and a timestamp. A historical `seed`
 adds every discovered taxon to this set while separately queueing missing
 plates. `collection import-approved` is the explicit migration and trust step
 for an existing catalog; later catalog synchronization does not mutate the
-collection. Before generation can consume work, it idempotently backfills any
-pre-collection seed-queue taxa into membership.
+collection. The first seed, collection mutation, or generation cycle imports
+any pre-collection seed-queue taxa and records a one-time migration timestamp.
+This happens before pending approvals and prevents a later cycle from undoing
+an explicit collection removal.
 
-A locked generation cycle reads the latest non-stale snapshot and the durable
-seed queue. Current observations take priority over queued seed taxa. The cycle
-then:
+A locked generation cycle completes that migration, recovers passing pending
+work, and then reads the latest non-stale snapshot and durable seed queue.
+Current observations take priority over queued seed taxa. The cycle then:
 
 1. selects taxa without a terminal local state;
 2. acquires and verifies licensed references;
@@ -159,14 +161,15 @@ unchanged. The next scheduled cycle retries from the current remote branch.
 | --- | --- | --- |
 | approved | Independent Codex review passed; published immutably | No |
 | pending | Passing candidate awaiting atomic publication or crash recovery | No |
+| incomplete pending | Interrupted candidate directory without a manifest | No |
 | rejected | Operator override rejected a candidate | No |
 | failed | Generation exhausted its bounded attempts | No |
 | queued | Broader seed discovery awaits generation | Yes |
-| terminal-blocked | A queued taxon also has rejected or failed state | No |
+| terminal-blocked | A queued taxon also has incomplete pending, rejected, or failed state | No |
 | eligible | No terminal state exists | Yes |
 
-`retry TAXON_ID` archives rejected or failed state and makes that taxon
-eligible. For failed quality reviews, it retains the final actionable
+`retry TAXON_ID` archives incomplete pending, rejected, or failed state and
+makes that taxon eligible. For failed quality reviews, it retains the final actionable
 corrections as durable input to the first new generation attempt while
 refreshing cached research. `retry TAXON_ID --source-attempt N` additionally
 selects a retained portrait as the edit base. The archive-relative source path
