@@ -530,6 +530,72 @@ def approve_candidate(state_dir: Path, catalog_dir: Path, taxon_id: int) -> Cata
     return next(entry for entry in entries if entry.taxon_id == taxon_id)
 
 
+def _available_rejected_destination(state_dir: Path, name: str) -> Path:
+    destination = state_dir / "rejected" / name
+    counter = 1
+    while destination.exists():
+        destination = destination.with_name(f"{name}-{counter}")
+        counter += 1
+    return destination
+
+
+def withdraw_approved_candidate(
+    state_dir: Path,
+    catalog_dir: Path,
+    taxon_id: int,
+    reason: str,
+) -> Path:
+    rejection_reason = reason.strip()
+    if not rejection_reason:
+        raise CatalogError("Approved replacement requires a non-empty rejection reason")
+    source = find_taxon_directory(catalog_dir / "species", taxon_id)
+    if source is None:
+        raise CatalogError(f"No approved candidate exists for taxon {taxon_id}")
+    manifest_path = source / "manifest.json"
+    manifest = read_json(manifest_path)
+    if (
+        not isinstance(manifest, dict)
+        or manifest.get("taxon_id") != taxon_id
+        or manifest.get("status") != "approved"
+    ):
+        raise CatalogError(f"Approved candidate manifest is invalid: {manifest_path}")
+
+    destination = _available_rejected_destination(state_dir, source.name)
+    destination.parent.mkdir(parents=True, exist_ok=True)
+    try:
+        shutil.copytree(source, destination)
+    except Exception:
+        if destination.exists():
+            shutil.rmtree(destination)
+        with suppress(OSError):
+            destination.parent.rmdir()
+        raise
+    try:
+        rejected_manifest = dict(manifest)
+        rejected_manifest["status"] = "rejected"
+        rejected_manifest["rejected_at"] = utc_now()
+        rejected_manifest["rejection_reason"] = rejection_reason
+        write_json_atomic(destination / "manifest.json", rejected_manifest)
+        shutil.rmtree(source)
+        rebuild_catalog_index(catalog_dir)
+    except Exception as error:
+        try:
+            if source.exists():
+                shutil.rmtree(source)
+            shutil.copytree(destination, source)
+            write_json_atomic(source / "manifest.json", manifest)
+        except Exception as rollback_error:
+            raise CatalogError(
+                "Approved candidate withdrawal failed and could not be rolled back; "
+                f"recovery copy retained at {destination}: {rollback_error}"
+            ) from error
+        shutil.rmtree(destination)
+        with suppress(OSError):
+            destination.parent.rmdir()
+        raise
+    return destination
+
+
 def reject_candidate(state_dir: Path, taxon_id: int, reason: str) -> Path:
     source = find_taxon_directory(state_dir / "pending", taxon_id)
     if source is None:
@@ -541,11 +607,7 @@ def reject_candidate(state_dir: Path, taxon_id: int, reason: str) -> Path:
     manifest["rejected_at"] = utc_now()
     manifest["rejection_reason"] = reason
     write_json_atomic(source / "manifest.json", manifest)
-    destination = state_dir / "rejected" / source.name
-    if destination.exists():
-        destination = destination.with_name(
-            f"{destination.name}-{datetime.now(UTC).timestamp():.0f}"
-        )
+    destination = _available_rejected_destination(state_dir, source.name)
     destination.parent.mkdir(parents=True, exist_ok=True)
     source.replace(destination)
     return destination

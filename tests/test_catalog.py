@@ -6,6 +6,7 @@ import unittest
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 from tempfile import TemporaryDirectory
+from unittest.mock import patch
 
 from inky_bird_frame.birds import BirdSpecies
 from inky_bird_frame.catalog import (
@@ -20,6 +21,7 @@ from inky_bird_frame.catalog import (
     read_json,
     rebuild_catalog_index,
     remove_collection_taxa,
+    withdraw_approved_candidate,
     write_candidate_manifest,
     write_collection,
 )
@@ -204,6 +206,74 @@ class CatalogTests(unittest.TestCase):
             self.assertFalse(candidate.exists())
             with self.assertRaises(CatalogError):
                 approve_candidate(state, catalog, species.taxon_id)
+
+    def test_approved_candidate_withdrawal_preserves_human_rejection_audit(self) -> None:
+        species = BirdSpecies(7513, "Carolina Wren", "Thryothorus ludovicianus", 5, "test")
+        review = QualityReview(True, 4, 4, 4, 4, True, ())
+        with TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            state = root / "state"
+            catalog = root / "catalog"
+            make_candidate(state, species, review)
+            approved = approve_candidate(state, catalog, species.taxon_id)
+
+            destination = withdraw_approved_candidate(
+                state,
+                catalog,
+                species.taxon_id,
+                "The eyes are not visually credible.",
+            )
+
+            manifest = read_json(destination / "manifest.json")
+            index = read_json(catalog / "index.json")
+            portrait_exists = (destination / "portrait.png").is_file()
+
+        self.assertIsInstance(manifest, dict)
+        if isinstance(manifest, dict):
+            self.assertEqual(manifest["status"], "rejected")
+            self.assertEqual(manifest["rejection_reason"], "The eyes are not visually credible.")
+            self.assertEqual(manifest["approved_at"], approved.approved_at)
+            self.assertIn("rejected_at", manifest)
+        self.assertTrue(portrait_exists)
+        self.assertIsInstance(index, dict)
+        if isinstance(index, dict):
+            self.assertEqual(index["species"], [])
+
+    def test_approved_candidate_withdrawal_rolls_back_on_index_failure(self) -> None:
+        species = BirdSpecies(7513, "Carolina Wren", "Thryothorus ludovicianus", 5, "test")
+        review = QualityReview(True, 4, 4, 4, 4, True, ())
+        with TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            state = root / "state"
+            catalog = root / "catalog"
+            make_candidate(state, species, review)
+            approve_candidate(state, catalog, species.taxon_id)
+            source = catalog / "species/7513-carolina-wren"
+
+            with (
+                patch(
+                    "inky_bird_frame.catalog.rebuild_catalog_index",
+                    side_effect=CatalogError("index failure"),
+                ),
+                self.assertRaisesRegex(CatalogError, "index failure"),
+            ):
+                withdraw_approved_candidate(
+                    state,
+                    catalog,
+                    species.taxon_id,
+                    "Human review failed.",
+                )
+
+            manifest = read_json(source / "manifest.json")
+            source_exists = source.is_dir()
+            rejected_exists = (state / "rejected").exists()
+
+        self.assertTrue(source_exists)
+        self.assertIsInstance(manifest, dict)
+        if isinstance(manifest, dict):
+            self.assertEqual(manifest["status"], "approved")
+            self.assertNotIn("rejection_reason", manifest)
+        self.assertFalse(rejected_exists)
 
     def test_interrupted_approval_with_leftover_pending_candidate_completes(self) -> None:
         species = BirdSpecies(7513, "Carolina Wren", "Thryothorus ludovicianus", 5, "test")

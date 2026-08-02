@@ -174,7 +174,13 @@ corrections as durable input to the first new generation attempt while
 refreshing cached research. `retry TAXON_ID --source-attempt N` additionally
 selects a retained portrait as the edit base. The archive-relative source path
 stays in private retry state, and the passing manifest records its SHA-256 for
-provenance. Approved art is never replaced implicitly.
+provenance. After explicit human review,
+`retry TAXON_ID --replace-approved --reason "..."` withdraws a locally approved
+plate, preserves its rejection audit, rebuilds the local index, and starts a
+source-free replacement constrained by the human rejection reason. The public
+catalog remains add-only; replacing a published artifact requires a separate
+explicit migration and maintainer review. Approved art is never replaced
+implicitly.
 
 ## Privacy and licensing
 

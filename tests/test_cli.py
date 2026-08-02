@@ -40,6 +40,15 @@ from inky_bird_frame.errors import (
 from inky_bird_frame.retry import RetryStore
 
 
+def controller_config(state_dir: Path, catalog_dir: Path | None = None) -> SimpleNamespace:
+    return SimpleNamespace(
+        controller=SimpleNamespace(
+            state_dir=state_dir,
+            catalog_dir=catalog_dir if catalog_dir is not None else state_dir / "catalog",
+        )
+    )
+
+
 class CliTests(unittest.TestCase):
     def test_runtime_version_matches_package_metadata(self) -> None:
         self.assertEqual(inky_bird_frame.__version__, version("inky-bird-frame"))
@@ -56,6 +65,22 @@ class CliTests(unittest.TestCase):
 
         self.assertEqual(str(args.config), "instance.toml")
         self.assertTrue(args.dry_run)
+
+    def test_retry_parses_explicit_approved_replacement(self) -> None:
+        args = build_parser().parse_args(
+            [
+                "retry",
+                "42",
+                "--config",
+                "instance.toml",
+                "--replace-approved",
+                "--reason",
+                "Human review rejected the plate.",
+            ]
+        )
+
+        self.assertTrue(args.replace_approved)
+        self.assertEqual(args.reason, "Human review rejected the plate.")
 
     def test_catalog_contribution_commands_use_explicit_catalog_paths(self) -> None:
         prepare = build_parser().parse_args(
@@ -495,7 +520,7 @@ rotation_mode = "shuffle_bag"
             references = state_dir / "references/42/references.json"
             references.parent.mkdir(parents=True)
             references.write_text("{}")
-            config = SimpleNamespace(controller=SimpleNamespace(state_dir=state_dir))
+            config = controller_config(state_dir)
             output = io.StringIO()
 
             with patch("inky_bird_frame.cli._config", return_value=config), redirect_stdout(output):
@@ -521,7 +546,7 @@ rotation_mode = "shuffle_bag"
             review = state_dir / "failed/42-example-bird/attempt-01/quality-review.json"
             review.parent.mkdir(parents=True)
             review.write_text(json.dumps({"passed": False, "findings": []}))
-            config = SimpleNamespace(controller=SimpleNamespace(state_dir=state_dir))
+            config = controller_config(state_dir)
             output = io.StringIO()
 
             with patch("inky_bird_frame.cli._config", return_value=config), redirect_stdout(output):
@@ -549,7 +574,7 @@ rotation_mode = "shuffle_bag"
                     }
                 )
             )
-            config = SimpleNamespace(controller=SimpleNamespace(state_dir=state_dir))
+            config = controller_config(state_dir)
 
             with (
                 patch("inky_bird_frame.cli._config", return_value=config),
@@ -569,7 +594,7 @@ rotation_mode = "shuffle_bag"
             pending = state_dir / "pending/42-example-bird"
             pending.mkdir(parents=True)
             (pending / "portrait.png").write_bytes(b"partial")
-            config = SimpleNamespace(controller=SimpleNamespace(state_dir=state_dir))
+            config = controller_config(state_dir)
             output = io.StringIO()
 
             with patch("inky_bird_frame.cli._config", return_value=config), redirect_stdout(output):
@@ -591,7 +616,7 @@ rotation_mode = "shuffle_bag"
             pending = state_dir / "pending/42-example-bird"
             pending.mkdir(parents=True)
             (pending / "manifest.json").write_text("{}")
-            config = SimpleNamespace(controller=SimpleNamespace(state_dir=state_dir))
+            config = controller_config(state_dir)
 
             with (
                 patch("inky_bird_frame.cli._config", return_value=config),
@@ -601,6 +626,104 @@ rotation_mode = "shuffle_bag"
             pending_exists = pending.is_dir()
 
         self.assertTrue(pending_exists)
+
+    def test_retry_requires_explicit_replacement_for_approved_candidate(self) -> None:
+        with TemporaryDirectory() as temporary:
+            state_dir = Path(temporary)
+            catalog_dir = state_dir / "catalog"
+            approved = catalog_dir / "species/42-example-bird"
+            approved.mkdir(parents=True)
+            config = controller_config(state_dir, catalog_dir)
+
+            with (
+                patch("inky_bird_frame.cli._config", return_value=config),
+                self.assertRaisesRegex(ValueError, "use --replace-approved"),
+            ):
+                retry_command(Namespace(taxon_id=42))
+
+            approved_exists = approved.is_dir()
+
+        self.assertTrue(approved_exists)
+
+    def test_retry_approved_replacement_requires_reason_and_fresh_source(self) -> None:
+        with TemporaryDirectory() as temporary:
+            state_dir = Path(temporary)
+            config = controller_config(state_dir)
+            with patch("inky_bird_frame.cli._config", return_value=config):
+                with self.assertRaisesRegex(ValueError, "requires a non-empty --reason"):
+                    retry_command(
+                        Namespace(
+                            taxon_id=42,
+                            replace_approved=True,
+                            reason=" ",
+                            source_attempt=None,
+                        )
+                    )
+                with self.assertRaisesRegex(ValueError, "cannot be combined"):
+                    retry_command(
+                        Namespace(
+                            taxon_id=42,
+                            replace_approved=True,
+                            reason="Human review rejected the plate.",
+                            source_attempt=1,
+                        )
+                    )
+
+    def test_retry_withdraws_approved_candidate_and_starts_from_scratch(self) -> None:
+        with TemporaryDirectory() as temporary:
+            state_dir = Path(temporary)
+            catalog_dir = state_dir / "catalog"
+            approved = catalog_dir / "species/42-example-bird"
+            approved.mkdir(parents=True)
+            (approved / "portrait.png").write_bytes(b"rejected portrait")
+            config = controller_config(state_dir, catalog_dir)
+            RetryStore(state_dir / "generation-retries.json").set_quality_guidance(
+                42,
+                ("Reuse the rejected plate.",),
+            )
+            output = io.StringIO()
+
+            def withdraw(
+                state: Path,
+                catalog: Path,
+                taxon_id: int,
+                reason: str,
+            ) -> Path:
+                self.assertEqual((state, catalog, taxon_id), (state_dir, catalog_dir, 42))
+                self.assertEqual(reason, "Human review rejected the eyes.")
+                destination = state / "rejected" / approved.name
+                destination.parent.mkdir(parents=True)
+                approved.replace(destination)
+                return destination
+
+            with (
+                patch("inky_bird_frame.cli._config", return_value=config),
+                patch("inky_bird_frame.cli.withdraw_approved_candidate", side_effect=withdraw),
+                redirect_stdout(output),
+            ):
+                retry_command(
+                    Namespace(
+                        taxon_id=42,
+                        replace_approved=True,
+                        reason="Human review rejected the eyes.",
+                        source_attempt=None,
+                    )
+                )
+
+            result = json.loads(output.getvalue())["data"]
+            archived = state_dir / "archive/42-example-bird"
+            archived_portrait = (archived / "portrait.png").read_bytes()
+            guidance = RetryStore(state_dir / "generation-retries.json").quality_guidance(42)
+
+        self.assertTrue(result["replaced_approved"])
+        self.assertEqual(result["preserved_quality_findings_count"], 1)
+        self.assertFalse(result["preserved_correction_source"])
+        self.assertEqual(result["archived"], [str(archived)])
+        self.assertEqual(archived_portrait, b"rejected portrait")
+        self.assertIsNotNone(guidance)
+        if guidance is not None:
+            self.assertEqual(guidance.findings, ("Human review rejected the eyes.",))
+            self.assertIsNone(guidance.source_plate)
 
     def test_retry_preserves_selected_attempt_as_correction_source(self) -> None:
         with TemporaryDirectory() as temporary:
@@ -619,7 +742,7 @@ rotation_mode = "shuffle_bag"
                         }
                     )
                 )
-            config = SimpleNamespace(controller=SimpleNamespace(state_dir=state_dir))
+            config = controller_config(state_dir)
             output = io.StringIO()
 
             with patch("inky_bird_frame.cli._config", return_value=config), redirect_stdout(output):
@@ -647,7 +770,7 @@ rotation_mode = "shuffle_bag"
             review = state_dir / "failed/42-example-bird/attempt-01/quality-review.json"
             review.parent.mkdir(parents=True)
             review.write_text(json.dumps({"passed": False, "findings": ["Fix the tail"]}))
-            config = SimpleNamespace(controller=SimpleNamespace(state_dir=state_dir))
+            config = controller_config(state_dir)
 
             with (
                 patch("inky_bird_frame.cli._config", return_value=config),
@@ -665,7 +788,7 @@ rotation_mode = "shuffle_bag"
             review = failed / "attempt-03/quality-review.json"
             review.parent.mkdir(parents=True)
             review.write_text("not json")
-            config = SimpleNamespace(controller=SimpleNamespace(state_dir=state_dir))
+            config = controller_config(state_dir)
 
             with (
                 patch("inky_bird_frame.cli._config", return_value=config),
@@ -679,7 +802,7 @@ rotation_mode = "shuffle_bag"
     def test_retry_is_excluded_by_running_generation_cycle(self) -> None:
         with TemporaryDirectory() as temporary:
             state_dir = Path(temporary)
-            config = SimpleNamespace(controller=SimpleNamespace(state_dir=state_dir))
+            config = controller_config(state_dir)
             with (
                 patch("inky_bird_frame.cli._config", return_value=config),
                 exclusive_cycle_lock(state_dir),

@@ -338,6 +338,15 @@ only; they never enter the approved catalog or rotation.
   for the first edit. Omit `--source-attempt` when no retained image should be
   reused. Transient source failures retain the guidance and edit source until
   generation reaches a successful or terminal quality result.
+- Human rejection after local approval: before public publication, run
+  `retry TAXON_ID --replace-approved --reason "..."`. The non-empty reason and
+  replacement flag are mandatory. The command archives the approved artifacts
+  with rejection metadata, atomically rebuilds the local catalog index, clears
+  cached research and references, and makes the taxon eligible for a fresh
+  generation without an edit source. The human rejection reason remains as
+  required correction guidance for that fresh render. This local migration does
+  not replace an immutable public catalog entry; a published correction
+  requires a separate maintainer-reviewed migration.
 - Controller unavailable: the current e-paper image remains visible. Display
   state is not advanced.
 - Checksum mismatch: the display refuses the asset and preserves current state.
