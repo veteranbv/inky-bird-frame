@@ -1,0 +1,35 @@
+{
+  "anatomy_accuracy": 4,
+  "composition_quality": 5,
+  "correction_findings": [],
+  "findings": [
+    "The plate is identifiable as an adult Black Vulture: compact black body, small bare dark-gray head, pale strongly hooked bill, broad fingered wings, short tail, and silvery outer-primary patches agree with the live sources and reference photos.",
+    "The stated length of 60\u201368 cm, weight of 1.6\u20132.2 kg, and wingspan of 137\u2013150 cm exactly match Cornell's published measurements and are independently corroborated by Audubon.",
+    "The common name, scientific name Coragyps atratus, and family Cathartidae are correct.",
+    "The habitat and behavior text is accurate: the species uses open areas near wooded cover, feeds chiefly on carrion, finds food visually or by following other vultures, flies with quick strong flaps and short flat-winged glides, and roosts socially.",
+    "The adult plumage agrees especially well with references 2 and 5. References 3 and 4 show juvenile and leucistic variation and do not contradict the plate's normal-adult treatment.",
+    "The flying inset correctly places the pale patches on the outer underwings and shows broad wings with separated primary \u201cfingers\u201d and a short tail.",
+    "Each full-body bird has one head, one beak, two wings, two legs, and one tail without duplicated or malformed appendages. The lateral main pose naturally obscures part of the far wing and tail.",
+    "The head texture and grasping claws are somewhat more sharply stylized than in the photographs, but the bare wrinkled skin, bill, legs, toes, and overall proportions remain scientifically recognizable and not materially misleading.",
+    "All visible factual text is legible and consistent with the verified sources. The centimeter/inch ruler is explicitly labeled schematic and not to scale.",
+    "No place name, ZIP code, coordinates, map, or local-observation detail appears."
+  ],
+  "location_free": true,
+  "passed": true,
+  "species_accuracy": 4,
+  "text_accuracy": 5,
+  "verification_sources": [
+    {
+      "title": "Black Vulture Identification \u2014 All About Birds, Cornell Lab of Ornithology",
+      "url": "https://www.allaboutbirds.org/guide/Black_Vulture/id"
+    },
+    {
+      "title": "Black Vulture \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/black-vulture"
+    },
+    {
+      "title": "Coragyps atratus \u2014 Animal Diversity Web",
+      "url": "https://animaldiversity.org/accounts/Coragyps_atratus/"
+    }
+  ]
+}
