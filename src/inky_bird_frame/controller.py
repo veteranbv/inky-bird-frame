@@ -44,10 +44,12 @@ from .catalog import (
     read_catalog_entries,
     read_collection,
     read_collection_state,
+    read_json,
     rebuild_catalog_index,
     remove_collection_taxa,
     sha256_file,
     utc_now,
+    withdraw_approved_candidate,
     write_candidate_manifest,
     write_collection,
 )
@@ -74,6 +76,14 @@ from .retry import RetryStore
 from .timeutil import parse_utc_timestamp
 
 REVIEW_FAILURE_FALLBACK = "The previous attempt did not meet every automated review threshold."
+HUMAN_REVIEW_SOURCE = "human-review"
+
+
+def _merge_correction_findings(
+    invariant_findings: tuple[str, ...],
+    current_findings: tuple[str, ...],
+) -> tuple[str, ...]:
+    return tuple(dict.fromkeys((*invariant_findings, *current_findings)))
 
 
 @dataclass(frozen=True)
@@ -709,6 +719,236 @@ def _current_discovery_species(config: AppConfig) -> list[BirdSpecies]:
     return _read_discovery_snapshot(config).species
 
 
+def _replacement_species(
+    taxon_id: int,
+    common_name: object,
+    scientific_name: object,
+    source: Path,
+) -> BirdSpecies:
+    if (
+        not isinstance(common_name, str)
+        or not common_name.strip()
+        or not isinstance(scientific_name, str)
+        or not scientific_name.strip()
+    ):
+        raise CatalogError(f"Replacement candidate identity is invalid: {source}")
+    return BirdSpecies(
+        taxon_id=taxon_id,
+        common_name=common_name,
+        scientific_name=scientific_name,
+        observation_count=0,
+        source=HUMAN_REVIEW_SOURCE,
+    )
+
+
+def _resumable_approved_replacement(
+    state_dir: Path,
+    taxon_id: int,
+    reason: str,
+) -> tuple[Path, BirdSpecies] | None:
+    matches: list[tuple[Path, BirdSpecies]] = []
+    for path in sorted((state_dir / "rejected").glob(f"{taxon_id}-*")):
+        manifest_path = path / "manifest.json"
+        if not manifest_path.is_file():
+            continue
+        manifest = read_json(manifest_path)
+        if not isinstance(manifest, dict):
+            raise CatalogError(f"Rejected candidate manifest is invalid: {manifest_path}")
+        if (
+            manifest.get("taxon_id") != taxon_id
+            or manifest.get("status") != "rejected"
+            or not isinstance(manifest.get("approved_at"), str)
+            or manifest.get("rejection_reason") != reason
+        ):
+            continue
+        matches.append(
+            (
+                path,
+                _replacement_species(
+                    taxon_id,
+                    manifest.get("common_name"),
+                    manifest.get("scientific_name"),
+                    manifest_path,
+                ),
+            )
+        )
+    if len(matches) > 1:
+        raise CatalogError(f"Multiple resumable replacements exist for taxon {taxon_id}")
+    return matches[0] if matches else None
+
+
+def _archive_controller_paths(state_dir: Path, sources: list[Path]) -> list[str]:
+    archive = state_dir / "archive"
+    archive.mkdir(parents=True, exist_ok=True)
+    moved: list[str] = []
+    seen: set[Path] = set()
+    for source in sources:
+        if not source.exists():
+            continue
+        resolved = source.resolve()
+        if resolved in seen:
+            continue
+        seen.add(resolved)
+        destination = archive / source.name
+        counter = 1
+        while destination.exists():
+            destination = archive / f"{source.name}-{counter}"
+            counter += 1
+        shutil.move(str(source), destination)
+        moved.append(str(destination))
+    return moved
+
+
+def retry_approved_candidate(
+    config: AppConfig,
+    taxon_id: int,
+    reason: str,
+) -> dict[str, object]:
+    rejection_reason = reason.strip()
+    if not rejection_reason:
+        raise ValueError("Approved replacement requires a non-empty rejection reason")
+
+    with exclusive_cycle_lock(config.controller.state_dir):
+        pending = find_taxon_directory(config.controller.state_dir / "pending", taxon_id)
+        if pending is not None and (pending / "manifest.json").is_file():
+            raise ValueError("Pending candidates must be approved or rejected before retrying")
+        with catalog_state_lock(config.controller.state_dir):
+            approved_entries = read_catalog_entries(config.controller.catalog_dir)
+            approved_entry = next(
+                (entry for entry in approved_entries if entry.taxon_id == taxon_id),
+                None,
+            )
+            approved_path = find_taxon_directory(
+                config.controller.catalog_dir / "species",
+                taxon_id,
+            )
+            if (approved_entry is None) != (approved_path is None):
+                raise CatalogError(f"Approved catalog state is inconsistent for taxon {taxon_id}")
+
+            retry_store = RetryStore(config.controller.state_dir / "generation-retries.json")
+            queued_species = read_generation_queue(config)
+            observed = _current_discovery_species(config)
+            read_collection_state(config.controller.state_dir)
+            resumable = (
+                _resumable_approved_replacement(
+                    config.controller.state_dir,
+                    taxon_id,
+                    rejection_reason,
+                )
+                if approved_entry is None
+                else None
+            )
+            queued = next(
+                (species for species in queued_species if species.taxon_id == taxon_id),
+                None,
+            )
+            guidance = retry_store.quality_guidance(taxon_id)
+            if approved_entry is None and resumable is None:
+                already_prepared = (
+                    queued is not None
+                    and guidance is not None
+                    and rejection_reason in guidance.invariant_findings
+                    and guidance.source_plate is None
+                    and not _has_terminal_state(config.controller.state_dir, taxon_id)
+                )
+                if not already_prepared:
+                    raise ValueError(f"No approved candidate exists for taxon {taxon_id}")
+                assert guidance is not None
+                active_count = _write_active_catalog(
+                    config,
+                    observed,
+                    approved=approved_entries,
+                )
+                return {
+                    "taxon_id": taxon_id,
+                    "status": "eligible",
+                    "archived": [],
+                    "cleared_deferred_retry": False,
+                    "cleared_cached_profile": False,
+                    "cleared_cached_references": False,
+                    "preserved_quality_findings_count": len(guidance.findings),
+                    "replaced_approved": True,
+                    "resumed": True,
+                    "source_attempt": None,
+                    "preserved_correction_source": False,
+                    "active_approved_count": active_count,
+                    "queued_for_generation": True,
+                }
+
+            if approved_entry is not None and approved_path is not None:
+                species = _replacement_species(
+                    taxon_id,
+                    approved_entry.common_name,
+                    approved_entry.scientific_name,
+                    approved_path / "manifest.json",
+                )
+                withdrawn: Path | None = None
+            else:
+                assert resumable is not None
+                withdrawn, species = resumable
+
+            if queued is not None and (
+                queued.common_name != species.common_name
+                or queued.scientific_name != species.scientific_name
+            ):
+                raise CatalogError(f"Generation queue identity differs for taxon {taxon_id}")
+
+            rejected_paths = sorted(
+                (config.controller.state_dir / "rejected").glob(f"{taxon_id}-*")
+            )
+            old_sources = [pending] if pending is not None else []
+            old_sources.extend(
+                sorted((config.controller.state_dir / "failed").glob(f"{taxon_id}-*"))
+            )
+            old_sources.extend(path for path in rejected_paths if path != withdrawn)
+            profile_cache = config.controller.state_dir / "profiles" / str(taxon_id)
+            reference_cache = config.controller.state_dir / "references" / str(taxon_id)
+            cleared_cached_profile = profile_cache.exists()
+            cleared_cached_references = reference_cache.exists()
+            if cleared_cached_profile:
+                old_sources.append(profile_cache)
+            if cleared_cached_references:
+                old_sources.append(reference_cache)
+            moved = _archive_controller_paths(config.controller.state_dir, old_sources)
+
+            if queued is None:
+                queued_species.append(species)
+                _write_generation_queue(config, queued_species)
+            deferred = retry_store.get(taxon_id) is not None
+            retry_store.clear(taxon_id)
+            guidance = retry_store.set_quality_guidance(
+                taxon_id,
+                (rejection_reason,),
+                invariant_findings=(rejection_reason,),
+            )
+
+            if withdrawn is None:
+                withdrawn = withdraw_approved_candidate(
+                    config.controller.state_dir,
+                    config.controller.catalog_dir,
+                    taxon_id,
+                    rejection_reason,
+                )
+            active_count = _write_active_catalog(config, observed)
+            moved.extend(_archive_controller_paths(config.controller.state_dir, [withdrawn]))
+
+    return {
+        "taxon_id": taxon_id,
+        "status": "eligible",
+        "archived": moved,
+        "cleared_deferred_retry": deferred,
+        "cleared_cached_profile": cleared_cached_profile,
+        "cleared_cached_references": cleared_cached_references,
+        "preserved_quality_findings_count": len(guidance.findings),
+        "replaced_approved": True,
+        "resumed": resumable is not None,
+        "source_attempt": None,
+        "preserved_correction_source": False,
+        "active_approved_count": active_count,
+        "queued_for_generation": True,
+    }
+
+
 def _collection_summary(
     entries: list[CollectionEntry],
     approved: list[CatalogEntry],
@@ -991,6 +1231,7 @@ def generate_candidate(
     *,
     initial_correction_findings: tuple[str, ...] = (),
     initial_correction_source: Path | None = None,
+    invariant_correction_findings: tuple[str, ...] = (),
 ) -> Path:
     state_dir = config.controller.state_dir
     if species.taxon_id in approved_taxon_ids(config.controller.catalog_dir):
@@ -1024,7 +1265,10 @@ def generate_candidate(
             profile_output_path,
             logs / "01-profile.log",
         )
-        correction_findings = initial_correction_findings
+        correction_findings = _merge_correction_findings(
+            invariant_correction_findings,
+            initial_correction_findings,
+        )
         correction_source = initial_correction_source
         history: list[dict[str, object]] = []
         for attempt in range(1, config.controller.max_generation_attempts + 1):
@@ -1091,7 +1335,10 @@ def generate_candidate(
                     raise CatalogError(f"Pending destination already exists: {destination}")
                 shutil.copytree(attempt_dir, destination)
                 return destination
-            correction_findings = review.correction_findings or (REVIEW_FAILURE_FALLBACK,)
+            correction_findings = _merge_correction_findings(
+                invariant_correction_findings,
+                review.correction_findings or (REVIEW_FAILURE_FALLBACK,),
+            )
             correction_source = portrait_path
 
         failed = state_dir / "failed" / f"{species.taxon_id}-{_timestamp()}"
@@ -1255,8 +1502,8 @@ def run_generation_cycle(config: AppConfig) -> dict[str, object]:
             if not retry_store.due(species.taxon_id, datetime.now(UTC)):
                 continue
             attempted_count += 1
+            guidance = retry_store.quality_guidance(species.taxon_id)
             try:
-                guidance = retry_store.quality_guidance(species.taxon_id)
                 if guidance is None:
                     generate_candidate(config, species, config.controller.workspace_dir)
                 else:
@@ -1266,7 +1513,14 @@ def run_generation_cycle(config: AppConfig) -> dict[str, object]:
                             guidance.source_plate,
                         )
                     except SpeciesStateError:
-                        retry_store.clear_quality_guidance(species.taxon_id)
+                        if guidance.invariant_findings:
+                            retry_store.set_quality_guidance(
+                                species.taxon_id,
+                                guidance.invariant_findings,
+                                invariant_findings=guidance.invariant_findings,
+                            )
+                        else:
+                            retry_store.clear_quality_guidance(species.taxon_id)
                         raise
                     generate_candidate(
                         config,
@@ -1274,6 +1528,7 @@ def run_generation_cycle(config: AppConfig) -> dict[str, object]:
                         config.controller.workspace_dir,
                         initial_correction_findings=guidance.findings,
                         initial_correction_source=correction_source,
+                        invariant_correction_findings=guidance.invariant_findings,
                     )
                 with catalog_state_lock(config.controller.state_dir):
                     entry = approve_candidate(
@@ -1327,7 +1582,14 @@ def run_generation_cycle(config: AppConfig) -> dict[str, object]:
                 )
             except QualityReviewError as exc:
                 retry_store.clear(species.taxon_id)
-                retry_store.clear_quality_guidance(species.taxon_id)
+                if guidance is not None and guidance.invariant_findings:
+                    retry_store.set_quality_guidance(
+                        species.taxon_id,
+                        guidance.invariant_findings,
+                        invariant_findings=guidance.invariant_findings,
+                    )
+                else:
+                    retry_store.clear_quality_guidance(species.taxon_id)
                 failure_path = record_failure(config.controller.state_dir, species, exc)
                 failures.append(
                     {

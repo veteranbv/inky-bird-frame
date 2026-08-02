@@ -6,7 +6,7 @@ import stat
 import unittest
 from argparse import Namespace
 from contextlib import redirect_stdout
-from datetime import date
+from datetime import UTC, date, datetime
 from importlib.metadata import version
 from pathlib import Path
 from tempfile import TemporaryDirectory
@@ -560,6 +560,40 @@ rotation_mode = "shuffle_bag"
         if guidance is not None:
             self.assertEqual(guidance.findings, (REVIEW_FAILURE_FALLBACK,))
 
+    def test_retry_preserves_guidance_when_clearing_only_deferred_backoff(self) -> None:
+        with TemporaryDirectory() as temporary:
+            state_dir = Path(temporary)
+            state_dir.mkdir(parents=True, exist_ok=True)
+            store = RetryStore(state_dir / "generation-retries.json")
+            store.record_failure(
+                42,
+                GenerationError("transient failure"),
+                now=datetime(2026, 8, 2, tzinfo=UTC),
+                initial_minutes=5,
+                maximum_minutes=60,
+            )
+            expected = store.set_quality_guidance(
+                42,
+                ("Keep the visible eye correction.",),
+                source_plate="archive/42-source/portrait.png",
+                invariant_findings=("Keep the visible eye correction.",),
+            )
+            config = controller_config(state_dir)
+            output = io.StringIO()
+
+            with patch("inky_bird_frame.cli._config", return_value=config), redirect_stdout(output):
+                retry_command(Namespace(taxon_id=42))
+
+            reloaded = RetryStore(state_dir / "generation-retries.json")
+            guidance = reloaded.quality_guidance(42)
+            retry = reloaded.get(42)
+            result = json.loads(output.getvalue())["data"]
+
+        self.assertIsNone(retry)
+        self.assertEqual(guidance, expected)
+        self.assertEqual(result["preserved_quality_findings_count"], 1)
+        self.assertTrue(result["preserved_correction_source"])
+
     def test_retry_reads_findings_from_legacy_null_correction_field(self) -> None:
         with TemporaryDirectory() as temporary:
             state_dir = Path(temporary)
@@ -672,33 +706,21 @@ rotation_mode = "shuffle_bag"
     def test_retry_withdraws_approved_candidate_and_starts_from_scratch(self) -> None:
         with TemporaryDirectory() as temporary:
             state_dir = Path(temporary)
-            catalog_dir = state_dir / "catalog"
-            approved = catalog_dir / "species/42-example-bird"
-            approved.mkdir(parents=True)
-            (approved / "portrait.png").write_bytes(b"rejected portrait")
-            config = controller_config(state_dir, catalog_dir)
-            RetryStore(state_dir / "generation-retries.json").set_quality_guidance(
-                42,
-                ("Reuse the rejected plate.",),
-            )
+            config = controller_config(state_dir)
+            expected = {
+                "taxon_id": 42,
+                "status": "eligible",
+                "replaced_approved": True,
+                "queued_for_generation": True,
+            }
             output = io.StringIO()
-
-            def withdraw(
-                state: Path,
-                catalog: Path,
-                taxon_id: int,
-                reason: str,
-            ) -> Path:
-                self.assertEqual((state, catalog, taxon_id), (state_dir, catalog_dir, 42))
-                self.assertEqual(reason, "Human review rejected the eyes.")
-                destination = state / "rejected" / approved.name
-                destination.parent.mkdir(parents=True)
-                approved.replace(destination)
-                return destination
 
             with (
                 patch("inky_bird_frame.cli._config", return_value=config),
-                patch("inky_bird_frame.cli.withdraw_approved_candidate", side_effect=withdraw),
+                patch(
+                    "inky_bird_frame.cli.retry_approved_candidate",
+                    return_value=expected,
+                ) as replace,
                 redirect_stdout(output),
             ):
                 retry_command(
@@ -711,19 +733,9 @@ rotation_mode = "shuffle_bag"
                 )
 
             result = json.loads(output.getvalue())["data"]
-            archived = state_dir / "archive/42-example-bird"
-            archived_portrait = (archived / "portrait.png").read_bytes()
-            guidance = RetryStore(state_dir / "generation-retries.json").quality_guidance(42)
 
-        self.assertTrue(result["replaced_approved"])
-        self.assertEqual(result["preserved_quality_findings_count"], 1)
-        self.assertFalse(result["preserved_correction_source"])
-        self.assertEqual(result["archived"], [str(archived)])
-        self.assertEqual(archived_portrait, b"rejected portrait")
-        self.assertIsNotNone(guidance)
-        if guidance is not None:
-            self.assertEqual(guidance.findings, ("Human review rejected the eyes.",))
-            self.assertIsNone(guidance.source_plate)
+        self.assertEqual(result, expected)
+        replace.assert_called_once_with(config, 42, "Human review rejected the eyes.")
 
     def test_retry_preserves_selected_attempt_as_correction_source(self) -> None:
         with TemporaryDirectory() as temporary:

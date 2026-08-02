@@ -78,10 +78,11 @@ source is archived, checksum-tracked, and edited rather than regenerated from
 scratch. If human visual review rejects a locally approved plate before public
 publication, `retry TAXON_ID --replace-approved --reason "..."` is the explicit
 replacement migration: it records the rejection, archives the plate, removes
-it from local rotation, refreshes research and references, and regenerates from
-scratch while carrying the human rejection reason as a required constraint. It
-never rewrites an existing public catalog entry. Once a taxon passes, it is
-never regenerated implicitly.
+it from local rotation, requeues historical-only taxa, refreshes research and
+references, and regenerates from scratch while carrying the human rejection
+reason as a required constraint through every correction attempt. The migration
+is safe to resume after interruption and never rewrites an existing public
+catalog entry. Once a taxon passes, it is never regenerated implicitly.
 
 Regular application code handles selection, licensing rules, checksums, image
 dimensions, rotation, publishing, downloads, and display state. Codex handles
