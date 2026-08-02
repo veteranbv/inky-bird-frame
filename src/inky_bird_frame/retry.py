@@ -5,7 +5,7 @@ from __future__ import annotations
 import json
 from dataclasses import dataclass
 from datetime import datetime, timedelta
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 
 from .catalog import utc_now
 from .errors import CatalogError
@@ -39,9 +39,16 @@ class RetryRecord:
 class RetryGuidance:
     taxon_id: int
     findings: tuple[str, ...]
+    source_plate: str | None = None
 
     def as_dict(self) -> dict[str, object]:
-        return {"taxon_id": self.taxon_id, "findings": list(self.findings)}
+        value: dict[str, object] = {
+            "taxon_id": self.taxon_id,
+            "findings": list(self.findings),
+        }
+        if self.source_plate is not None:
+            value["source_plate"] = self.source_plate
+        return value
 
 
 class RetryStore:
@@ -122,9 +129,19 @@ class RetryStore:
     def quality_guidance(self, taxon_id: int) -> RetryGuidance | None:
         return self._quality_guidance.get(taxon_id)
 
-    def set_quality_guidance(self, taxon_id: int, findings: tuple[str, ...]) -> RetryGuidance:
+    def set_quality_guidance(
+        self,
+        taxon_id: int,
+        findings: tuple[str, ...],
+        *,
+        source_plate: str | None = None,
+    ) -> RetryGuidance:
         guidance = _parse_guidance(
-            {"taxon_id": taxon_id, "findings": list(findings)},
+            {
+                "taxon_id": taxon_id,
+                "findings": list(findings),
+                "source_plate": source_plate,
+            },
             self.path,
         )
         self._quality_guidance[taxon_id] = guidance
@@ -217,6 +234,7 @@ def _parse_guidance(raw: object, source: Path) -> RetryGuidance:
         raise CatalogError(f"Invalid retry quality guidance: {source}")
     taxon_id = raw.get("taxon_id")
     findings = raw.get("findings")
+    source_plate = raw.get("source_plate")
     if (
         not isinstance(taxon_id, int)
         or isinstance(taxon_id, bool)
@@ -226,4 +244,21 @@ def _parse_guidance(raw: object, source: Path) -> RetryGuidance:
         or any(not isinstance(finding, str) or not finding.strip() for finding in findings)
     ):
         raise CatalogError(f"Invalid retry quality guidance: {source}")
-    return RetryGuidance(taxon_id=taxon_id, findings=tuple(findings))
+    if source_plate is not None:
+        if not isinstance(source_plate, str) or not source_plate:
+            raise CatalogError(f"Invalid retry quality guidance: {source}")
+        source_path = PurePosixPath(source_plate)
+        if (
+            source_path.is_absolute()
+            or not source_path.parts
+            or source_path.parts[0] != "archive"
+            or ".." in source_path.parts
+            or source_path.suffix.casefold() != ".png"
+        ):
+            raise CatalogError(f"Invalid retry quality guidance: {source}")
+        source_plate = source_path.as_posix()
+    return RetryGuidance(
+        taxon_id=taxon_id,
+        findings=tuple(findings),
+        source_plate=source_plate,
+    )

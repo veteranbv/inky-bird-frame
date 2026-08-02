@@ -437,10 +437,17 @@ class ControllerTests(unittest.TestCase):
                 initial_minutes=30,
                 maximum_minutes=60,
             )
-            retry_store.set_quality_guidance(first.taxon_id, ("Keep the wing angle accurate",))
+            source_plate = config.controller.state_dir / "archive/first/attempt-01/portrait.png"
+            source_plate.parent.mkdir(parents=True)
+            source_plate.write_bytes(b"source")
+            retry_store.set_quality_guidance(
+                first.taxon_id,
+                ("Keep the wing angle accurate",),
+                source_plate="archive/first/attempt-01/portrait.png",
+            )
             with (
                 patch("inky_bird_frame.controller.approved_taxon_ids", return_value=set()),
-                patch("inky_bird_frame.controller.generate_candidate"),
+                patch("inky_bird_frame.controller.generate_candidate") as generate,
                 patch("inky_bird_frame.controller.approve_candidate", return_value=entry),
                 patch("inky_bird_frame.controller._write_active_catalog", return_value=0),
             ):
@@ -453,6 +460,61 @@ class ControllerTests(unittest.TestCase):
         self.assertEqual(result["deferred_count"], 0)
         self.assertEqual(result["outstanding_retry_count"], 1)
         self.assertIsNone(first_guidance)
+        self.assertEqual(
+            generate.call_args.kwargs["initial_correction_source"],
+            source_plate.resolve(),
+        )
+
+    def test_missing_retry_source_clears_unusable_quality_guidance(self) -> None:
+        species = BirdSpecies(1, "First Bird", "Avis first", 4, "iNaturalist")
+        with TemporaryDirectory() as temporary:
+            config_path = Path(temporary) / "config.toml"
+            config_path.write_text(CONFIG)
+            config = load_config(config_path)
+            config.controller.state_dir.mkdir(parents=True)
+            (config.controller.state_dir / "discovery.json").write_text(
+                json.dumps(
+                    {
+                        "schema_version": 1,
+                        "refreshed_at": datetime.now(UTC).isoformat(),
+                        "place_name": "Exampleville",
+                        "state": "XY",
+                        "species": [
+                            {
+                                "taxon_id": species.taxon_id,
+                                "common_name": species.common_name,
+                                "scientific_name": species.scientific_name,
+                                "observation_count": species.observation_count,
+                                "source": species.source,
+                            }
+                        ],
+                    }
+                )
+            )
+            RetryStore(
+                config.controller.state_dir / "generation-retries.json"
+            ).set_quality_guidance(
+                species.taxon_id,
+                ("Keep the wing angle accurate",),
+                source_plate="archive/missing/attempt-01/portrait.png",
+            )
+            with (
+                patch("inky_bird_frame.controller.approved_taxon_ids", return_value=set()),
+                patch("inky_bird_frame.controller.generate_candidate") as generate,
+                patch("inky_bird_frame.controller._write_active_catalog", return_value=0),
+            ):
+                result = run_generation_cycle(config)
+            guidance = RetryStore(
+                config.controller.state_dir / "generation-retries.json"
+            ).quality_guidance(species.taxon_id)
+
+        self.assertIsNone(guidance)
+        generate.assert_not_called()
+        failures = result["failures"]
+        self.assertIsInstance(failures, list)
+        if isinstance(failures, list):
+            self.assertTrue(failures[0]["terminal"])
+            self.assertIn("Invalid retained correction source", failures[0]["error"])
 
     def test_overlapping_refresh_is_rejected_before_discovery(self) -> None:
         with TemporaryDirectory() as temporary:
@@ -786,7 +848,16 @@ class ControllerTests(unittest.TestCase):
 
     def test_failed_review_is_corrected_and_passing_attempt_is_staged(self) -> None:
         species = BirdSpecies(9083, "Northern Cardinal", "Cardinalis cardinalis", 2, "test")
-        failed_review = QualityReview(False, 3, 4, 5, 5, True, ("Crest is too short",))
+        failed_review = QualityReview(
+            False,
+            3,
+            4,
+            5,
+            5,
+            True,
+            ("The remaining anatomy is correct", "Crest is too short"),
+            correction_findings=("Crest is too short",),
+        )
         passed_review = QualityReview(
             True,
             5,
@@ -805,6 +876,7 @@ class ControllerTests(unittest.TestCase):
             corrections: list[tuple[str, ...]] = []
             generated_paths: list[Path] = []
             review_paths: list[Path] = []
+            correction_sources: list[Path | None] = []
             reviews = iter((failed_review, passed_review))
 
             def __init__(self, _executable: Path, workspace: Path) -> None:
@@ -817,7 +889,7 @@ class ControllerTests(unittest.TestCase):
                 output_path.write_text(json.dumps(PROFILE))
                 return PROFILE
 
-            def generate_plate(self, *_args: object) -> Path:
+            def generate_plate(self, *_args: object, **_kwargs: object) -> Path:
                 output_path = _args[-3]
                 correction = _args[-1]
                 assert isinstance(output_path, Path)
@@ -825,6 +897,9 @@ class ControllerTests(unittest.TestCase):
                 self.generated_paths.append(output_path)
                 assert output_path.resolve().is_relative_to(self.workspace)
                 self.corrections.append(correction)
+                source = _kwargs.get("correction_source_path")
+                assert source is None or isinstance(source, Path)
+                self.correction_sources.append(source)
                 output_path.write_bytes(b"generated")
                 return output_path
 
@@ -846,6 +921,9 @@ class ControllerTests(unittest.TestCase):
             )
             config = load_config(config_path)
             config.controller.workspace_dir.mkdir()
+            source_plate = config.controller.state_dir / "archive/source/portrait.png"
+            source_plate.parent.mkdir(parents=True)
+            source_plate.write_bytes(b"source")
             with (
                 patch("inky_bird_frame.controller.load_or_fetch_references", return_value=[]),
                 patch("inky_bird_frame.controller.fetch_taxon_context"),
@@ -857,6 +935,7 @@ class ControllerTests(unittest.TestCase):
                     species,
                     config.controller.workspace_dir,
                     initial_correction_findings=("Preserve the previous scale correction",),
+                    initial_correction_source=source_plate,
                 )
             manifest = json.loads((candidate / "manifest.json").read_text())
             private_histories = list(
@@ -869,6 +948,12 @@ class ControllerTests(unittest.TestCase):
         )
         self.assertEqual(len(FakeRunner.generated_paths), 2)
         self.assertEqual(len(FakeRunner.review_paths), 2)
+        self.assertEqual(FakeRunner.correction_sources[0], source_plate)
+        self.assertEqual(FakeRunner.correction_sources[1], FakeRunner.review_paths[0])
+        self.assertEqual(
+            manifest["generation"]["correction_source_sha256"],
+            "51c5a8296a032ce7b3014e66000c20d0d759d2e910873f28fa6107ab012bf887",
+        )
         self.assertEqual(manifest["generation"]["attempt"], 2)
         self.assertEqual(manifest["status"], "pending")
         self.assertFalse((candidate / "attempt-history.json").exists())
@@ -1032,7 +1117,7 @@ class ControllerTests(unittest.TestCase):
             def __init__(self, _executable: Path, _workspace: Path) -> None:
                 pass
 
-            def generate_plate(self, *_args: object) -> Path:
+            def generate_plate(self, *_args: object, **_kwargs: object) -> Path:
                 output_path = _args[-3]
                 assert isinstance(output_path, Path)
                 output_path.write_bytes(b"generated")

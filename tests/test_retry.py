@@ -90,6 +90,31 @@ class RetryStoreTests(unittest.TestCase):
             with self.assertRaisesRegex(CatalogError, "Invalid retry quality guidance"):
                 RetryStore(path)
 
+    def test_correction_source_is_durable(self) -> None:
+        with TemporaryDirectory() as temporary:
+            path = Path(temporary) / "retries.json"
+            guidance = RetryStore(path).set_quality_guidance(
+                42,
+                ("Correct the scale",),
+                source_plate="archive/42-bird/attempt-03/portrait.png",
+            )
+
+            reloaded = RetryStore(path).quality_guidance(42)
+
+        self.assertEqual(guidance, reloaded)
+        self.assertEqual(guidance.source_plate, "archive/42-bird/attempt-03/portrait.png")
+
+    def test_correction_source_must_remain_in_archive(self) -> None:
+        with TemporaryDirectory() as temporary:
+            path = Path(temporary) / "retries.json"
+
+            with self.assertRaisesRegex(CatalogError, "Invalid retry quality guidance"):
+                RetryStore(path).set_quality_guidance(
+                    42,
+                    ("Correct the scale",),
+                    source_plate="../private/portrait.png",
+                )
+
 
 if __name__ == "__main__":
     unittest.main()

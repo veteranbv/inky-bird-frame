@@ -9,7 +9,7 @@ from pathlib import Path
 from .birds import BirdSpecies, TaxonContext
 from .models import ReferencePhoto, SpeciesProfileData
 
-PROMPT_VERSION = "field-journal-v2"
+PROMPT_VERSION = "field-journal-v3"
 
 
 class _TextExtractor(HTMLParser):
@@ -27,9 +27,9 @@ def strip_html(value: str) -> str:
     return "".join(parser.parts).strip()
 
 
-def reference_list(references: list[ReferencePhoto]) -> str:
+def reference_list(references: list[ReferencePhoto], *, start_index: int = 1) -> str:
     lines = []
-    for index, reference in enumerate(references, start=1):
+    for index, reference in enumerate(references, start=start_index):
         lines.append(
             f"Image {index}: {reference.attribution}; {reference.license_code}; "
             f"{reference.source_url}"
@@ -80,6 +80,8 @@ def plate_prompt(
     references: list[ReferencePhoto],
     output_path: Path,
     correction_findings: tuple[str, ...] = (),
+    *,
+    has_correction_source: bool = False,
 ) -> str:
     measurements = profile["measurements"]
     field_marks = "\n".join(f"  - {mark}" for mark in profile["field_marks"])
@@ -87,18 +89,45 @@ def plate_prompt(
     correction = ""
     if correction_findings:
         issues = "\n".join(f"- {finding}" for finding in correction_findings)
-        correction = f"""
-Correction required after an independent review of the previous attempt:
+        if has_correction_source:
+            correction = f"""
+Image 1 is the previous plate and the edit target. Images 2 onward are species-accuracy
+references. Correct only the concrete defects below while preserving the previous plate's
+successful content, visual identity, typography, and large specimen footprint. Keep every
+unflagged factual statement and design element unchanged. Do not shrink the bird or create new
+empty space to make room for corrections.
+
+Corrections required after an independent review:
 {issues}
 
-Create a new image that corrects every issue above. Do not copy or lightly edit the previous
-attempt.
+Use the supplied current profile as the authority for visible facts, including any text that the
+review requires changing. Preserve correct anatomy and composition from Image 1 while making the
+smallest complete edit that resolves every correction. Legacy review records may include
+statements confirming correct traits; preserve those traits as invariants rather than treating
+them as changes.
 """
+        else:
+            correction = f"""
+Corrections required after an independent review of an earlier generation cycle:
+{issues}
+
+Create a new image that resolves every correction while preserving the supplied correct facts and
+the required large-specimen composition. Legacy review records may include statements confirming
+correct traits; preserve those traits as invariants rather than treating them as changes.
+"""
+    reference_start = 2 if has_correction_source else 1
+    reference_roles = (
+        "Image 1 is the correction edit target. The remaining attached images are licensed "
+        "species-accuracy references."
+        if has_correction_source
+        else "Every attached image is a licensed species-accuracy reference."
+    )
     return f"""$imagegen
 
-Use case: scientific-educational
+Use case: {"precise-object-edit" if has_correction_source else "scientific-educational"}
 Asset type: reusable portrait plate for a 13.3-inch color e-paper frame
-Primary request: Create one polished scientific field-journal plate for the species below.
+Primary request: {"Correct" if has_correction_source else "Create"} one polished scientific
+field-journal plate for the species below.
 
 Species identity:
 - Common name, verbatim: "{species.common_name}"
@@ -116,23 +145,29 @@ Species-specific field notes:
 - Plumage palette: {palette}
 
 Reference images, in attachment order:
-{reference_list(references)}
+{reference_list(references, start_index=reference_start)}
 
-Treat every attached image as a species-accuracy reference. Synthesize the consistent anatomy,
-proportions, posture, plumage pattern, and colors across them. Do not reproduce any photograph's
-background, pose, crop, or composition.
+{reference_roles} Synthesize the consistent anatomy, proportions, posture, plumage pattern, and
+colors across the reference photographs. Do not reproduce any photograph's background, pose,
+crop, or composition.
 {correction}
 
 Style and composition:
 - Portrait 3:4 page on warm aged cream naturalist-notebook paper.
 - Fine graphite and confident ink linework with restrained transparent watercolor.
 - One full-body bird, large and centered-right, in a natural perched posture.
+- The bird remains the dominant page element and confidently uses the available space.
 - Left margin contains compact handwritten measurements and field marks.
 - Bottom margin contains a small wing-pattern study, a bill/head study, and color swatches.
-- Right edge contains a thin measurement ruler.
+- Right edge contains a thin, self-contained vertical schematic ruler keyed to the body-length
+  range "{measurements["length"]}". Use proportionally spaced ticks with explicit units, visibly
+  mark the published range, and label it "BODY LENGTH: {measurements["length"]}" and
+  "SCHEMATIC — NOT TO SCALE". Keep it separate from the bird; never imply that it measures the
+  printed illustration.
 - It should look like a carefully scanned scientific field-journal page, not Audubon, not a
   decorative poster, not a collage, and not photorealistic.
 - Quiet margins. No scenery, map, location, ZIP code, coordinates, date, logo, or watermark.
+- Preserve the exact 3:4 portrait aspect ratio and keep all text inside safe page margins.
 - Exactly one bird, one head, one beak, two wings, two legs, and one tail. Feet must be plausible.
 - Render only the exact species name and supplied factual notes. Do not invent extra prose.
 
@@ -163,12 +198,15 @@ these domains: {", ".join(allowed_domains)}. Do not rely on search snippets. Ins
 for correct plumage, proportions, bill, eye, wings, tail, legs, feet, and species field marks
 against the attached field-reference photos. Compare every visible factual claim to the
 independently verified facts. Confirm that no place name, ZIP code, coordinates, map, or
-local-observation detail appears. Record every concrete issue and return at least two direct HTTPS
-source URLs from distinct configured domains used for verification.
+local-observation detail appears. Use findings for the complete review record, including verified
+strengths and concrete issues. Put only required, actionable changes in correction_findings; do not
+repeat positive observations, source confirmations, or already-correct traits there. Return at
+least two direct HTTPS source URLs from distinct configured domains used for verification.
 
 Set passed=true only when all four scores are at least 4, location_free is true, the bird has
 exactly one head, one beak, two wings, two legs, and one tail, and there are no material species or
-text errors. Return only the requested JSON.
+text errors. When passed=false, correction_findings must contain at least one specific change.
+When passed=true, correction_findings must be empty. Return only the requested JSON.
 
 Reference provenance:
 {reference_list(references)}

@@ -113,11 +113,21 @@ def write_candidate_manifest(
     prompt_version: str,
     attempt: int = 1,
     max_attempts: int = 1,
+    correction_source_sha256: str | None = None,
 ) -> Path:
     portrait_path = destination / "portrait.png"
     display_path = destination / "display.png"
     if not portrait_path.is_file() or not display_path.is_file():
         raise CatalogError("Candidate must contain portrait.png and display.png")
+    generation: dict[str, object] = {
+        "generator": generator,
+        "prompt_version": prompt_version,
+        "generated_at": utc_now(),
+        "attempt": attempt,
+        "max_attempts": max_attempts,
+    }
+    if correction_source_sha256 is not None:
+        generation["correction_source_sha256"] = correction_source_sha256
     manifest = {
         "schema_version": SCHEMA_VERSION,
         "status": "pending",
@@ -127,13 +137,7 @@ def write_candidate_manifest(
         "slug": slugify(species.common_name),
         "profile": profile,
         "references": [reference.as_dict() for reference in references],
-        "generation": {
-            "generator": generator,
-            "prompt_version": prompt_version,
-            "generated_at": utc_now(),
-            "attempt": attempt,
-            "max_attempts": max_attempts,
-        },
+        "generation": generation,
         "quality_review": review.as_dict(),
         "assets": {
             "portrait": {"filename": "portrait.png", "sha256": sha256_file(portrait_path)},
@@ -228,6 +232,7 @@ def approved_taxon_ids(catalog_dir: Path) -> set[int]:
 def has_passing_sourced_review(review: object) -> bool:
     if not isinstance(review, dict):
         return False
+    correction_findings = review.get("correction_findings", [])
     score_fields = (
         "species_accuracy",
         "anatomy_accuracy",
@@ -237,6 +242,8 @@ def has_passing_sourced_review(review: object) -> bool:
     if (
         review.get("passed") is not True
         or review.get("location_free") is not True
+        or not isinstance(correction_findings, list)
+        or bool(correction_findings)
         or any(
             not isinstance(review.get(field), int)
             or isinstance(review.get(field), bool)
@@ -265,12 +272,21 @@ def is_bounded_generation(generation: object) -> bool:
         return False
     attempt = generation.get("attempt")
     max_attempts = generation.get("max_attempts")
+    correction_source_sha256 = generation.get("correction_source_sha256")
     return (
         isinstance(attempt, int)
         and not isinstance(attempt, bool)
         and isinstance(max_attempts, int)
         and not isinstance(max_attempts, bool)
         and 1 <= attempt <= max_attempts
+        and (
+            correction_source_sha256 is None
+            or (
+                isinstance(correction_source_sha256, str)
+                and len(correction_source_sha256) == 64
+                and all(character in "0123456789abcdef" for character in correction_source_sha256)
+            )
+        )
     )
 
 

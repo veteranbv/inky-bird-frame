@@ -366,9 +366,14 @@ def reject_command(args: argparse.Namespace) -> int:
     return 0
 
 
-def _latest_quality_findings(failed_directories: list[Path]) -> tuple[str, ...]:
+def _retry_quality_guidance(
+    failed_directories: list[Path],
+    source_attempt: int | None,
+) -> tuple[tuple[str, ...], Path | None]:
     if not failed_directories:
-        return ()
+        if source_attempt is not None:
+            raise ValueError("--source-attempt requires retained failed generation attempts")
+        return (), None
     attempts: list[tuple[int, Path]] = []
     for attempt_path in failed_directories[-1].glob("attempt-*"):
         try:
@@ -379,22 +384,44 @@ def _latest_quality_findings(failed_directories: list[Path]) -> tuple[str, ...]:
             raise SpeciesStateError(f"Invalid generation attempt: {attempt_path}")
         attempts.append((attempt_number, attempt_path))
     if not attempts:
-        return ()
-    review_path = max(attempts, key=lambda item: item[0])[1] / "quality-review.json"
+        if source_attempt is not None:
+            raise ValueError("--source-attempt requires retained failed generation attempts")
+        return (), None
+    attempts_by_number = dict(attempts)
+    if source_attempt is None:
+        selected_attempt, attempt_path = max(attempts, key=lambda item: item[0])
+    else:
+        if source_attempt <= 0 or source_attempt not in attempts_by_number:
+            available = ", ".join(str(number) for number in sorted(attempts_by_number))
+            raise ValueError(
+                f"Generation attempt {source_attempt} is unavailable; choose one of: {available}"
+            )
+        selected_attempt = source_attempt
+        attempt_path = attempts_by_number[source_attempt]
+    review_path = attempt_path / "quality-review.json"
     if not review_path.is_file():
-        return ()
+        raise SpeciesStateError(
+            f"Generation attempt {selected_attempt} has no quality review: {attempt_path}"
+        )
     try:
         review = json.loads(review_path.read_text())
     except (json.JSONDecodeError, UnicodeDecodeError) as exc:
         raise SpeciesStateError(f"Invalid quality review: {review_path}") from exc
     if not isinstance(review, dict) or review.get("passed") is not False:
         raise SpeciesStateError(f"Invalid failed quality review: {review_path}")
-    findings = review.get("findings")
+    findings = review.get("correction_findings", review.get("findings"))
     if not isinstance(findings, list) or any(
         not isinstance(finding, str) or not finding.strip() for finding in findings
     ):
         raise SpeciesStateError(f"Invalid quality review findings: {review_path}")
-    return tuple(findings) or (REVIEW_FAILURE_FALLBACK,)
+    source_plate = None
+    if source_attempt is not None:
+        source_plate = attempt_path / "portrait.png"
+        if not source_plate.is_file():
+            raise SpeciesStateError(
+                f"Generation attempt {selected_attempt} has no portrait: {attempt_path}"
+            )
+    return tuple(findings) or (REVIEW_FAILURE_FALLBACK,), source_plate
 
 
 def retry_command(args: argparse.Namespace) -> int:
@@ -405,7 +432,11 @@ def retry_command(args: argparse.Namespace) -> int:
         failed_directories = sorted(
             (config.controller.state_dir / "failed").glob(f"{args.taxon_id}-*")
         )
-        quality_findings = _latest_quality_findings(failed_directories)
+        source_attempt = getattr(args, "source_attempt", None)
+        quality_findings, correction_source = _retry_quality_guidance(
+            failed_directories,
+            source_attempt,
+        )
         sources = list(failed_directories)
         rejected = find_taxon_directory(config.controller.state_dir / "rejected", args.taxon_id)
         if rejected is not None:
@@ -424,21 +455,42 @@ def retry_command(args: argparse.Namespace) -> int:
         cleared_cached_references = reference_cache.exists()
         if cleared_cached_references:
             sources.append(reference_cache)
+        correction_owner = (
+            next(
+                (source for source in sources if correction_source.is_relative_to(source)),
+                None,
+            )
+            if correction_source is not None
+            else None
+        )
+        if correction_source is not None and correction_owner is None:
+            raise SpeciesStateError("The selected correction source is outside retained state")
         archive = config.controller.state_dir / "archive"
         archive.mkdir(parents=True, exist_ok=True)
         moved: list[str] = []
+        archived_correction_source: Path | None = None
         for source in sources:
             destination = archive / source.name
             counter = 1
             while destination.exists():
                 destination = archive / f"{source.name}-{counter}"
                 counter += 1
+            if source == correction_owner and correction_source is not None:
+                archived_correction_source = destination / correction_source.relative_to(source)
             shutil.move(str(source), destination)
             moved.append(str(destination))
         retry_store.clear(args.taxon_id)
         guidance = retry_store.quality_guidance(args.taxon_id)
         if quality_findings:
-            guidance = retry_store.set_quality_guidance(args.taxon_id, quality_findings)
+            guidance = retry_store.set_quality_guidance(
+                args.taxon_id,
+                quality_findings,
+                source_plate=(
+                    archived_correction_source.relative_to(config.controller.state_dir).as_posix()
+                    if archived_correction_source is not None
+                    else None
+                ),
+            )
     print_result(
         {
             "taxon_id": args.taxon_id,
@@ -450,6 +502,8 @@ def retry_command(args: argparse.Namespace) -> int:
             "preserved_quality_findings_count": (
                 len(guidance.findings) if guidance is not None else 0
             ),
+            "source_attempt": source_attempt,
+            "preserved_correction_source": archived_correction_source is not None,
         }
     )
     return 0
@@ -882,6 +936,11 @@ def build_parser() -> argparse.ArgumentParser:
     )
     add_config_argument(retry_parser)
     retry_parser.add_argument("taxon_id", type=int)
+    retry_parser.add_argument(
+        "--source-attempt",
+        type=int,
+        help="Edit a selected retained attempt instead of generating the first retry from scratch",
+    )
     retry_parser.set_defaults(func=retry_command)
 
     status_parser = subparsers.add_parser("status", help="List approved and pending plates")

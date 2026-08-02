@@ -67,11 +67,15 @@ candidate:
    neutrality; and
 4. returns structured scores and concrete findings.
 
-A failed review becomes corrective input for the next attempt. Attempts are
-bounded by configuration, and exhausted work stops for inspection rather than
-publishing. A deliberate `retry` refreshes the cached research and carries the
-final review findings into the first new attempt. Once a taxon passes, it is
-never regenerated implicitly.
+A failed review returns separate actionable corrections for the next attempt,
+which uses them to edit the failed plate while preserving its successful
+composition and content. Attempts are bounded by configuration, and exhausted
+work stops for
+inspection rather than publishing. A deliberate `retry` refreshes cached
+research and carries the final corrections into the next cycle. Maintainers can
+select a strong retained plate with `retry TAXON_ID --source-attempt N`; the
+source is archived, checksum-tracked, and edited rather than regenerated from
+scratch. Once a taxon passes, it is never regenerated implicitly.
 
 Regular application code handles selection, licensing rules, checksums, image
 dimensions, rotation, publishing, downloads, and display state. Codex handles

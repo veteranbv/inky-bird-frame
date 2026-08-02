@@ -70,6 +70,7 @@ class QualityReview:
     location_free: bool
     findings: tuple[str, ...]
     verification_sources: tuple[SourceLink, ...] = ()
+    correction_findings: tuple[str, ...] = ()
 
     def as_dict(self) -> dict[str, object]:
         return {
@@ -81,4 +82,5 @@ class QualityReview:
             "location_free": self.location_free,
             "findings": list(self.findings),
             "verification_sources": list(self.verification_sources),
+            "correction_findings": list(self.correction_findings),
         }

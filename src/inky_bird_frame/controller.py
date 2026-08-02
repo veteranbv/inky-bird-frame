@@ -37,6 +37,7 @@ from .catalog import (
     has_passing_sourced_review,
     is_bounded_generation,
     rebuild_catalog_index,
+    sha256_file,
     utc_now,
     write_candidate_manifest,
 )
@@ -760,6 +761,7 @@ def generate_candidate(
     workspace: Path,
     *,
     initial_correction_findings: tuple[str, ...] = (),
+    initial_correction_source: Path | None = None,
 ) -> Path:
     state_dir = config.controller.state_dir
     if species.taxon_id in approved_taxon_ids(config.controller.catalog_dir):
@@ -794,6 +796,7 @@ def generate_candidate(
             logs / "01-profile.log",
         )
         correction_findings = initial_correction_findings
+        correction_source = initial_correction_source
         history: list[dict[str, object]] = []
         for attempt in range(1, config.controller.max_generation_attempts + 1):
             attempt_dir = work / f"attempt-{attempt:02d}"
@@ -805,6 +808,9 @@ def generate_candidate(
                 dir=generation_parent,
             ) as generation_temporary:
                 generated_path = Path(generation_temporary) / "generated.png"
+                correction_source_sha256 = (
+                    sha256_file(correction_source) if correction_source is not None else None
+                )
                 runner.generate_plate(
                     species,
                     profile,
@@ -813,6 +819,7 @@ def generate_candidate(
                     generated_path,
                     logs / f"02-generation-attempt-{attempt:02d}.log",
                     correction_findings,
+                    correction_source_path=correction_source,
                 )
                 prepare_generated_plate(generated_path, portrait_path, display_path)
 
@@ -827,7 +834,13 @@ def generate_candidate(
                 allowed_domains=config.research.allowed_domains,
             )
             write_json_atomic(attempt_dir / "quality-review.json", review.as_dict())
-            history.append({"attempt": attempt, "quality_review": review.as_dict()})
+            history_entry: dict[str, object] = {
+                "attempt": attempt,
+                "quality_review": review.as_dict(),
+            }
+            if correction_source_sha256 is not None:
+                history_entry["correction_source_sha256"] = correction_source_sha256
+            history.append(history_entry)
             if review.passed:
                 shutil.copy2(profile_path, attempt_dir / "profile.json")
                 write_json_atomic(logs / "attempt-history.json", history)
@@ -841,6 +854,7 @@ def generate_candidate(
                     prompt_version=PROMPT_VERSION,
                     attempt=attempt,
                     max_attempts=config.controller.max_generation_attempts,
+                    correction_source_sha256=correction_source_sha256,
                 )
                 destination = candidate_directory(state_dir, species)
                 destination.parent.mkdir(parents=True, exist_ok=True)
@@ -848,7 +862,8 @@ def generate_candidate(
                     raise CatalogError(f"Pending destination already exists: {destination}")
                 shutil.copytree(attempt_dir, destination)
                 return destination
-            correction_findings = review.findings or (REVIEW_FAILURE_FALLBACK,)
+            correction_findings = review.correction_findings or (REVIEW_FAILURE_FALLBACK,)
+            correction_source = portrait_path
 
         failed = state_dir / "failed" / f"{species.taxon_id}-{_timestamp()}"
         failed.parent.mkdir(parents=True, exist_ok=True)
@@ -857,6 +872,16 @@ def generate_candidate(
             "Generated plate failed automated quality review after "
             f"{config.controller.max_generation_attempts} attempts; artifacts retained at {failed}"
         )
+
+
+def _retry_source_plate(state_dir: Path, relative_path: str | None) -> Path | None:
+    if relative_path is None:
+        return None
+    state_root = state_dir.resolve()
+    source = (state_dir / relative_path).resolve()
+    if not source.is_relative_to(state_root) or not source.is_file():
+        raise SpeciesStateError(f"Invalid retained correction source: {relative_path}")
+    return source
 
 
 def _has_terminal_state(state_dir: Path, taxon_id: int) -> bool:
@@ -952,11 +977,20 @@ def run_generation_cycle(config: AppConfig) -> dict[str, object]:
                 if guidance is None:
                     generate_candidate(config, species, config.controller.workspace_dir)
                 else:
+                    try:
+                        correction_source = _retry_source_plate(
+                            config.controller.state_dir,
+                            guidance.source_plate,
+                        )
+                    except SpeciesStateError:
+                        retry_store.clear_quality_guidance(species.taxon_id)
+                        raise
                     generate_candidate(
                         config,
                         species,
                         config.controller.workspace_dir,
                         initial_correction_findings=guidance.findings,
+                        initial_correction_source=correction_source,
                     )
                 with catalog_state_lock(config.controller.state_dir):
                     entry = approve_candidate(
