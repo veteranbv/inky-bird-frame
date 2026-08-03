@@ -81,14 +81,22 @@ def plate_prompt(
     output_path: Path,
     correction_findings: tuple[str, ...] = (),
     *,
+    invariant_findings: tuple[str, ...] = (),
     has_correction_source: bool = False,
 ) -> str:
     measurements = profile["measurements"]
     field_marks = "\n".join(f"  - {mark}" for mark in profile["field_marks"])
     palette = ", ".join(profile["palette"])
     correction = ""
-    if correction_findings:
-        issues = "\n".join(f"- {finding}" for finding in correction_findings)
+    if correction_findings or invariant_findings:
+        issues = (
+            "\n".join(f"- {finding}" for finding in correction_findings)
+            or "- No new defect beyond the non-regression constraints below."
+        )
+        invariants = (
+            "\n".join(f"- {finding}" for finding in invariant_findings)
+            or "- No separate non-regression constraints."
+        )
         if has_correction_source:
             correction = f"""
 Image 1 is the previous plate and the edit target. Images 2 onward are species-accuracy
@@ -97,23 +105,31 @@ successful content, visual identity, typography, and large specimen footprint. K
 unflagged factual statement and design element unchanged. Do not shrink the bird or create new
 empty space to make room for corrections.
 
-Corrections required after an independent review:
+Current actionable corrections required after an independent review:
 {issues}
+
+Non-regression constraints from earlier human review:
+{invariants}
 
 Use the supplied current profile as the authority for visible facts, including any text that the
 review requires changing. Preserve correct anatomy and composition from Image 1 while making the
-smallest complete edit that resolves every correction. Legacy review records may include
-statements confirming correct traits; preserve those traits as invariants rather than treating
-them as changes.
+smallest complete edit that resolves every current correction. A non-regression constraint remains
+mandatory, but it is not a request to redraw a feature that Image 1 already satisfies. Inspect each
+one: preserve an already-correct feature exactly, and change it only if Image 1 still violates the
+constraint.
 """
         else:
             correction = f"""
-Corrections required after an independent review of an earlier generation cycle:
+Current actionable corrections required after an independent review of an earlier generation
+cycle:
 {issues}
 
+Mandatory constraints from earlier human review:
+{invariants}
+
 Create a new image that resolves every correction while preserving the supplied correct facts and
-the required large-specimen composition. Legacy review records may include statements confirming
-correct traits; preserve those traits as invariants rather than treating them as changes.
+the required large-specimen composition. Implement every mandatory constraint in a source-free
+generation; do not treat it as optional merely because it originated in an earlier review.
 """
     reference_start = 2 if has_correction_source else 1
     reference_roles = (
@@ -149,7 +165,16 @@ Reference images, in attachment order:
 
 {reference_roles} Synthesize the consistent anatomy, proportions, posture, plumage pattern, and
 colors across the reference photographs. Do not reproduce any photograph's background, pose,
-crop, or composition.
+crop, or composition. When a field mark depends on unequal paired structures such as mandibles,
+identify each structure before editing it. For an open skimmer bill, the lower mandible is the jaw
+below the gape line: when the references show it projecting, its tip must be farther from the
+shared bill base than the upper tip. Match both the direction and degree of that difference to the
+clearest side-profile references. Preserve the near-full length of the shorter structure; do not
+substitute a wider gape, lengthen the wrong jaw, truncate the upper mandible, or exaggerate a
+qualitative field mark. In a side-profile skimmer with an open bill, keep the difference visually
+legible: the lower tip must also reach farther forward in the bird's facing direction when the
+references show that projection; do not rely on a steeper gape angle or lower tip position. Use the
+same plausible proportional relationship in the primary specimen and every supplementary study.
 {correction}
 
 Style and composition:
@@ -159,17 +184,33 @@ Style and composition:
 - The bird remains the dominant page element and confidently uses the available space.
 - Left margin contains compact handwritten measurements and field marks.
 - Bottom margin contains a small wing-pattern study, a bill/head study, and color swatches.
-- Right edge contains a thin, self-contained vertical schematic ruler keyed to the body-length
-  range "{measurements["length"]}". Use proportionally spaced ticks with explicit units, visibly
-  mark the published range, and label it "BODY LENGTH: {measurements["length"]}" and
-  "SCHEMATIC — NOT TO SCALE". Keep it separate from the bird; never imply that it measures the
-  printed illustration.
+- Right edge contains a thin, self-contained vertical schematic range ruler representing exactly
+  the published body length "{measurements["length"]}". For a range, the ruler itself spans only
+  the published endpoints, with the minimum at the bottom and maximum at the top, plus exactly
+  four evenly spaced unlabeled interior ticks creating five equal proportional segments. Those
+  ticks are subdivisions, not one-unit increments. For a single value, use one dimension line
+  labeled with that value. Use explicit units. Do not draw a zero-based or wider full-range axis,
+  and do not add a separate range bracket whose endpoints could disagree with the ruler. Label it
+  "BODY LENGTH: {measurements["length"]}" and "SCHEMATIC — NOT TO SCALE". Keep it separate from
+  the bird; never imply that it measures the printed illustration.
 - It should look like a carefully scanned scientific field-journal page, not Audubon, not a
   decorative poster, not a collage, and not photorealistic.
 - Quiet margins. No scenery, map, location, ZIP code, coordinates, date, logo, or watermark.
 - Preserve the exact 3:4 portrait aspect ratio and keep all text inside safe page margins.
-- Exactly one bird, one head, one beak, two wings, two legs, and one tail. Feet must be plausible.
+- Exactly one complete primary bird specimen, with one head, one beak, two wings, two legs, and
+  one tail. The detached bottom-margin wing and bill/head studies are supplementary anatomical
+  details, not additional birds; keep them spatially separate from the primary specimen and make
+  each anatomically accurate. Do not depict a second complete bird. Feet must be plausible.
+- Render the primary bird's tail as a distinct anatomical structure matching the supplied field
+  mark; do not let folded wing tips obscure or impersonate it.
+- When a supplied field mark calls an eye dark and inconspicuous while specifying its pupil shape,
+  keep the iris dark enough to blend into the surrounding plumage while making the pupil readable;
+  render the specified pupil itself as a thin black vertical slit in every depicted head, never a
+  round or oval pupil, and do not substitute a conspicuous amber, gold, or yellow iris ring.
 - Render only the exact species name and supplied factual notes. Do not invent extra prose.
+- Before finishing, compare every visible text line character-for-character with the supplied
+  field notes and confirm that the requested edit did not alter unrelated anatomy or design. Undo
+  any incidental spelling, number, punctuation, anatomy, or composition drift.
 
 Generate exactly one image using the built-in image generation tool. After generation, copy the
 selected final bitmap to this exact path inside the current workspace:
@@ -197,15 +238,36 @@ and the attached references. Do not assume the proposed facts are correct. Restr
 these domains: {", ".join(allowed_domains)}. Do not rely on search snippets. Inspect the candidate
 for correct plumage, proportions, bill, eye, wings, tail, legs, feet, and species field marks
 against the attached field-reference photos. Compare every visible factual claim to the
-independently verified facts. Confirm that no place name, ZIP code, coordinates, map, or
-local-observation detail appears. Use findings for the complete review record, including verified
-strengths and concrete issues. Put only required, actionable changes in correction_findings; do not
-repeat positive observations, source confirmations, or already-correct traits there. Return at
-least two direct HTTPS source URLs from distinct configured domains used for verification.
+independently verified facts. Do not infer a seasonal-plumage correction from one image or an
+unstated assumption; require explicit agreement from at least two direct allowed source pages
+before requesting a seasonal qualifier or color-pattern rewrite. Inspect every ruler, scale, and
+measurement diagram for internal
+consistency: values must increase from bottom to top, its endpoints, ticks, and units must match the
+published value or range, no separate marker may disagree with it, and it must be clearly
+schematic rather than presented as the printed bird's size. A range ruler must contain exactly
+four evenly spaced unlabeled interior ticks; treat them as five proportional segments, not
+one-unit increments. Treat any mismatch as a material text error with a specific correction.
+Read every visible text line in full rather than summarizing it. Compare its spelling, numbers,
+and word order to the proposed facts; treat duplicated, omitted, substituted, or nonsensical words
+as material text errors and give the exact replacement. When unequal mandibles are a field mark,
+trace each one independently from its shared bill base to its tip in every depicted head; do not
+confuse the open-gape angle with base-to-tip length. Compare both the direction and degree of the
+projection with the clearest attached side-profile references. Fail an ambiguous, co-terminal, or
+reversed rendering, an exaggerated or materially understated projection, a truncated-looking
+upper mandible, or inconsistent proportions between heads—even when the lower mandible is
+technically longer. Confirm that no place name, ZIP code, coordinates, map, or local-observation
+detail appears. Use findings for the complete review record, including verified strengths and
+concrete issues. Put only required, actionable changes in correction_findings; do not repeat
+positive observations, source confirmations, or already-correct traits there. Return at least two
+direct HTTPS source URLs from distinct configured domains used for verification.
 
 Set passed=true only when all four scores are at least 4, location_free is true, the bird has
-exactly one head, one beak, two wings, two legs, and one tail, and there are no material species or
-text errors. When passed=false, correction_findings must contain at least one specific change.
+exactly one complete primary specimen with one head, one beak, two wings, two legs, and one tail,
+and there are no material species or text errors. Clearly detached wing and bill/head studies are
+intentional supplementary anatomy, not duplicate parts or additional birds; do not fail them for
+their presence, but validate each study independently and fail malformed anatomy or a study that
+appears attached to the primary specimen. When passed=false, correction_findings must contain at
+least one specific change.
 When passed=true, correction_findings must be empty. Return only the requested JSON.
 
 Reference provenance:

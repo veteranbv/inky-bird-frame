@@ -81,13 +81,6 @@ REVIEW_FAILURE_FALLBACK = "The previous attempt did not meet every automated rev
 HUMAN_REVIEW_SOURCE = "human-review"
 
 
-def _merge_correction_findings(
-    invariant_findings: tuple[str, ...],
-    current_findings: tuple[str, ...],
-) -> tuple[str, ...]:
-    return tuple(dict.fromkeys((*invariant_findings, *current_findings)))
-
-
 @dataclass(frozen=True)
 class DiscoverySnapshot:
     refreshed_at: datetime
@@ -1331,10 +1324,7 @@ def generate_candidate(
             profile_output_path,
             logs / "01-profile.log",
         )
-        correction_findings = _merge_correction_findings(
-            invariant_correction_findings,
-            initial_correction_findings,
-        )
+        correction_findings = initial_correction_findings
         correction_source = initial_correction_source
         history: list[dict[str, object]] = []
         for attempt in range(1, config.controller.max_generation_attempts + 1):
@@ -1359,6 +1349,7 @@ def generate_candidate(
                     logs / f"02-generation-attempt-{attempt:02d}.log",
                     correction_findings,
                     correction_source_path=correction_source,
+                    invariant_findings=invariant_correction_findings,
                 )
                 prepare_generated_plate(generated_path, portrait_path, display_path)
 
@@ -1401,10 +1392,7 @@ def generate_candidate(
                     raise CatalogError(f"Pending destination already exists: {destination}")
                 shutil.copytree(attempt_dir, destination)
                 return destination
-            correction_findings = _merge_correction_findings(
-                invariant_correction_findings,
-                review.correction_findings or (REVIEW_FAILURE_FALLBACK,),
-            )
+            correction_findings = review.correction_findings or (REVIEW_FAILURE_FALLBACK,)
             correction_source = portrait_path
 
         failed = state_dir / "failed" / f"{species.taxon_id}-{_timestamp()}"
@@ -1588,11 +1576,17 @@ def run_generation_cycle(config: AppConfig) -> dict[str, object]:
                         else:
                             retry_store.clear_quality_guidance(species.taxon_id)
                         raise
+                    invariant_findings = set(guidance.invariant_findings)
+                    current_findings = tuple(
+                        finding
+                        for finding in guidance.findings
+                        if finding not in invariant_findings
+                    )
                     generate_candidate(
                         config,
                         species,
                         config.controller.workspace_dir,
-                        initial_correction_findings=guidance.findings,
+                        initial_correction_findings=current_findings,
                         initial_correction_source=correction_source,
                         invariant_correction_findings=guidance.invariant_findings,
                     )
