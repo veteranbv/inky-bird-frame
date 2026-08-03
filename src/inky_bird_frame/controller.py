@@ -854,6 +854,8 @@ def retry_approved_candidate(
     config: AppConfig,
     taxon_id: int,
     reason: str,
+    *,
+    refresh_research: bool = False,
 ) -> dict[str, object]:
     rejection_reason = reason.strip()
     if not rejection_reason:
@@ -893,6 +895,10 @@ def retry_approved_candidate(
                 None,
             )
             guidance = retry_store.quality_guidance(taxon_id)
+            profile_cache = config.controller.state_dir / "profiles" / str(taxon_id)
+            reference_cache = config.controller.state_dir / "references" / str(taxon_id)
+            cleared_cached_profile = refresh_research and profile_cache.exists()
+            cleared_cached_references = refresh_research and reference_cache.exists()
             if approved_entry is None and resumable is None:
                 already_prepared = (
                     queued is not None
@@ -905,6 +911,18 @@ def retry_approved_candidate(
                     raise ValueError(f"No approved candidate exists for taxon {taxon_id}")
                 _migrate_legacy_queue_before_replacement(config, queued_species, taxon_id)
                 assert guidance is not None
+                cache_sources = [
+                    path
+                    for path, should_clear in (
+                        (profile_cache, cleared_cached_profile),
+                        (reference_cache, cleared_cached_references),
+                    )
+                    if should_clear
+                ]
+                moved = _archive_controller_paths(
+                    config.controller.state_dir,
+                    cache_sources,
+                )
                 active_count = _write_active_catalog(
                     config,
                     observed,
@@ -913,10 +931,10 @@ def retry_approved_candidate(
                 return {
                     "taxon_id": taxon_id,
                     "status": "eligible",
-                    "archived": [],
+                    "archived": moved,
                     "cleared_deferred_retry": False,
-                    "cleared_cached_profile": False,
-                    "cleared_cached_references": False,
+                    "cleared_cached_profile": cleared_cached_profile,
+                    "cleared_cached_references": cleared_cached_references,
                     "preserved_quality_findings_count": len(guidance.findings),
                     "replaced_approved": True,
                     "resumed": True,
@@ -953,10 +971,6 @@ def retry_approved_candidate(
                 sorted((config.controller.state_dir / "failed").glob(f"{taxon_id}-*"))
             )
             old_sources.extend(path for path in rejected_paths if path != withdrawn)
-            profile_cache = config.controller.state_dir / "profiles" / str(taxon_id)
-            reference_cache = config.controller.state_dir / "references" / str(taxon_id)
-            cleared_cached_profile = profile_cache.exists()
-            cleared_cached_references = reference_cache.exists()
             if cleared_cached_profile:
                 old_sources.append(profile_cache)
             if cleared_cached_references:
