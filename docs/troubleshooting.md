@@ -98,20 +98,25 @@ inky-bird-frame status --config /path/to/config.toml
 ```
 
 Find the `birdweather` entry in the `providers` array. A status of `ok` means
-the station request succeeded. `species_count` is the number of distinct avian
-species in the station summary, not the number of recordings, and
-`unresolved_count` reports species that could not be matched to the catalog's
-iNaturalist taxonomy. An error on that provider points to the station token,
-outbound HTTPS, the controller clock, or a BirdWeather outage.
+the station request and taxonomy step completed without a provider-level
+error. `species_count` is the number of distinct avian species matched to the
+catalog's iNaturalist taxonomy, not the number of recordings.
+`unresolved_count` reports otherwise usable station species that could not be
+matched. Read the provider's `error` field before changing configuration.
+Common causes include the station token, outbound HTTPS, the controller clock,
+a BirdWeather outage, iNaturalist availability, or a taxonomy mismatch.
 
 The station API returns one row per species, not one row per recording.
 Detection counts use the configured time window, and the row count is capped
 by `species_limit` and BirdWeather's 100-species maximum. Species are also
 deduplicated against the other discovery providers. Repeated detections update
 one species record; they do not create more plates. If a detected species is
-absent from `approved`, the next generation cycle still needs to create its
-plate. Check `deferred` and `failed` for work that needs attention. If the
-species appears in neither, let the scheduled generator run or invoke
+absent from `approved`, it still needs a plate before it can appear. Check
+`pending`, `deferred`, `terminal_blocked`, and `failed` before forcing a run. A
+plate you previously rejected is also terminal; for a live-only detection, it
+may not appear in those lists. Inspect it and run `retry TAXON_ID` to make the
+taxon eligible again. When no deferred or terminal state exists, let the
+scheduled generator run or invoke
 `inky-bird-frame generate --config /path/to/config.toml` for an immediate
 attempt.
 
