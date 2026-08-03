@@ -9,7 +9,7 @@ from pathlib import Path
 from .birds import BirdSpecies, TaxonContext
 from .models import ReferencePhoto, SpeciesProfileData
 
-PROMPT_VERSION = "field-journal-v3"
+PROMPT_VERSION = "field-journal-v4"
 
 
 class _TextExtractor(HTMLParser):
@@ -204,9 +204,11 @@ Style and composition:
 - Render the primary bird's tail as a distinct anatomical structure matching the supplied field
   mark; do not let folded wing tips obscure or impersonate it.
 - When a supplied field mark calls an eye dark and inconspicuous while specifying its pupil shape,
-  keep the iris dark enough to blend into the surrounding plumage while making the pupil readable;
-  render the specified pupil itself as a thin black vertical slit in every depicted head, never a
-  round or oval pupil, and do not substitute a conspicuous amber, gold, or yellow iris ring.
+  keep the iris dark enough to blend into the surrounding plumage while making the pupil readable,
+  and render the supplied pupil shape precisely in every depicted head. When the supplied shape is
+  vertical, use a thin black vertical slit rather than a round or oval pupil. Never invent a
+  vertical slit for a species whose supplied facts specify another shape, and do not substitute a
+  conspicuous amber, gold, or yellow iris ring.
 - Render only the exact species name and supplied factual notes. Do not invent extra prose.
 - Before finishing, compare every visible text line character-for-character with the supplied
   field notes and confirm that the requested edit did not alter unrelated anatomy or design. Undo

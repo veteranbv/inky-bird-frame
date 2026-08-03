@@ -5,10 +5,13 @@ from pathlib import Path
 
 from inky_bird_frame.birds import BirdSpecies
 from inky_bird_frame.models import ReferencePhoto, SpeciesProfileData
-from inky_bird_frame.prompts import plate_prompt, review_prompt
+from inky_bird_frame.prompts import PROMPT_VERSION, plate_prompt, review_prompt
 
 
 class PromptTests(unittest.TestCase):
+    def test_prompt_contract_version(self) -> None:
+        self.assertEqual(PROMPT_VERSION, "field-journal-v4")
+
     def test_plate_prompt_contains_species_facts_and_excludes_location(self) -> None:
         species = BirdSpecies(12942, "Eastern Bluebird", "Sialia sialis", 26, "iNaturalist")
         profile = SpeciesProfileData(
@@ -129,8 +132,12 @@ class PromptTests(unittest.TestCase):
         self.assertIn("do not rely on a steeper gape angle", normalized_prompt)
         self.assertIn("same plausible proportional relationship", normalized_prompt)
         self.assertIn("keep the iris dark enough to blend", normalized_prompt)
-        self.assertIn("thin black vertical slit in every depicted head", normalized_prompt)
-        self.assertIn("never a round or oval pupil", normalized_prompt)
+        self.assertIn("render the supplied pupil shape precisely", normalized_prompt)
+        self.assertIn("When the supplied shape is vertical", normalized_prompt)
+        self.assertIn(
+            "thin black vertical slit rather than a round or oval pupil", normalized_prompt
+        )
+        self.assertIn("Never invent a vertical slit", normalized_prompt)
         self.assertIn("compare every visible text line character-for-character", normalized_prompt)
         self.assertIn("Undo any incidental spelling, number, punctuation", normalized_prompt)
         self.assertNotIn("Do not copy or lightly edit", prompt)
