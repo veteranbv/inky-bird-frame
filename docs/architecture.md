@@ -63,7 +63,16 @@ inventing evidence.
 
 Plate rulers are vertical schematic body-length keys: they show the sourced
 range and units, are labeled as not to scale, remain separate from the specimen,
-and never claim that display pixels reproduce physical size.
+and never claim that display pixels reproduce physical size. Range rulers span
+only the published endpoints, increase bottom-to-top, and use four unlabeled
+interior ticks as proportional subdivisions; they do not add a zero-based axis
+or a second range marker. Independent review checks the same contract.
+
+Species field marks that depend on relative anatomy are reference-matched rather
+than reduced to a binary direction check. Generation and review compare the
+base-to-tip relationship against the clearest attached side-profile references
+and require consistent proportions across the primary specimen and anatomical
+studies without encoding an arbitrary universal ratio.
 
 Transient per-taxon failures are written to a durable retry schedule with capped
 exponential backoff. Deferred taxa are skipped without consuming the successful
@@ -177,7 +186,18 @@ removed from the local index and active catalog before regeneration; a fully
 valid approved entry remains protected. `retry TAXON_ID --source-attempt N` additionally
 selects a retained portrait as the edit base. The archive-relative source path
 stays in private retry state, and the passing manifest records its SHA-256 for
-provenance. After explicit human review,
+provenance. `retry TAXON_ID --source-run RUN_NAME --source-attempt N` selects a
+specific attempt from an older archived failed run after validating archive
+containment, the profile identity, failed review, and portrait. The archived run stays
+immutable while its relative portrait path becomes the private correction
+source. A repeatable `--correction "..."` on a source-selected retry replaces
+the current automated correction list after operator adjudication. It does not
+remove earlier human invariants, bypass source validation, or alter provenance.
+`retry TAXON_ID --source-candidate ARCHIVE_NAME` reuses a complete,
+human-rejected candidate that is already in the private archive. The command
+validates archive containment, manifest identity, rejected status, human
+rejection guidance, and portrait integrity before preserving it as the edit
+source. After explicit human review,
 `retry TAXON_ID --replace-approved --reason "..."` withdraws a locally approved
 plate, preserves its rejection audit, rebuilds the local index, requeues the
 taxon, preserves validated research and references, and starts a source-free

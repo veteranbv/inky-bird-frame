@@ -342,7 +342,26 @@ only; they never enter the approved catalog or rotation.
   generation reaches a successful or terminal quality result. If retry finds an
   interrupted, fully invalid approval directory, it archives that debris and
   removes the stale local catalog entry before regeneration; a valid approved
-  plate still requires the explicit replacement command below.
+  plate still requires the explicit replacement command below. When a
+  stronger portrait belongs to an older archived generation run, use
+  `retry TAXON_ID --source-run RUN_NAME --source-attempt N`. `RUN_NAME` is the
+  archive directory name, not a path. The command validates archive containment,
+  the generation-run identity, the selected failed review, and the portrait
+  before preserving the exact archive-relative edit source; it does not move or
+  rewrite the older run. If human inspection accepts some source traits and adjudicates
+  one or more automated findings, add repeatable `--correction "..."` values to
+  a retry with `--source-attempt` or `--source-candidate`. These values replace
+  only the current review corrections; prior human-rejection invariants remain
+  mandatory, and the selected source still passes the same containment and
+  integrity checks. When a human-rejected candidate in the private archive is
+  the strongest edit base,
+  use `retry TAXON_ID --source-candidate ARCHIVE_NAME`. This selector accepts an
+  archive directory name, not a path, and verifies the candidate's taxon ID,
+  rejected status, human rejection reason, and portrait checksum before changing
+  terminal state. Its rejection reason—not findings from an unrelated later
+  attempt—becomes the targeted correction contract. It may run immediately
+  after `--replace-approved`; the human rejection remains an invariant while
+  the archived plate becomes the first edit source.
 - Human rejection after local approval: before public publication, run
   `retry TAXON_ID --replace-approved --reason "..."`. The non-empty reason and
   replacement flag are mandatory. The command archives the approved artifacts

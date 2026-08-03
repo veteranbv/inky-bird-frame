@@ -210,6 +210,7 @@ class CodexRunner:
         correction_findings: tuple[str, ...] = (),
         *,
         correction_source_path: Path | None = None,
+        invariant_findings: tuple[str, ...] = (),
     ) -> Path:
         output_path.parent.mkdir(parents=True, exist_ok=True)
         command = self._base_command(writable=True)
@@ -226,6 +227,7 @@ class CodexRunner:
                 references,
                 output_path,
                 correction_findings,
+                invariant_findings=invariant_findings,
                 has_correction_source=correction_source_path is not None,
             ),
             log_path,

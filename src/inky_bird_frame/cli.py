@@ -23,6 +23,7 @@ from .catalog import (
     read_json,
     rebuild_catalog_index,
     reject_candidate,
+    sha256_file,
 )
 from .config import (
     AppConfig,
@@ -456,6 +457,114 @@ def _retry_quality_guidance(
     return tuple(findings) or (REVIEW_FAILURE_FALLBACK,), source_plate
 
 
+def _retry_archived_quality_guidance(
+    state_dir: Path,
+    taxon_id: int,
+    source_run: str,
+    source_attempt: int,
+) -> tuple[tuple[str, ...], Path]:
+    run_name = source_run.strip()
+    if (
+        not run_name
+        or Path(run_name).is_absolute()
+        or Path(run_name).parts != (run_name,)
+        or not run_name.startswith(f"{taxon_id}-")
+    ):
+        raise ValueError("--source-run must be an archive directory name for the requested taxon")
+    archive = (state_dir / "archive").resolve()
+    run = state_dir / "archive" / run_name
+    profile_path = run / "profile.json"
+    if (
+        run.is_symlink()
+        or not run.is_dir()
+        or run.resolve().parent != archive
+        or profile_path.is_symlink()
+        or not profile_path.is_file()
+        or profile_path.resolve().parent != run.resolve()
+    ):
+        raise ValueError(f"Retained generation run is unavailable: {run_name}")
+    profile = read_json(profile_path)
+    if not isinstance(profile, dict) or profile.get("taxon_id") != taxon_id:
+        raise SpeciesStateError(
+            f"Retained generation profile identity does not match taxon {taxon_id}: {profile_path}"
+        )
+    for attempt_path in run.glob("attempt-*"):
+        if (
+            attempt_path.is_symlink()
+            or not attempt_path.is_dir()
+            or attempt_path.resolve().parent != run.resolve()
+        ):
+            raise SpeciesStateError(
+                f"Retained generation attempt escapes its archive run: {attempt_path}"
+            )
+        for filename in ("quality-review.json", "portrait.png"):
+            artifact_path = attempt_path / filename
+            if artifact_path.is_symlink() or (
+                artifact_path.exists() and artifact_path.resolve().parent != attempt_path.resolve()
+            ):
+                raise SpeciesStateError(
+                    f"Retained generation artifact escapes its attempt: {artifact_path}"
+                )
+    findings, source_plate = _retry_quality_guidance([run], source_attempt)
+    if source_plate is None:
+        raise SpeciesStateError(f"Retained generation attempt is unavailable: {run_name}")
+    return findings, source_plate
+
+
+def _retry_candidate_guidance(
+    state_dir: Path,
+    taxon_id: int,
+    source_candidate: str,
+) -> tuple[tuple[str, ...], Path]:
+    candidate_name = source_candidate.strip()
+    if (
+        not candidate_name
+        or Path(candidate_name).is_absolute()
+        or Path(candidate_name).parts != (candidate_name,)
+        or not candidate_name.startswith(f"{taxon_id}-")
+    ):
+        raise ValueError(
+            "--source-candidate must be the archive directory name for the requested taxon"
+        )
+    archive = (state_dir / "archive").resolve()
+    candidate = state_dir / "archive" / candidate_name
+    if candidate.is_symlink() or not candidate.is_dir() or candidate.resolve().parent != archive:
+        raise ValueError(f"Retained candidate is unavailable: {candidate_name}")
+    manifest_path = candidate / "manifest.json"
+    if (
+        manifest_path.is_symlink()
+        or not manifest_path.is_file()
+        or manifest_path.resolve().parent != candidate.resolve()
+    ):
+        raise SpeciesStateError(f"Retained candidate has no valid manifest: {candidate}")
+    manifest = read_json(manifest_path)
+    rejection_reason = manifest.get("rejection_reason") if isinstance(manifest, dict) else None
+    assets = manifest.get("assets") if isinstance(manifest, dict) else None
+    portrait_asset = assets.get("portrait") if isinstance(assets, dict) else None
+    if (
+        not isinstance(manifest, dict)
+        or manifest.get("schema_version") != 1
+        or manifest.get("status") != "rejected"
+        or manifest.get("taxon_id") != taxon_id
+        or not isinstance(rejection_reason, str)
+        or not rejection_reason.strip()
+        or not isinstance(portrait_asset, dict)
+        or portrait_asset.get("filename") != "portrait.png"
+        or not isinstance(portrait_asset.get("sha256"), str)
+    ):
+        raise SpeciesStateError(f"Invalid retained candidate manifest: {manifest_path}")
+    portrait = candidate / "portrait.png"
+    if (
+        portrait.is_symlink()
+        or not portrait.is_file()
+        or portrait.resolve().parent != candidate.resolve()
+    ):
+        raise SpeciesStateError(f"Retained candidate has no portrait: {candidate}")
+    if sha256_file(portrait) != portrait_asset["sha256"]:
+        raise SpeciesStateError(f"Retained candidate portrait checksum mismatch: {portrait}")
+    return (rejection_reason.strip(),), portrait
+
+
 def retry_command(args: argparse.Namespace) -> int:
     config = _config(args)
     replace_approved = bool(getattr(args, "replace_approved", False))
@@ -463,9 +572,37 @@ def retry_command(args: argparse.Namespace) -> int:
     raw_reason = getattr(args, "reason", None)
     reason = raw_reason.strip() if isinstance(raw_reason, str) else None
     source_attempt = getattr(args, "source_attempt", None)
+    source_candidate = getattr(args, "source_candidate", None)
+    source_run = getattr(args, "source_run", None)
+    raw_corrections = getattr(args, "correction", None)
+    correction_override: tuple[str, ...] = ()
+    if raw_corrections is not None:
+        if not isinstance(raw_corrections, list) or any(
+            not isinstance(correction, str) or not correction.strip()
+            for correction in raw_corrections
+        ):
+            raise ValueError("--correction values must be non-empty")
+        correction_override = tuple(correction.strip() for correction in raw_corrections)
+        if len(set(correction_override)) != len(correction_override):
+            raise ValueError("--correction values must not repeat")
+    if source_attempt is not None and source_candidate is not None:
+        raise ValueError("--source-attempt cannot be combined with --source-candidate")
+    if source_run is not None and source_candidate is not None:
+        raise ValueError("--source-run cannot be combined with --source-candidate")
+    if source_run is not None and source_attempt is None:
+        raise ValueError("--source-run requires --source-attempt")
+    if correction_override and source_attempt is None and source_candidate is None:
+        raise ValueError("--correction requires --source-attempt or --source-candidate")
     if replace_approved:
-        if source_attempt is not None:
-            raise ValueError("--replace-approved cannot be combined with --source-attempt")
+        if (
+            source_attempt is not None
+            or source_candidate is not None
+            or source_run is not None
+            or correction_override
+        ):
+            raise ValueError(
+                "--replace-approved cannot be combined with a correction source selector"
+            )
         if not reason:
             raise ValueError("--replace-approved requires a non-empty --reason")
         print_result(
@@ -493,10 +630,28 @@ def retry_command(args: argparse.Namespace) -> int:
         failed_directories = sorted(
             (config.controller.state_dir / "failed").glob(f"{args.taxon_id}-*")
         )
-        quality_findings, correction_source = _retry_quality_guidance(
-            failed_directories,
-            source_attempt,
-        )
+        quality_findings: tuple[str, ...]
+        correction_source: Path | None
+        if source_run is not None and source_attempt is not None:
+            quality_findings, correction_source = _retry_archived_quality_guidance(
+                config.controller.state_dir,
+                args.taxon_id,
+                source_run,
+                source_attempt,
+            )
+        elif source_candidate is None:
+            quality_findings, correction_source = _retry_quality_guidance(
+                failed_directories,
+                source_attempt,
+            )
+        else:
+            quality_findings, correction_source = _retry_candidate_guidance(
+                config.controller.state_dir,
+                args.taxon_id,
+                source_candidate,
+            )
+        if correction_override:
+            quality_findings = correction_override
         sources = [pending] if pending is not None else []
         sources.extend(failed_directories)
         sources.extend(
@@ -505,7 +660,7 @@ def retry_command(args: argparse.Namespace) -> int:
         retry_store = RetryStore(config.controller.state_dir / "generation-retries.json")
         existing_guidance = retry_store.quality_guidance(args.taxon_id)
         deferred = retry_store.get(args.taxon_id) is not None
-        if not sources and not deferred:
+        if not sources and not deferred and source_candidate is None and source_run is None:
             raise ValueError(
                 f"No failed, rejected, or deferred candidate exists for taxon {args.taxon_id}"
             )
@@ -525,7 +680,14 @@ def retry_command(args: argparse.Namespace) -> int:
             if correction_source is not None
             else None
         )
-        if correction_source is not None and correction_owner is None:
+        retained_correction_source = (
+            correction_source if source_candidate is not None or source_run is not None else None
+        )
+        if (
+            correction_source is not None
+            and correction_owner is None
+            and retained_correction_source is None
+        ):
             raise SpeciesStateError("The selected correction source is outside retained state")
         invalid_approved_archive = archive_invalid_approved_catalog_state(
             config,
@@ -534,7 +696,7 @@ def retry_command(args: argparse.Namespace) -> int:
         archive = config.controller.state_dir / "archive"
         archive.mkdir(parents=True, exist_ok=True)
         moved = [str(invalid_approved_archive)] if invalid_approved_archive is not None else []
-        archived_correction_source: Path | None = None
+        archived_correction_source = retained_correction_source
         for source in sources:
             destination = archive / source.name
             counter = 1
@@ -573,6 +735,9 @@ def retry_command(args: argparse.Namespace) -> int:
             ),
             "replaced_approved": False,
             "source_attempt": source_attempt,
+            "source_candidate": source_candidate,
+            "source_run": source_run,
+            "correction_override_count": len(correction_override),
             "preserved_correction_source": (
                 final_guidance is not None and final_guidance.source_plate is not None
             ),
@@ -1047,6 +1212,22 @@ def build_parser() -> argparse.ArgumentParser:
         "--source-attempt",
         type=int,
         help="Edit a selected retained attempt instead of generating the first retry from scratch",
+    )
+    retry_parser.add_argument(
+        "--source-candidate",
+        help="Edit a human-rejected candidate retained under the controller archive",
+    )
+    retry_parser.add_argument(
+        "--source-run",
+        help="Select an archived failed generation run with --source-attempt",
+    )
+    retry_parser.add_argument(
+        "--correction",
+        action="append",
+        help=(
+            "Replace selected review findings with an operator-adjudicated correction; "
+            "repeatable and requires a correction source"
+        ),
     )
     retry_parser.add_argument(
         "--replace-approved",

@@ -77,7 +77,18 @@ cycle. Use `--refresh-research` only when those inputs themselves need to be
 replaced. Maintainers can
 select a strong retained plate with `retry TAXON_ID --source-attempt N`; the
 source is archived, checksum-tracked, and edited rather than regenerated from
-scratch. If human visual review rejects a locally approved plate before public
+scratch. If a stronger attempt belongs to an older archived generation run,
+select it with `retry TAXON_ID --source-run RUN_NAME --source-attempt N`; the
+command validates the private archive boundary, failed review, and portrait
+before preserving that exact edit source. When human inspection accepts some
+traits but adjudicates a review finding, repeat `--correction "..."` with a
+selected source to replace only the current automated findings; durable human
+invariants still apply. A later retry can reuse a human-rejected candidate
+already in the private archive with
+`retry TAXON_ID --source-candidate ARCHIVE_NAME`; the command verifies its taxon
+identity, rejection reason, and portrait checksum before using that rejection
+as the targeted edit contract. If human visual review rejects a locally approved
+plate before public
 publication, `retry TAXON_ID --replace-approved --reason "..."` is the explicit
 replacement migration: it records the rejection, archives the plate, removes
 it from local rotation, requeues historical-only taxa, preserves validated

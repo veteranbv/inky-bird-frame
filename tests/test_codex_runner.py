@@ -187,6 +187,7 @@ class CodexRunnerSubprocessTests(unittest.TestCase):
                     root / "plate.log",
                     ("Shorten the tail",),
                     correction_source_path=source,
+                    invariant_findings=("Keep the correct wing pattern",),
                 )
 
         command = execute.call_args.args[0]
@@ -195,6 +196,9 @@ class CodexRunnerSubprocessTests(unittest.TestCase):
         self.assertIn(
             "Image 1 is the previous plate and the edit target", execute.call_args.args[1]
         )
+        self.assertIn("Shorten the tail", execute.call_args.args[1])
+        self.assertIn("Keep the correct wing pattern", execute.call_args.args[1])
+        self.assertIn("Non-regression constraints", execute.call_args.args[1])
 
     def test_create_profile_rejects_mismatched_taxon_identity(self) -> None:
         with TemporaryDirectory() as temporary:

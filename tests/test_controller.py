@@ -1424,7 +1424,7 @@ class ControllerTests(unittest.TestCase):
         self.assertIsNotNone(guidance)
         self.assertEqual(
             generate.call_args.kwargs["initial_correction_findings"],
-            ("Keep the bill proportion accurate",),
+            (),
         )
         self.assertEqual(
             generate.call_args.kwargs["invariant_correction_findings"],
@@ -1459,6 +1459,7 @@ class ControllerTests(unittest.TestCase):
 
         class FakeRunner:
             corrections: list[tuple[str, ...]] = []
+            invariants: list[tuple[str, ...]] = []
             generated_paths: list[Path] = []
             review_paths: list[Path] = []
             correction_sources: list[Path | None] = []
@@ -1482,6 +1483,9 @@ class ControllerTests(unittest.TestCase):
                 self.generated_paths.append(output_path)
                 assert output_path.resolve().is_relative_to(self.workspace)
                 self.corrections.append(correction)
+                invariants = _kwargs.get("invariant_findings")
+                assert isinstance(invariants, tuple)
+                self.invariants.append(invariants)
                 source = _kwargs.get("correction_source_path")
                 assert source is None or isinstance(source, Path)
                 self.correction_sources.append(source)
@@ -1531,8 +1535,15 @@ class ControllerTests(unittest.TestCase):
         self.assertEqual(
             FakeRunner.corrections,
             [
-                ("Render clearly visible natural eyes", "Preserve the previous scale correction"),
-                ("Render clearly visible natural eyes", "Crest is too short"),
+                ("Preserve the previous scale correction",),
+                ("Crest is too short",),
+            ],
+        )
+        self.assertEqual(
+            FakeRunner.invariants,
+            [
+                ("Render clearly visible natural eyes",),
+                ("Render clearly visible natural eyes",),
             ],
         )
         self.assertEqual(len(FakeRunner.generated_paths), 2)
@@ -1595,7 +1606,7 @@ class ControllerTests(unittest.TestCase):
             )
         self.assertEqual(
             generate.call_args.kwargs["initial_correction_findings"],
-            ("Keep the eyes clearly visible", "Correct the ruler scale"),
+            ("Correct the ruler scale",),
         )
         self.assertEqual(
             generate.call_args.kwargs["invariant_correction_findings"],
@@ -1861,7 +1872,7 @@ class ControllerTests(unittest.TestCase):
             self.assertEqual(guidance.invariant_findings, ("Keep the eyes clearly visible",))
         self.assertEqual(
             generate.call_args.kwargs["initial_correction_findings"],
-            ("Keep the eyes clearly visible", "Correct the ruler scale"),
+            ("Correct the ruler scale",),
         )
 
 
