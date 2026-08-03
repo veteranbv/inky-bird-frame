@@ -20,6 +20,7 @@ from inky_bird_frame.catalog import (
     CatalogEntry,
     CollectionEntry,
     CollectionOrigin,
+    approve_candidate,
     candidate_directory,
     read_collection,
     read_collection_state,
@@ -27,8 +28,9 @@ from inky_bird_frame.catalog import (
     write_collection,
 )
 from inky_bird_frame.codex_runner import CodexRunner
-from inky_bird_frame.config import DiscoveryProvider, load_config
+from inky_bird_frame.config import AppConfig, DiscoveryProvider, load_config
 from inky_bird_frame.controller import (
+    HUMAN_REVIEW_SOURCE,
     DiscoveryResult,
     DiscoverySnapshot,
     ProviderStatus,
@@ -42,8 +44,10 @@ from inky_bird_frame.controller import (
     import_approved_collection,
     load_or_create_profile,
     load_or_fetch_references,
+    read_generation_queue,
     read_generation_queue_partition,
     remove_collection_member,
+    retry_approved_candidate,
     run_controller_cycle,
     run_generation_cycle,
     run_refresh_cycle,
@@ -86,6 +90,29 @@ PROFILE = SpeciesProfileData(
         {"title": "Source two", "url": "https://example.test/two"},
     ],
 )
+
+
+def approve_test_species(config: AppConfig, species: BirdSpecies) -> CatalogEntry:
+    review = QualityReview(True, 5, 5, 5, 5, True, ())
+    candidate = candidate_directory(config.controller.state_dir, species)
+    candidate.mkdir(parents=True)
+    (candidate / "portrait.png").write_bytes(b"portrait")
+    (candidate / "display.png").write_bytes(b"display")
+    write_candidate_manifest(
+        candidate,
+        species,
+        PROFILE,
+        [],
+        review,
+        generator="test",
+        prompt_version="test-v1",
+    )
+    return approve_candidate(
+        config.controller.state_dir,
+        config.controller.catalog_dir,
+        species.taxon_id,
+    )
+
 
 CONFIG = """
 [discovery]
@@ -418,6 +445,173 @@ class ControllerTests(unittest.TestCase):
         self.assertEqual(result["removed_taxon_ids"], [1])
         self.assertEqual(result["collection_count"], 0)
         self.assertEqual(result["active_approved_count"], 1)
+
+    def test_approved_replacement_requeues_historical_taxon_and_updates_active_catalog(
+        self,
+    ) -> None:
+        species = BirdSpecies(9083, "Northern Cardinal", "Cardinalis cardinalis", 0, "test")
+        reason = "Render clearly visible, natural eyes with the correct pupil shape."
+        with TemporaryDirectory() as temporary:
+            config_path = Path(temporary) / "config.toml"
+            config_path.write_text(CONFIG)
+            config = load_config(config_path)
+            approve_test_species(config, species)
+            add_collection_member(config, species.taxon_id)
+            active_before = json.loads(
+                (config.controller.state_dir / "active-catalog.json").read_text()
+            )
+
+            result = retry_approved_candidate(config, species.taxon_id, reason)
+
+            active_after = json.loads(
+                (config.controller.state_dir / "active-catalog.json").read_text()
+            )
+            queue = read_generation_queue(config)
+            partition = read_generation_queue_partition(config)
+            guidance = RetryStore(
+                config.controller.state_dir / "generation-retries.json"
+            ).quality_guidance(species.taxon_id)
+            archived_manifests = list(
+                (config.controller.state_dir / "archive").glob("9083-*/manifest.json")
+            )
+            archived_manifest = json.loads(archived_manifests[0].read_text())
+            approved_exists = (
+                config.controller.catalog_dir / "species/9083-northern-cardinal"
+            ).exists()
+
+        self.assertEqual(len(active_before["species"]), 1)
+        self.assertEqual(active_after["species"], [])
+        self.assertFalse(approved_exists)
+        self.assertEqual([item.taxon_id for item in queue], [species.taxon_id])
+        self.assertEqual(queue[0].source, "human-review")
+        self.assertEqual([item.taxon_id for item in partition.actionable], [species.taxon_id])
+        self.assertEqual(partition.terminal_blocked, [])
+        self.assertIsNotNone(guidance)
+        if guidance is not None:
+            self.assertEqual(guidance.findings, (reason,))
+            self.assertEqual(guidance.invariant_findings, (reason,))
+            self.assertIsNone(guidance.source_plate)
+        self.assertEqual(len(archived_manifests), 1)
+        self.assertEqual(archived_manifest["rejection_reason"], reason)
+        self.assertEqual(result["active_approved_count"], 0)
+        self.assertTrue(result["queued_for_generation"])
+        self.assertFalse(result["resumed"])
+
+    def test_approved_replacement_resumes_after_active_catalog_write_failure(self) -> None:
+        species = BirdSpecies(9083, "Northern Cardinal", "Cardinalis cardinalis", 0, "test")
+        reason = "Render clearly visible, natural eyes with the correct pupil shape."
+        with TemporaryDirectory() as temporary:
+            config_path = Path(temporary) / "config.toml"
+            config_path.write_text(CONFIG)
+            config = load_config(config_path)
+            approve_test_species(config, species)
+            add_collection_member(config, species.taxon_id)
+
+            with (
+                patch(
+                    "inky_bird_frame.controller._write_active_catalog",
+                    side_effect=CatalogError("active catalog write failed"),
+                ),
+                self.assertRaisesRegex(CatalogError, "active catalog write failed"),
+            ):
+                retry_approved_candidate(config, species.taxon_id, reason)
+
+            rejected_before_resume = list((config.controller.state_dir / "rejected").glob("9083-*"))
+            queued_before_resume = read_generation_queue(config)
+            result = retry_approved_candidate(config, species.taxon_id, reason)
+            rejected_after_resume = list((config.controller.state_dir / "rejected").glob("9083-*"))
+            active = json.loads((config.controller.state_dir / "active-catalog.json").read_text())
+
+        self.assertEqual(len(rejected_before_resume), 1)
+        self.assertEqual([item.taxon_id for item in queued_before_resume], [species.taxon_id])
+        self.assertEqual(rejected_after_resume, [])
+        self.assertEqual(active["species"], [])
+        self.assertTrue(result["resumed"])
+
+    def test_approved_replacement_migrates_only_the_preexisting_legacy_queue(self) -> None:
+        species = BirdSpecies(9083, "Northern Cardinal", "Cardinalis cardinalis", 0, "test")
+        queued = BirdSpecies(1, "Queued Bird", "Avis queued", 1, "iNaturalist")
+        with TemporaryDirectory() as temporary:
+            config_path = Path(temporary) / "config.toml"
+            config_path.write_text(CONFIG)
+            config = load_config(config_path)
+            config.controller.state_dir.mkdir(parents=True)
+            (config.controller.state_dir / "generation-queue.json").write_text(
+                json.dumps(
+                    {
+                        "schema_version": 2,
+                        "updated_at": datetime.now(UTC).isoformat(),
+                        "species": [
+                            {
+                                "taxon_id": queued.taxon_id,
+                                "common_name": queued.common_name,
+                                "scientific_name": queued.scientific_name,
+                                "observation_count": queued.observation_count,
+                                "source": queued.source,
+                            },
+                            {
+                                "taxon_id": species.taxon_id,
+                                "common_name": species.common_name,
+                                "scientific_name": species.scientific_name,
+                                "observation_count": species.observation_count,
+                                "source": HUMAN_REVIEW_SOURCE,
+                            },
+                        ],
+                    }
+                )
+            )
+            approve_test_species(config, species)
+
+            retry_approved_candidate(config, species.taxon_id, "Replace the uncanny eyes.")
+
+            collection = read_collection_state(config.controller.state_dir)
+            queue = read_generation_queue(config)
+
+        self.assertEqual([entry.taxon_id for entry in collection.entries], [queued.taxon_id])
+        self.assertIsNotNone(collection.legacy_seed_queue_migrated_at)
+        self.assertEqual(
+            [entry.taxon_id for entry in queue],
+            [queued.taxon_id, species.taxon_id],
+        )
+
+    def test_approved_replacement_migrates_a_preexisting_target_seed(self) -> None:
+        species = BirdSpecies(
+            9083,
+            "Northern Cardinal",
+            "Cardinalis cardinalis",
+            1,
+            "iNaturalist",
+        )
+        with TemporaryDirectory() as temporary:
+            config_path = Path(temporary) / "config.toml"
+            config_path.write_text(CONFIG)
+            config = load_config(config_path)
+            config.controller.state_dir.mkdir(parents=True)
+            (config.controller.state_dir / "generation-queue.json").write_text(
+                json.dumps(
+                    {
+                        "schema_version": 2,
+                        "updated_at": datetime.now(UTC).isoformat(),
+                        "species": [
+                            {
+                                "taxon_id": species.taxon_id,
+                                "common_name": species.common_name,
+                                "scientific_name": species.scientific_name,
+                                "observation_count": species.observation_count,
+                                "source": species.source,
+                            }
+                        ],
+                    }
+                )
+            )
+            approve_test_species(config, species)
+
+            retry_approved_candidate(config, species.taxon_id, "Replace the uncanny eyes.")
+
+            collection = read_collection_state(config.controller.state_dir)
+
+        self.assertEqual([entry.taxon_id for entry in collection.entries], [species.taxon_id])
+        self.assertIsNotNone(collection.legacy_seed_queue_migrated_at)
 
     def test_collection_remove_is_preserved_after_legacy_queue_migration(self) -> None:
         queued = BirdSpecies(1, "Queued Bird", "Avis queued", 1, "iNaturalist")
@@ -1161,7 +1355,11 @@ class ControllerTests(unittest.TestCase):
             config.controller.state_dir.mkdir(parents=True)
             RetryStore(
                 config.controller.state_dir / "generation-retries.json"
-            ).set_quality_guidance(species.taxon_id, ("Keep the bill proportion accurate",))
+            ).set_quality_guidance(
+                species.taxon_id,
+                ("Keep the bill proportion accurate",),
+                invariant_findings=("Keep the bill proportion accurate",),
+            )
             with (
                 patch(
                     "inky_bird_frame.controller.discover_species",
@@ -1186,6 +1384,10 @@ class ControllerTests(unittest.TestCase):
         self.assertIsNotNone(guidance)
         self.assertEqual(
             generate.call_args.kwargs["initial_correction_findings"],
+            ("Keep the bill proportion accurate",),
+        )
+        self.assertEqual(
+            generate.call_args.kwargs["invariant_correction_findings"],
             ("Keep the bill proportion accurate",),
         )
 
@@ -1279,6 +1481,7 @@ class ControllerTests(unittest.TestCase):
                     config.controller.workspace_dir,
                     initial_correction_findings=("Preserve the previous scale correction",),
                     initial_correction_source=source_plate,
+                    invariant_correction_findings=("Render clearly visible natural eyes",),
                 )
             manifest = json.loads((candidate / "manifest.json").read_text())
             private_histories = list(
@@ -1287,7 +1490,10 @@ class ControllerTests(unittest.TestCase):
 
         self.assertEqual(
             FakeRunner.corrections,
-            [("Preserve the previous scale correction",), ("Crest is too short",)],
+            [
+                ("Render clearly visible natural eyes", "Preserve the previous scale correction"),
+                ("Render clearly visible natural eyes", "Crest is too short"),
+            ],
         )
         self.assertEqual(len(FakeRunner.generated_paths), 2)
         self.assertEqual(len(FakeRunner.review_paths), 2)
@@ -1312,7 +1518,11 @@ class ControllerTests(unittest.TestCase):
             config.controller.state_dir.mkdir(parents=True)
             RetryStore(
                 config.controller.state_dir / "generation-retries.json"
-            ).set_quality_guidance(species.taxon_id, ("Correct the ruler scale",))
+            ).set_quality_guidance(
+                species.taxon_id,
+                ("Keep the eyes clearly visible", "Correct the ruler scale"),
+                invariant_findings=("Keep the eyes clearly visible",),
+            )
             with (
                 patch(
                     "inky_bird_frame.controller.discover_species",
@@ -1338,9 +1548,18 @@ class ControllerTests(unittest.TestCase):
             self.assertEqual(first_failure["error"], "profile failed")
             self.assertFalse(first_failure["terminal"])
         self.assertIsNotNone(guidance)
+        if guidance is not None:
+            self.assertEqual(
+                guidance.invariant_findings,
+                ("Keep the eyes clearly visible",),
+            )
         self.assertEqual(
             generate.call_args.kwargs["initial_correction_findings"],
-            ("Correct the ruler scale",),
+            ("Keep the eyes clearly visible", "Correct the ruler scale"),
+        )
+        self.assertEqual(
+            generate.call_args.kwargs["invariant_correction_findings"],
+            ("Keep the eyes clearly visible",),
         )
 
     def test_catalog_wide_error_still_aborts_the_cycle(self) -> None:
@@ -1571,7 +1790,11 @@ class ControllerTests(unittest.TestCase):
             config.controller.state_dir.mkdir(parents=True)
             RetryStore(
                 config.controller.state_dir / "generation-retries.json"
-            ).set_quality_guidance(species.taxon_id, ("Correct the ruler scale",))
+            ).set_quality_guidance(
+                species.taxon_id,
+                ("Correct the ruler scale",),
+                invariant_findings=("Keep the eyes clearly visible",),
+            )
             with (
                 patch(
                     "inky_bird_frame.controller.discover_species",
@@ -1592,10 +1815,13 @@ class ControllerTests(unittest.TestCase):
         self.assertIsInstance(failure_results, list)
         if isinstance(failure_results, list):
             self.assertTrue(failure_results[0]["terminal"])
-        self.assertIsNone(guidance)
+        self.assertIsNotNone(guidance)
+        if guidance is not None:
+            self.assertEqual(guidance.findings, ("Keep the eyes clearly visible",))
+            self.assertEqual(guidance.invariant_findings, ("Keep the eyes clearly visible",))
         self.assertEqual(
             generate.call_args.kwargs["initial_correction_findings"],
-            ("Correct the ruler scale",),
+            ("Keep the eyes clearly visible", "Correct the ruler scale"),
         )
 
 

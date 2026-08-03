@@ -6,6 +6,7 @@ import json
 from dataclasses import dataclass
 from datetime import datetime, timedelta
 from pathlib import Path, PurePosixPath
+from typing import cast
 
 from .catalog import utc_now
 from .errors import CatalogError
@@ -40,6 +41,7 @@ class RetryGuidance:
     taxon_id: int
     findings: tuple[str, ...]
     source_plate: str | None = None
+    invariant_findings: tuple[str, ...] = ()
 
     def as_dict(self) -> dict[str, object]:
         value: dict[str, object] = {
@@ -48,6 +50,8 @@ class RetryGuidance:
         }
         if self.source_plate is not None:
             value["source_plate"] = self.source_plate
+        if self.invariant_findings:
+            value["invariant_findings"] = list(self.invariant_findings)
         return value
 
 
@@ -135,12 +139,14 @@ class RetryStore:
         findings: tuple[str, ...],
         *,
         source_plate: str | None = None,
+        invariant_findings: tuple[str, ...] = (),
     ) -> RetryGuidance:
         guidance = _parse_guidance(
             {
                 "taxon_id": taxon_id,
                 "findings": list(findings),
                 "source_plate": source_plate,
+                "invariant_findings": list(invariant_findings),
             },
             self.path,
         )
@@ -235,6 +241,7 @@ def _parse_guidance(raw: object, source: Path) -> RetryGuidance:
     taxon_id = raw.get("taxon_id")
     findings = raw.get("findings")
     source_plate = raw.get("source_plate")
+    invariant_findings = raw.get("invariant_findings", [])
     if (
         not isinstance(taxon_id, int)
         or isinstance(taxon_id, bool)
@@ -242,6 +249,10 @@ def _parse_guidance(raw: object, source: Path) -> RetryGuidance:
         or not isinstance(findings, list)
         or not findings
         or any(not isinstance(finding, str) or not finding.strip() for finding in findings)
+        or not isinstance(invariant_findings, list)
+        or any(
+            not isinstance(finding, str) or not finding.strip() for finding in invariant_findings
+        )
     ):
         raise CatalogError(f"Invalid retry quality guidance: {source}")
     if source_plate is not None:
@@ -257,8 +268,12 @@ def _parse_guidance(raw: object, source: Path) -> RetryGuidance:
         ):
             raise CatalogError(f"Invalid retry quality guidance: {source}")
         source_plate = source_path.as_posix()
+    merged_findings = tuple(
+        dict.fromkeys((*cast(list[str], invariant_findings), *cast(list[str], findings)))
+    )
     return RetryGuidance(
         taxon_id=taxon_id,
-        findings=tuple(findings),
+        findings=merged_findings,
         source_plate=source_plate,
+        invariant_findings=tuple(cast(list[str], invariant_findings)),
     )

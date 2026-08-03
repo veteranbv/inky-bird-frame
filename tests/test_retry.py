@@ -104,6 +104,27 @@ class RetryStoreTests(unittest.TestCase):
         self.assertEqual(guidance, reloaded)
         self.assertEqual(guidance.source_plate, "archive/42-bird/attempt-03/portrait.png")
 
+    def test_invariant_findings_are_durable_and_merged_into_guidance(self) -> None:
+        with TemporaryDirectory() as temporary:
+            path = Path(temporary) / "retries.json"
+            guidance = RetryStore(path).set_quality_guidance(
+                42,
+                ("Correct the wing.",),
+                invariant_findings=("Render clearly visible natural eyes.",),
+            )
+
+            reloaded = RetryStore(path).quality_guidance(42)
+
+        self.assertEqual(
+            guidance.findings,
+            ("Render clearly visible natural eyes.", "Correct the wing."),
+        )
+        self.assertEqual(
+            guidance.invariant_findings,
+            ("Render clearly visible natural eyes.",),
+        )
+        self.assertEqual(reloaded, guidance)
+
     def test_correction_source_must_remain_in_archive(self) -> None:
         with TemporaryDirectory() as temporary:
             path = Path(temporary) / "retries.json"

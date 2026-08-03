@@ -19,6 +19,7 @@ from .catalog import (
     approve_candidate,
     catalog_state_lock,
     find_taxon_directory,
+    has_valid_approved_candidate,
     read_json,
     rebuild_catalog_index,
     reject_candidate,
@@ -33,6 +34,7 @@ from .config import (
 from .controller import (
     REVIEW_FAILURE_FALLBACK,
     add_collection_member,
+    archive_invalid_approved_catalog_state,
     collection_status,
     discover_species,
     enqueue_seed_species,
@@ -40,6 +42,7 @@ from .controller import (
     import_approved_collection,
     read_generation_queue_partition,
     remove_collection_member,
+    retry_approved_candidate,
     run_controller_cycle,
     run_generation_cycle,
     run_refresh_cycle,
@@ -455,24 +458,44 @@ def _retry_quality_guidance(
 
 def retry_command(args: argparse.Namespace) -> int:
     config = _config(args)
+    replace_approved = bool(getattr(args, "replace_approved", False))
+    raw_reason = getattr(args, "reason", None)
+    reason = raw_reason.strip() if isinstance(raw_reason, str) else None
+    source_attempt = getattr(args, "source_attempt", None)
+    if replace_approved:
+        if source_attempt is not None:
+            raise ValueError("--replace-approved cannot be combined with --source-attempt")
+        if not reason:
+            raise ValueError("--replace-approved requires a non-empty --reason")
+        print_result(retry_approved_candidate(config, args.taxon_id, reason))
+        return 0
+    if raw_reason is not None:
+        raise ValueError("--reason requires --replace-approved")
+
     with exclusive_cycle_lock(config.controller.state_dir):
         pending = find_taxon_directory(config.controller.state_dir / "pending", args.taxon_id)
         if pending is not None and (pending / "manifest.json").is_file():
             raise ValueError("Pending candidates must be approved or rejected before retrying")
+        with catalog_state_lock(config.controller.state_dir):
+            if has_valid_approved_candidate(config.controller.catalog_dir, args.taxon_id):
+                raise ValueError(
+                    f"Taxon {args.taxon_id} is already approved; use --replace-approved "
+                    "with --reason after human review"
+                )
         failed_directories = sorted(
             (config.controller.state_dir / "failed").glob(f"{args.taxon_id}-*")
         )
-        source_attempt = getattr(args, "source_attempt", None)
         quality_findings, correction_source = _retry_quality_guidance(
             failed_directories,
             source_attempt,
         )
         sources = [pending] if pending is not None else []
         sources.extend(failed_directories)
-        rejected = find_taxon_directory(config.controller.state_dir / "rejected", args.taxon_id)
-        if rejected is not None:
-            sources.append(rejected)
+        sources.extend(
+            sorted((config.controller.state_dir / "rejected").glob(f"{args.taxon_id}-*"))
+        )
         retry_store = RetryStore(config.controller.state_dir / "generation-retries.json")
+        existing_guidance = retry_store.quality_guidance(args.taxon_id)
         deferred = retry_store.get(args.taxon_id) is not None
         if not sources and not deferred:
             raise ValueError(
@@ -496,9 +519,13 @@ def retry_command(args: argparse.Namespace) -> int:
         )
         if correction_source is not None and correction_owner is None:
             raise SpeciesStateError("The selected correction source is outside retained state")
+        invalid_approved_archive = archive_invalid_approved_catalog_state(
+            config,
+            args.taxon_id,
+        )
         archive = config.controller.state_dir / "archive"
         archive.mkdir(parents=True, exist_ok=True)
-        moved: list[str] = []
+        moved = [str(invalid_approved_archive)] if invalid_approved_archive is not None else []
         archived_correction_source: Path | None = None
         for source in sources:
             destination = archive / source.name
@@ -511,15 +538,18 @@ def retry_command(args: argparse.Namespace) -> int:
             shutil.move(str(source), destination)
             moved.append(str(destination))
         retry_store.clear(args.taxon_id)
-        guidance = retry_store.quality_guidance(args.taxon_id)
+        final_guidance = existing_guidance
         if quality_findings:
-            guidance = retry_store.set_quality_guidance(
+            final_guidance = retry_store.set_quality_guidance(
                 args.taxon_id,
                 quality_findings,
                 source_plate=(
                     archived_correction_source.relative_to(config.controller.state_dir).as_posix()
                     if archived_correction_source is not None
                     else None
+                ),
+                invariant_findings=(
+                    existing_guidance.invariant_findings if existing_guidance is not None else ()
                 ),
             )
     print_result(
@@ -531,10 +561,13 @@ def retry_command(args: argparse.Namespace) -> int:
             "cleared_cached_profile": cleared_cached_profile,
             "cleared_cached_references": cleared_cached_references,
             "preserved_quality_findings_count": (
-                len(guidance.findings) if guidance is not None else 0
+                len(final_guidance.findings) if final_guidance is not None else 0
             ),
+            "replaced_approved": False,
             "source_attempt": source_attempt,
-            "preserved_correction_source": archived_correction_source is not None,
+            "preserved_correction_source": (
+                final_guidance is not None and final_guidance.source_plate is not None
+            ),
         }
     )
     return 0
@@ -1006,6 +1039,15 @@ def build_parser() -> argparse.ArgumentParser:
         "--source-attempt",
         type=int,
         help="Edit a selected retained attempt instead of generating the first retry from scratch",
+    )
+    retry_parser.add_argument(
+        "--replace-approved",
+        action="store_true",
+        help="Withdraw a locally approved plate after human review and regenerate from scratch",
+    )
+    retry_parser.add_argument(
+        "--reason",
+        help="Human rejection reason required with --replace-approved",
     )
     retry_parser.set_defaults(func=retry_command)
 
