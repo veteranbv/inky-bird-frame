@@ -1,0 +1,42 @@
+{
+  "behavior": "Usually solitary and territorial; watches from exposed waterside perches or hovers, then plunges headfirst for fish and other aquatic prey. Flies along shorelines with a loud rattling call and excavates nesting burrows in earthen banks.",
+  "common_name": "Belted Kingfisher",
+  "family": "Alcedinidae",
+  "field_marks": [
+    "Stocky, top-heavy profile with a large head and shaggy crest",
+    "Long, thick, straight dark bill and dark eye",
+    "Blue-gray head, back, and wings",
+    "White collar and underparts with a broad blue-gray breast band; females add a rusty belly band and flanks",
+    "Fine white spotting and barring on the wings and medium-length, square-tipped tail",
+    "Short legs with small orange-gray feet"
+  ],
+  "habitat": "Clear or calm streams, rivers, ponds, lakes, estuaries, and coastal waters with open hunting perches; exposed earthen banks are important for nesting.",
+  "measurements": {
+    "length": "28\u201335 cm (11.0\u201313.8 in)",
+    "weight": "140\u2013170 g (4.9\u20136.0 oz)",
+    "wingspan": "48\u201358 cm (18.9\u201322.8 in)"
+  },
+  "palette": [
+    "blue-gray",
+    "white",
+    "rusty chestnut",
+    "charcoal black",
+    "orange-gray"
+  ],
+  "scientific_name": "Megaceryle alcyon",
+  "sources": [
+    {
+      "title": "Belted Kingfisher Identification \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Belted_Kingfisher/id"
+    },
+    {
+      "title": "Belted Kingfisher Life History \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Belted_Kingfisher/lifehistory"
+    },
+    {
+      "title": "Megaceryle alcyon \u2014 Animal Diversity Web",
+      "url": "https://animaldiversity.org/accounts/Megaceryle_alcyon/"
+    }
+  ],
+  "taxon_id": 2548
+}

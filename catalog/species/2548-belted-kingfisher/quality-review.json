@@ -1,0 +1,36 @@
+{
+  "anatomy_accuracy": 5,
+  "composition_quality": 5,
+  "correction_findings": [],
+  "findings": [
+    "The common name, scientific name, and family are correct: Belted Kingfisher, Megaceryle alcyon, Alcedinidae.",
+    "The printed length, wingspan, and weight ranges exactly match the independently checked All About Birds and Audubon pages: 28\u201335 cm (11.0\u201313.8 in), 48\u201358 cm (18.9\u201322.8 in), and 140\u2013170 g (4.9\u20136.0 oz).",
+    "Every visible prose line and field-mark bullet matches the proposed wording without misspellings, duplicated words, omissions, substitutions, or nonsensical text.",
+    "The primary specimen is an anatomically coherent adult female: stocky body, disproportionately large crested head, dark eye, heavy straight pointed bill, blue-gray upperparts, white collar, blue-gray breast band, rusty belly band and flanks, white underparts, spotted wings and tail, and short legs with small orange-gray feet.",
+    "The bill is consistently rendered in the primary specimen and detached head study. Both mandibles trace cleanly from a shared base to a pointed, essentially co-terminal tip; no reversed, truncated, or inconsistent projection is present.",
+    "The primary specimen has one head, one beak, two normally positioned wings with the far wing naturally occluded, two legs and feet, and one medium-length tail. No duplicated or malformed attached anatomy is present.",
+    "The detached spread-wing and head-and-bill studies are clearly separated supplementary illustrations. Their feather structure, wing pattern, crest, eye, collar, and bill proportions are consistent with the species and the supplied field photographs.",
+    "The ruler runs upward from 28 cm to 35 cm and has exactly four evenly spaced unlabeled interior ticks, creating five proportional segments. Its endpoints agree with the printed body-length range, and the adjacent label explicitly states that the diagram is schematic and not to scale.",
+    "The habitat and behavior text agrees with the checked sources: waterside perching or hovering, headfirst plunge-diving for aquatic prey, loud rattling flight calls, solitary or territorial behavior, and nesting burrows excavated in earthen banks.",
+    "The plate has clear hierarchy, balanced spacing, readable typography, a coherent scientific-journal aesthetic, and no overlaps that obscure text or anatomy.",
+    "No place name, ZIP code, coordinates, map, or local-observation detail appears."
+  ],
+  "location_free": true,
+  "passed": true,
+  "species_accuracy": 5,
+  "text_accuracy": 5,
+  "verification_sources": [
+    {
+      "title": "Belted Kingfisher Identification \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Belted_Kingfisher/id"
+    },
+    {
+      "title": "Belted Kingfisher \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/belted-kingfisher"
+    },
+    {
+      "title": "Megaceryle alcyon \u2014 Animal Diversity Web",
+      "url": "https://animaldiversity.org/accounts/Megaceryle_alcyon/"
+    }
+  ]
+}

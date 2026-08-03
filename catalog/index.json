@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-03T14:12:03+00:00",
+  "generated_at": "2026-08-03T16:14:53+00:00",
   "schema_version": 1,
   "species": [
     {
@@ -78,6 +78,17 @@
       "scientific_name": "Hirundo rustica",
       "slug": "barn-swallow",
       "taxon_id": 11901
+    },
+    {
+      "approved_at": "2026-08-03T16:14:53+00:00",
+      "common_name": "Belted Kingfisher",
+      "display_path": "species/2548-belted-kingfisher/display.png",
+      "display_sha256": "82d5d9ab272daedd7fb9da877b7deeab6bd5425d0e7864f0c5a459343e60b932",
+      "portrait_path": "species/2548-belted-kingfisher/portrait.png",
+      "portrait_sha256": "71e2aa640113225f02bc353235fdf86c0ac5877867bfaa27971d903c235990d8",
+      "scientific_name": "Megaceryle alcyon",
+      "slug": "belted-kingfisher",
+      "taxon_id": 2548
     },
     {
       "approved_at": "2026-08-03T10:30:59+00:00",
