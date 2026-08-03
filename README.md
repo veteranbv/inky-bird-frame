@@ -68,37 +68,25 @@ candidate:
    neutrality; and
 4. returns structured scores and concrete findings.
 
-A failed review returns separate actionable corrections for the next attempt,
-which uses them to edit the failed plate while preserving its successful
-composition and content. Attempts are bounded by configuration, and exhausted
-work stops for
-inspection rather than publishing. A deliberate `retry` preserves validated
-research and references while carrying the final corrections into the next
-cycle. Use `--refresh-research` only when those inputs themselves need to be
-replaced. Maintainers can
-select a strong retained plate with `retry TAXON_ID --source-attempt N`; the
-source is archived, checksum-tracked, and edited rather than regenerated from
-scratch. If a stronger attempt belongs to an older archived generation run,
-select it with `retry TAXON_ID --source-run RUN_NAME --source-attempt N`; the
-command validates the private archive boundary, failed review, and portrait
-before preserving that exact edit source. When human inspection accepts some
-traits but adjudicates a review finding, repeat `--correction "..."` with a
-selected source to replace only the current automated findings; durable human
-invariants still apply. A later retry can reuse a human-rejected candidate
-already in the private archive with
-`retry TAXON_ID --source-candidate ARCHIVE_NAME`; the command verifies its taxon
-identity, rejection reason, and portrait checksum before using that rejection
-as the targeted edit contract. If human visual review rejects a locally approved
-plate before public
-publication, `retry TAXON_ID --replace-approved --reason "..."` is the explicit
-replacement migration: it records the rejection, archives the plate, removes
-it from local rotation, requeues historical-only taxa, preserves validated
-research and references, and regenerates the image from scratch while carrying
-the human rejection reason as a required constraint through every correction
-attempt. Add `--refresh-research` when the cached factual inputs are also being
-rejected. The migration
-is safe to resume after interruption and never rewrites an existing public
-catalog entry. Once a taxon passes, it is never regenerated implicitly.
+A failed review returns actionable corrections. The next attempt edits the
+failed plate while keeping the composition and content that passed. Attempts
+are bounded by configuration, and exhausted work stops for inspection rather
+than publishing.
+
+`retry TAXON_ID` keeps validated research and references by default. A
+maintainer can also resume from a retained attempt or archived candidate, or
+replace an automated finding with a specific human correction. Each path
+verifies the selected source and records its checksum before editing. Use
+`--refresh-research` only when the factual inputs are also suspect. The
+[operations guide](docs/operations.md#failure-recovery) lists those commands
+and the checks each one performs.
+
+A locally approved plate is protected from ordinary retries. Before public
+publication, `retry TAXON_ID --replace-approved --reason "..."` records a human
+rejection, archives the plate, removes it from local rotation, and starts a
+fresh replacement while keeping that rejection as a required correction. The
+migration is safe to resume after interruption and never rewrites an existing
+public catalog entry. Once a taxon passes, it is never regenerated implicitly.
 
 Regular application code handles selection, licensing rules, checksums, image
 dimensions, rotation, publishing, downloads, and display state. Codex handles
@@ -281,6 +269,8 @@ one station; it does not receive recordings or manage microphones. Bird Buddy
 is an opt-in private-API integration that requires the user to obtain Bird
 Buddy's permission and confirm it during login. Every provider result is
 matched to the same iNaturalist species identity before it enters the catalog.
+By default, the frame shows the newest station detection once, then returns to
+its normal rotation.
 
 Choose `last-day`, `last-week`, `last-30-days`, `last-year`, or `all-time` for
 the observation window. Provider limits still apply. The
