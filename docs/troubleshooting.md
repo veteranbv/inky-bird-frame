@@ -97,14 +97,19 @@ inky-bird-frame refresh --config /path/to/config.toml
 inky-bird-frame status --config /path/to/config.toml
 ```
 
-Find the `birdweather` entry in the `providers` array. A status of `ok` means
-the station request and taxonomy step completed without a provider-level
-error. `species_count` is the number of distinct avian species matched to the
-catalog's iNaturalist taxonomy, not the number of recordings.
-`unresolved_count` reports otherwise usable station species that could not be
-matched. Read the provider's `error` field before changing configuration.
-Common causes include the station token, outbound HTTPS, the controller clock,
-a BirdWeather outage, iNaturalist availability, or a taxonomy mismatch.
+If the command returns `"ok": false`, start with its top-level `error`. When
+every configured provider fails, the command stops before it can return a
+`providers` array. A successful command may still report one failed provider.
+In that case, find the `birdweather` entry and read its `error` field before
+changing configuration.
+
+A BirdWeather status of `ok` means the station request and taxonomy step
+completed without a provider-level error. `species_count` is the number of
+distinct avian species matched to the catalog's iNaturalist taxonomy, not the
+number of recordings. `unresolved_count` reports otherwise usable station
+species that could not be matched. Common error causes include the station
+token, outbound HTTPS, the controller clock, a BirdWeather outage, iNaturalist
+availability, or a taxonomy mismatch.
 
 The station API returns one row per species, not one row per recording.
 Detection counts use the configured time window, and the row count is capped
