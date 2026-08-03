@@ -456,6 +456,12 @@ class ControllerTests(unittest.TestCase):
             config_path.write_text(CONFIG)
             config = load_config(config_path)
             approve_test_species(config, species)
+            profile_cache = config.controller.state_dir / "profiles/9083/profile.json"
+            profile_cache.parent.mkdir(parents=True)
+            profile_cache.write_text("{}")
+            reference_cache = config.controller.state_dir / "references/9083/references.json"
+            reference_cache.parent.mkdir(parents=True)
+            reference_cache.write_text("{}")
             add_collection_member(config, species.taxon_id)
             active_before = json.loads(
                 (config.controller.state_dir / "active-catalog.json").read_text()
@@ -478,6 +484,8 @@ class ControllerTests(unittest.TestCase):
             approved_exists = (
                 config.controller.catalog_dir / "species/9083-northern-cardinal"
             ).exists()
+            profile_cache_exists = profile_cache.exists()
+            reference_cache_exists = reference_cache.exists()
 
         self.assertEqual(len(active_before["species"]), 1)
         self.assertEqual(active_after["species"], [])
@@ -496,6 +504,38 @@ class ControllerTests(unittest.TestCase):
         self.assertEqual(result["active_approved_count"], 0)
         self.assertTrue(result["queued_for_generation"])
         self.assertFalse(result["resumed"])
+        self.assertFalse(result["cleared_cached_profile"])
+        self.assertFalse(result["cleared_cached_references"])
+        self.assertTrue(profile_cache_exists)
+        self.assertTrue(reference_cache_exists)
+
+    def test_approved_replacement_refreshes_research_only_when_requested(self) -> None:
+        species = BirdSpecies(9083, "Northern Cardinal", "Cardinalis cardinalis", 0, "test")
+        with TemporaryDirectory() as temporary:
+            config_path = Path(temporary) / "config.toml"
+            config_path.write_text(CONFIG)
+            config = load_config(config_path)
+            approve_test_species(config, species)
+            profile_cache = config.controller.state_dir / "profiles/9083/profile.json"
+            profile_cache.parent.mkdir(parents=True)
+            profile_cache.write_text("{}")
+            reference_cache = config.controller.state_dir / "references/9083/references.json"
+            reference_cache.parent.mkdir(parents=True)
+            reference_cache.write_text("{}")
+
+            result = retry_approved_candidate(
+                config,
+                species.taxon_id,
+                "Replace the malformed feet.",
+                refresh_research=True,
+            )
+            profile_cache_exists = profile_cache.exists()
+            reference_cache_exists = reference_cache.exists()
+
+        self.assertTrue(result["cleared_cached_profile"])
+        self.assertTrue(result["cleared_cached_references"])
+        self.assertFalse(profile_cache_exists)
+        self.assertFalse(reference_cache_exists)
 
     def test_approved_replacement_resumes_after_active_catalog_write_failure(self) -> None:
         species = BirdSpecies(9083, "Northern Cardinal", "Cardinalis cardinalis", 0, "test")

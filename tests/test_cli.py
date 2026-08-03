@@ -81,6 +81,14 @@ class CliTests(unittest.TestCase):
 
         self.assertTrue(args.replace_approved)
         self.assertEqual(args.reason, "Human review rejected the plate.")
+        self.assertFalse(args.refresh_research)
+
+    def test_retry_parses_explicit_research_refresh(self) -> None:
+        args = build_parser().parse_args(
+            ["retry", "42", "--config", "instance.toml", "--refresh-research"]
+        )
+
+        self.assertTrue(args.refresh_research)
 
     def test_catalog_contribution_commands_use_explicit_catalog_paths(self) -> None:
         prepare = build_parser().parse_args(
@@ -501,7 +509,35 @@ rotation_mode = "shuffle_bag"
         recovered_keys = [call.kwargs["key"] for call in recover.call_args_list]
         self.assertEqual(recovered_keys, ["generation-cycle"])
 
-    def test_retry_archives_cached_profile(self) -> None:
+    def test_retry_preserves_cached_research_by_default(self) -> None:
+        with TemporaryDirectory() as temporary:
+            state_dir = Path(temporary)
+            failed = state_dir / "failed/42-example-bird"
+            review = failed / "attempt-01/quality-review.json"
+            review.parent.mkdir(parents=True)
+            review.write_text(json.dumps({"passed": False, "findings": ["Fix the feet"]}))
+            profile = state_dir / "profiles/42/profile.json"
+            profile.parent.mkdir(parents=True)
+            profile.write_text("{}")
+            references = state_dir / "references/42/references.json"
+            references.parent.mkdir(parents=True)
+            references.write_text("{}")
+            config = controller_config(state_dir)
+            output = io.StringIO()
+
+            with patch("inky_bird_frame.cli._config", return_value=config), redirect_stdout(output):
+                retry_command(Namespace(taxon_id=42))
+
+            result = json.loads(output.getvalue())["data"]
+            profile_exists = profile.exists()
+            references_exist = references.exists()
+
+        self.assertFalse(result["cleared_cached_profile"])
+        self.assertFalse(result["cleared_cached_references"])
+        self.assertTrue(profile_exists)
+        self.assertTrue(references_exist)
+
+    def test_retry_archives_cached_research_when_refresh_requested(self) -> None:
         with TemporaryDirectory() as temporary:
             state_dir = Path(temporary)
             failed = state_dir / "failed/42-example-bird"
@@ -524,7 +560,7 @@ rotation_mode = "shuffle_bag"
             output = io.StringIO()
 
             with patch("inky_bird_frame.cli._config", return_value=config), redirect_stdout(output):
-                retry_command(Namespace(taxon_id=42))
+                retry_command(Namespace(taxon_id=42, refresh_research=True))
 
             result = json.loads(output.getvalue())["data"]
             guidance = RetryStore(state_dir / "generation-retries.json").quality_guidance(42)
@@ -770,7 +806,12 @@ rotation_mode = "shuffle_bag"
             result = json.loads(output.getvalue())["data"]
 
         self.assertEqual(result, expected)
-        replace.assert_called_once_with(config, 42, "Human review rejected the eyes.")
+        replace.assert_called_once_with(
+            config,
+            42,
+            "Human review rejected the eyes.",
+            refresh_research=False,
+        )
 
     def test_retry_preserves_selected_attempt_as_correction_source(self) -> None:
         with TemporaryDirectory() as temporary:

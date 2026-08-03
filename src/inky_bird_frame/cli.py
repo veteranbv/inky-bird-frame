@@ -459,6 +459,7 @@ def _retry_quality_guidance(
 def retry_command(args: argparse.Namespace) -> int:
     config = _config(args)
     replace_approved = bool(getattr(args, "replace_approved", False))
+    refresh_research = bool(getattr(args, "refresh_research", False))
     raw_reason = getattr(args, "reason", None)
     reason = raw_reason.strip() if isinstance(raw_reason, str) else None
     source_attempt = getattr(args, "source_attempt", None)
@@ -467,7 +468,14 @@ def retry_command(args: argparse.Namespace) -> int:
             raise ValueError("--replace-approved cannot be combined with --source-attempt")
         if not reason:
             raise ValueError("--replace-approved requires a non-empty --reason")
-        print_result(retry_approved_candidate(config, args.taxon_id, reason))
+        print_result(
+            retry_approved_candidate(
+                config,
+                args.taxon_id,
+                reason,
+                refresh_research=refresh_research,
+            )
+        )
         return 0
     if raw_reason is not None:
         raise ValueError("--reason requires --replace-approved")
@@ -502,11 +510,11 @@ def retry_command(args: argparse.Namespace) -> int:
                 f"No failed, rejected, or deferred candidate exists for taxon {args.taxon_id}"
             )
         profile_cache = config.controller.state_dir / "profiles" / str(args.taxon_id)
-        cleared_cached_profile = profile_cache.exists()
+        cleared_cached_profile = refresh_research and profile_cache.exists()
         if cleared_cached_profile:
             sources.append(profile_cache)
         reference_cache = config.controller.state_dir / "references" / str(args.taxon_id)
-        cleared_cached_references = reference_cache.exists()
+        cleared_cached_references = refresh_research and reference_cache.exists()
         if cleared_cached_references:
             sources.append(reference_cache)
         correction_owner = (
@@ -1048,6 +1056,11 @@ def build_parser() -> argparse.ArgumentParser:
     retry_parser.add_argument(
         "--reason",
         help="Human rejection reason required with --replace-approved",
+    )
+    retry_parser.add_argument(
+        "--refresh-research",
+        action="store_true",
+        help="Discard cached species research and reference photos before retrying",
     )
     retry_parser.set_defaults(func=retry_command)
 
