@@ -15,6 +15,7 @@ from inky_bird_frame.catalog import (
     add_collection_taxa,
     approve_candidate,
     candidate_directory,
+    has_valid_approved_candidate,
     read_catalog_entries,
     read_collection,
     read_collection_state,
@@ -206,6 +207,23 @@ class CatalogTests(unittest.TestCase):
             self.assertFalse(candidate.exists())
             with self.assertRaises(CatalogError):
                 approve_candidate(state, catalog, species.taxon_id)
+
+    def test_valid_approved_candidate_requires_complete_checked_assets(self) -> None:
+        species = BirdSpecies(7513, "Carolina Wren", "Thryothorus ludovicianus", 5, "test")
+        review = QualityReview(True, 4, 4, 4, 4, True, ())
+        with TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            state = root / "state"
+            catalog = root / "catalog"
+            make_candidate(state, species, review)
+            approve_candidate(state, catalog, species.taxon_id)
+
+            complete = has_valid_approved_candidate(catalog, species.taxon_id)
+            (catalog / "species/7513-carolina-wren/display.png").unlink()
+            incomplete = has_valid_approved_candidate(catalog, species.taxon_id)
+
+        self.assertTrue(complete)
+        self.assertFalse(incomplete)
 
     def test_approved_candidate_withdrawal_preserves_human_rejection_audit(self) -> None:
         species = BirdSpecies(7513, "Carolina Wren", "Thryothorus ludovicianus", 5, "test")

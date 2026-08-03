@@ -19,6 +19,7 @@ from .catalog import (
     approve_candidate,
     catalog_state_lock,
     find_taxon_directory,
+    has_valid_approved_candidate,
     read_json,
     rebuild_catalog_index,
     reject_candidate,
@@ -47,7 +48,7 @@ from .controller import (
 )
 from .display import show_on_inky
 from .display_node import run_display_cycle
-from .errors import CatalogError, InkyBirdFrameError, SpeciesStateError
+from .errors import InkyBirdFrameError, SpeciesStateError
 from .images import prepare_uploaded_image
 from .installation import InstallationRole, doctor, setup
 from .notifications import (
@@ -454,20 +455,6 @@ def _retry_quality_guidance(
     return tuple(findings) or (REVIEW_FAILURE_FALLBACK,), source_plate
 
 
-def _is_approved_candidate(path: Path | None, taxon_id: int) -> bool:
-    if path is None:
-        return False
-    try:
-        manifest = read_json(path / "manifest.json")
-    except CatalogError:
-        return False
-    return (
-        isinstance(manifest, dict)
-        and manifest.get("taxon_id") == taxon_id
-        and manifest.get("status") == "approved"
-    )
-
-
 def retry_command(args: argparse.Namespace) -> int:
     config = _config(args)
     replace_approved = bool(getattr(args, "replace_approved", False))
@@ -488,11 +475,7 @@ def retry_command(args: argparse.Namespace) -> int:
         pending = find_taxon_directory(config.controller.state_dir / "pending", args.taxon_id)
         if pending is not None and (pending / "manifest.json").is_file():
             raise ValueError("Pending candidates must be approved or rejected before retrying")
-        approved_path = find_taxon_directory(
-            config.controller.catalog_dir / "species",
-            args.taxon_id,
-        )
-        if _is_approved_candidate(approved_path, args.taxon_id):
+        if has_valid_approved_candidate(config.controller.catalog_dir, args.taxon_id):
             raise ValueError(
                 f"Taxon {args.taxon_id} is already approved; use --replace-approved "
                 "with --reason after human review"

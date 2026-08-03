@@ -479,6 +479,17 @@ def _valid_destination_entry(destination: Path, catalog_dir: Path) -> bool:
     return True
 
 
+def has_valid_approved_candidate(catalog_dir: Path, taxon_id: int) -> bool:
+    destination = find_taxon_directory(catalog_dir / "species", taxon_id)
+    if destination is None:
+        return False
+    try:
+        entry = _manifest_entry(destination / "manifest.json", catalog_dir)
+    except (CatalogError, OSError):
+        return False
+    return entry.taxon_id == taxon_id
+
+
 def approve_candidate(state_dir: Path, catalog_dir: Path, taxon_id: int) -> CatalogEntry:
     source = find_taxon_directory(state_dir / "pending", taxon_id)
     if source is None:

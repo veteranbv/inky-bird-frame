@@ -549,6 +549,9 @@ rotation_mode = "shuffle_bag"
             debris = catalog_dir / "species/42-example-bird"
             debris.mkdir(parents=True)
             (debris / "portrait.png").write_bytes(b"incomplete approval")
+            (debris / "manifest.json").write_text(
+                json.dumps({"taxon_id": 42, "status": "approved"})
+            )
             config = controller_config(state_dir, catalog_dir)
 
             with (
@@ -688,13 +691,14 @@ rotation_mode = "shuffle_bag"
             catalog_dir = state_dir / "catalog"
             approved = catalog_dir / "species/42-example-bird"
             approved.mkdir(parents=True)
-            (approved / "manifest.json").write_text(
-                json.dumps({"taxon_id": 42, "status": "approved"})
-            )
             config = controller_config(state_dir, catalog_dir)
 
             with (
                 patch("inky_bird_frame.cli._config", return_value=config),
+                patch(
+                    "inky_bird_frame.cli.has_valid_approved_candidate",
+                    return_value=True,
+                ),
                 self.assertRaisesRegex(ValueError, "use --replace-approved"),
             ):
                 retry_command(Namespace(taxon_id=42))
