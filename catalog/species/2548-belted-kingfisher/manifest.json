@@ -1,0 +1,159 @@
+{
+  "approved_at": "2026-08-03T16:14:53+00:00",
+  "assets": {
+    "display": {
+      "filename": "display.png",
+      "sha256": "82d5d9ab272daedd7fb9da877b7deeab6bd5425d0e7864f0c5a459343e60b932"
+    },
+    "portrait": {
+      "filename": "portrait.png",
+      "sha256": "71e2aa640113225f02bc353235fdf86c0ac5877867bfaa27971d903c235990d8"
+    }
+  },
+  "common_name": "Belted Kingfisher",
+  "generation": {
+    "attempt": 2,
+    "correction_source_sha256": "039b035d381bac90b21afa0fc85cf37197b813da2f642a1ff1322e214f2477fb",
+    "generated_at": "2026-08-03T16:14:53+00:00",
+    "generator": "Codex subscription / built-in gpt-image-2",
+    "max_attempts": 3,
+    "prompt_version": "field-journal-v4"
+  },
+  "profile": {
+    "behavior": "Usually solitary and territorial; watches from exposed waterside perches or hovers, then plunges headfirst for fish and other aquatic prey. Flies along shorelines with a loud rattling call and excavates nesting burrows in earthen banks.",
+    "common_name": "Belted Kingfisher",
+    "family": "Alcedinidae",
+    "field_marks": [
+      "Stocky, top-heavy profile with a large head and shaggy crest",
+      "Long, thick, straight dark bill and dark eye",
+      "Blue-gray head, back, and wings",
+      "White collar and underparts with a broad blue-gray breast band; females add a rusty belly band and flanks",
+      "Fine white spotting and barring on the wings and medium-length, square-tipped tail",
+      "Short legs with small orange-gray feet"
+    ],
+    "habitat": "Clear or calm streams, rivers, ponds, lakes, estuaries, and coastal waters with open hunting perches; exposed earthen banks are important for nesting.",
+    "measurements": {
+      "length": "28\u201335 cm (11.0\u201313.8 in)",
+      "weight": "140\u2013170 g (4.9\u20136.0 oz)",
+      "wingspan": "48\u201358 cm (18.9\u201322.8 in)"
+    },
+    "palette": [
+      "blue-gray",
+      "white",
+      "rusty chestnut",
+      "charcoal black",
+      "orange-gray"
+    ],
+    "scientific_name": "Megaceryle alcyon",
+    "sources": [
+      {
+        "title": "Belted Kingfisher Identification \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Belted_Kingfisher/id"
+      },
+      {
+        "title": "Belted Kingfisher Life History \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Belted_Kingfisher/lifehistory"
+      },
+      {
+        "title": "Megaceryle alcyon \u2014 Animal Diversity Web",
+        "url": "https://animaldiversity.org/accounts/Megaceryle_alcyon/"
+      }
+    ],
+    "taxon_id": 2548
+  },
+  "quality_review": {
+    "anatomy_accuracy": 5,
+    "composition_quality": 5,
+    "correction_findings": [],
+    "findings": [
+      "The common name, scientific name, and family are correct: Belted Kingfisher, Megaceryle alcyon, Alcedinidae.",
+      "The printed length, wingspan, and weight ranges exactly match the independently checked All About Birds and Audubon pages: 28\u201335 cm (11.0\u201313.8 in), 48\u201358 cm (18.9\u201322.8 in), and 140\u2013170 g (4.9\u20136.0 oz).",
+      "Every visible prose line and field-mark bullet matches the proposed wording without misspellings, duplicated words, omissions, substitutions, or nonsensical text.",
+      "The primary specimen is an anatomically coherent adult female: stocky body, disproportionately large crested head, dark eye, heavy straight pointed bill, blue-gray upperparts, white collar, blue-gray breast band, rusty belly band and flanks, white underparts, spotted wings and tail, and short legs with small orange-gray feet.",
+      "The bill is consistently rendered in the primary specimen and detached head study. Both mandibles trace cleanly from a shared base to a pointed, essentially co-terminal tip; no reversed, truncated, or inconsistent projection is present.",
+      "The primary specimen has one head, one beak, two normally positioned wings with the far wing naturally occluded, two legs and feet, and one medium-length tail. No duplicated or malformed attached anatomy is present.",
+      "The detached spread-wing and head-and-bill studies are clearly separated supplementary illustrations. Their feather structure, wing pattern, crest, eye, collar, and bill proportions are consistent with the species and the supplied field photographs.",
+      "The ruler runs upward from 28 cm to 35 cm and has exactly four evenly spaced unlabeled interior ticks, creating five proportional segments. Its endpoints agree with the printed body-length range, and the adjacent label explicitly states that the diagram is schematic and not to scale.",
+      "The habitat and behavior text agrees with the checked sources: waterside perching or hovering, headfirst plunge-diving for aquatic prey, loud rattling flight calls, solitary or territorial behavior, and nesting burrows excavated in earthen banks.",
+      "The plate has clear hierarchy, balanced spacing, readable typography, a coherent scientific-journal aesthetic, and no overlaps that obscure text or anatomy.",
+      "No place name, ZIP code, coordinates, map, or local-observation detail appears."
+    ],
+    "location_free": true,
+    "passed": true,
+    "species_accuracy": 5,
+    "text_accuracy": 5,
+    "verification_sources": [
+      {
+        "title": "Belted Kingfisher Identification \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Belted_Kingfisher/id"
+      },
+      {
+        "title": "Belted Kingfisher \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/belted-kingfisher"
+      },
+      {
+        "title": "Megaceryle alcyon \u2014 Animal Diversity Web",
+        "url": "https://animaldiversity.org/accounts/Megaceryle_alcyon/"
+      }
+    ]
+  },
+  "references": [
+    {
+      "attribution": "(c) Jonathan Eisen, some rights reserved (CC BY)",
+      "filename": "01-62536274.jpg",
+      "height": 1366,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/62536274/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 39418726,
+      "observer": "phylogenomics",
+      "photo_id": 62536274,
+      "sha256": "afe6886af023e9cc566aa5fe06f75fd98d42e441677742c73fd2d87b7fdcdae3",
+      "source_url": "https://www.inaturalist.org/observations/39418726",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) Morgan Caygill, some rights reserved (CC BY)",
+      "filename": "02-209793545.jpg",
+      "height": 1473,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/209793545/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 123814051,
+      "observer": "eurasiankestrel",
+      "photo_id": 209793545,
+      "sha256": "13c90202eeda3a68a59c4be08bfa59ceb3a22755fa13e7c9d2a97ebd3f78b9c6",
+      "source_url": "https://www.inaturalist.org/observations/123814051",
+      "width": 1538
+    },
+    {
+      "attribution": "(c) Julien Fougeroux, some rights reserved (CC BY)",
+      "filename": "03-599760852.jpg",
+      "height": 1368,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/599760852/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 330709914,
+      "observer": "julien_fgx",
+      "photo_id": 599760852,
+      "sha256": "e98f2e5c23cb764eab62da58f13ecb28787ec1b8eadbef35c2e9a064eeb60ff2",
+      "source_url": "https://www.inaturalist.org/observations/330709914",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) pachips, some rights reserved (CC BY)",
+      "filename": "04-206202271.jpeg",
+      "height": 1366,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/206202271/large.jpeg",
+      "license_code": "cc-by",
+      "observation_id": 121827162,
+      "observer": "pachips",
+      "photo_id": 206202271,
+      "sha256": "f4d13c23340f4a5abaa287287764f796ac03cba8f2ce2cd313b53eed2c0f24dd",
+      "source_url": "https://www.inaturalist.org/observations/121827162",
+      "width": 1599
+    }
+  ],
+  "schema_version": 1,
+  "scientific_name": "Megaceryle alcyon",
+  "slug": "belted-kingfisher",
+  "status": "approved",
+  "taxon_id": 2548
+}
