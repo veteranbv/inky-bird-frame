@@ -1,0 +1,158 @@
+{
+  "approved_at": "2026-08-03T20:46:40+00:00",
+  "assets": {
+    "display": {
+      "filename": "display.png",
+      "sha256": "ae9bf6851dbbe55253b63ac2d94533e7c94dab31633244ae50d95b08ec45d4b0"
+    },
+    "portrait": {
+      "filename": "portrait.png",
+      "sha256": "4f42d298b67d8d7a000eded0b62bff3b22894b45bb8c459a3f7b1aa4b4bf38da"
+    }
+  },
+  "common_name": "Northern Yellow Warbler",
+  "generation": {
+    "attempt": 2,
+    "correction_source_sha256": "373a01b6b1e04626e8d4e2a52713bb7d465b7030c798cc3faac69360c397dd90",
+    "generated_at": "2026-08-03T20:46:40+00:00",
+    "generator": "Codex subscription / built-in gpt-image-2",
+    "max_attempts": 3,
+    "prompt_version": "field-journal-v4"
+  },
+  "profile": {
+    "behavior": "Active foliage-gleaner; hops along slender branches, picking insects from leaves, briefly hovering or making short aerial sallies. Singing males often use exposed high perches.",
+    "common_name": "Northern Yellow Warbler",
+    "family": "Parulidae",
+    "field_marks": [
+      "Bright yellow head and underparts; adult males show fine chestnut breast streaks",
+      "Plain yellow face emphasizing a large, dark eye",
+      "Yellow-green back and darker olive wings with yellow-edged feathers",
+      "Straight, fine, pointed gray bill",
+      "Medium-length, slightly notched tail with yellow inner patches",
+      "Small, evenly proportioned body with a rounded head and slender pinkish-brown legs"
+    ],
+    "habitat": "Shrubby thickets, open woodland edges, streamside vegetation, and wetland margins; outside the breeding season also uses semi-open woodland, scrub, mangroves, gardens, and other secondary growth.",
+    "measurements": {
+      "length": "12\u201313 cm (4.7\u20135.1 in)",
+      "weight": "9\u201311 g (0.3\u20130.4 oz)",
+      "wingspan": "16\u201320 cm (6.3\u20137.9 in)"
+    },
+    "palette": [
+      "egg-yolk yellow",
+      "yellow-green",
+      "olive brown",
+      "chestnut red",
+      "charcoal black"
+    ],
+    "scientific_name": "Setophaga aestiva",
+    "sources": [
+      {
+        "title": "Northern Yellow Warbler Identification \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/yellow_warbler/id"
+      },
+      {
+        "title": "Northern Yellow Warbler Life History \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Northern_Yellow_Warbler/lifehistory"
+      },
+      {
+        "title": "Northern Yellow Warbler \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/northern-yellow-warbler"
+      }
+    ],
+    "taxon_id": 1188207
+  },
+  "quality_review": {
+    "anatomy_accuracy": 4,
+    "composition_quality": 5,
+    "correction_findings": [],
+    "findings": [
+      "Live sources independently confirm the identity as Northern Yellow Warbler (Setophaga aestiva), family Parulidae.",
+      "The printed measurements\u2014length 12\u201313 cm (4.7\u20135.1 in), wingspan 16\u201320 cm (6.3\u20137.9 in), and weight 9\u201311 g (0.3\u20130.4 oz)\u2014match Cornell's published values; Audubon corroborates the metric ranges and rounded wing/notched-tail shape.",
+      "The primary specimen accurately represents an adult male: bright yellow head and underparts, plain face with a prominent dark eye, chestnut breast streaking, yellow-green back, dark olive wings with yellow edging, and yellow in the tail.",
+      "The wing contrast and body fullness are somewhat stronger than in the photographs, but remain plausible field-journal stylization without obscuring species identity or requiring correction.",
+      "The primary bird is a single complete specimen with one head and bill, two anatomically implied wings, two visible legs with coherent perching feet, and one tail. The detached wing and head are clearly separated supplementary studies rather than attached or duplicate body parts.",
+      "Both depicted heads have a straight, fine, pointed gray bill with coherent mandibles and no reversed, truncated, or materially inconsistent bill rendering.",
+      "The folded wing, detached spread-wing study, medium-length slightly notched tail, slender legs, and grasping feet are anatomically coherent. The detached wing has a plausible rounded flight-feather arrangement.",
+      "Every visible factual line matches the proposed wording, spelling, numbers, units, field marks, habitat, behavior, taxonomy, and palette labels; no duplicated, omitted, substituted, or nonsensical text was found.",
+      "The ruler runs from 12 cm at the bottom to 13 cm at the top, has exactly four evenly spaced unlabeled interior ticks, agrees with the printed length range, and is explicitly labeled \u201cSCHEMATIC \u2014 NOT TO SCALE.\u201d",
+      "No place name, ZIP code, coordinates, map, or local-observation detail appears."
+    ],
+    "location_free": true,
+    "passed": true,
+    "species_accuracy": 4,
+    "text_accuracy": 5,
+    "verification_sources": [
+      {
+        "title": "Northern Yellow Warbler Identification \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/yellow_warbler/id"
+      },
+      {
+        "title": "Northern Yellow Warbler Overview \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Northern_Yellow_Warbler/overview"
+      },
+      {
+        "title": "Northern Yellow Warbler \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/northern-yellow-warbler"
+      }
+    ]
+  },
+  "references": [
+    {
+      "attribution": "no rights reserved",
+      "filename": "01-19302642.jpg",
+      "height": 872,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/19302642/large.jpg",
+      "license_code": "cc0",
+      "observation_id": 13202356,
+      "observer": "schoenitz",
+      "photo_id": 19302642,
+      "sha256": "b7e0eae0a385eafbc5862a77e346bcff40672a9161f6c268b13ec18dc1756413",
+      "source_url": "https://www.inaturalist.org/observations/13202356",
+      "width": 1308
+    },
+    {
+      "attribution": "(c) Hunter Hickok, some rights reserved (CC BY)",
+      "filename": "02-75768400.jpeg",
+      "height": 1365,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/75768400/large.jpeg",
+      "license_code": "cc-by",
+      "observation_id": 47765172,
+      "observer": "once_casadastraphobic_bird",
+      "photo_id": 75768400,
+      "sha256": "bf152678a66cacb2d1caeba3334bde0e0c1e01bb74bb85b6316c5fe8eaabc9f1",
+      "source_url": "https://www.inaturalist.org/observations/47765172",
+      "width": 2048
+    },
+    {
+      "attribution": "no rights reserved",
+      "filename": "03-339455453.jpg",
+      "height": 1334,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/339455453/large.jpg",
+      "license_code": "cc0",
+      "observation_id": 193251978,
+      "observer": "rawcomposition",
+      "photo_id": 339455453,
+      "sha256": "a1a9785040baba462ab3b4a58ab766fa3d5d4821529996fa69bfcb37df9d89da",
+      "source_url": "https://www.inaturalist.org/observations/193251978",
+      "width": 2000
+    },
+    {
+      "attribution": "(c) John Krampl, some rights reserved (CC BY)",
+      "filename": "04-59592694.jpeg",
+      "height": 1365,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/59592694/large.jpeg",
+      "license_code": "cc-by",
+      "observation_id": 37575071,
+      "observer": "johnkrampl",
+      "photo_id": 59592694,
+      "sha256": "c980d7e1b010f39b3dc0a9c1d9efa01126edb1114b739ba626ad15e5c410db79",
+      "source_url": "https://www.inaturalist.org/observations/37575071",
+      "width": 2048
+    }
+  ],
+  "schema_version": 1,
+  "scientific_name": "Setophaga aestiva",
+  "slug": "northern-yellow-warbler",
+  "status": "approved",
+  "taxon_id": 1188207
+}

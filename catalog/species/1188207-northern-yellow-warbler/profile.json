@@ -1,0 +1,42 @@
+{
+  "behavior": "Active foliage-gleaner; hops along slender branches, picking insects from leaves, briefly hovering or making short aerial sallies. Singing males often use exposed high perches.",
+  "common_name": "Northern Yellow Warbler",
+  "family": "Parulidae",
+  "field_marks": [
+    "Bright yellow head and underparts; adult males show fine chestnut breast streaks",
+    "Plain yellow face emphasizing a large, dark eye",
+    "Yellow-green back and darker olive wings with yellow-edged feathers",
+    "Straight, fine, pointed gray bill",
+    "Medium-length, slightly notched tail with yellow inner patches",
+    "Small, evenly proportioned body with a rounded head and slender pinkish-brown legs"
+  ],
+  "habitat": "Shrubby thickets, open woodland edges, streamside vegetation, and wetland margins; outside the breeding season also uses semi-open woodland, scrub, mangroves, gardens, and other secondary growth.",
+  "measurements": {
+    "length": "12\u201313 cm (4.7\u20135.1 in)",
+    "weight": "9\u201311 g (0.3\u20130.4 oz)",
+    "wingspan": "16\u201320 cm (6.3\u20137.9 in)"
+  },
+  "palette": [
+    "egg-yolk yellow",
+    "yellow-green",
+    "olive brown",
+    "chestnut red",
+    "charcoal black"
+  ],
+  "scientific_name": "Setophaga aestiva",
+  "sources": [
+    {
+      "title": "Northern Yellow Warbler Identification \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/yellow_warbler/id"
+    },
+    {
+      "title": "Northern Yellow Warbler Life History \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Northern_Yellow_Warbler/lifehistory"
+    },
+    {
+      "title": "Northern Yellow Warbler \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/northern-yellow-warbler"
+    }
+  ],
+  "taxon_id": 1188207
+}
