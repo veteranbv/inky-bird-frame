@@ -34,6 +34,7 @@ from .config import (
 from .controller import (
     REVIEW_FAILURE_FALLBACK,
     add_collection_member,
+    archive_invalid_approved_catalog_state,
     collection_status,
     discover_species,
     enqueue_seed_species,
@@ -475,11 +476,12 @@ def retry_command(args: argparse.Namespace) -> int:
         pending = find_taxon_directory(config.controller.state_dir / "pending", args.taxon_id)
         if pending is not None and (pending / "manifest.json").is_file():
             raise ValueError("Pending candidates must be approved or rejected before retrying")
-        if has_valid_approved_candidate(config.controller.catalog_dir, args.taxon_id):
-            raise ValueError(
-                f"Taxon {args.taxon_id} is already approved; use --replace-approved "
-                "with --reason after human review"
-            )
+        with catalog_state_lock(config.controller.state_dir):
+            if has_valid_approved_candidate(config.controller.catalog_dir, args.taxon_id):
+                raise ValueError(
+                    f"Taxon {args.taxon_id} is already approved; use --replace-approved "
+                    "with --reason after human review"
+                )
         failed_directories = sorted(
             (config.controller.state_dir / "failed").glob(f"{args.taxon_id}-*")
         )
@@ -517,9 +519,13 @@ def retry_command(args: argparse.Namespace) -> int:
         )
         if correction_source is not None and correction_owner is None:
             raise SpeciesStateError("The selected correction source is outside retained state")
+        invalid_approved_archive = archive_invalid_approved_catalog_state(
+            config,
+            args.taxon_id,
+        )
         archive = config.controller.state_dir / "archive"
         archive.mkdir(parents=True, exist_ok=True)
-        moved: list[str] = []
+        moved = [str(invalid_approved_archive)] if invalid_approved_archive is not None else []
         archived_correction_source: Path | None = None
         for source in sources:
             destination = archive / source.name

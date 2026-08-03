@@ -35,11 +35,13 @@ from .catalog import (
     add_collection_taxa,
     approve_candidate,
     approved_taxon_ids,
+    archive_invalid_approved_candidate,
     candidate_directory,
     catalog_state_lock,
     clear_catalog_staging,
     find_taxon_directory,
     has_passing_sourced_review,
+    has_valid_approved_candidate,
     is_bounded_generation,
     read_catalog_entries,
     read_collection,
@@ -719,6 +721,33 @@ def _current_discovery_species(config: AppConfig) -> list[BirdSpecies]:
     return _read_discovery_snapshot(config).species
 
 
+def archive_invalid_approved_catalog_state(
+    config: AppConfig,
+    taxon_id: int,
+) -> Path | None:
+    with catalog_state_lock(config.controller.state_dir):
+        observed = _current_discovery_species(config)
+        approved_path = find_taxon_directory(
+            config.controller.catalog_dir / "species",
+            taxon_id,
+        )
+        if approved_path is None:
+            _write_active_catalog(config, observed)
+            return None
+        if has_valid_approved_candidate(config.controller.catalog_dir, taxon_id):
+            raise ValueError(
+                f"Taxon {taxon_id} is already approved; use --replace-approved "
+                "with --reason after human review"
+            )
+        archived = archive_invalid_approved_candidate(
+            config.controller.state_dir,
+            config.controller.catalog_dir,
+            taxon_id,
+        )
+        _write_active_catalog(config, observed)
+        return archived
+
+
 def _replacement_species(
     taxon_id: int,
     common_name: object,
@@ -799,6 +828,24 @@ def _archive_controller_paths(state_dir: Path, sources: list[Path]) -> list[str]
     return moved
 
 
+def _migrate_legacy_queue_before_replacement(
+    config: AppConfig,
+    queued_species: list[BirdSpecies],
+    taxon_id: int,
+) -> None:
+    pre_replacement_queue = [species for species in queued_species if species.taxon_id != taxon_id]
+    collection, _, migrated_at, migration_applied = _migrate_legacy_seed_queue(
+        read_collection_state(config.controller.state_dir),
+        pre_replacement_queue,
+    )
+    if migration_applied:
+        write_collection(
+            config.controller.state_dir,
+            collection,
+            legacy_seed_queue_migrated_at=migrated_at,
+        )
+
+
 def retry_approved_candidate(
     config: AppConfig,
     taxon_id: int,
@@ -828,7 +875,6 @@ def retry_approved_candidate(
             retry_store = RetryStore(config.controller.state_dir / "generation-retries.json")
             queued_species = read_generation_queue(config)
             observed = _current_discovery_species(config)
-            read_collection_state(config.controller.state_dir)
             resumable = (
                 _resumable_approved_replacement(
                     config.controller.state_dir,
@@ -853,6 +899,7 @@ def retry_approved_candidate(
                 )
                 if not already_prepared:
                     raise ValueError(f"No approved candidate exists for taxon {taxon_id}")
+                _migrate_legacy_queue_before_replacement(config, queued_species, taxon_id)
                 assert guidance is not None
                 active_count = _write_active_catalog(
                     config,
@@ -892,6 +939,7 @@ def retry_approved_candidate(
                 or queued.scientific_name != species.scientific_name
             ):
                 raise CatalogError(f"Generation queue identity differs for taxon {taxon_id}")
+            _migrate_legacy_queue_before_replacement(config, queued_species, taxon_id)
 
             rejected_paths = sorted(
                 (config.controller.state_dir / "rejected").glob(f"{taxon_id}-*")

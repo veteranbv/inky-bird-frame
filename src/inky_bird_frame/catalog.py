@@ -490,6 +490,52 @@ def has_valid_approved_candidate(catalog_dir: Path, taxon_id: int) -> bool:
     return entry.taxon_id == taxon_id
 
 
+def archive_invalid_approved_candidate(
+    state_dir: Path,
+    catalog_dir: Path,
+    taxon_id: int,
+) -> Path | None:
+    source = find_taxon_directory(catalog_dir / "species", taxon_id)
+    if source is None:
+        return None
+    if has_valid_approved_candidate(catalog_dir, taxon_id):
+        raise CatalogError(f"Taxon {taxon_id} has a valid approved candidate")
+
+    archive = state_dir / "archive"
+    destination = archive / f"invalid-approved-{source.name}"
+    counter = 1
+    while destination.exists():
+        destination = archive / f"invalid-approved-{source.name}-{counter}"
+        counter += 1
+    destination.parent.mkdir(parents=True, exist_ok=True)
+    try:
+        shutil.copytree(source, destination)
+    except Exception:
+        if destination.exists():
+            shutil.rmtree(destination)
+        with suppress(OSError):
+            destination.parent.rmdir()
+        raise
+    try:
+        shutil.rmtree(source)
+        rebuild_catalog_index(catalog_dir)
+    except Exception as error:
+        try:
+            if source.exists():
+                shutil.rmtree(source)
+            shutil.copytree(destination, source)
+        except Exception as rollback_error:
+            raise CatalogError(
+                "Invalid approved candidate archival failed and could not be rolled back; "
+                f"recovery copy retained at {destination}: {rollback_error}"
+            ) from error
+        shutil.rmtree(destination)
+        with suppress(OSError):
+            destination.parent.rmdir()
+        raise
+    return destination
+
+
 def approve_candidate(state_dir: Path, catalog_dir: Path, taxon_id: int) -> CatalogEntry:
     source = find_taxon_directory(state_dir / "pending", taxon_id)
     if source is None:

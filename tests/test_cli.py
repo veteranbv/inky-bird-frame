@@ -553,16 +553,23 @@ rotation_mode = "shuffle_bag"
                 json.dumps({"taxon_id": 42, "status": "approved"})
             )
             config = controller_config(state_dir, catalog_dir)
+            output = io.StringIO()
 
             with (
                 patch("inky_bird_frame.cli._config", return_value=config),
-                redirect_stdout(io.StringIO()),
+                redirect_stdout(output),
             ):
                 retry_command(Namespace(taxon_id=42))
 
             archived = (state_dir / "archive/42-example-bird").is_dir()
+            invalid_archived = (state_dir / "archive/invalid-approved-42-example-bird").is_dir()
+            debris_exists = debris.exists()
+            result = json.loads(output.getvalue())["data"]
 
         self.assertTrue(archived)
+        self.assertTrue(invalid_archived)
+        self.assertFalse(debris_exists)
+        self.assertEqual(len(result["archived"]), 2)
 
     def test_retry_preserves_fallback_for_empty_quality_findings(self) -> None:
         with TemporaryDirectory() as temporary:

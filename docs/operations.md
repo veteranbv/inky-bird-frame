@@ -337,7 +337,10 @@ only; they never enter the approved catalog or rotation.
   references and profile data, and preserves the selected attempt's corrections
   for the first edit. Omit `--source-attempt` when no retained image should be
   reused. Transient source failures retain the guidance and edit source until
-  generation reaches a successful or terminal quality result.
+  generation reaches a successful or terminal quality result. If retry finds an
+  interrupted, fully invalid approval directory, it archives that debris and
+  removes the stale local catalog entry before regeneration; a valid approved
+  plate still requires the explicit replacement command below.
 - Human rejection after local approval: before public publication, run
   `retry TAXON_ID --replace-approved --reason "..."`. The non-empty reason and
   replacement flag are mandatory. The command archives the approved artifacts

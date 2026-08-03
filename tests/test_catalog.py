@@ -14,6 +14,7 @@ from inky_bird_frame.catalog import (
     CollectionOrigin,
     add_collection_taxa,
     approve_candidate,
+    archive_invalid_approved_candidate,
     candidate_directory,
     has_valid_approved_candidate,
     read_catalog_entries,
@@ -224,6 +225,32 @@ class CatalogTests(unittest.TestCase):
 
         self.assertTrue(complete)
         self.assertFalse(incomplete)
+
+    def test_invalid_approved_archival_rolls_back_on_index_failure(self) -> None:
+        with TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            state = root / "state"
+            catalog = root / "catalog"
+            source = catalog / "species/7513-carolina-wren"
+            source.mkdir(parents=True)
+            (source / "manifest.json").write_text(
+                json.dumps({"taxon_id": 7513, "status": "approved"})
+            )
+
+            with (
+                patch(
+                    "inky_bird_frame.catalog.rebuild_catalog_index",
+                    side_effect=CatalogError("index failure"),
+                ),
+                self.assertRaisesRegex(CatalogError, "index failure"),
+            ):
+                archive_invalid_approved_candidate(state, catalog, 7513)
+
+            source_exists = source.is_dir()
+            archive_exists = (state / "archive").exists()
+
+        self.assertTrue(source_exists)
+        self.assertFalse(archive_exists)
 
     def test_approved_candidate_withdrawal_preserves_human_rejection_audit(self) -> None:
         species = BirdSpecies(7513, "Carolina Wren", "Thryothorus ludovicianus", 5, "test")

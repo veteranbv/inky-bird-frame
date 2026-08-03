@@ -527,6 +527,45 @@ class ControllerTests(unittest.TestCase):
         self.assertEqual(active["species"], [])
         self.assertTrue(result["resumed"])
 
+    def test_approved_replacement_migrates_only_the_preexisting_legacy_queue(self) -> None:
+        species = BirdSpecies(9083, "Northern Cardinal", "Cardinalis cardinalis", 0, "test")
+        queued = BirdSpecies(1, "Queued Bird", "Avis queued", 1, "iNaturalist")
+        with TemporaryDirectory() as temporary:
+            config_path = Path(temporary) / "config.toml"
+            config_path.write_text(CONFIG)
+            config = load_config(config_path)
+            config.controller.state_dir.mkdir(parents=True)
+            (config.controller.state_dir / "generation-queue.json").write_text(
+                json.dumps(
+                    {
+                        "schema_version": 2,
+                        "updated_at": datetime.now(UTC).isoformat(),
+                        "species": [
+                            {
+                                "taxon_id": queued.taxon_id,
+                                "common_name": queued.common_name,
+                                "scientific_name": queued.scientific_name,
+                                "observation_count": queued.observation_count,
+                                "source": queued.source,
+                            }
+                        ],
+                    }
+                )
+            )
+            approve_test_species(config, species)
+
+            retry_approved_candidate(config, species.taxon_id, "Replace the uncanny eyes.")
+
+            collection = read_collection_state(config.controller.state_dir)
+            queue = read_generation_queue(config)
+
+        self.assertEqual([entry.taxon_id for entry in collection.entries], [queued.taxon_id])
+        self.assertIsNotNone(collection.legacy_seed_queue_migrated_at)
+        self.assertEqual(
+            [entry.taxon_id for entry in queue],
+            [queued.taxon_id, species.taxon_id],
+        )
+
     def test_collection_remove_is_preserved_after_legacy_queue_migration(self) -> None:
         queued = BirdSpecies(1, "Queued Bird", "Avis queued", 1, "iNaturalist")
         with TemporaryDirectory() as temporary:

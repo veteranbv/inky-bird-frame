@@ -171,7 +171,9 @@ unchanged. The next scheduled cycle retries from the current remote branch.
 `retry TAXON_ID` archives incomplete pending, rejected, or failed state and
 makes that taxon eligible. For failed quality reviews, it retains the final actionable
 corrections as durable input to the first new generation attempt while
-refreshing cached research. `retry TAXON_ID --source-attempt N` additionally
+refreshing cached research. Invalid approval debris is archived and removed from
+the local index and active catalog before regeneration; a fully valid approved
+entry remains protected. `retry TAXON_ID --source-attempt N` additionally
 selects a retained portrait as the edit base. The archive-relative source path
 stays in private retry state, and the passing manifest records its SHA-256 for
 provenance. After explicit human review,
