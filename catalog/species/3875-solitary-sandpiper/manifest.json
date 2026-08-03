@@ -1,0 +1,162 @@
+{
+  "approved_at": "2026-08-03T14:12:03+00:00",
+  "assets": {
+    "display": {
+      "filename": "display.png",
+      "sha256": "f1307a10024184b5a8b047d731afa2f244f06e7acd078978590514161b52f2ef"
+    },
+    "portrait": {
+      "filename": "portrait.png",
+      "sha256": "be12580b1e3577462a64d951b8f0e48b58e7aa507c0f32bb6b2f7cf44546b10f"
+    }
+  },
+  "common_name": "Solitary Sandpiper",
+  "generation": {
+    "attempt": 2,
+    "correction_source_sha256": "3d693cd5f0ec5c0a81d92fed9bc114e6a7ffe584116eab44f0b619fd36933c89",
+    "generated_at": "2026-08-03T14:12:03+00:00",
+    "generator": "Codex subscription / built-in gpt-image-2",
+    "max_attempts": 3,
+    "prompt_version": "field-journal-v4"
+  },
+  "profile": {
+    "behavior": "Usually solitary; walks slowly through shallow freshwater, bobbing its rear and sometimes trembling a foot to stir prey. Picks prey by sight, probes only occasionally, and may briefly hold its wings raised after landing.",
+    "common_name": "Solitary Sandpiper",
+    "family": "Scolopacidae",
+    "field_marks": [
+      "Bold, complete white eye-ring",
+      "Dark olive-brown upperparts neatly spotted with white",
+      "Finely streaked gray-brown head, neck, and upper breast above a white belly",
+      "Thin, straight, dark bill",
+      "Fairly long olive-yellow legs",
+      "Long folded wings and a short, dark-centered tail with pale barred outer feathers"
+    ],
+    "habitat": "Quiet freshwater wetlands, especially wooded ponds, stream edges, swamps, bogs, muddy pools, ditches, and flooded fields; generally avoids tidal flats and salt marshes.",
+    "measurements": {
+      "length": "19\u201323 cm (7.5\u20139.1 in)",
+      "weight": "31\u201365 g (1.1\u20132.3 oz)",
+      "wingspan": "55\u201357 cm (21.6\u201322.4 in)"
+    },
+    "palette": [
+      "olive brown",
+      "charcoal gray",
+      "white",
+      "pale gray",
+      "olive yellow"
+    ],
+    "scientific_name": "Tringa solitaria",
+    "sources": [
+      {
+        "title": "Solitary Sandpiper Identification \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Solitary_Sandpiper/id"
+      },
+      {
+        "title": "Solitary Sandpiper Life History \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Solitary_Sandpiper/lifehistory"
+      },
+      {
+        "title": "Solitary Sandpiper \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/solitary-sandpiper"
+      }
+    ],
+    "taxon_id": 3875
+  },
+  "quality_review": {
+    "anatomy_accuracy": 4,
+    "composition_quality": 5,
+    "correction_findings": [],
+    "findings": [
+      "The primary specimen is a convincing Solitary Sandpiper: dark olive-brown, white-spotted upperparts; finely streaked head, neck, and upper breast; clean white belly; bold complete white eye-ring; thin straight dark bill; olive-yellow legs; long folded wings; and a dark-centered, pale-barred tail all agree with the reference photos and live identification sources.",
+      "Overall proportions are credible, though the legs and neck are slightly elongated relative to several attached photographs; the difference remains within an acceptable field-illustration range and does not suggest another species.",
+      "The primary specimen has one head, one bill, two overlapping folded wings, two anatomically coherent legs and feet, and one tail. No duplicated or extraneous anatomy is attached.",
+      "The detached spread-wing and head studies are clearly supplementary. Both are anatomically coherent and reproduce the species\u2019 pointed wing, spotted upperwing, eye-ring, streaked face, and thin straight bill consistently with the primary specimen.",
+      "All visible identification, habitat, and behavior text is legible and matches the proposed wording without duplicated, omitted, substituted, misspelled, or nonsensical words.",
+      "The common name, scientific name, and family are correct. All About Birds, Birds of the World, and Animal Diversity Web identify the species as Solitary Sandpiper, Tringa solitaria, family Scolopacidae.",
+      "The printed 19\u201323 cm length, 31\u201365 g weight, and 55\u201357 cm wingspan match the current All About Birds identification page. Animal Diversity Web independently supports the 19\u201323 cm and 31\u201365 g ranges. Audubon publishes narrower alternative measurements, so the sources are not unanimous, but the plate\u2019s values are directly supported by the cited Cornell source.",
+      "The ruler is internally consistent: 19 cm is at the bottom, 23 cm at the top, values increase upward, four evenly spaced unlabeled interior ticks create five proportional segments, endpoint conversions match the printed range, and the repeated body-length label agrees. \u201cSCHEMATIC \u2014 NOT TO SCALE\u201d clearly prevents interpreting the printed bird as life-size.",
+      "The palette labels and swatches are appropriate to the illustrated plumage and bare-part colors.",
+      "No place name, ZIP code, coordinates, map, or local-observation detail appears."
+    ],
+    "location_free": true,
+    "passed": true,
+    "species_accuracy": 5,
+    "text_accuracy": 5,
+    "verification_sources": [
+      {
+        "title": "Solitary Sandpiper Identification \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Solitary_Sandpiper/id"
+      },
+      {
+        "title": "Solitary Sandpiper \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/solitary-sandpiper"
+      },
+      {
+        "title": "Tringa solitaria \u2014 Animal Diversity Web",
+        "url": "https://animaldiversity.org/accounts/Tringa_solitaria/"
+      },
+      {
+        "title": "Solitary Sandpiper \u2014 Birds of the World",
+        "url": "https://birdsoftheworld.org/bow/species/solsan/cur/introduction"
+      }
+    ]
+  },
+  "references": [
+    {
+      "attribution": "(c) Pete Lypkie, some rights reserved (CC BY)",
+      "filename": "01-195481029.jpg",
+      "height": 1364,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/195481029/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 115823639,
+      "observer": "doviende",
+      "photo_id": 195481029,
+      "sha256": "a0a3095bb49b0bb2c97a78f30d5fc450b8f8379592c0d41c9f6c6cf4cdda04f9",
+      "source_url": "https://www.inaturalist.org/observations/115823639",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) Millie Basden, some rights reserved (CC BY)",
+      "filename": "02-317721442.jpeg",
+      "height": 1328,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/317721442/large.jpeg",
+      "license_code": "cc-by",
+      "observation_id": 182247324,
+      "observer": "milliebasden",
+      "photo_id": 317721442,
+      "sha256": "2647d706273667b5b3a6cc034cb9cb5f6d4706c7f04a52144ae84122c4711d7a",
+      "source_url": "https://www.inaturalist.org/observations/182247324",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) Anthony Batista, some rights reserved (CC BY)",
+      "filename": "03-181914180.jpg",
+      "height": 1366,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/181914180/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 108086775,
+      "observer": "tonybatista",
+      "photo_id": 181914180,
+      "sha256": "e6487cdead56f7d4e408f655fb97f703ff2afaabab2d1df2efd3177358236382",
+      "source_url": "https://www.inaturalist.org/observations/108086775",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) Sean Frey, some rights reserved (CC BY)",
+      "filename": "04-291554850.jpeg",
+      "height": 1467,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/291554850/large.jpeg",
+      "license_code": "cc-by",
+      "observation_id": 168245887,
+      "observer": "georectified",
+      "photo_id": 291554850,
+      "sha256": "0748e7a5b5e623b495ff38ea39bd14628447a352e926aaf3614c811667574e28",
+      "source_url": "https://www.inaturalist.org/observations/168245887",
+      "width": 2048
+    }
+  ],
+  "schema_version": 1,
+  "scientific_name": "Tringa solitaria",
+  "slug": "solitary-sandpiper",
+  "status": "approved",
+  "taxon_id": 3875
+}

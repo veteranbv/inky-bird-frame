@@ -1,0 +1,42 @@
+{
+  "behavior": "Usually solitary; walks slowly through shallow freshwater, bobbing its rear and sometimes trembling a foot to stir prey. Picks prey by sight, probes only occasionally, and may briefly hold its wings raised after landing.",
+  "common_name": "Solitary Sandpiper",
+  "family": "Scolopacidae",
+  "field_marks": [
+    "Bold, complete white eye-ring",
+    "Dark olive-brown upperparts neatly spotted with white",
+    "Finely streaked gray-brown head, neck, and upper breast above a white belly",
+    "Thin, straight, dark bill",
+    "Fairly long olive-yellow legs",
+    "Long folded wings and a short, dark-centered tail with pale barred outer feathers"
+  ],
+  "habitat": "Quiet freshwater wetlands, especially wooded ponds, stream edges, swamps, bogs, muddy pools, ditches, and flooded fields; generally avoids tidal flats and salt marshes.",
+  "measurements": {
+    "length": "19\u201323 cm (7.5\u20139.1 in)",
+    "weight": "31\u201365 g (1.1\u20132.3 oz)",
+    "wingspan": "55\u201357 cm (21.6\u201322.4 in)"
+  },
+  "palette": [
+    "olive brown",
+    "charcoal gray",
+    "white",
+    "pale gray",
+    "olive yellow"
+  ],
+  "scientific_name": "Tringa solitaria",
+  "sources": [
+    {
+      "title": "Solitary Sandpiper Identification \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Solitary_Sandpiper/id"
+    },
+    {
+      "title": "Solitary Sandpiper Life History \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Solitary_Sandpiper/lifehistory"
+    },
+    {
+      "title": "Solitary Sandpiper \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/solitary-sandpiper"
+    }
+  ],
+  "taxon_id": 3875
+}

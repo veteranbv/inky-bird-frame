@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-03T10:30:59+00:00",
+  "generated_at": "2026-08-03T14:12:03+00:00",
   "schema_version": 1,
   "species": [
     {
@@ -969,6 +969,17 @@
       "scientific_name": "Archilochus colubris",
       "slug": "ruby-throated-hummingbird",
       "taxon_id": 6432
+    },
+    {
+      "approved_at": "2026-08-03T14:12:03+00:00",
+      "common_name": "Solitary Sandpiper",
+      "display_path": "species/3875-solitary-sandpiper/display.png",
+      "display_sha256": "f1307a10024184b5a8b047d731afa2f244f06e7acd078978590514161b52f2ef",
+      "portrait_path": "species/3875-solitary-sandpiper/portrait.png",
+      "portrait_sha256": "be12580b1e3577462a64d951b8f0e48b58e7aa507c0f32bb6b2f7cf44546b10f",
+      "scientific_name": "Tringa solitaria",
+      "slug": "solitary-sandpiper",
+      "taxon_id": 3875
     },
     {
       "approved_at": "2026-07-13T07:05:24+00:00",
