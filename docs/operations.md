@@ -334,9 +334,11 @@ only; they never enter the approved catalog or rotation.
   correction input. After all configured attempts fail, inspect the retained
   artifacts and use `retry TAXON_ID --source-attempt N` when a specific attempt
   is a strong edit base. The command archives that portrait, refreshes cached
-  references and profile data, and preserves the selected attempt's corrections
-  for the first edit. Omit `--source-attempt` when no retained image should be
-  reused. Transient source failures retain the guidance and edit source until
+  references and profile data only when `--refresh-research` is also supplied,
+  and preserves the selected attempt's corrections for the first edit. By
+  default, validated research and references are reused. Omit `--source-attempt`
+  when no retained image should be reused. Transient source failures retain the
+  guidance and edit source until
   generation reaches a successful or terminal quality result. If retry finds an
   interrupted, fully invalid approval directory, it archives that debris and
   removes the stale local catalog entry before regeneration; a valid approved
@@ -344,14 +346,15 @@ only; they never enter the approved catalog or rotation.
 - Human rejection after local approval: before public publication, run
   `retry TAXON_ID --replace-approved --reason "..."`. The non-empty reason and
   replacement flag are mandatory. The command archives the approved artifacts
-  with rejection metadata, atomically rebuilds the local catalog index, clears
-  cached research and references, and makes the taxon eligible for a fresh
+  with rejection metadata, atomically rebuilds the local catalog index, preserves
+  validated research and references, and makes the taxon eligible for a fresh
   generation without an edit source, including for a historical-only taxon that
-  is no longer in live discovery. The human rejection reason remains required
-  correction guidance on every attempt. Re-running the same command and reason
-  safely resumes an interrupted migration. This local migration does not replace
-  an immutable public catalog entry; a published correction requires a separate
-  maintainer-reviewed migration.
+  is no longer in live discovery. Add `--refresh-research` when those cached
+  factual inputs are also being rejected. The human rejection reason remains
+  required correction guidance on every attempt. Re-running the same command and
+  reason safely resumes an interrupted migration. This local migration does not
+  replace an immutable public catalog entry; a published correction requires a
+  separate maintainer-reviewed migration.
 - Controller unavailable: the current e-paper image remains visible. Display
   state is not advanced.
 - Checksum mismatch: the display refuses the asset and preserves current state.
