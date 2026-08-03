@@ -1,0 +1,34 @@
+{
+  "anatomy_accuracy": 4,
+  "composition_quality": 4,
+  "correction_findings": [],
+  "findings": [
+    "Species identity is correct: the plate depicts Black Skimmer, Rynchops niger, family Laridae, with the diagnostic black-and-white plumage, extremely long red-and-black bill, projecting lower mandible, long pointed wings, short red-orange legs, and webbed feet.",
+    "The printed measurements are correct: length 40\u201350 cm (15.8\u201319.7 in), weight 265\u2013365 g (9.3\u201312.9 oz), and wingspan 109\u2013115 cm (42.9\u201345.3 in) match the live All About Birds account. Animal Diversity Web independently confirms the length and mass ranges and gives a compatible average wingspan of 112 cm.",
+    "Every visible title, taxonomy line, measurement, habitat line, behavior line, field-mark bullet, ruler label, schematic disclaimer, and palette label is legible and matches the proposed facts without material spelling, number, duplication, omission, substitution, or word-order errors.",
+    "Both depicted heads were checked independently. In the primary specimen and detached head study, the mandibles share a coherent base, the lower mandible projects conspicuously beyond the upper by a degree comparable to the clearest side-profile reference, and neither upper mandible looks reversed, co-terminal, truncated, or inconsistently proportioned.",
+    "The primary specimen has one head, one bill, two folded wings, two legs with webbed feet, and one short tail. Its sleek, low-slung proportions, white forehead and underparts, black cap and upperparts, red-orange proximal bill with black distal portion, dark eye, and pointed folded wings are consistent with the references and live descriptions.",
+    "The isolated wing and head-and-bill renderings read clearly as detached supplementary studies rather than extra birds or parts attached to the primary specimen. The wing has plausible pointed flight feathers and a white trailing edge; the head study preserves the vertical pupil and diagnostic unequal mandibles.",
+    "The body-length ruler is internally consistent: 40 cm / 15.8 in is at the bottom, 50 cm / 19.7 in is at the top, values increase upward, there are exactly four evenly spaced unlabeled interior ticks forming five proportional segments, and the plate explicitly labels it \u201cSCHEMATIC \u2013 NOT TO SCALE.\u201d",
+    "The composition is orderly and readable, with the primary specimen dominant and the supplementary studies clearly separated. Lower-page elements are somewhat dense but do not overlap or impair interpretation.",
+    "No place name, ZIP code, coordinates, map, observation locality, or other local-observation detail appears."
+  ],
+  "location_free": true,
+  "passed": true,
+  "species_accuracy": 5,
+  "text_accuracy": 5,
+  "verification_sources": [
+    {
+      "title": "Black Skimmer Identification \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/black_skimmer/id"
+    },
+    {
+      "title": "Black Skimmer \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/black-skimmer"
+    },
+    {
+      "title": "Rynchops niger \u2014 Animal Diversity Web",
+      "url": "https://animaldiversity.org/accounts/Rynchops_niger/"
+    }
+  ]
+}

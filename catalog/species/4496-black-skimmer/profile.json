@@ -1,0 +1,45 @@
+{
+  "behavior": "Social and colonial; rests and nests in flocks on open ground. Forages by flying low over calm water with the elongated lower mandible slicing the surface, snapping the bill shut when it contacts a small fish. Active by day and often at dusk or night; calls are short, barking notes.",
+  "common_name": "Black Skimmer",
+  "family": "Laridae",
+  "field_marks": [
+    "Long, blade-thin red-orange and black bill, with the lower mandible projecting well beyond the upper",
+    "Jet-black cap and upperparts sharply contrasting with a white forehead, neck, and underparts",
+    "Very long, pointed wings and sleek, low-slung tern-like proportions",
+    "Short red-orange legs with webbed feet",
+    "Dark eye set inconspicuously in the black cap, with a narrow vertical pupil",
+    "Short, shallowly notched tail"
+  ],
+  "habitat": "Open sandy beaches, islands, shell or gravel bars, mudflats, estuaries, lagoons, sheltered bays, coastal marshes, and broad rivers or large inland lakes. Nesting sites are sparsely vegetated open ground near productive shallow water.",
+  "measurements": {
+    "length": "40\u201350 cm (15.8\u201319.7 in)",
+    "weight": "265\u2013365 g (9.3\u201312.9 oz)",
+    "wingspan": "109\u2013115 cm (42.9\u201345.3 in)"
+  },
+  "palette": [
+    "jet black",
+    "clean white",
+    "red-orange",
+    "charcoal gray"
+  ],
+  "scientific_name": "Rynchops niger",
+  "sources": [
+    {
+      "title": "Black Skimmer Identification \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/black_skimmer/id"
+    },
+    {
+      "title": "Black Skimmer Life History \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Black_Skimmer/lifehistory"
+    },
+    {
+      "title": "Black Skimmer \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/black-skimmer"
+    },
+    {
+      "title": "Rynchops niger \u2014 Animal Diversity Web",
+      "url": "https://animaldiversity.org/accounts/Rynchops_niger/"
+    }
+  ],
+  "taxon_id": 4496
+}

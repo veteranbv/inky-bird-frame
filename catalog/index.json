@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-02T22:46:54+00:00",
+  "generated_at": "2026-08-03T10:30:59+00:00",
   "schema_version": 1,
   "species": [
     {
@@ -78,6 +78,17 @@
       "scientific_name": "Hirundo rustica",
       "slug": "barn-swallow",
       "taxon_id": 11901
+    },
+    {
+      "approved_at": "2026-08-03T10:30:59+00:00",
+      "common_name": "Black Skimmer",
+      "display_path": "species/4496-black-skimmer/display.png",
+      "display_sha256": "fe98d6227687c3943ce8093f916752d2ac15edef435b3e46dbfc05d4faae2117",
+      "portrait_path": "species/4496-black-skimmer/portrait.png",
+      "portrait_sha256": "6facfbc3efb626f5bc3d49c7ad3bff886685fe98ed12b9bdf43c123117e5632f",
+      "scientific_name": "Rynchops niger",
+      "slug": "black-skimmer",
+      "taxon_id": 4496
     },
     {
       "approved_at": "2026-08-02T22:46:54+00:00",

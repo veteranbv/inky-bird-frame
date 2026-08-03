@@ -1,0 +1,160 @@
+{
+  "approved_at": "2026-08-03T10:30:59+00:00",
+  "assets": {
+    "display": {
+      "filename": "display.png",
+      "sha256": "fe98d6227687c3943ce8093f916752d2ac15edef435b3e46dbfc05d4faae2117"
+    },
+    "portrait": {
+      "filename": "portrait.png",
+      "sha256": "6facfbc3efb626f5bc3d49c7ad3bff886685fe98ed12b9bdf43c123117e5632f"
+    }
+  },
+  "common_name": "Black Skimmer",
+  "generation": {
+    "attempt": 2,
+    "correction_source_sha256": "5b86bb2c9fc8e019fa9ab609c11f1abd89d2c1b7e339a72f192c61a8b0723685",
+    "generated_at": "2026-08-03T10:30:59+00:00",
+    "generator": "Codex subscription / built-in gpt-image-2",
+    "max_attempts": 3,
+    "prompt_version": "field-journal-v3"
+  },
+  "profile": {
+    "behavior": "Social and colonial; rests and nests in flocks on open ground. Forages by flying low over calm water with the elongated lower mandible slicing the surface, snapping the bill shut when it contacts a small fish. Active by day and often at dusk or night; calls are short, barking notes.",
+    "common_name": "Black Skimmer",
+    "family": "Laridae",
+    "field_marks": [
+      "Long, blade-thin red-orange and black bill, with the lower mandible projecting well beyond the upper",
+      "Jet-black cap and upperparts sharply contrasting with a white forehead, neck, and underparts",
+      "Very long, pointed wings and sleek, low-slung tern-like proportions",
+      "Short red-orange legs with webbed feet",
+      "Dark eye set inconspicuously in the black cap, with a narrow vertical pupil",
+      "Short, shallowly notched tail"
+    ],
+    "habitat": "Open sandy beaches, islands, shell or gravel bars, mudflats, estuaries, lagoons, sheltered bays, coastal marshes, and broad rivers or large inland lakes. Nesting sites are sparsely vegetated open ground near productive shallow water.",
+    "measurements": {
+      "length": "40\u201350 cm (15.8\u201319.7 in)",
+      "weight": "265\u2013365 g (9.3\u201312.9 oz)",
+      "wingspan": "109\u2013115 cm (42.9\u201345.3 in)"
+    },
+    "palette": [
+      "jet black",
+      "clean white",
+      "red-orange",
+      "charcoal gray"
+    ],
+    "scientific_name": "Rynchops niger",
+    "sources": [
+      {
+        "title": "Black Skimmer Identification \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/black_skimmer/id"
+      },
+      {
+        "title": "Black Skimmer Life History \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Black_Skimmer/lifehistory"
+      },
+      {
+        "title": "Black Skimmer \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/black-skimmer"
+      },
+      {
+        "title": "Rynchops niger \u2014 Animal Diversity Web",
+        "url": "https://animaldiversity.org/accounts/Rynchops_niger/"
+      }
+    ],
+    "taxon_id": 4496
+  },
+  "quality_review": {
+    "anatomy_accuracy": 4,
+    "composition_quality": 4,
+    "correction_findings": [],
+    "findings": [
+      "Species identity is correct: the plate depicts Black Skimmer, Rynchops niger, family Laridae, with the diagnostic black-and-white plumage, extremely long red-and-black bill, projecting lower mandible, long pointed wings, short red-orange legs, and webbed feet.",
+      "The printed measurements are correct: length 40\u201350 cm (15.8\u201319.7 in), weight 265\u2013365 g (9.3\u201312.9 oz), and wingspan 109\u2013115 cm (42.9\u201345.3 in) match the live All About Birds account. Animal Diversity Web independently confirms the length and mass ranges and gives a compatible average wingspan of 112 cm.",
+      "Every visible title, taxonomy line, measurement, habitat line, behavior line, field-mark bullet, ruler label, schematic disclaimer, and palette label is legible and matches the proposed facts without material spelling, number, duplication, omission, substitution, or word-order errors.",
+      "Both depicted heads were checked independently. In the primary specimen and detached head study, the mandibles share a coherent base, the lower mandible projects conspicuously beyond the upper by a degree comparable to the clearest side-profile reference, and neither upper mandible looks reversed, co-terminal, truncated, or inconsistently proportioned.",
+      "The primary specimen has one head, one bill, two folded wings, two legs with webbed feet, and one short tail. Its sleek, low-slung proportions, white forehead and underparts, black cap and upperparts, red-orange proximal bill with black distal portion, dark eye, and pointed folded wings are consistent with the references and live descriptions.",
+      "The isolated wing and head-and-bill renderings read clearly as detached supplementary studies rather than extra birds or parts attached to the primary specimen. The wing has plausible pointed flight feathers and a white trailing edge; the head study preserves the vertical pupil and diagnostic unequal mandibles.",
+      "The body-length ruler is internally consistent: 40 cm / 15.8 in is at the bottom, 50 cm / 19.7 in is at the top, values increase upward, there are exactly four evenly spaced unlabeled interior ticks forming five proportional segments, and the plate explicitly labels it \u201cSCHEMATIC \u2013 NOT TO SCALE.\u201d",
+      "The composition is orderly and readable, with the primary specimen dominant and the supplementary studies clearly separated. Lower-page elements are somewhat dense but do not overlap or impair interpretation.",
+      "No place name, ZIP code, coordinates, map, observation locality, or other local-observation detail appears."
+    ],
+    "location_free": true,
+    "passed": true,
+    "species_accuracy": 5,
+    "text_accuracy": 5,
+    "verification_sources": [
+      {
+        "title": "Black Skimmer Identification \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/black_skimmer/id"
+      },
+      {
+        "title": "Black Skimmer \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/black-skimmer"
+      },
+      {
+        "title": "Rynchops niger \u2014 Animal Diversity Web",
+        "url": "https://animaldiversity.org/accounts/Rynchops_niger/"
+      }
+    ]
+  },
+  "references": [
+    {
+      "attribution": "(c) Bill Levine, some rights reserved (CC BY)",
+      "filename": "01-176696760.jpeg",
+      "height": 1307,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/176696760/large.jpeg",
+      "license_code": "cc-by",
+      "observation_id": 105326545,
+      "observer": "blevine",
+      "photo_id": 176696760,
+      "sha256": "7d0f5cf9b652b1d1161fe7eeffff618803808d9bd60f455d2501eb3f518cc87a",
+      "source_url": "https://www.inaturalist.org/observations/105326545",
+      "width": 1046
+    },
+    {
+      "attribution": "(c) thebirdswatch, some rights reserved (CC BY)",
+      "filename": "02-563932706.jpg",
+      "height": 1462,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/563932706/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 312350986,
+      "observer": "thebirdswatch",
+      "photo_id": 563932706,
+      "sha256": "eb6e2019052c2a316a23a5228d8693308d74f2e131e4b9b7edc646e3e0a05da0",
+      "source_url": "https://www.inaturalist.org/observations/312350986",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) Cricket Raspet, some rights reserved (CC BY)",
+      "filename": "03-422646493.jpeg",
+      "height": 1282,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/422646493/large.jpeg",
+      "license_code": "cc-by",
+      "observation_id": 237479362,
+      "observer": "chilipossum",
+      "photo_id": 422646493,
+      "sha256": "a28291202a2a0739dc727ea1cd47b7d6fee6f13949fdee0052640592efb9a322",
+      "source_url": "https://www.inaturalist.org/observations/237479362",
+      "width": 1923
+    },
+    {
+      "attribution": "(c) Evan M. Raskin, some rights reserved (CC BY)",
+      "filename": "04-45850868.jpg",
+      "height": 1050,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/45850868/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 29380229,
+      "observer": "eraskin",
+      "photo_id": 45850868,
+      "sha256": "cd3dbebc7b7e096c1ef107df6250641a1482924e1ee3b3c495e74a5878b21b8a",
+      "source_url": "https://www.inaturalist.org/observations/29380229",
+      "width": 1400
+    }
+  ],
+  "schema_version": 1,
+  "scientific_name": "Rynchops niger",
+  "slug": "black-skimmer",
+  "status": "approved",
+  "taxon_id": 4496
+}
