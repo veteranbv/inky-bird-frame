@@ -833,7 +833,11 @@ def _migrate_legacy_queue_before_replacement(
     queued_species: list[BirdSpecies],
     taxon_id: int,
 ) -> None:
-    pre_replacement_queue = [species for species in queued_species if species.taxon_id != taxon_id]
+    pre_replacement_queue = [
+        species
+        for species in queued_species
+        if species.taxon_id != taxon_id or HUMAN_REVIEW_SOURCE not in species.sources
+    ]
     collection, _, migrated_at, migration_applied = _migrate_legacy_seed_queue(
         read_collection_state(config.controller.state_dir),
         pre_replacement_queue,

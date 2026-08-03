@@ -30,6 +30,7 @@ from inky_bird_frame.catalog import (
 from inky_bird_frame.codex_runner import CodexRunner
 from inky_bird_frame.config import AppConfig, DiscoveryProvider, load_config
 from inky_bird_frame.controller import (
+    HUMAN_REVIEW_SOURCE,
     DiscoveryResult,
     DiscoverySnapshot,
     ProviderStatus,
@@ -547,7 +548,14 @@ class ControllerTests(unittest.TestCase):
                                 "scientific_name": queued.scientific_name,
                                 "observation_count": queued.observation_count,
                                 "source": queued.source,
-                            }
+                            },
+                            {
+                                "taxon_id": species.taxon_id,
+                                "common_name": species.common_name,
+                                "scientific_name": species.scientific_name,
+                                "observation_count": species.observation_count,
+                                "source": HUMAN_REVIEW_SOURCE,
+                            },
                         ],
                     }
                 )
@@ -565,6 +573,45 @@ class ControllerTests(unittest.TestCase):
             [entry.taxon_id for entry in queue],
             [queued.taxon_id, species.taxon_id],
         )
+
+    def test_approved_replacement_migrates_a_preexisting_target_seed(self) -> None:
+        species = BirdSpecies(
+            9083,
+            "Northern Cardinal",
+            "Cardinalis cardinalis",
+            1,
+            "iNaturalist",
+        )
+        with TemporaryDirectory() as temporary:
+            config_path = Path(temporary) / "config.toml"
+            config_path.write_text(CONFIG)
+            config = load_config(config_path)
+            config.controller.state_dir.mkdir(parents=True)
+            (config.controller.state_dir / "generation-queue.json").write_text(
+                json.dumps(
+                    {
+                        "schema_version": 2,
+                        "updated_at": datetime.now(UTC).isoformat(),
+                        "species": [
+                            {
+                                "taxon_id": species.taxon_id,
+                                "common_name": species.common_name,
+                                "scientific_name": species.scientific_name,
+                                "observation_count": species.observation_count,
+                                "source": species.source,
+                            }
+                        ],
+                    }
+                )
+            )
+            approve_test_species(config, species)
+
+            retry_approved_candidate(config, species.taxon_id, "Replace the uncanny eyes.")
+
+            collection = read_collection_state(config.controller.state_dir)
+
+        self.assertEqual([entry.taxon_id for entry in collection.entries], [species.taxon_id])
+        self.assertIsNotNone(collection.legacy_seed_queue_migrated_at)
 
     def test_collection_remove_is_preserved_after_legacy_queue_migration(self) -> None:
         queued = BirdSpecies(1, "Queued Bird", "Avis queued", 1, "iNaturalist")
