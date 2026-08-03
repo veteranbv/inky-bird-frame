@@ -1,0 +1,35 @@
+{
+  "anatomy_accuracy": 4,
+  "composition_quality": 5,
+  "correction_findings": [],
+  "findings": [
+    "Live sources independently confirm the identity as Northern Yellow Warbler (Setophaga aestiva), family Parulidae.",
+    "The printed measurements\u2014length 12\u201313 cm (4.7\u20135.1 in), wingspan 16\u201320 cm (6.3\u20137.9 in), and weight 9\u201311 g (0.3\u20130.4 oz)\u2014match Cornell's published values; Audubon corroborates the metric ranges and rounded wing/notched-tail shape.",
+    "The primary specimen accurately represents an adult male: bright yellow head and underparts, plain face with a prominent dark eye, chestnut breast streaking, yellow-green back, dark olive wings with yellow edging, and yellow in the tail.",
+    "The wing contrast and body fullness are somewhat stronger than in the photographs, but remain plausible field-journal stylization without obscuring species identity or requiring correction.",
+    "The primary bird is a single complete specimen with one head and bill, two anatomically implied wings, two visible legs with coherent perching feet, and one tail. The detached wing and head are clearly separated supplementary studies rather than attached or duplicate body parts.",
+    "Both depicted heads have a straight, fine, pointed gray bill with coherent mandibles and no reversed, truncated, or materially inconsistent bill rendering.",
+    "The folded wing, detached spread-wing study, medium-length slightly notched tail, slender legs, and grasping feet are anatomically coherent. The detached wing has a plausible rounded flight-feather arrangement.",
+    "Every visible factual line matches the proposed wording, spelling, numbers, units, field marks, habitat, behavior, taxonomy, and palette labels; no duplicated, omitted, substituted, or nonsensical text was found.",
+    "The ruler runs from 12 cm at the bottom to 13 cm at the top, has exactly four evenly spaced unlabeled interior ticks, agrees with the printed length range, and is explicitly labeled \u201cSCHEMATIC \u2014 NOT TO SCALE.\u201d",
+    "No place name, ZIP code, coordinates, map, or local-observation detail appears."
+  ],
+  "location_free": true,
+  "passed": true,
+  "species_accuracy": 4,
+  "text_accuracy": 5,
+  "verification_sources": [
+    {
+      "title": "Northern Yellow Warbler Identification \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/yellow_warbler/id"
+    },
+    {
+      "title": "Northern Yellow Warbler Overview \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Northern_Yellow_Warbler/overview"
+    },
+    {
+      "title": "Northern Yellow Warbler \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/northern-yellow-warbler"
+    }
+  ]
+}

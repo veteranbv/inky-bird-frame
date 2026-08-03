@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-03T16:14:53+00:00",
+  "generated_at": "2026-08-03T20:46:40+00:00",
   "schema_version": 1,
   "species": [
     {
@@ -804,6 +804,17 @@
       "scientific_name": "Setophaga americana",
       "slug": "northern-parula",
       "taxon_id": 145233
+    },
+    {
+      "approved_at": "2026-08-03T20:46:40+00:00",
+      "common_name": "Northern Yellow Warbler",
+      "display_path": "species/1188207-northern-yellow-warbler/display.png",
+      "display_sha256": "ae9bf6851dbbe55253b63ac2d94533e7c94dab31633244ae50d95b08ec45d4b0",
+      "portrait_path": "species/1188207-northern-yellow-warbler/portrait.png",
+      "portrait_sha256": "4f42d298b67d8d7a000eded0b62bff3b22894b45bb8c459a3f7b1aa4b4bf38da",
+      "scientific_name": "Setophaga aestiva",
+      "slug": "northern-yellow-warbler",
+      "taxon_id": 1188207
     },
     {
       "approved_at": "2026-07-13T05:55:39+00:00",
