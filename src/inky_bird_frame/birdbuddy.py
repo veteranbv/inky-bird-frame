@@ -135,6 +135,10 @@ query InkyBirdBuddyFeed($first: Int!, $after: String) {
 """.strip()
 
 _FEED_QUERIES: Final = (_FEED_RECOGNIZED, _FEED_UNLOCKED)
+_FEED_SIGHTING_TYPES: Final = (
+    "SightingRecognizedBird",
+    "SightingRecognizedBirdUnlocked",
+)
 
 
 @dataclass(frozen=True)
@@ -163,6 +167,7 @@ class BirdBuddyPostcard:
     postcard_id: str
     observed_at: str
     species: tuple[PostcardSpecies, ...]
+    complete: bool = True
 
 
 @dataclass(frozen=True)
@@ -506,7 +511,11 @@ def _feeder_id(value: object) -> str | None:
     return _nonempty_string(value.get("id"))
 
 
-def _parse_postcard(value: object, selected_feeder_id: str) -> BirdBuddyPostcard | None:
+def _parse_postcard(
+    value: object,
+    selected_feeder_id: str,
+    selected_sighting_type: str | None = None,
+) -> BirdBuddyPostcard | None:
     if not isinstance(value, dict) or value.get("__typename") != "FeedItemNewPostcard":
         return None
     postcard_id = _nonempty_string(value.get("id"))
@@ -518,18 +527,23 @@ def _parse_postcard(value: object, selected_feeder_id: str) -> BirdBuddyPostcard
     ):
         return None
     observed_at = observed.replace(microsecond=0).isoformat()
+    preview = value.get("sightingReportPreview")
+    sightings = preview.get("sightings") if isinstance(preview, dict) else None
+    if not isinstance(sightings, list):
+        # A missing preview is an incomplete response, not an explicit
+        # withdrawal. Ignore it so a transient schema/backend response cannot
+        # delete a previously retained classification during reconciliation.
+        return BirdBuddyPostcard(postcard_id, observed_at, (), complete=False)
     # An empty species tuple is a reconciliation tombstone. It lets a complete
     # feed refresh remove a previously accepted classification without storing
     # low-confidence or non-bird results in detection history.
     if value.get("inferenceConfidenceLevel") != "HIGH_CONFIDENCE":
         return BirdBuddyPostcard(postcard_id, observed_at, ())
-    preview = value.get("sightingReportPreview")
-    sightings = preview.get("sightings") if isinstance(preview, dict) else None
-    if not isinstance(sightings, list):
-        return BirdBuddyPostcard(postcard_id, observed_at, ())
     species: dict[str, PostcardSpecies] = {}
+    incomplete_recognized_sighting = False
     for sighting in sightings:
         if not isinstance(sighting, dict):
+            incomplete_recognized_sighting = True
             continue
         typename = sighting.get("__typename")
         if typename not in {
@@ -537,20 +551,34 @@ def _parse_postcard(value: object, selected_feeder_id: str) -> BirdBuddyPostcard
             "SightingRecognizedBirdUnlocked",
         }:
             continue
+        # Each private-API query can select fields for only one union member.
+        # The complementary member therefore has a typename but no species in
+        # this response; its own query variant validates it independently.
+        if selected_sighting_type is not None and typename != selected_sighting_type:
+            continue
         species_value = sighting.get("species")
         if not isinstance(species_value, dict) or species_value.get("__typename") != "SpeciesBird":
+            incomplete_recognized_sighting = True
             continue
         species_id = _nonempty_string(species_value.get("id"))
         common_name = _nonempty_string(species_value.get("name"))
         scientific_name = _nonempty_string(species_value.get("scientificName"))
-        if species_id is not None and common_name is not None and scientific_name is not None:
-            species[species_id] = PostcardSpecies(species_id, common_name, scientific_name)
+        if species_id is None or common_name is None or scientific_name is None:
+            incomplete_recognized_sighting = True
+            continue
+        species[species_id] = PostcardSpecies(species_id, common_name, scientific_name)
     if not species:
-        return BirdBuddyPostcard(postcard_id, observed_at, ())
+        return BirdBuddyPostcard(
+            postcard_id,
+            observed_at,
+            (),
+            complete=not incomplete_recognized_sighting,
+        )
     return BirdBuddyPostcard(
         postcard_id,
         observed_at,
         tuple(sorted(species.values(), key=lambda item: item.species_id)),
+        complete=not incomplete_recognized_sighting,
     )
 
 
@@ -558,6 +586,7 @@ def _fetch_postcard_variant(
     access_token: str,
     feeder_id: str,
     query: str,
+    sighting_type: str | None = None,
 ) -> tuple[list[BirdBuddyPostcard], int, int, int]:
     postcards: dict[str, BirdBuddyPostcard] = {}
     after: str | None = None
@@ -587,12 +616,12 @@ def _fetch_postcard_variant(
         for edge in edges:
             processed += 1
             node = edge.get("node") if isinstance(edge, dict) else None
-            postcard = _parse_postcard(node, feeder_id)
+            postcard = _parse_postcard(node, feeder_id, sighting_type)
             if postcard is None:
                 ignored += 1
             else:
                 postcards[postcard.postcard_id] = postcard
-                if not postcard.species:
+                if not postcard.complete or not postcard.species:
                     ignored += 1
         has_next = page_info.get("hasNextPage")
         if has_next is False:
@@ -622,6 +651,7 @@ def _merge_postcard_variants(
         existing.postcard_id,
         existing.observed_at,
         tuple(sorted(species.values(), key=lambda item: item.species_id)),
+        complete=existing.complete and incoming.complete,
     )
 
 
@@ -630,22 +660,34 @@ def _fetch_postcards(
     feeder_id: str,
 ) -> tuple[list[BirdBuddyPostcard], int, int, int]:
     postcards: dict[str, BirdBuddyPostcard] = {}
+    variant_counts: dict[str, int] = {}
     total_pages = 0
     processed_per_variant: list[int] = []
-    for query in _FEED_QUERIES:
+    for query, sighting_type in zip(
+        _FEED_QUERIES,
+        _FEED_SIGHTING_TYPES,
+        strict=True,
+    ):
         incoming, pages, processed, _ = _fetch_postcard_variant(
             access_token,
             feeder_id,
             query,
+            sighting_type,
         )
         total_pages += pages
         processed_per_variant.append(processed)
         for postcard in incoming:
             _merge_postcard_variants(postcards, postcard)
+            variant_counts[postcard.postcard_id] = variant_counts.get(postcard.postcard_id, 0) + 1
     processed = max(processed_per_variant, default=0)
-    accepted_postcards = sum(bool(postcard.species) for postcard in postcards.values())
+    complete_postcards = [
+        postcard
+        for postcard in postcards.values()
+        if postcard.complete and variant_counts[postcard.postcard_id] == len(_FEED_QUERIES)
+    ]
+    accepted_postcards = sum(bool(postcard.species) for postcard in complete_postcards)
     ignored = max(0, processed - accepted_postcards)
-    return list(postcards.values()), total_pages, processed, ignored
+    return complete_postcards, total_pages, processed, ignored
 
 
 def _parse_postcard_state(value: object) -> BirdBuddyPostcard:

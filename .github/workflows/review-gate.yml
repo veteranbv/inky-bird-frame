@@ -3,8 +3,9 @@ name: review-gate
 # Bridges Codex review comments into a required CheckRun. Codex posts findings
 # as PR review comments (not as CheckRuns), so the standard
 # `required_status_checks` mechanism cannot gate on them directly. This
-# workflow runs once per pushed head SHA and fails when Codex has flagged a
-# blocking-severity finding. Codex review submissions are handled by
+# workflow runs for each pushed head and ready-for-review transition, and fails
+# when Codex has flagged a blocking-severity finding. Codex review submissions
+# are handled by
 # `review-gate-retrigger.yml`, which re-runs this workflow's gate job IN PLACE
 # (a new attempt of the same check suite) rather than starting a parallel run.
 #
@@ -13,7 +14,7 @@ name: review-gate
 
 on:
   pull_request:
-    types: [opened, synchronize, reopened]
+    types: [opened, synchronize, reopened, ready_for_review]
   # Deliberately NOT `pull_request_review`: a review-event run creates a
   # second check suite with a same-named check run on the same head SHA, and
   # required-status evaluation demands EVERY suite's run pass. Combined with
@@ -26,12 +27,14 @@ on:
   # auto-fire this gate. To re-evaluate after resolving threads, push any
   # commit (`git commit --allow-empty -m "rerun" && git push`).
 
-# One run per head SHA, never cancelled: a cancelled conclusion on the
-# current head blocks required-status evaluation (the auto-merge stall this
-# group previously caused). Runs for superseded heads exit early on their
-# own. review_gate.py returns success as soon as it sees the PR head move or
-# the PR merge, because a post-merge timeout cannot protect the completed merge,
-# so CI minutes stay bounded without cancel-in-progress.
+# One run per reviewable lifecycle event, never cancelled: ready-for-review
+# intentionally starts a new run on the same head so draft review signals
+# cannot authorize a merge. A cancelled conclusion on the current head blocks
+# required-status evaluation (the auto-merge stall this group previously
+# caused). Runs for superseded heads exit early on their own. review_gate.py
+# returns success as soon as it sees the PR head move or the PR merge, because
+# a post-merge timeout cannot protect the completed merge, so CI minutes stay
+# bounded without cancel-in-progress.
 concurrency:
   group: review-gate-${{ github.event.pull_request.number }}-${{ github.event.pull_request.head.sha }}
   cancel-in-progress: false
@@ -56,6 +59,10 @@ permissions:
 # full lifecycle without owner action.
 jobs:
   review-gate:
+    # Draft review is useful feedback, but it cannot certify merge readiness.
+    # Skip draft lifecycle runs so they cannot time out and leave a failed
+    # same-head suite that a later ready-for-review run cannot supersede.
+    if: github.event.action == 'ready_for_review' || !github.event.pull_request.draft
     runs-on: ubuntu-latest
     # Explicit job-level permissions (mirrors the workflow-level audit) so
     # static review tools can see at a glance that this job has what it needs.

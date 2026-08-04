@@ -40,6 +40,21 @@ def postcard(
     )
 
 
+def feed_node(
+    *sightings: object,
+    postcard_id: str = "postcard-1",
+    observed_at: str = "2026-08-03T10:00:00+00:00",
+) -> dict[str, object]:
+    return {
+        "__typename": "FeedItemNewPostcard",
+        "id": postcard_id,
+        "createdAt": observed_at,
+        "inferenceConfidenceLevel": "HIGH_CONFIDENCE",
+        "feeder": {"id": "feeder-1"},
+        "sightingReportPreview": {"sightings": list(sightings)},
+    }
+
+
 class BirdBuddyTests(unittest.TestCase):
     def test_feed_operation_is_read_only_and_metadata_only(self) -> None:
         self.assertEqual(len(_FEED_QUERIES), 2)
@@ -123,27 +138,19 @@ class BirdBuddyTests(unittest.TestCase):
             self.assertFalse((state_dir / "birdbuddy-auth.json").exists())
 
     def test_parse_postcard_accepts_only_high_confidence_recognized_birds(self) -> None:
-        node = {
-            "__typename": "FeedItemNewPostcard",
-            "id": "postcard-1",
-            "createdAt": "2026-08-03T10:00:00+00:00",
-            "inferenceConfidenceLevel": "HIGH_CONFIDENCE",
-            "feeder": {"id": "feeder-1"},
-            "sightingReportPreview": {
-                "sightings": [
-                    {
-                        "__typename": "SightingRecognizedBird",
-                        "species": {
-                            "__typename": "SpeciesBird",
-                            "id": "species-bluebird",
-                            "name": "Eastern Bluebird",
-                            "scientificName": "Sialia sialis",
-                        },
-                    },
-                    {"__typename": "SightingCantDecideWhichBird"},
-                ]
+        recognized_sighting = {
+            "__typename": "SightingRecognizedBird",
+            "species": {
+                "__typename": "SpeciesBird",
+                "id": "species-bluebird",
+                "name": "Eastern Bluebird",
+                "scientificName": "Sialia sialis",
             },
         }
+        node = feed_node(
+            recognized_sighting,
+            {"__typename": "SightingCantDecideWhichBird"},
+        )
 
         parsed = _parse_postcard(node, "feeder-1")
 
@@ -189,6 +196,53 @@ class BirdBuddyTests(unittest.TestCase):
         self.assertIsNotNone(parsed_no_bird)
         assert parsed_no_bird is not None
         self.assertEqual(parsed_no_bird.species, ())
+
+        for incomplete_preview in (
+            None,
+            {},
+            {"sightings": None},
+            {"sightings": [None]},
+            {
+                "sightings": [
+                    {
+                        "__typename": "SightingRecognizedBird",
+                        "species": None,
+                    }
+                ]
+            },
+        ):
+            incomplete = {**node, "sightingReportPreview": incomplete_preview}
+            parsed_incomplete = _parse_postcard(incomplete, "feeder-1")
+            self.assertIsNotNone(parsed_incomplete)
+            assert parsed_incomplete is not None
+            self.assertFalse(parsed_incomplete.complete)
+
+        partially_incomplete = {
+            **node,
+            "sightingReportPreview": {
+                "sightings": [
+                    recognized_sighting,
+                    {
+                        "__typename": "SightingRecognizedBird",
+                        "species": None,
+                    },
+                ]
+            },
+        }
+        parsed_partial = _parse_postcard(partially_incomplete, "feeder-1")
+        self.assertIsNotNone(parsed_partial)
+        assert parsed_partial is not None
+        self.assertFalse(parsed_partial.complete)
+
+        low_confidence_incomplete = {
+            **node,
+            "inferenceConfidenceLevel": "LOW_CONFIDENCE",
+            "sightingReportPreview": None,
+        }
+        parsed_low_confidence = _parse_postcard(low_confidence_incomplete, "feeder-1")
+        self.assertIsNotNone(parsed_low_confidence)
+        assert parsed_low_confidence is not None
+        self.assertFalse(parsed_low_confidence.complete)
 
     def test_feed_rejects_repeated_pagination_cursor(self) -> None:
         page = {
@@ -249,6 +303,122 @@ class BirdBuddyTests(unittest.TestCase):
             [item.species_id for item in postcards[0].species],
             ["species-bluebird", "species-cardinal"],
         )
+
+    def test_feed_combines_complementary_union_variants_before_validation(self) -> None:
+        observed_at = datetime(2026, 8, 3, 10, 0, tzinfo=UTC)
+        recognized = postcard("postcard-1", observed_at)
+        unlocked = postcard(
+            "postcard-1",
+            observed_at,
+            "species-cardinal",
+            "Northern Cardinal",
+            "Cardinalis cardinalis",
+        )
+        recognized_node = feed_node(
+            {
+                "__typename": "SightingRecognizedBird",
+                "species": {
+                    "__typename": "SpeciesBird",
+                    "id": recognized.species[0].species_id,
+                    "name": recognized.species[0].common_name,
+                    "scientificName": recognized.species[0].scientific_name,
+                },
+            },
+            {"__typename": "SightingRecognizedBirdUnlocked"},
+            observed_at=observed_at.isoformat(),
+        )
+        unlocked_node = feed_node(
+            {"__typename": "SightingRecognizedBird"},
+            {
+                "__typename": "SightingRecognizedBirdUnlocked",
+                "species": {
+                    "__typename": "SpeciesBird",
+                    "id": unlocked.species[0].species_id,
+                    "name": unlocked.species[0].common_name,
+                    "scientificName": unlocked.species[0].scientific_name,
+                },
+            },
+            observed_at=observed_at.isoformat(),
+        )
+
+        parsed_recognized = _parse_postcard(
+            recognized_node,
+            "feeder-1",
+            "SightingRecognizedBird",
+        )
+        parsed_unlocked = _parse_postcard(
+            unlocked_node,
+            "feeder-1",
+            "SightingRecognizedBirdUnlocked",
+        )
+
+        self.assertIsNotNone(parsed_recognized)
+        self.assertIsNotNone(parsed_unlocked)
+        assert parsed_recognized is not None
+        assert parsed_unlocked is not None
+        self.assertTrue(parsed_recognized.complete)
+        self.assertTrue(parsed_unlocked.complete)
+
+        with patch(
+            "inky_bird_frame.birdbuddy._fetch_postcard_variant",
+            side_effect=[
+                ([parsed_recognized], 1, 1, 0),
+                ([parsed_unlocked], 1, 1, 0),
+            ],
+        ):
+            postcards, _, _, ignored = _fetch_postcards("access-secret", "feeder-1")
+
+        self.assertEqual(ignored, 0)
+        self.assertEqual(
+            [item.species_id for item in postcards[0].species],
+            ["species-bluebird", "species-cardinal"],
+        )
+
+    def test_feed_rejects_combined_postcard_when_selected_variant_is_incomplete(
+        self,
+    ) -> None:
+        observed_at = datetime(2026, 8, 3, 10, 0, tzinfo=UTC)
+        incomplete = BirdBuddyPostcard(
+            "postcard-1",
+            observed_at.isoformat(),
+            (),
+            complete=False,
+        )
+        unlocked = postcard(
+            "postcard-1",
+            observed_at,
+            "species-cardinal",
+            "Northern Cardinal",
+            "Cardinalis cardinalis",
+        )
+        with patch(
+            "inky_bird_frame.birdbuddy._fetch_postcard_variant",
+            side_effect=[
+                ([incomplete], 1, 1, 1),
+                ([unlocked], 1, 1, 0),
+            ],
+        ):
+            postcards, _, processed, ignored = _fetch_postcards("access-secret", "feeder-1")
+
+        self.assertEqual(postcards, [])
+        self.assertEqual(processed, 1)
+        self.assertEqual(ignored, 1)
+
+    def test_feed_ignores_postcard_missing_from_one_query_variant(self) -> None:
+        observed_at = datetime(2026, 8, 3, 10, 0, tzinfo=UTC)
+        recognized = postcard("postcard-1", observed_at)
+        with patch(
+            "inky_bird_frame.birdbuddy._fetch_postcard_variant",
+            side_effect=[
+                ([recognized], 1, 1, 0),
+                ([], 1, 0, 0),
+            ],
+        ):
+            postcards, _, processed, ignored = _fetch_postcards("access-secret", "feeder-1")
+
+        self.assertEqual(postcards, [])
+        self.assertEqual(processed, 1)
+        self.assertEqual(ignored, 1)
 
     def test_revoked_refresh_token_has_actionable_redacted_error(self) -> None:
         with (
@@ -454,6 +624,72 @@ class BirdBuddyTests(unittest.TestCase):
         self.assertEqual(removed.species, [])
         self.assertEqual(removed.stats.reclassified_postcards, 1)
         self.assertEqual(history["feeders"]["feeder-1"]["postcards"], [])
+
+    def test_sync_preserves_detection_when_postcard_preview_is_incomplete(self) -> None:
+        feeder = BirdBuddyFeeder("feeder-1", "Garden feeder", "member")
+        now = datetime(2026, 8, 3, 12, 0, tzinfo=UTC)
+        original = postcard("postcard-1", now - timedelta(hours=1))
+        incomplete_page = {
+            "me": {
+                "feed": {
+                    "edges": [
+                        {
+                            "node": {
+                                "__typename": "FeedItemNewPostcard",
+                                "id": original.postcard_id,
+                                "createdAt": original.observed_at,
+                                "inferenceConfidenceLevel": "HIGH_CONFIDENCE",
+                                "feeder": {"id": feeder.feeder_id},
+                                "sightingReportPreview": None,
+                            }
+                        }
+                    ],
+                    "pageInfo": {"hasNextPage": False, "endCursor": None},
+                }
+            }
+        }
+        with TemporaryDirectory() as temporary:
+            state_dir = Path(temporary)
+            with patch(
+                "inky_bird_frame.birdbuddy._authenticate",
+                return_value=("access", "refresh", [feeder]),
+            ):
+                login_birdbuddy(
+                    state_dir,
+                    email="birder@example.test",
+                    password="private-password",
+                    authorization_confirmed=True,
+                    now=now,
+                )
+            with patch(
+                "inky_bird_frame.birdbuddy._refresh_access_token",
+                return_value=("access", "replacement"),
+            ):
+                with patch(
+                    "inky_bird_frame.birdbuddy._fetch_postcards",
+                    return_value=([original], 2, 1, 0),
+                ):
+                    sync_birdbuddy_detections(
+                        state_dir,
+                        window=ObservationWindow.ALL_TIME,
+                        limit=20,
+                        now=now,
+                    )
+                with patch(
+                    "inky_bird_frame.birdbuddy._graphql_request",
+                    return_value=incomplete_page,
+                ):
+                    preserved = sync_birdbuddy_detections(
+                        state_dir,
+                        window=ObservationWindow.ALL_TIME,
+                        limit=20,
+                        now=now,
+                    )
+
+        self.assertEqual(len(preserved.species), 1)
+        self.assertEqual(preserved.species[0].scientific_name, "Sialia sialis")
+        self.assertEqual(preserved.stats.reclassified_postcards, 0)
+        self.assertEqual(preserved.stats.ignored_postcards, 1)
 
     def test_all_time_retains_pruned_detection_while_last_year_excludes_it(self) -> None:
         feeder = BirdBuddyFeeder("feeder-1", "Garden feeder", "member")

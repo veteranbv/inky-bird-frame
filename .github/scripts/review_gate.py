@@ -100,6 +100,15 @@ query($owner: String!, $repo: String!, $pr: Int!) {
           commit { oid pushedDate committedDate }
         }
       }
+      readyForReviewEvents: timelineItems(
+        first: 100
+        itemTypes: [READY_FOR_REVIEW_EVENT]
+      ) {
+        pageInfo { hasNextPage }
+        nodes {
+          ... on ReadyForReviewEvent { createdAt }
+        }
+      }
       reviews(first: 100) {
         pageInfo { hasNextPage }
         nodes {
@@ -241,7 +250,13 @@ def _has_next_page(connection: object) -> bool:
 
 def _pagination_overflows(state: dict[str, object]) -> list[str]:
     overflows: list[str] = []
-    for key in ("reviews", "reviewThreads", "comments", "reactions"):
+    for key in (
+        "readyForReviewEvents",
+        "reviews",
+        "reviewThreads",
+        "comments",
+        "reactions",
+    ):
         if _has_next_page(state.get(key)):
             overflows.append(key)
 
@@ -288,33 +303,47 @@ def _comment_request_time(comment: dict[str, object]) -> datetime | None:
     return _parse_iso(created) if isinstance(created, str) else None
 
 
+def _latest_ready_for_review_time(state: dict[str, object]) -> datetime | None:
+    events = state.get("readyForReviewEvents")
+    if not isinstance(events, dict):
+        return None
+    candidates = [
+        parsed
+        for event in events.get("nodes") or []
+        if isinstance(event, dict)
+        for created_at in [event.get("createdAt")]
+        if isinstance(created_at, str)
+        for parsed in [_parse_iso(created_at)]
+        if parsed is not None
+    ]
+    return max(candidates) if candidates else None
+
+
 def _head_time(state: dict[str, object], head_sha: str) -> datetime | None:
-    """Return the timestamp for when the head commit became reviewable.
+    """Return when the current head most recently became reviewable.
 
     Only `pushedDate` is safe for reaction freshness. `committedDate` can be
     arbitrarily old after a force-push or reused commit, which would let a
     thumbs-up from a prior head satisfy the current head's engagement gate. If
     GitHub omits `pushedDate`, fall back to the latest `@codex review` request
-    comment that names this exact head SHA.
+    comment that names this exact head SHA. A later ready-for-review transition
+    supersedes both: draft review signals are provisional until the PR is ready.
     """
+    commit_time: datetime | None = None
     commits_obj = state.get("commits")
-    if not isinstance(commits_obj, dict):
-        return None
-    nodes = commits_obj.get("nodes")
-    if not isinstance(nodes, list) or not nodes:
-        return None
-    last = nodes[-1]
-    if not isinstance(last, dict):
-        return None
-    commit = last.get("commit")
-    if not isinstance(commit, dict):
-        return None
-    pushed = commit.get("pushedDate")
-    if isinstance(pushed, str):
-        parsed = _parse_iso(pushed)
-        if parsed is not None:
-            return parsed
-    return _latest_codex_request_time(state, head_sha)
+    if isinstance(commits_obj, dict):
+        nodes = commits_obj.get("nodes")
+        if isinstance(nodes, list) and nodes:
+            last = nodes[-1]
+            commit = last.get("commit") if isinstance(last, dict) else None
+            pushed = commit.get("pushedDate") if isinstance(commit, dict) else None
+            if isinstance(pushed, str):
+                commit_time = _parse_iso(pushed)
+    if commit_time is None:
+        commit_time = _latest_codex_request_time(state, head_sha)
+    ready_time = _latest_ready_for_review_time(state)
+    candidates = [value for value in (commit_time, ready_time) if value is not None]
+    return max(candidates) if candidates else None
 
 
 def _latest_codex_request_time(state: dict[str, object], head_sha: str) -> datetime | None:
@@ -366,7 +395,9 @@ def _owner_review_cutoff(
     request_time = _owner_codex_request_time(state, owner_login, head_sha)
     if request_time is None:
         return None
-    return max(request_time, head_time) if head_time is not None else request_time
+    if head_time is not None and request_time < head_time:
+        return None
+    return request_time
 
 
 def _codex_setup_required(

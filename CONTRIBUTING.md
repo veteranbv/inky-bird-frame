@@ -159,6 +159,11 @@ validation, and the repository review gate. The repository owner controls the
 exact-head Codex review request and production deployment. External pull
 requests never receive those credentials.
 
+For a draft pull request, mark it ready before the owner's final exact-head
+Codex review request. The ready-for-review transition invalidates review signals
+from the draft lifecycle; wait for the post-ready review gate to finish before
+merging or enabling auto-merge.
+
 ## Documentation and agent guidance
 
 Public documentation and examples must be portable. Use placeholders for

@@ -890,6 +890,80 @@ def test_owner_request_uses_edit_time_for_current_body() -> None:
     assert cutoff.isoformat() == "2026-06-15T12:04:00+00:00"
 
 
+def test_ready_for_review_invalidates_draft_review_signals() -> None:
+    review_gate = _load_review_gate()
+    state = _state_with_commit(
+        pushed="2026-06-15T11:59:00Z",
+        committed="2026-06-15T11:58:00Z",
+    )
+    state["readyForReviewEvents"] = {"nodes": [{"createdAt": "2026-06-15T12:05:00Z"}]}
+    state["comments"] = {
+        "nodes": [
+            {
+                "body": "@codex review\n\nhead: abc123",
+                "createdAt": "2026-06-15T12:00:00Z",
+                "author": {"login": "owner"},
+            }
+        ]
+    }
+
+    head_time = review_gate._head_time(state, "abc123")
+
+    assert head_time is not None
+    assert head_time.isoformat() == "2026-06-15T12:05:00+00:00"
+    assert (
+        review_gate.engaged_bots(
+            state,
+            "owner/repo",
+            "abc123",
+            head_time,
+            owner_login="owner",
+        )
+        == set()
+    )
+
+
+def test_post_ready_exact_head_request_can_authorize_fresh_review() -> None:
+    review_gate = _load_review_gate()
+    head_sha = "abc1234"
+    state = _state_with_commit(
+        pushed="2026-06-15T11:59:00Z",
+        committed="2026-06-15T11:58:00Z",
+    )
+    state["readyForReviewEvents"] = {"nodes": [{"createdAt": "2026-06-15T12:05:00Z"}]}
+    state["comments"] = {
+        "nodes": [
+            {
+                "body": f"@codex review\n\nhead: {head_sha}",
+                "createdAt": "2026-06-15T12:06:00Z",
+                "author": {"login": "owner"},
+            }
+        ]
+    }
+    state["reviews"] = {
+        "nodes": [
+            {
+                "databaseId": 1,
+                "state": "COMMENTED",
+                "submittedAt": "2026-06-15T12:07:00Z",
+                "body": _full_codex_review_body(head_sha),
+                "author": {"login": "chatgpt-codex-connector"},
+                "commit": {"oid": head_sha},
+            }
+        ]
+    }
+
+    head_time = review_gate._head_time(state, head_sha)
+
+    assert review_gate.engaged_bots(
+        state,
+        "owner/repo",
+        head_sha,
+        head_time,
+        owner_login="owner",
+    ) == {review_gate.CODEX_LOGIN}
+
+
 def test_engagement_poll_refreshes_head_time_from_updated_pr_state(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
@@ -1167,9 +1241,14 @@ def test_pagination_overflow_includes_nested_thread_comments() -> None:
             ],
         },
         "reactions": {"pageInfo": {"hasNextPage": False}, "nodes": []},
+        "readyForReviewEvents": {
+            "pageInfo": {"hasNextPage": True},
+            "nodes": [],
+        },
     }
 
     assert review_gate._pagination_overflows(state) == [
+        "readyForReviewEvents",
         "reviewThreads",
         "reviewThreads[0].comments",
     ]
