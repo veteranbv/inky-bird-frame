@@ -227,6 +227,7 @@ class ConfirmedSpeciesEvidence:
 @dataclass(frozen=True)
 class _ConfirmedMediaRecord:
     media_id: str
+    media_type: str
     observed_at: str
     source: str
     species: tuple[PostcardSpecies, ...]
@@ -668,7 +669,10 @@ def _parse_postcard(
         if not isinstance(sighting, dict):
             incomplete_recognized_sighting = True
             continue
-        typename = sighting.get("__typename")
+        typename = _nonempty_string(sighting.get("__typename"))
+        if typename is None:
+            incomplete_recognized_sighting = True
+            continue
         if typename not in {
             "SightingRecognizedBird",
             "SightingRecognizedBirdUnlocked",
@@ -870,6 +874,7 @@ def _parse_confirmed_evidence(
         species[species_id] = PostcardSpecies(species_id, common_name, scientific_name)
     return _ConfirmedMediaRecord(
         media_id,
+        media_type,
         observed_at,
         source,
         tuple(sorted(species.values(), key=lambda candidate: candidate.species_id)),
@@ -924,10 +929,7 @@ def _fetch_confirmed_history(
                 accepted_manual_records += 1
             if parsed.source == _CONFIRMED_FEEDER_SOURCE:
                 existing_record = records_by_media.get(parsed.media_id)
-                if existing_record is not None and (
-                    existing_record.observed_at != parsed.observed_at
-                    or existing_record.species != parsed.species
-                ):
+                if existing_record is not None and existing_record != parsed:
                     raise DataSourceError(
                         "Bird Buddy confirmed history returned conflicting media records"
                     )

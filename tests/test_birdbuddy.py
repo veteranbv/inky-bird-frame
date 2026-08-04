@@ -265,6 +265,7 @@ class BirdBuddyTests(unittest.TestCase):
             {},
             {"sightings": None},
             {"sightings": [None]},
+            {"sightings": [{"__typename": None}]},
             {
                 "sightings": [
                     {
