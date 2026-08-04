@@ -118,10 +118,11 @@ deduplicated against the other discovery providers. Repeated detections update
 one species record; they do not create more plates. If a detected species is
 absent from `approved`, it still needs a plate before it can appear. Check
 `pending`, `deferred`, `terminal_blocked`, and `failed` before forcing a run. A
-plate you previously rejected is also terminal; for a live-only detection, it
-may not appear in those lists. Inspect it and run `retry TAXON_ID` to make the
-taxon eligible again. When no deferred or terminal state exists, let the
-scheduled generator run or invoke
+plate you previously rejected or an interrupted pending directory without a
+manifest is also terminal; for a live-only detection, either state may be
+absent from those lists. Inspect the taxon and run `retry TAXON_ID` to make it
+eligible again. When no deferred or terminal state exists, let the scheduled
+generator run or invoke
 `inky-bird-frame generate --config /path/to/config.toml` for an immediate
 attempt.
 

@@ -269,9 +269,9 @@ one station; it does not receive recordings or manage microphones. Bird Buddy
 is an opt-in private-API integration that requires the user to obtain Bird
 Buddy's permission and confirm it during login. Every provider result is
 matched to the same iNaturalist species identity before it enters the catalog.
-By default, the frame gives the newest station detection one turn when that
-species already has a plate in the active catalog, then returns to its normal
-rotation.
+By default, the frame gives the newest eligible detection across BirdWeather
+and Bird Buddy one turn when that species already has a plate in the active
+catalog, then returns to its normal rotation.
 
 Choose `last-day`, `last-week`, `last-30-days`, `last-year`, or `all-time` for
 the observation window. Provider limits still apply. The
