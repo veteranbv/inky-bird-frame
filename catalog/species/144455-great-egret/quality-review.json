@@ -1,0 +1,36 @@
+{
+  "anatomy_accuracy": 5,
+  "composition_quality": 5,
+  "correction_findings": [],
+  "findings": [
+    "Species identity is correct: the plate depicts Great Egret, Ardea alba, family Ardeidae.",
+    "The measurement text is accurate. Cornell gives length 94\u2013104 cm and wingspan 131\u2013145 cm; Animal Diversity Web gives mass 912\u20131140 g, accurately rounded on the plate to 0.91\u20131.14 kg.",
+    "The ruler is internally consistent: 94 cm is the lower endpoint, 104 cm is the upper endpoint, values increase upward, the vertical label repeats the same range, and exactly four evenly spaced unlabeled interior ticks divide it into five proportional segments. \u201cSCHEMATIC \u2014 NOT TO SCALE\u201d clearly distinguishes it from the printed bird\u2019s size.",
+    "The habitat paragraph matches the proposed facts without omitted, duplicated, substituted, or nonsensical words and agrees with the verified wetland, shoreline, estuary, mudflat, wooded-swamp, and waterside nesting habitats.",
+    "The behavior paragraph matches the proposed facts and verified behavior: diurnal shallow-water hunting, standing or walking slowly, rapid bill-and-neck strikes, retracted neck and trailing legs in flight, and predominantly colonial nesting in trees or shrubs.",
+    "All six field-mark statements are reproduced correctly: entirely white plumage and breeding back plumes; tall slender proportions and an S-curved neck; long yellow-to-orange daggerlike bill; pale yellow eye and yellow-green facial skin; long dark legs and feet; and broad rounded wings, short tail, and trailing legs in flight.",
+    "The primary specimen is a single coherent adult with one head and bill, two anatomically consistent folded wings with the far side partly occluded by the lateral view, two long legs with plausible anisodactyl feet, and one short tail. No duplicated or malformed primary anatomy is present.",
+    "Plumage and bare-part colors agree with the attached adult references: white body feathers, wispy back plumes, yellow-orange bill, pale yellow eye, yellow-green lores, and dark legs and feet. The bird also has the expected long neck, slender body, and compact tail.",
+    "The detached wing and head studies are clearly supplementary and do not appear attached to the primary specimen. Their feather structure, rounded wing shape, head proportions, eye, and straight co-terminal mandibles are consistent with the primary specimen and references.",
+    "The layout is legible and balanced, with adequate separation among the text, primary specimen, ruler, supplementary studies, and palette.",
+    "No place name, ZIP code, coordinates, map, or local-observation detail appears."
+  ],
+  "location_free": true,
+  "passed": true,
+  "species_accuracy": 5,
+  "text_accuracy": 5,
+  "verification_sources": [
+    {
+      "title": "Great Egret Identification \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/great_egret/id"
+    },
+    {
+      "title": "Great Egret \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/great-egret"
+    },
+    {
+      "title": "Ardea alba (Great Egret) \u2014 Animal Diversity Web",
+      "url": "https://animaldiversity.org/accounts/Ardea_alba/"
+    }
+  ]
+}

@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-03T20:46:40+00:00",
+  "generated_at": "2026-08-04T17:57:54+00:00",
   "schema_version": 1,
   "species": [
     {
@@ -573,6 +573,17 @@
       "scientific_name": "Myiarchus crinitus",
       "slug": "great-crested-flycatcher",
       "taxon_id": 16028
+    },
+    {
+      "approved_at": "2026-08-04T17:57:54+00:00",
+      "common_name": "Great Egret",
+      "display_path": "species/144455-great-egret/display.png",
+      "display_sha256": "6a7da0d6a3f151329682971f9d573faa3707f649a18beebc249fd92681924f6a",
+      "portrait_path": "species/144455-great-egret/portrait.png",
+      "portrait_sha256": "5c5b1098471bcf39586e4780686ae62026c98e47a838258cccc06daa32705d49",
+      "scientific_name": "Ardea alba",
+      "slug": "great-egret",
+      "taxon_id": 144455
     },
     {
       "approved_at": "2026-07-10T13:38:02+00:00",
