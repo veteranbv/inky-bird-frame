@@ -1,0 +1,157 @@
+{
+  "approved_at": "2026-08-04T17:57:54+00:00",
+  "assets": {
+    "display": {
+      "filename": "display.png",
+      "sha256": "6a7da0d6a3f151329682971f9d573faa3707f649a18beebc249fd92681924f6a"
+    },
+    "portrait": {
+      "filename": "portrait.png",
+      "sha256": "5c5b1098471bcf39586e4780686ae62026c98e47a838258cccc06daa32705d49"
+    }
+  },
+  "common_name": "Great Egret",
+  "generation": {
+    "attempt": 1,
+    "generated_at": "2026-08-04T17:57:54+00:00",
+    "generator": "Codex subscription / built-in gpt-image-2",
+    "max_attempts": 3,
+    "prompt_version": "field-journal-v4"
+  },
+  "profile": {
+    "behavior": "A patient, diurnal hunter that stands still or walks slowly through shallow water, then strikes fish and other small prey with a rapid thrust of the neck and bill. Flies with the neck retracted and legs trailing. Usually nests colonially in trees or shrubs near water.",
+    "common_name": "Great Egret",
+    "family": "Ardeidae",
+    "field_marks": [
+      "Entirely white plumage; breeding adults develop long, wispy back plumes",
+      "Tall, slender proportions with a very long, S-curved neck",
+      "Long, straight, daggerlike bill, usually yellow to orange",
+      "Pale yellow eye with yellow-green bare facial skin",
+      "Very long, usually dark legs and feet",
+      "Broad, rounded white wings and a short tail; legs extend well past the tail in flight"
+    ],
+    "habitat": "Freshwater and saltwater wetlands, including marshes, ponds, lake and river margins, estuaries, lagoons, mudflats, wooded swamps, and other shallow-water shorelines; nesting sites are typically trees or shrubs near water.",
+    "measurements": {
+      "length": "94\u2013104 cm",
+      "weight": "0.91\u20131.14 kg",
+      "wingspan": "131\u2013145 cm"
+    },
+    "palette": [
+      "white",
+      "yellow-orange",
+      "black",
+      "pale yellow-green"
+    ],
+    "scientific_name": "Ardea alba",
+    "sources": [
+      {
+        "title": "Great Egret Identification \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/great_egret/id"
+      },
+      {
+        "title": "Great Egret \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/great-egret"
+      },
+      {
+        "title": "Ardea alba (Great Egret) \u2014 Animal Diversity Web",
+        "url": "https://animaldiversity.org/accounts/Ardea_alba/"
+      }
+    ],
+    "taxon_id": 144455
+  },
+  "quality_review": {
+    "anatomy_accuracy": 5,
+    "composition_quality": 5,
+    "correction_findings": [],
+    "findings": [
+      "Species identity is correct: the plate depicts Great Egret, Ardea alba, family Ardeidae.",
+      "The measurement text is accurate. Cornell gives length 94\u2013104 cm and wingspan 131\u2013145 cm; Animal Diversity Web gives mass 912\u20131140 g, accurately rounded on the plate to 0.91\u20131.14 kg.",
+      "The ruler is internally consistent: 94 cm is the lower endpoint, 104 cm is the upper endpoint, values increase upward, the vertical label repeats the same range, and exactly four evenly spaced unlabeled interior ticks divide it into five proportional segments. \u201cSCHEMATIC \u2014 NOT TO SCALE\u201d clearly distinguishes it from the printed bird\u2019s size.",
+      "The habitat paragraph matches the proposed facts without omitted, duplicated, substituted, or nonsensical words and agrees with the verified wetland, shoreline, estuary, mudflat, wooded-swamp, and waterside nesting habitats.",
+      "The behavior paragraph matches the proposed facts and verified behavior: diurnal shallow-water hunting, standing or walking slowly, rapid bill-and-neck strikes, retracted neck and trailing legs in flight, and predominantly colonial nesting in trees or shrubs.",
+      "All six field-mark statements are reproduced correctly: entirely white plumage and breeding back plumes; tall slender proportions and an S-curved neck; long yellow-to-orange daggerlike bill; pale yellow eye and yellow-green facial skin; long dark legs and feet; and broad rounded wings, short tail, and trailing legs in flight.",
+      "The primary specimen is a single coherent adult with one head and bill, two anatomically consistent folded wings with the far side partly occluded by the lateral view, two long legs with plausible anisodactyl feet, and one short tail. No duplicated or malformed primary anatomy is present.",
+      "Plumage and bare-part colors agree with the attached adult references: white body feathers, wispy back plumes, yellow-orange bill, pale yellow eye, yellow-green lores, and dark legs and feet. The bird also has the expected long neck, slender body, and compact tail.",
+      "The detached wing and head studies are clearly supplementary and do not appear attached to the primary specimen. Their feather structure, rounded wing shape, head proportions, eye, and straight co-terminal mandibles are consistent with the primary specimen and references.",
+      "The layout is legible and balanced, with adequate separation among the text, primary specimen, ruler, supplementary studies, and palette.",
+      "No place name, ZIP code, coordinates, map, or local-observation detail appears."
+    ],
+    "location_free": true,
+    "passed": true,
+    "species_accuracy": 5,
+    "text_accuracy": 5,
+    "verification_sources": [
+      {
+        "title": "Great Egret Identification \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/great_egret/id"
+      },
+      {
+        "title": "Great Egret \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/great-egret"
+      },
+      {
+        "title": "Ardea alba (Great Egret) \u2014 Animal Diversity Web",
+        "url": "https://animaldiversity.org/accounts/Ardea_alba/"
+      }
+    ]
+  },
+  "references": [
+    {
+      "attribution": "(c) William Harland, some rights reserved (CC BY)",
+      "filename": "01-493469366.jpeg",
+      "height": 1379,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/493469366/large.jpeg",
+      "license_code": "cc-by",
+      "observation_id": 274495522,
+      "observer": "william-harland",
+      "photo_id": 493469366,
+      "sha256": "663545371eac93e967932bc886baa6c716c82a2b0763654d7587061d656615fb",
+      "source_url": "https://www.inaturalist.org/observations/274495522",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) Shiva Shenoy, some rights reserved (CC BY)",
+      "filename": "02-123196245.jpg",
+      "height": 1380,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/123196245/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 75313436,
+      "observer": "shivashenoy",
+      "photo_id": 123196245,
+      "sha256": "b54cc0f7b098752315ea48684f0f9e55a3fc91db1872cad0c071850a35f6be52",
+      "source_url": "https://www.inaturalist.org/observations/75313436",
+      "width": 1725
+    },
+    {
+      "attribution": "(c) Robert Roach, some rights reserved (CC BY)",
+      "filename": "03-513149977.jpg",
+      "height": 2048,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/513149977/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 285486246,
+      "observer": "broacher",
+      "photo_id": 513149977,
+      "sha256": "d0f73ee73f667845e39d73a3dbdc612c983fbb0e4bc600d5ac470fce570c4105",
+      "source_url": "https://www.inaturalist.org/observations/285486246",
+      "width": 1535
+    },
+    {
+      "attribution": "no rights reserved",
+      "filename": "04-512622421.jpg",
+      "height": 1514,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/512622421/large.jpg",
+      "license_code": "cc0",
+      "observation_id": 285203731,
+      "observer": "wildreturn",
+      "photo_id": 512622421,
+      "sha256": "6af420b64988b439adff7c73e66578d5d994373ac582323d69a734fed6204393",
+      "source_url": "https://www.inaturalist.org/observations/285203731",
+      "width": 2048
+    }
+  ],
+  "schema_version": 1,
+  "scientific_name": "Ardea alba",
+  "slug": "great-egret",
+  "status": "approved",
+  "taxon_id": 144455
+}

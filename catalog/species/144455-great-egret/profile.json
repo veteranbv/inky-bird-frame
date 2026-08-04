@@ -1,0 +1,41 @@
+{
+  "behavior": "A patient, diurnal hunter that stands still or walks slowly through shallow water, then strikes fish and other small prey with a rapid thrust of the neck and bill. Flies with the neck retracted and legs trailing. Usually nests colonially in trees or shrubs near water.",
+  "common_name": "Great Egret",
+  "family": "Ardeidae",
+  "field_marks": [
+    "Entirely white plumage; breeding adults develop long, wispy back plumes",
+    "Tall, slender proportions with a very long, S-curved neck",
+    "Long, straight, daggerlike bill, usually yellow to orange",
+    "Pale yellow eye with yellow-green bare facial skin",
+    "Very long, usually dark legs and feet",
+    "Broad, rounded white wings and a short tail; legs extend well past the tail in flight"
+  ],
+  "habitat": "Freshwater and saltwater wetlands, including marshes, ponds, lake and river margins, estuaries, lagoons, mudflats, wooded swamps, and other shallow-water shorelines; nesting sites are typically trees or shrubs near water.",
+  "measurements": {
+    "length": "94\u2013104 cm",
+    "weight": "0.91\u20131.14 kg",
+    "wingspan": "131\u2013145 cm"
+  },
+  "palette": [
+    "white",
+    "yellow-orange",
+    "black",
+    "pale yellow-green"
+  ],
+  "scientific_name": "Ardea alba",
+  "sources": [
+    {
+      "title": "Great Egret Identification \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/great_egret/id"
+    },
+    {
+      "title": "Great Egret \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/great-egret"
+    },
+    {
+      "title": "Ardea alba (Great Egret) \u2014 Animal Diversity Web",
+      "url": "https://animaldiversity.org/accounts/Ardea_alba/"
+    }
+  ],
+  "taxon_id": 144455
+}
