@@ -251,6 +251,7 @@ class FeederHistory:
     archived_species: dict[str, ArchivedSpecies]
     confirmed_species: dict[tuple[str, str], ConfirmedSpeciesEvidence]
     archived_postcards: dict[tuple[str, ...], ArchivedPostcardLink] = field(default_factory=dict)
+    archived_unlinked_latest: dict[str, str] = field(default_factory=dict)
 
 
 @dataclass(frozen=True)
@@ -812,34 +813,40 @@ def _parse_confirmed_evidence(
     include_manual_sightings: bool,
 ) -> _ConfirmedMediaRecord | None:
     if not isinstance(value, dict):
-        return None
-    origin = value.get("origin")
+        raise DataSourceError("Bird Buddy confirmed history record was incomplete")
+    origin = _nonempty_string(value.get("origin"))
     feeder_id = _feeder_id(value.get("feeder"))
-    if origin == "POSTCARD" and feeder_id == selected_feeder_id:
+    if origin == "POSTCARD":
+        if feeder_id is None:
+            raise DataSourceError("Bird Buddy confirmed history record was incomplete")
+        if feeder_id != selected_feeder_id:
+            return None
         source = _CONFIRMED_FEEDER_SOURCE
     elif origin == "CUSTOM_ID" and include_manual_sightings:
         source = _CONFIRMED_MANUAL_SOURCE
-    else:
+    elif origin in {"CUSTOM_ID", "WATCHING"}:
         return None
+    else:
+        raise DataSourceError("Bird Buddy confirmed history record had an unsupported origin")
     media = value.get("media")
     created_at = media.get("createdAt") if isinstance(media, dict) else None
     media_id = _nonempty_string(media.get("id")) if isinstance(media, dict) else None
     observed = parse_utc_timestamp(created_at)
     species_values = value.get("species")
     if media_id is None or observed is None or not isinstance(species_values, list):
-        return None
+        raise DataSourceError("Bird Buddy confirmed history record was incomplete")
     observed_at = observed.astimezone(UTC).replace(microsecond=0).isoformat()
     species: dict[str, PostcardSpecies] = {}
     for item in species_values:
         if not isinstance(item, dict):
-            return None
+            raise DataSourceError("Bird Buddy confirmed history record was incomplete")
         if item.get("__typename") != "SpeciesBird":
             continue
         species_id = _nonempty_string(item.get("id"))
         common_name = _nonempty_string(item.get("name"))
         scientific_name = _nonempty_string(item.get("scientificName"))
         if species_id is None or common_name is None or scientific_name is None:
-            return None
+            raise DataSourceError("Bird Buddy confirmed history record was incomplete")
         species[species_id] = PostcardSpecies(species_id, common_name, scientific_name)
     return _ConfirmedMediaRecord(
         media_id,
@@ -1078,6 +1085,7 @@ def _parse_feeder_history(value: object) -> FeederHistory:
     postcard_values = value.get("postcards")
     archived_values = value.get("archived_species")
     archived_postcard_values = value.get("archived_postcards", [])
+    archived_unlinked_values = value.get("archived_unlinked_latest")
     confirmed_values = value.get("confirmed_species", [])
     if (
         history_started_at is None
@@ -1087,17 +1095,12 @@ def _parse_feeder_history(value: object) -> FeederHistory:
         or not isinstance(postcard_values, list)
         or not isinstance(archived_values, dict)
         or not isinstance(archived_postcard_values, list)
+        or (archived_unlinked_values is not None and not isinstance(archived_unlinked_values, dict))
         or not isinstance(confirmed_values, list)
     ):
         raise DataSourceError("Invalid Bird Buddy detection history")
     parsed_postcards = [_parse_postcard_state(item) for item in postcard_values]
-    # Version-one history written before media linkage cannot safely reconcile
-    # a later confirmation. Drop those short-lived rows instead of retaining a
-    # stale preview classification; confirmed history can still restore
-    # conservative species presence on this successful sync.
-    postcards = {
-        postcard.postcard_id: postcard for postcard in parsed_postcards if postcard.media_ids
-    }
+    postcards = {postcard.postcard_id: postcard for postcard in parsed_postcards}
     archived = {
         species_id: _parse_archived_species(item, species_id)
         for species_id, item in archived_values.items()
@@ -1109,6 +1112,39 @@ def _parse_feeder_history(value: object) -> FeederHistory:
     archived_postcards = {item.media_ids: item for item in archived_postcard_items}
     if len(archived_postcards) != len(archived_postcard_items):
         raise DataSourceError("Invalid Bird Buddy detection history")
+    linked_counts: dict[str, int] = {}
+    for item in archived_postcards.values():
+        for species_id in item.species_ids:
+            linked_counts[species_id] = linked_counts.get(species_id, 0) + 1
+    if any(
+        species_id not in archived or count > archived[species_id].detection_count
+        for species_id, count in linked_counts.items()
+    ):
+        raise DataSourceError("Invalid Bird Buddy detection history")
+    if archived_unlinked_values is None:
+        archived_unlinked_latest = {
+            species_id: item.latest_detection_at
+            for species_id, item in archived.items()
+            if linked_counts.get(species_id, 0) < item.detection_count
+        }
+    else:
+        archived_unlinked_latest = {
+            species_id: timestamp
+            for species_id, value in archived_unlinked_values.items()
+            if isinstance(species_id, str)
+            for timestamp in [_nonempty_string(value)]
+            if timestamp is not None and parse_utc_timestamp(timestamp) is not None
+        }
+        expected_unlinked = {
+            species_id
+            for species_id, item in archived.items()
+            if linked_counts.get(species_id, 0) < item.detection_count
+        }
+        if (
+            len(archived_unlinked_latest) != len(archived_unlinked_values)
+            or set(archived_unlinked_latest) != expected_unlinked
+        ):
+            raise DataSourceError("Invalid Bird Buddy detection history")
     confirmed_items = [_parse_confirmed_species(item) for item in confirmed_values]
     confirmed = {(item.source, item.species.species_id): item for item in confirmed_items}
     if len(confirmed) != len(confirmed_items):
@@ -1121,6 +1157,7 @@ def _parse_feeder_history(value: object) -> FeederHistory:
         archived,
         confirmed,
         archived_postcards,
+        archived_unlinked_latest,
     )
 
 
@@ -1200,6 +1237,7 @@ def _history_payload(histories: dict[str, FeederHistory]) -> dict[str, object]:
                         ),
                     )
                 ],
+                "archived_unlinked_latest": dict(sorted(history.archived_unlinked_latest.items())),
                 "confirmed_species": [
                     {
                         "id": item.species.species_id,
@@ -1224,7 +1262,12 @@ def _newest_timestamp(first: str, second: str) -> str:
     return first if first_at >= second_at else second
 
 
-def _archive_postcard(history: FeederHistory, postcard: BirdBuddyPostcard) -> None:
+def _archive_postcard(
+    history: FeederHistory,
+    postcard: BirdBuddyPostcard,
+    *,
+    linked: bool,
+) -> None:
     for species in postcard.species:
         existing = history.archived_species.get(species.species_id)
         history.archived_species[species.species_id] = ArchivedSpecies(
@@ -1238,6 +1281,13 @@ def _archive_postcard(history: FeederHistory, postcard: BirdBuddyPostcard) -> No
                 else postcard.observed_at
             ),
         )
+        if not linked:
+            unlinked_latest = history.archived_unlinked_latest.get(species.species_id)
+            history.archived_unlinked_latest[species.species_id] = (
+                postcard.observed_at
+                if unlinked_latest is None
+                else _newest_timestamp(unlinked_latest, postcard.observed_at)
+            )
 
 
 def _window_cutoff(window: ObservationWindow, now: datetime) -> datetime | None:
@@ -1349,6 +1399,23 @@ def _confirmed_species_for_media(
     return tuple(sorted(species.values(), key=lambda item: item.species_id))
 
 
+def _archived_latest_timestamp(history: FeederHistory, species_id: str) -> str:
+    candidates = [
+        item.observed_at
+        for item in history.archived_postcards.values()
+        if species_id in item.species_ids
+    ]
+    unlinked_latest = history.archived_unlinked_latest.get(species_id)
+    if unlinked_latest is not None:
+        candidates.append(unlinked_latest)
+    if not candidates:
+        raise DataSourceError("Invalid Bird Buddy archived correction history")
+    latest = candidates[0]
+    for candidate in candidates[1:]:
+        latest = _newest_timestamp(latest, candidate)
+    return latest
+
+
 def _reconcile_archived_postcards(
     history: FeederHistory,
     species_by_media: dict[str, tuple[PostcardSpecies, ...]],
@@ -1357,6 +1424,13 @@ def _reconcile_archived_postcards(
     for media_ids, archived_postcard in list(history.archived_postcards.items()):
         confirmed_species = _confirmed_species_for_media(media_ids, species_by_media)
         if confirmed_species is None:
+            for species_id in archived_postcard.species_ids:
+                current = history.archived_unlinked_latest.get(species_id)
+                history.archived_unlinked_latest[species_id] = (
+                    archived_postcard.observed_at
+                    if current is None
+                    else _newest_timestamp(current, archived_postcard.observed_at)
+                )
             del history.archived_postcards[media_ids]
             continue
         confirmed_by_id = {item.species_id: item for item in confirmed_species}
@@ -1364,19 +1438,25 @@ def _reconcile_archived_postcards(
         new_ids = set(confirmed_by_id)
         if old_ids == new_ids:
             continue
+        history.archived_postcards[media_ids] = ArchivedPostcardLink(
+            archived_postcard.observed_at,
+            media_ids,
+            tuple(sorted(new_ids)),
+        )
         for species_id in old_ids - new_ids:
             archived = history.archived_species.get(species_id)
             if archived is None:
                 raise DataSourceError("Invalid Bird Buddy archived correction history")
             if archived.detection_count == 1:
                 del history.archived_species[species_id]
+                history.archived_unlinked_latest.pop(species_id, None)
             else:
                 history.archived_species[species_id] = ArchivedSpecies(
                     archived.species_id,
                     archived.common_name,
                     archived.scientific_name,
                     archived.detection_count - 1,
-                    archived.latest_detection_at,
+                    _archived_latest_timestamp(history, species_id),
                 )
         for species_id in new_ids:
             species = confirmed_by_id[species_id]
@@ -1398,11 +1478,6 @@ def _reconcile_archived_postcards(
                     else archived_postcard.observed_at
                 ),
             )
-        history.archived_postcards[media_ids] = ArchivedPostcardLink(
-            archived_postcard.observed_at,
-            media_ids,
-            tuple(sorted(new_ids)),
-        )
         reclassified += 1
     return reclassified
 
@@ -1426,6 +1501,12 @@ def _update_history(
             feeder_id,
             FeederHistory(current_iso, None, None, {}, {}, {}),
         )
+        # History written before media linkage cannot safely reconcile a later
+        # confirmation. Migrate only the selected feeder after both remote
+        # snapshots succeeded; inactive feeder history must remain untouched.
+        for postcard_id, postcard in list(history.postcards.items()):
+            if not postcard.media_ids:
+                del history.postcards[postcard_id]
         duplicates = 0
         reclassified_postcard_ids: set[str] = set()
         for postcard in incoming:
@@ -1485,15 +1566,13 @@ def _update_history(
             if observed is None:
                 raise DataSourceError("Invalid Bird Buddy detection timestamp")
             if observed < prune_before:
-                _archive_postcard(history, postcard)
-                if (
-                    postcard.media_ids
-                    and _confirmed_species_for_media(
-                        postcard.media_ids,
-                        confirmed_species_by_media,
-                    )
-                    is not None
-                ):
+                confirmed_species = _confirmed_species_for_media(
+                    postcard.media_ids,
+                    confirmed_species_by_media,
+                )
+                linked = bool(postcard.media_ids) and confirmed_species is not None
+                _archive_postcard(history, postcard, linked=linked)
+                if linked:
                     history.archived_postcards[postcard.media_ids] = ArchivedPostcardLink(
                         postcard.observed_at,
                         postcard.media_ids,
