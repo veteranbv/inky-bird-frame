@@ -37,11 +37,13 @@ def postcard(
     species_id: str = "species-bluebird",
     common_name: str = "Eastern Bluebird",
     scientific_name: str = "Sialia sialis",
+    media_ids: tuple[str, ...] = (),
 ) -> BirdBuddyPostcard:
     return BirdBuddyPostcard(
         postcard_id,
         observed_at.astimezone(UTC).replace(microsecond=0).isoformat(),
         (PostcardSpecies(species_id, common_name, scientific_name),),
+        media_ids=media_ids,
     )
 
 
@@ -49,6 +51,7 @@ def feed_node(
     *sightings: object,
     postcard_id: str = "postcard-1",
     observed_at: str = "2026-08-03T10:00:00+00:00",
+    media_ids: tuple[str, ...] = ("media-1",),
 ) -> dict[str, object]:
     return {
         "__typename": "FeedItemNewPostcard",
@@ -56,6 +59,7 @@ def feed_node(
         "createdAt": observed_at,
         "inferenceConfidenceLevel": "HIGH_CONFIDENCE",
         "feeder": {"id": "feeder-1"},
+        "medias": [{"__typename": "MediaImage", "id": media_id} for media_id in media_ids],
         "sightingReportPreview": {"sightings": list(sightings)},
     }
 
@@ -65,11 +69,12 @@ def confirmed_node(
     origin: str,
     feeder_id: str,
     observed_at: str = "2026-08-03T10:00:00Z",
+    media_id: str = "media-1",
 ) -> dict[str, object]:
     return {
         "origin": origin,
         "feeder": {"id": feeder_id},
-        "media": {"createdAt": observed_at},
+        "media": {"__typename": "MediaImage", "id": media_id, "createdAt": observed_at},
         "species": [
             {
                 "__typename": "SpeciesBird",
@@ -95,6 +100,7 @@ class BirdBuddyTests(unittest.TestCase):
         combined = "\n".join(_FEED_QUERIES)
         self.assertNotIn("mutation", combined.casefold())
         self.assertEqual(combined.count("species {"), 2)
+        self.assertEqual(combined.count("medias { __typename id }"), 2)
         for forbidden in (
             "contentUrl",
             "sightingCreateFromPostcard",
@@ -105,6 +111,14 @@ class BirdBuddyTests(unittest.TestCase):
             self.assertNotIn(forbidden, combined)
         self.assertNotIn("mutation", _CONFIRMED_HISTORY.casefold())
         self.assertIn("mediasOwned", _CONFIRMED_HISTORY)
+        self.assertIn("media { __typename id createdAt }", _CONFIRMED_HISTORY)
+        for feeder_type in (
+            "FeederForMember",
+            "FeederForOwner",
+            "FeederForPublic",
+            "FeederForRemoteGuest",
+        ):
+            self.assertIn(f"... on {feeder_type} {{ id }}", _CONFIRMED_HISTORY)
         for forbidden in ("contentUrl", "thumbnailUrl", "locationCity", "ownerName"):
             self.assertNotIn(forbidden, _CONFIRMED_HISTORY)
 
@@ -487,6 +501,7 @@ class BirdBuddyTests(unittest.TestCase):
 
         self.assertEqual(selected[0].source, "selected_feeder")
         self.assertEqual(selected[0].observed_at, "2026-08-03T10:00:00+00:00")
+        self.assertEqual(selected[0].media_id, "media-1")
         self.assertEqual(other_feeder, ())
         self.assertEqual(manual_disabled, ())
         self.assertEqual(manual_enabled[0].source, "manual")
@@ -548,6 +563,35 @@ class BirdBuddyTests(unittest.TestCase):
         self.assertEqual(result.records_ignored, 1)
         self.assertEqual(len(result.evidence), 1)
         self.assertEqual(result.evidence[0].observed_at, "2026-08-03T10:00:00+00:00")
+
+    def test_confirmed_history_links_selected_feeder_species_by_media(self) -> None:
+        page = {
+            "me": {
+                "mediasOwned": {
+                    "edges": [
+                        {
+                            "node": confirmed_node(
+                                origin="POSTCARD",
+                                feeder_id="feeder-1",
+                                media_id="media-1",
+                            )
+                        }
+                    ],
+                    "pageInfo": {"hasNextPage": False, "endCursor": None},
+                }
+            }
+        }
+        with patch("inky_bird_frame.birdbuddy._graphql_request", return_value=page):
+            result = _fetch_confirmed_history(
+                "access-secret",
+                "feeder-1",
+                include_manual_sightings=False,
+            )
+
+        self.assertEqual(
+            result.species_by_media["media-1"][0].scientific_name,
+            "Archilochus colubris",
+        )
 
     def test_confirmed_history_rejects_repeated_pagination_cursor(self) -> None:
         page = {
@@ -744,6 +788,79 @@ class BirdBuddyTests(unittest.TestCase):
             result.species[0].latest_detection_at,
             (now - timedelta(hours=1)).isoformat(),
         )
+
+    def test_confirmed_media_reclassifies_linked_cached_postcard(self) -> None:
+        feeder = BirdBuddyFeeder("feeder-1", "Garden feeder", "member")
+        now = datetime(2026, 8, 3, 12, 0, tzinfo=UTC)
+        preview = postcard(
+            "postcard-1",
+            now - timedelta(hours=2),
+            media_ids=("media-1",),
+        )
+        corrected_species = PostcardSpecies(
+            "species-cardinal",
+            "Northern Cardinal",
+            "Cardinalis cardinalis",
+        )
+        confirmed_evidence = ConfirmedSpeciesEvidence(
+            corrected_species,
+            (now - timedelta(hours=1)).isoformat(),
+            "selected_feeder",
+            "media-1",
+        )
+        confirmed = _ConfirmedHistoryFetch(
+            [confirmed_evidence],
+            1,
+            1,
+            1,
+            0,
+            0,
+            {"media-1": (corrected_species,)},
+        )
+        with TemporaryDirectory() as temporary:
+            state_dir = Path(temporary)
+            with patch(
+                "inky_bird_frame.birdbuddy._authenticate",
+                return_value=("access", "refresh", [feeder]),
+            ):
+                login_birdbuddy(
+                    state_dir,
+                    email="birder@example.test",
+                    password="private-password",
+                    authorization_confirmed=True,
+                    now=now,
+                )
+            with (
+                patch(
+                    "inky_bird_frame.birdbuddy._refresh_access_token",
+                    return_value=("access", "replacement"),
+                ),
+                patch(
+                    "inky_bird_frame.birdbuddy._fetch_postcards",
+                    return_value=([preview], 2, 1, 0),
+                ),
+                patch(
+                    "inky_bird_frame.birdbuddy._fetch_confirmed_history",
+                    return_value=confirmed,
+                ),
+            ):
+                result = sync_birdbuddy_detections(
+                    state_dir,
+                    window=ObservationWindow.LAST_DAY,
+                    limit=20,
+                    now=now,
+                )
+            history = json.loads((state_dir / "birdbuddy-detections.json").read_text())
+
+        self.assertEqual(
+            [item.scientific_name for item in result.species],
+            ["Cardinalis cardinalis"],
+        )
+        self.assertEqual(result.species[0].detection_count, 1)
+        self.assertEqual(result.stats.reclassified_postcards, 1)
+        stored = history["feeders"]["feeder-1"]["postcards"][0]
+        self.assertEqual(stored["media_ids"], ["media-1"])
+        self.assertEqual(stored["species"][0]["id"], "species-cardinal")
 
     def test_complete_confirmed_snapshot_removes_stale_manual_evidence(self) -> None:
         feeder = BirdBuddyFeeder("feeder-1", "Garden feeder", "member")

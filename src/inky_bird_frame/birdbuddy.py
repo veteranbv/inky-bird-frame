@@ -7,7 +7,7 @@ import json
 import stat
 from collections.abc import Iterator
 from contextlib import contextmanager, nullcontext
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
 from typing import Final
@@ -79,6 +79,7 @@ query InkyBirdBuddyFeed($first: Int!, $after: String) {
               ... on FeederForPublic { id }
               ... on FeederForRemoteGuest { id }
             }
+            medias { __typename id }
             sightingReportPreview {
               sightings {
                 __typename
@@ -118,6 +119,7 @@ query InkyBirdBuddyFeed($first: Int!, $after: String) {
               ... on FeederForPublic { id }
               ... on FeederForRemoteGuest { id }
             }
+            medias { __typename id }
             sightingReportPreview {
               sightings {
                 __typename
@@ -151,8 +153,14 @@ query InkyBirdBuddyConfirmedHistory($first: Int!, $after: String) {
       edges {
         node {
           origin
-          feeder { id }
-          media { createdAt }
+          feeder {
+            __typename
+            ... on FeederForMember { id }
+            ... on FeederForOwner { id }
+            ... on FeederForPublic { id }
+            ... on FeederForRemoteGuest { id }
+          }
+          media { __typename id createdAt }
           species {
             __typename
             ... on SpeciesBird { id name scientificName }
@@ -199,6 +207,7 @@ class BirdBuddyPostcard:
     postcard_id: str
     observed_at: str
     species: tuple[PostcardSpecies, ...]
+    media_ids: tuple[str, ...] = ()
     complete: bool = True
 
 
@@ -207,6 +216,7 @@ class ConfirmedSpeciesEvidence:
     species: PostcardSpecies
     observed_at: str
     source: str
+    media_id: str | None = None
 
 
 @dataclass(frozen=True)
@@ -285,6 +295,7 @@ class _ConfirmedHistoryFetch:
     records_accepted: int
     manual_records_accepted: int
     records_ignored: int
+    species_by_media: dict[str, tuple[PostcardSpecies, ...]] = field(default_factory=dict)
 
 
 def _auth_path(state_dir: Path) -> Path:
@@ -587,18 +598,43 @@ def _parse_postcard(
     ):
         return None
     observed_at = observed.replace(microsecond=0).isoformat()
+    media_values = value.get("medias")
+    media_ids: set[str] = set()
+    media_complete = isinstance(media_values, list)
+    if isinstance(media_values, list):
+        for media in media_values:
+            media_id = _nonempty_string(media.get("id")) if isinstance(media, dict) else None
+            if media_id is None:
+                media_complete = False
+                continue
+            media_ids.add(media_id)
+        if not media_ids:
+            media_complete = False
+    sorted_media_ids = tuple(sorted(media_ids))
     preview = value.get("sightingReportPreview")
     sightings = preview.get("sightings") if isinstance(preview, dict) else None
     if not isinstance(sightings, list):
         # A missing preview is an incomplete response, not an explicit
         # withdrawal. Ignore it so a transient schema/backend response cannot
         # delete a previously retained classification during reconciliation.
-        return BirdBuddyPostcard(postcard_id, observed_at, (), complete=False)
+        return BirdBuddyPostcard(
+            postcard_id,
+            observed_at,
+            (),
+            media_ids=sorted_media_ids,
+            complete=False,
+        )
     # An empty species tuple is a reconciliation tombstone. It lets a complete
     # feed refresh remove a previously accepted classification without storing
     # low-confidence or non-bird results in detection history.
     if value.get("inferenceConfidenceLevel") != "HIGH_CONFIDENCE":
-        return BirdBuddyPostcard(postcard_id, observed_at, ())
+        return BirdBuddyPostcard(
+            postcard_id,
+            observed_at,
+            (),
+            media_ids=sorted_media_ids,
+            complete=media_complete,
+        )
     species: dict[str, PostcardSpecies] = {}
     incomplete_recognized_sighting = False
     for sighting in sightings:
@@ -632,13 +668,15 @@ def _parse_postcard(
             postcard_id,
             observed_at,
             (),
-            complete=not incomplete_recognized_sighting,
+            media_ids=sorted_media_ids,
+            complete=media_complete and not incomplete_recognized_sighting,
         )
     return BirdBuddyPostcard(
         postcard_id,
         observed_at,
         tuple(sorted(species.values(), key=lambda item: item.species_id)),
-        complete=not incomplete_recognized_sighting,
+        media_ids=sorted_media_ids,
+        complete=media_complete and not incomplete_recognized_sighting,
     )
 
 
@@ -707,11 +745,13 @@ def _merge_postcard_variants(
         raise DataSourceError("Bird Buddy returned inconsistent postcard timestamps")
     species = {item.species_id: item for item in existing.species}
     species.update({item.species_id: item for item in incoming.species})
+    media_ids_match = existing.media_ids == incoming.media_ids
     postcards[incoming.postcard_id] = BirdBuddyPostcard(
         existing.postcard_id,
         existing.observed_at,
         tuple(sorted(species.values(), key=lambda item: item.species_id)),
-        complete=existing.complete and incoming.complete,
+        media_ids=tuple(sorted(set(existing.media_ids) | set(incoming.media_ids))),
+        complete=existing.complete and incoming.complete and media_ids_match,
     )
 
 
@@ -768,9 +808,10 @@ def _parse_confirmed_evidence(
         return ()
     media = value.get("media")
     created_at = media.get("createdAt") if isinstance(media, dict) else None
+    media_id = _nonempty_string(media.get("id")) if isinstance(media, dict) else None
     observed = parse_utc_timestamp(created_at)
     species_values = value.get("species")
-    if observed is None or not isinstance(species_values, list):
+    if media_id is None or observed is None or not isinstance(species_values, list):
         return ()
     observed_at = observed.astimezone(UTC).replace(microsecond=0).isoformat()
     species: dict[str, PostcardSpecies] = {}
@@ -784,7 +825,7 @@ def _parse_confirmed_evidence(
             continue
         species[species_id] = PostcardSpecies(species_id, common_name, scientific_name)
     return tuple(
-        ConfirmedSpeciesEvidence(item, observed_at, source)
+        ConfirmedSpeciesEvidence(item, observed_at, source, media_id)
         for item in sorted(species.values(), key=lambda candidate: candidate.species_id)
     )
 
@@ -796,6 +837,7 @@ def _fetch_confirmed_history(
     include_manual_sightings: bool,
 ) -> _ConfirmedHistoryFetch:
     evidence: dict[tuple[str, str], ConfirmedSpeciesEvidence] = {}
+    species_by_media: dict[str, dict[str, PostcardSpecies]] = {}
     after: str | None = None
     seen_cursors: set[str] = set()
     pages = 0
@@ -835,6 +877,9 @@ def _fetch_confirmed_history(
             if any(item.source == _CONFIRMED_MANUAL_SOURCE for item in parsed):
                 accepted_manual_records += 1
             for item in parsed:
+                if item.source == _CONFIRMED_FEEDER_SOURCE and item.media_id is not None:
+                    media_species = species_by_media.setdefault(item.media_id, {})
+                    media_species[item.species.species_id] = item.species
                 key = (item.source, item.species.species_id)
                 existing = evidence.get(key)
                 if (
@@ -863,6 +908,10 @@ def _fetch_confirmed_history(
         accepted_records,
         accepted_manual_records,
         processed - accepted_records,
+        {
+            media_id: tuple(sorted(items.values(), key=lambda item: item.species_id))
+            for media_id, items in species_by_media.items()
+        },
     )
 
 
@@ -872,12 +921,22 @@ def _parse_postcard_state(value: object) -> BirdBuddyPostcard:
     postcard_id = _nonempty_string(value.get("id"))
     observed_at = _nonempty_string(value.get("observed_at"))
     species_values = value.get("species")
+    media_id_values = value.get("media_ids", [])
     if (
         postcard_id is None
         or observed_at is None
         or parse_utc_timestamp(observed_at) is None
         or not isinstance(species_values, list)
+        or not isinstance(media_id_values, list)
     ):
+        raise DataSourceError("Invalid Bird Buddy detection history")
+    media_ids = tuple(
+        media_id
+        for item in media_id_values
+        for media_id in [_nonempty_string(item)]
+        if media_id is not None
+    )
+    if len(media_ids) != len(media_id_values) or len(set(media_ids)) != len(media_ids):
         raise DataSourceError("Invalid Bird Buddy detection history")
     species: list[PostcardSpecies] = []
     for item in species_values:
@@ -889,7 +948,12 @@ def _parse_postcard_state(value: object) -> BirdBuddyPostcard:
         if species_id is None or common_name is None or scientific_name is None:
             raise DataSourceError("Invalid Bird Buddy detection history")
         species.append(PostcardSpecies(species_id, common_name, scientific_name))
-    return BirdBuddyPostcard(postcard_id, observed_at, tuple(species))
+    return BirdBuddyPostcard(
+        postcard_id,
+        observed_at,
+        tuple(species),
+        media_ids=tuple(sorted(media_ids)),
+    )
 
 
 def _parse_archived_species(value: object, species_id: str) -> ArchivedSpecies:
@@ -1007,6 +1071,7 @@ def _postcard_payload(postcard: BirdBuddyPostcard) -> dict[str, object]:
     return {
         "id": postcard.postcard_id,
         "observed_at": postcard.observed_at,
+        "media_ids": list(postcard.media_ids),
         "species": [
             {
                 "id": species.species_id,
@@ -1179,6 +1244,22 @@ def _latest_history_detection(
     return latest
 
 
+def _confirmed_postcard_species(
+    postcard: BirdBuddyPostcard,
+    species_by_media: dict[str, tuple[PostcardSpecies, ...]],
+) -> tuple[PostcardSpecies, ...] | None:
+    if not postcard.media_ids or any(
+        media_id not in species_by_media for media_id in postcard.media_ids
+    ):
+        return None
+    species = {
+        item.species_id: item
+        for media_id in postcard.media_ids
+        for item in species_by_media[media_id]
+    }
+    return tuple(sorted(species.values(), key=lambda item: item.species_id))
+
+
 def _update_history(
     state_dir: Path,
     feeder_id: str,
@@ -1188,6 +1269,7 @@ def _update_history(
     *,
     persist: bool,
     replace_manual_evidence: bool,
+    confirmed_species_by_media: dict[str, tuple[PostcardSpecies, ...]],
 ) -> _HistoryUpdate:
     current_iso = current.isoformat()
     lock = _history_lock(state_dir) if persist else nullcontext()
@@ -1198,19 +1280,37 @@ def _update_history(
             FeederHistory(current_iso, None, None, {}, {}, {}),
         )
         duplicates = 0
-        reclassified = 0
+        reclassified_postcard_ids: set[str] = set()
         for postcard in incoming:
             existing = history.postcards.get(postcard.postcard_id)
             if not postcard.species:
                 if existing is not None:
                     del history.postcards[postcard.postcard_id]
-                    reclassified += 1
+                    reclassified_postcard_ids.add(postcard.postcard_id)
                 continue
-            if existing == postcard:
+            if (
+                existing is not None
+                and existing.observed_at == postcard.observed_at
+                and existing.species == postcard.species
+            ):
                 duplicates += 1
             elif existing is not None:
-                reclassified += 1
+                reclassified_postcard_ids.add(postcard.postcard_id)
             history.postcards[postcard.postcard_id] = postcard
+        for postcard_id, postcard in list(history.postcards.items()):
+            confirmed_species = _confirmed_postcard_species(
+                postcard,
+                confirmed_species_by_media,
+            )
+            if confirmed_species is None or confirmed_species == postcard.species:
+                continue
+            history.postcards[postcard_id] = BirdBuddyPostcard(
+                postcard.postcard_id,
+                postcard.observed_at,
+                confirmed_species,
+                media_ids=postcard.media_ids,
+            )
+            reclassified_postcard_ids.add(postcard_id)
         replaced_sources = {_CONFIRMED_FEEDER_SOURCE}
         if replace_manual_evidence:
             replaced_sources.add(_CONFIRMED_MANUAL_SOURCE)
@@ -1240,7 +1340,7 @@ def _update_history(
         histories[feeder_id] = history
         if persist:
             write_json_atomic(_history_path(state_dir), _history_payload(histories), mode=0o600)
-    return _HistoryUpdate(history, duplicates, reclassified)
+    return _HistoryUpdate(history, duplicates, len(reclassified_postcard_ids))
 
 
 def sync_birdbuddy_detections(
@@ -1271,6 +1371,7 @@ def sync_birdbuddy_detections(
         current,
         persist=persist_history,
         replace_manual_evidence=include_manual_sightings,
+        confirmed_species_by_media=confirmed.species_by_media,
     )
     species = _aggregate_species(
         update.history,

@@ -188,10 +188,12 @@ Bird Buddy rotates its refresh token during every authenticated request, so
 even `discover` and seed previews must atomically update authentication state.
 Preview commands do not commit detection history or taxonomy cache changes.
 
-The provider reads high-confidence species metadata from new postcards. It
-also reads the species, capture time, origin, and feeder ID from confirmed
-history so a postcard is not missed when someone confirms it before Inky's
-next poll. It never requests media URLs or downloads photos, video, or audio.
+The provider reads high-confidence species metadata and media identifiers from
+new postcards. It also reads the species, capture time, origin, feeder ID, and
+media identifier from confirmed history so a postcard is not missed when
+someone confirms it before Inky's next poll. The identifiers link a confirmed
+correction back to its cached postcard; they never enter the public catalog.
+Inky never requests media URLs or downloads photos, video, or audio.
 It does not convert, reanalyze, collect, edit, discard, or share a postcard or
 control a feeder. The independent
 [pybirdbuddy project](https://github.com/jhansche/pybirdbuddy) demonstrates the
@@ -201,6 +203,9 @@ authoritative Bird Buddy API contract and is not a runtime dependency here.
 Bird Buddy removes a postcard from the new-postcard feed after it is confirmed.
 The controller therefore combines exact postcard history with confirmed
 metadata. Exact postcards are deduplicated and counted once per species.
+When confirmed history covers every media item on a cached postcard, its
+species replace the earlier preview classification. An incomplete match leaves
+the cached postcard unchanged rather than guessing.
 Confirmed records fill gaps in species presence and supply the newest capture
 time, but they do not increase an existing postcard count: one postcard can
 contain several media records, and treating each as a visit would inflate the
