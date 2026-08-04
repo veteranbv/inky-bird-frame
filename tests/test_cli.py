@@ -17,6 +17,9 @@ import inky_bird_frame
 from inky_bird_frame.birds import BirdSpecies, DateRange
 from inky_bird_frame.catalog import sha256_file
 from inky_bird_frame.cli import (
+    _confirm_birdbuddy_authorization,
+    birdbuddy_login_command,
+    birdbuddy_logout_command,
     build_parser,
     catalog_sync_command,
     config_install_command,
@@ -51,6 +54,81 @@ def controller_config(state_dir: Path, catalog_dir: Path | None = None) -> Simpl
 
 
 class CliTests(unittest.TestCase):
+    def test_birdbuddy_commands_parse_explicit_authorization_and_logout(self) -> None:
+        login = build_parser().parse_args(
+            [
+                "birdbuddy",
+                "login",
+                "--config",
+                "instance.toml",
+                "--feeder-id",
+                "feeder-1",
+                "--confirm-authorized-access",
+            ]
+        )
+        status = build_parser().parse_args(["birdbuddy", "status", "--config", "instance.toml"])
+        logout = build_parser().parse_args(
+            ["birdbuddy", "logout", "--config", "instance.toml", "--yes"]
+        )
+
+        self.assertTrue(login.confirm_authorized_access)
+        self.assertEqual(login.feeder_id, "feeder-1")
+        self.assertEqual(str(status.config), "instance.toml")
+        self.assertTrue(logout.yes)
+
+    def test_noninteractive_birdbuddy_login_fails_before_credentials(self) -> None:
+        stdin = SimpleNamespace(isatty=lambda: False)
+        with (
+            patch("inky_bird_frame.cli.sys.stdin", stdin),
+            self.assertRaisesRegex(DataSourceError, "confirmation is required"),
+        ):
+            _confirm_birdbuddy_authorization(False)
+
+    def test_birdbuddy_login_uses_environment_without_echoing_credentials(self) -> None:
+        args = Namespace(
+            config=Path("instance.toml"),
+            confirm_authorized_access=True,
+            feeder_id="feeder-1",
+        )
+        config = controller_config(Path("state"))
+        with (
+            patch("inky_bird_frame.cli._config", return_value=config),
+            patch.dict(
+                "os.environ",
+                {
+                    "INKY_BIRDBUDDY_EMAIL": "birder@example.test",
+                    "INKY_BIRDBUDDY_PASSWORD": "private-password",
+                },
+                clear=True,
+            ),
+            patch(
+                "inky_bird_frame.cli.login_birdbuddy",
+                return_value={"authenticated": True},
+            ) as login,
+            redirect_stdout(io.StringIO()) as output,
+        ):
+            result = birdbuddy_login_command(args)
+
+        self.assertEqual(result, 0)
+        login.assert_called_once_with(
+            Path("state"),
+            email="birder@example.test",
+            password="private-password",
+            authorization_confirmed=True,
+            feeder_id="feeder-1",
+        )
+        self.assertNotIn("private-password", output.getvalue())
+        self.assertNotIn("birder@example.test", output.getvalue())
+
+    def test_birdbuddy_logout_requires_yes_before_loading_config(self) -> None:
+        with (
+            patch("inky_bird_frame.cli._config") as load,
+            self.assertRaisesRegex(DataSourceError, "requires --yes"),
+        ):
+            birdbuddy_logout_command(Namespace(yes=False, config=Path("instance.toml")))
+
+        load.assert_not_called()
+
     def test_runtime_version_matches_package_metadata(self) -> None:
         self.assertEqual(inky_bird_frame.__version__, version("inky-bird-frame"))
 
@@ -1396,6 +1474,7 @@ rotation_mode = "shuffle_bag"
                 {"name": "inaturalist", "status": "ok"},
                 {"name": "ebird", "status": "ok"},
                 {"name": "birdweather", "status": "ok"},
+                {"name": "birdbuddy", "status": "ok"},
             ],
             "unresolved_species": [
                 {
@@ -1403,7 +1482,13 @@ rotation_mode = "shuffle_bag"
                     "species_code": "42",
                     "common_name": "Split Bird",
                     "scientific_name": "Avis split",
-                }
+                },
+                {
+                    "provider": "birdbuddy",
+                    "species_code": "species-new",
+                    "common_name": "New Bird",
+                    "scientific_name": "Avis nova",
+                },
             ],
             "new_species": [],
         }
@@ -1419,9 +1504,30 @@ rotation_mode = "shuffle_bag"
         degraded_keys = [call.kwargs["key"] for call in degradation.call_args_list]
         recovered_keys = [call.kwargs["key"] for call in recovery.call_args_list]
         self.assertIn("birdweather-taxonomy", degraded_keys)
+        self.assertIn("birdbuddy-taxonomy", degraded_keys)
         self.assertNotIn("ebird-taxonomy", degraded_keys)
         self.assertIn("ebird-taxonomy", recovered_keys)
         self.assertNotIn("birdweather-taxonomy", recovered_keys)
+        self.assertNotIn("birdbuddy-taxonomy", recovered_keys)
+
+    def test_refresh_recovers_birdbuddy_taxonomy_alert(self) -> None:
+        config = SimpleNamespace(discovery=SimpleNamespace(sources=(DiscoveryProvider.BIRDBUDDY,)))
+        result = {
+            "providers": [{"name": "birdbuddy", "status": "ok"}],
+            "unresolved_species": [],
+            "new_species": [],
+        }
+        with (
+            patch("inky_bird_frame.cli._config", return_value=config),
+            patch("inky_bird_frame.cli.run_refresh_cycle", return_value=result),
+            patch("inky_bird_frame.cli.safe_record_degradation"),
+            patch("inky_bird_frame.cli.safe_record_recovery") as recovery,
+            redirect_stdout(io.StringIO()),
+        ):
+            refresh_command(Namespace())
+
+        recovered_keys = [call.kwargs["key"] for call in recovery.call_args_list]
+        self.assertIn("birdbuddy-taxonomy", recovered_keys)
 
 
 if __name__ == "__main__":

@@ -15,6 +15,7 @@ from inky_bird_frame.config import PublicCatalogConfig, load_config
 from inky_bird_frame.errors import CatalogPublishError
 from inky_bird_frame.http import write_json_atomic
 from inky_bird_frame.publisher import (
+    _check_json_privacy,
     _remote_repository,
     _validate_checkout,
     run_catalog_publish,
@@ -168,6 +169,22 @@ def _initialize_remote(root: Path) -> tuple[Path, Path]:
 
 
 class PublisherTests(unittest.TestCase):
+    def test_birdbuddy_private_fields_are_rejected_from_catalog_json(self) -> None:
+        for field in (
+            "authorization_confirmed_at",
+            "birdbuddy",
+            "email",
+            "feeder_id",
+            "password",
+            "postcard_id",
+            "refresh_token",
+        ):
+            with (
+                self.subTest(field=field),
+                self.assertRaisesRegex(CatalogPublishError, "Private field"),
+            ):
+                _check_json_privacy({field: "private"}, Path("manifest.json"))
+
     def test_parses_only_supported_github_repository_remotes(self) -> None:
         self.assertEqual(
             _remote_repository("https://github.com/example/inky-bird-frame.git"),

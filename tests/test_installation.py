@@ -15,6 +15,7 @@ from inky_bird_frame.installation import (
     CommandResult,
     DiagnosticCheck,
     InstallationRole,
+    _birdbuddy_auth_check,
     _display_hardware_check,
     _health_url,
     controller_systemd_units,
@@ -56,6 +57,42 @@ rotation_mode = "shuffle_bag"
 
 
 class InstallationTests(unittest.TestCase):
+    def test_birdbuddy_doctor_check_warns_when_login_is_missing(self) -> None:
+        with TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            config_path = write_config(root, Path("/usr/bin/false"))
+            config_path.write_text(
+                config_path.read_text().replace(
+                    "[discovery]\n",
+                    '[discovery]\nsources = ["birdbuddy"]\n',
+                )
+            )
+            config = load_config(config_path)
+            with patch(
+                "inky_bird_frame.installation.birdbuddy_status",
+                return_value={"authenticated": False},
+            ):
+                check = _birdbuddy_auth_check(config)
+
+        self.assertEqual(check.status, CheckStatus.WARN)
+        self.assertIn("not authenticated", check.summary)
+
+    def test_birdbuddy_doctor_check_reports_redacted_selected_feeder(self) -> None:
+        with TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            config = load_config(write_config(root, Path("/usr/bin/false")))
+            with patch(
+                "inky_bird_frame.installation.birdbuddy_status",
+                return_value={
+                    "authenticated": True,
+                    "feeder": {"name": "Garden feeder", "role": "member"},
+                },
+            ):
+                check = _birdbuddy_auth_check(config)
+
+        self.assertEqual(check.status, CheckStatus.PASS)
+        self.assertEqual(check.detail, "Selected feeder: Garden feeder (member)")
+
     def test_display_hardware_check_accepts_both_supported_geometries(self) -> None:
         for geometry in ("1600x1200", "800x480"):
             with (

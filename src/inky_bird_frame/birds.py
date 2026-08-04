@@ -51,6 +51,15 @@ class BirdWeatherSpecies:
 
 
 @dataclass(frozen=True)
+class BirdBuddySpecies:
+    species_id: str
+    common_name: str
+    scientific_name: str
+    detection_count: int
+    latest_detection_at: str
+
+
+@dataclass(frozen=True)
 class EbirdResolution:
     species: list[BirdSpecies]
     unresolved: list[EbirdSpecies]
@@ -559,6 +568,44 @@ def resolve_birdweather_species(
         for species, detection in zip(resolution.species, resolved_detections, strict=True)
     ]
     return resolved, [item for item in detections if str(item.species_id) in unresolved_codes]
+
+
+def resolve_birdbuddy_species(
+    detections: list[BirdBuddySpecies],
+    cache_path: Path,
+    *,
+    now: datetime | None = None,
+    timeout_seconds: float = 10.0,
+    persist_cache: bool = True,
+) -> tuple[list[BirdSpecies], list[BirdBuddySpecies]]:
+    observations = [
+        EbirdSpecies(
+            species_code=item.species_id,
+            common_name=item.common_name,
+            scientific_name=item.scientific_name,
+            observed_at=item.latest_detection_at,
+        )
+        for item in detections
+    ]
+    counts = {item.species_id: item.detection_count for item in detections}
+    resolution = _resolve_external_species(
+        observations,
+        cache_path,
+        source="Bird Buddy",
+        counts=counts,
+        now=now,
+        timeout_seconds=timeout_seconds,
+        persist_cache=persist_cache,
+    )
+    unresolved_codes = {item.species_code for item in resolution.unresolved}
+    resolved_detections = [item for item in detections if item.species_id not in unresolved_codes]
+    if len(resolution.species) != len(resolved_detections):
+        raise DataSourceError("Bird Buddy taxonomy resolution returned inconsistent results")
+    resolved = [
+        replace(species, latest_detection_at=detection.latest_detection_at)
+        for species, detection in zip(resolution.species, resolved_detections, strict=True)
+    ]
+    return resolved, [item for item in detections if item.species_id in unresolved_codes]
 
 
 def _resolve_external_species(

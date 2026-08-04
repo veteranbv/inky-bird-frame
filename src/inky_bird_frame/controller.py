@@ -14,7 +14,9 @@ from pathlib import Path
 from tempfile import TemporaryDirectory
 from typing import cast
 
+from .birdbuddy import sync_birdbuddy_detections
 from .birds import (
+    BirdBuddySpecies,
     BirdSpecies,
     BirdWeatherSpecies,
     DateRange,
@@ -24,6 +26,7 @@ from .birds import (
     fetch_ebird_observations,
     fetch_inaturalist_birds,
     fetch_taxon_context,
+    resolve_birdbuddy_species,
     resolve_birdweather_species,
     resolve_ebird_species,
 )
@@ -96,6 +99,7 @@ class ProviderStatus:
     species_count: int
     unresolved_count: int = 0
     error: str | None = None
+    details: dict[str, object] | None = None
 
     def as_dict(self) -> dict[str, object]:
         value: dict[str, object] = {
@@ -106,6 +110,8 @@ class ProviderStatus:
         }
         if self.error is not None:
             value["error"] = self.error
+        if self.details is not None:
+            value["details"] = self.details
         return value
 
 
@@ -114,7 +120,7 @@ class DiscoveryResult:
     location: DiscoveryLocation | None
     species: list[BirdSpecies]
     providers: list[ProviderStatus]
-    unresolved: list[EbirdSpecies | BirdWeatherSpecies]
+    unresolved: list[EbirdSpecies | BirdWeatherSpecies | BirdBuddySpecies]
 
 
 @dataclass(frozen=True)
@@ -197,7 +203,7 @@ def discover_species(
         raise ValueError("BirdWeather species_limit must be between 1 and 100")
     providers: list[ProviderStatus] = []
     provider_species: list[list[BirdSpecies]] = []
-    unresolved: list[EbirdSpecies | BirdWeatherSpecies] = []
+    unresolved: list[EbirdSpecies | BirdWeatherSpecies | BirdBuddySpecies] = []
     location: DiscoveryLocation | None = None
 
     location_provider_names: list[str] = []
@@ -326,6 +332,46 @@ def discover_species(
                     )
                 )
 
+    if DiscoveryProvider.BIRDBUDDY in selected_sources:
+        try:
+            sync = sync_birdbuddy_detections(
+                config.controller.state_dir,
+                window=selected_window,
+                limit=selected_limit,
+                persist_history=persist_taxonomy_cache,
+            )
+            resolved, birdbuddy_unresolved = resolve_birdbuddy_species(
+                sync.species,
+                config.controller.state_dir / "birdbuddy-taxonomy-crosswalk.json",
+                persist_cache=persist_taxonomy_cache,
+            )
+        except (DataSourceError, ValueError) as exc:
+            providers.append(ProviderStatus("birdbuddy", "error", 0, error=str(exc)))
+        else:
+            unresolved.extend(birdbuddy_unresolved)
+            if sync.species and not resolved:
+                providers.append(
+                    ProviderStatus(
+                        "birdbuddy",
+                        "error",
+                        0,
+                        unresolved_count=len(birdbuddy_unresolved),
+                        error="No Bird Buddy detections had an exact iNaturalist species match",
+                        details=sync.stats.as_dict(),
+                    )
+                )
+            else:
+                provider_species.append(resolved)
+                providers.append(
+                    ProviderStatus(
+                        "birdbuddy",
+                        "ok",
+                        len(resolved),
+                        unresolved_count=len(birdbuddy_unresolved),
+                        details=sync.stats.as_dict(),
+                    )
+                )
+
     if not provider_species:
         failures = "; ".join(
             f"{provider.name}: {provider.error}" for provider in providers if provider.error
@@ -355,9 +401,22 @@ def _merge_provider_species(provider_species: list[list[BirdSpecies]]) -> list[B
                 observation_count=max(existing.observation_count, species.observation_count),
                 source="+".join(sources),
                 sources=sources,
-                latest_detection_at=(existing.latest_detection_at or species.latest_detection_at),
+                latest_detection_at=_latest_detection_at(
+                    existing.latest_detection_at,
+                    species.latest_detection_at,
+                ),
             )
     return [merged[taxon_id] for taxon_id in order]
+
+
+def _latest_detection_at(first: str | None, second: str | None) -> str | None:
+    candidates = [
+        (parsed, value)
+        for value in (first, second)
+        if value is not None
+        if (parsed := parse_utc_timestamp(value)) is not None
+    ]
+    return max(candidates, default=(None, None), key=lambda item: item[0])[1]
 
 
 def _snapshot_path(config: AppConfig) -> Path:
@@ -387,14 +446,17 @@ def _species_payload(species: BirdSpecies) -> dict[str, object]:
 
 
 def _unresolved_species_payload(
-    species: EbirdSpecies | BirdWeatherSpecies,
+    species: EbirdSpecies | BirdWeatherSpecies | BirdBuddySpecies,
 ) -> dict[str, object]:
     if isinstance(species, EbirdSpecies):
         provider = "ebird"
         provider_species_id = species.species_code
-    else:
+    elif isinstance(species, BirdWeatherSpecies):
         provider = "birdweather"
         provider_species_id = str(species.species_id)
+    else:
+        provider = "birdbuddy"
+        provider_species_id = species.species_id
     return {
         "provider": provider,
         "species_code": provider_species_id,

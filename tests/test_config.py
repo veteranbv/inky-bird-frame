@@ -206,6 +206,32 @@ class ConfigTests(unittest.TestCase):
             (DiscoveryProvider.EBIRD, DiscoveryProvider.BIRDWEATHER),
         )
 
+    def test_birdbuddy_source_uses_private_state_instead_of_configured_credentials(self) -> None:
+        configured = CONFIG.replace(
+            "[discovery]\n",
+            '[discovery]\nsources = ["birdbuddy"]\n',
+        )
+        with TemporaryDirectory() as temporary:
+            path = Path(temporary) / "config.toml"
+            path.write_text(configured)
+            config = load_config(path)
+
+        self.assertEqual(config.discovery.sources, (DiscoveryProvider.BIRDBUDDY,))
+
+    def test_legacy_all_source_does_not_implicitly_enable_birdbuddy(self) -> None:
+        configured = CONFIG.replace(
+            "[discovery]\n",
+            '[discovery]\nsource = "all"\n'
+            'ebird_api_key = "ebird-secret"\n'
+            'birdweather_token = "station-secret"\n',
+        )
+        with TemporaryDirectory() as temporary:
+            path = Path(temporary) / "config.toml"
+            path.write_text(configured)
+            config = load_config(path)
+
+        self.assertNotIn(DiscoveryProvider.BIRDBUDDY, config.discovery.sources)
+
     def test_rejects_source_and_sources_together(self) -> None:
         configured = CONFIG.replace(
             "[discovery]\n",

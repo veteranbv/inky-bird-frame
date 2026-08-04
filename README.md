@@ -23,10 +23,11 @@ plates on a color e-paper display.
 
 The controller checks the observation sources you configure. iNaturalist and
 eBird use your distance and time window; BirdWeather uses recent detections from
-your station. If a matching plate already exists, the controller uses it. If
-not, it gathers licensed reference photos, researches the species, creates a
-plate with Codex, and reviews the result before it can appear on the frame.
-Approved plates are cached and reused.
+your station; Bird Buddy can read authorized postcard detections from one
+feeder. If a matching plate already exists, the controller uses it. If not, it
+gathers licensed reference photos, researches the species, creates a plate with
+Codex, and reviews the result before it can appear on the frame. Approved plates
+are cached and reused.
 
 ## How it works
 
@@ -274,9 +275,11 @@ uv run inky-bird-frame catalog-publish --config config.toml --dry-run
 uv run inky-bird-frame catalog-publish --config config.toml
 ```
 
-Choose any combination of `inaturalist`, `ebird`, and `birdweather` in
-`discovery.sources`. BirdWeather reads detection summaries from one station; it
-does not receive recordings or manage microphones. Every provider result is
+Choose any combination of `inaturalist`, `ebird`, `birdweather`, and
+`birdbuddy` in `discovery.sources`. BirdWeather reads detection summaries from
+one station; it does not receive recordings or manage microphones. Bird Buddy
+is an opt-in private-API integration that requires the user to obtain Bird
+Buddy's permission and confirm it during login. Every provider result is
 matched to the same iNaturalist species identity before it enters the catalog.
 
 Choose `last-day`, `last-week`, `last-30-days`, `last-year`, or `all-time` for
