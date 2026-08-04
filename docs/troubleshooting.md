@@ -85,6 +85,64 @@ A multi-provider refresh reports each provider independently and continues when
 at least one configured provider is healthy. A refresh failure does not remove
 the existing active catalog.
 
+### BirdWeather shows detections, but the frame does not change
+
+Start at the controller. `discover` queries the configured providers
+interactively, `refresh` saves the result and rebuilds the active catalog, and
+`status` shows the approved catalog and any retained generation work:
+
+```bash
+inky-bird-frame discover --config /path/to/config.toml
+inky-bird-frame refresh --config /path/to/config.toml
+inky-bird-frame status --config /path/to/config.toml
+```
+
+If the command returns `"ok": false`, start with its top-level `error`. When
+every configured provider fails, the command stops before it can return a
+`providers` array. A successful command may still report one failed provider.
+In that case, find the `birdweather` entry and read its `error` field before
+changing configuration.
+
+A BirdWeather status of `ok` means the station request and taxonomy step
+completed without a provider-level error. `species_count` is the number of
+distinct avian species matched to the catalog's iNaturalist taxonomy, not the
+number of recordings. `unresolved_count` reports otherwise usable station
+species that could not be matched. Common error causes include the station
+token, outbound HTTPS, the controller clock, a BirdWeather outage, iNaturalist
+availability, or a taxonomy mismatch.
+
+The station API returns one row per species, not one row per recording.
+Detection counts use the configured time window, and the row count is capped
+by `species_limit` and BirdWeather's 100-species maximum. Species are also
+deduplicated against the other discovery providers. Repeated detections update
+one species record; they do not create more plates. If a detected species is
+absent from `approved`, it still needs a plate before it can appear. Check
+`pending`, `deferred`, `terminal_blocked`, and `failed` before forcing a run. A
+plate you previously rejected or an interrupted pending directory without a
+manifest is also terminal; for a live-only detection, either state may be
+absent from those lists. Inspect the taxon and run `retry TAXON_ID` to make it
+eligible again. When no deferred or terminal state exists, let the scheduled
+generator run or invoke
+`inky-bird-frame generate --config /path/to/config.toml` for an immediate
+attempt.
+
+The active catalog is exactly what the display node can choose from:
+
+```bash
+# On the controller
+curl --fail --silent "http://127.0.0.1:8793/v1/catalog"
+
+# On a systemd display node
+journalctl -u inky-bird-frame-display.service -n 100 --no-pager
+```
+
+When `prioritize_latest_detection` is enabled, the display shows the newest
+unconsumed detection once and then resumes normal rotation. Its successful
+cycle reports `"selection_reason": "latest_detection"`; `display_update` may
+be `unchanged` when that plate is already on the panel. A station
+classification that looks wrong must be corrected at the detector. Inky Bird
+Frame does not download the audio or apply a second confidence filter.
+
 ### TLS or certificate errors right after boot
 
 Raspberry Pi computers have no battery-backed real-time clock. After a power
