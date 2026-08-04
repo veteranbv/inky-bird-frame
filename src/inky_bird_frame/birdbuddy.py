@@ -179,6 +179,12 @@ _CONFIRMED_SOURCES: Final = {
     _CONFIRMED_FEEDER_SOURCE,
     _CONFIRMED_MANUAL_SOURCE,
 }
+_FEEDER_REFERENCE_TYPES: Final = {
+    "FeederForMember",
+    "FeederForOwner",
+    "FeederForPublic",
+    "FeederForRemoteGuest",
+}
 
 
 @dataclass(frozen=True)
@@ -595,6 +601,8 @@ def _refreshed_access_token(state_dir: Path) -> tuple[str, BirdBuddyFeeder]:
 def _feeder_id(value: object) -> str | None:
     if not isinstance(value, dict):
         return None
+    if _nonempty_string(value.get("__typename")) not in _FEEDER_REFERENCE_TYPES:
+        return None
     return _nonempty_string(value.get("id"))
 
 
@@ -620,7 +628,10 @@ def _parse_postcard(
     if isinstance(media_values, list):
         for media in media_values:
             media_id = _nonempty_string(media.get("id")) if isinstance(media, dict) else None
-            if media_id is None:
+            media_type = (
+                _nonempty_string(media.get("__typename")) if isinstance(media, dict) else None
+            )
+            if media_id is None or media_type is None:
                 media_complete = False
                 continue
             media_ids.add(media_id)
@@ -872,7 +883,7 @@ def _fetch_confirmed_history(
     include_manual_sightings: bool,
 ) -> _ConfirmedHistoryFetch:
     evidence: dict[tuple[str, str], ConfirmedSpeciesEvidence] = {}
-    species_by_media: dict[str, dict[str, PostcardSpecies]] = {}
+    records_by_media: dict[str, _ConfirmedMediaRecord] = {}
     after: str | None = None
     seen_cursors: set[str] = set()
     pages = 0
@@ -912,13 +923,15 @@ def _fetch_confirmed_history(
             if parsed.source == _CONFIRMED_MANUAL_SOURCE:
                 accepted_manual_records += 1
             if parsed.source == _CONFIRMED_FEEDER_SOURCE:
-                parsed_species = {item.species_id: item for item in parsed.species}
-                existing_species = species_by_media.get(parsed.media_id)
-                if existing_species is not None and existing_species != parsed_species:
+                existing_record = records_by_media.get(parsed.media_id)
+                if existing_record is not None and (
+                    existing_record.observed_at != parsed.observed_at
+                    or existing_record.species != parsed.species
+                ):
                     raise DataSourceError(
                         "Bird Buddy confirmed history returned conflicting media records"
                     )
-                species_by_media[parsed.media_id] = parsed_species
+                records_by_media[parsed.media_id] = parsed
             for species in parsed.species:
                 item = ConfirmedSpeciesEvidence(
                     species,
@@ -953,10 +966,7 @@ def _fetch_confirmed_history(
         accepted_records,
         accepted_manual_records,
         processed - accepted_records,
-        {
-            media_id: tuple(sorted(items.values(), key=lambda item: item.species_id))
-            for media_id, items in species_by_media.items()
-        },
+        {media_id: record.species for media_id, record in records_by_media.items()},
     )
 
 
@@ -1522,7 +1532,7 @@ def _update_history(
         reclassified_postcard_ids: set[str] = set()
         for postcard in incoming:
             existing = history.postcards.get(postcard.postcard_id)
-            if not postcard.species:
+            if not postcard.species and not postcard.media_ids:
                 if existing is not None:
                     del history.postcards[postcard.postcard_id]
                     reclassified_postcard_ids.add(postcard.postcard_id)

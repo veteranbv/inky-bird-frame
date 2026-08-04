@@ -58,7 +58,7 @@ def feed_node(
         "id": postcard_id,
         "createdAt": observed_at,
         "inferenceConfidenceLevel": "HIGH_CONFIDENCE",
-        "feeder": {"id": "feeder-1"},
+        "feeder": {"__typename": "FeederForMember", "id": "feeder-1"},
         "medias": [{"__typename": "MediaImage", "id": media_id} for media_id in media_ids],
         "sightingReportPreview": {"sightings": list(sightings)},
     }
@@ -73,7 +73,7 @@ def confirmed_node(
 ) -> dict[str, object]:
     return {
         "origin": origin,
-        "feeder": {"id": feeder_id},
+        "feeder": {"__typename": "FeederForMember", "id": feeder_id},
         "media": {"__typename": "MediaImage", "id": media_id, "createdAt": observed_at},
         "species": [
             {
@@ -217,6 +217,17 @@ class BirdBuddyTests(unittest.TestCase):
         assert low_confidence is not None
         self.assertEqual(low_confidence.species, ())
         self.assertIsNone(_parse_postcard(node, "another-feeder"))
+
+        missing_media_type = feed_node(recognized_sighting)
+        missing_media_type["medias"] = [{"__typename": None, "id": "media-1"}]
+        parsed_missing_media_type = _parse_postcard(missing_media_type, "feeder-1")
+        self.assertIsNotNone(parsed_missing_media_type)
+        assert parsed_missing_media_type is not None
+        self.assertFalse(parsed_missing_media_type.complete)
+
+        missing_feeder_type = feed_node(recognized_sighting)
+        missing_feeder_type["feeder"] = {"__typename": None, "id": "feeder-1"}
+        self.assertIsNone(_parse_postcard(missing_feeder_type, "feeder-1"))
 
         unlocked = {
             **node,
@@ -507,6 +518,9 @@ class BirdBuddyTests(unittest.TestCase):
         missing_media_type["media"]["__typename"] = None
         missing_feeder = confirmed_node(origin="POSTCARD", feeder_id="feeder-1")
         missing_feeder["feeder"] = None
+        missing_feeder_type = confirmed_node(origin="POSTCARD", feeder_id="feeder-1")
+        assert isinstance(missing_feeder_type["feeder"], dict)
+        missing_feeder_type["feeder"]["__typename"] = None
         unsupported_origin = confirmed_node(origin="UNKNOWN", feeder_id="feeder-1")
 
         assert selected is not None
@@ -540,6 +554,12 @@ class BirdBuddyTests(unittest.TestCase):
         with self.assertRaisesRegex(DataSourceError, "record was incomplete"):
             _parse_confirmed_evidence(
                 missing_feeder,
+                "feeder-1",
+                include_manual_sightings=False,
+            )
+        with self.assertRaisesRegex(DataSourceError, "record was incomplete"):
+            _parse_confirmed_evidence(
+                missing_feeder_type,
                 "feeder-1",
                 include_manual_sightings=False,
             )
@@ -644,6 +664,40 @@ class BirdBuddyTests(unittest.TestCase):
         )
         self.assertEqual(result.species_by_media["media-2"], ())
         self.assertEqual(result.records_accepted, 2)
+
+    def test_confirmed_history_rejects_timestamp_conflicts_for_one_media(self) -> None:
+        page = {
+            "me": {
+                "mediasOwned": {
+                    "edges": [
+                        {
+                            "node": confirmed_node(
+                                origin="POSTCARD",
+                                feeder_id="feeder-1",
+                                observed_at="2026-08-03T10:00:00Z",
+                            )
+                        },
+                        {
+                            "node": confirmed_node(
+                                origin="POSTCARD",
+                                feeder_id="feeder-1",
+                                observed_at="2026-08-03T11:00:00Z",
+                            )
+                        },
+                    ],
+                    "pageInfo": {"hasNextPage": False, "endCursor": None},
+                }
+            }
+        }
+        with (
+            patch("inky_bird_frame.birdbuddy._graphql_request", return_value=page),
+            self.assertRaisesRegex(DataSourceError, "conflicting media records"),
+        ):
+            _fetch_confirmed_history(
+                "access-secret",
+                "feeder-1",
+                include_manual_sightings=False,
+            )
 
     def test_confirmed_history_rejects_malformed_selected_feeder_record(self) -> None:
         malformed = confirmed_node(origin="POSTCARD", feeder_id="feeder-1")
@@ -1023,6 +1077,76 @@ class BirdBuddyTests(unittest.TestCase):
         stored = history["feeders"]["feeder-1"]["postcards"][0]
         self.assertEqual(stored["media_ids"], ["media-1"])
         self.assertEqual(stored["species"], [])
+
+    def test_confirmed_media_recovers_same_sync_feed_tombstone_as_exact_postcard(self) -> None:
+        feeder = BirdBuddyFeeder("feeder-1", "Garden feeder", "member")
+        now = datetime(2026, 8, 3, 12, 0, tzinfo=UTC)
+        exact = postcard(
+            "postcard-exact",
+            now - timedelta(hours=2),
+            media_ids=("media-exact",),
+        )
+        tombstone = BirdBuddyPostcard(
+            "postcard-confirmed",
+            (now - timedelta(hours=1)).isoformat(),
+            (),
+            media_ids=("media-confirmed",),
+        )
+        evidence = ConfirmedSpeciesEvidence(
+            exact.species[0],
+            tombstone.observed_at,
+            "selected_feeder",
+        )
+        confirmed = _ConfirmedHistoryFetch(
+            [evidence],
+            1,
+            1,
+            1,
+            0,
+            0,
+            {"media-confirmed": exact.species},
+        )
+        with TemporaryDirectory() as temporary:
+            state_dir = Path(temporary)
+            with patch(
+                "inky_bird_frame.birdbuddy._authenticate",
+                return_value=("access", "refresh", [feeder]),
+            ):
+                login_birdbuddy(
+                    state_dir,
+                    email="birder@example.test",
+                    password="private-password",
+                    authorization_confirmed=True,
+                    now=now,
+                )
+            with (
+                patch(
+                    "inky_bird_frame.birdbuddy._refresh_access_token",
+                    return_value=("access", "replacement"),
+                ),
+                patch(
+                    "inky_bird_frame.birdbuddy._fetch_postcards",
+                    return_value=([exact, tombstone], 2, 2, 1),
+                ),
+                patch(
+                    "inky_bird_frame.birdbuddy._fetch_confirmed_history",
+                    return_value=confirmed,
+                ),
+            ):
+                result = sync_birdbuddy_detections(
+                    state_dir,
+                    window=ObservationWindow.ALL_TIME,
+                    limit=20,
+                    now=now,
+                )
+            history = json.loads((state_dir / "birdbuddy-detections.json").read_text())
+
+        self.assertEqual(result.species[0].detection_count, 2)
+        stored = {item["id"]: item for item in history["feeders"]["feeder-1"]["postcards"]}
+        self.assertEqual(
+            stored["postcard-confirmed"]["species"][0]["scientific_name"],
+            "Sialia sialis",
+        )
 
     def test_sync_discards_legacy_postcard_without_media_linkage(self) -> None:
         feeder = BirdBuddyFeeder("feeder-1", "Garden feeder", "member")
@@ -1580,7 +1704,11 @@ class BirdBuddyTests(unittest.TestCase):
                                 "id": original.postcard_id,
                                 "createdAt": original.observed_at,
                                 "inferenceConfidenceLevel": "HIGH_CONFIDENCE",
-                                "feeder": {"id": feeder.feeder_id},
+                                "feeder": {
+                                    "__typename": "FeederForMember",
+                                    "id": feeder.feeder_id,
+                                },
+                                "medias": [{"__typename": "MediaImage", "id": "media-1"}],
                                 "sightingReportPreview": None,
                             }
                         }
