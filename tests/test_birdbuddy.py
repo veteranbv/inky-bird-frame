@@ -500,6 +500,8 @@ class BirdBuddyTests(unittest.TestCase):
         )
         malformed = confirmed_node(origin="POSTCARD", feeder_id="feeder-1")
         malformed["species"] = [{"__typename": "SpeciesBird", "id": None}]
+        missing_species_type = confirmed_node(origin="POSTCARD", feeder_id="feeder-1")
+        missing_species_type["species"] = [{}]
         missing_feeder = confirmed_node(origin="POSTCARD", feeder_id="feeder-1")
         missing_feeder["feeder"] = None
         unsupported_origin = confirmed_node(origin="UNKNOWN", feeder_id="feeder-1")
@@ -517,6 +519,12 @@ class BirdBuddyTests(unittest.TestCase):
         with self.assertRaisesRegex(DataSourceError, "record was incomplete"):
             _parse_confirmed_evidence(
                 malformed,
+                "feeder-1",
+                include_manual_sightings=False,
+            )
+        with self.assertRaisesRegex(DataSourceError, "record was incomplete"):
+            _parse_confirmed_evidence(
+                missing_species_type,
                 "feeder-1",
                 include_manual_sightings=False,
             )
@@ -989,6 +997,7 @@ class BirdBuddyTests(unittest.TestCase):
                     limit=20,
                     now=now + timedelta(minutes=5),
                 )
+            status = birdbuddy_status(state_dir)
             history = json.loads((state_dir / "birdbuddy-detections.json").read_text())
 
         self.assertEqual(
@@ -999,6 +1008,9 @@ class BirdBuddyTests(unittest.TestCase):
         self.assertEqual(corrected.stats.reclassified_postcards, 1)
         self.assertEqual(removed.species, [])
         self.assertEqual(removed.stats.reclassified_postcards, 1)
+        status_history = status["history"]
+        assert isinstance(status_history, dict)
+        self.assertIsNone(status_history["latest_detection_at"])
         stored = history["feeders"]["feeder-1"]["postcards"][0]
         self.assertEqual(stored["media_ids"], ["media-1"])
         self.assertEqual(stored["species"], [])

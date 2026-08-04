@@ -840,7 +840,10 @@ def _parse_confirmed_evidence(
     for item in species_values:
         if not isinstance(item, dict):
             raise DataSourceError("Bird Buddy confirmed history record was incomplete")
-        if item.get("__typename") != "SpeciesBird":
+        species_type = _nonempty_string(item.get("__typename"))
+        if species_type is None:
+            raise DataSourceError("Bird Buddy confirmed history record was incomplete")
+        if species_type != "SpeciesBird":
             continue
         species_id = _nonempty_string(item.get("id"))
         common_name = _nonempty_string(item.get("name"))
@@ -1375,7 +1378,9 @@ def _latest_history_detection(
     history: FeederHistory, *, include_manual_sightings: bool
 ) -> str | None:
     latest: str | None = None
-    timestamps = [postcard.observed_at for postcard in history.postcards.values()]
+    timestamps = [
+        postcard.observed_at for postcard in history.postcards.values() if postcard.species
+    ]
     timestamps.extend(species.latest_detection_at for species in history.archived_species.values())
     timestamps.extend(
         item.observed_at
