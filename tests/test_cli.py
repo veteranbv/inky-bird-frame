@@ -1474,6 +1474,7 @@ rotation_mode = "shuffle_bag"
                 {"name": "inaturalist", "status": "ok"},
                 {"name": "ebird", "status": "ok"},
                 {"name": "birdweather", "status": "ok"},
+                {"name": "birdbuddy", "status": "ok"},
             ],
             "unresolved_species": [
                 {
@@ -1481,7 +1482,13 @@ rotation_mode = "shuffle_bag"
                     "species_code": "42",
                     "common_name": "Split Bird",
                     "scientific_name": "Avis split",
-                }
+                },
+                {
+                    "provider": "birdbuddy",
+                    "species_code": "species-new",
+                    "common_name": "New Bird",
+                    "scientific_name": "Avis nova",
+                },
             ],
             "new_species": [],
         }
@@ -1497,9 +1504,30 @@ rotation_mode = "shuffle_bag"
         degraded_keys = [call.kwargs["key"] for call in degradation.call_args_list]
         recovered_keys = [call.kwargs["key"] for call in recovery.call_args_list]
         self.assertIn("birdweather-taxonomy", degraded_keys)
+        self.assertIn("birdbuddy-taxonomy", degraded_keys)
         self.assertNotIn("ebird-taxonomy", degraded_keys)
         self.assertIn("ebird-taxonomy", recovered_keys)
         self.assertNotIn("birdweather-taxonomy", recovered_keys)
+        self.assertNotIn("birdbuddy-taxonomy", recovered_keys)
+
+    def test_refresh_recovers_birdbuddy_taxonomy_alert(self) -> None:
+        config = SimpleNamespace(discovery=SimpleNamespace(sources=(DiscoveryProvider.BIRDBUDDY,)))
+        result = {
+            "providers": [{"name": "birdbuddy", "status": "ok"}],
+            "unresolved_species": [],
+            "new_species": [],
+        }
+        with (
+            patch("inky_bird_frame.cli._config", return_value=config),
+            patch("inky_bird_frame.cli.run_refresh_cycle", return_value=result),
+            patch("inky_bird_frame.cli.safe_record_degradation"),
+            patch("inky_bird_frame.cli.safe_record_recovery") as recovery,
+            redirect_stdout(io.StringIO()),
+        ):
+            refresh_command(Namespace())
+
+        recovered_keys = [call.kwargs["key"] for call in recovery.call_args_list]
+        self.assertIn("birdbuddy-taxonomy", recovered_keys)
 
 
 if __name__ == "__main__":

@@ -151,9 +151,12 @@ class BirdBuddyTests(unittest.TestCase):
         assert parsed is not None
         self.assertEqual(parsed.postcard_id, "postcard-1")
         self.assertEqual([item.species_id for item in parsed.species], ["species-bluebird"])
-        self.assertIsNone(
-            _parse_postcard({**node, "inferenceConfidenceLevel": "LOW_CONFIDENCE"}, "feeder-1")
+        low_confidence = _parse_postcard(
+            {**node, "inferenceConfidenceLevel": "LOW_CONFIDENCE"}, "feeder-1"
         )
+        self.assertIsNotNone(low_confidence)
+        assert low_confidence is not None
+        self.assertEqual(low_confidence.species, ())
         self.assertIsNone(_parse_postcard(node, "another-feeder"))
 
         unlocked = {
@@ -177,6 +180,15 @@ class BirdBuddyTests(unittest.TestCase):
         self.assertIsNotNone(parsed_unlocked)
         assert parsed_unlocked is not None
         self.assertEqual(parsed_unlocked.species[0].species_id, "species-cardinal")
+
+        no_bird = {
+            **node,
+            "sightingReportPreview": {"sightings": [{"__typename": "SightingNoBirdRecognized"}]},
+        }
+        parsed_no_bird = _parse_postcard(no_bird, "feeder-1")
+        self.assertIsNotNone(parsed_no_bird)
+        assert parsed_no_bird is not None
+        self.assertEqual(parsed_no_bird.species, ())
 
     def test_feed_rejects_repeated_pagination_cursor(self) -> None:
         page = {
@@ -393,6 +405,55 @@ class BirdBuddyTests(unittest.TestCase):
         self.assertEqual(
             [item.scientific_name for item in reclassified.species], ["Cardinalis cardinalis"]
         )
+
+    def test_sync_removes_detection_when_classification_is_withdrawn(self) -> None:
+        feeder = BirdBuddyFeeder("feeder-1", "Garden feeder", "member")
+        now = datetime(2026, 8, 3, 12, 0, tzinfo=UTC)
+        original = postcard("postcard-1", now - timedelta(hours=1))
+        withdrawn = BirdBuddyPostcard(original.postcard_id, original.observed_at, ())
+        with TemporaryDirectory() as temporary:
+            state_dir = Path(temporary)
+            with patch(
+                "inky_bird_frame.birdbuddy._authenticate",
+                return_value=("access", "refresh", [feeder]),
+            ):
+                login_birdbuddy(
+                    state_dir,
+                    email="birder@example.test",
+                    password="private-password",
+                    authorization_confirmed=True,
+                    now=now,
+                )
+            with patch(
+                "inky_bird_frame.birdbuddy._refresh_access_token",
+                return_value=("access", "replacement"),
+            ):
+                with patch(
+                    "inky_bird_frame.birdbuddy._fetch_postcards",
+                    return_value=([original], 2, 1, 0),
+                ):
+                    first = sync_birdbuddy_detections(
+                        state_dir,
+                        window=ObservationWindow.ALL_TIME,
+                        limit=20,
+                        now=now,
+                    )
+                with patch(
+                    "inky_bird_frame.birdbuddy._fetch_postcards",
+                    return_value=([withdrawn], 2, 1, 1),
+                ):
+                    removed = sync_birdbuddy_detections(
+                        state_dir,
+                        window=ObservationWindow.ALL_TIME,
+                        limit=20,
+                        now=now,
+                    )
+            history = json.loads((state_dir / "birdbuddy-detections.json").read_text())
+
+        self.assertEqual(len(first.species), 1)
+        self.assertEqual(removed.species, [])
+        self.assertEqual(removed.stats.reclassified_postcards, 1)
+        self.assertEqual(history["feeders"]["feeder-1"]["postcards"], [])
 
     def test_all_time_retains_pruned_detection_while_last_year_excludes_it(self) -> None:
         feeder = BirdBuddyFeeder("feeder-1", "Garden feeder", "member")

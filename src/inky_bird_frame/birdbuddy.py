@@ -509,8 +509,6 @@ def _feeder_id(value: object) -> str | None:
 def _parse_postcard(value: object, selected_feeder_id: str) -> BirdBuddyPostcard | None:
     if not isinstance(value, dict) or value.get("__typename") != "FeedItemNewPostcard":
         return None
-    if value.get("inferenceConfidenceLevel") != "HIGH_CONFIDENCE":
-        return None
     postcard_id = _nonempty_string(value.get("id"))
     observed = parse_utc_timestamp(value.get("createdAt"))
     if (
@@ -519,10 +517,16 @@ def _parse_postcard(value: object, selected_feeder_id: str) -> BirdBuddyPostcard
         or _feeder_id(value.get("feeder")) != selected_feeder_id
     ):
         return None
+    observed_at = observed.replace(microsecond=0).isoformat()
+    # An empty species tuple is a reconciliation tombstone. It lets a complete
+    # feed refresh remove a previously accepted classification without storing
+    # low-confidence or non-bird results in detection history.
+    if value.get("inferenceConfidenceLevel") != "HIGH_CONFIDENCE":
+        return BirdBuddyPostcard(postcard_id, observed_at, ())
     preview = value.get("sightingReportPreview")
     sightings = preview.get("sightings") if isinstance(preview, dict) else None
     if not isinstance(sightings, list):
-        return None
+        return BirdBuddyPostcard(postcard_id, observed_at, ())
     species: dict[str, PostcardSpecies] = {}
     for sighting in sightings:
         if not isinstance(sighting, dict):
@@ -542,10 +546,10 @@ def _parse_postcard(value: object, selected_feeder_id: str) -> BirdBuddyPostcard
         if species_id is not None and common_name is not None and scientific_name is not None:
             species[species_id] = PostcardSpecies(species_id, common_name, scientific_name)
     if not species:
-        return None
+        return BirdBuddyPostcard(postcard_id, observed_at, ())
     return BirdBuddyPostcard(
         postcard_id,
-        observed.replace(microsecond=0).isoformat(),
+        observed_at,
         tuple(sorted(species.values(), key=lambda item: item.species_id)),
     )
 
@@ -588,6 +592,8 @@ def _fetch_postcard_variant(
                 ignored += 1
             else:
                 postcards[postcard.postcard_id] = postcard
+                if not postcard.species:
+                    ignored += 1
         has_next = page_info.get("hasNextPage")
         if has_next is False:
             break
@@ -637,7 +643,8 @@ def _fetch_postcards(
         for postcard in incoming:
             _merge_postcard_variants(postcards, postcard)
     processed = max(processed_per_variant, default=0)
-    ignored = max(0, processed - len(postcards))
+    accepted_postcards = sum(bool(postcard.species) for postcard in postcards.values())
+    ignored = max(0, processed - accepted_postcards)
     return list(postcards.values()), total_pages, processed, ignored
 
 
@@ -903,6 +910,11 @@ def _update_history(
         reclassified = 0
         for postcard in incoming:
             existing = history.postcards.get(postcard.postcard_id)
+            if not postcard.species:
+                if existing is not None:
+                    del history.postcards[postcard.postcard_id]
+                    reclassified += 1
+                continue
             if existing == postcard:
                 duplicates += 1
             elif existing is not None:

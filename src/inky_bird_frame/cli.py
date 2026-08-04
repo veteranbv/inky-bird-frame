@@ -208,7 +208,11 @@ def refresh_command(args: argparse.Namespace) -> int:
                 continue
             provider = item["provider"]
             unresolved_by_provider[provider] = unresolved_by_provider.get(provider, 0) + 1
-    taxonomy_providers = {"ebird": "eBird", "birdweather": "BirdWeather"}
+    taxonomy_providers = {
+        "ebird": "eBird",
+        "birdweather": "BirdWeather",
+        "birdbuddy": "Bird Buddy",
+    }
     for provider, display_name in taxonomy_providers.items():
         unresolved_count = unresolved_by_provider.get(provider, 0)
         if unresolved_count:
