@@ -553,9 +553,9 @@ def _parse_postcard(value: object, selected_feeder_id: str) -> BirdBuddyPostcard
             incomplete_recognized_sighting = True
             continue
         species[species_id] = PostcardSpecies(species_id, common_name, scientific_name)
+    if incomplete_recognized_sighting:
+        return None
     if not species:
-        if incomplete_recognized_sighting:
-            return None
         return BirdBuddyPostcard(postcard_id, observed_at, ())
     return BirdBuddyPostcard(
         postcard_id,

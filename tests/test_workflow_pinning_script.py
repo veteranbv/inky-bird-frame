@@ -121,6 +121,9 @@ def test_review_gate_runs_when_draft_becomes_ready() -> None:
     ).read_text()
 
     assert "types: [opened, synchronize, reopened, ready_for_review]" in workflow
+    assert (
+        "if: github.event.action == 'ready_for_review' || !github.event.pull_request.draft"
+    ) in workflow
 
 
 def test_review_gate_retrigger_accepts_only_exact_head_owner_requests() -> None:

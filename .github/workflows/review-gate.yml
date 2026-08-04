@@ -59,6 +59,10 @@ permissions:
 # full lifecycle without owner action.
 jobs:
   review-gate:
+    # Draft review is useful feedback, but it cannot certify merge readiness.
+    # Skip draft lifecycle runs so they cannot time out and leave a failed
+    # same-head suite that a later ready-for-review run cannot supersede.
+    if: github.event.action == 'ready_for_review' || !github.event.pull_request.draft
     runs-on: ubuntu-latest
     # Explicit job-level permissions (mirrors the workflow-level audit) so
     # static review tools can see at a glance that this job has what it needs.

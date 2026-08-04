@@ -123,6 +123,15 @@ class BirdBuddyTests(unittest.TestCase):
             self.assertFalse((state_dir / "birdbuddy-auth.json").exists())
 
     def test_parse_postcard_accepts_only_high_confidence_recognized_birds(self) -> None:
+        recognized_sighting = {
+            "__typename": "SightingRecognizedBird",
+            "species": {
+                "__typename": "SpeciesBird",
+                "id": "species-bluebird",
+                "name": "Eastern Bluebird",
+                "scientificName": "Sialia sialis",
+            },
+        }
         node = {
             "__typename": "FeedItemNewPostcard",
             "id": "postcard-1",
@@ -131,15 +140,7 @@ class BirdBuddyTests(unittest.TestCase):
             "feeder": {"id": "feeder-1"},
             "sightingReportPreview": {
                 "sightings": [
-                    {
-                        "__typename": "SightingRecognizedBird",
-                        "species": {
-                            "__typename": "SpeciesBird",
-                            "id": "species-bluebird",
-                            "name": "Eastern Bluebird",
-                            "scientificName": "Sialia sialis",
-                        },
-                    },
+                    recognized_sighting,
                     {"__typename": "SightingCantDecideWhichBird"},
                 ]
             },
@@ -206,6 +207,20 @@ class BirdBuddyTests(unittest.TestCase):
         ):
             incomplete = {**node, "sightingReportPreview": incomplete_preview}
             self.assertIsNone(_parse_postcard(incomplete, "feeder-1"))
+
+        partially_incomplete = {
+            **node,
+            "sightingReportPreview": {
+                "sightings": [
+                    recognized_sighting,
+                    {
+                        "__typename": "SightingRecognizedBird",
+                        "species": None,
+                    },
+                ]
+            },
+        }
+        self.assertIsNone(_parse_postcard(partially_incomplete, "feeder-1"))
 
         low_confidence_incomplete = {
             **node,
