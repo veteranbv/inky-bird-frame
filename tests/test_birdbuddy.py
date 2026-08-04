@@ -502,6 +502,9 @@ class BirdBuddyTests(unittest.TestCase):
         malformed["species"] = [{"__typename": "SpeciesBird", "id": None}]
         missing_species_type = confirmed_node(origin="POSTCARD", feeder_id="feeder-1")
         missing_species_type["species"] = [{}]
+        missing_media_type = confirmed_node(origin="POSTCARD", feeder_id="feeder-1")
+        assert isinstance(missing_media_type["media"], dict)
+        missing_media_type["media"]["__typename"] = None
         missing_feeder = confirmed_node(origin="POSTCARD", feeder_id="feeder-1")
         missing_feeder["feeder"] = None
         unsupported_origin = confirmed_node(origin="UNKNOWN", feeder_id="feeder-1")
@@ -525,6 +528,12 @@ class BirdBuddyTests(unittest.TestCase):
         with self.assertRaisesRegex(DataSourceError, "record was incomplete"):
             _parse_confirmed_evidence(
                 missing_species_type,
+                "feeder-1",
+                include_manual_sightings=False,
+            )
+        with self.assertRaisesRegex(DataSourceError, "record was incomplete"):
+            _parse_confirmed_evidence(
+                missing_media_type,
                 "feeder-1",
                 include_manual_sightings=False,
             )

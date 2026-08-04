@@ -829,11 +829,17 @@ def _parse_confirmed_evidence(
     else:
         raise DataSourceError("Bird Buddy confirmed history record had an unsupported origin")
     media = value.get("media")
+    media_type = _nonempty_string(media.get("__typename")) if isinstance(media, dict) else None
     created_at = media.get("createdAt") if isinstance(media, dict) else None
     media_id = _nonempty_string(media.get("id")) if isinstance(media, dict) else None
     observed = parse_utc_timestamp(created_at)
     species_values = value.get("species")
-    if media_id is None or observed is None or not isinstance(species_values, list):
+    if (
+        media_type is None
+        or media_id is None
+        or observed is None
+        or not isinstance(species_values, list)
+    ):
         raise DataSourceError("Bird Buddy confirmed history record was incomplete")
     observed_at = observed.astimezone(UTC).replace(microsecond=0).isoformat()
     species: dict[str, PostcardSpecies] = {}
