@@ -130,7 +130,9 @@ The active catalog is exactly what the display node can choose from:
 
 ```bash
 # On the controller
-curl --fail --silent "http://127.0.0.1:8793/v1/catalog"
+# Match the reachable address and port in [controller]. These are the defaults.
+CONTROLLER_URL="http://127.0.0.1:8793"
+curl --fail --silent "${CONTROLLER_URL}/v1/catalog"
 
 # On a systemd display node
 journalctl -u inky-bird-frame-display.service -n 100 --no-pager

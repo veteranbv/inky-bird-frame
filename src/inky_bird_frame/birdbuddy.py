@@ -518,18 +518,23 @@ def _parse_postcard(value: object, selected_feeder_id: str) -> BirdBuddyPostcard
     ):
         return None
     observed_at = observed.replace(microsecond=0).isoformat()
+    preview = value.get("sightingReportPreview")
+    sightings = preview.get("sightings") if isinstance(preview, dict) else None
+    if not isinstance(sightings, list):
+        # A missing preview is an incomplete response, not an explicit
+        # withdrawal. Ignore it so a transient schema/backend response cannot
+        # delete a previously retained classification during reconciliation.
+        return None
     # An empty species tuple is a reconciliation tombstone. It lets a complete
     # feed refresh remove a previously accepted classification without storing
     # low-confidence or non-bird results in detection history.
     if value.get("inferenceConfidenceLevel") != "HIGH_CONFIDENCE":
         return BirdBuddyPostcard(postcard_id, observed_at, ())
-    preview = value.get("sightingReportPreview")
-    sightings = preview.get("sightings") if isinstance(preview, dict) else None
-    if not isinstance(sightings, list):
-        return BirdBuddyPostcard(postcard_id, observed_at, ())
     species: dict[str, PostcardSpecies] = {}
+    incomplete_recognized_sighting = False
     for sighting in sightings:
         if not isinstance(sighting, dict):
+            incomplete_recognized_sighting = True
             continue
         typename = sighting.get("__typename")
         if typename not in {
@@ -539,13 +544,18 @@ def _parse_postcard(value: object, selected_feeder_id: str) -> BirdBuddyPostcard
             continue
         species_value = sighting.get("species")
         if not isinstance(species_value, dict) or species_value.get("__typename") != "SpeciesBird":
+            incomplete_recognized_sighting = True
             continue
         species_id = _nonempty_string(species_value.get("id"))
         common_name = _nonempty_string(species_value.get("name"))
         scientific_name = _nonempty_string(species_value.get("scientificName"))
-        if species_id is not None and common_name is not None and scientific_name is not None:
-            species[species_id] = PostcardSpecies(species_id, common_name, scientific_name)
+        if species_id is None or common_name is None or scientific_name is None:
+            incomplete_recognized_sighting = True
+            continue
+        species[species_id] = PostcardSpecies(species_id, common_name, scientific_name)
     if not species:
+        if incomplete_recognized_sighting:
+            return None
         return BirdBuddyPostcard(postcard_id, observed_at, ())
     return BirdBuddyPostcard(
         postcard_id,

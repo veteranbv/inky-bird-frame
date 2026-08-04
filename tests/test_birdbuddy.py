@@ -190,6 +190,30 @@ class BirdBuddyTests(unittest.TestCase):
         assert parsed_no_bird is not None
         self.assertEqual(parsed_no_bird.species, ())
 
+        for incomplete_preview in (
+            None,
+            {},
+            {"sightings": None},
+            {"sightings": [None]},
+            {
+                "sightings": [
+                    {
+                        "__typename": "SightingRecognizedBird",
+                        "species": None,
+                    }
+                ]
+            },
+        ):
+            incomplete = {**node, "sightingReportPreview": incomplete_preview}
+            self.assertIsNone(_parse_postcard(incomplete, "feeder-1"))
+
+        low_confidence_incomplete = {
+            **node,
+            "inferenceConfidenceLevel": "LOW_CONFIDENCE",
+            "sightingReportPreview": None,
+        }
+        self.assertIsNone(_parse_postcard(low_confidence_incomplete, "feeder-1"))
+
     def test_feed_rejects_repeated_pagination_cursor(self) -> None:
         page = {
             "me": {
@@ -454,6 +478,72 @@ class BirdBuddyTests(unittest.TestCase):
         self.assertEqual(removed.species, [])
         self.assertEqual(removed.stats.reclassified_postcards, 1)
         self.assertEqual(history["feeders"]["feeder-1"]["postcards"], [])
+
+    def test_sync_preserves_detection_when_postcard_preview_is_incomplete(self) -> None:
+        feeder = BirdBuddyFeeder("feeder-1", "Garden feeder", "member")
+        now = datetime(2026, 8, 3, 12, 0, tzinfo=UTC)
+        original = postcard("postcard-1", now - timedelta(hours=1))
+        incomplete_page = {
+            "me": {
+                "feed": {
+                    "edges": [
+                        {
+                            "node": {
+                                "__typename": "FeedItemNewPostcard",
+                                "id": original.postcard_id,
+                                "createdAt": original.observed_at,
+                                "inferenceConfidenceLevel": "HIGH_CONFIDENCE",
+                                "feeder": {"id": feeder.feeder_id},
+                                "sightingReportPreview": None,
+                            }
+                        }
+                    ],
+                    "pageInfo": {"hasNextPage": False, "endCursor": None},
+                }
+            }
+        }
+        with TemporaryDirectory() as temporary:
+            state_dir = Path(temporary)
+            with patch(
+                "inky_bird_frame.birdbuddy._authenticate",
+                return_value=("access", "refresh", [feeder]),
+            ):
+                login_birdbuddy(
+                    state_dir,
+                    email="birder@example.test",
+                    password="private-password",
+                    authorization_confirmed=True,
+                    now=now,
+                )
+            with patch(
+                "inky_bird_frame.birdbuddy._refresh_access_token",
+                return_value=("access", "replacement"),
+            ):
+                with patch(
+                    "inky_bird_frame.birdbuddy._fetch_postcards",
+                    return_value=([original], 2, 1, 0),
+                ):
+                    sync_birdbuddy_detections(
+                        state_dir,
+                        window=ObservationWindow.ALL_TIME,
+                        limit=20,
+                        now=now,
+                    )
+                with patch(
+                    "inky_bird_frame.birdbuddy._graphql_request",
+                    return_value=incomplete_page,
+                ):
+                    preserved = sync_birdbuddy_detections(
+                        state_dir,
+                        window=ObservationWindow.ALL_TIME,
+                        limit=20,
+                        now=now,
+                    )
+
+        self.assertEqual(len(preserved.species), 1)
+        self.assertEqual(preserved.species[0].scientific_name, "Sialia sialis")
+        self.assertEqual(preserved.stats.reclassified_postcards, 0)
+        self.assertEqual(preserved.stats.ignored_postcards, 1)
 
     def test_all_time_retains_pruned_detection_while_last_year_excludes_it(self) -> None:
         feeder = BirdBuddyFeeder("feeder-1", "Garden feeder", "member")
