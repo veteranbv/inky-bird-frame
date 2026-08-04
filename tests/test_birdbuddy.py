@@ -26,6 +26,7 @@ from inky_bird_frame.birdbuddy import (
     _parse_postcard,
     _reconcile_archived_postcards,
     _refresh_access_token,
+    _sync_lock,
     birdbuddy_status,
     login_birdbuddy,
     logout_birdbuddy,
@@ -329,6 +330,12 @@ class BirdBuddyTests(unittest.TestCase):
         assert parsed_low_confidence is not None
         self.assertFalse(parsed_low_confidence.complete)
 
+        missing_confidence = {**node, "inferenceConfidenceLevel": None}
+        parsed_missing_confidence = _parse_postcard(missing_confidence, "feeder-1")
+        self.assertIsNotNone(parsed_missing_confidence)
+        assert parsed_missing_confidence is not None
+        self.assertFalse(parsed_missing_confidence.complete)
+
     def test_feed_rejects_repeated_pagination_cursor(self) -> None:
         page = {
             "me": {
@@ -390,6 +397,78 @@ class BirdBuddyTests(unittest.TestCase):
                 _FEED_QUERIES[0],
                 "SightingRecognizedBird",
             )
+
+    def test_feed_rejects_malformed_duplicate_across_query_variants(self) -> None:
+        sighting = {
+            "__typename": "SightingRecognizedBird",
+            "species": {
+                "__typename": "SpeciesBird",
+                "id": "species-bluebird",
+                "name": "Eastern Bluebird",
+                "scientificName": "Sialia sialis",
+            },
+        }
+        malformed = feed_node(sighting)
+        malformed["createdAt"] = None
+        responses = [
+            {
+                "me": {
+                    "feed": {
+                        "edges": [{"node": feed_node(sighting)}],
+                        "pageInfo": {"hasNextPage": False, "endCursor": None},
+                    }
+                }
+            },
+            {
+                "me": {
+                    "feed": {
+                        "edges": [{"node": malformed}],
+                        "pageInfo": {"hasNextPage": False, "endCursor": None},
+                    }
+                }
+            },
+        ]
+        with (
+            patch("inky_bird_frame.birdbuddy._graphql_request", side_effect=responses),
+            self.assertRaisesRegex(DataSourceError, "invalid duplicate postcard"),
+        ):
+            _fetch_postcards("access-secret", "feeder-1")
+
+    def test_feed_rejects_confidence_mismatch_across_query_variants(self) -> None:
+        sighting = {
+            "__typename": "SightingRecognizedBird",
+            "species": {
+                "__typename": "SpeciesBird",
+                "id": "species-bluebird",
+                "name": "Eastern Bluebird",
+                "scientificName": "Sialia sialis",
+            },
+        }
+        low_confidence = feed_node(sighting)
+        low_confidence["inferenceConfidenceLevel"] = "LOW_CONFIDENCE"
+        responses = [
+            {
+                "me": {
+                    "feed": {
+                        "edges": [{"node": feed_node(sighting)}],
+                        "pageInfo": {"hasNextPage": False, "endCursor": None},
+                    }
+                }
+            },
+            {
+                "me": {
+                    "feed": {
+                        "edges": [{"node": low_confidence}],
+                        "pageInfo": {"hasNextPage": False, "endCursor": None},
+                    }
+                }
+            },
+        ]
+        with (
+            patch("inky_bird_frame.birdbuddy._graphql_request", side_effect=responses),
+            self.assertRaisesRegex(DataSourceError, "inconsistent postcard confidence levels"),
+        ):
+            _fetch_postcards("access-secret", "feeder-1")
 
     def test_first_feed_page_omits_null_cursor(self) -> None:
         page = {
@@ -828,6 +907,38 @@ class BirdBuddyTests(unittest.TestCase):
                 include_manual_sightings=True,
             )
 
+    def test_confirmed_history_rejects_species_identity_conflicts_across_media(self) -> None:
+        manual = confirmed_node(
+            origin="CUSTOM_ID",
+            feeder_id="manual",
+            media_id="media-2",
+        )
+        species = manual["species"]
+        assert isinstance(species, list)
+        conflicting = species[0]
+        assert isinstance(conflicting, dict)
+        conflicting["name"] = "Conflicting Hummingbird"
+        page = {
+            "me": {
+                "mediasOwned": {
+                    "edges": [
+                        {"node": confirmed_node(origin="POSTCARD", feeder_id="feeder-1")},
+                        {"node": manual},
+                    ],
+                    "pageInfo": {"hasNextPage": False, "endCursor": None},
+                }
+            }
+        }
+        with (
+            patch("inky_bird_frame.birdbuddy._graphql_request", return_value=page),
+            self.assertRaisesRegex(DataSourceError, "conflicting species identities"),
+        ):
+            _fetch_confirmed_history(
+                "access-secret",
+                "feeder-1",
+                include_manual_sightings=True,
+            )
+
     def test_confirmed_history_rejects_malformed_selected_feeder_record(self) -> None:
         malformed = confirmed_node(origin="POSTCARD", feeder_id="feeder-1")
         malformed["species"] = [{"__typename": "SpeciesBird", "id": None}]
@@ -920,6 +1031,24 @@ class BirdBuddyTests(unittest.TestCase):
             self.assertIn("second-refresh", auth_payload)
             self.assertNotIn("second-access", auth_payload)
             self.assertEqual(stat.S_IMODE(history_path.stat().st_mode), 0o600)
+
+    def test_persistent_sync_rejects_overlapping_fetch_and_commit_transaction(self) -> None:
+        feeder = BirdBuddyFeeder("feeder-1", "Garden feeder", "member")
+        with TemporaryDirectory() as temporary:
+            state_dir = Path(temporary)
+            with (
+                _sync_lock(state_dir),
+                patch(
+                    "inky_bird_frame.birdbuddy._refreshed_access_token",
+                    return_value=("access", feeder),
+                ),
+                self.assertRaisesRegex(DataSourceError, "sync is already running"),
+            ):
+                sync_birdbuddy_detections(
+                    state_dir,
+                    window=ObservationWindow.ALL_TIME,
+                    limit=20,
+                )
 
     def test_malformed_confirmed_snapshot_preserves_detection_history(self) -> None:
         feeder = BirdBuddyFeeder("feeder-1", "Garden feeder", "member")

@@ -351,6 +351,20 @@ def _history_lock(state_dir: Path) -> Iterator[None]:
             fcntl.flock(handle.fileno(), fcntl.LOCK_UN)
 
 
+@contextmanager
+def _sync_lock(state_dir: Path) -> Iterator[None]:
+    state_dir.mkdir(parents=True, exist_ok=True)
+    with (state_dir / "birdbuddy-sync.lock").open("a+") as handle:
+        try:
+            fcntl.flock(handle.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
+        except BlockingIOError as exc:
+            raise DataSourceError("Another Bird Buddy detection sync is already running") from exc
+        try:
+            yield
+        finally:
+            fcntl.flock(handle.fileno(), fcntl.LOCK_UN)
+
+
 def _require_private_file(path: Path, label: str) -> None:
     if path.is_symlink():
         raise DataSourceError(f"Refusing symlinked {label} state: {path}")
@@ -652,10 +666,19 @@ def _parse_postcard(
             media_ids=sorted_media_ids,
             complete=False,
         )
+    confidence_level = _nonempty_string(value.get("inferenceConfidenceLevel"))
+    if confidence_level is None:
+        return BirdBuddyPostcard(
+            postcard_id,
+            observed_at,
+            (),
+            media_ids=sorted_media_ids,
+            complete=False,
+        )
     # An empty species tuple is a reconciliation tombstone. It lets a complete
     # feed refresh remove a previously accepted classification without storing
     # low-confidence or non-bird results in detection history.
-    if value.get("inferenceConfidenceLevel") != "HIGH_CONFIDENCE":
+    if confidence_level != "HIGH_CONFIDENCE":
         return BirdBuddyPostcard(
             postcard_id,
             observed_at,
@@ -721,8 +744,11 @@ def _fetch_postcard_variant(
     feeder_id: str,
     query: str,
     sighting_type: str | None = None,
+    *,
+    raw_postcards: dict[str, tuple[str | None, BirdBuddyPostcard | None, str | None]] | None = None,
 ) -> tuple[list[BirdBuddyPostcard], int, int, int]:
     postcards: dict[str, BirdBuddyPostcard] = {}
+    raw_records = raw_postcards if raw_postcards is not None else {}
     after: str | None = None
     seen_cursors: set[str] = set()
     pages = 0
@@ -751,6 +777,28 @@ def _fetch_postcard_variant(
             processed += 1
             node = edge.get("node") if isinstance(edge, dict) else None
             postcard = _parse_postcard(node, feeder_id, sighting_type)
+            raw_id = _nonempty_string(node.get("id")) if isinstance(node, dict) else None
+            confidence = (
+                _nonempty_string(node.get("inferenceConfidenceLevel"))
+                if isinstance(node, dict)
+                else None
+            )
+            if raw_id is not None:
+                if raw_id in raw_records:
+                    previous_variant, previous_postcard, previous_confidence = raw_records[raw_id]
+                    if postcard is None or previous_postcard is None:
+                        raise DataSourceError(
+                            "Bird Buddy feed returned an invalid duplicate postcard"
+                        )
+                    if previous_confidence != confidence:
+                        raise DataSourceError(
+                            "Bird Buddy returned inconsistent postcard confidence levels"
+                        )
+                    if previous_variant == sighting_type and previous_postcard != postcard:
+                        raise DataSourceError(
+                            "Bird Buddy feed returned conflicting duplicate postcards"
+                        )
+                raw_records[raw_id] = (sighting_type, postcard, confidence)
             if postcard is None:
                 ignored += 1
             else:
@@ -805,6 +853,7 @@ def _fetch_postcards(
     feeder_id: str,
 ) -> tuple[list[BirdBuddyPostcard], int, int, int]:
     postcards: dict[str, BirdBuddyPostcard] = {}
+    raw_postcards: dict[str, tuple[str | None, BirdBuddyPostcard | None, str | None]] = {}
     variant_counts: dict[str, int] = {}
     total_pages = 0
     processed_per_variant: list[int] = []
@@ -818,6 +867,7 @@ def _fetch_postcards(
             feeder_id,
             query,
             sighting_type,
+            raw_postcards=raw_postcards,
         )
         total_pages += pages
         processed_per_variant.append(processed)
@@ -909,6 +959,7 @@ def _fetch_confirmed_history(
 ) -> _ConfirmedHistoryFetch:
     evidence: dict[tuple[str, str], ConfirmedSpeciesEvidence] = {}
     records_by_media: dict[str, _ConfirmedMediaRecord] = {}
+    species_identities: dict[str, PostcardSpecies] = {}
     after: str | None = None
     seen_cursors: set[str] = set()
     pages = 0
@@ -954,6 +1005,12 @@ def _fetch_confirmed_history(
                 )
             records_by_media[parsed.media_id] = parsed
             for species in parsed.species:
+                existing_identity = species_identities.get(species.species_id)
+                if existing_identity is not None and existing_identity != species:
+                    raise DataSourceError(
+                        "Bird Buddy confirmed history returned conflicting species identities"
+                    )
+                species_identities[species.species_id] = species
                 item = ConfirmedSpeciesEvidence(
                     species,
                     parsed.observed_at,
@@ -1658,24 +1715,26 @@ def sync_birdbuddy_detections(
     if limit <= 0:
         raise ValueError("Bird Buddy species limit must be greater than zero")
     current = (now or datetime.now(UTC)).astimezone(UTC).replace(microsecond=0)
-    access_token, feeder = _refreshed_access_token(state_dir)
-    incoming, pages, processed, ignored = _fetch_postcards(access_token, feeder.feeder_id)
-    confirmed = _fetch_confirmed_history(
-        access_token,
-        feeder.feeder_id,
-        include_manual_sightings=include_manual_sightings,
-    )
-    current_iso = current.isoformat()
-    update = _update_history(
-        state_dir,
-        feeder.feeder_id,
-        incoming,
-        confirmed.evidence,
-        current,
-        persist=persist_history,
-        replace_manual_evidence=include_manual_sightings,
-        confirmed_species_by_media=confirmed.species_by_media,
-    )
+    sync_lock = _sync_lock(state_dir) if persist_history else nullcontext()
+    with sync_lock:
+        access_token, feeder = _refreshed_access_token(state_dir)
+        incoming, pages, processed, ignored = _fetch_postcards(access_token, feeder.feeder_id)
+        confirmed = _fetch_confirmed_history(
+            access_token,
+            feeder.feeder_id,
+            include_manual_sightings=include_manual_sightings,
+        )
+        current_iso = current.isoformat()
+        update = _update_history(
+            state_dir,
+            feeder.feeder_id,
+            incoming,
+            confirmed.evidence,
+            current,
+            persist=persist_history,
+            replace_manual_evidence=include_manual_sightings,
+            confirmed_species_by_media=confirmed.species_by_media,
+        )
     species = _aggregate_species(
         update.history,
         window,
