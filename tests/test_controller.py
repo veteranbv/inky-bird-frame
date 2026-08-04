@@ -191,6 +191,7 @@ class ControllerTests(unittest.TestCase):
         self.assertEqual(result.species, [resolved])
         self.assertEqual(result.providers[0].details, stats.as_dict())
         self.assertEqual(sync.call_args.kwargs["window"], ObservationWindow.LAST_WEEK)
+        self.assertFalse(sync.call_args.kwargs["include_manual_sightings"])
         location.assert_not_called()
 
     def test_birdbuddy_failure_does_not_block_other_provider(self) -> None:

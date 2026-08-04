@@ -21,6 +21,10 @@ BIRDBUDDY_GRAPHQL_URL: Final = "https://graphql.app-api.prod.aws.mybirdbuddy.com
 BIRDBUDDY_PAGE_SIZE: Final = 50
 # A seven-day feed would need more than 700 visits per day to reach this guard.
 BIRDBUDDY_MAX_FEED_PAGES: Final = 100
+# Confirmed history is normally far smaller than this 5,000-record bound. The
+# cap prevents an undocumented pagination change from creating an unbounded
+# controller cycle while still failing visibly instead of truncating history.
+BIRDBUDDY_MAX_CONFIRMED_PAGES: Final = 100
 BIRDBUDDY_HISTORY_DAYS: Final = 366
 AUTH_SCHEMA_VERSION: Final = 1
 HISTORY_SCHEMA_VERSION: Final = 1
@@ -140,6 +144,34 @@ _FEED_SIGHTING_TYPES: Final = (
     "SightingRecognizedBirdUnlocked",
 )
 
+_CONFIRMED_HISTORY = """
+query InkyBirdBuddyConfirmedHistory($first: Int!, $after: String) {
+  me {
+    mediasOwned(first: $first, after: $after) {
+      edges {
+        node {
+          origin
+          feeder { id }
+          media { createdAt }
+          species {
+            __typename
+            ... on SpeciesBird { id name scientificName }
+          }
+        }
+      }
+      pageInfo { endCursor hasNextPage }
+    }
+  }
+}
+""".strip()
+
+_CONFIRMED_FEEDER_SOURCE: Final = "selected_feeder"
+_CONFIRMED_MANUAL_SOURCE: Final = "manual"
+_CONFIRMED_SOURCES: Final = {
+    _CONFIRMED_FEEDER_SOURCE,
+    _CONFIRMED_MANUAL_SOURCE,
+}
+
 
 @dataclass(frozen=True)
 class BirdBuddyFeeder:
@@ -171,6 +203,13 @@ class BirdBuddyPostcard:
 
 
 @dataclass(frozen=True)
+class ConfirmedSpeciesEvidence:
+    species: PostcardSpecies
+    observed_at: str
+    source: str
+
+
+@dataclass(frozen=True)
 class ArchivedSpecies:
     species_id: str
     common_name: str
@@ -186,6 +225,7 @@ class FeederHistory:
     last_successful_sync_at: str | None
     postcards: dict[str, BirdBuddyPostcard]
     archived_species: dict[str, ArchivedSpecies]
+    confirmed_species: dict[tuple[str, str], ConfirmedSpeciesEvidence]
 
 
 @dataclass(frozen=True)
@@ -199,6 +239,11 @@ class BirdBuddySyncStats:
     history_started_at: str
     earliest_initial_feed_at: str | None
     last_successful_sync_at: str
+    confirmed_pages: int = 0
+    confirmed_records_processed: int = 0
+    confirmed_records_accepted: int = 0
+    manual_records_accepted: int = 0
+    confirmed_records_ignored: int = 0
 
     def as_dict(self) -> dict[str, object]:
         return {
@@ -211,6 +256,11 @@ class BirdBuddySyncStats:
             "history_started_at": self.history_started_at,
             "earliest_initial_feed_at": self.earliest_initial_feed_at,
             "last_successful_sync_at": self.last_successful_sync_at,
+            "confirmed_pages": self.confirmed_pages,
+            "confirmed_records_processed": self.confirmed_records_processed,
+            "confirmed_records_accepted": self.confirmed_records_accepted,
+            "manual_records_accepted": self.manual_records_accepted,
+            "confirmed_records_ignored": self.confirmed_records_ignored,
         }
 
 
@@ -225,6 +275,16 @@ class _HistoryUpdate:
     history: FeederHistory
     duplicate_postcards: int
     reclassified_postcards: int
+
+
+@dataclass(frozen=True)
+class _ConfirmedHistoryFetch:
+    evidence: list[ConfirmedSpeciesEvidence]
+    pages: int
+    records_processed: int
+    records_accepted: int
+    manual_records_accepted: int
+    records_ignored: int
 
 
 def _auth_path(state_dir: Path) -> Path:
@@ -690,6 +750,122 @@ def _fetch_postcards(
     return complete_postcards, total_pages, processed, ignored
 
 
+def _parse_confirmed_evidence(
+    value: object,
+    selected_feeder_id: str,
+    *,
+    include_manual_sightings: bool,
+) -> tuple[ConfirmedSpeciesEvidence, ...]:
+    if not isinstance(value, dict):
+        return ()
+    origin = value.get("origin")
+    feeder_id = _feeder_id(value.get("feeder"))
+    if origin == "POSTCARD" and feeder_id == selected_feeder_id:
+        source = _CONFIRMED_FEEDER_SOURCE
+    elif origin == "CUSTOM_ID" and include_manual_sightings:
+        source = _CONFIRMED_MANUAL_SOURCE
+    else:
+        return ()
+    media = value.get("media")
+    created_at = media.get("createdAt") if isinstance(media, dict) else None
+    observed = parse_utc_timestamp(created_at)
+    species_values = value.get("species")
+    if observed is None or not isinstance(species_values, list):
+        return ()
+    observed_at = observed.astimezone(UTC).replace(microsecond=0).isoformat()
+    species: dict[str, PostcardSpecies] = {}
+    for item in species_values:
+        if not isinstance(item, dict) or item.get("__typename") != "SpeciesBird":
+            continue
+        species_id = _nonempty_string(item.get("id"))
+        common_name = _nonempty_string(item.get("name"))
+        scientific_name = _nonempty_string(item.get("scientificName"))
+        if species_id is None or common_name is None or scientific_name is None:
+            continue
+        species[species_id] = PostcardSpecies(species_id, common_name, scientific_name)
+    return tuple(
+        ConfirmedSpeciesEvidence(item, observed_at, source)
+        for item in sorted(species.values(), key=lambda candidate: candidate.species_id)
+    )
+
+
+def _fetch_confirmed_history(
+    access_token: str,
+    feeder_id: str,
+    *,
+    include_manual_sightings: bool,
+) -> _ConfirmedHistoryFetch:
+    evidence: dict[tuple[str, str], ConfirmedSpeciesEvidence] = {}
+    after: str | None = None
+    seen_cursors: set[str] = set()
+    pages = 0
+    processed = 0
+    accepted_records = 0
+    accepted_manual_records = 0
+    while True:
+        if pages >= BIRDBUDDY_MAX_CONFIRMED_PAGES:
+            raise DataSourceError("Bird Buddy confirmed history exceeded the safe pagination limit")
+        variables: dict[str, object] = {"first": BIRDBUDDY_PAGE_SIZE}
+        if after is not None:
+            variables["after"] = after
+        data = _graphql_request(
+            _CONFIRMED_HISTORY,
+            variables,
+            "confirmed history query",
+            access_token=access_token,
+        )
+        me = data.get("me")
+        connection = me.get("mediasOwned") if isinstance(me, dict) else None
+        edges = connection.get("edges") if isinstance(connection, dict) else None
+        page_info = connection.get("pageInfo") if isinstance(connection, dict) else None
+        if not isinstance(edges, list) or not isinstance(page_info, dict):
+            raise DataSourceError("Bird Buddy confirmed history response was incomplete")
+        pages += 1
+        for edge in edges:
+            processed += 1
+            node = edge.get("node") if isinstance(edge, dict) else None
+            parsed = _parse_confirmed_evidence(
+                node,
+                feeder_id,
+                include_manual_sightings=include_manual_sightings,
+            )
+            if not parsed:
+                continue
+            accepted_records += 1
+            if any(item.source == _CONFIRMED_MANUAL_SOURCE for item in parsed):
+                accepted_manual_records += 1
+            for item in parsed:
+                key = (item.source, item.species.species_id)
+                existing = evidence.get(key)
+                if (
+                    existing is None
+                    or _newest_timestamp(existing.observed_at, item.observed_at) == item.observed_at
+                ):
+                    evidence[key] = item
+        has_next = page_info.get("hasNextPage")
+        if has_next is False:
+            break
+        if has_next is not True:
+            raise DataSourceError(
+                "Bird Buddy confirmed history response had invalid pagination state"
+            )
+        cursor = _nonempty_string(page_info.get("endCursor"))
+        if cursor is None or cursor in seen_cursors:
+            raise DataSourceError(
+                "Bird Buddy confirmed history returned a repeated pagination cursor"
+            )
+        seen_cursors.add(cursor)
+        after = cursor
+    return _ConfirmedHistoryFetch(
+        list(evidence.values()),
+        pages,
+        processed,
+        accepted_records,
+        accepted_manual_records,
+        processed - accepted_records,
+    )
+
+
 def _parse_postcard_state(value: object) -> BirdBuddyPostcard:
     if not isinstance(value, dict):
         raise DataSourceError("Invalid Bird Buddy detection history")
@@ -736,6 +912,30 @@ def _parse_archived_species(value: object, species_id: str) -> ArchivedSpecies:
     return ArchivedSpecies(species_id, common_name, scientific_name, count, latest)
 
 
+def _parse_confirmed_species(value: object) -> ConfirmedSpeciesEvidence:
+    if not isinstance(value, dict):
+        raise DataSourceError("Invalid Bird Buddy detection history")
+    species_id = _nonempty_string(value.get("id"))
+    common_name = _nonempty_string(value.get("common_name"))
+    scientific_name = _nonempty_string(value.get("scientific_name"))
+    observed_at = _nonempty_string(value.get("observed_at"))
+    source = _nonempty_string(value.get("source"))
+    if (
+        species_id is None
+        or common_name is None
+        or scientific_name is None
+        or observed_at is None
+        or parse_utc_timestamp(observed_at) is None
+        or source not in _CONFIRMED_SOURCES
+    ):
+        raise DataSourceError("Invalid Bird Buddy detection history")
+    return ConfirmedSpeciesEvidence(
+        PostcardSpecies(species_id, common_name, scientific_name),
+        observed_at,
+        source,
+    )
+
+
 def _parse_feeder_history(value: object) -> FeederHistory:
     if not isinstance(value, dict):
         raise DataSourceError("Invalid Bird Buddy detection history")
@@ -744,6 +944,7 @@ def _parse_feeder_history(value: object) -> FeederHistory:
     last_sync = value.get("last_successful_sync_at")
     postcard_values = value.get("postcards")
     archived_values = value.get("archived_species")
+    confirmed_values = value.get("confirmed_species", [])
     if (
         history_started_at is None
         or parse_utc_timestamp(history_started_at) is None
@@ -751,6 +952,7 @@ def _parse_feeder_history(value: object) -> FeederHistory:
         or (last_sync is not None and parse_utc_timestamp(last_sync) is None)
         or not isinstance(postcard_values, list)
         or not isinstance(archived_values, dict)
+        or not isinstance(confirmed_values, list)
     ):
         raise DataSourceError("Invalid Bird Buddy detection history")
     postcards = {
@@ -765,12 +967,17 @@ def _parse_feeder_history(value: object) -> FeederHistory:
     }
     if len(archived) != len(archived_values):
         raise DataSourceError("Invalid Bird Buddy detection history")
+    confirmed_items = [_parse_confirmed_species(item) for item in confirmed_values]
+    confirmed = {(item.source, item.species.species_id): item for item in confirmed_items}
+    if len(confirmed) != len(confirmed_items):
+        raise DataSourceError("Invalid Bird Buddy detection history")
     return FeederHistory(
         history_started_at,
         earliest if isinstance(earliest, str) else None,
         last_sync if isinstance(last_sync, str) else None,
         postcards,
         archived,
+        confirmed,
     )
 
 
@@ -835,6 +1042,16 @@ def _history_payload(histories: dict[str, FeederHistory]) -> dict[str, object]:
                     }
                     for species_id, species in sorted(history.archived_species.items())
                 },
+                "confirmed_species": [
+                    {
+                        "id": item.species.species_id,
+                        "common_name": item.species.common_name,
+                        "scientific_name": item.species.scientific_name,
+                        "observed_at": item.observed_at,
+                        "source": item.source,
+                    }
+                    for _, item in sorted(history.confirmed_species.items())
+                ],
             }
             for feeder_id, history in sorted(histories.items())
         },
@@ -880,18 +1097,20 @@ def _aggregate_species(
     window: ObservationWindow,
     now: datetime,
     limit: int,
+    *,
+    include_manual_sightings: bool,
 ) -> list[BirdBuddySpecies]:
     counts: dict[str, int] = {}
     identities: dict[str, PostcardSpecies] = {}
     latest: dict[str, str] = {}
     cutoff = _window_cutoff(window, now)
     if cutoff is None:
-        for item in history.archived_species.values():
-            counts[item.species_id] = item.detection_count
-            identities[item.species_id] = PostcardSpecies(
-                item.species_id, item.common_name, item.scientific_name
+        for archived in history.archived_species.values():
+            counts[archived.species_id] = archived.detection_count
+            identities[archived.species_id] = PostcardSpecies(
+                archived.species_id, archived.common_name, archived.scientific_name
             )
-            latest[item.species_id] = item.latest_detection_at
+            latest[archived.species_id] = archived.latest_detection_at
     for postcard in history.postcards.values():
         observed = parse_utc_timestamp(postcard.observed_at)
         if observed is None:
@@ -907,6 +1126,27 @@ def _aggregate_species(
                 if current_latest is None
                 else _newest_timestamp(current_latest, postcard.observed_at)
             )
+    for evidence in history.confirmed_species.values():
+        if evidence.source == _CONFIRMED_MANUAL_SOURCE and not include_manual_sightings:
+            continue
+        observed = parse_utc_timestamp(evidence.observed_at)
+        if observed is None:
+            raise DataSourceError("Invalid Bird Buddy confirmed-history timestamp")
+        if cutoff is not None and observed < cutoff:
+            continue
+        species_id = evidence.species.species_id
+        # Confirmed media closes the transient-feed gap, but one postcard can
+        # contain several media records. It therefore supplies conservative
+        # presence evidence and a newest timestamp, never a fabricated visit
+        # count. Exact postcard history remains authoritative when available.
+        counts.setdefault(species_id, 1)
+        identities[species_id] = evidence.species
+        current_latest = latest.get(species_id)
+        latest[species_id] = (
+            evidence.observed_at
+            if current_latest is None
+            else _newest_timestamp(current_latest, evidence.observed_at)
+        )
     result = [
         BirdBuddySpecies(
             species_id,
@@ -923,10 +1163,17 @@ def _aggregate_species(
     return result[:limit]
 
 
-def _latest_history_detection(history: FeederHistory) -> str | None:
+def _latest_history_detection(
+    history: FeederHistory, *, include_manual_sightings: bool
+) -> str | None:
     latest: str | None = None
     timestamps = [postcard.observed_at for postcard in history.postcards.values()]
     timestamps.extend(species.latest_detection_at for species in history.archived_species.values())
+    timestamps.extend(
+        item.observed_at
+        for item in history.confirmed_species.values()
+        if item.source != _CONFIRMED_MANUAL_SOURCE or include_manual_sightings
+    )
     for timestamp in timestamps:
         latest = timestamp if latest is None else _newest_timestamp(latest, timestamp)
     return latest
@@ -936,9 +1183,11 @@ def _update_history(
     state_dir: Path,
     feeder_id: str,
     incoming: list[BirdBuddyPostcard],
+    confirmed: list[ConfirmedSpeciesEvidence],
     current: datetime,
     *,
     persist: bool,
+    replace_manual_evidence: bool,
 ) -> _HistoryUpdate:
     current_iso = current.isoformat()
     lock = _history_lock(state_dir) if persist else nullcontext()
@@ -946,7 +1195,7 @@ def _update_history(
         histories = _read_history(state_dir)
         history = histories.get(
             feeder_id,
-            FeederHistory(current_iso, None, None, {}, {}),
+            FeederHistory(current_iso, None, None, {}, {}, {}),
         )
         duplicates = 0
         reclassified = 0
@@ -962,6 +1211,21 @@ def _update_history(
             elif existing is not None:
                 reclassified += 1
             history.postcards[postcard.postcard_id] = postcard
+        replaced_sources = {_CONFIRMED_FEEDER_SOURCE}
+        if replace_manual_evidence:
+            replaced_sources.add(_CONFIRMED_MANUAL_SOURCE)
+        for key in list(history.confirmed_species):
+            if key[0] in replaced_sources:
+                del history.confirmed_species[key]
+        for evidence in confirmed:
+            key = (evidence.source, evidence.species.species_id)
+            existing_evidence = history.confirmed_species.get(key)
+            if (
+                existing_evidence is None
+                or _newest_timestamp(existing_evidence.observed_at, evidence.observed_at)
+                == evidence.observed_at
+            ):
+                history.confirmed_species[key] = evidence
         if history.earliest_initial_feed_at is None and incoming:
             history.earliest_initial_feed_at = min(item.observed_at for item in incoming)
         prune_before = current - timedelta(days=BIRDBUDDY_HISTORY_DAYS)
@@ -986,21 +1250,35 @@ def sync_birdbuddy_detections(
     limit: int,
     now: datetime | None = None,
     persist_history: bool = True,
+    include_manual_sightings: bool = False,
 ) -> BirdBuddySyncResult:
     if limit <= 0:
         raise ValueError("Bird Buddy species limit must be greater than zero")
     current = (now or datetime.now(UTC)).astimezone(UTC).replace(microsecond=0)
     access_token, feeder = _refreshed_access_token(state_dir)
     incoming, pages, processed, ignored = _fetch_postcards(access_token, feeder.feeder_id)
+    confirmed = _fetch_confirmed_history(
+        access_token,
+        feeder.feeder_id,
+        include_manual_sightings=include_manual_sightings,
+    )
     current_iso = current.isoformat()
     update = _update_history(
         state_dir,
         feeder.feeder_id,
         incoming,
+        confirmed.evidence,
         current,
         persist=persist_history,
+        replace_manual_evidence=include_manual_sightings,
     )
-    species = _aggregate_species(update.history, window, current, limit)
+    species = _aggregate_species(
+        update.history,
+        window,
+        current,
+        limit,
+        include_manual_sightings=include_manual_sightings,
+    )
     stats = BirdBuddySyncStats(
         pages=pages,
         postcards_processed=processed,
@@ -1011,11 +1289,18 @@ def sync_birdbuddy_detections(
         history_started_at=update.history.history_started_at,
         earliest_initial_feed_at=update.history.earliest_initial_feed_at,
         last_successful_sync_at=current_iso,
+        confirmed_pages=confirmed.pages,
+        confirmed_records_processed=confirmed.records_processed,
+        confirmed_records_accepted=confirmed.records_accepted,
+        manual_records_accepted=confirmed.manual_records_accepted,
+        confirmed_records_ignored=confirmed.records_ignored,
     )
     return BirdBuddySyncResult(species, stats)
 
 
-def birdbuddy_status(state_dir: Path) -> dict[str, object]:
+def birdbuddy_status(
+    state_dir: Path, *, include_manual_sightings: bool = False
+) -> dict[str, object]:
     path = _auth_path(state_dir)
     if path.is_symlink():
         raise DataSourceError(f"Refusing symlinked Bird Buddy authentication state: {path}")
@@ -1046,9 +1331,21 @@ def birdbuddy_status(state_dir: Path) -> dict[str, object]:
                 "history_started_at": history.history_started_at,
                 "earliest_initial_feed_at": history.earliest_initial_feed_at,
                 "last_successful_sync_at": history.last_successful_sync_at,
-                "latest_detection_at": _latest_history_detection(history),
+                "latest_detection_at": _latest_history_detection(
+                    history,
+                    include_manual_sightings=include_manual_sightings,
+                ),
                 "retained_postcards": len(history.postcards),
                 "archived_species": len(history.archived_species),
+                "confirmed_feeder_species": sum(
+                    item.source == _CONFIRMED_FEEDER_SOURCE
+                    for item in history.confirmed_species.values()
+                ),
+                "confirmed_manual_species": sum(
+                    item.source == _CONFIRMED_MANUAL_SOURCE
+                    for item in history.confirmed_species.values()
+                ),
+                "manual_sightings_included": include_manual_sightings,
             }
             if history is not None
             else None

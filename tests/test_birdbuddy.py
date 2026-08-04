@@ -9,12 +9,17 @@ from tempfile import TemporaryDirectory
 from unittest.mock import patch
 
 from inky_bird_frame.birdbuddy import (
+    _CONFIRMED_HISTORY,
     _FEED_QUERIES,
     BirdBuddyFeeder,
     BirdBuddyPostcard,
+    ConfirmedSpeciesEvidence,
     PostcardSpecies,
+    _ConfirmedHistoryFetch,
+    _fetch_confirmed_history,
     _fetch_postcard_variant,
     _fetch_postcards,
+    _parse_confirmed_evidence,
     _parse_postcard,
     _refresh_access_token,
     birdbuddy_status,
@@ -55,7 +60,36 @@ def feed_node(
     }
 
 
+def confirmed_node(
+    *,
+    origin: str,
+    feeder_id: str,
+    observed_at: str = "2026-08-03T10:00:00Z",
+) -> dict[str, object]:
+    return {
+        "origin": origin,
+        "feeder": {"id": feeder_id},
+        "media": {"createdAt": observed_at},
+        "species": [
+            {
+                "__typename": "SpeciesBird",
+                "id": "species-hummingbird",
+                "name": "Ruby-throated Hummingbird",
+                "scientificName": "Archilochus colubris",
+            }
+        ],
+    }
+
+
 class BirdBuddyTests(unittest.TestCase):
+    def setUp(self) -> None:
+        confirmed = patch(
+            "inky_bird_frame.birdbuddy._fetch_confirmed_history",
+            return_value=_ConfirmedHistoryFetch([], 1, 0, 0, 0, 0),
+        )
+        confirmed.start()
+        self.addCleanup(confirmed.stop)
+
     def test_feed_operation_is_read_only_and_metadata_only(self) -> None:
         self.assertEqual(len(_FEED_QUERIES), 2)
         combined = "\n".join(_FEED_QUERIES)
@@ -69,6 +103,10 @@ class BirdBuddyTests(unittest.TestCase):
             "feederUpdate",
         ):
             self.assertNotIn(forbidden, combined)
+        self.assertNotIn("mutation", _CONFIRMED_HISTORY.casefold())
+        self.assertIn("mediasOwned", _CONFIRMED_HISTORY)
+        for forbidden in ("contentUrl", "thumbnailUrl", "locationCity", "ownerName"):
+            self.assertNotIn(forbidden, _CONFIRMED_HISTORY)
 
     def test_login_requires_authorized_access_confirmation_before_network(self) -> None:
         with (
@@ -420,6 +458,116 @@ class BirdBuddyTests(unittest.TestCase):
         self.assertEqual(processed, 1)
         self.assertEqual(ignored, 1)
 
+    def test_confirmed_history_filters_by_provenance_and_selected_feeder(self) -> None:
+        selected = _parse_confirmed_evidence(
+            confirmed_node(origin="POSTCARD", feeder_id="feeder-1"),
+            "feeder-1",
+            include_manual_sightings=False,
+        )
+        other_feeder = _parse_confirmed_evidence(
+            confirmed_node(origin="POSTCARD", feeder_id="feeder-2"),
+            "feeder-1",
+            include_manual_sightings=True,
+        )
+        manual_disabled = _parse_confirmed_evidence(
+            confirmed_node(origin="CUSTOM_ID", feeder_id="manual"),
+            "feeder-1",
+            include_manual_sightings=False,
+        )
+        manual_enabled = _parse_confirmed_evidence(
+            confirmed_node(origin="CUSTOM_ID", feeder_id="manual"),
+            "feeder-1",
+            include_manual_sightings=True,
+        )
+        watching = _parse_confirmed_evidence(
+            confirmed_node(origin="WATCHING", feeder_id="feeder-1"),
+            "feeder-1",
+            include_manual_sightings=True,
+        )
+
+        self.assertEqual(selected[0].source, "selected_feeder")
+        self.assertEqual(selected[0].observed_at, "2026-08-03T10:00:00+00:00")
+        self.assertEqual(other_feeder, ())
+        self.assertEqual(manual_disabled, ())
+        self.assertEqual(manual_enabled[0].source, "manual")
+        self.assertEqual(watching, ())
+
+    def test_confirmed_history_paginates_and_keeps_newest_species_evidence(self) -> None:
+        first = {
+            "me": {
+                "mediasOwned": {
+                    "edges": [
+                        {
+                            "node": confirmed_node(
+                                origin="CUSTOM_ID",
+                                feeder_id="manual",
+                                observed_at="2026-08-03T09:00:00Z",
+                            )
+                        }
+                    ],
+                    "pageInfo": {"hasNextPage": True, "endCursor": "next"},
+                }
+            }
+        }
+        second = {
+            "me": {
+                "mediasOwned": {
+                    "edges": [
+                        {
+                            "node": confirmed_node(
+                                origin="CUSTOM_ID",
+                                feeder_id="manual",
+                                observed_at="2026-08-03T10:00:00Z",
+                            )
+                        },
+                        {
+                            "node": confirmed_node(
+                                origin="POSTCARD",
+                                feeder_id="another-feeder",
+                            )
+                        },
+                    ],
+                    "pageInfo": {"hasNextPage": False, "endCursor": None},
+                }
+            }
+        }
+        with patch(
+            "inky_bird_frame.birdbuddy._graphql_request",
+            side_effect=[first, second],
+        ):
+            result = _fetch_confirmed_history(
+                "access-secret",
+                "feeder-1",
+                include_manual_sightings=True,
+            )
+
+        self.assertEqual(result.pages, 2)
+        self.assertEqual(result.records_processed, 3)
+        self.assertEqual(result.records_accepted, 2)
+        self.assertEqual(result.manual_records_accepted, 2)
+        self.assertEqual(result.records_ignored, 1)
+        self.assertEqual(len(result.evidence), 1)
+        self.assertEqual(result.evidence[0].observed_at, "2026-08-03T10:00:00+00:00")
+
+    def test_confirmed_history_rejects_repeated_pagination_cursor(self) -> None:
+        page = {
+            "me": {
+                "mediasOwned": {
+                    "edges": [],
+                    "pageInfo": {"hasNextPage": True, "endCursor": "same"},
+                }
+            }
+        }
+        with (
+            patch("inky_bird_frame.birdbuddy._graphql_request", return_value=page),
+            self.assertRaisesRegex(DataSourceError, "repeated pagination cursor"),
+        ):
+            _fetch_confirmed_history(
+                "access-secret",
+                "feeder-1",
+                include_manual_sightings=False,
+            )
+
     def test_revoked_refresh_token_has_actionable_redacted_error(self) -> None:
         with (
             patch(
@@ -472,6 +620,192 @@ class BirdBuddyTests(unittest.TestCase):
             self.assertIn("second-refresh", auth_payload)
             self.assertNotIn("second-access", auth_payload)
             self.assertEqual(stat.S_IMODE(history_path.stat().st_mode), 0o600)
+
+    def test_manual_confirmed_history_is_opt_in_and_persisted_privately(self) -> None:
+        feeder = BirdBuddyFeeder("feeder-1", "Garden feeder", "member")
+        now = datetime(2026, 8, 3, 12, 0, tzinfo=UTC)
+        hummingbird = ConfirmedSpeciesEvidence(
+            PostcardSpecies(
+                "species-hummingbird",
+                "Ruby-throated Hummingbird",
+                "Archilochus colubris",
+            ),
+            "2026-08-03T10:00:00+00:00",
+            "manual",
+        )
+        confirmed = _ConfirmedHistoryFetch([hummingbird], 1, 1, 1, 1, 0)
+        with TemporaryDirectory() as temporary:
+            state_dir = Path(temporary)
+            with patch(
+                "inky_bird_frame.birdbuddy._authenticate",
+                return_value=("access", "refresh", [feeder]),
+            ):
+                login_birdbuddy(
+                    state_dir,
+                    email="birder@example.test",
+                    password="private-password",
+                    authorization_confirmed=True,
+                    now=now,
+                )
+            with (
+                patch(
+                    "inky_bird_frame.birdbuddy._refresh_access_token",
+                    return_value=("access", "replacement"),
+                ),
+                patch(
+                    "inky_bird_frame.birdbuddy._fetch_postcards",
+                    return_value=([], 2, 0, 0),
+                ),
+            ):
+                with patch(
+                    "inky_bird_frame.birdbuddy._fetch_confirmed_history",
+                    return_value=confirmed,
+                ):
+                    included = sync_birdbuddy_detections(
+                        state_dir,
+                        window=ObservationWindow.LAST_DAY,
+                        limit=20,
+                        now=now,
+                        include_manual_sightings=True,
+                    )
+                excluded = sync_birdbuddy_detections(
+                    state_dir,
+                    window=ObservationWindow.LAST_DAY,
+                    limit=20,
+                    now=now,
+                    include_manual_sightings=False,
+                )
+            included_status = birdbuddy_status(state_dir, include_manual_sightings=True)
+            excluded_status = birdbuddy_status(state_dir)
+            history_path = state_dir / "birdbuddy-detections.json"
+            history_payload = history_path.read_text()
+            history_permissions = stat.S_IMODE(history_path.stat().st_mode)
+
+        self.assertEqual(len(included.species), 1)
+        self.assertEqual(included.species[0].scientific_name, "Archilochus colubris")
+        self.assertEqual(included.species[0].detection_count, 1)
+        self.assertEqual(included.stats.manual_records_accepted, 1)
+        self.assertEqual(excluded.species, [])
+        self.assertEqual(history_permissions, 0o600)
+        self.assertIn('"source": "manual"', history_payload)
+        self.assertNotIn("access", history_payload)
+        included_history = included_status["history"]
+        excluded_history = excluded_status["history"]
+        assert isinstance(included_history, dict)
+        assert isinstance(excluded_history, dict)
+        self.assertEqual(included_history["latest_detection_at"], "2026-08-03T10:00:00+00:00")
+        self.assertIsNone(excluded_history["latest_detection_at"])
+
+    def test_confirmed_history_does_not_inflate_exact_postcard_count(self) -> None:
+        feeder = BirdBuddyFeeder("feeder-1", "Garden feeder", "member")
+        now = datetime(2026, 8, 3, 12, 0, tzinfo=UTC)
+        exact = postcard("postcard-1", now - timedelta(hours=2))
+        confirmed = ConfirmedSpeciesEvidence(
+            exact.species[0],
+            (now - timedelta(hours=1)).isoformat(),
+            "selected_feeder",
+        )
+        with TemporaryDirectory() as temporary:
+            state_dir = Path(temporary)
+            with patch(
+                "inky_bird_frame.birdbuddy._authenticate",
+                return_value=("access", "refresh", [feeder]),
+            ):
+                login_birdbuddy(
+                    state_dir,
+                    email="birder@example.test",
+                    password="private-password",
+                    authorization_confirmed=True,
+                    now=now,
+                )
+            with (
+                patch(
+                    "inky_bird_frame.birdbuddy._refresh_access_token",
+                    return_value=("access", "replacement"),
+                ),
+                patch(
+                    "inky_bird_frame.birdbuddy._fetch_postcards",
+                    return_value=([exact], 2, 1, 0),
+                ),
+                patch(
+                    "inky_bird_frame.birdbuddy._fetch_confirmed_history",
+                    return_value=_ConfirmedHistoryFetch([confirmed], 1, 1, 1, 0, 0),
+                ),
+            ):
+                result = sync_birdbuddy_detections(
+                    state_dir,
+                    window=ObservationWindow.LAST_DAY,
+                    limit=20,
+                    now=now,
+                )
+
+        self.assertEqual(result.species[0].detection_count, 1)
+        self.assertEqual(
+            result.species[0].latest_detection_at,
+            (now - timedelta(hours=1)).isoformat(),
+        )
+
+    def test_complete_confirmed_snapshot_removes_stale_manual_evidence(self) -> None:
+        feeder = BirdBuddyFeeder("feeder-1", "Garden feeder", "member")
+        now = datetime(2026, 8, 3, 12, 0, tzinfo=UTC)
+        hummingbird = ConfirmedSpeciesEvidence(
+            PostcardSpecies(
+                "species-hummingbird",
+                "Ruby-throated Hummingbird",
+                "Archilochus colubris",
+            ),
+            "2026-08-03T10:00:00+00:00",
+            "manual",
+        )
+        with TemporaryDirectory() as temporary:
+            state_dir = Path(temporary)
+            with patch(
+                "inky_bird_frame.birdbuddy._authenticate",
+                return_value=("access", "refresh", [feeder]),
+            ):
+                login_birdbuddy(
+                    state_dir,
+                    email="birder@example.test",
+                    password="private-password",
+                    authorization_confirmed=True,
+                    now=now,
+                )
+            with (
+                patch(
+                    "inky_bird_frame.birdbuddy._refresh_access_token",
+                    return_value=("access", "replacement"),
+                ),
+                patch(
+                    "inky_bird_frame.birdbuddy._fetch_postcards",
+                    return_value=([], 2, 0, 0),
+                ),
+                patch(
+                    "inky_bird_frame.birdbuddy._fetch_confirmed_history",
+                    side_effect=[
+                        _ConfirmedHistoryFetch([hummingbird], 1, 1, 1, 1, 0),
+                        _ConfirmedHistoryFetch([], 1, 0, 0, 0, 0),
+                    ],
+                ),
+            ):
+                first = sync_birdbuddy_detections(
+                    state_dir,
+                    window=ObservationWindow.ALL_TIME,
+                    limit=20,
+                    now=now,
+                    include_manual_sightings=True,
+                )
+                removed = sync_birdbuddy_detections(
+                    state_dir,
+                    window=ObservationWindow.ALL_TIME,
+                    limit=20,
+                    now=now + timedelta(minutes=15),
+                    include_manual_sightings=True,
+                )
+            history = json.loads((state_dir / "birdbuddy-detections.json").read_text())
+
+        self.assertEqual(len(first.species), 1)
+        self.assertEqual(removed.species, [])
+        self.assertEqual(history["feeders"]["feeder-1"]["confirmed_species"], [])
 
     def test_preview_sync_does_not_persist_detection_history(self) -> None:
         feeder = BirdBuddyFeeder("feeder-1", "Garden feeder", "member")

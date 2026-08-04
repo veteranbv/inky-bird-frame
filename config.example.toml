@@ -33,6 +33,9 @@ window = "last-30-days"
 # birdweather_token_env = "BIRDWEATHER_TOKEN"
 # Bird Buddy credentials never belong in this file. Obtain permission from Bird Buddy, add
 # "birdbuddy" to sources, then run `inky-bird-frame birdbuddy login --config config.toml`.
+# Manually added app sightings are account-level and may not belong to the selected feeder's
+# location, so they are excluded unless the operator explicitly accepts that provenance.
+birdbuddy_include_manual_sightings = false
 
 [controller]
 # Keep Codex's writable workspace separate from configuration, catalog, and state.

@@ -116,8 +116,13 @@ Do not quote a value unless the quote characters are part of the secret.
 Bird Buddy is different: its email and password are used once and must not be
 kept in `config.toml` or `controller.env`. After obtaining Bird Buddy's
 permission, add `"birdbuddy"` to `discovery.sources`, import the configuration,
-and perform the one-time login. The `-e` options pass existing shell variables
-without putting their values in the command line:
+and perform the one-time login.
+
+Manually added app sightings are excluded by default because they are not tied
+to the selected feeder. Set `birdbuddy_include_manual_sightings = true` in
+`[discovery]` before importing the configuration when they should count for
+this installation. The `-e` options below pass existing shell variables without
+putting their values in the command line:
 
 ```bash
 read -r -p "Bird Buddy email: " INKY_BIRDBUDDY_EMAIL

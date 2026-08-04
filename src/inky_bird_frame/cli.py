@@ -984,7 +984,12 @@ def birdbuddy_login_command(args: argparse.Namespace) -> int:
 
 def birdbuddy_status_command(args: argparse.Namespace) -> int:
     config = _config(args, load_secrets=False)
-    print_result(birdbuddy_status(config.controller.state_dir))
+    print_result(
+        birdbuddy_status(
+            config.controller.state_dir,
+            include_manual_sightings=(config.discovery.birdbuddy_include_manual_sightings),
+        )
+    )
     return 0
 
 

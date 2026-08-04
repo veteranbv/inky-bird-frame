@@ -43,9 +43,12 @@ An authorized Bird Buddy provider keeps two additional private files under
 `state_dir`. `birdbuddy-auth.json` contains the user's authorization
 attestation, selected feeder, and rotating refresh token; the email, password,
 and short-lived access token are never stored. `birdbuddy-detections.json`
-deduplicates postcard species for 366 days and retains older all-time totals.
-Both files use atomic mode-`0600` writes and never enter the served or published
-catalog.
+deduplicates postcard species for 366 days, retains older all-time totals, and
+keeps the newest confirmed metadata evidence for each species and provenance.
+Confirmed evidence closes the transient-feed gap without counting several
+media files as several visits. Account-level manual evidence affects discovery
+only when `birdbuddy_include_manual_sightings` is enabled. Both files use atomic
+mode-`0600` writes and never enter the served or published catalog.
 
 A locked generation cycle completes that migration, recovers passing pending
 work, and then reads the latest non-stale snapshot and durable seed queue.
