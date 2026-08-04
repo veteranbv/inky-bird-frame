@@ -693,7 +693,12 @@ def _parse_postcard(
         if species_id is None or common_name is None or scientific_name is None:
             incomplete_recognized_sighting = True
             continue
-        species[species_id] = PostcardSpecies(species_id, common_name, scientific_name)
+        parsed_species = PostcardSpecies(species_id, common_name, scientific_name)
+        existing_species = species.get(species_id)
+        if existing_species is not None and existing_species != parsed_species:
+            incomplete_recognized_sighting = True
+            continue
+        species[species_id] = parsed_species
     if not species:
         return BirdBuddyPostcard(
             postcard_id,
@@ -749,6 +754,11 @@ def _fetch_postcard_variant(
             if postcard is None:
                 ignored += 1
             else:
+                existing = postcards.get(postcard.postcard_id)
+                if existing is not None and existing != postcard:
+                    raise DataSourceError(
+                        "Bird Buddy feed returned conflicting duplicate postcards"
+                    )
                 postcards[postcard.postcard_id] = postcard
                 if not postcard.complete or not postcard.species:
                     ignored += 1
@@ -775,7 +785,11 @@ def _merge_postcard_variants(
     if existing.observed_at != incoming.observed_at:
         raise DataSourceError("Bird Buddy returned inconsistent postcard timestamps")
     species = {item.species_id: item for item in existing.species}
-    species.update({item.species_id: item for item in incoming.species})
+    for item in incoming.species:
+        existing_species = species.get(item.species_id)
+        if existing_species is not None and existing_species != item:
+            raise DataSourceError("Bird Buddy returned conflicting species identities")
+        species[item.species_id] = item
     media_ids_match = existing.media_ids == incoming.media_ids
     postcards[incoming.postcard_id] = BirdBuddyPostcard(
         existing.postcard_id,
@@ -871,7 +885,13 @@ def _parse_confirmed_evidence(
         scientific_name = _nonempty_string(item.get("scientificName"))
         if species_id is None or common_name is None or scientific_name is None:
             raise DataSourceError("Bird Buddy confirmed history record was incomplete")
-        species[species_id] = PostcardSpecies(species_id, common_name, scientific_name)
+        parsed_species = PostcardSpecies(species_id, common_name, scientific_name)
+        existing_species = species.get(species_id)
+        if existing_species is not None and existing_species != parsed_species:
+            raise DataSourceError(
+                "Bird Buddy confirmed history returned conflicting species identities"
+            )
+        species[species_id] = parsed_species
     return _ConfirmedMediaRecord(
         media_id,
         media_type,
@@ -927,13 +947,12 @@ def _fetch_confirmed_history(
             accepted_records += 1
             if parsed.source == _CONFIRMED_MANUAL_SOURCE:
                 accepted_manual_records += 1
-            if parsed.source == _CONFIRMED_FEEDER_SOURCE:
-                existing_record = records_by_media.get(parsed.media_id)
-                if existing_record is not None and existing_record != parsed:
-                    raise DataSourceError(
-                        "Bird Buddy confirmed history returned conflicting media records"
-                    )
-                records_by_media[parsed.media_id] = parsed
+            existing_record = records_by_media.get(parsed.media_id)
+            if existing_record is not None and existing_record != parsed:
+                raise DataSourceError(
+                    "Bird Buddy confirmed history returned conflicting media records"
+                )
+            records_by_media[parsed.media_id] = parsed
             for species in parsed.species:
                 item = ConfirmedSpeciesEvidence(
                     species,
@@ -968,7 +987,11 @@ def _fetch_confirmed_history(
         accepted_records,
         accepted_manual_records,
         processed - accepted_records,
-        {media_id: record.species for media_id, record in records_by_media.items()},
+        {
+            media_id: record.species
+            for media_id, record in records_by_media.items()
+            if record.source == _CONFIRMED_FEEDER_SOURCE
+        },
     )
 
 
@@ -1459,7 +1482,17 @@ def _reconcile_archived_postcards(
         confirmed_by_id = {item.species_id: item for item in confirmed_species}
         old_ids = set(archived_postcard.species_ids)
         new_ids = set(confirmed_by_id)
-        if old_ids == new_ids:
+        identity_changed = False
+        for species_id in old_ids & new_ids:
+            archived = history.archived_species.get(species_id)
+            if archived is None:
+                raise DataSourceError("Invalid Bird Buddy archived correction history")
+            confirmed_identity = confirmed_by_id[species_id]
+            identity_changed = identity_changed or (
+                archived.common_name != confirmed_identity.common_name
+                or archived.scientific_name != confirmed_identity.scientific_name
+            )
+        if old_ids == new_ids and not identity_changed:
             continue
         history.archived_postcards[media_ids] = ArchivedPostcardLink(
             archived_postcard.observed_at,

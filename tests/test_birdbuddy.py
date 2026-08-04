@@ -11,9 +11,12 @@ from unittest.mock import patch
 from inky_bird_frame.birdbuddy import (
     _CONFIRMED_HISTORY,
     _FEED_QUERIES,
+    ArchivedPostcardLink,
+    ArchivedSpecies,
     BirdBuddyFeeder,
     BirdBuddyPostcard,
     ConfirmedSpeciesEvidence,
+    FeederHistory,
     PostcardSpecies,
     _ConfirmedHistoryFetch,
     _fetch_confirmed_history,
@@ -21,6 +24,7 @@ from inky_bird_frame.birdbuddy import (
     _fetch_postcards,
     _parse_confirmed_evidence,
     _parse_postcard,
+    _reconcile_archived_postcards,
     _refresh_access_token,
     birdbuddy_status,
     login_birdbuddy,
@@ -298,6 +302,23 @@ class BirdBuddyTests(unittest.TestCase):
         assert parsed_partial is not None
         self.assertFalse(parsed_partial.complete)
 
+        conflicting_identity = feed_node(
+            recognized_sighting,
+            {
+                "__typename": "SightingRecognizedBird",
+                "species": {
+                    "__typename": "SpeciesBird",
+                    "id": "species-bluebird",
+                    "name": "Conflicting Bluebird",
+                    "scientificName": "Sialia conflictus",
+                },
+            },
+        )
+        parsed_conflict = _parse_postcard(conflicting_identity, "feeder-1")
+        self.assertIsNotNone(parsed_conflict)
+        assert parsed_conflict is not None
+        self.assertFalse(parsed_conflict.complete)
+
         low_confidence_incomplete = {
             **node,
             "inferenceConfidenceLevel": "LOW_CONFIDENCE",
@@ -322,6 +343,53 @@ class BirdBuddyTests(unittest.TestCase):
             self.assertRaisesRegex(DataSourceError, "repeated pagination cursor"),
         ):
             _fetch_postcards("access-secret", "feeder-1")
+
+    def test_feed_rejects_conflicting_duplicate_postcards_across_pages(self) -> None:
+        sighting = {
+            "__typename": "SightingRecognizedBird",
+            "species": {
+                "__typename": "SpeciesBird",
+                "id": "species-bluebird",
+                "name": "Eastern Bluebird",
+                "scientificName": "Sialia sialis",
+            },
+        }
+        first = {
+            "me": {
+                "feed": {
+                    "edges": [{"node": feed_node(sighting)}],
+                    "pageInfo": {"hasNextPage": True, "endCursor": "next"},
+                }
+            }
+        }
+        second = {
+            "me": {
+                "feed": {
+                    "edges": [
+                        {
+                            "node": feed_node(
+                                sighting,
+                                observed_at="2026-08-03T11:00:00+00:00",
+                            )
+                        }
+                    ],
+                    "pageInfo": {"hasNextPage": False, "endCursor": None},
+                }
+            }
+        }
+        with (
+            patch(
+                "inky_bird_frame.birdbuddy._graphql_request",
+                side_effect=[first, second],
+            ),
+            self.assertRaisesRegex(DataSourceError, "conflicting duplicate postcards"),
+        ):
+            _fetch_postcard_variant(
+                "access-secret",
+                "feeder-1",
+                _FEED_QUERIES[0],
+                "SightingRecognizedBird",
+            )
 
     def test_first_feed_page_omits_null_cursor(self) -> None:
         page = {
@@ -512,6 +580,17 @@ class BirdBuddyTests(unittest.TestCase):
         )
         malformed = confirmed_node(origin="POSTCARD", feeder_id="feeder-1")
         malformed["species"] = [{"__typename": "SpeciesBird", "id": None}]
+        conflicting_species = confirmed_node(origin="POSTCARD", feeder_id="feeder-1")
+        conflicting_species_values = conflicting_species["species"]
+        assert isinstance(conflicting_species_values, list)
+        conflicting_species_values.append(
+            {
+                "__typename": "SpeciesBird",
+                "id": "species-hummingbird",
+                "name": "Conflicting Hummingbird",
+                "scientificName": "Archilochus conflictus",
+            }
+        )
         missing_species_type = confirmed_node(origin="POSTCARD", feeder_id="feeder-1")
         missing_species_type["species"] = [{}]
         missing_media_type = confirmed_node(origin="POSTCARD", feeder_id="feeder-1")
@@ -537,6 +616,12 @@ class BirdBuddyTests(unittest.TestCase):
         with self.assertRaisesRegex(DataSourceError, "record was incomplete"):
             _parse_confirmed_evidence(
                 malformed,
+                "feeder-1",
+                include_manual_sightings=False,
+            )
+        with self.assertRaisesRegex(DataSourceError, "conflicting species identities"):
+            _parse_confirmed_evidence(
+                conflicting_species,
                 "feeder-1",
                 include_manual_sightings=False,
             )
@@ -597,6 +682,7 @@ class BirdBuddyTests(unittest.TestCase):
                                 origin="CUSTOM_ID",
                                 feeder_id="manual",
                                 observed_at="2026-08-03T10:00:00Z",
+                                media_id="media-2",
                             )
                         },
                         {
@@ -698,6 +784,48 @@ class BirdBuddyTests(unittest.TestCase):
                 "access-secret",
                 "feeder-1",
                 include_manual_sightings=False,
+            )
+
+    def test_confirmed_history_rejects_opted_in_manual_media_conflicts(self) -> None:
+        page = {
+            "me": {
+                "mediasOwned": {
+                    "edges": [
+                        {
+                            "node": confirmed_node(
+                                origin="CUSTOM_ID",
+                                feeder_id="manual",
+                                observed_at="2026-08-03T10:00:00Z",
+                            )
+                        },
+                        {
+                            "node": confirmed_node(
+                                origin="CUSTOM_ID",
+                                feeder_id="manual",
+                                observed_at="2026-08-03T11:00:00Z",
+                            )
+                        },
+                    ],
+                    "pageInfo": {"hasNextPage": False, "endCursor": None},
+                }
+            }
+        }
+        with patch("inky_bird_frame.birdbuddy._graphql_request", return_value=page):
+            ignored = _fetch_confirmed_history(
+                "access-secret",
+                "feeder-1",
+                include_manual_sightings=False,
+            )
+        self.assertEqual(ignored.records_accepted, 0)
+
+        with (
+            patch("inky_bird_frame.birdbuddy._graphql_request", return_value=page),
+            self.assertRaisesRegex(DataSourceError, "conflicting media records"),
+        ):
+            _fetch_confirmed_history(
+                "access-secret",
+                "feeder-1",
+                include_manual_sightings=True,
             )
 
     def test_confirmed_history_rejects_malformed_selected_feeder_record(self) -> None:
@@ -1476,6 +1604,44 @@ class BirdBuddyTests(unittest.TestCase):
             older.observed_at,
         )
         self.assertEqual(after_by_name["Cardinalis cardinalis"].detection_count, 1)
+
+    def test_archived_identity_correction_survives_confirmed_record_removal(self) -> None:
+        observed_at = "2025-08-01T10:00:00+00:00"
+        media_ids = ("media-1",)
+        original = ArchivedSpecies(
+            "species-bluebird",
+            "Eastern Bluebird",
+            "Sialia sialis",
+            1,
+            observed_at,
+        )
+        history = FeederHistory(
+            "2025-01-01T00:00:00+00:00",
+            None,
+            None,
+            {},
+            {original.species_id: original},
+            {},
+            {media_ids: ArchivedPostcardLink(observed_at, media_ids, (original.species_id,))},
+        )
+        corrected = PostcardSpecies(
+            original.species_id,
+            "Eastern Bluebird (updated)",
+            "Sialia sialis",
+        )
+
+        changed = _reconcile_archived_postcards(
+            history,
+            {"media-1": (corrected,)},
+        )
+        _reconcile_archived_postcards(history, {})
+
+        self.assertEqual(changed, 1)
+        self.assertEqual(
+            history.archived_species[original.species_id].common_name,
+            "Eastern Bluebird (updated)",
+        )
+        self.assertEqual(history.archived_postcards, {})
 
     def test_complete_confirmed_snapshot_removes_stale_manual_evidence(self) -> None:
         feeder = BirdBuddyFeeder("feeder-1", "Garden feeder", "member")
