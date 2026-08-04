@@ -32,6 +32,14 @@ state; the example uses a dedicated `workspace` directory. `catalog_dir` and
 `state_dir` must persist across deployments. `codex_path` must point to a Codex
 CLI whose `login status` reports a ChatGPT-authenticated session.
 
+Bird Buddy uses controller-private authentication state rather than configured
+credentials. Obtain Bird Buddy's permission first, run `birdbuddy login`, and
+verify the selected feeder with `birdbuddy status`. The controller stores only
+the rotating refresh token and fails that provider with a re-login instruction
+if the session is revoked. Removing `birdbuddy` from `discovery.sources` is the
+non-destructive rollback; `birdbuddy logout --yes` additionally removes local
+authentication without deleting accumulated history.
+
 Schedules are configured in `[schedule]`. Conservative starting values are:
 
 - controller HTTP service: always running;

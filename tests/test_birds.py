@@ -8,6 +8,7 @@ from unittest.mock import MagicMock, patch
 from urllib.parse import parse_qs, urlsplit
 
 from inky_bird_frame.birds import (
+    BirdBuddySpecies,
     BirdSpecies,
     BirdWeatherSpecies,
     DateRange,
@@ -25,6 +26,7 @@ from inky_bird_frame.birds import (
     parse_inaturalist_taxon,
     parse_inaturalist_taxon_match,
     parse_observation_window,
+    resolve_birdbuddy_species,
     resolve_birdweather_species,
     resolve_ebird_species,
 )
@@ -450,6 +452,28 @@ class BirdWeatherTests(unittest.TestCase):
         self.assertEqual(species[0].scientific_name, "Sialia canonicalis")
         self.assertEqual(species[0].observation_count, 7)
         self.assertEqual(species[0].sources, ("BirdWeather",))
+        self.assertEqual(species[0].latest_detection_at, detection.latest_detection_at)
+
+
+class BirdBuddyTaxonomyTests(unittest.TestCase):
+    def test_resolution_preserves_detection_count_source_and_timestamp(self) -> None:
+        detection = BirdBuddySpecies(
+            "species-bluebird",
+            "Eastern Bluebird",
+            "Sialia sialis",
+            3,
+            "2026-08-03T12:30:00+00:00",
+        )
+        match = BirdSpecies(12942, "Eastern Bluebird", "Sialia sialis", 1, "eBird")
+        with TemporaryDirectory() as temporary:
+            cache = Path(temporary) / "crosswalk.json"
+            with patch("inky_bird_frame.birds.fetch_inaturalist_taxon_match", return_value=match):
+                species, unresolved = resolve_birdbuddy_species([detection], cache)
+
+        self.assertEqual(unresolved, [])
+        self.assertEqual(species[0].taxon_id, 12942)
+        self.assertEqual(species[0].observation_count, 3)
+        self.assertEqual(species[0].sources, ("Bird Buddy",))
         self.assertEqual(species[0].latest_detection_at, detection.latest_detection_at)
 
 

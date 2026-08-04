@@ -8,7 +8,9 @@ from tempfile import TemporaryDirectory
 from typing import cast
 from unittest.mock import patch
 
+from inky_bird_frame.birdbuddy import BirdBuddySyncResult, BirdBuddySyncStats
 from inky_bird_frame.birds import (
+    BirdBuddySpecies,
     BirdSpecies,
     BirdWeatherSpecies,
     DateRange,
@@ -34,6 +36,7 @@ from inky_bird_frame.controller import (
     DiscoveryResult,
     DiscoverySnapshot,
     ProviderStatus,
+    _merge_provider_species,
     add_collection_member,
     collection_status,
     discover_species,
@@ -139,6 +142,114 @@ state_dir = "display"
 
 
 class ControllerTests(unittest.TestCase):
+    def test_birdbuddy_source_uses_private_detection_history(self) -> None:
+        detection = BirdBuddySpecies(
+            "species-bluebird",
+            "Eastern Bluebird",
+            "Sialia sialis",
+            3,
+            "2026-08-03T10:00:00+00:00",
+        )
+        resolved = BirdSpecies(
+            12942,
+            "Eastern Bluebird",
+            "Sialia sialis",
+            3,
+            "Bird Buddy",
+            latest_detection_at="2026-08-03T10:00:00+00:00",
+        )
+        stats = BirdBuddySyncStats(
+            1,
+            3,
+            3,
+            0,
+            0,
+            0,
+            "2026-08-03T09:00:00+00:00",
+            "2026-08-03T09:30:00+00:00",
+            "2026-08-03T10:00:00+00:00",
+        )
+        with TemporaryDirectory() as temporary:
+            config_path = Path(temporary) / "config.toml"
+            config_path.write_text(
+                CONFIG.replace("[discovery]\n", '[discovery]\nsources = ["birdbuddy"]\n')
+            )
+            config = load_config(config_path)
+            with (
+                patch(
+                    "inky_bird_frame.controller.sync_birdbuddy_detections",
+                    return_value=BirdBuddySyncResult([detection], stats),
+                ) as sync,
+                patch(
+                    "inky_bird_frame.controller.resolve_birdbuddy_species",
+                    return_value=([resolved], []),
+                ),
+                patch("inky_bird_frame.controller.resolve_discovery_location") as location,
+            ):
+                result = discover_species(config)
+
+        self.assertEqual(result.species, [resolved])
+        self.assertEqual(result.providers[0].details, stats.as_dict())
+        self.assertEqual(sync.call_args.kwargs["window"], ObservationWindow.LAST_WEEK)
+        location.assert_not_called()
+
+    def test_birdbuddy_failure_does_not_block_other_provider(self) -> None:
+        inaturalist = BirdSpecies(12942, "Eastern Bluebird", "Sialia sialis", 9, "iNaturalist")
+        with TemporaryDirectory() as temporary:
+            config_path = Path(temporary) / "config.toml"
+            config_path.write_text(
+                CONFIG.replace(
+                    "[discovery]\n",
+                    '[discovery]\nsources = ["inaturalist", "birdbuddy"]\n',
+                )
+            )
+            config = load_config(config_path)
+            with (
+                patch(
+                    "inky_bird_frame.controller.resolve_discovery_location",
+                    return_value=DiscoveryLocation("12345", "Exampleville", "XY", 1.0, 2.0),
+                ),
+                patch(
+                    "inky_bird_frame.controller.fetch_inaturalist_birds",
+                    return_value=[inaturalist],
+                ),
+                patch(
+                    "inky_bird_frame.controller.sync_birdbuddy_detections",
+                    side_effect=DataSourceError("Bird Buddy session is invalid"),
+                ),
+            ):
+                result = discover_species(config)
+
+        self.assertEqual(result.species, [inaturalist])
+        self.assertEqual(
+            [(provider.name, provider.status) for provider in result.providers],
+            [("inaturalist", "ok"), ("birdbuddy", "error")],
+        )
+
+    def test_provider_merge_uses_newest_detection_timestamp(self) -> None:
+        older = BirdSpecies(
+            12942,
+            "Eastern Bluebird",
+            "Sialia sialis",
+            4,
+            "BirdWeather",
+            latest_detection_at="2026-08-03T08:00:00-04:00",
+        )
+        newer = BirdSpecies(
+            12942,
+            "Eastern Bluebird",
+            "Sialia sialis",
+            3,
+            "Bird Buddy",
+            latest_detection_at="2026-08-03T12:30:00+00:00",
+        )
+
+        merged = _merge_provider_species([[older], [newer]])
+
+        self.assertEqual(merged[0].latest_detection_at, "2026-08-03T12:30:00+00:00")
+        self.assertEqual(merged[0].observation_count, 4)
+        self.assertEqual(merged[0].sources, ("BirdWeather", "Bird Buddy"))
+
     def test_invalid_cached_profile_fails_as_catalog_state(self) -> None:
         species = BirdSpecies(9083, "Northern Cardinal", "Cardinalis cardinalis", 2, "test")
         with TemporaryDirectory() as temporary:

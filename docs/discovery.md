@@ -1,7 +1,8 @@
 # Discovery sources
 
 Inky Bird Frame reads public observations, detections from your own acoustic
-station, or both. Every result enters the same catalog and review process.
+station, authorized postcard detections from your own Bird Buddy account, or a
+combination. Every result enters the same catalog and review process.
 
 Merlin Bird ID is Cornell's identification app. Its nearby lists are powered by
 eBird, so this project uses the documented eBird API rather than trying to
@@ -14,6 +15,7 @@ automate Merlin.
 | `inaturalist` | None | All | Default setup, historical seeds, and licensed references |
 | `ebird` | Personal eBird key | 1, 7, or 30 days | Bird-specific recent public sightings |
 | `birdweather` | BirdWeather station token | All | Species acoustically detected by one station |
+| `birdbuddy` | Authorized Bird Buddy account | All after setup | High-confidence postcard species from one feeder |
 
 Select any combination with a TOML array. Each configured provider runs
 independently.
@@ -21,7 +23,7 @@ independently.
 ## Configure a discovery location
 
 iNaturalist and eBird need a point and radius. Choose exactly one location
-form; BirdWeather-only setups need none.
+form; BirdWeather- and Bird Buddy-only setups need none.
 
 Direct coordinates are the provider-independent option. They work worldwide,
 do not disclose a postal code to a geocoder, and cannot become ambiguous:
@@ -132,6 +134,74 @@ sounds, and detector configuration can affect the result. Inky Bird Frame uses
 the station's accepted BirdWeather species summary as supplied. Tune and review
 the detector in its own software before relying on those species for display.
 
+## Bird Buddy setup
+
+Bird Buddy is optional and uses the private, undocumented GraphQL API behind
+the Bird Buddy app. It is not an official developer integration and may change
+without notice. Bird Buddy's current
+[app EULA](https://mybirdbuddy.com/app-eula/) restricts automated and non-app
+access. Obtain Bird Buddy's permission for your account before enabling this
+provider. Inky Bird Frame cannot grant or verify that permission; you are
+responsible for ensuring it remains valid.
+
+Create a dedicated email-and-password guest account and invite it to the feeder
+you want Inky to follow. Bird Buddy documents the
+[guest invitation flow](https://support.mybirdbuddy.com/hc/en-us/articles/4404431992337-Adding-guest-Feeder-Members-to-your-Birdbuddy).
+This is also the supported path when the feeder owner signs in with Apple,
+Google, or Facebook. Keep the guest account for this integration rather than
+using it interactively, so postcard state stays predictable.
+
+Add the provider without putting credentials in TOML:
+
+```toml
+[discovery]
+sources = ["inaturalist", "birdbuddy"]
+zip_code = "12345"
+radius_km = 8
+species_limit = 50
+window = "last-30-days"
+```
+
+Then authenticate once. The interactive command shows the authorization
+attestation before asking for credentials:
+
+```bash
+inky-bird-frame birdbuddy login --config /path/to/config.toml
+inky-bird-frame birdbuddy status --config /path/to/config.toml
+```
+
+For noninteractive secret-manager use, inject `INKY_BIRDBUDDY_EMAIL` and
+`INKY_BIRDBUDDY_PASSWORD` for that command only and add
+`--confirm-authorized-access`. Never put the password on the command line or in
+`config.toml`. If the account can see more than one feeder, login reports the
+available names and IDs without saving authentication; rerun with the intended
+`--feeder-id`.
+
+Login stores only the attestation time, selected feeder, and rotating refresh
+token in mode-`0600` controller state. Access tokens remain in memory. The
+password and email are never retained. `birdbuddy logout --config
+/path/to/config.toml --yes` removes local authentication while preserving
+detection history; it does not claim to revoke the remote token.
+
+Bird Buddy rotates its refresh token during every authenticated request, so
+even `discover` and seed previews must atomically update authentication state.
+Preview commands do not commit detection history or taxonomy cache changes.
+
+The provider reads only high-confidence recognized-bird metadata from new
+postcards. It does not convert, reanalyze, collect, edit, discard, or share a
+postcard; control a feeder; or download photos, video, or audio. The independent
+[pybirdbuddy project](https://github.com/jhansche/pybirdbuddy) demonstrates the
+private API's current password and guest-account behavior but is not an
+authoritative Bird Buddy API contract and is not a runtime dependency here.
+
+Bird Buddy removes postcards from the main feed after seven days. The
+controller therefore keeps a private, feeder-scoped history: exact postcard
+events for 366 days and separate older all-time totals. Standard windows are
+accurate from setup forward. The first sync can import only what Bird Buddy
+still exposes, and `all-time` means since the integration began. Repeated polls
+are deduplicated, and a changed classification replaces the prior species while
+the postcard remains available.
+
 ## How eBird enrichment works
 
 eBird returns recent public sightings and an eBird species code. The controller
@@ -160,25 +230,27 @@ when it was introduced, so an application upgrade cannot silently contact a
 future provider. New configurations should use the explicit array.
 
 iNaturalist supplies observation counts, BirdWeather supplies station detection
-counts, and eBird's nearby endpoint supplies presence rather than a comparable
-aggregate count. eBird-only species receive weight one. These counts describe
-different collection methods and should not be compared as equivalent evidence.
-`shuffle_bag` is the recommended source-neutral rotation policy.
+counts, Bird Buddy supplies distinct postcard counts, and eBird's nearby
+endpoint supplies presence rather than a comparable aggregate count. eBird-only
+species receive weight one. These counts describe different collection methods
+and should not be compared as equivalent evidence. `shuffle_bag` is the
+recommended source-neutral rotation policy.
 
-BirdWeather also supplies each species' latest station-detection timestamp.
+BirdWeather and Bird Buddy also supply each species' latest detection timestamp.
 By default, a display node shows the newest detection once before returning to
 its configured rotation. This is display priority, not a confidence claim or a
-live event stream: the timestamp advances only when the controller refreshes
-the station summary, and recording-only detection limitations still apply.
-Configure `display_node.prioritize_latest_detection = false` to disable it.
-The `discover` command includes `latest_detection_at` on species entries when a
-configured provider supplies that timestamp and omits the field otherwise.
+live event stream: the timestamp advances only when the controller refreshes a
+provider. Configure `display_node.prioritize_latest_detection = false` to
+disable it. The `discover` command includes `latest_detection_at` on species
+entries when a configured provider supplies that timestamp and omits the field
+otherwise.
 
 ## Limits and data use
 
 The eBird nearby API supports at most 30 days and 50 km. BirdWeather returns at
-most 100 species per station-species request. Use an explicit
-iNaturalist seed for longer periods:
+most 100 species per station-species request. Bird Buddy can return no more
+history than remains in its current feed on first setup, then uses private local
+history. Use an explicit iNaturalist seed for longer pre-existing periods:
 
 ```bash
 inky-bird-frame seed --config /path/to/config.toml \
@@ -219,6 +291,8 @@ and [eBird data-use guidance](https://support.ebird.org/en/support/solutions/art
 and the official [BirdWeather V1 API](https://app.birdweather.com/api/v1)
 before commercial use. BirdWeather is a hosted dependency and its availability,
 retention, accepted detection format, and API behavior remain outside this
-project's control. The private discovery snapshot may contain provider
-diagnostics and source names, but station tokens, location details, and
+project's control. Bird Buddy is likewise a hosted private dependency whose
+schema, availability, and access policy remain outside this project's control.
+The private discovery snapshot may contain provider diagnostics and source
+names, but tokens, feeder/postcard identifiers, location details, and
 observation details never enter reusable plates or the public catalog.

@@ -14,6 +14,7 @@ from enum import StrEnum
 from pathlib import Path
 from urllib.parse import urlsplit, urlunsplit
 
+from .birdbuddy import birdbuddy_status
 from .config import AppConfig, DiscoveryProvider, load_config
 from .errors import ConfigurationError, InkyBirdFrameError, InstallationError
 from .http import get_json
@@ -322,6 +323,32 @@ def _config_permissions(path: Path) -> DiagnosticCheck:
     return _pass("config_permissions", "Private configuration permissions are restricted")
 
 
+def _birdbuddy_auth_check(config: AppConfig) -> DiagnosticCheck:
+    try:
+        status = birdbuddy_status(config.controller.state_dir)
+    except InkyBirdFrameError as exc:
+        return _fail(
+            "birdbuddy_auth",
+            "Bird Buddy authentication state is invalid",
+            detail=str(exc),
+            remediation="Repair private state permissions or run birdbuddy login again.",
+        )
+    if status.get("authenticated") is not True:
+        return _warn(
+            "birdbuddy_auth",
+            "Bird Buddy is selected but not authenticated",
+            remediation="Obtain permission, then run birdbuddy login.",
+        )
+    feeder = status.get("feeder")
+    detail = None
+    if isinstance(feeder, dict):
+        name = feeder.get("name")
+        role = feeder.get("role")
+        if isinstance(name, str) and isinstance(role, str):
+            detail = f"Selected feeder: {name} ({role})"
+    return _pass("birdbuddy_auth", "Bird Buddy authentication state is ready", detail)
+
+
 def _writable_directory(check_id: str, path: Path) -> DiagnosticCheck:
     candidate = path
     while not candidate.exists() and candidate != candidate.parent:
@@ -580,6 +607,8 @@ def doctor(role: InstallationRole, config_path: Path) -> DoctorReport:
         )
         if config.controller.codex_path.is_file():
             checks.append(_codex_auth_check(config.controller.codex_path))
+        if DiscoveryProvider.BIRDBUDDY in config.discovery.sources:
+            checks.append(_birdbuddy_auth_check(config))
         if platform.system() == "Darwin":
             checks.extend(_launchd_checks(config))
         elif shutil.which("systemctl") is not None:

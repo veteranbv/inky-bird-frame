@@ -113,6 +113,34 @@ events = ["generation_approved", "terminal_error", "degraded", "recovered"]
 Then set the matching values in `controller.env`, one `NAME=value` per line.
 Do not quote a value unless the quote characters are part of the secret.
 
+Bird Buddy is different: its email and password are used once and must not be
+kept in `config.toml` or `controller.env`. After obtaining Bird Buddy's
+permission, add `"birdbuddy"` to `discovery.sources`, import the configuration,
+and perform the one-time login. The `-e` options pass existing shell variables
+without putting their values in the command line:
+
+```bash
+read -r -p "Bird Buddy email: " INKY_BIRDBUDDY_EMAIL
+read -r -s -p "Bird Buddy password: " INKY_BIRDBUDDY_PASSWORD
+printf '\n'
+export INKY_BIRDBUDDY_EMAIL INKY_BIRDBUDDY_PASSWORD
+docker compose run --rm --no-deps \
+  -e INKY_BIRDBUDDY_EMAIL -e INKY_BIRDBUDDY_PASSWORD scheduler \
+  birdbuddy login --config /data/config.toml --confirm-authorized-access
+unset INKY_BIRDBUDDY_EMAIL INKY_BIRDBUDDY_PASSWORD
+```
+
+If the guest account can access several feeders, rerun with the reported
+`--feeder-id`. Check the redacted local state with `birdbuddy status`. Logout
+removes the local refresh token while keeping detection history:
+
+```bash
+docker compose run --rm --no-deps scheduler \
+  birdbuddy status --config /data/config.toml
+docker compose run --rm --no-deps scheduler \
+  birdbuddy logout --config /data/config.toml --yes
+```
+
 The `.env` file controls the container image tag. A release bundle pins a
 version such as `0.1.0`. Keep that pin for repeatable updates and rollback. Use
 `latest` only when you want the newest trusted `main` build.
@@ -204,15 +232,17 @@ the updated file, and recreate the scheduler.
 ## Storage and recovery
 
 `controller-data` contains configuration, observations, generated work,
-approved plates, retry state, notification queues, and any publication
-checkout. `codex-auth` and `github-auth` contain authentication state.
+approved plates, retry state, notification queues, any publication checkout,
+and optional Bird Buddy refresh-token state. `codex-auth` and `github-auth`
+contain authentication state.
 
 Compose uses `restart: unless-stopped`, so the HTTP service and scheduler return
 after Docker starts following a reboot. The scheduler requires a successful
 observation refresh before it generates anything.
 
 Back up `config.toml`, `controller.env`, `.env`, and the `controller-data`
-volume. Protect authentication volumes if you include them in a backup.
+volume. Treat every backup containing `controller-data` as credential-sensitive
+when Bird Buddy is enabled. Protect authentication volumes if you include them.
 `docker compose down` keeps all volumes. `docker compose down --volumes`
 deletes permanent controller state and should not be part of a normal update.
 

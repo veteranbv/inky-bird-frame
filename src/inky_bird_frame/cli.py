@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+import getpass
 import json
 import os
 import shutil
@@ -14,6 +15,12 @@ from datetime import date
 from pathlib import Path
 from tempfile import NamedTemporaryFile
 
+from .birdbuddy import (
+    AUTHORIZED_ACCESS_ATTESTATION,
+    birdbuddy_status,
+    login_birdbuddy,
+    logout_birdbuddy,
+)
 from .birds import BirdSpecies, DateRange, ObservationWindow, parse_observation_window
 from .catalog import (
     approve_candidate,
@@ -50,7 +57,7 @@ from .controller import (
 )
 from .display import show_on_inky
 from .display_node import run_display_cycle
-from .errors import InkyBirdFrameError, SpeciesStateError
+from .errors import DataSourceError, InkyBirdFrameError, SpeciesStateError
 from .images import prepare_uploaded_image
 from .installation import InstallationRole, doctor, setup
 from .notifications import (
@@ -885,6 +892,7 @@ def config_validate_command(args: argparse.Namespace) -> int:
                 "geoapify_configured": config.discovery.geoapify_api_key is not None,
                 "ebird_configured": config.discovery.ebird_api_key is not None,
                 "birdweather_configured": config.discovery.birdweather_token is not None,
+                "birdbuddy_selected": DiscoveryProvider.BIRDBUDDY in config.discovery.sources,
                 "window": config.discovery.observation_window.value,
                 "radius_km": config.discovery.radius_km,
             },
@@ -921,6 +929,66 @@ def config_install_command(args: argparse.Namespace) -> int:
             temporary_path.unlink(missing_ok=True)
         raise
     print_result({"config": str(destination), "installed": True, "valid": True})
+    return 0
+
+
+def _confirm_birdbuddy_authorization(explicit_confirmation: bool) -> bool:
+    if explicit_confirmation:
+        return True
+    if not sys.stdin.isatty():
+        raise DataSourceError(
+            "Bird Buddy authorized-access confirmation is required; "
+            "use --confirm-authorized-access after obtaining permission"
+        )
+    print(AUTHORIZED_ACCESS_ATTESTATION, file=sys.stderr)
+    print("Type 'yes' to confirm: ", end="", file=sys.stderr, flush=True)
+    return sys.stdin.readline().strip().casefold() == "yes"
+
+
+def _birdbuddy_login_credentials() -> tuple[str, str]:
+    email = os.environ.get("INKY_BIRDBUDDY_EMAIL", "").strip()
+    password = os.environ.get("INKY_BIRDBUDDY_PASSWORD", "")
+    if not email:
+        if not sys.stdin.isatty():
+            raise DataSourceError("INKY_BIRDBUDDY_EMAIL is required for noninteractive login")
+        print("Bird Buddy email: ", end="", file=sys.stderr, flush=True)
+        email = sys.stdin.readline().strip()
+    if not password:
+        if not sys.stdin.isatty():
+            raise DataSourceError("INKY_BIRDBUDDY_PASSWORD is required for noninteractive login")
+        password = getpass.getpass("Bird Buddy password: ")
+    return email, password
+
+
+def birdbuddy_login_command(args: argparse.Namespace) -> int:
+    config = _config(args, load_secrets=False)
+    confirmed = _confirm_birdbuddy_authorization(args.confirm_authorized_access)
+    if not confirmed:
+        raise DataSourceError("Bird Buddy authorized-access confirmation was declined")
+    email, password = _birdbuddy_login_credentials()
+    print_result(
+        login_birdbuddy(
+            config.controller.state_dir,
+            email=email,
+            password=password,
+            authorization_confirmed=True,
+            feeder_id=args.feeder_id,
+        )
+    )
+    return 0
+
+
+def birdbuddy_status_command(args: argparse.Namespace) -> int:
+    config = _config(args, load_secrets=False)
+    print_result(birdbuddy_status(config.controller.state_dir))
+    return 0
+
+
+def birdbuddy_logout_command(args: argparse.Namespace) -> int:
+    if not args.yes:
+        raise DataSourceError("birdbuddy logout requires --yes")
+    config = _config(args, load_secrets=False)
+    print_result(logout_birdbuddy(config.controller.state_dir))
     return 0
 
 
@@ -1333,6 +1401,38 @@ def build_parser() -> argparse.ArgumentParser:
     )
     config_install_parser.add_argument("--destination", type=Path, required=True)
     config_install_parser.set_defaults(func=config_install_command)
+
+    birdbuddy_parser = subparsers.add_parser(
+        "birdbuddy", help="Manage private Bird Buddy discovery authentication"
+    )
+    birdbuddy_subparsers = birdbuddy_parser.add_subparsers(dest="birdbuddy_command", required=True)
+    birdbuddy_login_parser = birdbuddy_subparsers.add_parser(
+        "login", help="Authorize and authenticate a Bird Buddy account"
+    )
+    add_config_argument(birdbuddy_login_parser)
+    birdbuddy_login_parser.add_argument(
+        "--feeder-id",
+        help="Required when the account can access more than one feeder",
+    )
+    birdbuddy_login_parser.add_argument(
+        "--confirm-authorized-access",
+        action="store_true",
+        help="Confirm Bird Buddy authorized automated API access for this account",
+    )
+    birdbuddy_login_parser.set_defaults(func=birdbuddy_login_command)
+    birdbuddy_status_parser = birdbuddy_subparsers.add_parser(
+        "status", help="Show redacted local Bird Buddy authentication and history status"
+    )
+    add_config_argument(birdbuddy_status_parser)
+    birdbuddy_status_parser.set_defaults(func=birdbuddy_status_command)
+    birdbuddy_logout_parser = birdbuddy_subparsers.add_parser(
+        "logout", help="Remove local Bird Buddy authentication while preserving history"
+    )
+    add_config_argument(birdbuddy_logout_parser)
+    birdbuddy_logout_parser.add_argument(
+        "--yes", action="store_true", help="Remove local authentication state"
+    )
+    birdbuddy_logout_parser.set_defaults(func=birdbuddy_logout_command)
 
     notifications_parser = subparsers.add_parser(
         "notifications", help="Inspect and test notification delivery"

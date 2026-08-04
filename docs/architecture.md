@@ -39,6 +39,14 @@ any pre-collection seed-queue taxa and records a one-time migration timestamp.
 This happens before pending approvals and prevents a later cycle from undoing
 an explicit collection removal.
 
+An authorized Bird Buddy provider keeps two additional private files under
+`state_dir`. `birdbuddy-auth.json` contains the user's authorization
+attestation, selected feeder, and rotating refresh token; the email, password,
+and short-lived access token are never stored. `birdbuddy-detections.json`
+deduplicates postcard species for 366 days and retains older all-time totals.
+Both files use atomic mode-`0600` writes and never enter the served or published
+catalog.
+
 A locked generation cycle completes that migration, recovers passing pending
 work, and then reads the latest non-stale snapshot and durable seed queue.
 Current observations take priority over queued seed taxa. The cycle then:
@@ -114,11 +122,11 @@ The display node does not discover birds or generate art. Each timer cycle:
 
 1. fetches the private active catalog;
 2. selects an entry using the configured sequential, shuffle, `shuffle_bag`, or
-   observation-weighted policy and durable local state. A newer BirdWeather
-   station detection may take priority once and counts as shown in the current
-   rotation. `shuffle_bag` keeps its own remaining and shown lists, so a newly
-   active species joins the current bag without restoring species already
-   shown;
+   observation-weighted policy and durable local state. The newest BirdWeather
+   or Bird Buddy detection may take priority once and counts as shown in the
+   current rotation. `shuffle_bag` keeps its own remaining and shown lists, so
+   a newly active species joins the current bag without restoring species
+   already shown;
 3. downloads the canonical display asset;
 4. verifies its SHA-256 checksum;
 5. writes it to a local cache atomically;

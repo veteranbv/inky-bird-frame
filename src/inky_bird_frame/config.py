@@ -27,6 +27,7 @@ class DiscoveryProvider(StrEnum):
     INATURALIST = "inaturalist"
     EBIRD = "ebird"
     BIRDWEATHER = "birdweather"
+    BIRDBUDDY = "birdbuddy"
 
 
 LEGACY_DISCOVERY_SOURCES: dict[str, tuple[DiscoveryProvider, ...]] = {

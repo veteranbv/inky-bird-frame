@@ -1,6 +1,7 @@
 [discovery]
 # Select one or more providers explicitly. iNaturalist needs no credentials, eBird provides
-# nearby public sightings, and BirdWeather provides detections from one authenticated station.
+# nearby public sightings, BirdWeather provides detections from one authenticated station,
+# and authorized Bird Buddy accounts provide read-only feeder postcard detections.
 # Legacy singular source values remain accepted for compatibility. See docs/discovery.md.
 sources = ["inaturalist"]
 # Choose exactly one location form for iNaturalist or eBird. The legacy five-digit US
@@ -30,6 +31,8 @@ window = "last-30-days"
 # belongs only in this private file or an injected environment variable.
 # birdweather_token = "YOUR_BIRDWEATHER_STATION_TOKEN"
 # birdweather_token_env = "BIRDWEATHER_TOKEN"
+# Bird Buddy credentials never belong in this file. Obtain permission from Bird Buddy, add
+# "birdbuddy" to sources, then run `inky-bird-frame birdbuddy login --config config.toml`.
 
 [controller]
 # Keep Codex's writable workspace separate from configuration, catalog, and state.
@@ -78,7 +81,7 @@ state_dir = "var/display-node"
 # birds immediately. sequential is stable order; shuffle refills before admitting additions;
 # weighted favors frequently observed birds.
 rotation_mode = "shuffle_bag"
-# When BirdWeather is configured, show the newest station detection once before resuming
+# When a detection provider is configured, show the newest detection once before resuming
 # rotation. Disable this to make every display update follow rotation_mode exclusively.
 prioritize_latest_detection = true
 
