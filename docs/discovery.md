@@ -229,13 +229,22 @@ the option is disabled. Livestream `WATCHING` records and postcard history from
 other feeders are always excluded.
 
 Exact postcard events remain in private history for 366 days, with older
-all-time totals retained separately. Confirmed history keeps the newest
-evidence per species and provenance. The first sync can import only metadata
-Bird Buddy still exposes. `all-time` combines exact history accumulated since
-the integration began with conservative presence evidence from the current
-confirmed collection; it is not a claim about Bird Buddy's total visit count.
-Repeated polls are idempotent, and changed classifications replace prior
-species while Bird Buddy still exposes the underlying record.
+all-time totals retained separately. A compact correction ledger keeps media
+linkage for an archived postcard only while Bird Buddy still exposes every
+linked media record; it can adjust the totals without retaining the postcard
+ID. Confirmed history keeps the newest evidence per species and provenance.
+The first sync can import only metadata Bird Buddy still exposes. `all-time`
+combines exact history accumulated since the integration began with
+conservative presence evidence from the current confirmed collection; it is
+not a claim about Bird Buddy's total visit count. Repeated polls are idempotent,
+and changed or removed classifications replace prior species while Bird Buddy
+still exposes the underlying record.
+
+History written before media linkage cannot prove which confirmed record
+belongs to a cached postcard. The first successful sync after this upgrade
+drops those unlinked, short-lived postcard rows instead of risking a stale
+classification. Current confirmed metadata can still restore conservative
+species presence.
 
 ## How eBird enrichment works
 

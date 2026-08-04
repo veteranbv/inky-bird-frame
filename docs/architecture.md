@@ -47,7 +47,9 @@ deduplicates postcard species for 366 days, retains older all-time totals, and
 keeps the newest confirmed metadata evidence for each species and provenance.
 Private media identifiers link complete confirmed records back to cached
 postcards so corrections replace preview classifications without downloading
-media.
+media. After the 366-day detail window, a compact correction ledger remains
+only while the corresponding confirmed media remains visible; it can update
+archived totals without retaining the postcard ID.
 Confirmed evidence closes the transient-feed gap without counting several
 media files as several visits. Account-level manual evidence affects discovery
 only when `birdbuddy_include_manual_sightings` is enabled. Both files use atomic

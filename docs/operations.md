@@ -49,6 +49,11 @@ sightings are separate. Set
 should influence this frame; disable it to exclude them again without deleting
 private history.
 
+The first successful sync after upgrading from pre-linkage Bird Buddy history
+removes cached postcard rows that lack media identifiers. This avoids keeping
+an unprovable preview classification; confirmed metadata still supplies
+conservative presence for records Bird Buddy continues to expose.
+
 Schedules are configured in `[schedule]`. Conservative starting values are:
 
 - controller HTTP service: always running;
