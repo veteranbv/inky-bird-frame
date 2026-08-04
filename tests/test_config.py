@@ -217,6 +217,19 @@ class ConfigTests(unittest.TestCase):
             config = load_config(path)
 
         self.assertEqual(config.discovery.sources, (DiscoveryProvider.BIRDBUDDY,))
+        self.assertFalse(config.discovery.birdbuddy_include_manual_sightings)
+
+    def test_birdbuddy_manual_sightings_are_explicitly_opted_in(self) -> None:
+        configured = CONFIG.replace(
+            "[discovery]\n",
+            '[discovery]\nsources = ["birdbuddy"]\nbirdbuddy_include_manual_sightings = true\n',
+        )
+        with TemporaryDirectory() as temporary:
+            path = Path(temporary) / "config.toml"
+            path.write_text(configured)
+            config = load_config(path)
+
+        self.assertTrue(config.discovery.birdbuddy_include_manual_sightings)
 
     def test_legacy_all_source_does_not_implicitly_enable_birdbuddy(self) -> None:
         configured = CONFIG.replace(

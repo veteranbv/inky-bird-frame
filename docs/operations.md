@@ -40,6 +40,22 @@ if the session is revoked. Removing `birdbuddy` from `discovery.sources` is the
 non-destructive rollback; `birdbuddy logout --yes` additionally removes local
 authentication without deleting accumulated history.
 
+The selected feeder's confirmed metadata is always used as a safety net when a
+postcard leaves the new-postcard feed before a poll. When all of a cached
+postcard's media identifiers are present in confirmed history, the confirmed
+species replace its preview classification. Account-level manually added
+sightings are separate. Set
+`discovery.birdbuddy_include_manual_sightings = true` only when those sightings
+should influence this frame; disable it to exclude them again without deleting
+private history.
+
+The first successful sync for the selected feeder after upgrading from
+pre-linkage Bird Buddy history removes its cached postcard rows that lack media
+identifiers. Inactive feeder histories remain untouched until that feeder is
+selected and synced. This avoids keeping an unprovable preview classification;
+confirmed metadata still supplies conservative presence for records Bird Buddy
+continues to expose.
+
 Schedules are configured in `[schedule]`. Conservative starting values are:
 
 - controller HTTP service: always running;

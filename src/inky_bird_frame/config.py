@@ -98,6 +98,7 @@ class DiscoveryConfig:
     ebird_api_key_env: str | None = field(default=None, repr=False)
     birdweather_token: str | None = field(default=None, repr=False)
     birdweather_token_env: str | None = field(default=None, repr=False)
+    birdbuddy_include_manual_sightings: bool = False
 
 
 @dataclass(frozen=True)
@@ -591,6 +592,11 @@ def load_config(path: Path, *, load_secrets: bool = True) -> AppConfig:
             ebird_api_key_env=ebird_api_key_env,
             birdweather_token=birdweather_token,
             birdweather_token_env=birdweather_token_env,
+            birdbuddy_include_manual_sightings=_optional_boolean(
+                discovery,
+                "birdbuddy_include_manual_sightings",
+                default=False,
+            ),
         ),
         controller=ControllerConfig(
             workspace_dir=_path(_string(controller, "workspace_dir"), base_dir),

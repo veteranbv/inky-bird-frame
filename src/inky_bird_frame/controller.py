@@ -339,6 +339,7 @@ def discover_species(
                 window=selected_window,
                 limit=selected_limit,
                 persist_history=persist_taxonomy_cache,
+                include_manual_sightings=(config.discovery.birdbuddy_include_manual_sightings),
             )
             resolved, birdbuddy_unresolved = resolve_birdbuddy_species(
                 sync.species,

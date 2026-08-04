@@ -15,7 +15,7 @@ automate Merlin.
 | `inaturalist` | None | All | Default setup, historical seeds, and licensed references |
 | `ebird` | Personal eBird key | 1, 7, or 30 days | Bird-specific recent public sightings |
 | `birdweather` | BirdWeather station token | All | Species acoustically detected by one station |
-| `birdbuddy` | Authorized Bird Buddy account | All after setup | High-confidence postcard species from one feeder |
+| `birdbuddy` | Authorized Bird Buddy account | All after setup | Postcard species from one feeder, plus optional manual sightings |
 
 Select any combination with a TOML array. Each configured provider runs
 independently.
@@ -156,6 +156,7 @@ Add the provider without putting credentials in TOML:
 ```toml
 [discovery]
 sources = ["inaturalist", "birdbuddy"]
+birdbuddy_include_manual_sightings = false
 zip_code = "12345"
 radius_km = 8
 species_limit = 50
@@ -187,20 +188,63 @@ Bird Buddy rotates its refresh token during every authenticated request, so
 even `discover` and seed previews must atomically update authentication state.
 Preview commands do not commit detection history or taxonomy cache changes.
 
-The provider reads only high-confidence recognized-bird metadata from new
-postcards. It does not convert, reanalyze, collect, edit, discard, or share a
-postcard; control a feeder; or download photos, video, or audio. The independent
+The provider reads high-confidence species metadata and media identifiers from
+new postcards. It also reads the species, capture time, origin, feeder ID, and
+media identifier from confirmed history so a postcard is not missed when
+someone confirms it before Inky's next poll. The identifiers link a confirmed
+correction back to its cached postcard; they never enter the public catalog.
+Inky never requests media URLs or downloads photos, video, or audio.
+It does not convert, reanalyze, collect, edit, discard, or share a postcard or
+control a feeder. The independent
 [pybirdbuddy project](https://github.com/jhansche/pybirdbuddy) demonstrates the
 private API's current password and guest-account behavior but is not an
 authoritative Bird Buddy API contract and is not a runtime dependency here.
 
-Bird Buddy removes postcards from the main feed after seven days. The
-controller therefore keeps a private, feeder-scoped history: exact postcard
-events for 366 days and separate older all-time totals. Standard windows are
-accurate from setup forward. The first sync can import only what Bird Buddy
-still exposes, and `all-time` means since the integration began. Repeated polls
-are deduplicated, and a changed classification replaces the prior species while
-the postcard remains available.
+Bird Buddy removes a postcard from the new-postcard feed after it is confirmed.
+The controller therefore combines exact postcard history with confirmed
+metadata. Exact postcards are deduplicated and counted once per species.
+When confirmed history covers every media item on a cached postcard, its
+species replace the earlier preview classification. An incomplete match leaves
+the cached postcard unchanged rather than guessing.
+Confirmed records fill gaps in species presence and supply the newest capture
+time, but they do not increase an existing postcard count: one postcard can
+contain several media records, and treating each as a visit would inflate the
+result. Counts that rely only on confirmed history are conservative lower
+bounds.
+
+Manually added app sightings use Bird Buddy's account-level `CUSTOM_ID` origin.
+They are not tied to the selected feeder and may have been recorded somewhere
+else, so Inky excludes them by default. Include them only when that matches how
+you use the account:
+
+```toml
+[discovery]
+sources = ["birdbuddy"]
+birdbuddy_include_manual_sightings = true
+```
+
+The choice is reversible. Manual evidence remains in the private history so it
+does not need to be fetched again, but it stops affecting discovery as soon as
+the option is disabled. Livestream `WATCHING` records and postcard history from
+other feeders are always excluded.
+
+Exact postcard events remain in private history for 366 days, with older
+all-time totals retained separately. A compact correction ledger keeps media
+linkage for an archived postcard only while Bird Buddy still exposes every
+linked media record; it can adjust the totals without retaining the postcard
+ID. Confirmed history keeps the newest evidence per species and provenance.
+The first sync can import only metadata Bird Buddy still exposes. `all-time`
+combines exact history accumulated since the integration began with
+conservative presence evidence from the current confirmed collection; it is
+not a claim about Bird Buddy's total visit count. Repeated polls are idempotent,
+and changed or removed classifications replace prior species while Bird Buddy
+still exposes the underlying record.
+
+History written before media linkage cannot prove which confirmed record
+belongs to a cached postcard. The first successful sync after this upgrade
+drops those unlinked, short-lived postcard rows instead of risking a stale
+classification. Current confirmed metadata can still restore conservative
+species presence.
 
 ## How eBird enrichment works
 

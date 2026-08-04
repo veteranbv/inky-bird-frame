@@ -325,7 +325,10 @@ def _config_permissions(path: Path) -> DiagnosticCheck:
 
 def _birdbuddy_auth_check(config: AppConfig) -> DiagnosticCheck:
     try:
-        status = birdbuddy_status(config.controller.state_dir)
+        status = birdbuddy_status(
+            config.controller.state_dir,
+            include_manual_sightings=(config.discovery.birdbuddy_include_manual_sightings),
+        )
     except InkyBirdFrameError as exc:
         return _fail(
             "birdbuddy_auth",
