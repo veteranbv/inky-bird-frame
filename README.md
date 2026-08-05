@@ -34,7 +34,7 @@ are cached and reused.
 <p align="center">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="docs/images/installation-architecture-dark.png">
-    <img src="docs/images/installation-architecture.png" alt="Inky Bird Frame runtime architecture showing Internet services, the controller, its private HTTP connection with the Raspberry Pi display node, and the Inky Impression panel" width="760">
+    <img src="docs/images/installation-architecture.png" alt="Inky Bird Frame runtime architecture showing iNaturalist, eBird, BirdWeather, and Bird Buddy observation services; the controller; its private HTTP connection with the Raspberry Pi display node; and the Inky Impression panel" width="760">
   </picture>
 </p>
 

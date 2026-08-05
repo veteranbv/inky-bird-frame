@@ -7,7 +7,7 @@ bird observations.
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="images/installation-architecture-dark.png">
-  <img src="images/installation-architecture.png" alt="Inky Bird Frame runtime architecture showing Internet services, the controller, its private HTTP connection with the Raspberry Pi display node, and the Inky Impression panel">
+  <img src="images/installation-architecture.png" alt="Inky Bird Frame runtime architecture showing iNaturalist, eBird, BirdWeather, and Bird Buddy observation services; the controller; its private HTTP connection with the Raspberry Pi display node; and the Inky Impression panel">
 </picture>
 
 The display initiates every application connection. The controller's configured
