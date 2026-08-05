@@ -2,9 +2,9 @@
   <title id="title">How Inky Bird Frame works</title>
   <desc id="description">
     Runtime architecture. Internet services sit at the top: observation services
-    (iNaturalist, eBird, BirdWeather), licensed reference and research sources, and
-    OpenAI services for Codex generation and review. The controller initiates HTTPS
-    (TCP 443) to those services. On the trusted private network, the Raspberry Pi
+    (iNaturalist, eBird, BirdWeather, Bird Buddy), licensed reference and research
+    sources, and OpenAI services for Codex generation and review. The controller
+    initiates HTTPS (TCP 443) to those services. On the trusted private network, the Raspberry Pi
     display node initiates HTTP GET requests to the controller's configured port
     (8793 in the example configuration) and the controller returns approved catalog
     metadata and PNG plate images. The display node verifies checksums, applies the
@@ -25,8 +25,9 @@
   <text x="74" y="124" style="font-family:'Inter',-apple-system,'Segoe UI',sans-serif;font-size:16px;font-weight:600;letter-spacing:1.6px;" fill="#58a6ff">INTERNET SERVICES</text>
   <circle cx="77.0" cy="168" r="4" fill="#58a6ff"/>
   <text x="92.0" y="174" style="font-family:'Inter',-apple-system,'Segoe UI',sans-serif;font-size:21.5px;font-weight:600;" fill="#e6edf3">Observation services</text>
-  <text x="92.0" y="212" style="font-family:'Inter',-apple-system,'Segoe UI',sans-serif;font-size:20.5px;font-weight:400;" fill="#9198a1">iNaturalist, eBird, and</text>
-  <text x="92.0" y="242" style="font-family:'Inter',-apple-system,'Segoe UI',sans-serif;font-size:20.5px;font-weight:400;" fill="#9198a1">BirdWeather.</text>
+  <text x="92.0" y="212" style="font-family:'Inter',-apple-system,'Segoe UI',sans-serif;font-size:20.5px;font-weight:400;" fill="#9198a1">iNaturalist, eBird,</text>
+  <text x="92.0" y="242" style="font-family:'Inter',-apple-system,'Segoe UI',sans-serif;font-size:20.5px;font-weight:400;" fill="#9198a1">BirdWeather, and</text>
+  <text x="92.0" y="272" style="font-family:'Inter',-apple-system,'Segoe UI',sans-serif;font-size:20.5px;font-weight:400;" fill="#9198a1">Bird Buddy.</text>
   <text x="92.0" y="320" style="font-family:'Inter',-apple-system,'Segoe UI',sans-serif;font-size:17px;font-weight:400;" fill="#9198a1">Configured sources only</text>
   <circle cx="365.0" cy="168" r="4" fill="#58a6ff"/>
   <text x="380.0" y="174" style="font-family:'Inter',-apple-system,'Segoe UI',sans-serif;font-size:21.5px;font-weight:600;" fill="#e6edf3">Reference &amp; research</text>
