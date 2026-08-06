@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import io
 import json
+import shutil
 import stat
 import unittest
 from argparse import Namespace
@@ -1237,6 +1238,63 @@ rotation_mode = "shuffle_bag"
         self.assertEqual(moved_sources, [profile_cache, reference_cache])
         self.assertEqual(queue, [])
         self.assertTrue(failed_exists)
+
+    def test_retry_preserves_identity_across_partial_cache_archival(self) -> None:
+        with TemporaryDirectory() as temporary:
+            state_dir = Path(temporary)
+            profile_cache = state_dir / "profiles/42"
+            profile_cache.mkdir(parents=True)
+            (profile_cache / "profile.json").write_text(
+                json.dumps(
+                    {
+                        "taxon_id": 42,
+                        "common_name": "Legacy Deferred Bird",
+                        "scientific_name": "Avis dilata",
+                    }
+                )
+            )
+            reference_cache = state_dir / "references/42"
+            reference_cache.mkdir(parents=True)
+            (reference_cache / "references.json").write_text("{}")
+            RetryStore(state_dir / "generation-retries.json").record_failure(
+                42,
+                GenerationError("legacy transient failure"),
+                now=datetime(2026, 8, 2, tzinfo=UTC),
+                initial_minutes=5,
+                maximum_minutes=60,
+            )
+            real_move = shutil.move
+
+            def interrupt_reference_move(source: str, destination: Path) -> None:
+                if Path(source) == reference_cache:
+                    raise OSError("cache archival interrupted")
+                real_move(source, destination)
+
+            config = controller_config(state_dir)
+            with (
+                patch("inky_bird_frame.cli._config", return_value=config),
+                patch("inky_bird_frame.cli.shutil.move", side_effect=interrupt_reference_move),
+                self.assertRaisesRegex(OSError, "cache archival interrupted"),
+            ):
+                retry_command(Namespace(taxon_id=42, refresh_research=True))
+
+            interrupted_record = RetryStore(state_dir / "generation-retries.json").get(42)
+            with (
+                patch("inky_bird_frame.cli._config", return_value=config),
+                redirect_stdout(io.StringIO()),
+            ):
+                retry_command(Namespace(taxon_id=42, refresh_research=True))
+
+            queue = read_generation_queue(cast(AppConfig, config))
+            final_record = RetryStore(state_dir / "generation-retries.json").get(42)
+
+        self.assertIsNotNone(interrupted_record)
+        if interrupted_record is not None:
+            self.assertEqual(interrupted_record.common_name, "Legacy Deferred Bird")
+            self.assertEqual(interrupted_record.scientific_name, "Avis dilata")
+        self.assertEqual([item.taxon_id for item in queue], [42])
+        self.assertEqual(queue[0].common_name, "Legacy Deferred Bird")
+        self.assertIsNone(final_record)
 
     def test_retry_prefers_current_identity_over_older_edit_source(self) -> None:
         with TemporaryDirectory() as temporary:

@@ -779,6 +779,12 @@ def retry_command(args: argparse.Namespace) -> int:
                 args.taxon_id,
                 [correction_source.parent, correction_source.parent.parent],
             )
+        if identity is not None and retry_record is not None:
+            retry_record = retry_store.set_identity(
+                args.taxon_id,
+                identity[0],
+                identity[1],
+            )
         invalid_approved_archive = archive_invalid_approved_catalog_state(
             config,
             args.taxon_id,

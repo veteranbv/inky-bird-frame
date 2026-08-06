@@ -59,6 +59,28 @@ class RetryStoreTests(unittest.TestCase):
         self.assertEqual(record.next_attempt_at, now + timedelta(days=7))
         self.assertIsNone(store.get(42))
 
+    def test_identity_can_be_added_without_changing_backoff(self) -> None:
+        now = datetime(2026, 7, 10, tzinfo=UTC)
+        with TemporaryDirectory() as temporary:
+            path = Path(temporary) / "retries.json"
+            store = RetryStore(path)
+            original = store.record_failure(
+                42,
+                RuntimeError("temporary"),
+                now=now,
+                initial_minutes=30,
+                maximum_minutes=60,
+            )
+
+            updated = store.set_identity(42, "Example Bird", "Avis exemplum")
+            reloaded = RetryStore(path).get(42)
+
+        self.assertEqual(updated.attempts, original.attempts)
+        self.assertEqual(updated.next_attempt_at, original.next_attempt_at)
+        self.assertEqual(updated.common_name, "Example Bird")
+        self.assertEqual(updated.scientific_name, "Avis exemplum")
+        self.assertEqual(reloaded, updated)
+
     def test_quality_guidance_is_durable_and_independent_from_backoff(self) -> None:
         now = datetime(2026, 7, 10, tzinfo=UTC)
         with TemporaryDirectory() as temporary:

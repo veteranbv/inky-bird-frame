@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import json
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from datetime import datetime, timedelta
 from pathlib import Path, PurePosixPath
 from typing import cast
@@ -151,6 +151,26 @@ class RetryStore:
     def clear(self, taxon_id: int) -> None:
         if self._records.pop(taxon_id, None) is not None:
             self._write()
+
+    def set_identity(
+        self,
+        taxon_id: int,
+        common_name: str,
+        scientific_name: str,
+    ) -> RetryRecord:
+        record = self.get(taxon_id)
+        if record is None:
+            raise ValueError(f"No retry record exists for taxon {taxon_id}")
+        if not common_name.strip() or not scientific_name.strip():
+            raise ValueError("retry species identity names must be non-empty")
+        updated = replace(
+            record,
+            common_name=common_name,
+            scientific_name=scientific_name,
+        )
+        self._records[taxon_id] = updated
+        self._write()
+        return updated
 
     def quality_guidance(self, taxon_id: int) -> RetryGuidance | None:
         return self._quality_guidance.get(taxon_id)
