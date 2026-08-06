@@ -11,6 +11,7 @@ from importlib.metadata import version
 from pathlib import Path
 from tempfile import TemporaryDirectory
 from types import SimpleNamespace
+from typing import cast
 from unittest.mock import patch
 
 import inky_bird_frame
@@ -33,7 +34,7 @@ from inky_bird_frame.cli import (
     species_to_dict,
     status_command,
 )
-from inky_bird_frame.config import DiscoveryProvider
+from inky_bird_frame.config import AppConfig, DiscoveryProvider
 from inky_bird_frame.controller import (
     REVIEW_FAILURE_FALLBACK,
     exclusive_cycle_lock,
@@ -991,7 +992,7 @@ rotation_mode = "shuffle_bag"
                 if guidance is not None and guidance.source_plate is not None
                 else None
             )
-            queue = read_generation_queue(config)
+            queue = read_generation_queue(cast(AppConfig, config))
 
         self.assertTrue(result["preserved_correction_source"])
         self.assertTrue(result["queued_for_generation"])
@@ -1048,7 +1049,7 @@ rotation_mode = "shuffle_bag"
                 if guidance is not None and guidance.source_plate is not None
                 else None
             )
-            queue = read_generation_queue(config)
+            queue = read_generation_queue(cast(AppConfig, config))
 
         self.assertTrue(result["preserved_correction_source"])
         self.assertEqual(result["source_run"], run.name)
