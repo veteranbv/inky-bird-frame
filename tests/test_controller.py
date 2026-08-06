@@ -933,6 +933,17 @@ class ControllerTests(unittest.TestCase):
                     }
                 )
             )
+            profile_cache = config.controller.state_dir / "profiles/42"
+            profile_cache.mkdir(parents=True)
+            (profile_cache / "profile.json").write_text(
+                json.dumps(
+                    {
+                        "taxon_id": species.taxon_id,
+                        "common_name": "Old Bird Name",
+                        "scientific_name": "Avis old",
+                    }
+                )
+            )
             with (
                 patch("inky_bird_frame.controller.generate_candidate") as generate,
                 patch("inky_bird_frame.controller.approve_candidate", return_value=approved),
@@ -945,12 +956,18 @@ class ControllerTests(unittest.TestCase):
                 result = run_generation_cycle(config)
 
             queue = read_generation_queue(config)
+            archived_profile_exists = (
+                config.controller.state_dir / "archive/42/profile.json"
+            ).is_file()
+            profile_cache_exists = profile_cache.exists()
 
         generated_species = generate.call_args.args[1]
         self.assertEqual(generated_species.common_name, species.common_name)
         self.assertEqual(generated_species.scientific_name, species.scientific_name)
         self.assertEqual(len(cast(list[object], result["generated"])), 1)
         self.assertEqual(queue, [])
+        self.assertTrue(archived_profile_exists)
+        self.assertFalse(profile_cache_exists)
 
     def test_expired_seed_queue_generates_with_deferred_identity(self) -> None:
         queued = BirdSpecies(42, "Old Bird Name", "Avis old", 1, "eBird")

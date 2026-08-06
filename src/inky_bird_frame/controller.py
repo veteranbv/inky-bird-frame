@@ -1745,6 +1745,7 @@ def run_generation_cycle(config: AppConfig) -> dict[str, object]:
                     sources=queued.sources,
                     latest_detection_at=queued.latest_detection_at,
                 )
+            synchronize_generation_retry_identity(config, queued_species, queued)
             generation_species.append(queued)
         approved = approved_taxon_ids(config.controller.catalog_dir)
         eligible = [
