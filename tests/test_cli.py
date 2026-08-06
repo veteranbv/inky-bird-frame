@@ -1065,6 +1065,147 @@ rotation_mode = "shuffle_bag"
         self.assertEqual(queue[0].scientific_name, "Avis current")
         self.assertEqual(queue[0].source, "human-review")
 
+    def test_retry_uses_cached_profile_for_expired_deferred_observation(self) -> None:
+        with TemporaryDirectory() as temporary:
+            state_dir = Path(temporary)
+            profile = state_dir / "profiles/42/profile.json"
+            profile.parent.mkdir(parents=True)
+            profile.write_text(
+                json.dumps(
+                    {
+                        "taxon_id": 42,
+                        "common_name": "Deferred Bird",
+                        "scientific_name": "Avis dilata",
+                    }
+                )
+            )
+            store = RetryStore(state_dir / "generation-retries.json")
+            store.record_failure(
+                42,
+                GenerationError("transient failure"),
+                now=datetime(2026, 8, 2, tzinfo=UTC),
+                initial_minutes=5,
+                maximum_minutes=60,
+            )
+            config = controller_config(state_dir)
+
+            with (
+                patch("inky_bird_frame.cli._config", return_value=config),
+                redirect_stdout(io.StringIO()),
+            ):
+                retry_command(Namespace(taxon_id=42))
+
+            queue = read_generation_queue(cast(AppConfig, config))
+            profile_exists = profile.is_file()
+
+        self.assertEqual([item.taxon_id for item in queue], [42])
+        self.assertEqual(queue[0].common_name, "Deferred Bird")
+        self.assertTrue(profile_exists)
+
+    def test_retry_persists_guidance_before_archiving_terminal_state(self) -> None:
+        with TemporaryDirectory() as temporary:
+            state_dir = Path(temporary)
+            failed = state_dir / "failed/42-example-bird"
+            attempt = failed / "attempt-01"
+            attempt.mkdir(parents=True)
+            (attempt / "portrait.png").write_bytes(b"strong source")
+            (attempt / "quality-review.json").write_text(
+                json.dumps(
+                    {
+                        "passed": False,
+                        "findings": ["Correct the ruler"],
+                        "correction_findings": ["Correct the ruler"],
+                    }
+                )
+            )
+            (failed / "profile.json").write_text(
+                json.dumps(
+                    {
+                        "taxon_id": 42,
+                        "common_name": "Example Bird",
+                        "scientific_name": "Avis exemplum",
+                    }
+                )
+            )
+            config = controller_config(state_dir)
+
+            with (
+                patch("inky_bird_frame.cli._config", return_value=config),
+                patch("inky_bird_frame.cli.shutil.move", side_effect=OSError("interrupted")),
+                self.assertRaisesRegex(OSError, "interrupted"),
+            ):
+                retry_command(Namespace(taxon_id=42, source_attempt=1))
+
+            guidance = RetryStore(state_dir / "generation-retries.json").quality_guidance(42)
+            queue = read_generation_queue(cast(AppConfig, config))
+            failed_exists = failed.is_dir()
+
+        self.assertIsNotNone(guidance)
+        if guidance is not None:
+            self.assertEqual(guidance.findings, ("Correct the ruler",))
+            self.assertEqual(
+                guidance.source_plate,
+                "archive/42-example-bird/attempt-01/portrait.png",
+            )
+        self.assertEqual([item.taxon_id for item in queue], [42])
+        self.assertTrue(failed_exists)
+
+    def test_retry_prefers_current_identity_over_older_edit_source(self) -> None:
+        with TemporaryDirectory() as temporary:
+            state_dir = Path(temporary)
+            failed = state_dir / "failed/42-current-run"
+            failed.mkdir(parents=True)
+            (failed / "profile.json").write_text(
+                json.dumps(
+                    {
+                        "taxon_id": 42,
+                        "common_name": "Current Bird Name",
+                        "scientific_name": "Avis current",
+                    }
+                )
+            )
+            run = state_dir / "archive/42-older-run"
+            attempt = run / "attempt-01"
+            attempt.mkdir(parents=True)
+            (run / "profile.json").write_text(
+                json.dumps(
+                    {
+                        "taxon_id": 42,
+                        "common_name": "Old Bird Name",
+                        "scientific_name": "Avis old",
+                    }
+                )
+            )
+            (attempt / "portrait.png").write_bytes(b"older strong source")
+            (attempt / "quality-review.json").write_text(
+                json.dumps(
+                    {
+                        "passed": False,
+                        "findings": ["Correct the ruler"],
+                        "correction_findings": ["Correct the ruler"],
+                    }
+                )
+            )
+            config = controller_config(state_dir)
+
+            with (
+                patch("inky_bird_frame.cli._config", return_value=config),
+                redirect_stdout(io.StringIO()),
+            ):
+                retry_command(
+                    Namespace(
+                        taxon_id=42,
+                        source_run=run.name,
+                        source_attempt=1,
+                    )
+                )
+
+            queue = read_generation_queue(cast(AppConfig, config))
+
+        self.assertEqual(len(queue), 1)
+        self.assertEqual(queue[0].common_name, "Current Bird Name")
+        self.assertEqual(queue[0].scientific_name, "Avis current")
+
     def test_retry_preserves_selected_attempt_from_archived_run(self) -> None:
         with TemporaryDirectory() as temporary:
             state_dir = Path(temporary)

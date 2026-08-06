@@ -610,6 +610,30 @@ def _retry_species_identity(
     return identity
 
 
+def _retry_archive_plan(
+    state_dir: Path,
+    sources: list[Path],
+    correction_owner: Path | None,
+    correction_source: Path | None,
+) -> tuple[list[tuple[Path, Path]], Path | None]:
+    archive = state_dir / "archive"
+    archive.mkdir(parents=True, exist_ok=True)
+    reserved: set[Path] = set()
+    moves: list[tuple[Path, Path]] = []
+    archived_correction_source: Path | None = None
+    for source in dict.fromkeys(sources):
+        destination = archive / source.name
+        counter = 1
+        while destination.exists() or destination in reserved:
+            destination = archive / f"{source.name}-{counter}"
+            counter += 1
+        reserved.add(destination)
+        moves.append((source, destination))
+        if source == correction_owner and correction_source is not None:
+            archived_correction_source = destination / correction_source.relative_to(source)
+    return moves, archived_correction_source
+
+
 def retry_command(args: argparse.Namespace) -> int:
     config = _config(args)
     replace_approved = bool(getattr(args, "replace_approved", False))
@@ -702,6 +726,7 @@ def retry_command(args: argparse.Namespace) -> int:
         sources.extend(
             sorted((config.controller.state_dir / "rejected").glob(f"{args.taxon_id}-*"))
         )
+        terminal_sources = list(sources)
         retry_store = RetryStore(config.controller.state_dir / "generation-retries.json")
         existing_guidance = retry_store.quality_guidance(args.taxon_id)
         deferred = retry_store.get(args.taxon_id) is not None
@@ -734,40 +759,26 @@ def retry_command(args: argparse.Namespace) -> int:
             and retained_correction_source is None
         ):
             raise SpeciesStateError("The selected correction source is outside retained state")
-        identity_sources = list(sources)
-        if correction_source is not None:
-            identity_sources.append(correction_source.parent)
-            identity_sources.append(correction_source.parent.parent)
-        identity = _retry_species_identity(args.taxon_id, identity_sources)
-        queued_for_generation = False
-        if identity is not None:
-            ensure_generation_retry(
-                config,
+        identity = _retry_species_identity(args.taxon_id, terminal_sources)
+        if identity is None:
+            identity = _retry_species_identity(args.taxon_id, [profile_cache])
+        if identity is None and correction_source is not None:
+            identity = _retry_species_identity(
                 args.taxon_id,
-                identity[0],
-                identity[1],
-                identity[2],
+                [correction_source.parent, correction_source.parent.parent],
             )
-            queued_for_generation = True
         invalid_approved_archive = archive_invalid_approved_catalog_state(
             config,
             args.taxon_id,
         )
-        archive = config.controller.state_dir / "archive"
-        archive.mkdir(parents=True, exist_ok=True)
         moved = [str(invalid_approved_archive)] if invalid_approved_archive is not None else []
-        archived_correction_source = retained_correction_source
-        for source in sources:
-            destination = archive / source.name
-            counter = 1
-            while destination.exists():
-                destination = archive / f"{source.name}-{counter}"
-                counter += 1
-            if source == correction_owner and correction_source is not None:
-                archived_correction_source = destination / correction_source.relative_to(source)
-            shutil.move(str(source), destination)
-            moved.append(str(destination))
-        retry_store.clear(args.taxon_id)
+        archive_plan, planned_correction_source = _retry_archive_plan(
+            config.controller.state_dir,
+            sources,
+            correction_owner,
+            correction_source,
+        )
+        archived_correction_source = retained_correction_source or planned_correction_source
         final_guidance = existing_guidance
         if quality_findings:
             final_guidance = retry_store.set_quality_guidance(
@@ -782,6 +793,20 @@ def retry_command(args: argparse.Namespace) -> int:
                     existing_guidance.invariant_findings if existing_guidance is not None else ()
                 ),
             )
+        queued_for_generation = False
+        if identity is not None:
+            ensure_generation_retry(
+                config,
+                args.taxon_id,
+                identity[0],
+                identity[1],
+                identity[2],
+            )
+            queued_for_generation = True
+        for source, destination in archive_plan:
+            shutil.move(str(source), destination)
+            moved.append(str(destination))
+        retry_store.clear(args.taxon_id)
     print_result(
         {
             "taxon_id": args.taxon_id,
