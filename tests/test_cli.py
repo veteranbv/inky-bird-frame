@@ -1302,18 +1302,25 @@ rotation_mode = "shuffle_bag"
                 species=species,
             )
             config = controller_config(state_dir)
+            output = io.StringIO()
 
             with (
                 patch("inky_bird_frame.cli._config", return_value=config),
-                redirect_stdout(io.StringIO()),
+                redirect_stdout(output),
             ):
                 retry_command(Namespace(taxon_id=42))
 
             queue = read_generation_queue(cast(AppConfig, config))
+            result = json.loads(output.getvalue())["data"]
+            profile_exists = profile.exists()
+            archived_profile_exists = (state_dir / "archive/42/profile.json").is_file()
 
         self.assertEqual([item.taxon_id for item in queue], [42])
         self.assertEqual(queue[0].common_name, "Current Bird Name")
         self.assertEqual(queue[0].scientific_name, "Avis current")
+        self.assertTrue(result["cleared_cached_profile"])
+        self.assertFalse(profile_exists)
+        self.assertTrue(archived_profile_exists)
 
     def test_retry_persists_guidance_before_archiving_terminal_state(self) -> None:
         with TemporaryDirectory() as temporary:

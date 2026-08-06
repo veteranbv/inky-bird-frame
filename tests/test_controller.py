@@ -657,6 +657,76 @@ class ControllerTests(unittest.TestCase):
         self.assertEqual(queue[0].source, HUMAN_REVIEW_SOURCE)
         self.assertEqual(persisted_queue, queue)
 
+    def test_expired_human_review_queue_generates_with_persisted_identity(self) -> None:
+        species = BirdSpecies(42, "Current Bird Name", "Avis current", 0, HUMAN_REVIEW_SOURCE)
+        approved = CatalogEntry(
+            species.taxon_id,
+            species.common_name,
+            species.scientific_name,
+            "current-bird-name",
+            "species/42/portrait.png",
+            "a" * 64,
+            "species/42/display.png",
+            "b" * 64,
+            "2026-08-05T12:00:00+00:00",
+        )
+        with TemporaryDirectory() as temporary:
+            config_path = Path(temporary) / "config.toml"
+            config_path.write_text(CONFIG)
+            config = load_config(config_path)
+            config.controller.state_dir.mkdir(parents=True)
+            write_collection(
+                config.controller.state_dir,
+                [],
+                legacy_seed_queue_migrated_at="2026-08-05T12:00:00+00:00",
+            )
+            (config.controller.state_dir / "generation-queue.json").write_text(
+                json.dumps(
+                    {
+                        "schema_version": 2,
+                        "species": [
+                            {
+                                "taxon_id": species.taxon_id,
+                                "common_name": species.common_name,
+                                "scientific_name": species.scientific_name,
+                                "observation_count": species.observation_count,
+                                "source": species.source,
+                                "sources": [species.source],
+                            }
+                        ],
+                    }
+                )
+            )
+            (config.controller.state_dir / "discovery.json").write_text(
+                json.dumps(
+                    {
+                        "schema_version": 2,
+                        "refreshed_at": datetime.now(UTC).isoformat(),
+                        "place_name": "Exampleville",
+                        "state": "XY",
+                        "species": [],
+                    }
+                )
+            )
+            with (
+                patch("inky_bird_frame.controller.generate_candidate") as generate,
+                patch("inky_bird_frame.controller.approve_candidate", return_value=approved),
+                patch(
+                    "inky_bird_frame.controller.approved_taxon_ids",
+                    side_effect=[set(), {species.taxon_id}, {species.taxon_id}],
+                ),
+                patch("inky_bird_frame.controller._write_active_catalog", return_value=0),
+            ):
+                result = run_generation_cycle(config)
+
+            queue = read_generation_queue(config)
+
+        generated_species = generate.call_args.args[1]
+        self.assertEqual(generated_species.common_name, species.common_name)
+        self.assertEqual(generated_species.scientific_name, species.scientific_name)
+        self.assertEqual(len(cast(list[object], result["generated"])), 1)
+        self.assertEqual(queue, [])
+
     def test_approved_replacement_refreshes_research_only_when_requested(self) -> None:
         species = BirdSpecies(9083, "Northern Cardinal", "Cardinalis cardinalis", 0, "test")
         with TemporaryDirectory() as temporary:

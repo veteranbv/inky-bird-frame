@@ -745,43 +745,6 @@ def retry_command(args: argparse.Namespace) -> int:
             ),
             None,
         )
-        profile_cache = config.controller.state_dir / "profiles" / str(args.taxon_id)
-        cached_profile_identity = (
-            _retry_species_identity(args.taxon_id, [profile_cache])
-            if observed is not None and profile_cache.exists()
-            else None
-        )
-        incompatible_cached_profile = (
-            observed is not None
-            and cached_profile_identity is not None
-            and cached_profile_identity[:2] != (observed.common_name, observed.scientific_name)
-        )
-        cleared_cached_profile = (
-            refresh_research or incompatible_cached_profile
-        ) and profile_cache.exists()
-        if cleared_cached_profile:
-            sources.append(profile_cache)
-        reference_cache = config.controller.state_dir / "references" / str(args.taxon_id)
-        cleared_cached_references = refresh_research and reference_cache.exists()
-        if cleared_cached_references:
-            sources.append(reference_cache)
-        correction_owner = (
-            next(
-                (source for source in sources if correction_source.is_relative_to(source)),
-                None,
-            )
-            if correction_source is not None
-            else None
-        )
-        retained_correction_source = (
-            correction_source if source_candidate is not None or source_run is not None else None
-        )
-        if (
-            correction_source is not None
-            and correction_owner is None
-            and retained_correction_source is None
-        ):
-            raise SpeciesStateError("The selected correction source is outside retained state")
         terminal_identity = _retry_species_identity(args.taxon_id, terminal_sources)
         identity = (
             (
@@ -803,10 +766,47 @@ def retry_command(args: argparse.Namespace) -> int:
                 retry_record.scientific_name,
                 retry_store.path,
             )
+        profile_cache = config.controller.state_dir / "profiles" / str(args.taxon_id)
+        cached_profile_identity = (
+            _retry_species_identity(args.taxon_id, [profile_cache])
+            if profile_cache.exists()
+            else None
+        )
         if identity is None:
-            identity = _retry_species_identity(args.taxon_id, [profile_cache])
-        if identity is None:
+            identity = cached_profile_identity
+        incompatible_cached_profile = (
+            identity is not None
+            and cached_profile_identity is not None
+            and cached_profile_identity[:2] != identity[:2]
+        )
+        cleared_cached_profile = (
+            refresh_research or incompatible_cached_profile
+        ) and profile_cache.exists()
+        if cleared_cached_profile:
+            sources.append(profile_cache)
+        reference_cache = config.controller.state_dir / "references" / str(args.taxon_id)
+        cleared_cached_references = refresh_research and reference_cache.exists()
+        if cleared_cached_references:
+            sources.append(reference_cache)
+        if identity is None and not cleared_cached_references:
             identity = _retry_species_identity(args.taxon_id, [reference_cache])
+        correction_owner = (
+            next(
+                (source for source in sources if correction_source.is_relative_to(source)),
+                None,
+            )
+            if correction_source is not None
+            else None
+        )
+        retained_correction_source = (
+            correction_source if source_candidate is not None or source_run is not None else None
+        )
+        if (
+            correction_source is not None
+            and correction_owner is None
+            and retained_correction_source is None
+        ):
+            raise SpeciesStateError("The selected correction source is outside retained state")
         if identity is None and correction_source is not None:
             identity = _retry_species_identity(
                 args.taxon_id,
