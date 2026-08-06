@@ -754,7 +754,7 @@ def retry_command(args: argparse.Namespace) -> int:
                 config.controller.state_dir / "discovery.json",
             )
             if observed is not None
-            else terminal_identity
+            else None
         )
         queued = next(
             (
@@ -781,6 +781,8 @@ def retry_command(args: argparse.Namespace) -> int:
                 retry_record.scientific_name,
                 retry_store.path,
             )
+        if identity is None:
+            identity = terminal_identity
         if identity is None and queued is not None:
             identity = (
                 queued.common_name,

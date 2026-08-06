@@ -1154,6 +1154,52 @@ rotation_mode = "shuffle_bag"
         self.assertFalse(cached_profile_exists)
         self.assertTrue(archived_profile_exists)
 
+    def test_retry_prefers_refreshed_human_review_queue_over_terminal_identity(self) -> None:
+        with TemporaryDirectory() as temporary:
+            state_dir = Path(temporary)
+            failed = state_dir / "failed/42-old-bird-name"
+            failed.mkdir(parents=True)
+            (failed / "profile.json").write_text(
+                json.dumps(
+                    {
+                        "taxon_id": 42,
+                        "common_name": "Old Bird Name",
+                        "scientific_name": "Avis old",
+                    }
+                )
+            )
+            (state_dir / "generation-queue.json").write_text(
+                json.dumps(
+                    {
+                        "schema_version": 2,
+                        "species": [
+                            {
+                                "taxon_id": 42,
+                                "common_name": "Current Bird Name",
+                                "scientific_name": "Avis current",
+                                "observation_count": 0,
+                                "source": HUMAN_REVIEW_SOURCE,
+                                "sources": [HUMAN_REVIEW_SOURCE],
+                            }
+                        ],
+                    }
+                )
+            )
+            config = controller_config(state_dir)
+
+            with (
+                patch("inky_bird_frame.cli._config", return_value=config),
+                redirect_stdout(io.StringIO()),
+            ):
+                retry_command(Namespace(taxon_id=42))
+
+            queue = read_generation_queue(cast(AppConfig, config))
+
+        self.assertEqual([item.taxon_id for item in queue], [42])
+        self.assertEqual(queue[0].common_name, "Current Bird Name")
+        self.assertEqual(queue[0].scientific_name, "Avis current")
+        self.assertEqual(queue[0].source, HUMAN_REVIEW_SOURCE)
+
     def test_retry_uses_cached_profile_for_expired_deferred_observation(self) -> None:
         with TemporaryDirectory() as temporary:
             state_dir = Path(temporary)
