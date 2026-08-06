@@ -1650,6 +1650,7 @@ rotation_mode = "shuffle_bag"
             pending = state_dir / "pending/42-example-bird"
             pending.mkdir(parents=True)
             (pending / "portrait.png").write_bytes(b"incomplete candidate")
+            (pending / "profile.json").write_text("[]")
             (state_dir / "generation-queue.json").write_text(
                 json.dumps(
                     {

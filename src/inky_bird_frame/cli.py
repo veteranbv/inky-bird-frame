@@ -758,7 +758,12 @@ def retry_command(args: argparse.Namespace) -> int:
             ),
             None,
         )
-        terminal_identity = _retry_species_identity(args.taxon_id, terminal_sources)
+        deferred_identity_errors: list[CatalogError | SpeciesStateError] = []
+        terminal_identity = _retry_species_identity(
+            args.taxon_id,
+            terminal_sources,
+            deferred_malformed_errors=deferred_identity_errors,
+        )
         identity = (
             (
                 observed.common_name,
@@ -802,12 +807,11 @@ def retry_command(args: argparse.Namespace) -> int:
                 config.controller.state_dir / "generation-queue.json",
             )
         profile_cache = config.controller.state_dir / "profiles" / str(args.taxon_id)
-        profile_identity_errors: list[CatalogError | SpeciesStateError] = []
         cached_profile_identity = (
             _retry_species_identity(
                 args.taxon_id,
                 [profile_cache],
-                deferred_malformed_errors=(profile_identity_errors if refresh_research else None),
+                deferred_malformed_errors=(deferred_identity_errors if refresh_research else None),
             )
             if profile_cache.exists() and (not refresh_research or identity is None)
             else None
@@ -827,8 +831,6 @@ def retry_command(args: argparse.Namespace) -> int:
         reference_cache = config.controller.state_dir / "references" / str(args.taxon_id)
         if identity is None:
             identity = _retry_species_identity(args.taxon_id, [reference_cache])
-        if identity is None and profile_identity_errors:
-            raise profile_identity_errors[0]
         cleared_cached_references = refresh_research and reference_cache.exists()
         if cleared_cached_references:
             sources.append(reference_cache)
@@ -854,6 +856,8 @@ def retry_command(args: argparse.Namespace) -> int:
                 args.taxon_id,
                 [correction_source.parent, correction_source.parent.parent],
             )
+        if identity is None and deferred_identity_errors:
+            raise deferred_identity_errors[0]
         if identity is None:
             raise SpeciesStateError(
                 f"Taxon {args.taxon_id} has no recoverable species identity; "
