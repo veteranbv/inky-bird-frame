@@ -766,10 +766,25 @@ def retry_command(args: argparse.Namespace) -> int:
                 retry_record.scientific_name,
                 retry_store.path,
             )
+        if identity is None:
+            queued = next(
+                (
+                    species
+                    for species in read_generation_queue(config)
+                    if species.taxon_id == args.taxon_id
+                ),
+                None,
+            )
+            if queued is not None:
+                identity = (
+                    queued.common_name,
+                    queued.scientific_name,
+                    config.controller.state_dir / "generation-queue.json",
+                )
         profile_cache = config.controller.state_dir / "profiles" / str(args.taxon_id)
         cached_profile_identity = (
             _retry_species_identity(args.taxon_id, [profile_cache])
-            if profile_cache.exists()
+            if profile_cache.exists() and (not refresh_research or identity is None)
             else None
         )
         if identity is None:
@@ -812,21 +827,6 @@ def retry_command(args: argparse.Namespace) -> int:
                 args.taxon_id,
                 [correction_source.parent, correction_source.parent.parent],
             )
-        if identity is None:
-            queued = next(
-                (
-                    species
-                    for species in read_generation_queue(config)
-                    if species.taxon_id == args.taxon_id
-                ),
-                None,
-            )
-            if queued is not None:
-                identity = (
-                    queued.common_name,
-                    queued.scientific_name,
-                    config.controller.state_dir / "generation-queue.json",
-                )
         if identity is None:
             raise SpeciesStateError(
                 f"Taxon {args.taxon_id} has no recoverable species identity; "

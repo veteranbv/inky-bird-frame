@@ -1670,6 +1670,8 @@ def run_generation_cycle(config: AppConfig) -> dict[str, object]:
                 "Discovery state is stale; a successful refresh is required before generation"
             )
         species_list = snapshot.species
+        for species in species_list:
+            synchronize_generation_retry_identity(config, queued_species, species)
         generation_species = list(species_list)
         observed_taxa = {species.taxon_id for species in species_list}
         generation_species.extend(
@@ -1744,7 +1746,6 @@ def run_generation_cycle(config: AppConfig) -> dict[str, object]:
                 retry_store.clear(species.taxon_id)
                 retry_store.clear_quality_guidance(species.taxon_id)
             except InsufficientReferencesError as exc:
-                synchronize_generation_retry_identity(config, queued_species, species)
                 retry = retry_store.record_failure(
                     species.taxon_id,
                     exc,
@@ -1764,7 +1765,6 @@ def run_generation_cycle(config: AppConfig) -> dict[str, object]:
                     }
                 )
             except DataSourceError as exc:
-                synchronize_generation_retry_identity(config, queued_species, species)
                 retry = retry_store.record_failure(
                     species.taxon_id,
                     exc,
@@ -1819,7 +1819,6 @@ def run_generation_cycle(config: AppConfig) -> dict[str, object]:
             except CatalogError:
                 raise
             except InkyBirdFrameError as exc:
-                synchronize_generation_retry_identity(config, queued_species, species)
                 retry = retry_store.record_failure(
                     species.taxon_id,
                     exc,

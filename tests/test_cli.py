@@ -708,7 +708,7 @@ rotation_mode = "shuffle_bag"
             )
             profile = state_dir / "profiles/42/profile.json"
             profile.parent.mkdir(parents=True)
-            profile.write_text("{}")
+            profile.write_text("{malformed")
             references = state_dir / "references/42/references.json"
             references.parent.mkdir(parents=True)
             references.write_text("{}")

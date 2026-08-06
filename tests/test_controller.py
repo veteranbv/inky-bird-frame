@@ -1919,6 +1919,29 @@ class ControllerTests(unittest.TestCase):
             config_path = Path(temporary) / "config.toml"
             config_path.write_text(CONFIG)
             config = load_config(config_path)
+            config.controller.state_dir.mkdir(parents=True)
+            write_collection(
+                config.controller.state_dir,
+                [],
+                legacy_seed_queue_migrated_at="2026-08-05T12:00:00+00:00",
+            )
+            (config.controller.state_dir / "generation-queue.json").write_text(
+                json.dumps(
+                    {
+                        "schema_version": 2,
+                        "species": [
+                            {
+                                "taxon_id": species.taxon_id,
+                                "common_name": "Old Cardinal Name",
+                                "scientific_name": "Cardinalis old",
+                                "observation_count": 0,
+                                "source": HUMAN_REVIEW_SOURCE,
+                                "sources": [HUMAN_REVIEW_SOURCE],
+                            }
+                        ],
+                    }
+                )
+            )
             with (
                 patch(
                     "inky_bird_frame.controller.discover_species",
@@ -1932,7 +1955,14 @@ class ControllerTests(unittest.TestCase):
             ):
                 run_controller_cycle(config)
 
-            self.assertEqual(list((config.controller.state_dir / "failed").glob("*")), [])
+            failures = list((config.controller.state_dir / "failed").glob("*"))
+            queue = read_generation_queue(config)
+
+        self.assertEqual(failures, [])
+        self.assertEqual(len(queue), 1)
+        self.assertEqual(queue[0].common_name, species.common_name)
+        self.assertEqual(queue[0].scientific_name, species.scientific_name)
+        self.assertEqual(queue[0].source, HUMAN_REVIEW_SOURCE)
 
     def test_catalog_failure_is_terminal_for_species_without_aborting_cycle(self) -> None:
         species = BirdSpecies(9083, "Northern Cardinal", "Cardinalis cardinalis", 2, "test")
