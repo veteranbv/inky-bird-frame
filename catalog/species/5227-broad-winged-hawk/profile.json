@@ -1,0 +1,42 @@
+{
+  "behavior": "Diurnal perch-hunter that drops onto small mammals, amphibians, reptiles, birds, and insects. Usually solitary and territorial, but migrants soar on thermals in large flocks called kettles.",
+  "common_name": "Broad-winged Hawk",
+  "family": "Accipitridae",
+  "field_marks": [
+    "Small, stocky build with a large head and short, square tail",
+    "Reddish-brown head and upperparts; adults barred chestnut below",
+    "Juveniles paler below with coarse brown vertical streaks",
+    "Dark hooked bill with yellow cere, dark eyes, and yellow legs",
+    "Adult tail marked by broad black-and-white bands",
+    "Broad, slightly pointed wings with pale undersides and a dark trailing edge"
+  ],
+  "habitat": "Large deciduous and mixed forests, especially forest interiors near openings or water; also forest edges, tropical forest, cloud forest, and dry scrub outside the breeding season.",
+  "measurements": {
+    "length": "34\u201344 cm (13.4\u201317.3 in)",
+    "weight": "265\u2013560 g (9.3\u201319.8 oz)",
+    "wingspan": "81\u2013100 cm (31.9\u201339.4 in)"
+  },
+  "palette": [
+    "reddish brown",
+    "chestnut",
+    "cream white",
+    "charcoal black",
+    "golden yellow"
+  ],
+  "scientific_name": "Buteo platypterus",
+  "sources": [
+    {
+      "title": "Broad-winged Hawk Identification \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Broad-winged_Hawk/id"
+    },
+    {
+      "title": "Broad-winged Hawk Life History \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Broad-winged_Hawk/lifehistory"
+    },
+    {
+      "title": "Buteo platypterus \u2014 Animal Diversity Web",
+      "url": "https://animaldiversity.org/accounts/Buteo_platypterus/"
+    }
+  ],
+  "taxon_id": 5227
+}

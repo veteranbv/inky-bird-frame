@@ -1,0 +1,155 @@
+{
+  "approved_at": "2026-08-06T11:56:19+00:00",
+  "assets": {
+    "display": {
+      "filename": "display.png",
+      "sha256": "d7cd9e6654678dade21c67f089c557c1288edf2513ff32e28f4275ec5a7df55f"
+    },
+    "portrait": {
+      "filename": "portrait.png",
+      "sha256": "9caaa8caf1a6f53a02196b846d410a35f9b23790b427ed71583a85438c3563fa"
+    }
+  },
+  "common_name": "Scarlet Tanager",
+  "generation": {
+    "attempt": 1,
+    "correction_source_sha256": "5daafeeff6612feddeb4b833def4e09af44eae25affe3183d0de4393eb78e502",
+    "generated_at": "2026-08-06T11:56:19+00:00",
+    "generator": "Codex subscription / built-in gpt-image-2",
+    "max_attempts": 3,
+    "prompt_version": "field-journal-v4"
+  },
+  "profile": {
+    "behavior": "Forages deliberately in foliage, often high in the canopy; eats insects and wild fruits, and gives a distinctive chick-burr call.",
+    "common_name": "Scarlet Tanager",
+    "family": "Cardinalidae",
+    "field_marks": [
+      "Medium-sized, compact songbird with a fairly long, straight-to-slightly pointed bill",
+      "Breeding male has a vivid scarlet-red head and body",
+      "Breeding male shows sharply contrasting jet-black wings and tail",
+      "Female, immature, and nonbreeding male are yellowish to olive-green with dark wings and tail",
+      "Dark, rounded eye; slender dark legs and feet",
+      "Long, dark tail extends well beyond the folded wings"
+    ],
+    "habitat": "Primarily mature deciduous and mixed forests; also uses forest edges, younger woodland, and evergreen forest during the nonbreeding season.",
+    "measurements": {
+      "length": "16\u201317 cm",
+      "weight": "23.5\u201338 g",
+      "wingspan": "25\u201329 cm"
+    },
+    "palette": [
+      "scarlet red",
+      "jet black",
+      "olive green",
+      "straw yellow",
+      "pale horn gray"
+    ],
+    "scientific_name": "Piranga olivacea",
+    "sources": [
+      {
+        "title": "Scarlet Tanager Overview \u2014 All About Birds, Cornell Lab of Ornithology",
+        "url": "https://www.allaboutbirds.org/guide/Scarlet_Tanager/overview"
+      },
+      {
+        "title": "Piranga olivacea \u2014 Animal Diversity Web",
+        "url": "https://animaldiversity.org/accounts/Piranga_olivacea/"
+      }
+    ],
+    "taxon_id": 9921
+  },
+  "quality_review": {
+    "anatomy_accuracy": 4,
+    "composition_quality": 5,
+    "correction_findings": [],
+    "findings": [
+      "Species identity is correct: the plate depicts a breeding male Scarlet Tanager, Piranga olivacea, with the diagnostic scarlet head and body contrasting with black wings and tail. Cardinalidae is the current family assignment used by Cornell.",
+      "The measurement lines are accurate: \u201cLength 16\u201317 cm,\u201d \u201cWingspan 25\u201329 cm,\u201d and \u201cWeight 23.5\u201338 g\u201d agree with the published ranges; Cornell rounds the mass to 23\u201338 g, while Animal Diversity Web gives 23.5\u201338 g.",
+      "The body-length diagram is internally consistent: 16 cm is at the bottom, 17 cm is at the top, values increase upward, the endpoints agree with the printed range, and exactly four evenly spaced unlabeled interior ticks divide the range into five proportional segments. \u201cSCHEMATIC \u2013 NOT TO SCALE\u201d clearly prevents interpreting it as the printed specimen\u2019s physical scale.",
+      "The habitat text\u2014\u201cMature deciduous & mixed forests; edges, young woodland; evergreen forest in nonbreeding season.\u201d\u2014is supported by the verified habitat accounts and contains no material spelling, number, omission, duplication, or word-order error.",
+      "The behavior text\u2014\u201cDeliberate foliage forager, often high in canopy; insects & wild fruits; chick-burr call.\u201d\u2014accurately reflects deliberate foliage foraging in tall trees, an insect-and-fruit diet, and the distinctive chick-burr call.",
+      "All five field-mark lines are valid. In particular, \u201cThick, blunt-tipped bill\u201d and \u201cShort, broad dark tail\u201d agree with Cornell\u2019s direct identification description; the proposed research-pass alternatives describing a fairly long pointed bill and a long tail are not supported by that source.",
+      "The primary specimen has appropriate compact, stocky proportions, a large rounded head, dark rounded eye, thick pale horn-colored bill, scarlet breeding plumage, black folded wing, dark tail, and two slender dark legs with grasping feet. The profile-obscured far wing does not create a duplicate or missing-anatomy defect.",
+      "The bill is closed and both mandibles converge consistently from their common base to a co-terminal tip in the primary specimen and detached head study. Unequal mandible projection is not established as a Scarlet Tanager field mark by the verified sources, so no projection correction is warranted.",
+      "The detached wing and detached head are clearly supplementary studies and do not appear attached to the primary specimen. Their plumage and bill treatment remain consistent with the main bird and the references.",
+      "The palette labels\u2014\u201cscarlet,\u201d \u201cjet black,\u201d \u201colive green,\u201d \u201cstraw yellow,\u201d and \u201cpale horn gray\u201d\u2014are legible and appropriate. The line \u201cFemale, immature & nonbreeding male: yellowish to olive-green; dark wings & tail\u201d is explicitly supported by Cornell, Animal Diversity Web, and Audubon.",
+      "The plate contains exactly one primary bird with one head, one beak, two anatomical wings, two legs, and one tail. The layout is readable and balanced, and no place name, ZIP code, coordinates, map, or local-observation detail appears."
+    ],
+    "location_free": true,
+    "passed": true,
+    "species_accuracy": 5,
+    "text_accuracy": 5,
+    "verification_sources": [
+      {
+        "title": "Scarlet Tanager Identification \u2014 All About Birds, Cornell Lab of Ornithology",
+        "url": "https://www.allaboutbirds.org/guide/Scarlet_Tanager/id"
+      },
+      {
+        "title": "Piranga olivacea \u2014 Animal Diversity Web",
+        "url": "https://animaldiversity.org/accounts/Piranga_olivacea/"
+      },
+      {
+        "title": "Scarlet Tanager \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/scarlet-tanager"
+      }
+    ]
+  },
+  "references": [
+    {
+      "attribution": "(c) Shirley Zundell, some rights reserved (CC BY)",
+      "filename": "01-42961581.jpeg",
+      "height": 2048,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/42961581/large.jpeg",
+      "license_code": "cc-by",
+      "observation_id": 27600400,
+      "observer": "sdz456",
+      "photo_id": 42961581,
+      "sha256": "a1abaa5fd31fad444ef5b17a85f8ca992fa0e3ed186facec2bbd4389e3fa98ca",
+      "source_url": "https://www.inaturalist.org/observations/27600400",
+      "width": 2001
+    },
+    {
+      "attribution": "(c) Sean Vanderluit, some rights reserved (CC BY)",
+      "filename": "02-203711981.jpeg",
+      "height": 1365,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/203711981/large.jpeg",
+      "license_code": "cc-by",
+      "observation_id": 120444017,
+      "observer": "seanvanderluit",
+      "photo_id": 203711981,
+      "sha256": "be49c0335dc7781b4c356dafebc84466e0fffeea93e36d01acc0bff1e41b3470",
+      "source_url": "https://www.inaturalist.org/observations/120444017",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) Sean Frey, some rights reserved (CC BY)",
+      "filename": "03-670719461.jpg",
+      "height": 1044,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/670719461/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 367291287,
+      "observer": "georectified",
+      "photo_id": 670719461,
+      "sha256": "ef57c949d5782e5ad91ffb3fbb80eb6659b931ee270f823875490f92c5873ecf",
+      "source_url": "https://www.inaturalist.org/observations/367291287",
+      "width": 1612
+    },
+    {
+      "attribution": "(c) er-birds, some rights reserved (CC BY)",
+      "filename": "04-379902762.jpeg",
+      "height": 1365,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/379902762/large.jpeg",
+      "license_code": "cc-by",
+      "observation_id": 214907070,
+      "observer": "er-birds",
+      "photo_id": 379902762,
+      "sha256": "41d47cfa0afed3710c0ba0cc7dcbab2daca40aed9499d1d40819dec5a6c4fae8",
+      "source_url": "https://www.inaturalist.org/observations/214907070",
+      "width": 2048
+    }
+  ],
+  "schema_version": 1,
+  "scientific_name": "Piranga olivacea",
+  "slug": "scarlet-tanager",
+  "status": "approved",
+  "taxon_id": 9921
+}

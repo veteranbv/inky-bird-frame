@@ -1,0 +1,38 @@
+{
+  "behavior": "Forages deliberately in foliage, often high in the canopy; eats insects and wild fruits, and gives a distinctive chick-burr call.",
+  "common_name": "Scarlet Tanager",
+  "family": "Cardinalidae",
+  "field_marks": [
+    "Medium-sized, compact songbird with a fairly long, straight-to-slightly pointed bill",
+    "Breeding male has a vivid scarlet-red head and body",
+    "Breeding male shows sharply contrasting jet-black wings and tail",
+    "Female, immature, and nonbreeding male are yellowish to olive-green with dark wings and tail",
+    "Dark, rounded eye; slender dark legs and feet",
+    "Long, dark tail extends well beyond the folded wings"
+  ],
+  "habitat": "Primarily mature deciduous and mixed forests; also uses forest edges, younger woodland, and evergreen forest during the nonbreeding season.",
+  "measurements": {
+    "length": "16\u201317 cm",
+    "weight": "23.5\u201338 g",
+    "wingspan": "25\u201329 cm"
+  },
+  "palette": [
+    "scarlet red",
+    "jet black",
+    "olive green",
+    "straw yellow",
+    "pale horn gray"
+  ],
+  "scientific_name": "Piranga olivacea",
+  "sources": [
+    {
+      "title": "Scarlet Tanager Overview \u2014 All About Birds, Cornell Lab of Ornithology",
+      "url": "https://www.allaboutbirds.org/guide/Scarlet_Tanager/overview"
+    },
+    {
+      "title": "Piranga olivacea \u2014 Animal Diversity Web",
+      "url": "https://animaldiversity.org/accounts/Piranga_olivacea/"
+    }
+  ],
+  "taxon_id": 9921
+}
