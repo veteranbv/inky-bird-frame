@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-04T17:57:54+00:00",
+  "generated_at": "2026-08-06T11:28:33+00:00",
   "schema_version": 1,
   "species": [
     {
@@ -507,6 +507,17 @@
       "scientific_name": "Carduelis carduelis",
       "slug": "european-goldfinch",
       "taxon_id": 9398
+    },
+    {
+      "approved_at": "2026-08-06T11:28:33+00:00",
+      "common_name": "European Starling",
+      "display_path": "species/14850-european-starling/display.png",
+      "display_sha256": "6e6e137dd5c1162fb63474bdec1db991ce74be56cccc3db48c9e9945ffc5220f",
+      "portrait_path": "species/14850-european-starling/portrait.png",
+      "portrait_sha256": "a5c9ee8356b4a537908edf7dc0e26e8bb0d6394dff37bd4e088356f04eec13ed",
+      "scientific_name": "Sturnus vulgaris",
+      "slug": "european-starling",
+      "taxon_id": 14850
     },
     {
       "approved_at": "2026-07-13T04:34:30+00:00",

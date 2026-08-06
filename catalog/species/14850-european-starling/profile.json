@@ -1,0 +1,42 @@
+{
+  "behavior": "Gregarious and vocal; walks rapidly over short ground cover, probing with its bill for insects and other food. Often gathers in large, coordinated flocks, nests in cavities, and readily mimics other sounds.",
+  "common_name": "European Starling",
+  "family": "Sturnidae",
+  "field_marks": [
+    "Chunky body with a short tail and short, pointed wings",
+    "Long, slender, sharply pointed bill; yellow in breeding adults and dark in nonbreeding birds and juveniles",
+    "Adult plumage appears black with strong green and purple iridescence",
+    "Fresh nonbreeding plumage is densely tipped with white or cream spots",
+    "Juveniles are comparatively plain gray-brown without the adult's strong gloss",
+    "Dark eyes and pinkish-red to reddish-brown legs"
+  ],
+  "habitat": "Open lowland habitats with short vegetation, including grasslands, farmland, lawns, and built environments. Uses holes and crevices in trees or structures for nesting and generally avoids extensive unbroken forest and desert.",
+  "measurements": {
+    "length": "20\u201323 cm (7.9\u20139.1 in)",
+    "weight": "60\u201396 g (2.1\u20133.4 oz)",
+    "wingspan": "31\u201340 cm (12.2\u201315.8 in)"
+  },
+  "palette": [
+    "glossy black",
+    "iridescent green",
+    "purple",
+    "creamy white",
+    "golden yellow"
+  ],
+  "scientific_name": "Sturnus vulgaris",
+  "sources": [
+    {
+      "title": "European Starling Identification \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/european_starling/id/"
+    },
+    {
+      "title": "European Starling Life History \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/European_Starling/lifehistory"
+    },
+    {
+      "title": "Sturnus vulgaris (common starling) \u2014 Animal Diversity Web",
+      "url": "https://animaldiversity.org/accounts/Sturnus_vulgaris/"
+    }
+  ],
+  "taxon_id": 14850
+}

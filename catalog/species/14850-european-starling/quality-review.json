@@ -1,0 +1,39 @@
+{
+  "anatomy_accuracy": 5,
+  "composition_quality": 5,
+  "correction_findings": [],
+  "findings": [
+    "The primary specimen is identifiable as European Starling (Sturnus vulgaris): chunky body, short tail, slender pointed bill, compact pointed folded wings, dark eye, reddish-brown legs, iridescent green-purple plumage, and dense pale nonbreeding spots all agree with the references and direct sources.",
+    "The dark bill and heavily spotted plumage form a coherent nonbreeding-adult treatment. All About Birds and Audubon independently confirm that breeding adults have yellow bills, while fresh fall/winter birds have dark or duller bills and prominent pale spots.",
+    "The primary specimen has one head, one beak, two normally overlapping wings in profile, two anatomically plausible anisodactyl legs and feet, and one short tail. No duplicated, missing, fused, or extraneous primary anatomy is evident.",
+    "Both bill profiles are long, slender, sharply pointed, and internally consistent. Neither has a truncated, reversed, exaggerated, or conspicuously unequal mandible.",
+    "The detached spread-wing and head studies read clearly as supplementary anatomy rather than additional birds or parts attached to the primary specimen. Their feather organization, bill, eye, and plumage remain consistent with the species.",
+    "The printed taxonomy is correct: \u201cEuropean Starling,\u201d \u201cSturnus vulgaris,\u201d and \u201cFamily: Sturnidae.\u201d",
+    "Every printed measurement matches the verified All About Birds ranges: length 20\u201323 cm (7.9\u20139.1 in), wingspan 31\u201340 cm (12.2\u201315.8 in), and weight 60\u201396 g (2.1\u20133.4 oz). Audubon independently gives substantively identical values with additional decimal precision.",
+    "The ruler increases correctly from 20 cm at the bottom to 23 cm at the top, contains exactly four evenly spaced unlabeled interior ticks, repeats the correct imperial and metric range, and is explicitly labeled \u201cSCHEMATIC \u2014 NOT TO SCALE.\u201d",
+    "The habitat paragraph accurately describes open lowland, agricultural, lawn, and built habitats, cavity nesting, and avoidance of extensive unbroken forest and desert.",
+    "The behavior paragraph accurately describes gregariousness, vocalization, rapid ground foraging and probing, coordinated flocks, cavity nesting, and mimicry.",
+    "All six printed field-mark statements match the proposed wording and are supported by the direct sources: chunky short-tailed form, short pointed wings, slender pointed seasonally colored bill, green-purple adult iridescence, pale-tipped fresh nonbreeding plumage, plain gray-brown juveniles, dark eyes, and reddish legs.",
+    "The palette swatches correspond to the stated glossy black, iridescent green, purple, creamy white, and golden-yellow colors without introducing a contradictory plumage claim.",
+    "The layout is legible and well balanced, with clear separation between the primary specimen, supplementary studies, prose, palette, and schematic ruler.",
+    "No place name, ZIP code, coordinates, map, or local-observation detail appears on the candidate plate."
+  ],
+  "location_free": true,
+  "passed": true,
+  "species_accuracy": 5,
+  "text_accuracy": 5,
+  "verification_sources": [
+    {
+      "title": "European Starling Identification \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/european_starling/id/"
+    },
+    {
+      "title": "European Starling \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/european-starling"
+    },
+    {
+      "title": "Sturnus vulgaris (common starling) \u2014 Animal Diversity Web",
+      "url": "https://animaldiversity.org/accounts/Sturnus_vulgaris/"
+    }
+  ]
+}
