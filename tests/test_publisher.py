@@ -18,6 +18,7 @@ from inky_bird_frame.publisher import (
     _check_json_privacy,
     _remote_repository,
     _validate_checkout,
+    replace_public_catalog_taxon,
     run_catalog_publish,
     sync_public_catalog,
     validate_catalog_additions,
@@ -463,6 +464,77 @@ class PublisherTests(unittest.TestCase):
             rebuild_catalog_index(candidate)
 
             with self.assertRaisesRegex(CatalogPublishError, "changed immutable taxon 1"):
+                validate_catalog_additions(base, candidate)
+
+    def test_validates_explicit_hash_bound_catalog_replacement(self) -> None:
+        with TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            base = root / "base"
+            candidate = root / "candidate"
+            source = root / "source"
+            original = _create_species(base, 1, "Existing Bird")
+            shutil.copytree(base, candidate)
+            replacement = _create_species(source, 1, "Existing Bird")
+            Image.new("RGB", (1200, 1600), "black").save(replacement / "portrait.png")
+            manifest_path = replacement / "manifest.json"
+            manifest = json.loads(manifest_path.read_text())
+            manifest["approved_at"] = "2026-07-10T00:00:00+00:00"
+            manifest["assets"]["portrait"]["sha256"] = sha256_file(replacement / "portrait.png")
+            write_json_atomic(manifest_path, manifest)
+            rebuild_catalog_index(source)
+
+            result = replace_public_catalog_taxon(
+                source,
+                candidate,
+                1,
+                "Human review found incorrect proportions.",
+            )
+
+            replaced = result["replaced"]
+            self.assertIsInstance(replaced, dict)
+            assert isinstance(replaced, dict)
+            self.assertEqual(replaced["taxon_id"], 1)
+            self.assertEqual(validate_catalog_additions(base, candidate), [])
+            replaced_manifest = json.loads(
+                (candidate / "species/1-existing-bird/manifest.json").read_text()
+            )
+            self.assertEqual(
+                replaced_manifest["catalog_migration"],
+                {
+                    "reason": "Human review found incorrect proportions.",
+                    "replaces": {
+                        "approved_at": "2026-07-09T00:00:00+00:00",
+                        "display_sha256": sha256_file(original / "display.png"),
+                        "portrait_sha256": sha256_file(original / "portrait.png"),
+                    },
+                },
+            )
+
+    def test_rejects_catalog_replacement_with_wrong_base_hash(self) -> None:
+        with TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            base = root / "base"
+            candidate = root / "candidate"
+            _create_species(base, 1, "Existing Bird")
+            shutil.copytree(base, candidate)
+            portrait = candidate / "species/1-existing-bird/portrait.png"
+            Image.new("RGB", (1200, 1600), "black").save(portrait)
+            manifest_path = candidate / "species/1-existing-bird/manifest.json"
+            manifest = json.loads(manifest_path.read_text())
+            manifest["approved_at"] = "2026-07-10T00:00:00+00:00"
+            manifest["assets"]["portrait"]["sha256"] = sha256_file(portrait)
+            manifest["catalog_migration"] = {
+                "reason": "Human review found incorrect proportions.",
+                "replaces": {
+                    "approved_at": "2026-07-09T00:00:00+00:00",
+                    "display_sha256": "0" * 64,
+                    "portrait_sha256": "0" * 64,
+                },
+            }
+            write_json_atomic(manifest_path, manifest)
+            rebuild_catalog_index(candidate)
+
+            with self.assertRaisesRegex(CatalogPublishError, "does not match"):
                 validate_catalog_additions(base, candidate)
 
     def test_rejects_removing_a_base_catalog_taxon(self) -> None:

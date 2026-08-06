@@ -76,6 +76,7 @@ from .notifications import (
     validate_notification_destinations,
 )
 from .publisher import (
+    replace_public_catalog_taxon,
     run_catalog_publish,
     sync_public_catalog,
     validate_catalog_additions,
@@ -1021,11 +1022,26 @@ def catalog_publish_command(args: argparse.Namespace) -> int:
 
 
 def catalog_prepare_command(args: argparse.Namespace) -> int:
-    result = sync_public_catalog(
-        args.source_catalog,
-        args.catalog,
-        taxon_ids={args.taxon_id},
-    )
+    replace_approved = bool(getattr(args, "replace_approved", False))
+    raw_reason = getattr(args, "reason", None)
+    reason = raw_reason.strip() if isinstance(raw_reason, str) else None
+    if replace_approved:
+        if not reason:
+            raise ValueError("--replace-approved requires a non-empty --reason")
+        result = replace_public_catalog_taxon(
+            args.source_catalog,
+            args.catalog,
+            args.taxon_id,
+            reason,
+        )
+    else:
+        if raw_reason is not None:
+            raise ValueError("--reason requires --replace-approved")
+        result = sync_public_catalog(
+            args.source_catalog,
+            args.catalog,
+            taxon_ids={args.taxon_id},
+        )
     print_result(
         {
             **result,
@@ -1563,6 +1579,15 @@ def build_parser() -> argparse.ArgumentParser:
         type=Path,
         default=Path("catalog"),
         help="Repository catalog to update (default: catalog)",
+    )
+    catalog_prepare_parser.add_argument(
+        "--replace-approved",
+        action="store_true",
+        help="Replace a published taxon through an explicit hash-bound migration",
+    )
+    catalog_prepare_parser.add_argument(
+        "--reason",
+        help="Human-reviewed migration reason required with --replace-approved",
     )
     catalog_prepare_parser.set_defaults(func=catalog_prepare_command)
     catalog_sync_parser = catalog_subparsers.add_parser(

@@ -215,8 +215,27 @@ class CliTests(unittest.TestCase):
         self.assertEqual(prepare.taxon_id, 42)
         self.assertEqual(str(prepare.source_catalog), "approved")
         self.assertEqual(str(prepare.catalog), "catalog")
+        self.assertFalse(prepare.replace_approved)
+        self.assertIsNone(prepare.reason)
         self.assertEqual(str(validate.catalog), "catalog")
         self.assertEqual(str(validate.base_catalog), "base-catalog")
+
+    def test_catalog_prepare_parses_explicit_approved_replacement(self) -> None:
+        args = build_parser().parse_args(
+            [
+                "catalog",
+                "prepare",
+                "42",
+                "--source-catalog",
+                "approved",
+                "--replace-approved",
+                "--reason",
+                "Human review rejected the published plate.",
+            ]
+        )
+
+        self.assertTrue(args.replace_approved)
+        self.assertEqual(args.reason, "Human review rejected the published plate.")
 
     def test_catalog_sync_uses_explicit_catalog_paths(self) -> None:
         args = build_parser().parse_args(

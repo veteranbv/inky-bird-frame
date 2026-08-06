@@ -400,7 +400,11 @@ only; they never enter the approved catalog or rotation.
   required correction guidance on every attempt. Re-running the same command and
   reason safely resumes an interrupted migration. This local migration does not
   replace an immutable public catalog entry; a published correction requires a
-  separate maintainer-reviewed migration.
+  separate maintainer-reviewed migration. Use `catalog prepare TAXON_ID` with
+  `--replace-approved` and a non-empty `--reason` against the approved source
+  catalog. The command preserves the prior approval timestamp and image hashes
+  in a validated `catalog_migration` record; CI rejects a replacement whose
+  record does not match the pull request base.
 - Controller unavailable: the current e-paper image remains visible. Display
   state is not advanced.
 - Checksum mismatch: the display refuses the asset and preserves current state.

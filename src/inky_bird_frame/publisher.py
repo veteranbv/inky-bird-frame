@@ -30,6 +30,8 @@ from .catalog import (
 )
 from .config import AppConfig, PublicCatalogConfig
 from .errors import CatalogPublishError
+from .http import write_json_atomic
+from .timeutil import parse_utc_timestamp
 
 _ALLOWED_SPECIES_FILES = frozenset(
     {
@@ -83,6 +85,7 @@ _GITHUB_REMOTE = re.compile(
 )
 _IMAGE_DIMENSIONS = {"portrait.png": (1200, 1600), "display.png": (1600, 1200)}
 _COMMAND_TIMEOUT_SECONDS = 180
+_SHA256 = re.compile(r"[0-9a-f]{64}")
 
 
 @contextmanager
@@ -222,6 +225,7 @@ def _validate_species_directory(directory: Path) -> tuple[int, str]:
         or directory.name != f"{taxon_id}-{slug}"
     ):
         raise CatalogPublishError(f"Manifest identity does not match {directory}")
+    _catalog_migration_record(manifest, directory / "manifest.json")
 
     review = manifest.get("quality_review")
     generation = manifest.get("generation")
@@ -301,6 +305,84 @@ def _trees_match(left: Path, right: Path) -> bool:
     )
 
 
+def _catalog_migration_record(
+    manifest: dict[str, object],
+    source: Path,
+) -> tuple[str, str, str, str] | None:
+    raw = manifest.get("catalog_migration")
+    if raw is None:
+        return None
+    if not isinstance(raw, dict) or set(raw) != {"reason", "replaces"}:
+        raise CatalogPublishError(f"Invalid catalog migration record: {source}")
+    reason = raw.get("reason")
+    replaces = raw.get("replaces")
+    if (
+        not isinstance(reason, str)
+        or not reason.strip()
+        or reason != reason.strip()
+        or not isinstance(replaces, dict)
+        or set(replaces) != {"approved_at", "display_sha256", "portrait_sha256"}
+    ):
+        raise CatalogPublishError(f"Invalid catalog migration record: {source}")
+    approved_at = replaces.get("approved_at")
+    display_sha256 = replaces.get("display_sha256")
+    portrait_sha256 = replaces.get("portrait_sha256")
+    if (
+        not isinstance(approved_at, str)
+        or parse_utc_timestamp(approved_at) is None
+        or not isinstance(display_sha256, str)
+        or _SHA256.fullmatch(display_sha256) is None
+        or not isinstance(portrait_sha256, str)
+        or _SHA256.fullmatch(portrait_sha256) is None
+    ):
+        raise CatalogPublishError(f"Invalid catalog migration record: {source}")
+    return reason, approved_at, display_sha256, portrait_sha256
+
+
+def _manifest_asset_sha256(manifest: dict[str, object], asset_name: str) -> str:
+    assets = manifest.get("assets")
+    asset = assets.get(asset_name) if isinstance(assets, dict) else None
+    checksum = asset.get("sha256") if isinstance(asset, dict) else None
+    if not isinstance(checksum, str) or _SHA256.fullmatch(checksum) is None:
+        raise CatalogPublishError(f"Manifest has invalid {asset_name} checksum")
+    return checksum
+
+
+def _validate_catalog_replacement(base_directory: Path, candidate_directory: Path) -> None:
+    base = read_json(base_directory / "manifest.json")
+    candidate = read_json(candidate_directory / "manifest.json")
+    if not isinstance(base, dict) or not isinstance(candidate, dict):
+        raise CatalogPublishError("Catalog replacement manifests must be JSON objects")
+    record = _catalog_migration_record(candidate, candidate_directory / "manifest.json")
+    if record is None:
+        raise CatalogPublishError(
+            f"Catalog contribution changed immutable taxon {base.get('taxon_id')}"
+        )
+    _, approved_at, display_sha256, portrait_sha256 = record
+    identity_fields = ("taxon_id", "common_name", "scientific_name", "slug")
+    if any(base.get(field) != candidate.get(field) for field in identity_fields):
+        raise CatalogPublishError("Catalog replacement changed the approved taxon identity")
+    if (
+        base.get("approved_at") != approved_at
+        or _manifest_asset_sha256(base, "display") != display_sha256
+        or _manifest_asset_sha256(base, "portrait") != portrait_sha256
+    ):
+        raise CatalogPublishError("Catalog migration does not match the approved base artifacts")
+    candidate_approved_at = parse_utc_timestamp(candidate.get("approved_at"))
+    replaced_approved_at = parse_utc_timestamp(approved_at)
+    if (
+        candidate_approved_at is None
+        or replaced_approved_at is None
+        or candidate_approved_at <= replaced_approved_at
+    ):
+        raise CatalogPublishError("Catalog replacement must have a newer approval timestamp")
+    if (
+        _manifest_asset_sha256(candidate, "display") == display_sha256
+        and _manifest_asset_sha256(candidate, "portrait") == portrait_sha256
+    ):
+        raise CatalogPublishError("Catalog replacement does not change an approved image")
+
+
 def validate_catalog_additions(
     base_catalog: Path,
     candidate_catalog: Path,
@@ -319,15 +401,104 @@ def validate_catalog_additions(
         candidate_directory = (
             candidate_catalog / "species" / f"{candidate_entry.taxon_id}-{candidate_entry.slug}"
         )
-        if base_directory.name != candidate_directory.name or not _trees_match(
-            base_directory, candidate_directory
-        ):
+        if base_directory.name != candidate_directory.name:
             raise CatalogPublishError(
                 f"Catalog contribution changed immutable taxon {base_entry.taxon_id}"
             )
+        if not _trees_match(base_directory, candidate_directory):
+            _validate_catalog_replacement(base_directory, candidate_directory)
 
     base_taxa = {entry.taxon_id for entry in base_entries}
-    return [entry for entry in candidate_entries if entry.taxon_id not in base_taxa]
+    additions = [entry for entry in candidate_entries if entry.taxon_id not in base_taxa]
+    for entry in additions:
+        manifest = read_json(
+            candidate_catalog / "species" / f"{entry.taxon_id}-{entry.slug}" / "manifest.json"
+        )
+        if isinstance(manifest, dict) and manifest.get("catalog_migration") is not None:
+            raise CatalogPublishError(
+                f"New catalog taxon {entry.taxon_id} cannot declare a replacement migration"
+            )
+    return additions
+
+
+def replace_public_catalog_taxon(
+    source_catalog: Path,
+    destination_catalog: Path,
+    taxon_id: int,
+    reason: str,
+) -> dict[str, object]:
+    replacement_reason = reason.strip()
+    if not replacement_reason:
+        raise ValueError("Catalog replacement requires a non-empty reason")
+    source_entries = validate_public_catalog(source_catalog)
+    destination_entries = validate_public_catalog(destination_catalog)
+    source_entry = next((entry for entry in source_entries if entry.taxon_id == taxon_id), None)
+    destination_entry = next(
+        (entry for entry in destination_entries if entry.taxon_id == taxon_id), None
+    )
+    if source_entry is None:
+        raise CatalogPublishError(f"Source catalog does not contain taxon {taxon_id}")
+    if destination_entry is None:
+        raise CatalogPublishError(f"Destination catalog does not contain taxon {taxon_id}")
+    if (
+        source_entry.common_name,
+        source_entry.scientific_name,
+        source_entry.slug,
+    ) != (
+        destination_entry.common_name,
+        destination_entry.scientific_name,
+        destination_entry.slug,
+    ):
+        raise CatalogPublishError("Catalog replacement identity differs from the approved taxon")
+
+    source = source_catalog / "species" / f"{taxon_id}-{source_entry.slug}"
+    destination = destination_catalog / "species" / f"{taxon_id}-{destination_entry.slug}"
+    replacement_record = {
+        "reason": replacement_reason,
+        "replaces": {
+            "approved_at": destination_entry.approved_at,
+            "display_sha256": destination_entry.display_sha256,
+            "portrait_sha256": destination_entry.portrait_sha256,
+        },
+    }
+
+    with TemporaryDirectory(prefix=".catalog-replace-", dir=destination_catalog.parent) as temp:
+        transaction = Path(temp)
+        staged = transaction / "replacement" / source.name
+        backup = transaction / "approved" / destination.name
+        backup.parent.mkdir()
+        shutil.copytree(source, staged)
+        staged_manifest_path = staged / "manifest.json"
+        staged_manifest = read_json(staged_manifest_path)
+        if not isinstance(staged_manifest, dict):
+            raise CatalogPublishError(f"Invalid replacement manifest: {staged_manifest_path}")
+        staged_manifest["catalog_migration"] = replacement_record
+        write_json_atomic(staged_manifest_path, staged_manifest)
+        _validate_species_directory(staged)
+        _validate_catalog_replacement(destination, staged)
+
+        destination.replace(backup)
+        try:
+            staged.replace(destination)
+            rebuild_catalog_index(destination_catalog)
+            validate_public_catalog(destination_catalog)
+        except BaseException as error:
+            if destination.exists():
+                shutil.rmtree(destination)
+            backup.replace(destination)
+            rebuild_catalog_index(destination_catalog)
+            raise CatalogPublishError("Catalog replacement failed and was rolled back") from error
+
+    return {
+        "replaced": {
+            "taxon_id": source_entry.taxon_id,
+            "common_name": source_entry.common_name,
+            "scientific_name": source_entry.scientific_name,
+            "slug": source_entry.slug,
+        },
+        "reason": replacement_reason,
+        "replaces": replacement_record["replaces"],
+    }
 
 
 def sync_public_catalog(
