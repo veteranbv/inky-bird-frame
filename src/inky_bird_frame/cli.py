@@ -805,6 +805,12 @@ def retry_command(args: argparse.Namespace) -> int:
                     existing_guidance.invariant_findings if existing_guidance is not None else ()
                 ),
             )
+        terminal_source_set = set(terminal_sources)
+        cache_moves = [move for move in archive_plan if move[0] not in terminal_source_set]
+        terminal_moves = [move for move in archive_plan if move[0] in terminal_source_set]
+        for source, destination in cache_moves:
+            shutil.move(str(source), destination)
+            moved.append(str(destination))
         queued_for_generation = False
         if identity is not None:
             ensure_generation_retry(
@@ -815,7 +821,7 @@ def retry_command(args: argparse.Namespace) -> int:
                 identity[2],
             )
             queued_for_generation = True
-        for source, destination in archive_plan:
+        for source, destination in terminal_moves:
             shutil.move(str(source), destination)
             moved.append(str(destination))
         retry_store.clear(args.taxon_id)
