@@ -40,6 +40,7 @@ from .config import (
     load_config,
 )
 from .controller import (
+    HUMAN_REVIEW_SOURCE,
     REVIEW_FAILURE_FALLBACK,
     add_collection_member,
     archive_invalid_approved_catalog_state,
@@ -755,21 +756,20 @@ def retry_command(args: argparse.Namespace) -> int:
             if observed is not None
             else terminal_identity
         )
-        if identity is None:
-            queued = next(
-                (
-                    species
-                    for species in read_generation_queue(config)
-                    if species.taxon_id == args.taxon_id
-                ),
-                None,
+        queued = next(
+            (
+                species
+                for species in read_generation_queue(config)
+                if species.taxon_id == args.taxon_id
+            ),
+            None,
+        )
+        if identity is None and queued is not None and HUMAN_REVIEW_SOURCE in queued.sources:
+            identity = (
+                queued.common_name,
+                queued.scientific_name,
+                config.controller.state_dir / "generation-queue.json",
             )
-            if queued is not None:
-                identity = (
-                    queued.common_name,
-                    queued.scientific_name,
-                    config.controller.state_dir / "generation-queue.json",
-                )
         if (
             identity is None
             and retry_record is not None
@@ -780,6 +780,12 @@ def retry_command(args: argparse.Namespace) -> int:
                 retry_record.common_name,
                 retry_record.scientific_name,
                 retry_store.path,
+            )
+        if identity is None and queued is not None:
+            identity = (
+                queued.common_name,
+                queued.scientific_name,
+                config.controller.state_dir / "generation-queue.json",
             )
         profile_cache = config.controller.state_dir / "profiles" / str(args.taxon_id)
         cached_profile_identity = (
@@ -800,11 +806,11 @@ def retry_command(args: argparse.Namespace) -> int:
         if cleared_cached_profile:
             sources.append(profile_cache)
         reference_cache = config.controller.state_dir / "references" / str(args.taxon_id)
+        if identity is None:
+            identity = _retry_species_identity(args.taxon_id, [reference_cache])
         cleared_cached_references = refresh_research and reference_cache.exists()
         if cleared_cached_references:
             sources.append(reference_cache)
-        if identity is None and not cleared_cached_references:
-            identity = _retry_species_identity(args.taxon_id, [reference_cache])
         correction_owner = (
             next(
                 (source for source in sources if correction_source.is_relative_to(source)),

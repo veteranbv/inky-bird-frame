@@ -576,7 +576,12 @@ def ensure_generation_retry(
 def synchronize_generation_retry_identity(
     config: AppConfig, queued_species: list[BirdSpecies], species: BirdSpecies
 ) -> None:
-    """Refresh a retry-only queue entry from the latest observed taxonomy."""
+    """Refresh durable retry state from the latest observed taxonomy."""
+    retry_store = RetryStore(config.controller.state_dir / "generation-retries.json")
+    retry = retry_store.get(species.taxon_id)
+    retry_identity_changed = retry is not None and (
+        retry.common_name != species.common_name or retry.scientific_name != species.scientific_name
+    )
     queued_index = next(
         (
             index
@@ -585,15 +590,22 @@ def synchronize_generation_retry_identity(
         ),
         None,
     )
-    if queued_index is None:
-        return
-    queued = queued_species[queued_index]
-    if HUMAN_REVIEW_SOURCE not in queued.sources:
-        return
-    if queued.common_name != species.common_name or queued.scientific_name != (
-        species.scientific_name
-    ):
+    queued = queued_species[queued_index] if queued_index is not None else None
+    queue_identity_changed = (
+        queued is not None
+        and HUMAN_REVIEW_SOURCE in queued.sources
+        and (
+            queued.common_name != species.common_name
+            or queued.scientific_name != species.scientific_name
+        )
+    )
+    if retry_identity_changed or queue_identity_changed:
         _archive_incompatible_retry_profile(config.controller.state_dir, species)
+    if retry_identity_changed:
+        retry_store.set_identity(species.taxon_id, species.common_name, species.scientific_name)
+    if queued_index is None or queued is None or HUMAN_REVIEW_SOURCE not in queued.sources:
+        return
+    if queue_identity_changed:
         queued_species[queued_index] = BirdSpecies(
             taxon_id=species.taxon_id,
             common_name=species.common_name,
@@ -615,12 +627,6 @@ def synchronize_generation_retry_identity(
             if persisted_index is not None:
                 persisted_species[persisted_index] = queued_species[queued_index]
                 _write_generation_queue(config, persisted_species)
-    retry_store = RetryStore(config.controller.state_dir / "generation-retries.json")
-    retry = retry_store.get(species.taxon_id)
-    if retry is not None and (
-        retry.common_name != species.common_name or retry.scientific_name != species.scientific_name
-    ):
-        retry_store.set_identity(species.taxon_id, species.common_name, species.scientific_name)
 
 
 def _archive_incompatible_retry_profile(state_dir: Path, species: BirdSpecies) -> None:

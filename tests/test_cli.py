@@ -37,6 +37,7 @@ from inky_bird_frame.cli import (
 )
 from inky_bird_frame.config import AppConfig, DiscoveryProvider
 from inky_bird_frame.controller import (
+    HUMAN_REVIEW_SOURCE,
     REVIEW_FAILURE_FALLBACK,
     exclusive_cycle_lock,
     read_generation_queue,
@@ -1227,6 +1228,48 @@ rotation_mode = "shuffle_bag"
         self.assertEqual(queue[0].common_name, "Referenced Bird")
         self.assertEqual(queue[0].scientific_name, "Avis relata")
 
+    def test_retry_refreshes_references_after_recovering_legacy_identity(self) -> None:
+        with TemporaryDirectory() as temporary:
+            state_dir = Path(temporary)
+            reference_cache = state_dir / "references/42"
+            reference_cache.mkdir(parents=True)
+            (reference_cache / "references.json").write_text(
+                json.dumps(
+                    {
+                        "schema_version": 1,
+                        "taxon_id": 42,
+                        "common_name": "Referenced Bird",
+                        "scientific_name": "Avis relata",
+                        "references": [],
+                    }
+                )
+            )
+            RetryStore(state_dir / "generation-retries.json").record_failure(
+                42,
+                GenerationError("legacy transient failure"),
+                now=datetime(2026, 8, 2, tzinfo=UTC),
+                initial_minutes=5,
+                maximum_minutes=60,
+            )
+            config = controller_config(state_dir)
+
+            with (
+                patch("inky_bird_frame.cli._config", return_value=config),
+                redirect_stdout(io.StringIO()),
+            ):
+                retry_command(Namespace(taxon_id=42, refresh_research=True))
+
+            queue = read_generation_queue(cast(AppConfig, config))
+            archived_references = state_dir / "archive/42/references.json"
+            archived_references_exists = archived_references.is_file()
+            reference_cache_exists = reference_cache.exists()
+
+        self.assertEqual([item.taxon_id for item in queue], [42])
+        self.assertEqual(queue[0].common_name, "Referenced Bird")
+        self.assertEqual(queue[0].scientific_name, "Avis relata")
+        self.assertTrue(archived_references_exists)
+        self.assertFalse(reference_cache_exists)
+
     def test_retry_uses_deferred_record_identity_when_profile_was_not_created(self) -> None:
         with TemporaryDirectory() as temporary:
             state_dir = Path(temporary)
@@ -1337,6 +1380,63 @@ rotation_mode = "shuffle_bag"
         self.assertTrue(result["cleared_cached_profile"])
         self.assertFalse(profile_exists)
         self.assertTrue(archived_profile_exists)
+
+    def test_retry_prefers_deferred_identity_over_non_human_queue(self) -> None:
+        with TemporaryDirectory() as temporary:
+            state_dir = Path(temporary)
+            (state_dir / "generation-queue.json").write_text(
+                json.dumps(
+                    {
+                        "schema_version": 2,
+                        "species": [
+                            {
+                                "taxon_id": 42,
+                                "common_name": "Old Seed Name",
+                                "scientific_name": "Avis old",
+                                "observation_count": 1,
+                                "source": "eBird",
+                                "sources": ["eBird"],
+                            }
+                        ],
+                    }
+                )
+            )
+            current_species = BirdSpecies(42, "Current Bird Name", "Avis current", 1, "eBird")
+            RetryStore(state_dir / "generation-retries.json").record_failure(
+                42,
+                GenerationError("temporary failure"),
+                now=datetime(2026, 8, 2, tzinfo=UTC),
+                initial_minutes=5,
+                maximum_minutes=60,
+                species=current_species,
+            )
+            profile = state_dir / "profiles/42/profile.json"
+            profile.parent.mkdir(parents=True)
+            profile.write_text(
+                json.dumps(
+                    {
+                        "taxon_id": 42,
+                        "common_name": current_species.common_name,
+                        "scientific_name": current_species.scientific_name,
+                    }
+                )
+            )
+            config = controller_config(state_dir)
+
+            with (
+                patch("inky_bird_frame.cli._config", return_value=config),
+                redirect_stdout(io.StringIO()),
+            ):
+                retry_command(Namespace(taxon_id=42))
+
+            queue = read_generation_queue(cast(AppConfig, config))
+            profile_exists = profile.is_file()
+
+        self.assertEqual([item.taxon_id for item in queue], [42])
+        self.assertEqual(queue[0].common_name, current_species.common_name)
+        self.assertEqual(queue[0].scientific_name, current_species.scientific_name)
+        self.assertEqual(queue[0].source, HUMAN_REVIEW_SOURCE)
+        self.assertTrue(profile_exists)
 
     def test_retry_persists_guidance_before_archiving_terminal_state(self) -> None:
         with TemporaryDirectory() as temporary:

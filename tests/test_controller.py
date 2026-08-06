@@ -728,6 +728,46 @@ class ControllerTests(unittest.TestCase):
         self.assertEqual(queue[0].scientific_name, species.scientific_name)
         self.assertEqual(queue[0].source, HUMAN_REVIEW_SOURCE)
 
+    def test_live_observation_refreshes_deferred_identity_without_queue(self) -> None:
+        with TemporaryDirectory() as temporary:
+            config_path = Path(temporary) / "config.toml"
+            config_path.write_text(CONFIG)
+            config = load_config(config_path)
+            state_dir = config.controller.state_dir
+            config.controller.state_dir.mkdir(parents=True)
+            old_species = BirdSpecies(42, "Old Bird Name", "Avis old", 1, "eBird")
+            observed = BirdSpecies(42, "Current Bird Name", "Avis current", 3, "eBird")
+            RetryStore(state_dir / "generation-retries.json").record_failure(
+                42,
+                GenerationError("temporary failure"),
+                now=datetime(2026, 8, 5, tzinfo=UTC),
+                initial_minutes=5,
+                maximum_minutes=60,
+                species=old_species,
+            )
+            profile_cache = state_dir / "profiles/42"
+            profile_cache.mkdir(parents=True)
+            (profile_cache / "profile.json").write_text(
+                json.dumps(
+                    {
+                        "taxon_id": 42,
+                        "common_name": old_species.common_name,
+                        "scientific_name": old_species.scientific_name,
+                    }
+                )
+            )
+
+            synchronize_generation_retry_identity(config, [], observed)
+            retry = RetryStore(state_dir / "generation-retries.json").get(42)
+            archived_profile = json.loads((state_dir / "archive/42/profile.json").read_text())
+
+        self.assertIsNotNone(retry)
+        if retry is not None:
+            self.assertEqual(retry.common_name, observed.common_name)
+            self.assertEqual(retry.scientific_name, observed.scientific_name)
+        self.assertEqual(archived_profile["common_name"], old_species.common_name)
+        self.assertFalse(profile_cache.exists())
+
     def test_expired_human_review_queue_generates_with_persisted_identity(self) -> None:
         species = BirdSpecies(42, "Current Bird Name", "Avis current", 0, HUMAN_REVIEW_SOURCE)
         approved = CatalogEntry(
