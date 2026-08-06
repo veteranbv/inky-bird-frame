@@ -583,6 +583,8 @@ def _retry_candidate_guidance(
 def _retry_species_identity(
     taxon_id: int,
     sources: list[Path],
+    *,
+    deferred_malformed_errors: list[CatalogError | SpeciesStateError] | None = None,
 ) -> tuple[str, str, Path] | None:
     identity: tuple[str, str, Path] | None = None
     for source in dict.fromkeys(sources):
@@ -590,9 +592,19 @@ def _retry_species_identity(
             identity_path = source / filename
             if not identity_path.is_file():
                 continue
-            payload = read_json(identity_path)
+            try:
+                payload = read_json(identity_path)
+            except CatalogError as exc:
+                if deferred_malformed_errors is None:
+                    raise
+                deferred_malformed_errors.append(exc)
+                continue
             if not isinstance(payload, dict):
-                raise SpeciesStateError(f"Invalid retained candidate identity: {identity_path}")
+                error = SpeciesStateError(f"Invalid retained candidate identity: {identity_path}")
+                if deferred_malformed_errors is None:
+                    raise error
+                deferred_malformed_errors.append(error)
+                continue
             retained_taxon_id = payload.get("taxon_id")
             if retained_taxon_id is None:
                 continue
@@ -790,18 +802,16 @@ def retry_command(args: argparse.Namespace) -> int:
                 config.controller.state_dir / "generation-queue.json",
             )
         profile_cache = config.controller.state_dir / "profiles" / str(args.taxon_id)
-        profile_identity_error: CatalogError | None = None
-        try:
-            cached_profile_identity = (
-                _retry_species_identity(args.taxon_id, [profile_cache])
-                if profile_cache.exists() and (not refresh_research or identity is None)
-                else None
+        profile_identity_errors: list[CatalogError | SpeciesStateError] = []
+        cached_profile_identity = (
+            _retry_species_identity(
+                args.taxon_id,
+                [profile_cache],
+                deferred_malformed_errors=(profile_identity_errors if refresh_research else None),
             )
-        except CatalogError as exc:
-            if not refresh_research:
-                raise
-            profile_identity_error = exc
-            cached_profile_identity = None
+            if profile_cache.exists() and (not refresh_research or identity is None)
+            else None
+        )
         if identity is None:
             identity = cached_profile_identity
         incompatible_cached_profile = (
@@ -817,8 +827,8 @@ def retry_command(args: argparse.Namespace) -> int:
         reference_cache = config.controller.state_dir / "references" / str(args.taxon_id)
         if identity is None:
             identity = _retry_species_identity(args.taxon_id, [reference_cache])
-        if identity is None and profile_identity_error is not None:
-            raise profile_identity_error
+        if identity is None and profile_identity_errors:
+            raise profile_identity_errors[0]
         cleared_cached_references = refresh_research and reference_cache.exists()
         if cleared_cached_references:
             sources.append(reference_cache)

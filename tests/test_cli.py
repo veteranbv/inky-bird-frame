@@ -1292,7 +1292,7 @@ rotation_mode = "shuffle_bag"
             )
             profile_cache = state_dir / "profiles/42"
             profile_cache.mkdir(parents=True)
-            (profile_cache / "profile.json").write_text("{not valid json")
+            (profile_cache / "profile.json").write_text("[]")
             RetryStore(state_dir / "generation-retries.json").record_failure(
                 42,
                 GenerationError("legacy transient failure"),
