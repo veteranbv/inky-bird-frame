@@ -702,7 +702,7 @@ def enqueue_seed_species(
                         collection,
                         legacy_seed_queue_migrated_at=migrated_at,
                     )
-                _write_active_catalog(config, _current_discovery_species(config))
+                _write_active_catalog(config, current_discovery_species(config))
 
     return {
         "window": window.value if window is not None else None,
@@ -846,7 +846,7 @@ def _read_discovery_snapshot(config: AppConfig) -> DiscoverySnapshot:
     return DiscoverySnapshot(refreshed, place_name, state, species)
 
 
-def _current_discovery_species(config: AppConfig) -> list[BirdSpecies]:
+def current_discovery_species(config: AppConfig) -> list[BirdSpecies]:
     if not _snapshot_path(config).exists():
         return []
     return _read_discovery_snapshot(config).species
@@ -857,7 +857,7 @@ def archive_invalid_approved_catalog_state(
     taxon_id: int,
 ) -> Path | None:
     with catalog_state_lock(config.controller.state_dir):
-        observed = _current_discovery_species(config)
+        observed = current_discovery_species(config)
         approved_path = find_taxon_directory(
             config.controller.catalog_dir / "species",
             taxon_id,
@@ -1011,7 +1011,7 @@ def retry_approved_candidate(
 
             retry_store = RetryStore(config.controller.state_dir / "generation-retries.json")
             queued_species = read_generation_queue(config)
-            observed = _current_discovery_species(config)
+            observed = current_discovery_species(config)
             resumable = (
                 _resumable_approved_replacement(
                     config.controller.state_dir,
@@ -1187,7 +1187,7 @@ def collection_status(
     return _collection_summary(
         state.entries,
         approved if approved is not None else read_catalog_entries(config.controller.catalog_dir),
-        _current_discovery_species(config),
+        current_discovery_species(config),
         legacy_seed_queue_migrated_at=state.legacy_seed_queue_migrated_at,
     )
 
@@ -1227,7 +1227,7 @@ def _change_collection(
                     raise ValueError("collection additions require an origin")
                 updated, added = add_collection_taxa(current, requested_taxa, origin)
                 removed = []
-            observed = _current_discovery_species(config)
+            observed = current_discovery_species(config)
             summary = _collection_summary(
                 updated,
                 approved,

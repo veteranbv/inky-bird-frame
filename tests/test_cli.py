@@ -1066,6 +1066,57 @@ rotation_mode = "shuffle_bag"
         self.assertEqual(queue[0].scientific_name, "Avis current")
         self.assertEqual(queue[0].source, "human-review")
 
+    def test_retry_preserves_current_observed_identity_after_observation_expires(self) -> None:
+        with TemporaryDirectory() as temporary:
+            state_dir = Path(temporary)
+            failed = state_dir / "failed/42-old-bird-name"
+            failed.mkdir(parents=True)
+            (failed / "profile.json").write_text(
+                json.dumps(
+                    {
+                        "taxon_id": 42,
+                        "common_name": "Old Bird Name",
+                        "scientific_name": "Avis old",
+                    }
+                )
+            )
+            discovery = state_dir / "discovery.json"
+            discovery.write_text(
+                json.dumps(
+                    {
+                        "schema_version": 2,
+                        "refreshed_at": "2026-08-05T12:00:00+00:00",
+                        "place_name": "Exampleville",
+                        "state": "XY",
+                        "species": [
+                            {
+                                "taxon_id": 42,
+                                "common_name": "Current Bird Name",
+                                "scientific_name": "Avis current",
+                                "observation_count": 1,
+                                "source": "eBird",
+                                "sources": ["eBird"],
+                            }
+                        ],
+                    }
+                )
+            )
+            config = controller_config(state_dir)
+
+            with (
+                patch("inky_bird_frame.cli._config", return_value=config),
+                redirect_stdout(io.StringIO()),
+            ):
+                retry_command(Namespace(taxon_id=42))
+
+            discovery.unlink()
+            queue = read_generation_queue(cast(AppConfig, config))
+
+        self.assertEqual([item.taxon_id for item in queue], [42])
+        self.assertEqual(queue[0].common_name, "Current Bird Name")
+        self.assertEqual(queue[0].scientific_name, "Avis current")
+        self.assertEqual(queue[0].source, "human-review")
+
     def test_retry_uses_cached_profile_for_expired_deferred_observation(self) -> None:
         with TemporaryDirectory() as temporary:
             state_dir = Path(temporary)

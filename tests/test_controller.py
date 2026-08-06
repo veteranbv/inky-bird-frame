@@ -547,7 +547,7 @@ class ControllerTests(unittest.TestCase):
                     return_value=[approved],
                 ),
                 patch(
-                    "inky_bird_frame.controller._current_discovery_species",
+                    "inky_bird_frame.controller.current_discovery_species",
                     return_value=[observed],
                 ),
                 patch("inky_bird_frame.controller._write_active_catalog", return_value=1),

@@ -44,6 +44,7 @@ from .controller import (
     add_collection_member,
     archive_invalid_approved_catalog_state,
     collection_status,
+    current_discovery_species,
     discover_species,
     enqueue_seed_species,
     ensure_generation_retry,
@@ -761,7 +762,24 @@ def retry_command(args: argparse.Namespace) -> int:
             and retained_correction_source is None
         ):
             raise SpeciesStateError("The selected correction source is outside retained state")
-        identity = _retry_species_identity(args.taxon_id, terminal_sources)
+        terminal_identity = _retry_species_identity(args.taxon_id, terminal_sources)
+        observed = next(
+            (
+                species
+                for species in current_discovery_species(config)
+                if species.taxon_id == args.taxon_id
+            ),
+            None,
+        )
+        identity = (
+            (
+                observed.common_name,
+                observed.scientific_name,
+                config.controller.state_dir / "discovery.json",
+            )
+            if observed is not None
+            else terminal_identity
+        )
         if (
             identity is None
             and retry_record is not None
