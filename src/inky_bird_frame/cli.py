@@ -49,6 +49,7 @@ from .controller import (
     ensure_generation_retry,
     exclusive_cycle_lock,
     import_approved_collection,
+    read_generation_queue,
     read_generation_queue_partition,
     remove_collection_member,
     retry_approved_candidate,
@@ -583,7 +584,7 @@ def _retry_species_identity(
 ) -> tuple[str, str, Path] | None:
     identity: tuple[str, str, Path] | None = None
     for source in dict.fromkeys(sources):
-        for filename in ("profile.json", "manifest.json", "failure.json"):
+        for filename in ("profile.json", "references.json", "manifest.json", "failure.json"):
             identity_path = source / filename
             if not identity_path.is_file():
                 continue
@@ -763,6 +764,8 @@ def retry_command(args: argparse.Namespace) -> int:
         identity = _retry_species_identity(args.taxon_id, terminal_sources)
         if identity is None:
             identity = _retry_species_identity(args.taxon_id, [profile_cache])
+        if identity is None:
+            identity = _retry_species_identity(args.taxon_id, [reference_cache])
         if (
             identity is None
             and retry_record is not None
@@ -814,11 +817,7 @@ def retry_command(args: argparse.Namespace) -> int:
         terminal_source_set = set(terminal_sources)
         cache_moves = [move for move in archive_plan if move[0] not in terminal_source_set]
         terminal_moves = [move for move in archive_plan if move[0] in terminal_source_set]
-        for source, destination in cache_moves:
-            shutil.move(str(source), destination)
-            moved.append(str(destination))
-        queued_for_generation = False
-        if identity is not None:
+        if identity is not None and terminal_moves:
             ensure_generation_retry(
                 config,
                 args.taxon_id,
@@ -826,11 +825,24 @@ def retry_command(args: argparse.Namespace) -> int:
                 identity[1],
                 identity[2],
             )
-            queued_for_generation = True
+        for source, destination in cache_moves:
+            shutil.move(str(source), destination)
+            moved.append(str(destination))
+        if identity is not None and not terminal_moves:
+            ensure_generation_retry(
+                config,
+                args.taxon_id,
+                identity[0],
+                identity[1],
+                identity[2],
+            )
         for source, destination in terminal_moves:
             shutil.move(str(source), destination)
             moved.append(str(destination))
         retry_store.clear(args.taxon_id)
+        queued_for_generation = any(
+            species.taxon_id == args.taxon_id for species in read_generation_queue(config)
+        )
     print_result(
         {
             "taxon_id": args.taxon_id,

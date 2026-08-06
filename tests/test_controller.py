@@ -54,6 +54,7 @@ from inky_bird_frame.controller import (
     run_controller_cycle,
     run_generation_cycle,
     run_refresh_cycle,
+    synchronize_generation_retry_identity,
 )
 from inky_bird_frame.errors import (
     CatalogError,
@@ -620,6 +621,39 @@ class ControllerTests(unittest.TestCase):
         self.assertFalse(result["cleared_cached_references"])
         self.assertTrue(profile_cache_exists)
         self.assertTrue(reference_cache_exists)
+
+    def test_live_observation_refreshes_human_review_queue_identity(self) -> None:
+        with TemporaryDirectory() as temporary:
+            config_path = Path(temporary) / "config.toml"
+            config_path.write_text(CONFIG)
+            config = load_config(config_path)
+            config.controller.state_dir.mkdir(parents=True)
+            (config.controller.state_dir / "generation-queue.json").write_text(
+                json.dumps(
+                    {
+                        "schema_version": 2,
+                        "species": [
+                            {
+                                "taxon_id": 42,
+                                "common_name": "Old Bird Name",
+                                "scientific_name": "Avis old",
+                                "observation_count": 0,
+                                "source": HUMAN_REVIEW_SOURCE,
+                                "sources": [HUMAN_REVIEW_SOURCE],
+                            }
+                        ],
+                    }
+                )
+            )
+            observed = BirdSpecies(42, "Current Bird Name", "Avis current", 3, "eBird")
+
+            synchronize_generation_retry_identity(config, observed)
+            queue = read_generation_queue(config)
+
+        self.assertEqual(len(queue), 1)
+        self.assertEqual(queue[0].common_name, "Current Bird Name")
+        self.assertEqual(queue[0].scientific_name, "Avis current")
+        self.assertEqual(queue[0].source, HUMAN_REVIEW_SOURCE)
 
     def test_approved_replacement_refreshes_research_only_when_requested(self) -> None:
         species = BirdSpecies(9083, "Northern Cardinal", "Cardinalis cardinalis", 0, "test")

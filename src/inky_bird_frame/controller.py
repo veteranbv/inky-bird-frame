@@ -571,6 +571,35 @@ def ensure_generation_retry(
         _write_generation_queue(config, queued_species)
 
 
+def synchronize_generation_retry_identity(config: AppConfig, species: BirdSpecies) -> None:
+    """Refresh a retry-only queue entry from the latest observed taxonomy."""
+    with catalog_state_lock(config.controller.state_dir):
+        queued_species = read_generation_queue(config)
+        queued_index = next(
+            (
+                index
+                for index, queued in enumerate(queued_species)
+                if queued.taxon_id == species.taxon_id
+            ),
+            None,
+        )
+        if queued_index is None:
+            return
+        queued = queued_species[queued_index]
+        if HUMAN_REVIEW_SOURCE not in queued.sources or (
+            queued.common_name == species.common_name
+            and queued.scientific_name == species.scientific_name
+        ):
+            return
+        queued_species[queued_index] = _replacement_species(
+            species.taxon_id,
+            species.common_name,
+            species.scientific_name,
+            _generation_queue_path(config),
+        )
+        _write_generation_queue(config, queued_species)
+
+
 def _migrate_legacy_seed_queue(
     state: CollectionState,
     queued_species: list[BirdSpecies],
@@ -1702,6 +1731,7 @@ def run_generation_cycle(config: AppConfig) -> dict[str, object]:
                 retry_store.clear(species.taxon_id)
                 retry_store.clear_quality_guidance(species.taxon_id)
             except InsufficientReferencesError as exc:
+                synchronize_generation_retry_identity(config, species)
                 retry = retry_store.record_failure(
                     species.taxon_id,
                     exc,
@@ -1721,6 +1751,7 @@ def run_generation_cycle(config: AppConfig) -> dict[str, object]:
                     }
                 )
             except DataSourceError as exc:
+                synchronize_generation_retry_identity(config, species)
                 retry = retry_store.record_failure(
                     species.taxon_id,
                     exc,
@@ -1775,6 +1806,7 @@ def run_generation_cycle(config: AppConfig) -> dict[str, object]:
             except CatalogError:
                 raise
             except InkyBirdFrameError as exc:
+                synchronize_generation_retry_identity(config, species)
                 retry = retry_store.record_failure(
                     species.taxon_id,
                     exc,
