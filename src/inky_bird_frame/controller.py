@@ -599,11 +599,9 @@ def synchronize_generation_retry_identity(
             or queued.scientific_name != species.scientific_name
         )
     )
-    if retry_identity_changed or queue_identity_changed:
-        _archive_incompatible_retry_profile(config.controller.state_dir, species)
     if queue_identity_changed:
         assert queued_index is not None
-        queued_species[queued_index] = BirdSpecies(
+        replacement = BirdSpecies(
             taxon_id=species.taxon_id,
             common_name=species.common_name,
             scientific_name=species.scientific_name,
@@ -621,10 +619,18 @@ def synchronize_generation_retry_identity(
                 ),
                 None,
             )
-            if persisted_index is not None:
-                persisted_species[persisted_index] = queued_species[queued_index]
-                _write_generation_queue(config, persisted_species)
-    if retry_identity_changed:
+            if persisted_index is None:
+                raise SpeciesStateError(
+                    f"Human-review queue entry disappeared for taxon {species.taxon_id}"
+                )
+            persisted_species[persisted_index] = replacement
+            _write_generation_queue(config, persisted_species)
+        queued_species[queued_index] = replacement
+    if retry_identity_changed and not queue_identity_changed:
+        retry_store.set_identity(species.taxon_id, species.common_name, species.scientific_name)
+    if retry_identity_changed or queue_identity_changed:
+        _archive_incompatible_retry_profile(config.controller.state_dir, species)
+    if retry_identity_changed and queue_identity_changed:
         retry_store.set_identity(species.taxon_id, species.common_name, species.scientific_name)
 
 
