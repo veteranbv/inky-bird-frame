@@ -655,17 +655,35 @@ class ControllerTests(unittest.TestCase):
                 maximum_minutes=60,
                 species=BirdSpecies(42, "Old Bird Name", "Avis old", 0, HUMAN_REVIEW_SOURCE),
             )
+            profile_cache = config.controller.state_dir / "profiles/42"
+            profile_cache.mkdir(parents=True)
+            (profile_cache / "profile.json").write_text(
+                json.dumps(
+                    {
+                        "taxon_id": 42,
+                        "common_name": "Old Bird Name",
+                        "scientific_name": "Avis old",
+                    }
+                )
+            )
 
             queue = read_generation_queue(config)
             synchronize_generation_retry_identity(config, queue, observed)
             persisted_queue = read_generation_queue(config)
             retry = RetryStore(config.controller.state_dir / "generation-retries.json").get(42)
+            archived_profile = json.loads(
+                (config.controller.state_dir / "archive/42/profile.json").read_text()
+            )
+            profile_cache_exists = profile_cache.exists()
 
         self.assertEqual(len(queue), 1)
         self.assertEqual(queue[0].common_name, "Current Bird Name")
         self.assertEqual(queue[0].scientific_name, "Avis current")
         self.assertEqual(queue[0].source, HUMAN_REVIEW_SOURCE)
         self.assertEqual(persisted_queue, queue)
+        self.assertFalse(profile_cache_exists)
+        self.assertEqual(archived_profile["common_name"], "Old Bird Name")
+        self.assertEqual(archived_profile["scientific_name"], "Avis old")
         self.assertIsNotNone(retry)
         if retry is not None:
             self.assertEqual(retry.common_name, observed.common_name)

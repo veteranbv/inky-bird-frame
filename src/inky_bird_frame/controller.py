@@ -593,6 +593,7 @@ def synchronize_generation_retry_identity(
     if queued.common_name != species.common_name or queued.scientific_name != (
         species.scientific_name
     ):
+        _archive_incompatible_retry_profile(config.controller.state_dir, species)
         queued_species[queued_index] = BirdSpecies(
             taxon_id=species.taxon_id,
             common_name=species.common_name,
@@ -620,6 +621,32 @@ def synchronize_generation_retry_identity(
         retry.common_name != species.common_name or retry.scientific_name != species.scientific_name
     ):
         retry_store.set_identity(species.taxon_id, species.common_name, species.scientific_name)
+
+
+def _archive_incompatible_retry_profile(state_dir: Path, species: BirdSpecies) -> None:
+    """Preserve a valid cached profile whose taxonomy no longer matches discovery."""
+    profile_cache = state_dir / "profiles" / str(species.taxon_id)
+    profile_path = profile_cache / "profile.json"
+    if not profile_path.is_file():
+        return
+    raw = read_json(profile_path)
+    if not isinstance(raw, dict):
+        return
+    cached_taxon_id = raw.get("taxon_id")
+    cached_common_name = raw.get("common_name")
+    cached_scientific_name = raw.get("scientific_name")
+    if not (
+        isinstance(cached_taxon_id, int)
+        and isinstance(cached_common_name, str)
+        and isinstance(cached_scientific_name, str)
+    ):
+        return
+    if (
+        cached_taxon_id != species.taxon_id
+        or cached_common_name != species.common_name
+        or cached_scientific_name != species.scientific_name
+    ):
+        _archive_controller_paths(state_dir, [profile_cache])
 
 
 def _migrate_legacy_seed_queue(
