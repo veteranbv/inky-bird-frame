@@ -591,6 +591,7 @@ def synchronize_generation_retry_identity(
         None,
     )
     queued = queued_species[queued_index] if queued_index is not None else None
+    has_human_review_queue = queued is not None and HUMAN_REVIEW_SOURCE in queued.sources
     queue_identity_changed = (
         queued is not None
         and HUMAN_REVIEW_SOURCE in queued.sources
@@ -628,7 +629,7 @@ def synchronize_generation_retry_identity(
         queued_species[queued_index] = replacement
     if retry_identity_changed and not queue_identity_changed:
         retry_store.set_identity(species.taxon_id, species.common_name, species.scientific_name)
-    if retry_identity_changed or queue_identity_changed:
+    if retry is not None or has_human_review_queue:
         _archive_incompatible_retry_profile(config.controller.state_dir, species)
     if retry_identity_changed and queue_identity_changed:
         retry_store.set_identity(species.taxon_id, species.common_name, species.scientific_name)

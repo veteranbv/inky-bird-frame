@@ -757,10 +757,23 @@ class ControllerTests(unittest.TestCase):
                 )
             )
 
+            with (
+                patch("inky_bird_frame.controller.shutil.move", side_effect=OSError("interrupted")),
+                self.assertRaisesRegex(OSError, "interrupted"),
+            ):
+                synchronize_generation_retry_identity(config, [], observed)
+            interrupted_retry = RetryStore(state_dir / "generation-retries.json").get(42)
+            profile_exists_after_interruption = profile_cache.exists()
+
             synchronize_generation_retry_identity(config, [], observed)
             retry = RetryStore(state_dir / "generation-retries.json").get(42)
             archived_profile = json.loads((state_dir / "archive/42/profile.json").read_text())
 
+        self.assertIsNotNone(interrupted_retry)
+        if interrupted_retry is not None:
+            self.assertEqual(interrupted_retry.common_name, observed.common_name)
+            self.assertEqual(interrupted_retry.scientific_name, observed.scientific_name)
+        self.assertTrue(profile_exists_after_interruption)
         self.assertIsNotNone(retry)
         if retry is not None:
             self.assertEqual(retry.common_name, observed.common_name)
