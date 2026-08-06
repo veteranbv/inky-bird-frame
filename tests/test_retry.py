@@ -5,6 +5,7 @@ from datetime import UTC, datetime, timedelta
 from pathlib import Path
 from tempfile import TemporaryDirectory
 
+from inky_bird_frame.birds import BirdSpecies
 from inky_bird_frame.errors import CatalogError
 from inky_bird_frame.retry import RetryGuidance, RetryStore
 
@@ -15,12 +16,14 @@ class RetryStoreTests(unittest.TestCase):
         with TemporaryDirectory() as temporary:
             path = Path(temporary) / "retries.json"
             store = RetryStore(path)
+            species = BirdSpecies(42, "Example Bird", "Avis exemplum", 1, "eBird")
             first = store.record_failure(
                 42,
                 RuntimeError("temporary"),
                 now=now,
                 initial_minutes=30,
                 maximum_minutes=60,
+                species=species,
             )
             second = store.record_failure(
                 42,
@@ -34,6 +37,10 @@ class RetryStoreTests(unittest.TestCase):
         self.assertEqual(first.next_attempt_at, now + timedelta(minutes=30))
         self.assertEqual(second.next_attempt_at, now + timedelta(minutes=90))
         self.assertEqual(reloaded, second)
+        self.assertIsNotNone(reloaded)
+        if reloaded is not None:
+            self.assertEqual(reloaded.common_name, "Example Bird")
+            self.assertEqual(reloaded.scientific_name, "Avis exemplum")
 
     def test_fixed_delay_and_clear(self) -> None:
         now = datetime(2026, 7, 10, tzinfo=UTC)

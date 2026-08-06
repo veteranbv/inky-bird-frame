@@ -729,7 +729,8 @@ def retry_command(args: argparse.Namespace) -> int:
         terminal_sources = list(sources)
         retry_store = RetryStore(config.controller.state_dir / "generation-retries.json")
         existing_guidance = retry_store.quality_guidance(args.taxon_id)
-        deferred = retry_store.get(args.taxon_id) is not None
+        retry_record = retry_store.get(args.taxon_id)
+        deferred = retry_record is not None
         if not sources and not deferred and source_candidate is None and source_run is None:
             raise ValueError(
                 f"No failed, rejected, or deferred candidate exists for taxon {args.taxon_id}"
@@ -762,6 +763,17 @@ def retry_command(args: argparse.Namespace) -> int:
         identity = _retry_species_identity(args.taxon_id, terminal_sources)
         if identity is None:
             identity = _retry_species_identity(args.taxon_id, [profile_cache])
+        if (
+            identity is None
+            and retry_record is not None
+            and retry_record.common_name is not None
+            and retry_record.scientific_name is not None
+        ):
+            identity = (
+                retry_record.common_name,
+                retry_record.scientific_name,
+                retry_store.path,
+            )
         if identity is None and correction_source is not None:
             identity = _retry_species_identity(
                 args.taxon_id,

@@ -75,8 +75,10 @@ published.
 failing species receives durable exponential backoff and no longer consumes the
 successful-generation quota on every cycle. Insufficient licensed references
 use the longer `insufficient_references_retry_minutes` delay because source
-availability changes slowly. Later birds continue through the queue. Exhausted
-factual or visual review remains terminal and requires `retry TAXON_ID`.
+availability changes slowly. The retry record also retains species identity so
+an explicit retry can requeue work that failed before profile creation. Later
+birds continue through the queue. Exhausted factual or visual review remains
+terminal and requires `retry TAXON_ID`.
 
 Discovery requests and validates species-rank iNaturalist results so genera,
 families, and other aggregate taxa never enter generation. Species context uses

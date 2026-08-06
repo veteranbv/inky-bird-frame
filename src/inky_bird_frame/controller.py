@@ -1709,6 +1709,7 @@ def run_generation_cycle(config: AppConfig) -> dict[str, object]:
                     initial_minutes=config.controller.retry_initial_minutes,
                     maximum_minutes=config.controller.retry_max_minutes,
                     fixed_minutes=config.controller.insufficient_references_retry_minutes,
+                    species=species,
                 )
                 failures.append(
                     {
@@ -1726,6 +1727,7 @@ def run_generation_cycle(config: AppConfig) -> dict[str, object]:
                     now=datetime.now(UTC),
                     initial_minutes=config.controller.retry_initial_minutes,
                     maximum_minutes=config.controller.retry_max_minutes,
+                    species=species,
                 )
                 failures.append(
                     {
@@ -1779,6 +1781,7 @@ def run_generation_cycle(config: AppConfig) -> dict[str, object]:
                     now=datetime.now(UTC),
                     initial_minutes=config.controller.retry_initial_minutes,
                     maximum_minutes=config.controller.retry_max_minutes,
+                    species=species,
                 )
                 failures.append(
                     {

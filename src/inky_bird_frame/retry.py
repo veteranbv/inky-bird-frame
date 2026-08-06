@@ -8,6 +8,7 @@ from datetime import datetime, timedelta
 from pathlib import Path, PurePosixPath
 from typing import cast
 
+from .birds import BirdSpecies
 from .catalog import utc_now
 from .errors import CatalogError
 from .http import write_json_atomic
@@ -23,9 +24,11 @@ class RetryRecord:
     first_failed_at: datetime
     last_failed_at: datetime
     next_attempt_at: datetime
+    common_name: str | None = None
+    scientific_name: str | None = None
 
     def as_dict(self) -> dict[str, object]:
-        return {
+        value: dict[str, object] = {
             "taxon_id": self.taxon_id,
             "attempts": self.attempts,
             "error_type": self.error_type,
@@ -34,6 +37,10 @@ class RetryRecord:
             "last_failed_at": self.last_failed_at.isoformat(),
             "next_attempt_at": self.next_attempt_at.isoformat(),
         }
+        if self.common_name is not None and self.scientific_name is not None:
+            value["common_name"] = self.common_name
+            value["scientific_name"] = self.scientific_name
+        return value
 
 
 @dataclass(frozen=True)
@@ -105,8 +112,21 @@ class RetryStore:
         initial_minutes: int,
         maximum_minutes: int,
         fixed_minutes: int | None = None,
+        species: BirdSpecies | None = None,
     ) -> RetryRecord:
         previous = self.get(taxon_id)
+        if species is not None and species.taxon_id != taxon_id:
+            raise ValueError("retry species identity must match taxon_id")
+        common_name: str | None
+        scientific_name: str | None
+        if species is not None:
+            if not species.common_name.strip() or not species.scientific_name.strip():
+                raise ValueError("retry species identity names must be non-empty")
+            common_name = species.common_name
+            scientific_name = species.scientific_name
+        else:
+            common_name = previous.common_name if previous is not None else None
+            scientific_name = previous.scientific_name if previous is not None else None
         attempts = (previous.attempts if previous is not None else 0) + 1
         delay = (
             fixed_minutes
@@ -121,6 +141,8 @@ class RetryStore:
             first_failed_at=previous.first_failed_at if previous is not None else now,
             last_failed_at=now,
             next_attempt_at=now + timedelta(minutes=delay),
+            common_name=common_name,
+            scientific_name=scientific_name,
         )
         self._records[taxon_id] = record
         self._write()
@@ -211,6 +233,8 @@ def _parse_record(raw: object, source: Path) -> RetryRecord:
     attempts = raw.get("attempts")
     error_type = raw.get("error_type")
     error = raw.get("error")
+    common_name = raw.get("common_name")
+    scientific_name = raw.get("scientific_name")
     if (
         not isinstance(taxon_id, int)
         or isinstance(taxon_id, bool)
@@ -222,6 +246,16 @@ def _parse_record(raw: object, source: Path) -> RetryRecord:
         or not error_type
         or not isinstance(error, str)
         or not error
+        or (common_name is None) != (scientific_name is None)
+        or (
+            common_name is not None
+            and (
+                not isinstance(common_name, str)
+                or not common_name.strip()
+                or not isinstance(scientific_name, str)
+                or not scientific_name.strip()
+            )
+        )
     ):
         raise CatalogError(f"Invalid retry record: {source}")
     return RetryRecord(
@@ -232,6 +266,8 @@ def _parse_record(raw: object, source: Path) -> RetryRecord:
         first_failed_at=_parse_datetime(raw.get("first_failed_at"), source),
         last_failed_at=_parse_datetime(raw.get("last_failed_at"), source),
         next_attempt_at=_parse_datetime(raw.get("next_attempt_at"), source),
+        common_name=common_name,
+        scientific_name=scientific_name,
     )
 
 
