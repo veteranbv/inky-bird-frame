@@ -647,8 +647,8 @@ class ControllerTests(unittest.TestCase):
             )
             observed = BirdSpecies(42, "Current Bird Name", "Avis current", 3, "eBird")
 
-            synchronize_generation_retry_identity(config, observed)
             queue = read_generation_queue(config)
+            synchronize_generation_retry_identity(queue, observed)
 
         self.assertEqual(len(queue), 1)
         self.assertEqual(queue[0].common_name, "Current Bird Name")
@@ -1539,6 +1539,28 @@ class ControllerTests(unittest.TestCase):
             config_path.write_text(CONFIG)
             config = load_config(config_path)
             config.controller.state_dir.mkdir(parents=True)
+            write_collection(
+                config.controller.state_dir,
+                [],
+                legacy_seed_queue_migrated_at="2026-08-02T12:00:00+00:00",
+            )
+            (config.controller.state_dir / "generation-queue.json").write_text(
+                json.dumps(
+                    {
+                        "schema_version": 2,
+                        "species": [
+                            {
+                                "taxon_id": species.taxon_id,
+                                "common_name": "Old Cardinal Name",
+                                "scientific_name": "Cardinalis old",
+                                "observation_count": 0,
+                                "source": HUMAN_REVIEW_SOURCE,
+                                "sources": [HUMAN_REVIEW_SOURCE],
+                            }
+                        ],
+                    }
+                )
+            )
             RetryStore(
                 config.controller.state_dir / "generation-retries.json"
             ).set_quality_guidance(
@@ -1559,6 +1581,7 @@ class ControllerTests(unittest.TestCase):
             guidance = RetryStore(
                 config.controller.state_dir / "generation-retries.json"
             ).quality_guidance(species.taxon_id)
+            queue = read_generation_queue(config)
 
         self.assertEqual(terminal_failures, [])
         failures = result["failures"]
@@ -1576,6 +1599,10 @@ class ControllerTests(unittest.TestCase):
             generate.call_args.kwargs["invariant_correction_findings"],
             ("Keep the bill proportion accurate",),
         )
+        self.assertEqual(len(queue), 1)
+        self.assertEqual(queue[0].common_name, species.common_name)
+        self.assertEqual(queue[0].scientific_name, species.scientific_name)
+        self.assertEqual(queue[0].source, HUMAN_REVIEW_SOURCE)
 
     def test_failed_review_is_corrected_and_passing_attempt_is_staged(self) -> None:
         species = BirdSpecies(9083, "Northern Cardinal", "Cardinalis cardinalis", 2, "test")

@@ -1169,6 +1169,56 @@ rotation_mode = "shuffle_bag"
         self.assertEqual(queue[0].scientific_name, "Avis immatura")
         self.assertIsNone(retry_record)
 
+    def test_retry_prefers_deferred_record_identity_over_stale_caches(self) -> None:
+        with TemporaryDirectory() as temporary:
+            state_dir = Path(temporary)
+            profile = state_dir / "profiles/42/profile.json"
+            profile.parent.mkdir(parents=True)
+            profile.write_text(
+                json.dumps(
+                    {
+                        "taxon_id": 42,
+                        "common_name": "Old Profile Name",
+                        "scientific_name": "Avis profile",
+                    }
+                )
+            )
+            references = state_dir / "references/42/references.json"
+            references.parent.mkdir(parents=True)
+            references.write_text(
+                json.dumps(
+                    {
+                        "schema_version": 1,
+                        "taxon_id": 42,
+                        "common_name": "Old Reference Name",
+                        "scientific_name": "Avis reference",
+                        "references": [],
+                    }
+                )
+            )
+            species = BirdSpecies(42, "Current Bird Name", "Avis current", 1, "eBird")
+            RetryStore(state_dir / "generation-retries.json").record_failure(
+                42,
+                GenerationError("reference lookup failed"),
+                now=datetime(2026, 8, 2, tzinfo=UTC),
+                initial_minutes=5,
+                maximum_minutes=60,
+                species=species,
+            )
+            config = controller_config(state_dir)
+
+            with (
+                patch("inky_bird_frame.cli._config", return_value=config),
+                redirect_stdout(io.StringIO()),
+            ):
+                retry_command(Namespace(taxon_id=42))
+
+            queue = read_generation_queue(cast(AppConfig, config))
+
+        self.assertEqual([item.taxon_id for item in queue], [42])
+        self.assertEqual(queue[0].common_name, "Current Bird Name")
+        self.assertEqual(queue[0].scientific_name, "Avis current")
+
     def test_retry_persists_guidance_before_archiving_terminal_state(self) -> None:
         with TemporaryDirectory() as temporary:
             state_dir = Path(temporary)

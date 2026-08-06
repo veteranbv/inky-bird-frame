@@ -762,10 +762,6 @@ def retry_command(args: argparse.Namespace) -> int:
         ):
             raise SpeciesStateError("The selected correction source is outside retained state")
         identity = _retry_species_identity(args.taxon_id, terminal_sources)
-        if identity is None:
-            identity = _retry_species_identity(args.taxon_id, [profile_cache])
-        if identity is None:
-            identity = _retry_species_identity(args.taxon_id, [reference_cache])
         if (
             identity is None
             and retry_record is not None
@@ -777,6 +773,10 @@ def retry_command(args: argparse.Namespace) -> int:
                 retry_record.scientific_name,
                 retry_store.path,
             )
+        if identity is None:
+            identity = _retry_species_identity(args.taxon_id, [profile_cache])
+        if identity is None:
+            identity = _retry_species_identity(args.taxon_id, [reference_cache])
         if identity is None and correction_source is not None:
             identity = _retry_species_identity(
                 args.taxon_id,
