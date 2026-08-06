@@ -1747,6 +1747,7 @@ def run_generation_cycle(config: AppConfig) -> dict[str, object]:
                 )
             synchronize_generation_retry_identity(config, queued_species, queued)
             generation_species.append(queued)
+        retry_store = RetryStore(config.controller.state_dir / "generation-retries.json")
         approved = approved_taxon_ids(config.controller.catalog_dir)
         eligible = [
             species
