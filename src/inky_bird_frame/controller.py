@@ -561,8 +561,10 @@ def ensure_generation_retry(
         )
         if queued_index is not None:
             queued = queued_species[queued_index]
-            if queued.common_name != species.common_name or queued.scientific_name != (
-                species.scientific_name
+            if (
+                HUMAN_REVIEW_SOURCE not in queued.sources
+                or queued.common_name != species.common_name
+                or queued.scientific_name != species.scientific_name
             ):
                 queued_species[queued_index] = species
                 _write_generation_queue(config, queued_species)

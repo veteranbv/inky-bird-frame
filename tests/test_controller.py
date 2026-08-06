@@ -41,6 +41,7 @@ from inky_bird_frame.controller import (
     collection_status,
     discover_species,
     enqueue_seed_species,
+    ensure_generation_retry,
     exclusive_cycle_lock,
     exclusive_refresh_lock,
     generate_candidate,
@@ -669,6 +670,45 @@ class ControllerTests(unittest.TestCase):
         if retry is not None:
             self.assertEqual(retry.common_name, observed.common_name)
             self.assertEqual(retry.scientific_name, observed.scientific_name)
+
+    def test_retry_marks_matching_observation_queue_as_human_review(self) -> None:
+        species = BirdSpecies(42, "Example Bird", "Avis exemplum", 1, "iNaturalist")
+        with TemporaryDirectory() as temporary:
+            config_path = Path(temporary) / "config.toml"
+            config_path.write_text(CONFIG)
+            config = load_config(config_path)
+            config.controller.state_dir.mkdir(parents=True)
+            (config.controller.state_dir / "generation-queue.json").write_text(
+                json.dumps(
+                    {
+                        "schema_version": 2,
+                        "species": [
+                            {
+                                "taxon_id": species.taxon_id,
+                                "common_name": species.common_name,
+                                "scientific_name": species.scientific_name,
+                                "observation_count": species.observation_count,
+                                "source": species.source,
+                                "sources": [species.source],
+                            }
+                        ],
+                    }
+                )
+            )
+
+            ensure_generation_retry(
+                config,
+                species.taxon_id,
+                species.common_name,
+                species.scientific_name,
+                config.controller.state_dir / "failed/42-example-bird/profile.json",
+            )
+            queue = read_generation_queue(config)
+
+        self.assertEqual(len(queue), 1)
+        self.assertEqual(queue[0].common_name, species.common_name)
+        self.assertEqual(queue[0].scientific_name, species.scientific_name)
+        self.assertEqual(queue[0].source, HUMAN_REVIEW_SOURCE)
 
     def test_expired_human_review_queue_generates_with_persisted_identity(self) -> None:
         species = BirdSpecies(42, "Current Bird Name", "Avis current", 0, HUMAN_REVIEW_SOURCE)
