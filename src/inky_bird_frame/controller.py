@@ -538,6 +538,132 @@ def _write_generation_queue(config: AppConfig, species: list[BirdSpecies]) -> No
     )
 
 
+def ensure_generation_retry(
+    config: AppConfig,
+    taxon_id: int,
+    common_name: object,
+    scientific_name: object,
+    source: Path,
+) -> None:
+    """Keep an operator-requested retry eligible after its observation expires."""
+    species = _replacement_species(
+        taxon_id,
+        common_name,
+        scientific_name,
+        source,
+    )
+    with catalog_state_lock(config.controller.state_dir):
+        queued_species = read_generation_queue(config)
+        _migrate_legacy_queue_before_human_review(config, queued_species, taxon_id)
+        queued_index = next(
+            (index for index, item in enumerate(queued_species) if item.taxon_id == taxon_id),
+            None,
+        )
+        if queued_index is not None:
+            queued = queued_species[queued_index]
+            if (
+                HUMAN_REVIEW_SOURCE not in queued.sources
+                or queued.common_name != species.common_name
+                or queued.scientific_name != species.scientific_name
+            ):
+                queued_species[queued_index] = species
+                _write_generation_queue(config, queued_species)
+            return
+        queued_species.append(species)
+        _write_generation_queue(config, queued_species)
+
+
+def synchronize_generation_retry_identity(
+    config: AppConfig, queued_species: list[BirdSpecies], species: BirdSpecies
+) -> None:
+    """Refresh durable retry state from the latest observed taxonomy."""
+    retry_store = RetryStore(config.controller.state_dir / "generation-retries.json")
+    retry = retry_store.get(species.taxon_id)
+    retry_identity_changed = retry is not None and (
+        retry.common_name != species.common_name or retry.scientific_name != species.scientific_name
+    )
+    queued_index = next(
+        (
+            index
+            for index, queued in enumerate(queued_species)
+            if queued.taxon_id == species.taxon_id
+        ),
+        None,
+    )
+    queued = queued_species[queued_index] if queued_index is not None else None
+    has_human_review_queue = queued is not None and HUMAN_REVIEW_SOURCE in queued.sources
+    queue_identity_changed = (
+        queued is not None
+        and HUMAN_REVIEW_SOURCE in queued.sources
+        and (
+            queued.common_name != species.common_name
+            or queued.scientific_name != species.scientific_name
+        )
+    )
+    if queue_identity_changed:
+        assert queued_index is not None
+        replacement = BirdSpecies(
+            taxon_id=species.taxon_id,
+            common_name=species.common_name,
+            scientific_name=species.scientific_name,
+            observation_count=0,
+            source=HUMAN_REVIEW_SOURCE,
+        )
+        with catalog_state_lock(config.controller.state_dir):
+            persisted_species = read_generation_queue(config)
+            persisted_index = next(
+                (
+                    index
+                    for index, persisted in enumerate(persisted_species)
+                    if persisted.taxon_id == species.taxon_id
+                    and HUMAN_REVIEW_SOURCE in persisted.sources
+                ),
+                None,
+            )
+            if persisted_index is None:
+                raise SpeciesStateError(
+                    f"Human-review queue entry disappeared for taxon {species.taxon_id}"
+                )
+            persisted_species[persisted_index] = replacement
+            _write_generation_queue(config, persisted_species)
+        queued_species[queued_index] = replacement
+    if retry_identity_changed and not queue_identity_changed:
+        retry_store.set_identity(species.taxon_id, species.common_name, species.scientific_name)
+    if retry is not None or has_human_review_queue:
+        _archive_incompatible_retry_profile(config.controller.state_dir, species)
+    if retry_identity_changed and queue_identity_changed:
+        retry_store.set_identity(species.taxon_id, species.common_name, species.scientific_name)
+
+
+def _archive_incompatible_retry_profile(state_dir: Path, species: BirdSpecies) -> None:
+    """Preserve a valid cached profile whose taxonomy no longer matches discovery."""
+    profile_cache = state_dir / "profiles" / str(species.taxon_id)
+    profile_path = profile_cache / "profile.json"
+    if not profile_path.is_file():
+        return
+    try:
+        raw = read_json(profile_path)
+    except CatalogError:
+        return
+    if not isinstance(raw, dict):
+        return
+    cached_taxon_id = raw.get("taxon_id")
+    cached_common_name = raw.get("common_name")
+    cached_scientific_name = raw.get("scientific_name")
+    if not (
+        isinstance(cached_taxon_id, int)
+        and isinstance(cached_common_name, str)
+        and isinstance(cached_scientific_name, str)
+    ):
+        return
+    if (
+        cached_taxon_id != species.taxon_id
+        or cached_common_name != species.common_name
+        or cached_scientific_name != species.scientific_name
+    ):
+        _archive_controller_paths(state_dir, [profile_cache])
+
+
 def _migrate_legacy_seed_queue(
     state: CollectionState,
     queued_species: list[BirdSpecies],
@@ -627,7 +753,7 @@ def enqueue_seed_species(
                         collection,
                         legacy_seed_queue_migrated_at=migrated_at,
                     )
-                _write_active_catalog(config, _current_discovery_species(config))
+                _write_active_catalog(config, current_discovery_species(config))
 
     return {
         "window": window.value if window is not None else None,
@@ -771,7 +897,7 @@ def _read_discovery_snapshot(config: AppConfig) -> DiscoverySnapshot:
     return DiscoverySnapshot(refreshed, place_name, state, species)
 
 
-def _current_discovery_species(config: AppConfig) -> list[BirdSpecies]:
+def current_discovery_species(config: AppConfig) -> list[BirdSpecies]:
     if not _snapshot_path(config).exists():
         return []
     return _read_discovery_snapshot(config).species
@@ -782,7 +908,7 @@ def archive_invalid_approved_catalog_state(
     taxon_id: int,
 ) -> Path | None:
     with catalog_state_lock(config.controller.state_dir):
-        observed = _current_discovery_species(config)
+        observed = current_discovery_species(config)
         approved_path = find_taxon_directory(
             config.controller.catalog_dir / "species",
             taxon_id,
@@ -884,7 +1010,7 @@ def _archive_controller_paths(state_dir: Path, sources: list[Path]) -> list[str]
     return moved
 
 
-def _migrate_legacy_queue_before_replacement(
+def _migrate_legacy_queue_before_human_review(
     config: AppConfig,
     queued_species: list[BirdSpecies],
     taxon_id: int,
@@ -936,7 +1062,7 @@ def retry_approved_candidate(
 
             retry_store = RetryStore(config.controller.state_dir / "generation-retries.json")
             queued_species = read_generation_queue(config)
-            observed = _current_discovery_species(config)
+            observed = current_discovery_species(config)
             resumable = (
                 _resumable_approved_replacement(
                     config.controller.state_dir,
@@ -965,7 +1091,7 @@ def retry_approved_candidate(
                 )
                 if not already_prepared:
                     raise ValueError(f"No approved candidate exists for taxon {taxon_id}")
-                _migrate_legacy_queue_before_replacement(config, queued_species, taxon_id)
+                _migrate_legacy_queue_before_human_review(config, queued_species, taxon_id)
                 assert guidance is not None
                 cache_sources = [
                     path
@@ -1017,7 +1143,7 @@ def retry_approved_candidate(
                 or queued.scientific_name != species.scientific_name
             ):
                 raise CatalogError(f"Generation queue identity differs for taxon {taxon_id}")
-            _migrate_legacy_queue_before_replacement(config, queued_species, taxon_id)
+            _migrate_legacy_queue_before_human_review(config, queued_species, taxon_id)
 
             rejected_paths = sorted(
                 (config.controller.state_dir / "rejected").glob(f"{taxon_id}-*")
@@ -1112,7 +1238,7 @@ def collection_status(
     return _collection_summary(
         state.entries,
         approved if approved is not None else read_catalog_entries(config.controller.catalog_dir),
-        _current_discovery_species(config),
+        current_discovery_species(config),
         legacy_seed_queue_migrated_at=state.legacy_seed_queue_migrated_at,
     )
 
@@ -1152,7 +1278,7 @@ def _change_collection(
                     raise ValueError("collection additions require an origin")
                 updated, added = add_collection_taxa(current, requested_taxa, origin)
                 removed = []
-            observed = _current_discovery_species(config)
+            observed = current_discovery_species(config)
             summary = _collection_summary(
                 updated,
                 approved,
@@ -1595,11 +1721,33 @@ def run_generation_cycle(config: AppConfig) -> dict[str, object]:
                 "Discovery state is stale; a successful refresh is required before generation"
             )
         species_list = snapshot.species
+        for species in species_list:
+            synchronize_generation_retry_identity(config, queued_species, species)
         generation_species = list(species_list)
         observed_taxa = {species.taxon_id for species in species_list}
-        generation_species.extend(
-            species for species in queued_species if species.taxon_id not in observed_taxa
-        )
+        retry_store = RetryStore(config.controller.state_dir / "generation-retries.json")
+        for queued in queued_species:
+            if queued.taxon_id in observed_taxa:
+                continue
+            retry = retry_store.get(queued.taxon_id)
+            if (
+                HUMAN_REVIEW_SOURCE not in queued.sources
+                and retry is not None
+                and retry.common_name is not None
+                and retry.scientific_name is not None
+            ):
+                queued = BirdSpecies(
+                    taxon_id=queued.taxon_id,
+                    common_name=retry.common_name,
+                    scientific_name=retry.scientific_name,
+                    observation_count=queued.observation_count,
+                    source=queued.source,
+                    sources=queued.sources,
+                    latest_detection_at=queued.latest_detection_at,
+                )
+            synchronize_generation_retry_identity(config, queued_species, queued)
+            generation_species.append(queued)
+        retry_store = RetryStore(config.controller.state_dir / "generation-retries.json")
         approved = approved_taxon_ids(config.controller.catalog_dir)
         eligible = [
             species
@@ -1609,7 +1757,6 @@ def run_generation_cycle(config: AppConfig) -> dict[str, object]:
         ]
         generated: list[dict[str, object]] = []
         failures: list[dict[str, object]] = []
-        retry_store = RetryStore(config.controller.state_dir / "generation-retries.json")
         attempted_count = 0
         for species in eligible:
             if len(generated) >= config.controller.generations_per_cycle:
@@ -1676,6 +1823,7 @@ def run_generation_cycle(config: AppConfig) -> dict[str, object]:
                     initial_minutes=config.controller.retry_initial_minutes,
                     maximum_minutes=config.controller.retry_max_minutes,
                     fixed_minutes=config.controller.insufficient_references_retry_minutes,
+                    species=species,
                 )
                 failures.append(
                     {
@@ -1693,6 +1841,7 @@ def run_generation_cycle(config: AppConfig) -> dict[str, object]:
                     now=datetime.now(UTC),
                     initial_minutes=config.controller.retry_initial_minutes,
                     maximum_minutes=config.controller.retry_max_minutes,
+                    species=species,
                 )
                 failures.append(
                     {
@@ -1746,6 +1895,7 @@ def run_generation_cycle(config: AppConfig) -> dict[str, object]:
                     now=datetime.now(UTC),
                     initial_minutes=config.controller.retry_initial_minutes,
                     maximum_minutes=config.controller.retry_max_minutes,
+                    species=species,
                 )
                 failures.append(
                     {

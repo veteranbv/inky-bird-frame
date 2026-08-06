@@ -75,8 +75,10 @@ published.
 failing species receives durable exponential backoff and no longer consumes the
 successful-generation quota on every cycle. Insufficient licensed references
 use the longer `insufficient_references_retry_minutes` delay because source
-availability changes slowly. Later birds continue through the queue. Exhausted
-factual or visual review remains terminal and requires `retry TAXON_ID`.
+availability changes slowly. The retry record also retains species identity so
+an explicit retry can requeue work that failed before profile creation. Later
+birds continue through the queue. Exhausted factual or visual review remains
+terminal and requires `retry TAXON_ID`.
 
 Discovery requests and validates species-rank iNaturalist results so genera,
 families, and other aggregate taxa never enter generation. Species context uses
@@ -359,10 +361,11 @@ only; they never enter the approved catalog or rotation.
   artifacts and use `retry TAXON_ID --source-attempt N` when a specific attempt
   is a strong edit base. The command archives that portrait, refreshes cached
   references and profile data only when `--refresh-research` is also supplied,
-  and preserves the selected attempt's corrections for the first edit. By
-  default, validated research and references are reused. Omit `--source-attempt`
-  when no retained image should be reused. Transient source failures retain the
-  guidance and edit source until
+  preserves the selected attempt's corrections for the first edit, and keeps
+  the validated retained identity in the generation queue if the original
+  observation later expires. By default, validated research and references are
+  reused. Omit `--source-attempt` when no retained image should be reused.
+  Transient source failures retain the guidance and edit source until
   generation reaches a successful or terminal quality result. If retry finds an
   interrupted, fully invalid approval directory, it archives that debris and
   removes the stale local catalog entry before regeneration; a valid approved

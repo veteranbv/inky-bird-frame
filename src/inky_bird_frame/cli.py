@@ -40,14 +40,18 @@ from .config import (
     load_config,
 )
 from .controller import (
+    HUMAN_REVIEW_SOURCE,
     REVIEW_FAILURE_FALLBACK,
     add_collection_member,
     archive_invalid_approved_catalog_state,
     collection_status,
+    current_discovery_species,
     discover_species,
     enqueue_seed_species,
+    ensure_generation_retry,
     exclusive_cycle_lock,
     import_approved_collection,
+    read_generation_queue,
     read_generation_queue_partition,
     remove_collection_member,
     retry_approved_candidate,
@@ -57,7 +61,7 @@ from .controller import (
 )
 from .display import show_on_inky
 from .display_node import run_display_cycle
-from .errors import DataSourceError, InkyBirdFrameError, SpeciesStateError
+from .errors import CatalogError, DataSourceError, InkyBirdFrameError, SpeciesStateError
 from .images import prepare_uploaded_image
 from .installation import InstallationRole, doctor, setup
 from .notifications import (
@@ -576,6 +580,75 @@ def _retry_candidate_guidance(
     return (rejection_reason.strip(),), portrait
 
 
+def _retry_species_identity(
+    taxon_id: int,
+    sources: list[Path],
+    *,
+    deferred_malformed_errors: list[CatalogError | SpeciesStateError] | None = None,
+) -> tuple[str, str, Path] | None:
+    identity: tuple[str, str, Path] | None = None
+    for source in dict.fromkeys(sources):
+        for filename in ("profile.json", "references.json", "manifest.json", "failure.json"):
+            identity_path = source / filename
+            if not identity_path.is_file():
+                continue
+            try:
+                payload = read_json(identity_path)
+            except CatalogError as exc:
+                if deferred_malformed_errors is None:
+                    raise
+                deferred_malformed_errors.append(exc)
+                continue
+            if not isinstance(payload, dict):
+                error = SpeciesStateError(f"Invalid retained candidate identity: {identity_path}")
+                if deferred_malformed_errors is None:
+                    raise error
+                deferred_malformed_errors.append(error)
+                continue
+            retained_taxon_id = payload.get("taxon_id")
+            if retained_taxon_id is None:
+                continue
+            if retained_taxon_id != taxon_id:
+                raise SpeciesStateError(
+                    f"Retained candidate identity does not match taxon {taxon_id}: {identity_path}"
+                )
+            common_name = payload.get("common_name")
+            scientific_name = payload.get("scientific_name")
+            if not isinstance(common_name, str) or not isinstance(scientific_name, str):
+                continue
+            candidate_identity = (common_name, scientific_name, identity_path)
+            if identity is not None and identity[:2] != candidate_identity[:2]:
+                raise SpeciesStateError(
+                    f"Retained candidate identities conflict for taxon {taxon_id}"
+                )
+            identity = candidate_identity
+    return identity
+
+
+def _retry_archive_plan(
+    state_dir: Path,
+    sources: list[Path],
+    correction_owner: Path | None,
+    correction_source: Path | None,
+) -> tuple[list[tuple[Path, Path]], Path | None]:
+    archive = state_dir / "archive"
+    archive.mkdir(parents=True, exist_ok=True)
+    reserved: set[Path] = set()
+    moves: list[tuple[Path, Path]] = []
+    archived_correction_source: Path | None = None
+    for source in dict.fromkeys(sources):
+        destination = archive / source.name
+        counter = 1
+        while destination.exists() or destination in reserved:
+            destination = archive / f"{source.name}-{counter}"
+            counter += 1
+        reserved.add(destination)
+        moves.append((source, destination))
+        if source == correction_owner and correction_source is not None:
+            archived_correction_source = destination / correction_source.relative_to(source)
+    return moves, archived_correction_source
+
+
 def retry_command(args: argparse.Namespace) -> int:
     config = _config(args)
     replace_approved = bool(getattr(args, "replace_approved", False))
@@ -668,18 +741,96 @@ def retry_command(args: argparse.Namespace) -> int:
         sources.extend(
             sorted((config.controller.state_dir / "rejected").glob(f"{args.taxon_id}-*"))
         )
+        terminal_sources = list(sources)
         retry_store = RetryStore(config.controller.state_dir / "generation-retries.json")
         existing_guidance = retry_store.quality_guidance(args.taxon_id)
-        deferred = retry_store.get(args.taxon_id) is not None
+        retry_record = retry_store.get(args.taxon_id)
+        deferred = retry_record is not None
         if not sources and not deferred and source_candidate is None and source_run is None:
             raise ValueError(
                 f"No failed, rejected, or deferred candidate exists for taxon {args.taxon_id}"
             )
+        observed = next(
+            (
+                species
+                for species in current_discovery_species(config)
+                if species.taxon_id == args.taxon_id
+            ),
+            None,
+        )
+        deferred_identity_errors: list[CatalogError | SpeciesStateError] = []
+        terminal_identity = _retry_species_identity(
+            args.taxon_id,
+            terminal_sources,
+            deferred_malformed_errors=deferred_identity_errors,
+        )
+        identity = (
+            (
+                observed.common_name,
+                observed.scientific_name,
+                config.controller.state_dir / "discovery.json",
+            )
+            if observed is not None
+            else None
+        )
+        queued = next(
+            (
+                species
+                for species in read_generation_queue(config)
+                if species.taxon_id == args.taxon_id
+            ),
+            None,
+        )
+        if identity is None and queued is not None and HUMAN_REVIEW_SOURCE in queued.sources:
+            identity = (
+                queued.common_name,
+                queued.scientific_name,
+                config.controller.state_dir / "generation-queue.json",
+            )
+        if (
+            identity is None
+            and retry_record is not None
+            and retry_record.common_name is not None
+            and retry_record.scientific_name is not None
+        ):
+            identity = (
+                retry_record.common_name,
+                retry_record.scientific_name,
+                retry_store.path,
+            )
+        if identity is None:
+            identity = terminal_identity
+        if identity is None and queued is not None:
+            identity = (
+                queued.common_name,
+                queued.scientific_name,
+                config.controller.state_dir / "generation-queue.json",
+            )
         profile_cache = config.controller.state_dir / "profiles" / str(args.taxon_id)
-        cleared_cached_profile = refresh_research and profile_cache.exists()
+        cached_profile_identity = (
+            _retry_species_identity(
+                args.taxon_id,
+                [profile_cache],
+                deferred_malformed_errors=(deferred_identity_errors if refresh_research else None),
+            )
+            if profile_cache.exists() and (not refresh_research or identity is None)
+            else None
+        )
+        if identity is None:
+            identity = cached_profile_identity
+        incompatible_cached_profile = (
+            identity is not None
+            and cached_profile_identity is not None
+            and cached_profile_identity[:2] != identity[:2]
+        )
+        cleared_cached_profile = (
+            refresh_research or incompatible_cached_profile
+        ) and profile_cache.exists()
         if cleared_cached_profile:
             sources.append(profile_cache)
         reference_cache = config.controller.state_dir / "references" / str(args.taxon_id)
+        if identity is None:
+            identity = _retry_species_identity(args.taxon_id, [reference_cache])
         cleared_cached_references = refresh_research and reference_cache.exists()
         if cleared_cached_references:
             sources.append(reference_cache)
@@ -700,25 +851,36 @@ def retry_command(args: argparse.Namespace) -> int:
             and retained_correction_source is None
         ):
             raise SpeciesStateError("The selected correction source is outside retained state")
+        if identity is None and correction_source is not None:
+            identity = _retry_species_identity(
+                args.taxon_id,
+                [correction_source.parent, correction_source.parent.parent],
+            )
+        if identity is None and deferred_identity_errors:
+            raise deferred_identity_errors[0]
+        if identity is None:
+            raise SpeciesStateError(
+                f"Taxon {args.taxon_id} has no recoverable species identity; "
+                "wait for rediscovery or restore its retained profile or references"
+            )
+        if identity is not None and retry_record is not None:
+            retry_record = retry_store.set_identity(
+                args.taxon_id,
+                identity[0],
+                identity[1],
+            )
         invalid_approved_archive = archive_invalid_approved_catalog_state(
             config,
             args.taxon_id,
         )
-        archive = config.controller.state_dir / "archive"
-        archive.mkdir(parents=True, exist_ok=True)
         moved = [str(invalid_approved_archive)] if invalid_approved_archive is not None else []
-        archived_correction_source = retained_correction_source
-        for source in sources:
-            destination = archive / source.name
-            counter = 1
-            while destination.exists():
-                destination = archive / f"{source.name}-{counter}"
-                counter += 1
-            if source == correction_owner and correction_source is not None:
-                archived_correction_source = destination / correction_source.relative_to(source)
-            shutil.move(str(source), destination)
-            moved.append(str(destination))
-        retry_store.clear(args.taxon_id)
+        archive_plan, planned_correction_source = _retry_archive_plan(
+            config.controller.state_dir,
+            sources,
+            correction_owner,
+            correction_source,
+        )
+        archived_correction_source = retained_correction_source or planned_correction_source
         final_guidance = existing_guidance
         if quality_findings:
             final_guidance = retry_store.set_quality_guidance(
@@ -733,6 +895,35 @@ def retry_command(args: argparse.Namespace) -> int:
                     existing_guidance.invariant_findings if existing_guidance is not None else ()
                 ),
             )
+        terminal_source_set = set(terminal_sources)
+        cache_moves = [move for move in archive_plan if move[0] not in terminal_source_set]
+        terminal_moves = [move for move in archive_plan if move[0] in terminal_source_set]
+        if identity is not None and terminal_moves:
+            ensure_generation_retry(
+                config,
+                args.taxon_id,
+                identity[0],
+                identity[1],
+                identity[2],
+            )
+        for source, destination in cache_moves:
+            shutil.move(str(source), destination)
+            moved.append(str(destination))
+        if identity is not None and not terminal_moves:
+            ensure_generation_retry(
+                config,
+                args.taxon_id,
+                identity[0],
+                identity[1],
+                identity[2],
+            )
+        for source, destination in terminal_moves:
+            shutil.move(str(source), destination)
+            moved.append(str(destination))
+        retry_store.clear(args.taxon_id)
+        queued_for_generation = any(
+            species.taxon_id == args.taxon_id for species in read_generation_queue(config)
+        )
     print_result(
         {
             "taxon_id": args.taxon_id,
@@ -749,6 +940,7 @@ def retry_command(args: argparse.Namespace) -> int:
             "source_candidate": source_candidate,
             "source_run": source_run,
             "correction_override_count": len(correction_override),
+            "queued_for_generation": queued_for_generation,
             "preserved_correction_source": (
                 final_guidance is not None and final_guidance.source_plate is not None
             ),
