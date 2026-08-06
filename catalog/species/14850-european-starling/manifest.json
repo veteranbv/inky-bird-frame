@@ -1,0 +1,162 @@
+{
+  "approved_at": "2026-08-06T11:28:33+00:00",
+  "assets": {
+    "display": {
+      "filename": "display.png",
+      "sha256": "6e6e137dd5c1162fb63474bdec1db991ce74be56cccc3db48c9e9945ffc5220f"
+    },
+    "portrait": {
+      "filename": "portrait.png",
+      "sha256": "a5c9ee8356b4a537908edf7dc0e26e8bb0d6394dff37bd4e088356f04eec13ed"
+    }
+  },
+  "common_name": "European Starling",
+  "generation": {
+    "attempt": 1,
+    "correction_source_sha256": "e5e775bcacbadc117c6016b718973ab3aaf215224302eb565fcaeb1a5214ba5b",
+    "generated_at": "2026-08-06T11:28:33+00:00",
+    "generator": "Codex subscription / built-in gpt-image-2",
+    "max_attempts": 3,
+    "prompt_version": "field-journal-v4"
+  },
+  "profile": {
+    "behavior": "Gregarious and vocal; walks rapidly over short ground cover, probing with its bill for insects and other food. Often gathers in large, coordinated flocks, nests in cavities, and readily mimics other sounds.",
+    "common_name": "European Starling",
+    "family": "Sturnidae",
+    "field_marks": [
+      "Chunky body with a short tail and short, pointed wings",
+      "Long, slender, sharply pointed bill; yellow in breeding adults and dark in nonbreeding birds and juveniles",
+      "Adult plumage appears black with strong green and purple iridescence",
+      "Fresh nonbreeding plumage is densely tipped with white or cream spots",
+      "Juveniles are comparatively plain gray-brown without the adult's strong gloss",
+      "Dark eyes and pinkish-red to reddish-brown legs"
+    ],
+    "habitat": "Open lowland habitats with short vegetation, including grasslands, farmland, lawns, and built environments. Uses holes and crevices in trees or structures for nesting and generally avoids extensive unbroken forest and desert.",
+    "measurements": {
+      "length": "20\u201323 cm (7.9\u20139.1 in)",
+      "weight": "60\u201396 g (2.1\u20133.4 oz)",
+      "wingspan": "31\u201340 cm (12.2\u201315.8 in)"
+    },
+    "palette": [
+      "glossy black",
+      "iridescent green",
+      "purple",
+      "creamy white",
+      "golden yellow"
+    ],
+    "scientific_name": "Sturnus vulgaris",
+    "sources": [
+      {
+        "title": "European Starling Identification \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/european_starling/id/"
+      },
+      {
+        "title": "European Starling Life History \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/European_Starling/lifehistory"
+      },
+      {
+        "title": "Sturnus vulgaris (common starling) \u2014 Animal Diversity Web",
+        "url": "https://animaldiversity.org/accounts/Sturnus_vulgaris/"
+      }
+    ],
+    "taxon_id": 14850
+  },
+  "quality_review": {
+    "anatomy_accuracy": 5,
+    "composition_quality": 5,
+    "correction_findings": [],
+    "findings": [
+      "The primary specimen is identifiable as European Starling (Sturnus vulgaris): chunky body, short tail, slender pointed bill, compact pointed folded wings, dark eye, reddish-brown legs, iridescent green-purple plumage, and dense pale nonbreeding spots all agree with the references and direct sources.",
+      "The dark bill and heavily spotted plumage form a coherent nonbreeding-adult treatment. All About Birds and Audubon independently confirm that breeding adults have yellow bills, while fresh fall/winter birds have dark or duller bills and prominent pale spots.",
+      "The primary specimen has one head, one beak, two normally overlapping wings in profile, two anatomically plausible anisodactyl legs and feet, and one short tail. No duplicated, missing, fused, or extraneous primary anatomy is evident.",
+      "Both bill profiles are long, slender, sharply pointed, and internally consistent. Neither has a truncated, reversed, exaggerated, or conspicuously unequal mandible.",
+      "The detached spread-wing and head studies read clearly as supplementary anatomy rather than additional birds or parts attached to the primary specimen. Their feather organization, bill, eye, and plumage remain consistent with the species.",
+      "The printed taxonomy is correct: \u201cEuropean Starling,\u201d \u201cSturnus vulgaris,\u201d and \u201cFamily: Sturnidae.\u201d",
+      "Every printed measurement matches the verified All About Birds ranges: length 20\u201323 cm (7.9\u20139.1 in), wingspan 31\u201340 cm (12.2\u201315.8 in), and weight 60\u201396 g (2.1\u20133.4 oz). Audubon independently gives substantively identical values with additional decimal precision.",
+      "The ruler increases correctly from 20 cm at the bottom to 23 cm at the top, contains exactly four evenly spaced unlabeled interior ticks, repeats the correct imperial and metric range, and is explicitly labeled \u201cSCHEMATIC \u2014 NOT TO SCALE.\u201d",
+      "The habitat paragraph accurately describes open lowland, agricultural, lawn, and built habitats, cavity nesting, and avoidance of extensive unbroken forest and desert.",
+      "The behavior paragraph accurately describes gregariousness, vocalization, rapid ground foraging and probing, coordinated flocks, cavity nesting, and mimicry.",
+      "All six printed field-mark statements match the proposed wording and are supported by the direct sources: chunky short-tailed form, short pointed wings, slender pointed seasonally colored bill, green-purple adult iridescence, pale-tipped fresh nonbreeding plumage, plain gray-brown juveniles, dark eyes, and reddish legs.",
+      "The palette swatches correspond to the stated glossy black, iridescent green, purple, creamy white, and golden-yellow colors without introducing a contradictory plumage claim.",
+      "The layout is legible and well balanced, with clear separation between the primary specimen, supplementary studies, prose, palette, and schematic ruler.",
+      "No place name, ZIP code, coordinates, map, or local-observation detail appears on the candidate plate."
+    ],
+    "location_free": true,
+    "passed": true,
+    "species_accuracy": 5,
+    "text_accuracy": 5,
+    "verification_sources": [
+      {
+        "title": "European Starling Identification \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/european_starling/id/"
+      },
+      {
+        "title": "European Starling \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/european-starling"
+      },
+      {
+        "title": "Sturnus vulgaris (common starling) \u2014 Animal Diversity Web",
+        "url": "https://animaldiversity.org/accounts/Sturnus_vulgaris/"
+      }
+    ]
+  },
+  "references": [
+    {
+      "attribution": "(c) egorbirder, some rights reserved (CC BY)",
+      "filename": "01-118675313.jpg",
+      "height": 1000,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/118675313/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 72752929,
+      "observer": "egorbirder",
+      "photo_id": 118675313,
+      "sha256": "20dc82c5559e528cb794e0e2af2d7539b4568ca4814785a923a323c12dc3b906",
+      "source_url": "https://www.inaturalist.org/observations/72752929",
+      "width": 1500
+    },
+    {
+      "attribution": "(c) Whitney Mattila, some rights reserved (CC BY)",
+      "filename": "02-129167575.jpeg",
+      "height": 1697,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/129167575/large.jpeg",
+      "license_code": "cc-by",
+      "observation_id": 78896148,
+      "observer": "tanyuu",
+      "photo_id": 129167575,
+      "sha256": "8d220a86d0415e65e234a8876dc5bb32e4dcf14091282d4142b7552f0236af6a",
+      "source_url": "https://www.inaturalist.org/observations/78896148",
+      "width": 1810
+    },
+    {
+      "attribution": "no rights reserved",
+      "filename": "03-173914986.jpeg",
+      "height": 2048,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/173914986/large.jpeg",
+      "license_code": "cc0",
+      "observation_id": 103850384,
+      "observer": "andrawaag",
+      "photo_id": 173914986,
+      "sha256": "6aaacb80f67e9618e4c6cd727fc4ad269505c2868f9c83270e42626ad6db66d6",
+      "source_url": "https://www.inaturalist.org/observations/103850384",
+      "width": 1536
+    },
+    {
+      "attribution": "(c) Paolo Zucca, some rights reserved (CC BY)",
+      "filename": "04-9368838.jpg",
+      "height": 1366,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/9368838/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 7251144,
+      "observer": "theworldofpaolo",
+      "photo_id": 9368838,
+      "sha256": "351ff18401ad2a12db40d472393e5d33ee80c364607da20eb96438df35f090e3",
+      "source_url": "https://www.inaturalist.org/observations/7251144",
+      "width": 2048
+    }
+  ],
+  "schema_version": 1,
+  "scientific_name": "Sturnus vulgaris",
+  "slug": "european-starling",
+  "status": "approved",
+  "taxon_id": 14850
+}
