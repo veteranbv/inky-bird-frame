@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-06T11:28:33+00:00",
+  "generated_at": "2026-08-06T11:56:19+00:00",
   "schema_version": 1,
   "species": [
     {
@@ -177,6 +177,17 @@
       "scientific_name": "Quiscalus major",
       "slug": "boat-tailed-grackle",
       "taxon_id": 9601
+    },
+    {
+      "approved_at": "2026-08-06T11:53:08+00:00",
+      "common_name": "Broad-winged Hawk",
+      "display_path": "species/5227-broad-winged-hawk/display.png",
+      "display_sha256": "d95e8e670f724b7d058316f7a4273217c9964d995de5bfe9d84cc76ee29bc93d",
+      "portrait_path": "species/5227-broad-winged-hawk/portrait.png",
+      "portrait_sha256": "a5218fcaacb44d7f522d342eaa0c17d2a3e458df33e46fc93b0901305a19024f",
+      "scientific_name": "Buteo platypterus",
+      "slug": "broad-winged-hawk",
+      "taxon_id": 5227
     },
     {
       "approved_at": "2026-07-10T17:37:41+00:00",
@@ -1013,6 +1024,17 @@
       "scientific_name": "Archilochus colubris",
       "slug": "ruby-throated-hummingbird",
       "taxon_id": 6432
+    },
+    {
+      "approved_at": "2026-08-06T11:56:19+00:00",
+      "common_name": "Scarlet Tanager",
+      "display_path": "species/9921-scarlet-tanager/display.png",
+      "display_sha256": "d7cd9e6654678dade21c67f089c557c1288edf2513ff32e28f4275ec5a7df55f",
+      "portrait_path": "species/9921-scarlet-tanager/portrait.png",
+      "portrait_sha256": "9caaa8caf1a6f53a02196b846d410a35f9b23790b427ed71583a85438c3563fa",
+      "scientific_name": "Piranga olivacea",
+      "slug": "scarlet-tanager",
+      "taxon_id": 9921
     },
     {
       "approved_at": "2026-08-03T14:12:03+00:00",

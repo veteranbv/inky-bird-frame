@@ -1,0 +1,163 @@
+{
+  "approved_at": "2026-08-06T11:53:08+00:00",
+  "assets": {
+    "display": {
+      "filename": "display.png",
+      "sha256": "d95e8e670f724b7d058316f7a4273217c9964d995de5bfe9d84cc76ee29bc93d"
+    },
+    "portrait": {
+      "filename": "portrait.png",
+      "sha256": "a5218fcaacb44d7f522d342eaa0c17d2a3e458df33e46fc93b0901305a19024f"
+    }
+  },
+  "common_name": "Broad-winged Hawk",
+  "generation": {
+    "attempt": 3,
+    "correction_source_sha256": "4c4c1559ab517cf0822a5a4b0a9f856868573f683e6044f99fe151db2d74daf9",
+    "generated_at": "2026-08-06T11:53:08+00:00",
+    "generator": "Codex subscription / built-in gpt-image-2",
+    "max_attempts": 3,
+    "prompt_version": "field-journal-v4"
+  },
+  "profile": {
+    "behavior": "Diurnal perch-hunter that drops onto small mammals, amphibians, reptiles, birds, and insects. Usually solitary and territorial, but migrants soar on thermals in large flocks called kettles.",
+    "common_name": "Broad-winged Hawk",
+    "family": "Accipitridae",
+    "field_marks": [
+      "Small, stocky build with a large head and short, square tail",
+      "Reddish-brown head and upperparts; adults barred chestnut below",
+      "Juveniles paler below with coarse brown vertical streaks",
+      "Dark hooked bill with yellow cere, dark eyes, and yellow legs",
+      "Adult tail marked by broad black-and-white bands",
+      "Broad, slightly pointed wings with pale undersides and a dark trailing edge"
+    ],
+    "habitat": "Large deciduous and mixed forests, especially forest interiors near openings or water; also forest edges, tropical forest, cloud forest, and dry scrub outside the breeding season.",
+    "measurements": {
+      "length": "34\u201344 cm (13.4\u201317.3 in)",
+      "weight": "265\u2013560 g (9.3\u201319.8 oz)",
+      "wingspan": "81\u2013100 cm (31.9\u201339.4 in)"
+    },
+    "palette": [
+      "reddish brown",
+      "chestnut",
+      "cream white",
+      "charcoal black",
+      "golden yellow"
+    ],
+    "scientific_name": "Buteo platypterus",
+    "sources": [
+      {
+        "title": "Broad-winged Hawk Identification \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Broad-winged_Hawk/id"
+      },
+      {
+        "title": "Broad-winged Hawk Life History \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Broad-winged_Hawk/lifehistory"
+      },
+      {
+        "title": "Buteo platypterus \u2014 Animal Diversity Web",
+        "url": "https://animaldiversity.org/accounts/Buteo_platypterus/"
+      }
+    ],
+    "taxon_id": 5227
+  },
+  "quality_review": {
+    "anatomy_accuracy": 5,
+    "composition_quality": 5,
+    "correction_findings": [],
+    "findings": [
+      "Independent sources confirm the identification as Broad-winged Hawk, Buteo platypterus, family Accipitridae. The primary specimen and reference photographs agree in compact build, large head, short square tail, and adult light-morph plumage.",
+      "The measurements are correct: length 34\u201344 cm (13.4\u201317.3 in), wingspan 81\u2013100 cm (31.9\u201339.4 in), and weight 265\u2013560 g (9.3\u201319.8 oz).",
+      "All visible measurement graphics are internally consistent. The body-length ruler rises from 34 cm to 44 cm, has exactly four evenly spaced unlabeled interior ticks, repeats the correct range separately, and is explicitly marked \u201cSCHEMATIC \u2013 NOT TO SCALE.\u201d",
+      "The adult specimen correctly shows a reddish-brown head, brown to dark-brown upperparts, pale underparts with horizontal chestnut barring, and a strongly black-and-white-banded tail. The field-mark wording distinguishing the reddish head from the browner upperparts is supported by the sources.",
+      "The detached underwing study correctly depicts a broad, slightly pointed wing with a pale underside and dark trailing border. Its separation and labeling make it clearly supplementary rather than an extra attached wing.",
+      "The primary specimen contains exactly one head, one bill, two wings, two legs, and one tail. Both legs terminate in plausible anisodactyl raptor feet gripping the branch, with yellow tarsi and dark curved talons.",
+      "In both depicted heads, the upper and lower mandibles can be traced independently from their shared base. The hooked upper mandible projects beyond the lower in the correct direction and by a consistent, plausible amount; neither bill is co-terminal, reversed, truncated, or materially inconsistent with the side-profile references.",
+      "The eye, yellow cere, hooked dark bill, yellow legs, stocky proportions, folded-wing length, and tail configuration are consistent with Broad-winged Hawk anatomy and the supplied field photographs.",
+      "The habitat text is supported by the live sources: breeding birds use large deciduous or mixed forests, commonly near openings or water, while migrants and wintering birds also use forest edges, tropical or cloud forest, and arid scrub.",
+      "The behavior and diet text is supported: the species is diurnal, hunts from perches by dropping or swooping onto prey, consumes mammals, amphibians, reptiles, birds, and insects, is generally solitary and territorial outside migration, and forms large soaring migration kettles using thermals.",
+      "The juvenile description is accurate: juveniles are paler below with coarse longitudinal brown streaking and do not share the adult\u2019s bold tail pattern.",
+      "Every visible name, heading, label, numerical value, unit, habitat statement, behavior statement, and field-mark line is legible and scientifically coherent. No duplicated, omitted, substituted, or nonsensical text requiring correction was found.",
+      "The palette swatches appropriately represent reddish brown, chestnut, cream white, charcoal black, and golden yellow without introducing additional factual claims.",
+      "The layout is balanced and readable, with the primary specimen dominant and the supplementary underwing, magnified head, palette, and schematic ruler clearly separated.",
+      "No place name, ZIP code, coordinates, map, or local-observation detail appears."
+    ],
+    "location_free": true,
+    "passed": true,
+    "species_accuracy": 5,
+    "text_accuracy": 5,
+    "verification_sources": [
+      {
+        "title": "Broad-winged Hawk Identification \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Broad-winged_Hawk/id"
+      },
+      {
+        "title": "Buteo platypterus \u2014 Animal Diversity Web",
+        "url": "https://animaldiversity.org/accounts/Buteo_platypterus/"
+      },
+      {
+        "title": "Broad-winged Hawk \u2014 eBird",
+        "url": "https://ebird.org/species/brwhaw"
+      }
+    ]
+  },
+  "references": [
+    {
+      "attribution": "(c) Craig Hensley, some rights reserved (CC BY)",
+      "filename": "01-515312737.jpg",
+      "height": 1895,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/515312737/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 286633771,
+      "observer": "craighensley",
+      "photo_id": 515312737,
+      "sha256": "1150488c867613799912cf24cb70facd3f717e239c8222de1b456d912db376c7",
+      "source_url": "https://www.inaturalist.org/observations/286633771",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) Francisco Farriols Sarabia, some rights reserved (CC BY)",
+      "filename": "02-1435880.jpg",
+      "height": 1535,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/1435880/large.JPG",
+      "license_code": "cc-by",
+      "observation_id": 1141365,
+      "observer": "francisco3_",
+      "photo_id": 1435880,
+      "sha256": "f496c8afab7d26f49c8b9508c2e559ee823fe12e717efaa1cbeade054fd28f51",
+      "source_url": "http://conabio.inaturalist.org/observations/1141365",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) Abby Darrah, some rights reserved (CC BY)",
+      "filename": "03-184651101.jpeg",
+      "height": 1297,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/184651101/large.jpeg",
+      "license_code": "cc-by",
+      "observation_id": 109546486,
+      "observer": "adarrah",
+      "photo_id": 184651101,
+      "sha256": "4ffed9aae9ea2fd3e86ed138fbeef91150e018fd3c927c4af2dbc3ce4dd49536",
+      "source_url": "https://www.inaturalist.org/observations/109546486",
+      "width": 2048
+    },
+    {
+      "attribution": "no rights reserved",
+      "filename": "04-20207767.jpg",
+      "height": 2048,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/20207767/large.jpg",
+      "license_code": "cc0",
+      "observation_id": 13716259,
+      "observer": "kpmcfarland",
+      "photo_id": 20207767,
+      "sha256": "da54140e2702e960f92543658a776aaa07aaf435df511a302ea6b06e42a41d4b",
+      "source_url": "https://www.inaturalist.org/observations/13716259",
+      "width": 1365
+    }
+  ],
+  "schema_version": 1,
+  "scientific_name": "Buteo platypterus",
+  "slug": "broad-winged-hawk",
+  "status": "approved",
+  "taxon_id": 5227
+}

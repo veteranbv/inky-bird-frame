@@ -1,0 +1,36 @@
+{
+  "anatomy_accuracy": 4,
+  "composition_quality": 5,
+  "correction_findings": [],
+  "findings": [
+    "Species identity is correct: the plate depicts a breeding male Scarlet Tanager, Piranga olivacea, with the diagnostic scarlet head and body contrasting with black wings and tail. Cardinalidae is the current family assignment used by Cornell.",
+    "The measurement lines are accurate: \u201cLength 16\u201317 cm,\u201d \u201cWingspan 25\u201329 cm,\u201d and \u201cWeight 23.5\u201338 g\u201d agree with the published ranges; Cornell rounds the mass to 23\u201338 g, while Animal Diversity Web gives 23.5\u201338 g.",
+    "The body-length diagram is internally consistent: 16 cm is at the bottom, 17 cm is at the top, values increase upward, the endpoints agree with the printed range, and exactly four evenly spaced unlabeled interior ticks divide the range into five proportional segments. \u201cSCHEMATIC \u2013 NOT TO SCALE\u201d clearly prevents interpreting it as the printed specimen\u2019s physical scale.",
+    "The habitat text\u2014\u201cMature deciduous & mixed forests; edges, young woodland; evergreen forest in nonbreeding season.\u201d\u2014is supported by the verified habitat accounts and contains no material spelling, number, omission, duplication, or word-order error.",
+    "The behavior text\u2014\u201cDeliberate foliage forager, often high in canopy; insects & wild fruits; chick-burr call.\u201d\u2014accurately reflects deliberate foliage foraging in tall trees, an insect-and-fruit diet, and the distinctive chick-burr call.",
+    "All five field-mark lines are valid. In particular, \u201cThick, blunt-tipped bill\u201d and \u201cShort, broad dark tail\u201d agree with Cornell\u2019s direct identification description; the proposed research-pass alternatives describing a fairly long pointed bill and a long tail are not supported by that source.",
+    "The primary specimen has appropriate compact, stocky proportions, a large rounded head, dark rounded eye, thick pale horn-colored bill, scarlet breeding plumage, black folded wing, dark tail, and two slender dark legs with grasping feet. The profile-obscured far wing does not create a duplicate or missing-anatomy defect.",
+    "The bill is closed and both mandibles converge consistently from their common base to a co-terminal tip in the primary specimen and detached head study. Unequal mandible projection is not established as a Scarlet Tanager field mark by the verified sources, so no projection correction is warranted.",
+    "The detached wing and detached head are clearly supplementary studies and do not appear attached to the primary specimen. Their plumage and bill treatment remain consistent with the main bird and the references.",
+    "The palette labels\u2014\u201cscarlet,\u201d \u201cjet black,\u201d \u201colive green,\u201d \u201cstraw yellow,\u201d and \u201cpale horn gray\u201d\u2014are legible and appropriate. The line \u201cFemale, immature & nonbreeding male: yellowish to olive-green; dark wings & tail\u201d is explicitly supported by Cornell, Animal Diversity Web, and Audubon.",
+    "The plate contains exactly one primary bird with one head, one beak, two anatomical wings, two legs, and one tail. The layout is readable and balanced, and no place name, ZIP code, coordinates, map, or local-observation detail appears."
+  ],
+  "location_free": true,
+  "passed": true,
+  "species_accuracy": 5,
+  "text_accuracy": 5,
+  "verification_sources": [
+    {
+      "title": "Scarlet Tanager Identification \u2014 All About Birds, Cornell Lab of Ornithology",
+      "url": "https://www.allaboutbirds.org/guide/Scarlet_Tanager/id"
+    },
+    {
+      "title": "Piranga olivacea \u2014 Animal Diversity Web",
+      "url": "https://animaldiversity.org/accounts/Piranga_olivacea/"
+    },
+    {
+      "title": "Scarlet Tanager \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/scarlet-tanager"
+    }
+  ]
+}
