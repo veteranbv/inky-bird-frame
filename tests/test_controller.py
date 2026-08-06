@@ -952,6 +952,67 @@ class ControllerTests(unittest.TestCase):
         self.assertEqual(len(cast(list[object], result["generated"])), 1)
         self.assertEqual(queue, [])
 
+    def test_expired_seed_queue_generates_with_deferred_identity(self) -> None:
+        queued = BirdSpecies(42, "Old Bird Name", "Avis old", 1, "eBird")
+        current = BirdSpecies(42, "Current Bird Name", "Avis current", 1, "eBird")
+        with TemporaryDirectory() as temporary:
+            config_path = Path(temporary) / "config.toml"
+            config_path.write_text(CONFIG)
+            config = load_config(config_path)
+            config.controller.state_dir.mkdir(parents=True)
+            write_collection(
+                config.controller.state_dir,
+                [],
+                legacy_seed_queue_migrated_at="2026-08-05T12:00:00+00:00",
+            )
+            (config.controller.state_dir / "generation-queue.json").write_text(
+                json.dumps(
+                    {
+                        "schema_version": 2,
+                        "species": [
+                            {
+                                "taxon_id": queued.taxon_id,
+                                "common_name": queued.common_name,
+                                "scientific_name": queued.scientific_name,
+                                "observation_count": queued.observation_count,
+                                "source": queued.source,
+                                "sources": list(queued.sources),
+                            }
+                        ],
+                    }
+                )
+            )
+            (config.controller.state_dir / "discovery.json").write_text(
+                json.dumps(
+                    {
+                        "schema_version": 2,
+                        "refreshed_at": datetime.now(UTC).isoformat(),
+                        "place_name": "Exampleville",
+                        "state": "XY",
+                        "species": [],
+                    }
+                )
+            )
+            RetryStore(config.controller.state_dir / "generation-retries.json").record_failure(
+                current.taxon_id,
+                DataSourceError("temporary failure"),
+                now=datetime(2026, 8, 1, tzinfo=UTC),
+                initial_minutes=5,
+                maximum_minutes=60,
+                species=current,
+            )
+
+            with patch(
+                "inky_bird_frame.controller.generate_candidate",
+                side_effect=DataSourceError("still unavailable"),
+            ) as generate:
+                run_generation_cycle(config)
+
+        generated_species = generate.call_args.args[1]
+        self.assertEqual(generated_species.common_name, current.common_name)
+        self.assertEqual(generated_species.scientific_name, current.scientific_name)
+        self.assertEqual(generated_species.source, queued.source)
+
     def test_approved_replacement_refreshes_research_only_when_requested(self) -> None:
         species = BirdSpecies(9083, "Northern Cardinal", "Cardinalis cardinalis", 0, "test")
         with TemporaryDirectory() as temporary:

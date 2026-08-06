@@ -1725,9 +1725,27 @@ def run_generation_cycle(config: AppConfig) -> dict[str, object]:
             synchronize_generation_retry_identity(config, queued_species, species)
         generation_species = list(species_list)
         observed_taxa = {species.taxon_id for species in species_list}
-        generation_species.extend(
-            species for species in queued_species if species.taxon_id not in observed_taxa
-        )
+        retry_store = RetryStore(config.controller.state_dir / "generation-retries.json")
+        for queued in queued_species:
+            if queued.taxon_id in observed_taxa:
+                continue
+            retry = retry_store.get(queued.taxon_id)
+            if (
+                HUMAN_REVIEW_SOURCE not in queued.sources
+                and retry is not None
+                and retry.common_name is not None
+                and retry.scientific_name is not None
+            ):
+                queued = BirdSpecies(
+                    taxon_id=queued.taxon_id,
+                    common_name=retry.common_name,
+                    scientific_name=retry.scientific_name,
+                    observation_count=queued.observation_count,
+                    source=queued.source,
+                    sources=queued.sources,
+                    latest_detection_at=queued.latest_detection_at,
+                )
+            generation_species.append(queued)
         approved = approved_taxon_ids(config.controller.catalog_dir)
         eligible = [
             species
@@ -1737,7 +1755,6 @@ def run_generation_cycle(config: AppConfig) -> dict[str, object]:
         ]
         generated: list[dict[str, object]] = []
         failures: list[dict[str, object]] = []
-        retry_store = RetryStore(config.controller.state_dir / "generation-retries.json")
         attempted_count = 0
         for species in eligible:
             if len(generated) >= config.controller.generations_per_cycle:

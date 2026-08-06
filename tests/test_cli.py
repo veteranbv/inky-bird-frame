@@ -1290,6 +1290,9 @@ rotation_mode = "shuffle_bag"
                     }
                 )
             )
+            profile_cache = state_dir / "profiles/42"
+            profile_cache.mkdir(parents=True)
+            (profile_cache / "profile.json").write_text("{not valid json")
             RetryStore(state_dir / "generation-retries.json").record_failure(
                 42,
                 GenerationError("legacy transient failure"),
@@ -1306,15 +1309,19 @@ rotation_mode = "shuffle_bag"
                 retry_command(Namespace(taxon_id=42, refresh_research=True))
 
             queue = read_generation_queue(cast(AppConfig, config))
-            archived_references = state_dir / "archive/42/references.json"
+            archived_references = state_dir / "archive/42-1/references.json"
             archived_references_exists = archived_references.is_file()
+            archived_profile_exists = (state_dir / "archive/42/profile.json").is_file()
             reference_cache_exists = reference_cache.exists()
+            profile_cache_exists = profile_cache.exists()
 
         self.assertEqual([item.taxon_id for item in queue], [42])
         self.assertEqual(queue[0].common_name, "Referenced Bird")
         self.assertEqual(queue[0].scientific_name, "Avis relata")
         self.assertTrue(archived_references_exists)
+        self.assertTrue(archived_profile_exists)
         self.assertFalse(reference_cache_exists)
+        self.assertFalse(profile_cache_exists)
 
     def test_retry_uses_deferred_record_identity_when_profile_was_not_created(self) -> None:
         with TemporaryDirectory() as temporary:

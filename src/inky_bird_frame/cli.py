@@ -61,7 +61,7 @@ from .controller import (
 )
 from .display import show_on_inky
 from .display_node import run_display_cycle
-from .errors import DataSourceError, InkyBirdFrameError, SpeciesStateError
+from .errors import CatalogError, DataSourceError, InkyBirdFrameError, SpeciesStateError
 from .images import prepare_uploaded_image
 from .installation import InstallationRole, doctor, setup
 from .notifications import (
@@ -790,11 +790,18 @@ def retry_command(args: argparse.Namespace) -> int:
                 config.controller.state_dir / "generation-queue.json",
             )
         profile_cache = config.controller.state_dir / "profiles" / str(args.taxon_id)
-        cached_profile_identity = (
-            _retry_species_identity(args.taxon_id, [profile_cache])
-            if profile_cache.exists() and (not refresh_research or identity is None)
-            else None
-        )
+        profile_identity_error: CatalogError | None = None
+        try:
+            cached_profile_identity = (
+                _retry_species_identity(args.taxon_id, [profile_cache])
+                if profile_cache.exists() and (not refresh_research or identity is None)
+                else None
+            )
+        except CatalogError as exc:
+            if not refresh_research:
+                raise
+            profile_identity_error = exc
+            cached_profile_identity = None
         if identity is None:
             identity = cached_profile_identity
         incompatible_cached_profile = (
@@ -810,6 +817,8 @@ def retry_command(args: argparse.Namespace) -> int:
         reference_cache = config.controller.state_dir / "references" / str(args.taxon_id)
         if identity is None:
             identity = _retry_species_identity(args.taxon_id, [reference_cache])
+        if identity is None and profile_identity_error is not None:
+            raise profile_identity_error
         cleared_cached_references = refresh_research and reference_cache.exists()
         if cleared_cached_references:
             sources.append(reference_cache)
