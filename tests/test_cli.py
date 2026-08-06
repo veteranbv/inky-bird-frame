@@ -59,6 +59,19 @@ def controller_config(state_dir: Path, catalog_dir: Path | None = None) -> Simpl
     )
 
 
+def write_test_species_identity(directory: Path) -> None:
+    directory.mkdir(parents=True, exist_ok=True)
+    (directory / "profile.json").write_text(
+        json.dumps(
+            {
+                "taxon_id": 42,
+                "common_name": "Example Bird",
+                "scientific_name": "Avis exemplum",
+            }
+        )
+    )
+
+
 class CliTests(unittest.TestCase):
     def test_birdbuddy_commands_parse_explicit_authorization_and_logout(self) -> None:
         login = build_parser().parse_args(
@@ -657,6 +670,7 @@ rotation_mode = "shuffle_bag"
             review = failed / "attempt-01/quality-review.json"
             review.parent.mkdir(parents=True)
             review.write_text(json.dumps({"passed": False, "findings": ["Fix the feet"]}))
+            write_test_species_identity(failed)
             profile = state_dir / "profiles/42/profile.json"
             profile.parent.mkdir(parents=True)
             profile.write_text("{}")
@@ -683,6 +697,7 @@ rotation_mode = "shuffle_bag"
             state_dir = Path(temporary)
             failed = state_dir / "failed/42-example-bird"
             failed.mkdir(parents=True)
+            write_test_species_identity(failed)
             old_review = failed / "attempt-99/quality-review.json"
             old_review.parent.mkdir()
             old_review.write_text(json.dumps({"passed": False, "findings": ["Outdated finding"]}))
@@ -722,6 +737,7 @@ rotation_mode = "shuffle_bag"
             state_dir = Path(temporary)
             failed = state_dir / "failed/42-example-bird"
             failed.mkdir(parents=True)
+            write_test_species_identity(failed)
             catalog_dir = state_dir / "catalog"
             debris = catalog_dir / "species/42-example-bird"
             debris.mkdir(parents=True)
@@ -754,6 +770,7 @@ rotation_mode = "shuffle_bag"
             review = state_dir / "failed/42-example-bird/attempt-01/quality-review.json"
             review.parent.mkdir(parents=True)
             review.write_text(json.dumps({"passed": False, "findings": []}))
+            write_test_species_identity(review.parent.parent)
             config = controller_config(state_dir)
             output = io.StringIO()
 
@@ -817,6 +834,7 @@ rotation_mode = "shuffle_bag"
                     }
                 )
             )
+            write_test_species_identity(review.parent.parent)
             config = controller_config(state_dir)
 
             with (
@@ -831,27 +849,25 @@ rotation_mode = "shuffle_bag"
         if guidance is not None:
             self.assertEqual(guidance.findings, ("Correct the measurement ranges",))
 
-    def test_retry_archives_incomplete_pending_candidate(self) -> None:
+    def test_retry_preserves_incomplete_pending_candidate_without_identity(self) -> None:
         with TemporaryDirectory() as temporary:
             state_dir = Path(temporary)
             pending = state_dir / "pending/42-example-bird"
             pending.mkdir(parents=True)
             (pending / "portrait.png").write_bytes(b"partial")
             config = controller_config(state_dir)
-            output = io.StringIO()
 
-            with patch("inky_bird_frame.cli._config", return_value=config), redirect_stdout(output):
+            with (
+                patch("inky_bird_frame.cli._config", return_value=config),
+                self.assertRaisesRegex(SpeciesStateError, "no recoverable species identity"),
+            ):
                 retry_command(Namespace(taxon_id=42))
 
-            result = json.loads(output.getvalue())["data"]
             archived = state_dir / "archive/42-example-bird"
             pending_exists = pending.exists()
-            archived_portrait_exists = (archived / "portrait.png").is_file()
 
-        self.assertEqual(result["status"], "eligible")
-        self.assertEqual(result["archived"], [str(archived)])
-        self.assertFalse(pending_exists)
-        self.assertTrue(archived_portrait_exists)
+        self.assertTrue(pending_exists)
+        self.assertFalse(archived.exists())
 
     def test_retry_rejects_complete_pending_candidate(self) -> None:
         with TemporaryDirectory() as temporary:
@@ -1728,6 +1744,7 @@ rotation_mode = "shuffle_bag"
                     }
                 )
             )
+            write_test_species_identity(failed.parent)
             invariant = "Keep the source-matched bill proportion."
             RetryStore(state_dir / "generation-retries.json").set_quality_guidance(
                 42,
@@ -1801,6 +1818,8 @@ rotation_mode = "shuffle_bag"
                         "schema_version": 1,
                         "status": "rejected",
                         "taxon_id": 42,
+                        "common_name": "Example Bird",
+                        "scientific_name": "Avis exemplum",
                         "rejection_reason": rejection_reason,
                         "assets": {
                             "portrait": {
@@ -1849,6 +1868,8 @@ rotation_mode = "shuffle_bag"
                         "schema_version": 1,
                         "status": "rejected",
                         "taxon_id": 42,
+                        "common_name": "Example Bird",
+                        "scientific_name": "Avis exemplum",
                         "rejection_reason": rejection_reason,
                         "assets": {
                             "portrait": {

@@ -812,7 +812,22 @@ def retry_command(args: argparse.Namespace) -> int:
                 args.taxon_id,
                 [correction_source.parent, correction_source.parent.parent],
             )
-        if identity is None and retry_record is not None:
+        if identity is None:
+            queued = next(
+                (
+                    species
+                    for species in read_generation_queue(config)
+                    if species.taxon_id == args.taxon_id
+                ),
+                None,
+            )
+            if queued is not None:
+                identity = (
+                    queued.common_name,
+                    queued.scientific_name,
+                    config.controller.state_dir / "generation-queue.json",
+                )
+        if identity is None:
             raise SpeciesStateError(
                 f"Taxon {args.taxon_id} has no recoverable species identity; "
                 "wait for rediscovery or restore its retained profile or references"
