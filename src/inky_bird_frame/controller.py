@@ -586,31 +586,38 @@ def synchronize_generation_retry_identity(
     if queued_index is None:
         return
     queued = queued_species[queued_index]
-    if HUMAN_REVIEW_SOURCE not in queued.sources or (
-        queued.common_name == species.common_name
-        and queued.scientific_name == species.scientific_name
-    ):
+    if HUMAN_REVIEW_SOURCE not in queued.sources:
         return
-    queued_species[queued_index] = BirdSpecies(
-        taxon_id=species.taxon_id,
-        common_name=species.common_name,
-        scientific_name=species.scientific_name,
-        observation_count=0,
-        source=HUMAN_REVIEW_SOURCE,
-    )
-    with catalog_state_lock(config.controller.state_dir):
-        persisted_species = read_generation_queue(config)
-        persisted_index = next(
-            (
-                index
-                for index, queued in enumerate(persisted_species)
-                if queued.taxon_id == species.taxon_id and HUMAN_REVIEW_SOURCE in queued.sources
-            ),
-            None,
+    if queued.common_name != species.common_name or queued.scientific_name != (
+        species.scientific_name
+    ):
+        queued_species[queued_index] = BirdSpecies(
+            taxon_id=species.taxon_id,
+            common_name=species.common_name,
+            scientific_name=species.scientific_name,
+            observation_count=0,
+            source=HUMAN_REVIEW_SOURCE,
         )
-        if persisted_index is not None:
-            persisted_species[persisted_index] = queued_species[queued_index]
-            _write_generation_queue(config, persisted_species)
+        with catalog_state_lock(config.controller.state_dir):
+            persisted_species = read_generation_queue(config)
+            persisted_index = next(
+                (
+                    index
+                    for index, persisted in enumerate(persisted_species)
+                    if persisted.taxon_id == species.taxon_id
+                    and HUMAN_REVIEW_SOURCE in persisted.sources
+                ),
+                None,
+            )
+            if persisted_index is not None:
+                persisted_species[persisted_index] = queued_species[queued_index]
+                _write_generation_queue(config, persisted_species)
+    retry_store = RetryStore(config.controller.state_dir / "generation-retries.json")
+    retry = retry_store.get(species.taxon_id)
+    if retry is not None and (
+        retry.common_name != species.common_name or retry.scientific_name != species.scientific_name
+    ):
+        retry_store.set_identity(species.taxon_id, species.common_name, species.scientific_name)
 
 
 def _migrate_legacy_seed_queue(

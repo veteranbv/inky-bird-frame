@@ -755,17 +755,6 @@ def retry_command(args: argparse.Namespace) -> int:
             if observed is not None
             else terminal_identity
         )
-        if (
-            identity is None
-            and retry_record is not None
-            and retry_record.common_name is not None
-            and retry_record.scientific_name is not None
-        ):
-            identity = (
-                retry_record.common_name,
-                retry_record.scientific_name,
-                retry_store.path,
-            )
         if identity is None:
             queued = next(
                 (
@@ -781,6 +770,17 @@ def retry_command(args: argparse.Namespace) -> int:
                     queued.scientific_name,
                     config.controller.state_dir / "generation-queue.json",
                 )
+        if (
+            identity is None
+            and retry_record is not None
+            and retry_record.common_name is not None
+            and retry_record.scientific_name is not None
+        ):
+            identity = (
+                retry_record.common_name,
+                retry_record.scientific_name,
+                retry_store.path,
+            )
         profile_cache = config.controller.state_dir / "profiles" / str(args.taxon_id)
         cached_profile_identity = (
             _retry_species_identity(args.taxon_id, [profile_cache])

@@ -646,16 +646,29 @@ class ControllerTests(unittest.TestCase):
                 )
             )
             observed = BirdSpecies(42, "Current Bird Name", "Avis current", 3, "eBird")
+            RetryStore(config.controller.state_dir / "generation-retries.json").record_failure(
+                observed.taxon_id,
+                GenerationError("temporary failure"),
+                now=datetime(2026, 8, 5, tzinfo=UTC),
+                initial_minutes=5,
+                maximum_minutes=60,
+                species=BirdSpecies(42, "Old Bird Name", "Avis old", 0, HUMAN_REVIEW_SOURCE),
+            )
 
             queue = read_generation_queue(config)
             synchronize_generation_retry_identity(config, queue, observed)
             persisted_queue = read_generation_queue(config)
+            retry = RetryStore(config.controller.state_dir / "generation-retries.json").get(42)
 
         self.assertEqual(len(queue), 1)
         self.assertEqual(queue[0].common_name, "Current Bird Name")
         self.assertEqual(queue[0].scientific_name, "Avis current")
         self.assertEqual(queue[0].source, HUMAN_REVIEW_SOURCE)
         self.assertEqual(persisted_queue, queue)
+        self.assertIsNotNone(retry)
+        if retry is not None:
+            self.assertEqual(retry.common_name, observed.common_name)
+            self.assertEqual(retry.scientific_name, observed.scientific_name)
 
     def test_expired_human_review_queue_generates_with_persisted_identity(self) -> None:
         species = BirdSpecies(42, "Current Bird Name", "Avis current", 0, HUMAN_REVIEW_SOURCE)

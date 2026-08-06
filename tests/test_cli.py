@@ -1514,6 +1514,14 @@ rotation_mode = "shuffle_bag"
                     }
                 )
             )
+            RetryStore(state_dir / "generation-retries.json").record_failure(
+                42,
+                GenerationError("temporary failure"),
+                now=datetime(2026, 8, 2, tzinfo=UTC),
+                initial_minutes=5,
+                maximum_minutes=60,
+                species=BirdSpecies(42, "Old Bird Name", "Avis old", 0, "human-review"),
+            )
             config = controller_config(state_dir)
             output = io.StringIO()
 
@@ -1521,8 +1529,11 @@ rotation_mode = "shuffle_bag"
                 retry_command(Namespace(taxon_id=42))
 
             result = json.loads(output.getvalue())["data"]
+            queue = read_generation_queue(cast(AppConfig, config))
 
         self.assertTrue(result["queued_for_generation"])
+        self.assertEqual(queue[0].common_name, "Queued Bird")
+        self.assertEqual(queue[0].scientific_name, "Avis ordinata")
 
     def test_retry_prefers_current_identity_over_older_edit_source(self) -> None:
         with TemporaryDirectory() as temporary:
