@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-06T11:56:19+00:00",
+  "generated_at": "2026-08-06T12:51:19+00:00",
   "schema_version": 1,
   "species": [
     {
@@ -837,6 +837,17 @@
       "scientific_name": "Setophaga americana",
       "slug": "northern-parula",
       "taxon_id": 145233
+    },
+    {
+      "approved_at": "2026-08-06T12:51:19+00:00",
+      "common_name": "Northern Rough-winged Swallow",
+      "display_path": "species/11970-northern-rough-winged-swallow/display.png",
+      "display_sha256": "69af036d8aa08d7609691a74bce3700bf51aeb21ad8e2d6386f0c245ef7bfcda",
+      "portrait_path": "species/11970-northern-rough-winged-swallow/portrait.png",
+      "portrait_sha256": "68e44277ca1a983d67027b1f8226fc9a8695e5f8bbde2844e23963190858c904",
+      "scientific_name": "Stelgidopteryx serripennis",
+      "slug": "northern-rough-winged-swallow",
+      "taxon_id": 11970
     },
     {
       "approved_at": "2026-08-03T20:46:40+00:00",
