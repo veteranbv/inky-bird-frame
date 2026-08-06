@@ -46,6 +46,7 @@ from .controller import (
     collection_status,
     discover_species,
     enqueue_seed_species,
+    ensure_generation_retry,
     exclusive_cycle_lock,
     import_approved_collection,
     read_generation_queue_partition,
@@ -576,6 +577,39 @@ def _retry_candidate_guidance(
     return (rejection_reason.strip(),), portrait
 
 
+def _retry_species_identity(
+    taxon_id: int,
+    sources: list[Path],
+) -> tuple[str, str, Path] | None:
+    identity: tuple[str, str, Path] | None = None
+    for source in dict.fromkeys(sources):
+        for filename in ("profile.json", "manifest.json", "failure.json"):
+            identity_path = source / filename
+            if not identity_path.is_file():
+                continue
+            payload = read_json(identity_path)
+            if not isinstance(payload, dict):
+                raise SpeciesStateError(f"Invalid retained candidate identity: {identity_path}")
+            retained_taxon_id = payload.get("taxon_id")
+            if retained_taxon_id is None:
+                continue
+            if retained_taxon_id != taxon_id:
+                raise SpeciesStateError(
+                    f"Retained candidate identity does not match taxon {taxon_id}: {identity_path}"
+                )
+            common_name = payload.get("common_name")
+            scientific_name = payload.get("scientific_name")
+            if not isinstance(common_name, str) or not isinstance(scientific_name, str):
+                continue
+            candidate_identity = (common_name, scientific_name, identity_path)
+            if identity is not None and identity[:2] != candidate_identity[:2]:
+                raise SpeciesStateError(
+                    f"Retained candidate identities conflict for taxon {taxon_id}"
+                )
+            identity = candidate_identity
+    return identity
+
+
 def retry_command(args: argparse.Namespace) -> int:
     config = _config(args)
     replace_approved = bool(getattr(args, "replace_approved", False))
@@ -700,6 +734,21 @@ def retry_command(args: argparse.Namespace) -> int:
             and retained_correction_source is None
         ):
             raise SpeciesStateError("The selected correction source is outside retained state")
+        identity_sources = list(sources)
+        if correction_source is not None:
+            identity_sources.append(correction_source.parent)
+            identity_sources.append(correction_source.parent.parent)
+        identity = _retry_species_identity(args.taxon_id, identity_sources)
+        queued_for_generation = False
+        if identity is not None:
+            ensure_generation_retry(
+                config,
+                args.taxon_id,
+                identity[0],
+                identity[1],
+                identity[2],
+            )
+            queued_for_generation = True
         invalid_approved_archive = archive_invalid_approved_catalog_state(
             config,
             args.taxon_id,
@@ -749,6 +798,7 @@ def retry_command(args: argparse.Namespace) -> int:
             "source_candidate": source_candidate,
             "source_run": source_run,
             "correction_override_count": len(correction_override),
+            "queued_for_generation": queued_for_generation,
             "preserved_correction_source": (
                 final_guidance is not None and final_guidance.source_plate is not None
             ),

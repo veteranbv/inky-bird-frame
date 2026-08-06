@@ -538,6 +538,37 @@ def _write_generation_queue(config: AppConfig, species: list[BirdSpecies]) -> No
     )
 
 
+def ensure_generation_retry(
+    config: AppConfig,
+    taxon_id: int,
+    common_name: object,
+    scientific_name: object,
+    source: Path,
+) -> None:
+    """Keep an operator-requested retry eligible after its observation expires."""
+    species = _replacement_species(
+        taxon_id,
+        common_name,
+        scientific_name,
+        source,
+    )
+    with catalog_state_lock(config.controller.state_dir):
+        queued_species = read_generation_queue(config)
+        queued = next(
+            (item for item in queued_species if item.taxon_id == taxon_id),
+            None,
+        )
+        if queued is not None:
+            if (
+                queued.common_name != species.common_name
+                or queued.scientific_name != species.scientific_name
+            ):
+                raise CatalogError(f"Generation queue identity differs for taxon {taxon_id}")
+            return
+        queued_species.append(species)
+        _write_generation_queue(config, queued_species)
+
+
 def _migrate_legacy_seed_queue(
     state: CollectionState,
     queued_species: list[BirdSpecies],

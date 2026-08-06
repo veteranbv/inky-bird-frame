@@ -34,7 +34,11 @@ from inky_bird_frame.cli import (
     status_command,
 )
 from inky_bird_frame.config import DiscoveryProvider
-from inky_bird_frame.controller import REVIEW_FAILURE_FALLBACK, exclusive_cycle_lock
+from inky_bird_frame.controller import (
+    REVIEW_FAILURE_FALLBACK,
+    exclusive_cycle_lock,
+    read_generation_queue,
+)
 from inky_bird_frame.errors import (
     ConfigurationError,
     DataSourceError,
@@ -965,6 +969,15 @@ rotation_mode = "shuffle_bag"
                         }
                     )
                 )
+            (failed / "profile.json").write_text(
+                json.dumps(
+                    {
+                        "taxon_id": 42,
+                        "common_name": "Example Bird",
+                        "scientific_name": "Avis exemplum",
+                    }
+                )
+            )
             config = controller_config(state_dir)
             output = io.StringIO()
 
@@ -978,14 +991,18 @@ rotation_mode = "shuffle_bag"
                 if guidance is not None and guidance.source_plate is not None
                 else None
             )
+            queue = read_generation_queue(config)
 
         self.assertTrue(result["preserved_correction_source"])
+        self.assertTrue(result["queued_for_generation"])
         self.assertEqual(result["source_attempt"], 1)
         self.assertIsNotNone(guidance)
         if guidance is not None:
             self.assertEqual(guidance.findings, ("Fix the tail",))
             self.assertIsNotNone(guidance.source_plate)
         self.assertEqual(source_bytes, b"portrait-1")
+        self.assertEqual([item.taxon_id for item in queue], [42])
+        self.assertEqual(queue[0].source, "human-review")
 
     def test_retry_preserves_selected_attempt_from_archived_run(self) -> None:
         with TemporaryDirectory() as temporary:
@@ -993,7 +1010,15 @@ rotation_mode = "shuffle_bag"
             run = state_dir / "archive/42-20260803T060207Z"
             attempt = run / "attempt-03"
             attempt.mkdir(parents=True)
-            (run / "profile.json").write_text(json.dumps({"taxon_id": 42}))
+            (run / "profile.json").write_text(
+                json.dumps(
+                    {
+                        "taxon_id": 42,
+                        "common_name": "Example Bird",
+                        "scientific_name": "Avis exemplum",
+                    }
+                )
+            )
             (attempt / "portrait.png").write_bytes(b"best earlier portrait")
             (attempt / "quality-review.json").write_text(
                 json.dumps(
@@ -1023,6 +1048,7 @@ rotation_mode = "shuffle_bag"
                 if guidance is not None and guidance.source_plate is not None
                 else None
             )
+            queue = read_generation_queue(config)
 
         self.assertTrue(result["preserved_correction_source"])
         self.assertEqual(result["source_run"], run.name)
@@ -1032,6 +1058,8 @@ rotation_mode = "shuffle_bag"
         if guidance is not None:
             self.assertEqual(guidance.findings, ("Darken both irises",))
         self.assertEqual(source_bytes, b"best earlier portrait")
+        self.assertTrue(result["queued_for_generation"])
+        self.assertEqual([item.taxon_id for item in queue], [42])
 
     def test_retry_rejects_symlinked_attempt_from_archived_run(self) -> None:
         with TemporaryDirectory() as temporary:

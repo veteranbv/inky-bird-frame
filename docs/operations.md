@@ -359,10 +359,11 @@ only; they never enter the approved catalog or rotation.
   artifacts and use `retry TAXON_ID --source-attempt N` when a specific attempt
   is a strong edit base. The command archives that portrait, refreshes cached
   references and profile data only when `--refresh-research` is also supplied,
-  and preserves the selected attempt's corrections for the first edit. By
-  default, validated research and references are reused. Omit `--source-attempt`
-  when no retained image should be reused. Transient source failures retain the
-  guidance and edit source until
+  preserves the selected attempt's corrections for the first edit, and keeps
+  the validated retained identity in the generation queue if the original
+  observation later expires. By default, validated research and references are
+  reused. Omit `--source-attempt` when no retained image should be reused.
+  Transient source failures retain the guidance and edit source until
   generation reaches a successful or terminal quality result. If retry finds an
   interrupted, fully invalid approval directory, it archives that debris and
   removes the stale local catalog entry before regeneration; a valid approved
