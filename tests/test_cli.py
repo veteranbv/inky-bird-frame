@@ -993,6 +993,7 @@ rotation_mode = "shuffle_bag"
                 else None
             )
             queue = read_generation_queue(cast(AppConfig, config))
+            collection = json.loads((state_dir / "collection.json").read_text())
 
         self.assertTrue(result["preserved_correction_source"])
         self.assertTrue(result["queued_for_generation"])
@@ -1003,6 +1004,65 @@ rotation_mode = "shuffle_bag"
             self.assertIsNotNone(guidance.source_plate)
         self.assertEqual(source_bytes, b"portrait-1")
         self.assertEqual([item.taxon_id for item in queue], [42])
+        self.assertEqual(queue[0].source, "human-review")
+        self.assertEqual(collection["taxa"], [])
+        self.assertIsNotNone(collection["legacy_seed_queue_migrated_at"])
+
+    def test_retry_refreshes_stale_queued_identity(self) -> None:
+        with TemporaryDirectory() as temporary:
+            state_dir = Path(temporary)
+            failed = state_dir / "failed/42-example-bird"
+            attempt = failed / "attempt-01"
+            attempt.mkdir(parents=True)
+            (attempt / "portrait.png").write_bytes(b"strong source")
+            (attempt / "quality-review.json").write_text(
+                json.dumps(
+                    {
+                        "passed": False,
+                        "findings": ["Correct the ruler"],
+                        "correction_findings": ["Correct the ruler"],
+                    }
+                )
+            )
+            (failed / "profile.json").write_text(
+                json.dumps(
+                    {
+                        "taxon_id": 42,
+                        "common_name": "Current Bird Name",
+                        "scientific_name": "Avis current",
+                    }
+                )
+            )
+            (state_dir / "generation-queue.json").write_text(
+                json.dumps(
+                    {
+                        "schema_version": 2,
+                        "species": [
+                            {
+                                "taxon_id": 42,
+                                "common_name": "Old Bird Name",
+                                "scientific_name": "Avis old",
+                                "observation_count": 1,
+                                "source": "iNaturalist",
+                                "sources": ["iNaturalist"],
+                            }
+                        ],
+                    }
+                )
+            )
+            config = controller_config(state_dir)
+
+            with (
+                patch("inky_bird_frame.cli._config", return_value=config),
+                redirect_stdout(io.StringIO()),
+            ):
+                retry_command(Namespace(taxon_id=42, source_attempt=1))
+
+            queue = read_generation_queue(cast(AppConfig, config))
+
+        self.assertEqual(len(queue), 1)
+        self.assertEqual(queue[0].common_name, "Current Bird Name")
+        self.assertEqual(queue[0].scientific_name, "Avis current")
         self.assertEqual(queue[0].source, "human-review")
 
     def test_retry_preserves_selected_attempt_from_archived_run(self) -> None:

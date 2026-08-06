@@ -554,16 +554,18 @@ def ensure_generation_retry(
     )
     with catalog_state_lock(config.controller.state_dir):
         queued_species = read_generation_queue(config)
-        queued = next(
-            (item for item in queued_species if item.taxon_id == taxon_id),
+        _migrate_legacy_queue_before_human_review(config, queued_species, taxon_id)
+        queued_index = next(
+            (index for index, item in enumerate(queued_species) if item.taxon_id == taxon_id),
             None,
         )
-        if queued is not None:
-            if (
-                queued.common_name != species.common_name
-                or queued.scientific_name != species.scientific_name
+        if queued_index is not None:
+            queued = queued_species[queued_index]
+            if queued.common_name != species.common_name or queued.scientific_name != (
+                species.scientific_name
             ):
-                raise CatalogError(f"Generation queue identity differs for taxon {taxon_id}")
+                queued_species[queued_index] = species
+                _write_generation_queue(config, queued_species)
             return
         queued_species.append(species)
         _write_generation_queue(config, queued_species)
@@ -915,7 +917,7 @@ def _archive_controller_paths(state_dir: Path, sources: list[Path]) -> list[str]
     return moved
 
 
-def _migrate_legacy_queue_before_replacement(
+def _migrate_legacy_queue_before_human_review(
     config: AppConfig,
     queued_species: list[BirdSpecies],
     taxon_id: int,
@@ -996,7 +998,7 @@ def retry_approved_candidate(
                 )
                 if not already_prepared:
                     raise ValueError(f"No approved candidate exists for taxon {taxon_id}")
-                _migrate_legacy_queue_before_replacement(config, queued_species, taxon_id)
+                _migrate_legacy_queue_before_human_review(config, queued_species, taxon_id)
                 assert guidance is not None
                 cache_sources = [
                     path
@@ -1048,7 +1050,7 @@ def retry_approved_candidate(
                 or queued.scientific_name != species.scientific_name
             ):
                 raise CatalogError(f"Generation queue identity differs for taxon {taxon_id}")
-            _migrate_legacy_queue_before_replacement(config, queued_species, taxon_id)
+            _migrate_legacy_queue_before_human_review(config, queued_species, taxon_id)
 
             rejected_paths = sorted(
                 (config.controller.state_dir / "rejected").glob(f"{taxon_id}-*")
