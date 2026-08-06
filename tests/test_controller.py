@@ -648,12 +648,14 @@ class ControllerTests(unittest.TestCase):
             observed = BirdSpecies(42, "Current Bird Name", "Avis current", 3, "eBird")
 
             queue = read_generation_queue(config)
-            synchronize_generation_retry_identity(queue, observed)
+            synchronize_generation_retry_identity(config, queue, observed)
+            persisted_queue = read_generation_queue(config)
 
         self.assertEqual(len(queue), 1)
         self.assertEqual(queue[0].common_name, "Current Bird Name")
         self.assertEqual(queue[0].scientific_name, "Avis current")
         self.assertEqual(queue[0].source, HUMAN_REVIEW_SOURCE)
+        self.assertEqual(persisted_queue, queue)
 
     def test_approved_replacement_refreshes_research_only_when_requested(self) -> None:
         species = BirdSpecies(9083, "Northern Cardinal", "Cardinalis cardinalis", 0, "test")
@@ -1602,6 +1604,60 @@ class ControllerTests(unittest.TestCase):
         self.assertEqual(len(queue), 1)
         self.assertEqual(queue[0].common_name, species.common_name)
         self.assertEqual(queue[0].scientific_name, species.scientific_name)
+        self.assertEqual(queue[0].source, HUMAN_REVIEW_SOURCE)
+
+    def test_transient_failure_persists_current_identity_before_later_abort(self) -> None:
+        renamed = BirdSpecies(42, "Current Bird Name", "Avis current", 2, "eBird")
+        fatal = BirdSpecies(43, "Fatal Bird", "Avis fatalis", 1, "eBird")
+        location = DiscoveryLocation("12345", "Exampleville", "XY", 1.0, 2.0)
+        with TemporaryDirectory() as temporary:
+            config_path = Path(temporary) / "config.toml"
+            config_path.write_text(CONFIG)
+            config = load_config(config_path)
+            config.controller.state_dir.mkdir(parents=True)
+            write_collection(
+                config.controller.state_dir,
+                [],
+                legacy_seed_queue_migrated_at="2026-08-02T12:00:00+00:00",
+            )
+            (config.controller.state_dir / "generation-queue.json").write_text(
+                json.dumps(
+                    {
+                        "schema_version": 2,
+                        "species": [
+                            {
+                                "taxon_id": renamed.taxon_id,
+                                "common_name": "Old Bird Name",
+                                "scientific_name": "Avis old",
+                                "observation_count": 0,
+                                "source": HUMAN_REVIEW_SOURCE,
+                                "sources": [HUMAN_REVIEW_SOURCE],
+                            }
+                        ],
+                    }
+                )
+            )
+            with (
+                patch(
+                    "inky_bird_frame.controller.discover_species",
+                    return_value=discovery_result(location, [renamed, fatal]),
+                ),
+                patch(
+                    "inky_bird_frame.controller.generate_candidate",
+                    side_effect=[
+                        InsufficientReferencesError("only 1 of 4 references"),
+                        CatalogError("catalog corrupt"),
+                    ],
+                ),
+                self.assertRaisesRegex(CatalogError, "catalog corrupt"),
+            ):
+                run_controller_cycle(config)
+
+            queue = read_generation_queue(config)
+
+        self.assertEqual(len(queue), 1)
+        self.assertEqual(queue[0].common_name, renamed.common_name)
+        self.assertEqual(queue[0].scientific_name, renamed.scientific_name)
         self.assertEqual(queue[0].source, HUMAN_REVIEW_SOURCE)
 
     def test_failed_review_is_corrected_and_passing_attempt_is_staged(self) -> None:
