@@ -779,6 +779,7 @@ rotation_mode = "shuffle_bag"
                 now=datetime(2026, 8, 2, tzinfo=UTC),
                 initial_minutes=5,
                 maximum_minutes=60,
+                species=BirdSpecies(42, "Deferred Bird", "Avis dilata", 1, "eBird"),
             )
             expected = store.set_quality_guidance(
                 42,
@@ -1080,6 +1081,17 @@ rotation_mode = "shuffle_bag"
                     }
                 )
             )
+            cached_profile = state_dir / "profiles/42/profile.json"
+            cached_profile.parent.mkdir(parents=True)
+            cached_profile.write_text(
+                json.dumps(
+                    {
+                        "taxon_id": 42,
+                        "common_name": "Old Bird Name",
+                        "scientific_name": "Avis old",
+                    }
+                )
+            )
             discovery = state_dir / "discovery.json"
             discovery.write_text(
                 json.dumps(
@@ -1102,20 +1114,28 @@ rotation_mode = "shuffle_bag"
                 )
             )
             config = controller_config(state_dir)
+            output = io.StringIO()
 
             with (
                 patch("inky_bird_frame.cli._config", return_value=config),
-                redirect_stdout(io.StringIO()),
+                redirect_stdout(output),
             ):
                 retry_command(Namespace(taxon_id=42))
 
             discovery.unlink()
             queue = read_generation_queue(cast(AppConfig, config))
+            result = json.loads(output.getvalue())["data"]
+            archived_profile = state_dir / "archive/42/profile.json"
+            cached_profile_exists = cached_profile.exists()
+            archived_profile_exists = archived_profile.is_file()
 
         self.assertEqual([item.taxon_id for item in queue], [42])
         self.assertEqual(queue[0].common_name, "Current Bird Name")
         self.assertEqual(queue[0].scientific_name, "Avis current")
         self.assertEqual(queue[0].source, "human-review")
+        self.assertTrue(result["cleared_cached_profile"])
+        self.assertFalse(cached_profile_exists)
+        self.assertTrue(archived_profile_exists)
 
     def test_retry_uses_cached_profile_for_expired_deferred_observation(self) -> None:
         with TemporaryDirectory() as temporary:
@@ -1219,6 +1239,31 @@ rotation_mode = "shuffle_bag"
         self.assertEqual(queue[0].common_name, "Early Failure Bird")
         self.assertEqual(queue[0].scientific_name, "Avis immatura")
         self.assertIsNone(retry_record)
+
+    def test_retry_retains_legacy_deferred_record_without_recoverable_identity(self) -> None:
+        with TemporaryDirectory() as temporary:
+            state_dir = Path(temporary)
+            store = RetryStore(state_dir / "generation-retries.json")
+            expected = store.record_failure(
+                42,
+                GenerationError("reference lookup failed"),
+                now=datetime(2026, 8, 2, tzinfo=UTC),
+                initial_minutes=5,
+                maximum_minutes=60,
+            )
+            config = controller_config(state_dir)
+
+            with (
+                patch("inky_bird_frame.cli._config", return_value=config),
+                self.assertRaisesRegex(SpeciesStateError, "no recoverable species identity"),
+            ):
+                retry_command(Namespace(taxon_id=42))
+
+            retained = RetryStore(state_dir / "generation-retries.json").get(42)
+            queue = read_generation_queue(cast(AppConfig, config))
+
+        self.assertEqual(retained, expected)
+        self.assertEqual(queue, [])
 
     def test_retry_prefers_deferred_record_identity_over_stale_caches(self) -> None:
         with TemporaryDirectory() as temporary:

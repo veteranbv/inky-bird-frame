@@ -737,8 +737,28 @@ def retry_command(args: argparse.Namespace) -> int:
             raise ValueError(
                 f"No failed, rejected, or deferred candidate exists for taxon {args.taxon_id}"
             )
+        observed = next(
+            (
+                species
+                for species in current_discovery_species(config)
+                if species.taxon_id == args.taxon_id
+            ),
+            None,
+        )
         profile_cache = config.controller.state_dir / "profiles" / str(args.taxon_id)
-        cleared_cached_profile = refresh_research and profile_cache.exists()
+        cached_profile_identity = (
+            _retry_species_identity(args.taxon_id, [profile_cache])
+            if observed is not None and profile_cache.exists()
+            else None
+        )
+        incompatible_cached_profile = (
+            observed is not None
+            and cached_profile_identity is not None
+            and cached_profile_identity[:2] != (observed.common_name, observed.scientific_name)
+        )
+        cleared_cached_profile = (
+            refresh_research or incompatible_cached_profile
+        ) and profile_cache.exists()
         if cleared_cached_profile:
             sources.append(profile_cache)
         reference_cache = config.controller.state_dir / "references" / str(args.taxon_id)
@@ -763,14 +783,6 @@ def retry_command(args: argparse.Namespace) -> int:
         ):
             raise SpeciesStateError("The selected correction source is outside retained state")
         terminal_identity = _retry_species_identity(args.taxon_id, terminal_sources)
-        observed = next(
-            (
-                species
-                for species in current_discovery_species(config)
-                if species.taxon_id == args.taxon_id
-            ),
-            None,
-        )
         identity = (
             (
                 observed.common_name,
@@ -799,6 +811,11 @@ def retry_command(args: argparse.Namespace) -> int:
             identity = _retry_species_identity(
                 args.taxon_id,
                 [correction_source.parent, correction_source.parent.parent],
+            )
+        if identity is None and retry_record is not None:
+            raise SpeciesStateError(
+                f"Taxon {args.taxon_id} has no recoverable species identity; "
+                "wait for rediscovery or restore its retained profile or references"
             )
         if identity is not None and retry_record is not None:
             retry_record = retry_store.set_identity(
