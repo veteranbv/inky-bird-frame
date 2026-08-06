@@ -601,11 +601,8 @@ def synchronize_generation_retry_identity(
     )
     if retry_identity_changed or queue_identity_changed:
         _archive_incompatible_retry_profile(config.controller.state_dir, species)
-    if retry_identity_changed:
-        retry_store.set_identity(species.taxon_id, species.common_name, species.scientific_name)
-    if queued_index is None or queued is None or HUMAN_REVIEW_SOURCE not in queued.sources:
-        return
     if queue_identity_changed:
+        assert queued_index is not None
         queued_species[queued_index] = BirdSpecies(
             taxon_id=species.taxon_id,
             common_name=species.common_name,
@@ -627,6 +624,8 @@ def synchronize_generation_retry_identity(
             if persisted_index is not None:
                 persisted_species[persisted_index] = queued_species[queued_index]
                 _write_generation_queue(config, persisted_species)
+    if retry_identity_changed:
+        retry_store.set_identity(species.taxon_id, species.common_name, species.scientific_name)
 
 
 def _archive_incompatible_retry_profile(state_dir: Path, species: BirdSpecies) -> None:
@@ -635,7 +634,10 @@ def _archive_incompatible_retry_profile(state_dir: Path, species: BirdSpecies) -
     profile_path = profile_cache / "profile.json"
     if not profile_path.is_file():
         return
-    raw = read_json(profile_path)
+    try:
+        raw = read_json(profile_path)
+    except CatalogError:
+        return
     if not isinstance(raw, dict):
         return
     cached_taxon_id = raw.get("taxon_id")

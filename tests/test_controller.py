@@ -768,6 +768,49 @@ class ControllerTests(unittest.TestCase):
         self.assertEqual(archived_profile["common_name"], old_species.common_name)
         self.assertFalse(profile_cache.exists())
 
+    def test_retry_identity_remains_old_when_queue_identity_write_fails(self) -> None:
+        with TemporaryDirectory() as temporary:
+            config_path = Path(temporary) / "config.toml"
+            config_path.write_text(CONFIG)
+            config = load_config(config_path)
+            config.controller.state_dir.mkdir(parents=True)
+            old_species = BirdSpecies(42, "Old Bird Name", "Avis old", 0, HUMAN_REVIEW_SOURCE)
+            observed = BirdSpecies(42, "Current Bird Name", "Avis current", 3, "eBird")
+            ensure_generation_retry(
+                config,
+                old_species.taxon_id,
+                old_species.common_name,
+                old_species.scientific_name,
+                config.controller.state_dir / "test",
+            )
+            RetryStore(config.controller.state_dir / "generation-retries.json").record_failure(
+                42,
+                GenerationError("temporary failure"),
+                now=datetime(2026, 8, 5, tzinfo=UTC),
+                initial_minutes=5,
+                maximum_minutes=60,
+                species=old_species,
+            )
+            queue = read_generation_queue(config)
+
+            with (
+                patch(
+                    "inky_bird_frame.controller._write_generation_queue",
+                    side_effect=OSError("interrupted"),
+                ),
+                self.assertRaisesRegex(OSError, "interrupted"),
+            ):
+                synchronize_generation_retry_identity(config, queue, observed)
+
+            persisted_queue = read_generation_queue(config)
+            retry = RetryStore(config.controller.state_dir / "generation-retries.json").get(42)
+
+        self.assertEqual(persisted_queue[0].common_name, old_species.common_name)
+        self.assertIsNotNone(retry)
+        if retry is not None:
+            self.assertEqual(retry.common_name, old_species.common_name)
+            self.assertEqual(retry.scientific_name, old_species.scientific_name)
+
     def test_expired_human_review_queue_generates_with_persisted_identity(self) -> None:
         species = BirdSpecies(42, "Current Bird Name", "Avis current", 0, HUMAN_REVIEW_SOURCE)
         approved = CatalogEntry(
@@ -2192,6 +2235,20 @@ class ControllerTests(unittest.TestCase):
             (profiles / "9083" / "profile.json").write_bytes(corrupt_payload)
             (profiles / "7513").mkdir(parents=True)
             (profiles / "7513" / "profile.json").write_text(json.dumps(wren_profile))
+            RetryStore(config.controller.state_dir / "generation-retries.json").record_failure(
+                corrupt.taxon_id,
+                GenerationError("temporary failure"),
+                now=datetime(2026, 8, 1, tzinfo=UTC),
+                initial_minutes=5,
+                maximum_minutes=60,
+                species=BirdSpecies(
+                    corrupt.taxon_id,
+                    "Old Cardinal Name",
+                    "Cardinalis old",
+                    0,
+                    HUMAN_REVIEW_SOURCE,
+                ),
+            )
             with (
                 patch(
                     "inky_bird_frame.controller.discover_species",
