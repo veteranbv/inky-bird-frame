@@ -308,7 +308,95 @@ class PublisherTests(unittest.TestCase):
             repeated = sync_public_catalog(source, destination)
 
             self.assertEqual(repeated["published"], [])
+            self.assertEqual(repeated["replaced"], [])
             self.assertEqual(repeated["already_present"], [1])
+
+    def test_sync_applies_a_hash_bound_catalog_replacement(self) -> None:
+        with TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            destination = root / "destination"
+            source = root / "source"
+            replacement = root / "replacement"
+            _create_species(destination, 1, "Example Bird")
+            shutil.copytree(destination, source)
+            replacement_directory = _create_species(replacement, 1, "Example Bird")
+            portrait = replacement_directory / "portrait.png"
+            Image.new("RGB", (1200, 1600), "black").save(portrait)
+            manifest_path = replacement_directory / "manifest.json"
+            manifest = json.loads(manifest_path.read_text())
+            manifest["approved_at"] = "2026-07-10T00:00:00+00:00"
+            manifest["assets"]["portrait"]["sha256"] = sha256_file(portrait)
+            write_json_atomic(manifest_path, manifest)
+            rebuild_catalog_index(replacement)
+            replace_public_catalog_taxon(
+                replacement,
+                source,
+                1,
+                "Human review found incorrect proportions.",
+            )
+
+            result = sync_public_catalog(source, destination)
+
+            self.assertEqual(result["published"], [])
+            self.assertEqual(
+                result["replaced"],
+                [
+                    {
+                        "taxon_id": 1,
+                        "common_name": "Example Bird",
+                        "scientific_name": "Avis exemplaris",
+                        "slug": "example-bird",
+                    }
+                ],
+            )
+            self.assertEqual(result["already_present"], [])
+            self.assertEqual(
+                (destination / "species/1-example-bird/portrait.png").read_bytes(),
+                (source / "species/1-example-bird/portrait.png").read_bytes(),
+            )
+            self.assertEqual(len(validate_public_catalog(destination)), 1)
+
+    def test_sync_rolls_back_a_replacement_when_a_later_taxon_conflicts(self) -> None:
+        with TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            destination = root / "destination"
+            source = root / "source"
+            replacement = root / "replacement"
+            original = _create_species(destination, 1, "First Bird")
+            _create_species(destination, 2, "Second Bird")
+            original_portrait = (original / "portrait.png").read_bytes()
+            shutil.copytree(destination, source)
+            replacement_directory = _create_species(replacement, 1, "First Bird")
+            portrait = replacement_directory / "portrait.png"
+            Image.new("RGB", (1200, 1600), "black").save(portrait)
+            manifest_path = replacement_directory / "manifest.json"
+            manifest = json.loads(manifest_path.read_text())
+            manifest["approved_at"] = "2026-07-10T00:00:00+00:00"
+            manifest["assets"]["portrait"]["sha256"] = sha256_file(portrait)
+            write_json_atomic(manifest_path, manifest)
+            rebuild_catalog_index(replacement)
+            replace_public_catalog_taxon(
+                replacement,
+                source,
+                1,
+                "Human review found incorrect proportions.",
+            )
+            conflicting_portrait = source / "species/2-second-bird/portrait.png"
+            Image.new("RGB", (1200, 1600), "gray").save(conflicting_portrait)
+            conflicting_manifest_path = source / "species/2-second-bird/manifest.json"
+            conflicting_manifest = json.loads(conflicting_manifest_path.read_text())
+            conflicting_manifest["assets"]["portrait"]["sha256"] = sha256_file(conflicting_portrait)
+            write_json_atomic(conflicting_manifest_path, conflicting_manifest)
+            rebuild_catalog_index(source)
+
+            with self.assertRaisesRegex(CatalogPublishError, "changed immutable taxon 2"):
+                sync_public_catalog(source, destination)
+
+            self.assertEqual(
+                (destination / "species/1-first-bird/portrait.png").read_bytes(),
+                original_portrait,
+            )
+            self.assertEqual(len(list((destination / "species").glob(".sync-*"))), 1)
 
     def test_syncs_only_requested_taxa_for_a_contribution(self) -> None:
         with TemporaryDirectory() as temporary:

@@ -501,6 +501,21 @@ def replace_public_catalog_taxon(
     }
 
 
+def _restore_sync_replacements(transaction: Path, destination_species: Path) -> None:
+    backup_root = transaction / "approved"
+    if not backup_root.exists():
+        return
+    if backup_root.is_symlink() or not backup_root.is_dir():
+        raise CatalogPublishError(f"Invalid catalog sync backup path: {backup_root}")
+    for backup in sorted(backup_root.iterdir()):
+        _validate_species_directory(backup)
+        destination = destination_species / backup.name
+        if destination.exists():
+            _validate_species_directory(destination)
+            shutil.rmtree(destination)
+        backup.replace(destination)
+
+
 def sync_public_catalog(
     source_catalog: Path,
     destination_catalog: Path,
@@ -524,6 +539,7 @@ def sync_public_catalog(
     for staging_directory in interrupted_staging:
         if staging_directory.is_symlink() or not staging_directory.is_dir():
             raise CatalogPublishError(f"Invalid catalog sync staging path: {staging_directory}")
+        _restore_sync_replacements(staging_directory, destination_species)
         shutil.rmtree(staging_directory)
     if (destination_catalog / "index.json").exists():
         try:
@@ -542,6 +558,7 @@ def sync_public_catalog(
         validate_public_catalog(destination_catalog)
 
     published: list[dict[str, object]] = []
+    replaced: list[dict[str, object]] = []
     existing: list[int] = []
 
     transaction = Path(mkdtemp(prefix=".sync-", dir=destination_species))
@@ -554,10 +571,29 @@ def sync_public_catalog(
                     f"Catalog contains multiple directories for taxon {taxon_id}"
                 )
             if matches:
-                if matches[0].name != source.name or not _trees_match(source, matches[0]):
+                destination = matches[0]
+                if destination.name != source.name:
                     raise CatalogPublishError(
                         f"Catalog taxon {taxon_id} conflicts with immutable local approval"
                     )
+                if not _trees_match(source, destination):
+                    _validate_catalog_replacement(destination, source)
+                    staged = transaction / "replacement" / source.name
+                    backup = transaction / "approved" / destination.name
+                    backup.parent.mkdir(exist_ok=True)
+                    shutil.copytree(source, staged)
+                    _validate_species_directory(staged)
+                    destination.replace(backup)
+                    staged.replace(destination)
+                    replaced.append(
+                        {
+                            "taxon_id": entry.taxon_id,
+                            "common_name": entry.common_name,
+                            "scientific_name": entry.scientific_name,
+                            "slug": entry.slug,
+                        }
+                    )
+                    continue
                 existing.append(taxon_id)
                 continue
             staged = transaction / source.name
@@ -577,9 +613,11 @@ def sync_public_catalog(
         shutil.rmtree(transaction)
         validate_public_catalog(destination_catalog)
     except BaseException:
+        _restore_sync_replacements(transaction, destination_species)
+        rebuild_catalog_index(destination_catalog)
         transaction.mkdir(exist_ok=True)
         raise
-    return {"published": published, "already_present": existing}
+    return {"published": published, "replaced": replaced, "already_present": existing}
 
 
 def _redact_command_output(value: str) -> str:
