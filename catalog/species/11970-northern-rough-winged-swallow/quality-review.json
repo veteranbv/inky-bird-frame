@@ -1,0 +1,35 @@
+{
+  "anatomy_accuracy": 4,
+  "composition_quality": 5,
+  "correction_findings": [],
+  "findings": [
+    "The common name, scientific name, and family are spelled correctly and independently confirmed by All About Birds, Audubon, and eBird.",
+    "The printed measurements exactly match All About Birds: length 12\u201315 cm (4.7\u20135.9 in), wingspan 27\u201330 cm (10.6\u201311.8 in), and weight 10\u201318 g (0.3\u20130.6 oz). Audubon independently agrees on the metric length and wingspan ranges.",
+    "The ruler is internally consistent: 12 cm is at the bottom, 15 cm at the top, four evenly spaced unlabeled interior ticks divide the range into five proportional segments, and the adjacent label clearly states \u201cSCHEMATIC \u2014 NOT TO SCALE.\u201d",
+    "Every visible habitat, behavior, and field-mark line matches the proposed wording without omitted, duplicated, substituted, or nonsensical words. The claims are consistent with the direct sources.",
+    "The plate depicts the diagnostic plain brown upperparts, dingy gray-brown throat and chest fading gradually into a whitish belly, small rounded head, short dark bill, long pointed folded wings, and short nearly square tail with a shallow notch. These agree with the reference photographs and direct identification pages.",
+    "The primary specimen is anatomically coherent, with one head, one beak, naturally overlapping paired folded wings, two legs and gripping feet, and one tail. The detached wing and head studies are clearly separated supplementary studies and do not appear attached to the specimen.",
+    "Both depicted bills have consistent short, broad-based proportions. Unequal mandibles are not identified as a field mark by the consulted sources, and neither rendering shows a material gape or mandible defect.",
+    "The eye is dark and appropriately positioned, although its illustrated highlight and iris definition are slightly more conspicuous than in the photographs; this is minor stylistic emphasis rather than a material identification error.",
+    "The composition is clear and balanced, with legible text, nonoverlapping studies, a useful palette, and an unambiguous measurement schematic.",
+    "No place name, ZIP code, coordinates, map, observation identifier, or local-observation detail appears on the plate."
+  ],
+  "location_free": true,
+  "passed": true,
+  "species_accuracy": 5,
+  "text_accuracy": 5,
+  "verification_sources": [
+    {
+      "title": "Northern Rough-winged Swallow Identification \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Northern_Rough-winged_Swallow/id"
+    },
+    {
+      "title": "Northern Rough-winged Swallow \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/northern-rough-winged-swallow"
+    },
+    {
+      "title": "Northern Rough-winged Swallow \u2014 eBird",
+      "url": "https://ebird.org/species/nrwswa"
+    }
+  ]
+}

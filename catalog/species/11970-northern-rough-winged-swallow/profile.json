@@ -1,0 +1,41 @@
+{
+  "behavior": "Aerial insectivore that twists and glides low over water and open ground, using relatively slow, deliberate wingbeats. Often forages alone or in small groups and perches on exposed branches, wires, and posts.",
+  "common_name": "Northern Rough-winged Swallow",
+  "family": "Hirundinidae",
+  "field_marks": [
+    "Plain brown upperparts without bold markings",
+    "Dingy gray-brown throat and chest fading gradually to whitish belly",
+    "Small rounded head with a short, dark bill and dark eye",
+    "Long, broad-based, pointed wings",
+    "Short, nearly square tail with a shallow notch",
+    "Short, dark legs and feet"
+  ],
+  "habitat": "Open areas, fields, waterways, and open woodland, especially near streams, ponds, and lakes. Nests singly or in small groups in earthen-bank burrows and in crevices or cavities in structures.",
+  "measurements": {
+    "length": "12\u201315 cm (4.7\u20135.9 in)",
+    "weight": "10\u201318 g (0.3\u20130.6 oz)",
+    "wingspan": "27\u201330 cm (10.6\u201311.8 in)"
+  },
+  "palette": [
+    "warm brown",
+    "gray-brown",
+    "dirty white",
+    "charcoal black"
+  ],
+  "scientific_name": "Stelgidopteryx serripennis",
+  "sources": [
+    {
+      "title": "Northern Rough-winged Swallow Identification \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Northern_Rough-winged_Swallow/id"
+    },
+    {
+      "title": "Northern Rough-winged Swallow Life History \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Northern_Rough-winged_Swallow/lifehistory"
+    },
+    {
+      "title": "Northern Rough-winged Swallow \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/northern-rough-winged-swallow"
+    }
+  ],
+  "taxon_id": 11970
+}

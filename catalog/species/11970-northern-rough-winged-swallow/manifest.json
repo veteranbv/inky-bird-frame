@@ -1,0 +1,157 @@
+{
+  "approved_at": "2026-08-06T12:51:19+00:00",
+  "assets": {
+    "display": {
+      "filename": "display.png",
+      "sha256": "69af036d8aa08d7609691a74bce3700bf51aeb21ad8e2d6386f0c245ef7bfcda"
+    },
+    "portrait": {
+      "filename": "portrait.png",
+      "sha256": "68e44277ca1a983d67027b1f8226fc9a8695e5f8bbde2844e23963190858c904"
+    }
+  },
+  "common_name": "Northern Rough-winged Swallow",
+  "generation": {
+    "attempt": 2,
+    "correction_source_sha256": "a759830a3a8f3c3ff8e4384558f4a243797666dcdc30128196080a6d1b6d1c2e",
+    "generated_at": "2026-08-06T12:51:19+00:00",
+    "generator": "Codex subscription / built-in gpt-image-2",
+    "max_attempts": 3,
+    "prompt_version": "field-journal-v4"
+  },
+  "profile": {
+    "behavior": "Aerial insectivore that twists and glides low over water and open ground, using relatively slow, deliberate wingbeats. Often forages alone or in small groups and perches on exposed branches, wires, and posts.",
+    "common_name": "Northern Rough-winged Swallow",
+    "family": "Hirundinidae",
+    "field_marks": [
+      "Plain brown upperparts without bold markings",
+      "Dingy gray-brown throat and chest fading gradually to whitish belly",
+      "Small rounded head with a short, dark bill and dark eye",
+      "Long, broad-based, pointed wings",
+      "Short, nearly square tail with a shallow notch",
+      "Short, dark legs and feet"
+    ],
+    "habitat": "Open areas, fields, waterways, and open woodland, especially near streams, ponds, and lakes. Nests singly or in small groups in earthen-bank burrows and in crevices or cavities in structures.",
+    "measurements": {
+      "length": "12\u201315 cm (4.7\u20135.9 in)",
+      "weight": "10\u201318 g (0.3\u20130.6 oz)",
+      "wingspan": "27\u201330 cm (10.6\u201311.8 in)"
+    },
+    "palette": [
+      "warm brown",
+      "gray-brown",
+      "dirty white",
+      "charcoal black"
+    ],
+    "scientific_name": "Stelgidopteryx serripennis",
+    "sources": [
+      {
+        "title": "Northern Rough-winged Swallow Identification \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Northern_Rough-winged_Swallow/id"
+      },
+      {
+        "title": "Northern Rough-winged Swallow Life History \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Northern_Rough-winged_Swallow/lifehistory"
+      },
+      {
+        "title": "Northern Rough-winged Swallow \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/northern-rough-winged-swallow"
+      }
+    ],
+    "taxon_id": 11970
+  },
+  "quality_review": {
+    "anatomy_accuracy": 4,
+    "composition_quality": 5,
+    "correction_findings": [],
+    "findings": [
+      "The common name, scientific name, and family are spelled correctly and independently confirmed by All About Birds, Audubon, and eBird.",
+      "The printed measurements exactly match All About Birds: length 12\u201315 cm (4.7\u20135.9 in), wingspan 27\u201330 cm (10.6\u201311.8 in), and weight 10\u201318 g (0.3\u20130.6 oz). Audubon independently agrees on the metric length and wingspan ranges.",
+      "The ruler is internally consistent: 12 cm is at the bottom, 15 cm at the top, four evenly spaced unlabeled interior ticks divide the range into five proportional segments, and the adjacent label clearly states \u201cSCHEMATIC \u2014 NOT TO SCALE.\u201d",
+      "Every visible habitat, behavior, and field-mark line matches the proposed wording without omitted, duplicated, substituted, or nonsensical words. The claims are consistent with the direct sources.",
+      "The plate depicts the diagnostic plain brown upperparts, dingy gray-brown throat and chest fading gradually into a whitish belly, small rounded head, short dark bill, long pointed folded wings, and short nearly square tail with a shallow notch. These agree with the reference photographs and direct identification pages.",
+      "The primary specimen is anatomically coherent, with one head, one beak, naturally overlapping paired folded wings, two legs and gripping feet, and one tail. The detached wing and head studies are clearly separated supplementary studies and do not appear attached to the specimen.",
+      "Both depicted bills have consistent short, broad-based proportions. Unequal mandibles are not identified as a field mark by the consulted sources, and neither rendering shows a material gape or mandible defect.",
+      "The eye is dark and appropriately positioned, although its illustrated highlight and iris definition are slightly more conspicuous than in the photographs; this is minor stylistic emphasis rather than a material identification error.",
+      "The composition is clear and balanced, with legible text, nonoverlapping studies, a useful palette, and an unambiguous measurement schematic.",
+      "No place name, ZIP code, coordinates, map, observation identifier, or local-observation detail appears on the plate."
+    ],
+    "location_free": true,
+    "passed": true,
+    "species_accuracy": 5,
+    "text_accuracy": 5,
+    "verification_sources": [
+      {
+        "title": "Northern Rough-winged Swallow Identification \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Northern_Rough-winged_Swallow/id"
+      },
+      {
+        "title": "Northern Rough-winged Swallow \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/northern-rough-winged-swallow"
+      },
+      {
+        "title": "Northern Rough-winged Swallow \u2014 eBird",
+        "url": "https://ebird.org/species/nrwswa"
+      }
+    ]
+  },
+  "references": [
+    {
+      "attribution": "no rights reserved",
+      "filename": "01-33087057.jpg",
+      "height": 1200,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/33087057/large.jpg",
+      "license_code": "cc0",
+      "observation_id": 21390115,
+      "observer": "robw",
+      "photo_id": 33087057,
+      "sha256": "0dabe699d83a1d1ae4f01d2e0ae1e2e53531e29543a91a9b8ca3215d82a534d3",
+      "source_url": "https://www.inaturalist.org/observations/21390115",
+      "width": 958
+    },
+    {
+      "attribution": "(c) Bill Levine, some rights reserved (CC BY)",
+      "filename": "02-214948216.jpeg",
+      "height": 1905,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/214948216/large.jpeg",
+      "license_code": "cc-by",
+      "observation_id": 126669857,
+      "observer": "blevine",
+      "photo_id": 214948216,
+      "sha256": "09a481c1fee022cb6acc31a5cd91afc0efc26070ec0ad5cf20fc710fea2bc5c9",
+      "source_url": "https://www.inaturalist.org/observations/126669857",
+      "width": 1905
+    },
+    {
+      "attribution": "(c) Eric Schmidt, some rights reserved (CC BY)",
+      "filename": "03-219360207.jpeg",
+      "height": 1536,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/219360207/large.jpeg",
+      "license_code": "cc-by",
+      "observation_id": 129104590,
+      "observer": "eric-schmitty",
+      "photo_id": 219360207,
+      "sha256": "4a0f21416db7d38483563ba19ab2b61de405d935a8f1c598b5841912086a3c8c",
+      "source_url": "https://www.inaturalist.org/observations/129104590",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) Tristan Jobin, some rights reserved (CC BY)",
+      "filename": "04-40483908.jpeg",
+      "height": 1536,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/40483908/large.jpeg",
+      "license_code": "cc-by",
+      "observation_id": 26091940,
+      "observer": "ziggypop74",
+      "photo_id": 40483908,
+      "sha256": "b8c33520965e9c4fca58ca0d68dd5b8a7254c39f5e6da0e3977136c6945b0221",
+      "source_url": "https://www.inaturalist.org/observations/26091940",
+      "width": 2048
+    }
+  ],
+  "schema_version": 1,
+  "scientific_name": "Stelgidopteryx serripennis",
+  "slug": "northern-rough-winged-swallow",
+  "status": "approved",
+  "taxon_id": 11970
+}
