@@ -111,6 +111,28 @@ requested taxon, rebuilds `catalog/index.json`, and validates the result. It
 fails if the source taxon is missing or conflicts with an existing entry. Do
 not hand-edit generated JSON or checksums.
 
+### Correct a published plate
+
+Published taxa remain immutable by default. After a replacement has completed
+the controller's explicit human-review workflow, a maintainer can prepare the
+approved correction with a required reason:
+
+```bash
+uv run inky-bird-frame catalog prepare <taxon-id> \
+  --source-catalog <approved-catalog> \
+  --catalog catalog \
+  --replace-approved \
+  --reason "Human-reviewed reason for replacing the published plate"
+```
+
+The command verifies that the taxon identity is unchanged, records the prior
+approval timestamp and image hashes in `catalog_migration`, preserves earlier
+reviewed replacements as migration history, replaces the entry transactionally,
+rebuilds the index, and validates the result. Pull-request CI accepts the
+replacement only when the newest record exactly matches the base catalog.
+Ordinary catalog contributions remain add-only. Controller catalog sync accepts
+the recorded ancestry so an installation may safely skip intermediate releases.
+
 ### Required plate contents
 
 Each `catalog/species/<taxon-id>-<slug>/` directory contains only the files

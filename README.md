@@ -359,8 +359,10 @@ uv run inky-bird-frame catalog validate --catalog catalog
 ```
 
 Public CI verifies privacy, provenance, checksums, image structure, and that
-catalog pull requests only add new immutable taxa. It does not receive Codex,
-deployment, notification, or publisher credentials. See
+ordinary catalog pull requests only add new immutable taxa. Maintainer-reviewed
+corrections require an explicit migration record bound to the prior approval
+timestamp and image hashes. CI does not receive Codex, deployment, notification,
+or publisher credentials. See
 [`CONTRIBUTING.md`](CONTRIBUTING.md) for the complete workflow and engineering
 expectations, and [`SECURITY.md`](SECURITY.md) for private vulnerability
 reporting.

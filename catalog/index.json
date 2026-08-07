@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-06T12:51:19+00:00",
+  "generated_at": "2026-08-06T15:49:59+00:00",
   "schema_version": 1,
   "species": [
     {
@@ -839,12 +839,12 @@
       "taxon_id": 145233
     },
     {
-      "approved_at": "2026-08-06T12:51:19+00:00",
+      "approved_at": "2026-08-06T15:49:59+00:00",
       "common_name": "Northern Rough-winged Swallow",
       "display_path": "species/11970-northern-rough-winged-swallow/display.png",
-      "display_sha256": "69af036d8aa08d7609691a74bce3700bf51aeb21ad8e2d6386f0c245ef7bfcda",
+      "display_sha256": "6787ccd2cbaf4d378b0b06981137685bc9a7cc50a861297e5203db91d45c6fc5",
       "portrait_path": "species/11970-northern-rough-winged-swallow/portrait.png",
-      "portrait_sha256": "68e44277ca1a983d67027b1f8226fc9a8695e5f8bbde2844e23963190858c904",
+      "portrait_sha256": "90226d76ec91fe0d7b162d79328339af288ca02aee6e7d710f423ee4f4c848d2",
       "scientific_name": "Stelgidopteryx serripennis",
       "slug": "northern-rough-winged-swallow",
       "taxon_id": 11970

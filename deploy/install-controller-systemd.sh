@@ -130,9 +130,13 @@ with catalog_state_lock(config.controller.state_dir):
     source_catalog = root / "catalog"
     managed_catalog = app_dir / "catalog"
     if root != app_dir and managed_catalog.resolve() != config.controller.catalog_dir.resolve():
-        sync_public_catalog(source_catalog, managed_catalog)
+        sync_public_catalog(source_catalog, managed_catalog, allow_replacements=True)
         source_catalog = managed_catalog
-    sync_public_catalog(source_catalog, config.controller.catalog_dir)
+    sync_public_catalog(
+        source_catalog,
+        config.controller.catalog_dir,
+        allow_replacements=True,
+    )
 
 executable = app_dir / ".venv/bin/inky-bird-frame"
 units = controller_systemd_units(

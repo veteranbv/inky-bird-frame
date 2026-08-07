@@ -38,8 +38,8 @@ def test_controller_installer_restores_schedule_without_run_at_load_on_failure()
     assert "/usr/bin/plutil -replace RunAtLoad -bool false" in script
     assert 'if [ "${root}" != "${app_dir}" ]; then' in script
     assert 'rsync -a "${root}/catalog/" "${app_dir}/catalog/"' not in script
-    assert "sync_public_catalog(source_catalog, managed_catalog)" in script
-    assert "sync_public_catalog(source_catalog, config.controller.catalog_dir)" in script
+    assert "sync_public_catalog(source_catalog, managed_catalog, allow_replacements=True)" in script
+    assert "allow_replacements=True" in script
     assert "managed_catalog.resolve() != config.controller.catalog_dir.resolve()" in script
     assert "cannot use {names}" in script
     assert 'environment_credentials.append("ebird_api_key_env")' in script
@@ -76,8 +76,8 @@ def test_systemd_controller_installer_restarts_boot_persistent_services() -> Non
     assert "systemctl is-active --quiet inky-bird-frame-notifications.timer" in script
     assert 'if [ "${root}" != "${app_dir}" ]; then' in script
     assert 'rsync -a "${root}/catalog/" "${app_dir}/catalog/"' not in script
-    assert "sync_public_catalog(source_catalog, managed_catalog)" in script
-    assert "sync_public_catalog(source_catalog, config.controller.catalog_dir)" in script
+    assert "sync_public_catalog(source_catalog, managed_catalog, allow_replacements=True)" in script
+    assert "allow_replacements=True" in script
     assert "managed_catalog.resolve() != config.controller.catalog_dir.resolve()" in script
     assert "cannot use {names}" in script
     assert 'environment_credentials.append("ebird_api_key_env")' in script

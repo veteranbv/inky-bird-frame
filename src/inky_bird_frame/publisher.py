@@ -30,6 +30,8 @@ from .catalog import (
 )
 from .config import AppConfig, PublicCatalogConfig
 from .errors import CatalogPublishError
+from .http import write_json_atomic
+from .timeutil import parse_utc_timestamp
 
 _ALLOWED_SPECIES_FILES = frozenset(
     {
@@ -83,6 +85,7 @@ _GITHUB_REMOTE = re.compile(
 )
 _IMAGE_DIMENSIONS = {"portrait.png": (1200, 1600), "display.png": (1600, 1200)}
 _COMMAND_TIMEOUT_SECONDS = 180
+_SHA256 = re.compile(r"[0-9a-f]{64}")
 
 
 @contextmanager
@@ -222,6 +225,7 @@ def _validate_species_directory(directory: Path) -> tuple[int, str]:
         or directory.name != f"{taxon_id}-{slug}"
     ):
         raise CatalogPublishError(f"Manifest identity does not match {directory}")
+    _catalog_migration_records(manifest, directory / "manifest.json")
 
     review = manifest.get("quality_review")
     generation = manifest.get("generation")
@@ -301,6 +305,188 @@ def _trees_match(left: Path, right: Path) -> bool:
     )
 
 
+def _parse_catalog_migration_record(
+    raw: object,
+    source: Path,
+) -> tuple[str, str, str, str]:
+    if not isinstance(raw, dict) or set(raw) != {"reason", "replaces"}:
+        raise CatalogPublishError(f"Invalid catalog migration record: {source}")
+    reason = raw.get("reason")
+    replaces = raw.get("replaces")
+    if (
+        not isinstance(reason, str)
+        or not reason.strip()
+        or reason != reason.strip()
+        or not isinstance(replaces, dict)
+        or set(replaces) != {"approved_at", "display_sha256", "portrait_sha256"}
+    ):
+        raise CatalogPublishError(f"Invalid catalog migration record: {source}")
+    approved_at = replaces.get("approved_at")
+    display_sha256 = replaces.get("display_sha256")
+    portrait_sha256 = replaces.get("portrait_sha256")
+    if (
+        not isinstance(approved_at, str)
+        or parse_utc_timestamp(approved_at) is None
+        or not isinstance(display_sha256, str)
+        or _SHA256.fullmatch(display_sha256) is None
+        or not isinstance(portrait_sha256, str)
+        or _SHA256.fullmatch(portrait_sha256) is None
+    ):
+        raise CatalogPublishError(f"Invalid catalog migration record: {source}")
+    return reason, approved_at, display_sha256, portrait_sha256
+
+
+def _catalog_migration_records(
+    manifest: dict[str, object],
+    source: Path,
+) -> list[tuple[str, str, str, str]]:
+    raw = manifest.get("catalog_migration")
+    if raw is None:
+        return []
+    if not isinstance(raw, dict) or set(raw) not in (
+        {"reason", "replaces"},
+        {"history", "reason", "replaces"},
+    ):
+        raise CatalogPublishError(f"Invalid catalog migration record: {source}")
+    history = raw.get("history", [])
+    if not isinstance(history, list) or ("history" in raw and not history):
+        raise CatalogPublishError(f"Invalid catalog migration record: {source}")
+    current = {key: value for key, value in raw.items() if key != "history"}
+    records = [
+        *(_parse_catalog_migration_record(item, source) for item in history),
+        _parse_catalog_migration_record(current, source),
+    ]
+    approved_times = [parse_utc_timestamp(record[1]) for record in records]
+    candidate_approved_at = parse_utc_timestamp(manifest.get("approved_at"))
+    if (
+        any(value is None for value in approved_times)
+        or candidate_approved_at is None
+        or any(
+            previous >= current_time
+            for previous, current_time in zip(approved_times, approved_times[1:], strict=False)
+            if previous is not None and current_time is not None
+        )
+        or approved_times[-1] is None
+        or approved_times[-1] >= candidate_approved_at
+        or len({record[1:] for record in records}) != len(records)
+    ):
+        raise CatalogPublishError(f"Invalid catalog migration record: {source}")
+    return records
+
+
+def _catalog_migration_payload(record: tuple[str, str, str, str]) -> dict[str, object]:
+    reason, approved_at, display_sha256, portrait_sha256 = record
+    return {
+        "reason": reason,
+        "replaces": {
+            "approved_at": approved_at,
+            "display_sha256": display_sha256,
+            "portrait_sha256": portrait_sha256,
+        },
+    }
+
+
+def _manifest_asset_sha256(manifest: dict[str, object], asset_name: str) -> str:
+    assets = manifest.get("assets")
+    asset = assets.get(asset_name) if isinstance(assets, dict) else None
+    checksum = asset.get("sha256") if isinstance(asset, dict) else None
+    if not isinstance(checksum, str) or _SHA256.fullmatch(checksum) is None:
+        raise CatalogPublishError(f"Manifest has invalid {asset_name} checksum")
+    return checksum
+
+
+def _validate_catalog_replacement(
+    base_directory: Path,
+    candidate_directory: Path,
+    *,
+    allow_ancestor: bool = False,
+) -> None:
+    base = read_json(base_directory / "manifest.json")
+    candidate = read_json(candidate_directory / "manifest.json")
+    if not isinstance(base, dict) or not isinstance(candidate, dict):
+        raise CatalogPublishError("Catalog replacement manifests must be JSON objects")
+    records = _catalog_migration_records(candidate, candidate_directory / "manifest.json")
+    if not records:
+        raise CatalogPublishError(
+            f"Catalog contribution changed immutable taxon {base.get('taxon_id')}"
+        )
+    identity_fields = ("taxon_id", "common_name", "scientific_name", "slug")
+    if any(base.get(field) != candidate.get(field) for field in identity_fields):
+        raise CatalogPublishError("Catalog replacement changed the approved taxon identity")
+    base_records = _catalog_migration_records(base, base_directory / "manifest.json")
+    if records[: len(base_records)] != base_records or (
+        not allow_ancestor and records[:-1] != base_records
+    ):
+        raise CatalogPublishError("Catalog replacement did not preserve migration history")
+    base_approval = (
+        base.get("approved_at"),
+        _manifest_asset_sha256(base, "display"),
+        _manifest_asset_sha256(base, "portrait"),
+    )
+    matching_index = next(
+        (index for index, record in enumerate(records) if record[1:] == base_approval),
+        None,
+    )
+    if matching_index is None or (not allow_ancestor and matching_index != len(records) - 1):
+        raise CatalogPublishError("Catalog migration does not match the approved base artifacts")
+    candidate_approved_at = parse_utc_timestamp(candidate.get("approved_at"))
+    replaced_approved_at = parse_utc_timestamp(records[matching_index][1])
+    if (
+        candidate_approved_at is None
+        or replaced_approved_at is None
+        or candidate_approved_at <= replaced_approved_at
+    ):
+        raise CatalogPublishError("Catalog replacement must have a newer approval timestamp")
+    if (
+        not allow_ancestor
+        and _manifest_asset_sha256(candidate, "display") == records[-1][2]
+        and _manifest_asset_sha256(candidate, "portrait") == records[-1][3]
+    ):
+        raise CatalogPublishError("Catalog replacement does not change an approved image")
+
+
+def _trees_match_without_catalog_migration(left: Path, right: Path) -> bool:
+    left_files = sorted(path.relative_to(left) for path in left.rglob("*") if path.is_file())
+    right_files = sorted(path.relative_to(right) for path in right.rglob("*") if path.is_file())
+    if left_files != right_files:
+        return False
+    for relative in left_files:
+        if relative != Path("manifest.json"):
+            if (left / relative).read_bytes() != (right / relative).read_bytes():
+                return False
+            continue
+        left_manifest = read_json(left / relative)
+        right_manifest = read_json(right / relative)
+        if not isinstance(left_manifest, dict) or not isinstance(right_manifest, dict):
+            return False
+        left_manifest.pop("catalog_migration", None)
+        right_manifest.pop("catalog_migration", None)
+        if left_manifest != right_manifest:
+            return False
+    return True
+
+
+def _validate_catalog_migration_convergence(
+    destination_directory: Path,
+    candidate_directory: Path,
+) -> None:
+    destination = read_json(destination_directory / "manifest.json")
+    candidate = read_json(candidate_directory / "manifest.json")
+    if not isinstance(destination, dict) or not isinstance(candidate, dict):
+        raise CatalogPublishError("Catalog replacement manifests must be JSON objects")
+    destination_records = _catalog_migration_records(
+        destination, destination_directory / "manifest.json"
+    )
+    candidate_records = _catalog_migration_records(candidate, candidate_directory / "manifest.json")
+    if (
+        not _trees_match_without_catalog_migration(destination_directory, candidate_directory)
+        or destination_records != candidate_records[: len(destination_records)]
+    ):
+        raise CatalogPublishError(
+            f"Catalog taxon {destination.get('taxon_id')} conflicts with immutable local approval"
+        )
+
+
 def validate_catalog_additions(
     base_catalog: Path,
     candidate_catalog: Path,
@@ -319,15 +505,186 @@ def validate_catalog_additions(
         candidate_directory = (
             candidate_catalog / "species" / f"{candidate_entry.taxon_id}-{candidate_entry.slug}"
         )
-        if base_directory.name != candidate_directory.name or not _trees_match(
-            base_directory, candidate_directory
-        ):
+        if base_directory.name != candidate_directory.name:
             raise CatalogPublishError(
                 f"Catalog contribution changed immutable taxon {base_entry.taxon_id}"
             )
+        if not _trees_match(base_directory, candidate_directory):
+            _validate_catalog_replacement(base_directory, candidate_directory)
 
     base_taxa = {entry.taxon_id for entry in base_entries}
-    return [entry for entry in candidate_entries if entry.taxon_id not in base_taxa]
+    additions = [entry for entry in candidate_entries if entry.taxon_id not in base_taxa]
+    for entry in additions:
+        manifest = read_json(
+            candidate_catalog / "species" / f"{entry.taxon_id}-{entry.slug}" / "manifest.json"
+        )
+        if isinstance(manifest, dict) and manifest.get("catalog_migration") is not None:
+            raise CatalogPublishError(
+                f"New catalog taxon {entry.taxon_id} cannot declare a replacement migration"
+            )
+    return additions
+
+
+def replace_public_catalog_taxon(
+    source_catalog: Path,
+    destination_catalog: Path,
+    taxon_id: int,
+    reason: str,
+) -> dict[str, object]:
+    replacement_reason = reason.strip()
+    if not replacement_reason:
+        raise ValueError("Catalog replacement requires a non-empty reason")
+    source_entries = validate_public_catalog(source_catalog)
+    _validate_catalog_root(destination_catalog, allow_create=False)
+    _recover_catalog_transactions(destination_catalog)
+    destination_entries = validate_public_catalog(destination_catalog)
+    source_entry = next((entry for entry in source_entries if entry.taxon_id == taxon_id), None)
+    destination_entry = next(
+        (entry for entry in destination_entries if entry.taxon_id == taxon_id), None
+    )
+    if source_entry is None:
+        raise CatalogPublishError(f"Source catalog does not contain taxon {taxon_id}")
+    if destination_entry is None:
+        raise CatalogPublishError(f"Destination catalog does not contain taxon {taxon_id}")
+    if (
+        source_entry.common_name,
+        source_entry.scientific_name,
+        source_entry.slug,
+    ) != (
+        destination_entry.common_name,
+        destination_entry.scientific_name,
+        destination_entry.slug,
+    ):
+        raise CatalogPublishError("Catalog replacement identity differs from the approved taxon")
+
+    source = source_catalog / "species" / f"{taxon_id}-{source_entry.slug}"
+    destination = destination_catalog / "species" / f"{taxon_id}-{destination_entry.slug}"
+    destination_manifest = read_json(destination / "manifest.json")
+    if not isinstance(destination_manifest, dict):
+        raise CatalogPublishError(f"Invalid approved manifest: {destination / 'manifest.json'}")
+    migration_history = _catalog_migration_records(
+        destination_manifest, destination / "manifest.json"
+    )
+    replacement_record: dict[str, object] = {
+        "reason": replacement_reason,
+        "replaces": {
+            "approved_at": destination_entry.approved_at,
+            "display_sha256": destination_entry.display_sha256,
+            "portrait_sha256": destination_entry.portrait_sha256,
+        },
+    }
+
+    transaction = _new_catalog_transaction(destination_catalog)
+    try:
+        staged = transaction / "replacement" / source.name
+        backup = transaction / "approved" / destination.name
+        backup.parent.mkdir()
+        shutil.copytree(source, staged)
+        staged_manifest_path = staged / "manifest.json"
+        staged_manifest = read_json(staged_manifest_path)
+        if not isinstance(staged_manifest, dict):
+            raise CatalogPublishError(f"Invalid replacement manifest: {staged_manifest_path}")
+        if migration_history:
+            replacement_record["history"] = [
+                _catalog_migration_payload(record) for record in migration_history
+            ]
+        staged_manifest["catalog_migration"] = replacement_record
+        write_json_atomic(staged_manifest_path, staged_manifest)
+        _validate_species_directory(staged)
+        _validate_catalog_replacement(destination, staged)
+
+        destination.replace(backup)
+        staged.replace(destination)
+        rebuild_catalog_index(destination_catalog)
+        validate_public_catalog(destination_catalog)
+    except BaseException as error:
+        _restore_catalog_replacements(transaction, destination_catalog / "species")
+        rebuild_catalog_index(destination_catalog)
+        transaction.mkdir(exist_ok=True)
+        raise CatalogPublishError("Catalog replacement failed and was rolled back") from error
+    _commit_catalog_transaction(transaction, destination_catalog)
+
+    return {
+        "replaced": {
+            "taxon_id": source_entry.taxon_id,
+            "common_name": source_entry.common_name,
+            "scientific_name": source_entry.scientific_name,
+            "slug": source_entry.slug,
+        },
+        "reason": replacement_reason,
+        "replaces": replacement_record["replaces"],
+    }
+
+
+def _restore_catalog_replacements(transaction: Path, destination_species: Path) -> None:
+    backup_root = transaction / "approved"
+    if not backup_root.exists():
+        return
+    if backup_root.is_symlink() or not backup_root.is_dir():
+        raise CatalogPublishError(f"Invalid catalog sync backup path: {backup_root}")
+    for backup in sorted(backup_root.iterdir()):
+        _validate_species_directory(backup)
+        destination = destination_species / backup.name
+        if destination.is_symlink() or destination.is_file():
+            destination.unlink()
+        elif destination.exists():
+            shutil.rmtree(destination)
+        backup.replace(destination)
+
+
+def _catalog_transaction_prefix(destination_catalog: Path, *, committed: bool) -> str:
+    catalog_digest = hashlib.sha256(str(destination_catalog.resolve()).encode()).hexdigest()[:16]
+    state = "committed" if committed else "active"
+    return f".catalog-sync-{state}-{catalog_digest}-"
+
+
+def _catalog_transactions(destination_catalog: Path, *, committed: bool) -> list[Path]:
+    prefix = _catalog_transaction_prefix(destination_catalog, committed=committed)
+    return sorted(destination_catalog.parent.glob(f"{prefix}*"))
+
+
+def _validate_catalog_transaction(transaction: Path) -> None:
+    if transaction.is_symlink() or not transaction.is_dir():
+        raise CatalogPublishError(f"Invalid catalog sync transaction path: {transaction}")
+
+
+def _recover_catalog_transactions(destination_catalog: Path) -> bool:
+    destination_species = destination_catalog / "species"
+    committed_transactions = _catalog_transactions(destination_catalog, committed=True)
+    for transaction in committed_transactions:
+        _validate_catalog_transaction(transaction)
+        shutil.rmtree(transaction)
+    active_transactions = _catalog_transactions(destination_catalog, committed=False)
+    for transaction in active_transactions:
+        _validate_catalog_transaction(transaction)
+        _restore_catalog_replacements(transaction, destination_species)
+    if active_transactions:
+        rebuild_catalog_index(destination_catalog)
+        validate_public_catalog(destination_catalog)
+        for transaction in active_transactions:
+            shutil.rmtree(transaction)
+    return bool(active_transactions)
+
+
+def _new_catalog_transaction(destination_catalog: Path) -> Path:
+    return Path(
+        mkdtemp(
+            prefix=_catalog_transaction_prefix(destination_catalog, committed=False),
+            dir=destination_catalog.parent,
+        )
+    )
+
+
+def _commit_catalog_transaction(transaction: Path, destination_catalog: Path) -> None:
+    committed_transaction = transaction.with_name(
+        transaction.name.replace(
+            _catalog_transaction_prefix(destination_catalog, committed=False),
+            _catalog_transaction_prefix(destination_catalog, committed=True),
+            1,
+        )
+    )
+    transaction.replace(committed_transaction)
+    shutil.rmtree(committed_transaction)
 
 
 def sync_public_catalog(
@@ -335,6 +692,7 @@ def sync_public_catalog(
     destination_catalog: Path,
     *,
     taxon_ids: set[int] | None = None,
+    allow_replacements: bool = False,
 ) -> dict[str, object]:
     source_entries = validate_public_catalog(source_catalog)
     all_source_taxa = {entry.taxon_id for entry in source_entries}
@@ -349,16 +707,12 @@ def sync_public_catalog(
 
     _validate_catalog_root(destination_catalog, allow_create=True)
     destination_species = destination_catalog / "species"
-    interrupted_staging = list(destination_species.glob(".sync-*"))
-    for staging_directory in interrupted_staging:
-        if staging_directory.is_symlink() or not staging_directory.is_dir():
-            raise CatalogPublishError(f"Invalid catalog sync staging path: {staging_directory}")
-        shutil.rmtree(staging_directory)
+    recovered_transaction = _recover_catalog_transactions(destination_catalog)
     if (destination_catalog / "index.json").exists():
         try:
             validate_public_catalog(destination_catalog)
         except CatalogPublishError:
-            if not interrupted_staging:
+            if not recovered_transaction:
                 raise
             for directory in destination_species.iterdir():
                 _validate_species_directory(directory)
@@ -371,9 +725,10 @@ def sync_public_catalog(
         validate_public_catalog(destination_catalog)
 
     published: list[dict[str, object]] = []
+    replaced: list[dict[str, object]] = []
     existing: list[int] = []
 
-    transaction = Path(mkdtemp(prefix=".sync-", dir=destination_species))
+    transaction = _new_catalog_transaction(destination_catalog)
     try:
         for taxon_id, entry in sorted(source_by_taxon.items()):
             source = source_catalog / "species" / f"{taxon_id}-{entry.slug}"
@@ -383,10 +738,40 @@ def sync_public_catalog(
                     f"Catalog contains multiple directories for taxon {taxon_id}"
                 )
             if matches:
-                if matches[0].name != source.name or not _trees_match(source, matches[0]):
+                destination = matches[0]
+                if destination.name != source.name:
                     raise CatalogPublishError(
                         f"Catalog taxon {taxon_id} conflicts with immutable local approval"
                     )
+                if not _trees_match(source, destination):
+                    if not allow_replacements:
+                        raise CatalogPublishError(
+                            f"Catalog taxon {taxon_id} conflicts with immutable local approval"
+                        )
+                    if _trees_match_without_catalog_migration(destination, source):
+                        _validate_catalog_migration_convergence(destination, source)
+                    else:
+                        _validate_catalog_replacement(
+                            destination,
+                            source,
+                            allow_ancestor=True,
+                        )
+                    staged = transaction / "replacement" / source.name
+                    backup = transaction / "approved" / destination.name
+                    backup.parent.mkdir(exist_ok=True)
+                    shutil.copytree(source, staged)
+                    _validate_species_directory(staged)
+                    destination.replace(backup)
+                    staged.replace(destination)
+                    replaced.append(
+                        {
+                            "taxon_id": entry.taxon_id,
+                            "common_name": entry.common_name,
+                            "scientific_name": entry.scientific_name,
+                            "slug": entry.slug,
+                        }
+                    )
+                    continue
                 existing.append(taxon_id)
                 continue
             staged = transaction / source.name
@@ -403,12 +788,14 @@ def sync_public_catalog(
             )
 
         rebuild_catalog_index(destination_catalog)
-        shutil.rmtree(transaction)
         validate_public_catalog(destination_catalog)
     except BaseException:
+        _restore_catalog_replacements(transaction, destination_species)
+        rebuild_catalog_index(destination_catalog)
         transaction.mkdir(exist_ok=True)
         raise
-    return {"published": published, "already_present": existing}
+    _commit_catalog_transaction(transaction, destination_catalog)
+    return {"published": published, "replaced": replaced, "already_present": existing}
 
 
 def _redact_command_output(value: str) -> str:

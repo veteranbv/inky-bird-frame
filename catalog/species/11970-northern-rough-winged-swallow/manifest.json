@@ -1,20 +1,28 @@
 {
-  "approved_at": "2026-08-06T12:51:19+00:00",
+  "approved_at": "2026-08-06T15:49:59+00:00",
   "assets": {
     "display": {
       "filename": "display.png",
-      "sha256": "69af036d8aa08d7609691a74bce3700bf51aeb21ad8e2d6386f0c245ef7bfcda"
+      "sha256": "6787ccd2cbaf4d378b0b06981137685bc9a7cc50a861297e5203db91d45c6fc5"
     },
     "portrait": {
       "filename": "portrait.png",
-      "sha256": "68e44277ca1a983d67027b1f8226fc9a8695e5f8bbde2844e23963190858c904"
+      "sha256": "90226d76ec91fe0d7b162d79328339af288ca02aee6e7d710f423ee4f4c848d2"
+    }
+  },
+  "catalog_migration": {
+    "reason": "Human review found the published primary specimen too vertically elongated and cylindrical; the replacement uses a compact, streamlined perched posture while preserving diagnostic field marks and plate composition.",
+    "replaces": {
+      "approved_at": "2026-08-06T12:51:19+00:00",
+      "display_sha256": "69af036d8aa08d7609691a74bce3700bf51aeb21ad8e2d6386f0c245ef7bfcda",
+      "portrait_sha256": "68e44277ca1a983d67027b1f8226fc9a8695e5f8bbde2844e23963190858c904"
     }
   },
   "common_name": "Northern Rough-winged Swallow",
   "generation": {
-    "attempt": 2,
-    "correction_source_sha256": "a759830a3a8f3c3ff8e4384558f4a243797666dcdc30128196080a6d1b6d1c2e",
-    "generated_at": "2026-08-06T12:51:19+00:00",
+    "attempt": 1,
+    "correction_source_sha256": "f3384e61f886eb1d4727a51fa2f07dc07b7c4ec1d0220f323a102ca745c4e429",
+    "generated_at": "2026-08-06T15:49:59+00:00",
     "generator": "Codex subscription / built-in gpt-image-2",
     "max_attempts": 3,
     "prompt_version": "field-journal-v4"
@@ -65,20 +73,21 @@
     "composition_quality": 5,
     "correction_findings": [],
     "findings": [
-      "The common name, scientific name, and family are spelled correctly and independently confirmed by All About Birds, Audubon, and eBird.",
-      "The printed measurements exactly match All About Birds: length 12\u201315 cm (4.7\u20135.9 in), wingspan 27\u201330 cm (10.6\u201311.8 in), and weight 10\u201318 g (0.3\u20130.6 oz). Audubon independently agrees on the metric length and wingspan ranges.",
-      "The ruler is internally consistent: 12 cm is at the bottom, 15 cm at the top, four evenly spaced unlabeled interior ticks divide the range into five proportional segments, and the adjacent label clearly states \u201cSCHEMATIC \u2014 NOT TO SCALE.\u201d",
-      "Every visible habitat, behavior, and field-mark line matches the proposed wording without omitted, duplicated, substituted, or nonsensical words. The claims are consistent with the direct sources.",
-      "The plate depicts the diagnostic plain brown upperparts, dingy gray-brown throat and chest fading gradually into a whitish belly, small rounded head, short dark bill, long pointed folded wings, and short nearly square tail with a shallow notch. These agree with the reference photographs and direct identification pages.",
-      "The primary specimen is anatomically coherent, with one head, one beak, naturally overlapping paired folded wings, two legs and gripping feet, and one tail. The detached wing and head studies are clearly separated supplementary studies and do not appear attached to the specimen.",
-      "Both depicted bills have consistent short, broad-based proportions. Unequal mandibles are not identified as a field mark by the consulted sources, and neither rendering shows a material gape or mandible defect.",
-      "The eye is dark and appropriately positioned, although its illustrated highlight and iris definition are slightly more conspicuous than in the photographs; this is minor stylistic emphasis rather than a material identification error.",
-      "The composition is clear and balanced, with legible text, nonoverlapping studies, a useful palette, and an unambiguous measurement schematic.",
-      "No place name, ZIP code, coordinates, map, observation identifier, or local-observation detail appears on the plate."
+      "The common name, scientific name, and family are correctly shown as Northern Rough-winged Swallow, Stelgidopteryx serripennis, and Hirundinidae; All About Birds, Audubon, and eBird independently confirm the identity.",
+      "All printed measurements exactly match All About Birds: length 12\u201315 cm (4.7\u20135.9 in), weight 10\u201318 g (0.3\u20130.6 oz), and wingspan 27\u201330 cm (10.6\u201311.8 in). Audubon independently confirms the length and wingspan while publishing a narrower weight range of 11\u201314 g.",
+      "Every habitat and behavior line matches the proposed text without duplicated, omitted, substituted, or nonsensical words. The claims are supported by the direct source pages.",
+      "All six printed field-mark statements match the proposed wording and verified identification traits: plain brown upperparts, diffuse dingy throat and chest, pale belly, small head and bill, long broad-based pointed wings, short square or slightly notched tail, and dark legs and feet.",
+      "The primary specimen agrees with the reference photographs in its unpatterned brown upperparts, gradual gray-brown-to-whitish underpart transition, dark eye and bill, compact tail, and dark feet. Its head and eye are slightly more rounded and prominent than in the clearest photographs, but not enough to create a conflicting species identity.",
+      "The folded primary wing and detached wing study both communicate a long, relatively broad, tapered and pointed swallow wing. The detached study is clearly supplementary and does not appear attached to the primary specimen.",
+      "The tail is short, nearly square-ended, and shallowly notched. Both legs and grasping feet are present without obvious duplication or malformation. The single lateral primary specimen has one head, one bill, two legs, one tail, and anatomically normal paired-wing organization, with the far wing naturally occluded.",
+      "The detached bill/head study is internally consistent with the primary head. Unequal mandible length is not an established field mark requiring a projected lower mandible for this species.",
+      "The body-length diagram is internally consistent: 12 cm is at the bottom, 15 cm is at the top, values increase upward, units and endpoints match the published range, and exactly four evenly spaced unlabeled interior ticks divide the range into five proportional segments. \u201cSCHEMATIC \u2014 NOT TO SCALE\u201d clearly prevents interpretation as the printed bird\u2019s physical scale.",
+      "The plate is clean, legible, balanced, and uses the supplementary studies effectively without confusing them with additional birds.",
+      "No place name, ZIP code, coordinates, map, or local-observation detail appears anywhere on the plate."
     ],
     "location_free": true,
     "passed": true,
-    "species_accuracy": 5,
+    "species_accuracy": 4,
     "text_accuracy": 5,
     "verification_sources": [
       {

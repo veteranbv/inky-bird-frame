@@ -9,6 +9,7 @@ from pathlib import Path
 from tempfile import TemporaryDirectory
 from types import SimpleNamespace
 from unittest.mock import patch
+from urllib.parse import urlsplit
 
 from inky_bird_frame.config import DisplayNodeConfig, RotationMode
 from inky_bird_frame.display_node import _read_state, parse_catalog_entries, run_display_cycle
@@ -37,7 +38,7 @@ def catalog_payload(images: dict[int, bytes]) -> dict[str, object]:
 def asset_response(images: dict[int, bytes]) -> Callable[[str, float], bytes]:
     def get_asset(url: str, timeout: float) -> bytes:
         del timeout
-        taxon_id = int(url.rsplit("/", maxsplit=1)[-1].removesuffix(".png"))
+        taxon_id = int(urlsplit(url).path.rsplit("/", maxsplit=1)[-1].removesuffix(".png"))
         return images[taxon_id]
 
     return get_asset
@@ -270,7 +271,8 @@ class DisplayNodeTests(unittest.TestCase):
         self.assertEqual(result["display_update"], "sent")
         self.assertEqual(
             get_bytes.call_args.args[0],
-            "http://controller.test/v1/assets/species/4711-piop%C3%ADo/display.png",
+            "http://controller.test/v1/assets/species/4711-piop%C3%ADo/display.png"
+            f"?sha256={hashlib.sha256(image).hexdigest()}",
         )
 
     def test_shuffle_bag_persists_across_cycles_without_replacement(self) -> None:
