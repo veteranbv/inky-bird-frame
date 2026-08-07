@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-07T16:14:27+00:00",
+  "generated_at": "2026-08-07T22:50:17+00:00",
   "schema_version": 1,
   "species": [
     {
@@ -419,6 +419,17 @@
       "scientific_name": "Tyrannus tyrannus",
       "slug": "eastern-kingbird",
       "taxon_id": 16782
+    },
+    {
+      "approved_at": "2026-08-07T22:50:17+00:00",
+      "common_name": "Eastern Meadowlark",
+      "display_path": "species/9528-eastern-meadowlark/display.png",
+      "display_sha256": "7349f68d13a9c3c5a31baeae386c67844afba1cb7483df20d3827b7f5bd46ec5",
+      "portrait_path": "species/9528-eastern-meadowlark/portrait.png",
+      "portrait_sha256": "b8a9bea31cb4650636764976031edcc8b15d831a3b36d55cf32449834c64db16",
+      "scientific_name": "Sturnella magna",
+      "slug": "eastern-meadowlark",
+      "taxon_id": 9528
     },
     {
       "approved_at": "2026-07-22T09:23:14+00:00",

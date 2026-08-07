@@ -1,0 +1,155 @@
+{
+  "approved_at": "2026-08-07T22:50:17+00:00",
+  "assets": {
+    "display": {
+      "filename": "display.png",
+      "sha256": "7349f68d13a9c3c5a31baeae386c67844afba1cb7483df20d3827b7f5bd46ec5"
+    },
+    "portrait": {
+      "filename": "portrait.png",
+      "sha256": "b8a9bea31cb4650636764976031edcc8b15d831a3b36d55cf32449834c64db16"
+    }
+  },
+  "common_name": "Eastern Meadowlark",
+  "generation": {
+    "attempt": 1,
+    "generated_at": "2026-08-07T22:50:17+00:00",
+    "generator": "Codex subscription / built-in gpt-image-2",
+    "max_attempts": 3,
+    "prompt_version": "field-journal-v4"
+  },
+  "profile": {
+    "behavior": "Walks and stalks on the ground, probing soil and vegetation for insects; males sing from exposed perches and defend breeding territories with postures and flight displays. Often forms loose flocks outside the breeding season.",
+    "common_name": "Eastern Meadowlark",
+    "family": "Icteridae",
+    "field_marks": [
+      "Bright yellow throat and underparts crossed by a bold black V",
+      "Heavily streaked brown-and-black back and rounded wings",
+      "Striped crown with a yellow eyebrow and pale moustachial line",
+      "Long, straight, spear-shaped gray bill and dark brown eye",
+      "Long pale pinkish-gray legs with sturdy toes",
+      "Short barred brown tail with conspicuous white outer feathers"
+    ],
+    "habitat": "Native grasslands, prairies, pastures, hayfields, wet meadows, agricultural fields, savannas, and other open grassy areas; nests on the ground in dense vegetation.",
+    "measurements": {
+      "length": "19\u201326 cm (7.5\u201310.2 in)",
+      "weight": "90\u2013150 g (3.2\u20135.3 oz)",
+      "wingspan": "35\u201340 cm (13.8\u201315.8 in)"
+    },
+    "palette": [
+      "golden yellow",
+      "earthy brown",
+      "black",
+      "cream white",
+      "pale gray"
+    ],
+    "scientific_name": "Sturnella magna",
+    "sources": [
+      {
+        "title": "Eastern Meadowlark Identification \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Eastern_Meadowlark/id"
+      },
+      {
+        "title": "Eastern Meadowlark Life History \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Eastern_Meadowlark/lifehistory"
+      },
+      {
+        "title": "Sturnella magna \u2014 Animal Diversity Web",
+        "url": "https://animaldiversity.org/accounts/Sturnella_magna/"
+      }
+    ],
+    "taxon_id": 9528
+  },
+  "quality_review": {
+    "anatomy_accuracy": 4,
+    "composition_quality": 5,
+    "correction_findings": [],
+    "findings": [
+      "The primary specimen is clearly identifiable as an Eastern Meadowlark: the bright yellow throat and underparts, bold black breast V, white moustachial stripe, striped crown, streaked brown-and-black upperparts, short barred tail with white outer feathers, long pointed bill, and long pale legs agree with the references and direct sources.",
+      "Overall proportions are credible for the species. The bill, dark eye, folded wing, tail, legs, anisodactyl feet, detached spread-wing study, and detached head study are coherent and free of material malformation. Minor stylization does not compromise identification.",
+      "There is exactly one primary bird with one head, one beak, two legs, one tail, and a normal lateral wing arrangement; the far wing is naturally occluded. The detached wing and head are unambiguously supplementary studies rather than attached or duplicate anatomy.",
+      "Every visible identification, measurement, habitat, behavior, and field-mark line matches the proposed wording and verified facts. The common name, scientific name, and family are correctly spelled.",
+      "The published ranges are correct: length 19\u201326 cm (7.5\u201310.2 in), wingspan 35\u201340 cm (13.8\u201315.8 in), and weight 90\u2013150 g (3.2\u20135.3 oz).",
+      "The body-length ruler is internally consistent: 19 cm is at the bottom, 26 cm at the top, values increase upward, units and endpoints match the printed range, and it contains exactly four evenly spaced unlabeled interior ticks. The separate body-length label agrees, and \u201cSCHEMATIC \u2014 NOT TO SCALE\u201d prevents it from implying printed-bird scale.",
+      "The plate is legible, balanced, and visually organized; the primary specimen, supplementary studies, ruler, text, and palette remain clearly separated.",
+      "No place name, ZIP code, coordinates, map, or local-observation detail appears."
+    ],
+    "location_free": true,
+    "passed": true,
+    "species_accuracy": 5,
+    "text_accuracy": 5,
+    "verification_sources": [
+      {
+        "title": "Eastern Meadowlark Identification \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Eastern_Meadowlark/id"
+      },
+      {
+        "title": "Eastern Meadowlark \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/eastern-meadowlark"
+      },
+      {
+        "title": "Sturnella magna \u2014 Animal Diversity Web",
+        "url": "https://animaldiversity.org/accounts/Sturnella_magna/"
+      }
+    ]
+  },
+  "references": [
+    {
+      "attribution": "no rights reserved",
+      "filename": "01-178984323.jpeg",
+      "height": 1301,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/178984323/large.jpeg",
+      "license_code": "cc0",
+      "observation_id": 106536270,
+      "observer": "wildreturn",
+      "photo_id": 178984323,
+      "sha256": "b2cf5f60314466e2f1ba38b5a772201488b93865b4d2b0f0d82982bd577c2ebb",
+      "source_url": "https://www.inaturalist.org/observations/106536270",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) Grete Pasch, some rights reserved (CC BY)",
+      "filename": "02-98967959.jpg",
+      "height": 1639,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/98967959/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 61819482,
+      "observer": "gpasch",
+      "photo_id": 98967959,
+      "sha256": "2cc003f84fa93e00901566185d63b934df2e130fabdea7870a855c0df3be39d7",
+      "source_url": "https://www.inaturalist.org/observations/61819482",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) Laura Mae, some rights reserved (CC BY)",
+      "filename": "03-59489844.jpg",
+      "height": 1536,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/59489844/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 37517686,
+      "observer": "lauralovesbirds",
+      "photo_id": 59489844,
+      "sha256": "b563bb9d991d4183502615f2d70932a755251dedd4ed129a909f353f3f80cd02",
+      "source_url": "https://www.inaturalist.org/observations/37517686",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) Jason Hill, some rights reserved (CC BY)",
+      "filename": "04-206524193.jpeg",
+      "height": 1536,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/206524193/large.jpeg",
+      "license_code": "cc-by",
+      "observation_id": 122006534,
+      "observer": "hill_jasonm",
+      "photo_id": 206524193,
+      "sha256": "c35503174f39ecf730aa1e6df4ca9ca3e61fea6ffedb4d3b86451b5cd2565a50",
+      "source_url": "https://www.inaturalist.org/observations/122006534",
+      "width": 2048
+    }
+  ],
+  "schema_version": 1,
+  "scientific_name": "Sturnella magna",
+  "slug": "eastern-meadowlark",
+  "status": "approved",
+  "taxon_id": 9528
+}
