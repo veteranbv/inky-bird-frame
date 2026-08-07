@@ -625,8 +625,9 @@ def _restore_catalog_replacements(transaction: Path, destination_species: Path) 
     for backup in sorted(backup_root.iterdir()):
         _validate_species_directory(backup)
         destination = destination_species / backup.name
-        if destination.exists():
-            _validate_species_directory(destination)
+        if destination.is_symlink() or destination.is_file():
+            destination.unlink()
+        elif destination.exists():
             shutil.rmtree(destination)
         backup.replace(destination)
 
@@ -657,9 +658,11 @@ def _recover_catalog_transactions(destination_catalog: Path) -> bool:
     for transaction in active_transactions:
         _validate_catalog_transaction(transaction)
         _restore_catalog_replacements(transaction, destination_species)
-        shutil.rmtree(transaction)
     if active_transactions:
         rebuild_catalog_index(destination_catalog)
+        validate_public_catalog(destination_catalog)
+        for transaction in active_transactions:
+            shutil.rmtree(transaction)
     return bool(active_transactions)
 
 

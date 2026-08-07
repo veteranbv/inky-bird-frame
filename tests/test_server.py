@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import hashlib
 import json
 import threading
 import unittest
@@ -146,6 +147,23 @@ class ServerTests(unittest.TestCase):
 
         self.assertEqual(status, 200)
         self.assertEqual(headers.get("Content-Type"), "image/png")
+        self.assertEqual(headers.get("Cache-Control"), "no-cache")
+        self.assertEqual(body, PNG_BYTES)
+
+    def test_content_addressed_asset_is_immutable(self) -> None:
+        with self._environment() as (_, catalog_dir, state_dir):
+            asset = catalog_dir / "species" / "1-robin" / "portrait.png"
+            asset.parent.mkdir(parents=True)
+            asset.write_bytes(PNG_BYTES)
+            digest = hashlib.sha256(PNG_BYTES).hexdigest()
+            with _serving(catalog_dir, state_dir / "active-catalog.json", state_dir) as port:
+                status, headers, body = _get(
+                    port,
+                    f"/v1/assets/species/1-robin/portrait.png?sha256={digest}",
+                )
+
+        self.assertEqual(status, 200)
+        self.assertEqual(headers.get("Cache-Control"), "public, max-age=86400, immutable")
         self.assertEqual(body, PNG_BYTES)
 
     def test_asset_path_traversal_is_rejected(self) -> None:

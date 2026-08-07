@@ -715,6 +715,75 @@ class PublisherTests(unittest.TestCase):
             self.assertEqual(result["already_present"], [1, 2])
             self.assertEqual(len(validate_public_catalog(destination)), 2)
 
+    def test_sync_recovery_keeps_journal_until_index_rebuild_succeeds(self) -> None:
+        with TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            source = root / "source"
+            destination = root / "destination"
+            replacement = root / "replacement"
+            approved = _create_species(destination, 1, "Example Bird")
+            original_portrait = (approved / "portrait.png").read_bytes()
+            shutil.copytree(destination, source)
+            replacement_directory = _create_portrait_replacement(
+                replacement,
+                1,
+                "Example Bird",
+                approved_at="2026-07-10T00:00:00+00:00",
+                color="black",
+            )
+            active_prefix = _catalog_transaction_prefix(destination, committed=False)
+            transaction = root / f"{active_prefix}interrupted"
+            backup = transaction / "approved/1-example-bird"
+            backup.parent.mkdir(parents=True)
+            approved.replace(backup)
+            shutil.copytree(
+                replacement_directory,
+                destination / "species/1-example-bird",
+            )
+
+            with (
+                patch(
+                    "inky_bird_frame.publisher.rebuild_catalog_index",
+                    side_effect=OSError("simulated interrupted index rebuild"),
+                ),
+                self.assertRaisesRegex(OSError, "interrupted index rebuild"),
+            ):
+                sync_public_catalog(source, destination, allow_replacements=True)
+
+            self.assertTrue(transaction.exists())
+            self.assertEqual(
+                (destination / "species/1-example-bird/portrait.png").read_bytes(),
+                original_portrait,
+            )
+
+            recovered = sync_public_catalog(source, destination, allow_replacements=True)
+
+            self.assertEqual(recovered["already_present"], [1])
+            self.assertFalse(transaction.exists())
+            self.assertEqual(len(validate_public_catalog(destination)), 1)
+
+    def test_sync_recovery_discards_a_partial_destination_before_rollback(self) -> None:
+        with TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            source = root / "source"
+            destination = root / "destination"
+            approved = _create_species(destination, 1, "Example Bird")
+            shutil.copytree(destination, source)
+            active_prefix = _catalog_transaction_prefix(destination, committed=False)
+            transaction = root / f"{active_prefix}interrupted"
+            backup = transaction / "approved/1-example-bird"
+            backup.parent.mkdir(parents=True)
+            approved.replace(backup)
+            partial = destination / "species/1-example-bird"
+            partial.mkdir()
+            (partial / "manifest.json").write_text("{}")
+
+            recovered = sync_public_catalog(source, destination)
+
+            self.assertEqual(recovered["already_present"], [1])
+            self.assertFalse(transaction.exists())
+            self.assertEqual(len(validate_public_catalog(destination)), 1)
+
     def test_sync_preserves_transaction_marker_after_partial_failure(self) -> None:
         with TemporaryDirectory() as temporary:
             root = Path(temporary)

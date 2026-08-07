@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import hashlib
 import json
 import mimetypes
 from contextlib import suppress
@@ -40,13 +41,17 @@ class CatalogRequestHandler(BaseHTTPRequestHandler):
         self.end_headers()
         self.wfile.write(body)
 
-    def _send_file(self, path: Path) -> None:
+    def _send_file(self, path: Path, requested_sha256: list[str] | None) -> None:
         body = path.read_bytes()
         content_type = mimetypes.guess_type(path.name)[0] or "application/octet-stream"
+        content_addressed = requested_sha256 == [hashlib.sha256(body).hexdigest()]
         self.send_response(HTTPStatus.OK)
         self.send_header("Content-Type", content_type)
         self.send_header("Content-Length", str(len(body)))
-        self.send_header("Cache-Control", "public, max-age=86400, immutable")
+        self.send_header(
+            "Cache-Control",
+            "public, max-age=86400, immutable" if content_addressed else "no-cache",
+        )
         self.end_headers()
         self.wfile.write(body)
 
@@ -103,7 +108,7 @@ class CatalogRequestHandler(BaseHTTPRequestHandler):
             ):
                 self._send_json(HTTPStatus.NOT_FOUND, {"ok": False, "error": "not found"})
                 return
-            self._send_file(candidate)
+            self._send_file(candidate, parse_qs(split.query).get("sha256"))
             return
         self._send_json(HTTPStatus.NOT_FOUND, {"ok": False, "error": "not found"})
 

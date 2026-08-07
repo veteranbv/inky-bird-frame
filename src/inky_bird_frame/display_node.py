@@ -414,7 +414,10 @@ def run_display_cycle(
             }
 
         encoded_path = quote(selected.display_path, safe="/")
-        image_bytes = get_bytes(f"{config.controller_url}/v1/assets/{encoded_path}", 60.0)
+        image_bytes = get_bytes(
+            f"{config.controller_url}/v1/assets/{encoded_path}?sha256={selected.display_sha256}",
+            60.0,
+        )
         actual_hash = hashlib.sha256(image_bytes).hexdigest()
         if actual_hash != selected.display_sha256:
             raise CatalogError(
