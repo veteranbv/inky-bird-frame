@@ -1,0 +1,41 @@
+{
+  "behavior": "A ground-foraging plover that runs rapidly, pauses to watch and listen, then pecks or pulls invertebrates from sand or mud. Migrants and nonbreeding birds often forage and roost in flocks; breeding birds are territorial and perform slow, exaggerated display flights.",
+  "common_name": "Black-bellied Plover",
+  "family": "Charadriidae",
+  "field_marks": [
+    "Chunky, large-headed profile with a short neck",
+    "Short, thick black bill and large dark eye",
+    "Breeding plumage has a black face and belly bordered by white",
+    "Upperparts are strongly checkered or mottled black, white, gray, and brown",
+    "Moderately long, dark gray legs",
+    "Long, pointed wings; short, mostly whitish tail and diagnostic black axillaries visible in flight"
+  ],
+  "habitat": "Breeds on open wet or dry Arctic tundra. During migration it uses coastlines, muddy lake and river margins, wet fields, and short grasslands; nonbreeding habitat includes mudflats, tidal flats, beaches, estuaries, lagoons, and salt marshes.",
+  "measurements": {
+    "length": "25\u201330 cm (10\u201312 in)",
+    "weight": "180\u2013310 g (6.3\u201310.9 oz)",
+    "wingspan": "60\u201371 cm (24\u201328 in)"
+  },
+  "palette": [
+    "black",
+    "white",
+    "silver-gray",
+    "brown-gray"
+  ],
+  "scientific_name": "Pluvialis squatarola",
+  "sources": [
+    {
+      "title": "Black-bellied Plover Identification \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Black-bellied_Plover/id"
+    },
+    {
+      "title": "Black-bellied Plover Life History \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Black-bellied_Plover/lifehistory"
+    },
+    {
+      "title": "Black-bellied Plover \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/black-bellied-plover"
+    }
+  ],
+  "taxon_id": 4892
+}
