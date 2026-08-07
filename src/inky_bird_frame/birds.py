@@ -90,6 +90,7 @@ EBIRD_BACK_DAYS: Final = {
 }
 EBIRD_MAX_RADIUS_KM: Final = 50
 EBIRD_UNRESOLVED_RETRY_DAYS: Final = 7
+TAXONOMY_MATCH_STRATEGY: Final = "scientific-name-or-exact-synonym-v1"
 BIRDWEATHER_MAX_SPECIES: Final = 100
 
 
@@ -390,11 +391,14 @@ def parse_inaturalist_taxon_match(payload: object, scientific_name: str) -> Bird
         taxon_id = item.get("id")
         common_name = item.get("preferred_common_name")
         name = item.get("name")
+        matched_term = item.get("matched_term")
         if (
             item.get("rank") == "species"
             and item.get("is_active") is not False
             and item.get("iconic_taxon_name") == "Aves"
-            and name == scientific_name
+            and isinstance(name, str)
+            and name
+            and (name == scientific_name or matched_term == scientific_name)
             and isinstance(taxon_id, int)
             and not isinstance(taxon_id, bool)
             and isinstance(common_name, str)
@@ -477,22 +481,36 @@ def _resolve_external_species_locked(
 
     for observation in observations:
         cached = cache.get(observation.species_code)
-        if cached is not None and cached.get("scientific_name") == observation.scientific_name:
+        cached_source_name = (
+            cached.get("source_scientific_name", cached.get("scientific_name"))
+            if cached is not None
+            else None
+        )
+        if cached is not None and cached_source_name == observation.scientific_name:
             taxon_id = cached.get("taxon_id")
             common_name = cached.get("common_name")
-            if isinstance(taxon_id, int) and isinstance(common_name, str):
+            canonical_name = cached.get("scientific_name")
+            if (
+                isinstance(taxon_id, int)
+                and isinstance(common_name, str)
+                and isinstance(canonical_name, str)
+            ):
                 resolved.append(
                     BirdSpecies(
                         taxon_id=taxon_id,
                         common_name=common_name,
-                        scientific_name=observation.scientific_name,
+                        scientific_name=canonical_name,
                         observation_count=(counts or {}).get(observation.species_code, 1),
                         source=source,
                     )
                 )
                 continue
             retry_at = _parse_cache_datetime(cached.get("retry_at"))
-            if retry_at is not None and current < retry_at:
+            if (
+                cached.get("match_strategy") == TAXONOMY_MATCH_STRATEGY
+                and retry_at is not None
+                and current < retry_at
+            ):
                 unresolved.append(observation)
                 continue
 
@@ -502,18 +520,22 @@ def _resolve_external_species_locked(
             )
         except TaxonomyMatchError:
             cache[observation.species_code] = {
+                "match_strategy": TAXONOMY_MATCH_STRATEGY,
                 "scientific_name": observation.scientific_name,
                 "retry_at": (current + timedelta(days=EBIRD_UNRESOLVED_RETRY_DAYS)).isoformat(),
             }
             unresolved.append(observation)
             changed = True
             continue
-        cache[observation.species_code] = {
+        cache_entry: dict[str, object] = {
             "scientific_name": species.scientific_name,
             "common_name": species.common_name,
             "taxon_id": species.taxon_id,
             "resolved_at": current.isoformat(),
         }
+        if species.scientific_name != observation.scientific_name:
+            cache_entry["source_scientific_name"] = observation.scientific_name
+        cache[observation.species_code] = cache_entry
         resolved.append(
             BirdSpecies(
                 taxon_id=species.taxon_id,
