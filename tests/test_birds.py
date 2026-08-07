@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 import unittest
 from datetime import UTC, date, datetime
 from pathlib import Path
@@ -296,6 +297,44 @@ class EbirdTests(unittest.TestCase):
         self.assertEqual(species.taxon_id, 12942)
         self.assertEqual(species.sources, ("eBird",))
 
+    def test_taxon_match_accepts_one_exact_scientific_synonym(self) -> None:
+        payload = {
+            "results": [
+                {
+                    "id": 1579017,
+                    "preferred_common_name": "Cooper's Hawk",
+                    "name": "Astur cooperii",
+                    "matched_term": "Accipiter cooperii",
+                    "rank": "species",
+                    "is_active": True,
+                    "iconic_taxon_name": "Aves",
+                }
+            ]
+        }
+
+        species = parse_inaturalist_taxon_match(payload, "Accipiter cooperii")
+
+        self.assertEqual(species.taxon_id, 1579017)
+        self.assertEqual(species.scientific_name, "Astur cooperii")
+
+    def test_taxon_match_rejects_a_nonexact_search_result(self) -> None:
+        payload = {
+            "results": [
+                {
+                    "id": 1579017,
+                    "preferred_common_name": "Cooper's Hawk",
+                    "name": "Astur cooperii",
+                    "matched_term": "Cooper's Hawk",
+                    "rank": "species",
+                    "is_active": True,
+                    "iconic_taxon_name": "Aves",
+                }
+            ]
+        }
+
+        with self.assertRaisesRegex(TaxonomyMatchError, "found 0"):
+            parse_inaturalist_taxon_match(payload, "Accipiter cooperii")
+
     def test_resolution_uses_cached_exact_mapping(self) -> None:
         observation = EbirdSpecies(
             "easblu", "Eastern Bluebird", "Sialia sialis", "2026-07-12 08:15"
@@ -329,6 +368,36 @@ class EbirdTests(unittest.TestCase):
         self.assertEqual(fetch.call_count, 1)
         self.assertEqual(first.unresolved, [observation])
         self.assertEqual(second.unresolved, [observation])
+
+    def test_legacy_unresolved_mapping_is_retried_after_match_strategy_upgrade(self) -> None:
+        observation = EbirdSpecies("coohaw", "Cooper's Hawk", "Accipiter cooperii", "2026-08-07")
+        species = BirdSpecies(1579017, "Cooper's Hawk", "Astur cooperii", 1, "eBird")
+        now = datetime(2026, 8, 7, tzinfo=UTC)
+        with TemporaryDirectory() as temporary:
+            cache = Path(temporary) / "crosswalk.json"
+            cache.write_text(
+                json.dumps(
+                    {
+                        "schema_version": 1,
+                        "entries": {
+                            "coohaw": {
+                                "scientific_name": "Accipiter cooperii",
+                                "retry_at": "2026-08-12T00:00:00+00:00",
+                            }
+                        },
+                    }
+                )
+            )
+            with patch(
+                "inky_bird_frame.birds.fetch_inaturalist_taxon_match",
+                return_value=species,
+            ) as fetch:
+                result = resolve_ebird_species([observation], cache, now=now)
+
+        fetch.assert_called_once_with("Accipiter cooperii", timeout_seconds=10.0)
+        self.assertEqual(result.unresolved, [])
+        self.assertEqual(result.species[0].taxon_id, 1579017)
+        self.assertEqual(result.species[0].scientific_name, "Astur cooperii")
 
     def test_non_persistent_resolution_does_not_create_cache_state(self) -> None:
         observation = EbirdSpecies("easblu", "Eastern Bluebird", "Sialia sialis", "2026-07-12")
@@ -453,6 +522,40 @@ class BirdWeatherTests(unittest.TestCase):
         self.assertEqual(species[0].observation_count, 7)
         self.assertEqual(species[0].sources, ("BirdWeather",))
         self.assertEqual(species[0].latest_detection_at, detection.latest_detection_at)
+
+    def test_resolution_caches_source_and_canonical_scientific_names(self) -> None:
+        detection = BirdWeatherSpecies(
+            344,
+            "Cooper's Hawk",
+            "Accipiter cooperii",
+            7,
+            "2026-08-07T08:15:00-04:00",
+        )
+        match = BirdSpecies(1579017, "Cooper's Hawk", "Astur cooperii", 1, "eBird")
+        with TemporaryDirectory() as temporary:
+            cache = Path(temporary) / "crosswalk.json"
+            with patch(
+                "inky_bird_frame.birds.fetch_inaturalist_taxon_match", return_value=match
+            ) as fetch:
+                first, first_unresolved = resolve_birdweather_species([detection], cache)
+                second, second_unresolved = resolve_birdweather_species([detection], cache)
+            cached = json.loads(cache.read_text())
+
+        self.assertEqual(fetch.call_count, 1)
+        self.assertEqual(first_unresolved, [])
+        self.assertEqual(second_unresolved, [])
+        self.assertEqual(first[0].scientific_name, "Astur cooperii")
+        self.assertEqual(second[0].scientific_name, "Astur cooperii")
+        self.assertEqual(
+            cached["entries"]["344"],
+            {
+                "common_name": "Cooper's Hawk",
+                "resolved_at": cached["entries"]["344"]["resolved_at"],
+                "scientific_name": "Astur cooperii",
+                "source_scientific_name": "Accipiter cooperii",
+                "taxon_id": 1579017,
+            },
+        )
 
 
 class BirdBuddyTaxonomyTests(unittest.TestCase):
