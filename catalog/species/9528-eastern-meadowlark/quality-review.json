@@ -1,0 +1,33 @@
+{
+  "anatomy_accuracy": 4,
+  "composition_quality": 5,
+  "correction_findings": [],
+  "findings": [
+    "The primary specimen is clearly identifiable as an Eastern Meadowlark: the bright yellow throat and underparts, bold black breast V, white moustachial stripe, striped crown, streaked brown-and-black upperparts, short barred tail with white outer feathers, long pointed bill, and long pale legs agree with the references and direct sources.",
+    "Overall proportions are credible for the species. The bill, dark eye, folded wing, tail, legs, anisodactyl feet, detached spread-wing study, and detached head study are coherent and free of material malformation. Minor stylization does not compromise identification.",
+    "There is exactly one primary bird with one head, one beak, two legs, one tail, and a normal lateral wing arrangement; the far wing is naturally occluded. The detached wing and head are unambiguously supplementary studies rather than attached or duplicate anatomy.",
+    "Every visible identification, measurement, habitat, behavior, and field-mark line matches the proposed wording and verified facts. The common name, scientific name, and family are correctly spelled.",
+    "The published ranges are correct: length 19\u201326 cm (7.5\u201310.2 in), wingspan 35\u201340 cm (13.8\u201315.8 in), and weight 90\u2013150 g (3.2\u20135.3 oz).",
+    "The body-length ruler is internally consistent: 19 cm is at the bottom, 26 cm at the top, values increase upward, units and endpoints match the printed range, and it contains exactly four evenly spaced unlabeled interior ticks. The separate body-length label agrees, and \u201cSCHEMATIC \u2014 NOT TO SCALE\u201d prevents it from implying printed-bird scale.",
+    "The plate is legible, balanced, and visually organized; the primary specimen, supplementary studies, ruler, text, and palette remain clearly separated.",
+    "No place name, ZIP code, coordinates, map, or local-observation detail appears."
+  ],
+  "location_free": true,
+  "passed": true,
+  "species_accuracy": 5,
+  "text_accuracy": 5,
+  "verification_sources": [
+    {
+      "title": "Eastern Meadowlark Identification \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Eastern_Meadowlark/id"
+    },
+    {
+      "title": "Eastern Meadowlark \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/eastern-meadowlark"
+    },
+    {
+      "title": "Sturnella magna \u2014 Animal Diversity Web",
+      "url": "https://animaldiversity.org/accounts/Sturnella_magna/"
+    }
+  ]
+}

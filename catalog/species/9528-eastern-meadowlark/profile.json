@@ -1,0 +1,42 @@
+{
+  "behavior": "Walks and stalks on the ground, probing soil and vegetation for insects; males sing from exposed perches and defend breeding territories with postures and flight displays. Often forms loose flocks outside the breeding season.",
+  "common_name": "Eastern Meadowlark",
+  "family": "Icteridae",
+  "field_marks": [
+    "Bright yellow throat and underparts crossed by a bold black V",
+    "Heavily streaked brown-and-black back and rounded wings",
+    "Striped crown with a yellow eyebrow and pale moustachial line",
+    "Long, straight, spear-shaped gray bill and dark brown eye",
+    "Long pale pinkish-gray legs with sturdy toes",
+    "Short barred brown tail with conspicuous white outer feathers"
+  ],
+  "habitat": "Native grasslands, prairies, pastures, hayfields, wet meadows, agricultural fields, savannas, and other open grassy areas; nests on the ground in dense vegetation.",
+  "measurements": {
+    "length": "19\u201326 cm (7.5\u201310.2 in)",
+    "weight": "90\u2013150 g (3.2\u20135.3 oz)",
+    "wingspan": "35\u201340 cm (13.8\u201315.8 in)"
+  },
+  "palette": [
+    "golden yellow",
+    "earthy brown",
+    "black",
+    "cream white",
+    "pale gray"
+  ],
+  "scientific_name": "Sturnella magna",
+  "sources": [
+    {
+      "title": "Eastern Meadowlark Identification \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Eastern_Meadowlark/id"
+    },
+    {
+      "title": "Eastern Meadowlark Life History \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Eastern_Meadowlark/lifehistory"
+    },
+    {
+      "title": "Sturnella magna \u2014 Animal Diversity Web",
+      "url": "https://animaldiversity.org/accounts/Sturnella_magna/"
+    }
+  ],
+  "taxon_id": 9528
+}
