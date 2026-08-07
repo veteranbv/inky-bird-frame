@@ -1,0 +1,38 @@
+{
+  "anatomy_accuracy": 5,
+  "composition_quality": 5,
+  "correction_findings": [],
+  "findings": [
+    "The primary specimen is identifiable as a Black-bellied Plover and agrees with the field photographs: chunky, large-headed proportions; short neck; stout black bill; large dark eye; moderately long dark legs; long pointed folded wings; and a short pale tail.",
+    "The primary specimen has one head and bill, two anatomically coherent legs and feet, two wings with the far wing naturally superimposed in side profile, and one tail. No duplicated, missing, or malformed primary anatomy is evident.",
+    "The breeding-pattern depiction is supported by both All About Birds and eBird: black face and belly, a contrasting white border, and strongly checkered upperparts. Its black, white, gray, and brown-gray palette is also consistent with the references and published descriptions.",
+    "The detached wing and head are clearly separated supplementary studies rather than extra birds or appendages attached to the primary specimen. The wing shows plausible pointed flight feathers and a diagnostic dark axillary area; the supplementary bill matches the main head in direction, stoutness, and proportional length.",
+    "Every visible text line was checked. The common name, scientific name, family, six field-mark statements, habitat paragraph, behavior paragraph, three measurement lines, ruler label, and \u201cSCHEMATIC / NOT TO SCALE\u201d notice are complete, correctly ordered, and free of material spelling, duplication, omission, or substitution errors.",
+    "Audubon directly supports the displayed ranges of 25\u201330 cm length, 60\u201371 cm wingspan, and 180\u2013310 g weight. All About Birds publishes narrower measurement ranges, but this is source variation rather than an error because the plate\u2019s exact values are directly published by Audubon.",
+    "The ruler repeats the supported 25\u201330 cm (10\u201312 in) body-length range, has matching units, four evenly spaced unlabeled interior ticks forming five proportional segments, and is explicitly identified as schematic and not to scale. No conflicting scale marker appears.",
+    "The habitat and behavior prose is supported by the direct sources, including Arctic wet and dry tundra, coastal and inland migration habitats, rapid run-pause-forage behavior, flocking outside the breeding season, territorial breeding behavior, and slow display flight.",
+    "The layout is balanced and legible, with clear separation among the primary specimen, text, ruler, supplementary studies, and palette. No place name, ZIP code, coordinates, map, or local-observation detail appears; \u201cArctic\u201d is only a general habitat-region term."
+  ],
+  "location_free": true,
+  "passed": true,
+  "species_accuracy": 5,
+  "text_accuracy": 5,
+  "verification_sources": [
+    {
+      "title": "Black-bellied Plover Identification \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Black-bellied_Plover/id"
+    },
+    {
+      "title": "Black-bellied Plover Life History \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Black-bellied_Plover/lifehistory"
+    },
+    {
+      "title": "Black-bellied Plover \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/black-bellied-plover"
+    },
+    {
+      "title": "Black-bellied Plover \u2014 eBird",
+      "url": "https://ebird.org/species/bkbplo"
+    }
+  ]
+}

@@ -1,0 +1,165 @@
+{
+  "approved_at": "2026-08-07T16:14:27+00:00",
+  "assets": {
+    "display": {
+      "filename": "display.png",
+      "sha256": "b4ad89810c52bbeab6252c40fd58afd34aa5460156dcbee46e650a9b5df3b4fb"
+    },
+    "portrait": {
+      "filename": "portrait.png",
+      "sha256": "83b6d261f74f17d018c49a7a2e374f9e322640761bf46337f9d2ffa8f5f80bc8"
+    }
+  },
+  "common_name": "Little Blue Heron",
+  "generation": {
+    "attempt": 1,
+    "generated_at": "2026-08-07T16:14:27+00:00",
+    "generator": "Codex subscription / built-in gpt-image-2",
+    "max_attempts": 3,
+    "prompt_version": "field-journal-v4"
+  },
+  "profile": {
+    "behavior": "A deliberate, mostly daytime hunter that walks slowly or stands still in shallow water, then strikes fish, amphibians, crustaceans, and aquatic invertebrates with its bill. It often feeds alone but nests colonially with other waterbirds; in flight it uses slow, steady wingbeats with its neck tucked and legs trailing.",
+    "common_name": "Little Blue Heron",
+    "family": "Ardeidae",
+    "field_marks": [
+      "Adult has a dark slaty-blue body with a purple-maroon head and neck.",
+      "Juvenile is white, often with faint dusky tips on the outer flight feathers; molting immatures are mottled white and blue.",
+      "Long, straight, spear-shaped bill is pale blue-gray at the base and black toward the tip.",
+      "Eyes are yellow; legs and feet are greenish to dark olive.",
+      "Slender body and neck, with rounded wings and a short tail; legs project well beyond the tail in flight."
+    ],
+    "habitat": "Shallow freshwater, brackish, and coastal wetlands, including marshes, swamps, ponds, streams, lagoons, tidal flats, mangroves, flooded fields, canals, and ditches; it often forages near dense emergent vegetation and nests in shrubs or small trees.",
+    "measurements": {
+      "length": "56\u201374 cm (22.1\u201329.1 in)",
+      "weight": "296\u2013412 g (10.4\u201314.5 oz)",
+      "wingspan": "100\u2013105 cm (39.4\u201341.3 in)"
+    },
+    "palette": [
+      "slaty blue",
+      "purple-maroon",
+      "white",
+      "pale blue-gray",
+      "olive green"
+    ],
+    "scientific_name": "Egretta caerulea",
+    "sources": [
+      {
+        "title": "Little Blue Heron Identification \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Little_Blue_Heron/id"
+      },
+      {
+        "title": "Little Blue Heron Life History \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Little_Blue_Heron/lifehistory"
+      },
+      {
+        "title": "Egretta caerulea \u2014 Animal Diversity Web",
+        "url": "https://animaldiversity.org/accounts/Egretta_caerulea/"
+      },
+      {
+        "title": "The Little Blue Heron's Color Swap \u2014 Audubon",
+        "url": "https://www.audubon.org/news/the-little-blue-herons-color-swap"
+      }
+    ],
+    "taxon_id": 4937
+  },
+  "quality_review": {
+    "anatomy_accuracy": 4,
+    "composition_quality": 5,
+    "correction_findings": [],
+    "findings": [
+      "The primary specimen is identifiable as an adult Little Blue Heron: dark slaty-blue body, purple-maroon head and neck, yellow eye, two-toned blue-gray-and-black bill, olive legs, slender proportions, rounded folded wings, and short tail agree with the direct sources and adult reference photos.",
+      "The plate contains exactly one complete primary specimen with one head, one bill, two folded wings represented in the layered side view, two legs, and one tail. The detached wing and head are clearly isolated supplementary studies and do not appear attached to the primary bird.",
+      "Both depicted heads have long, straight, spear-shaped bills with coherent upper and lower mandibles traced from a common base to clean, non-reversed tips. Their proportions are mutually consistent and agree with the clearest attached side-profile references; the allowed direct sources do not identify unequal mandible projection as a species field mark.",
+      "The primary bird's eye, neck, body, wing, tail, leg, and foot colors and proportions are consistent with the adult references. The perched feet are stylized and partly occluded by the branch but remain anatomically plausible, with no extra or fused limbs.",
+      "The detached wing has a plausible rounded heron-wing outline and orderly covert, secondary, and primary feather groups. The detached head preserves the adult plumage pattern, yellow eye, and two-toned bill without malformed anatomy.",
+      "The common name, scientific name Egretta caerulea, and family Ardeidae are correct.",
+      "The printed measurements\u2014length 56\u201374 cm (22.1\u201329.1 in), wingspan 100\u2013105 cm (39.4\u201341.3 in), and weight 296\u2013412 g (10.4\u201314.5 oz)\u2014exactly match the Cornell identification page. Audubon independently supports the same length and an overlapping rounded wingspan and weight range.",
+      "Every visible habitat, behavior, and field-mark sentence is legible and complete, with no duplicated, omitted, substituted, or nonsensical words. The claims agree with the independently verified descriptions of wetland habitat, deliberate shallow-water foraging, diet, colonial nesting, tucked-neck flight, adult coloration, white juvenile plumage, calico immatures, bill coloration, yellow eyes, greenish legs, rounded wings, and short tail.",
+      "The body-length ruler is internally consistent: 56 cm (22.1 in) is at the bottom, 74 cm (29.1 in) is at the top, values increase upward, exactly four evenly spaced unlabeled interior ticks form five proportional segments, and the repeated body-length label agrees with both endpoints. \u201cSCHEMATIC \u2014 NOT TO SCALE\u201d clearly prevents interpreting it as the printed bird's physical scale.",
+      "The five palette swatches correspond in order to the stated slaty blue, purple-maroon, white, pale blue-gray, and olive-green field colors.",
+      "No place name, ZIP code, coordinates, map, or local-observation detail appears."
+    ],
+    "location_free": true,
+    "passed": true,
+    "species_accuracy": 5,
+    "text_accuracy": 5,
+    "verification_sources": [
+      {
+        "title": "Little Blue Heron Identification \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Little_Blue_Heron/id"
+      },
+      {
+        "title": "Little Blue Heron Life History \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Little_Blue_Heron/lifehistory"
+      },
+      {
+        "title": "Little Blue Heron \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/little-blue-heron"
+      },
+      {
+        "title": "Egretta caerulea \u2014 Animal Diversity Web",
+        "url": "https://animaldiversity.org/accounts/Egretta_caerulea/"
+      }
+    ]
+  },
+  "references": [
+    {
+      "attribution": "no rights reserved",
+      "filename": "01-409571662.jpg",
+      "height": 1536,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/409571662/large.jpg",
+      "license_code": "cc0",
+      "observation_id": 230652631,
+      "observer": "vicki936",
+      "photo_id": 409571662,
+      "sha256": "cca5e56c938a599a8536824c3ef6eeb3f88ff55f659c42deacb3b1129d18107b",
+      "source_url": "https://www.inaturalist.org/observations/230652631",
+      "width": 2048
+    },
+    {
+      "attribution": "no rights reserved",
+      "filename": "02-24429225.jpg",
+      "height": 1365,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/24429225/large.jpg",
+      "license_code": "cc0",
+      "observation_id": 16269944,
+      "observer": "bradyreed",
+      "photo_id": 24429225,
+      "sha256": "453665e9ebaebd5ab954196d918918b2b8e4d3615b4135f8ae923d1a8ee3a78c",
+      "source_url": "https://www.inaturalist.org/observations/16269944",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) Monics Paredes, some rights reserved (CC BY)",
+      "filename": "03-72239991.jpeg",
+      "height": 1365,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/72239991/large.jpeg",
+      "license_code": "cc-by",
+      "observation_id": 45556640,
+      "observer": "monics",
+      "photo_id": 72239991,
+      "sha256": "9ba5cec4e3bcf3fd8e34c34d0b2dcb1d53db532cb1d565880dd31c105210ddbf",
+      "source_url": "https://www.inaturalist.org/observations/45556640",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) Eduardo Luis Beltrocco, some rights reserved (CC BY)",
+      "filename": "04-469828825.jpeg",
+      "height": 1536,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/469828825/large.jpeg",
+      "license_code": "cc-by",
+      "observation_id": 96358769,
+      "observer": "elbeltrocco",
+      "photo_id": 469828825,
+      "sha256": "e5e464afb3d27e4101ed819b4f2ee9cf4977af2301aa23361eb02501eab3c73b",
+      "source_url": "https://www.inaturalist.org/observations/96358769",
+      "width": 2048
+    }
+  ],
+  "schema_version": 1,
+  "scientific_name": "Egretta caerulea",
+  "slug": "little-blue-heron",
+  "status": "approved",
+  "taxon_id": 4937
+}

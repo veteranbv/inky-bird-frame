@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-06T15:49:59+00:00",
+  "generated_at": "2026-08-07T16:14:27+00:00",
   "schema_version": 1,
   "species": [
     {
@@ -122,6 +122,17 @@
       "scientific_name": "Mniotilta varia",
       "slug": "black-and-white-warbler",
       "taxon_id": 10286
+    },
+    {
+      "approved_at": "2026-08-06T21:48:46+00:00",
+      "common_name": "Black-bellied Plover",
+      "display_path": "species/4892-black-bellied-plover/display.png",
+      "display_sha256": "210ef06545126217e2f506f54d79ade0c3abf01ce4c5fec1cf6c7fc316f3ad88",
+      "portrait_path": "species/4892-black-bellied-plover/portrait.png",
+      "portrait_sha256": "ceecebeb4eb7eecb3842155485f93a8b62ca48d92b553773e533ace68036bc8f",
+      "scientific_name": "Pluvialis squatarola",
+      "slug": "black-bellied-plover",
+      "taxon_id": 4892
     },
     {
       "approved_at": "2026-08-02T19:02:47+00:00",
@@ -705,6 +716,17 @@
       "scientific_name": "Leucophaeus atricilla",
       "slug": "laughing-gull",
       "taxon_id": 144514
+    },
+    {
+      "approved_at": "2026-08-07T16:14:27+00:00",
+      "common_name": "Little Blue Heron",
+      "display_path": "species/4937-little-blue-heron/display.png",
+      "display_sha256": "b4ad89810c52bbeab6252c40fd58afd34aa5460156dcbee46e650a9b5df3b4fb",
+      "portrait_path": "species/4937-little-blue-heron/portrait.png",
+      "portrait_sha256": "83b6d261f74f17d018c49a7a2e374f9e322640761bf46337f9d2ffa8f5f80bc8",
+      "scientific_name": "Egretta caerulea",
+      "slug": "little-blue-heron",
+      "taxon_id": 4937
     },
     {
       "approved_at": "2026-07-23T23:08:30+00:00",

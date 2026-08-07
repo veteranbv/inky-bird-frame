@@ -1,0 +1,159 @@
+{
+  "approved_at": "2026-08-06T21:48:46+00:00",
+  "assets": {
+    "display": {
+      "filename": "display.png",
+      "sha256": "210ef06545126217e2f506f54d79ade0c3abf01ce4c5fec1cf6c7fc316f3ad88"
+    },
+    "portrait": {
+      "filename": "portrait.png",
+      "sha256": "ceecebeb4eb7eecb3842155485f93a8b62ca48d92b553773e533ace68036bc8f"
+    }
+  },
+  "common_name": "Black-bellied Plover",
+  "generation": {
+    "attempt": 1,
+    "generated_at": "2026-08-06T21:48:46+00:00",
+    "generator": "Codex subscription / built-in gpt-image-2",
+    "max_attempts": 3,
+    "prompt_version": "field-journal-v4"
+  },
+  "profile": {
+    "behavior": "A ground-foraging plover that runs rapidly, pauses to watch and listen, then pecks or pulls invertebrates from sand or mud. Migrants and nonbreeding birds often forage and roost in flocks; breeding birds are territorial and perform slow, exaggerated display flights.",
+    "common_name": "Black-bellied Plover",
+    "family": "Charadriidae",
+    "field_marks": [
+      "Chunky, large-headed profile with a short neck",
+      "Short, thick black bill and large dark eye",
+      "Breeding plumage has a black face and belly bordered by white",
+      "Upperparts are strongly checkered or mottled black, white, gray, and brown",
+      "Moderately long, dark gray legs",
+      "Long, pointed wings; short, mostly whitish tail and diagnostic black axillaries visible in flight"
+    ],
+    "habitat": "Breeds on open wet or dry Arctic tundra. During migration it uses coastlines, muddy lake and river margins, wet fields, and short grasslands; nonbreeding habitat includes mudflats, tidal flats, beaches, estuaries, lagoons, and salt marshes.",
+    "measurements": {
+      "length": "25\u201330 cm (10\u201312 in)",
+      "weight": "180\u2013310 g (6.3\u201310.9 oz)",
+      "wingspan": "60\u201371 cm (24\u201328 in)"
+    },
+    "palette": [
+      "black",
+      "white",
+      "silver-gray",
+      "brown-gray"
+    ],
+    "scientific_name": "Pluvialis squatarola",
+    "sources": [
+      {
+        "title": "Black-bellied Plover Identification \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Black-bellied_Plover/id"
+      },
+      {
+        "title": "Black-bellied Plover Life History \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Black-bellied_Plover/lifehistory"
+      },
+      {
+        "title": "Black-bellied Plover \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/black-bellied-plover"
+      }
+    ],
+    "taxon_id": 4892
+  },
+  "quality_review": {
+    "anatomy_accuracy": 5,
+    "composition_quality": 5,
+    "correction_findings": [],
+    "findings": [
+      "The primary specimen is identifiable as a Black-bellied Plover and agrees with the field photographs: chunky, large-headed proportions; short neck; stout black bill; large dark eye; moderately long dark legs; long pointed folded wings; and a short pale tail.",
+      "The primary specimen has one head and bill, two anatomically coherent legs and feet, two wings with the far wing naturally superimposed in side profile, and one tail. No duplicated, missing, or malformed primary anatomy is evident.",
+      "The breeding-pattern depiction is supported by both All About Birds and eBird: black face and belly, a contrasting white border, and strongly checkered upperparts. Its black, white, gray, and brown-gray palette is also consistent with the references and published descriptions.",
+      "The detached wing and head are clearly separated supplementary studies rather than extra birds or appendages attached to the primary specimen. The wing shows plausible pointed flight feathers and a diagnostic dark axillary area; the supplementary bill matches the main head in direction, stoutness, and proportional length.",
+      "Every visible text line was checked. The common name, scientific name, family, six field-mark statements, habitat paragraph, behavior paragraph, three measurement lines, ruler label, and \u201cSCHEMATIC / NOT TO SCALE\u201d notice are complete, correctly ordered, and free of material spelling, duplication, omission, or substitution errors.",
+      "Audubon directly supports the displayed ranges of 25\u201330 cm length, 60\u201371 cm wingspan, and 180\u2013310 g weight. All About Birds publishes narrower measurement ranges, but this is source variation rather than an error because the plate\u2019s exact values are directly published by Audubon.",
+      "The ruler repeats the supported 25\u201330 cm (10\u201312 in) body-length range, has matching units, four evenly spaced unlabeled interior ticks forming five proportional segments, and is explicitly identified as schematic and not to scale. No conflicting scale marker appears.",
+      "The habitat and behavior prose is supported by the direct sources, including Arctic wet and dry tundra, coastal and inland migration habitats, rapid run-pause-forage behavior, flocking outside the breeding season, territorial breeding behavior, and slow display flight.",
+      "The layout is balanced and legible, with clear separation among the primary specimen, text, ruler, supplementary studies, and palette. No place name, ZIP code, coordinates, map, or local-observation detail appears; \u201cArctic\u201d is only a general habitat-region term."
+    ],
+    "location_free": true,
+    "passed": true,
+    "species_accuracy": 5,
+    "text_accuracy": 5,
+    "verification_sources": [
+      {
+        "title": "Black-bellied Plover Identification \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Black-bellied_Plover/id"
+      },
+      {
+        "title": "Black-bellied Plover Life History \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Black-bellied_Plover/lifehistory"
+      },
+      {
+        "title": "Black-bellied Plover \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/black-bellied-plover"
+      },
+      {
+        "title": "Black-bellied Plover \u2014 eBird",
+        "url": "https://ebird.org/species/bkbplo"
+      }
+    ]
+  },
+  "references": [
+    {
+      "attribution": "no rights reserved",
+      "filename": "01-449678785.jpeg",
+      "height": 1366,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/449678785/large.jpeg",
+      "license_code": "cc0",
+      "observation_id": 251328747,
+      "observer": "russnamitz",
+      "photo_id": 449678785,
+      "sha256": "a6fc881012123c4eee0cac4efc2a5f7935341f3e828a11b4d8d3c667854e3c0c",
+      "source_url": "https://www.inaturalist.org/observations/251328747",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) Diego Gonz\u00e1lez Dopico, some rights reserved (CC BY)",
+      "filename": "02-429955494.jpg",
+      "height": 1365,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/429955494/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 241258945,
+      "observer": "diegodgd",
+      "photo_id": 429955494,
+      "sha256": "27345bc061e70075175fa33cee04e448ce01394c20c262f012f273fe8e114b74",
+      "source_url": "https://www.inaturalist.org/observations/241258945",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) Kat B, some rights reserved (CC BY)",
+      "filename": "03-347243853.jpg",
+      "height": 1365,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/347243853/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 197192246,
+      "observer": "sorrykb",
+      "photo_id": 347243853,
+      "sha256": "a00db9c9d22113924d9de3d12734ffbd4c6a4acfd7f5ec2ffa0c5d5f4c99de25",
+      "source_url": "https://www.inaturalist.org/observations/197192246",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) Nicole, some rights reserved (CC BY)",
+      "filename": "04-243948430.jpeg",
+      "height": 1536,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/243948430/large.jpeg",
+      "license_code": "cc-by",
+      "observation_id": 142305218,
+      "observer": "pineten",
+      "photo_id": 243948430,
+      "sha256": "6f9e8677a91bce3be71e90c324fb3e438f24ec357d0ab764a54edfe9d46983a2",
+      "source_url": "https://www.inaturalist.org/observations/142305218",
+      "width": 2048
+    }
+  ],
+  "schema_version": 1,
+  "scientific_name": "Pluvialis squatarola",
+  "slug": "black-bellied-plover",
+  "status": "approved",
+  "taxon_id": 4892
+}

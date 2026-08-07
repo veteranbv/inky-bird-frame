@@ -1,0 +1,45 @@
+{
+  "behavior": "A deliberate, mostly daytime hunter that walks slowly or stands still in shallow water, then strikes fish, amphibians, crustaceans, and aquatic invertebrates with its bill. It often feeds alone but nests colonially with other waterbirds; in flight it uses slow, steady wingbeats with its neck tucked and legs trailing.",
+  "common_name": "Little Blue Heron",
+  "family": "Ardeidae",
+  "field_marks": [
+    "Adult has a dark slaty-blue body with a purple-maroon head and neck.",
+    "Juvenile is white, often with faint dusky tips on the outer flight feathers; molting immatures are mottled white and blue.",
+    "Long, straight, spear-shaped bill is pale blue-gray at the base and black toward the tip.",
+    "Eyes are yellow; legs and feet are greenish to dark olive.",
+    "Slender body and neck, with rounded wings and a short tail; legs project well beyond the tail in flight."
+  ],
+  "habitat": "Shallow freshwater, brackish, and coastal wetlands, including marshes, swamps, ponds, streams, lagoons, tidal flats, mangroves, flooded fields, canals, and ditches; it often forages near dense emergent vegetation and nests in shrubs or small trees.",
+  "measurements": {
+    "length": "56\u201374 cm (22.1\u201329.1 in)",
+    "weight": "296\u2013412 g (10.4\u201314.5 oz)",
+    "wingspan": "100\u2013105 cm (39.4\u201341.3 in)"
+  },
+  "palette": [
+    "slaty blue",
+    "purple-maroon",
+    "white",
+    "pale blue-gray",
+    "olive green"
+  ],
+  "scientific_name": "Egretta caerulea",
+  "sources": [
+    {
+      "title": "Little Blue Heron Identification \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Little_Blue_Heron/id"
+    },
+    {
+      "title": "Little Blue Heron Life History \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Little_Blue_Heron/lifehistory"
+    },
+    {
+      "title": "Egretta caerulea \u2014 Animal Diversity Web",
+      "url": "https://animaldiversity.org/accounts/Egretta_caerulea/"
+    },
+    {
+      "title": "The Little Blue Heron's Color Swap \u2014 Audubon",
+      "url": "https://www.audubon.org/news/the-little-blue-herons-color-swap"
+    }
+  ],
+  "taxon_id": 4937
+}
