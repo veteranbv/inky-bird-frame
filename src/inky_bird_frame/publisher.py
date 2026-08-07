@@ -413,6 +413,11 @@ def _validate_catalog_replacement(
     identity_fields = ("taxon_id", "common_name", "scientific_name", "slug")
     if any(base.get(field) != candidate.get(field) for field in identity_fields):
         raise CatalogPublishError("Catalog replacement changed the approved taxon identity")
+    base_records = _catalog_migration_records(base, base_directory / "manifest.json")
+    if records[: len(base_records)] != base_records or (
+        not allow_ancestor and records[:-1] != base_records
+    ):
+        raise CatalogPublishError("Catalog replacement did not preserve migration history")
     base_approval = (
         base.get("approved_at"),
         _manifest_asset_sha256(base, "display"),
@@ -530,6 +535,8 @@ def replace_public_catalog_taxon(
     if not replacement_reason:
         raise ValueError("Catalog replacement requires a non-empty reason")
     source_entries = validate_public_catalog(source_catalog)
+    _validate_catalog_root(destination_catalog, allow_create=False)
+    _recover_catalog_transactions(destination_catalog)
     destination_entries = validate_public_catalog(destination_catalog)
     source_entry = next((entry for entry in source_entries if entry.taxon_id == taxon_id), None)
     destination_entry = next(
@@ -567,8 +574,8 @@ def replace_public_catalog_taxon(
         },
     }
 
-    with TemporaryDirectory(prefix=".catalog-replace-", dir=destination_catalog.parent) as temp:
-        transaction = Path(temp)
+    transaction = _new_catalog_transaction(destination_catalog)
+    try:
         staged = transaction / "replacement" / source.name
         backup = transaction / "approved" / destination.name
         backup.parent.mkdir()
@@ -587,16 +594,15 @@ def replace_public_catalog_taxon(
         _validate_catalog_replacement(destination, staged)
 
         destination.replace(backup)
-        try:
-            staged.replace(destination)
-            rebuild_catalog_index(destination_catalog)
-            validate_public_catalog(destination_catalog)
-        except BaseException as error:
-            if destination.exists():
-                shutil.rmtree(destination)
-            backup.replace(destination)
-            rebuild_catalog_index(destination_catalog)
-            raise CatalogPublishError("Catalog replacement failed and was rolled back") from error
+        staged.replace(destination)
+        rebuild_catalog_index(destination_catalog)
+        validate_public_catalog(destination_catalog)
+    except BaseException as error:
+        _restore_catalog_replacements(transaction, destination_catalog / "species")
+        rebuild_catalog_index(destination_catalog)
+        transaction.mkdir(exist_ok=True)
+        raise CatalogPublishError("Catalog replacement failed and was rolled back") from error
+    _commit_catalog_transaction(transaction, destination_catalog)
 
     return {
         "replaced": {
@@ -610,7 +616,7 @@ def replace_public_catalog_taxon(
     }
 
 
-def _restore_sync_replacements(transaction: Path, destination_species: Path) -> None:
+def _restore_catalog_replacements(transaction: Path, destination_species: Path) -> None:
     backup_root = transaction / "approved"
     if not backup_root.exists():
         return
@@ -625,20 +631,57 @@ def _restore_sync_replacements(transaction: Path, destination_species: Path) -> 
         backup.replace(destination)
 
 
-def _sync_transaction_prefix(destination_catalog: Path, *, committed: bool) -> str:
+def _catalog_transaction_prefix(destination_catalog: Path, *, committed: bool) -> str:
     catalog_digest = hashlib.sha256(str(destination_catalog.resolve()).encode()).hexdigest()[:16]
     state = "committed" if committed else "active"
     return f".catalog-sync-{state}-{catalog_digest}-"
 
 
-def _sync_transactions(destination_catalog: Path, *, committed: bool) -> list[Path]:
-    prefix = _sync_transaction_prefix(destination_catalog, committed=committed)
+def _catalog_transactions(destination_catalog: Path, *, committed: bool) -> list[Path]:
+    prefix = _catalog_transaction_prefix(destination_catalog, committed=committed)
     return sorted(destination_catalog.parent.glob(f"{prefix}*"))
 
 
-def _validate_sync_transaction(transaction: Path) -> None:
+def _validate_catalog_transaction(transaction: Path) -> None:
     if transaction.is_symlink() or not transaction.is_dir():
         raise CatalogPublishError(f"Invalid catalog sync transaction path: {transaction}")
+
+
+def _recover_catalog_transactions(destination_catalog: Path) -> bool:
+    destination_species = destination_catalog / "species"
+    committed_transactions = _catalog_transactions(destination_catalog, committed=True)
+    for transaction in committed_transactions:
+        _validate_catalog_transaction(transaction)
+        shutil.rmtree(transaction)
+    active_transactions = _catalog_transactions(destination_catalog, committed=False)
+    for transaction in active_transactions:
+        _validate_catalog_transaction(transaction)
+        _restore_catalog_replacements(transaction, destination_species)
+        shutil.rmtree(transaction)
+    if active_transactions:
+        rebuild_catalog_index(destination_catalog)
+    return bool(active_transactions)
+
+
+def _new_catalog_transaction(destination_catalog: Path) -> Path:
+    return Path(
+        mkdtemp(
+            prefix=_catalog_transaction_prefix(destination_catalog, committed=False),
+            dir=destination_catalog.parent,
+        )
+    )
+
+
+def _commit_catalog_transaction(transaction: Path, destination_catalog: Path) -> None:
+    committed_transaction = transaction.with_name(
+        transaction.name.replace(
+            _catalog_transaction_prefix(destination_catalog, committed=False),
+            _catalog_transaction_prefix(destination_catalog, committed=True),
+            1,
+        )
+    )
+    transaction.replace(committed_transaction)
+    shutil.rmtree(committed_transaction)
 
 
 def sync_public_catalog(
@@ -661,20 +704,12 @@ def sync_public_catalog(
 
     _validate_catalog_root(destination_catalog, allow_create=True)
     destination_species = destination_catalog / "species"
-    committed_transactions = _sync_transactions(destination_catalog, committed=True)
-    for transaction in committed_transactions:
-        _validate_sync_transaction(transaction)
-        shutil.rmtree(transaction)
-    active_transactions = _sync_transactions(destination_catalog, committed=False)
-    for transaction in active_transactions:
-        _validate_sync_transaction(transaction)
-        _restore_sync_replacements(transaction, destination_species)
-        shutil.rmtree(transaction)
+    recovered_transaction = _recover_catalog_transactions(destination_catalog)
     if (destination_catalog / "index.json").exists():
         try:
             validate_public_catalog(destination_catalog)
         except CatalogPublishError:
-            if not active_transactions:
+            if not recovered_transaction:
                 raise
             for directory in destination_species.iterdir():
                 _validate_species_directory(directory)
@@ -690,12 +725,7 @@ def sync_public_catalog(
     replaced: list[dict[str, object]] = []
     existing: list[int] = []
 
-    transaction = Path(
-        mkdtemp(
-            prefix=_sync_transaction_prefix(destination_catalog, committed=False),
-            dir=destination_catalog.parent,
-        )
-    )
+    transaction = _new_catalog_transaction(destination_catalog)
     try:
         for taxon_id, entry in sorted(source_by_taxon.items()):
             source = source_catalog / "species" / f"{taxon_id}-{entry.slug}"
@@ -757,19 +787,11 @@ def sync_public_catalog(
         rebuild_catalog_index(destination_catalog)
         validate_public_catalog(destination_catalog)
     except BaseException:
-        _restore_sync_replacements(transaction, destination_species)
+        _restore_catalog_replacements(transaction, destination_species)
         rebuild_catalog_index(destination_catalog)
         transaction.mkdir(exist_ok=True)
         raise
-    committed_transaction = transaction.with_name(
-        transaction.name.replace(
-            _sync_transaction_prefix(destination_catalog, committed=False),
-            _sync_transaction_prefix(destination_catalog, committed=True),
-            1,
-        )
-    )
-    transaction.replace(committed_transaction)
-    shutil.rmtree(committed_transaction)
+    _commit_catalog_transaction(transaction, destination_catalog)
     return {"published": published, "replaced": replaced, "already_present": existing}
 
 

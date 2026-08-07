@@ -15,9 +15,9 @@ from inky_bird_frame.config import PublicCatalogConfig, load_config
 from inky_bird_frame.errors import CatalogPublishError
 from inky_bird_frame.http import write_json_atomic
 from inky_bird_frame.publisher import (
+    _catalog_transaction_prefix,
     _check_json_privacy,
     _remote_repository,
-    _sync_transaction_prefix,
     _validate_checkout,
     replace_public_catalog_taxon,
     run_catalog_publish,
@@ -499,6 +499,15 @@ class PublisherTests(unittest.TestCase):
                 ["First reviewed correction."],
             )
             self.assertEqual(validate_catalog_additions(first, second), [])
+            tampered = root / "tampered"
+            shutil.copytree(second, tampered)
+            tampered_manifest_path = tampered / "species/1-example-bird/manifest.json"
+            tampered_manifest = json.loads(tampered_manifest_path.read_text())
+            tampered_manifest["catalog_migration"].pop("history")
+            write_json_atomic(tampered_manifest_path, tampered_manifest)
+            rebuild_catalog_index(tampered)
+            with self.assertRaisesRegex(CatalogPublishError, "preserve migration history"):
+                validate_catalog_additions(first, tampered)
 
             shutil.copytree(original, skipped_controller)
             result = sync_public_catalog(
@@ -542,7 +551,7 @@ class PublisherTests(unittest.TestCase):
 
             def interrupt_committed_cleanup(path: Path) -> None:
                 transaction = Path(path)
-                committed_prefix = _sync_transaction_prefix(destination, committed=True)
+                committed_prefix = _catalog_transaction_prefix(destination, committed=True)
                 if transaction.name.startswith(committed_prefix):
                     backup = transaction / "approved/1-example-bird"
                     real_rmtree(backup)
@@ -558,7 +567,7 @@ class PublisherTests(unittest.TestCase):
             ):
                 sync_public_catalog(source, destination, allow_replacements=True)
 
-            committed_prefix = _sync_transaction_prefix(destination, committed=True)
+            committed_prefix = _catalog_transaction_prefix(destination, committed=True)
             self.assertEqual(len(list(root.glob(f"{committed_prefix}*"))), 1)
             self.assertEqual(
                 (destination / "species/1-example-bird/portrait.png").read_bytes(),
@@ -611,7 +620,7 @@ class PublisherTests(unittest.TestCase):
                 (destination / "species/1-first-bird/portrait.png").read_bytes(),
                 original_portrait,
             )
-            active_prefix = _sync_transaction_prefix(destination, committed=False)
+            active_prefix = _catalog_transaction_prefix(destination, committed=False)
             self.assertEqual(len(list(root.glob(f"{active_prefix}*"))), 1)
 
     def test_syncs_only_requested_taxa_for_a_contribution(self) -> None:
@@ -664,7 +673,7 @@ class PublisherTests(unittest.TestCase):
             source = root / "source"
             destination = root / "destination"
             _create_species(source, 1, "Example Bird")
-            active_prefix = _sync_transaction_prefix(destination, committed=False)
+            active_prefix = _catalog_transaction_prefix(destination, committed=False)
             staging = root / f"{active_prefix}interrupted/1-example-bird"
             staging.mkdir(parents=True)
             (staging / "manifest.json").write_text("partial")
@@ -697,7 +706,7 @@ class PublisherTests(unittest.TestCase):
                 source / "species/2-second-bird",
                 destination / "species/2-second-bird",
             )
-            active_prefix = _sync_transaction_prefix(destination, committed=False)
+            active_prefix = _catalog_transaction_prefix(destination, committed=False)
             (root / f"{active_prefix}interrupted").mkdir()
 
             result = sync_public_catalog(source, destination)
@@ -720,7 +729,7 @@ class PublisherTests(unittest.TestCase):
             with self.assertRaisesRegex(CatalogPublishError, "conflicts"):
                 sync_public_catalog(source, destination)
 
-            active_prefix = _sync_transaction_prefix(destination, committed=False)
+            active_prefix = _catalog_transaction_prefix(destination, committed=False)
             self.assertEqual(len(list(root.glob(f"{active_prefix}*"))), 1)
             recovered = sync_public_catalog(recovery_source, destination)
 
@@ -813,6 +822,43 @@ class PublisherTests(unittest.TestCase):
                     },
                 },
             )
+
+    def test_catalog_replacement_recovers_an_interrupted_approval_move(self) -> None:
+        with TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            destination = root / "destination"
+            replacement = root / "replacement"
+            approved = _create_species(destination, 1, "Existing Bird")
+            _create_portrait_replacement(
+                replacement,
+                1,
+                "Existing Bird",
+                approved_at="2026-07-10T00:00:00+00:00",
+                color="black",
+            )
+            active_prefix = _catalog_transaction_prefix(destination, committed=False)
+            interrupted = root / f"{active_prefix}interrupted"
+            backup = interrupted / "approved/1-existing-bird"
+            backup.parent.mkdir(parents=True)
+            approved.replace(backup)
+
+            result = replace_public_catalog_taxon(
+                replacement,
+                destination,
+                1,
+                "Human review found incorrect proportions.",
+            )
+
+            replaced = result["replaced"]
+            self.assertIsInstance(replaced, dict)
+            assert isinstance(replaced, dict)
+            self.assertEqual(replaced["taxon_id"], 1)
+            self.assertFalse(list(root.glob(f"{active_prefix}*")))
+            self.assertEqual(
+                (destination / "species/1-existing-bird/portrait.png").read_bytes(),
+                (replacement / "species/1-existing-bird/portrait.png").read_bytes(),
+            )
+            self.assertEqual(len(validate_public_catalog(destination)), 1)
 
     def test_rejects_catalog_replacement_with_wrong_base_hash(self) -> None:
         with TemporaryDirectory() as temporary:

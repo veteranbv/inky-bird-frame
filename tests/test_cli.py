@@ -300,7 +300,7 @@ class CliTests(unittest.TestCase):
         sync.assert_called_once_with(
             Path("bundled-catalog"),
             Path("managed-catalog"),
-            allow_replacements=True,
+            allow_replacements=False,
         )
 
     def test_scheduler_requires_explicit_config(self) -> None:

@@ -1060,7 +1060,7 @@ def catalog_sync_command(args: argparse.Namespace) -> int:
         result = sync_public_catalog(
             args.source_catalog,
             args.catalog,
-            allow_replacements=True,
+            allow_replacements=False,
         )
     print_result(
         {
