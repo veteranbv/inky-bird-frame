@@ -23,6 +23,7 @@ from inky_bird_frame.cli import (
     birdbuddy_login_command,
     birdbuddy_logout_command,
     build_parser,
+    catalog_prepare_command,
     catalog_sync_command,
     config_install_command,
     generate_command,
@@ -237,6 +238,30 @@ class CliTests(unittest.TestCase):
         self.assertTrue(args.replace_approved)
         self.assertEqual(args.reason, "Human review rejected the published plate.")
 
+    def test_catalog_prepare_keeps_ordinary_preparation_add_only(self) -> None:
+        args = Namespace(
+            source_catalog=Path("approved"),
+            catalog=Path("catalog"),
+            taxon_id=42,
+            replace_approved=False,
+            reason=None,
+        )
+        with (
+            patch(
+                "inky_bird_frame.cli.sync_public_catalog",
+                return_value={"published": [], "replaced": [], "already_present": []},
+            ) as sync,
+            redirect_stdout(io.StringIO()),
+        ):
+            catalog_prepare_command(args)
+
+        sync.assert_called_once_with(
+            Path("approved"),
+            Path("catalog"),
+            taxon_ids={42},
+            allow_replacements=False,
+        )
+
     def test_catalog_sync_uses_explicit_catalog_paths(self) -> None:
         args = build_parser().parse_args(
             [
@@ -272,7 +297,11 @@ class CliTests(unittest.TestCase):
             catalog_sync_command(args)
 
         catalog_lock.assert_called_once_with(Path("controller-state"))
-        sync.assert_called_once_with(Path("bundled-catalog"), Path("managed-catalog"))
+        sync.assert_called_once_with(
+            Path("bundled-catalog"),
+            Path("managed-catalog"),
+            allow_replacements=True,
+        )
 
     def test_scheduler_requires_explicit_config(self) -> None:
         args = build_parser().parse_args(["scheduler", "--config", "instance.toml"])

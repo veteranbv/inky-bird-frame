@@ -403,8 +403,10 @@ only; they never enter the approved catalog or rotation.
   separate maintainer-reviewed migration. Use `catalog prepare TAXON_ID` with
   `--replace-approved` and a non-empty `--reason` against the approved source
   catalog. The command preserves the prior approval timestamp and image hashes
-  in a validated `catalog_migration` record; CI rejects a replacement whose
-  record does not match the pull request base.
+  in a validated `catalog_migration` record and retains earlier reviewed
+  replacements as history. CI rejects a replacement whose newest record does
+  not match the pull request base, while controller sync may use the recorded
+  ancestry when an installation skips an intermediate release.
 - Controller unavailable: the current e-paper image remains visible. Display
   state is not advanced.
 - Checksum mismatch: the display refuses the asset and preserves current state.

@@ -1041,6 +1041,7 @@ def catalog_prepare_command(args: argparse.Namespace) -> int:
             args.source_catalog,
             args.catalog,
             taxon_ids={args.taxon_id},
+            allow_replacements=False,
         )
     print_result(
         {
@@ -1056,7 +1057,11 @@ def catalog_prepare_command(args: argparse.Namespace) -> int:
 def catalog_sync_command(args: argparse.Namespace) -> int:
     lock = catalog_state_lock(args.state_dir) if args.state_dir is not None else nullcontext()
     with lock:
-        result = sync_public_catalog(args.source_catalog, args.catalog)
+        result = sync_public_catalog(
+            args.source_catalog,
+            args.catalog,
+            allow_replacements=True,
+        )
     print_result(
         {
             **result,
