@@ -1,0 +1,42 @@
+{
+  "behavior": "Mostly nocturnal and often solitary outside nesting; hunts from perches with quiet, broad-winged flight, taking mainly mammals and birds. Territorial pairs advertise and defend their range with deep hoots.",
+  "common_name": "Great Horned Owl",
+  "family": "Strigidae",
+  "field_marks": [
+    "Large, thick-bodied owl with prominent ear tufts and an upright posture",
+    "Bright yellow eyes set in a gray-to-cinnamon facial disc",
+    "Short, dark, hooked bill partly concealed by facial feathers",
+    "Mottled gray-brown upperparts, a white throat patch, and densely barred underparts",
+    "Broad, rounded wings and a relatively short, barred tail",
+    "Heavily feathered legs ending in powerful dark talons"
+  ],
+  "habitat": "Highly adaptable; favors mosaics of woodland and open ground but also uses forests, wetlands, grasslands, deserts, agricultural areas, and wooded developed areas. Roosts and nests in trees, cavities, snags, ledges, and abandoned nests.",
+  "measurements": {
+    "length": "46\u201363 cm (18.1\u201324.8 in)",
+    "weight": "910\u20132,500 g (32.1\u201388.2 oz)",
+    "wingspan": "101\u2013145 cm (39.8\u201357.1 in)"
+  },
+  "palette": [
+    "gray-brown",
+    "cinnamon",
+    "cream",
+    "white",
+    "yellow"
+  ],
+  "scientific_name": "Bubo virginianus",
+  "sources": [
+    {
+      "title": "Great Horned Owl Identification \u2014 Cornell Lab of Ornithology",
+      "url": "https://www.allaboutbirds.org/guide/Great_Horned_Owl/id"
+    },
+    {
+      "title": "Great Horned Owl Life History \u2014 Cornell Lab of Ornithology",
+      "url": "https://www.allaboutbirds.org/guide/Great_Horned_Owl/lifehistory"
+    },
+    {
+      "title": "Bubo virginianus \u2014 Animal Diversity Web",
+      "url": "https://animaldiversity.org/accounts/Bubo_virginianus/"
+    }
+  ],
+  "taxon_id": 20044
+}

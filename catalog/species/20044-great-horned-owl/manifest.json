@@ -1,0 +1,156 @@
+{
+  "approved_at": "2026-08-09T19:24:26+00:00",
+  "assets": {
+    "display": {
+      "filename": "display.png",
+      "sha256": "343c8142a7794a328713881c8163f1717426348033dd9e8b6fd0b0e0a0e38b12"
+    },
+    "portrait": {
+      "filename": "portrait.png",
+      "sha256": "6a9c360766afcbbfd94aab22be6bc238d8ae39bee2ac7a563374b2fff0d8ea86"
+    }
+  },
+  "common_name": "Great Horned Owl",
+  "generation": {
+    "attempt": 3,
+    "correction_source_sha256": "ed52c92c80df4ee07ea2e76c13b2b1547c84c9b4d800d8dd954358db4990fd7f",
+    "generated_at": "2026-08-09T19:24:24+00:00",
+    "generator": "Codex subscription / built-in gpt-image-2",
+    "max_attempts": 3,
+    "prompt_version": "field-journal-v4"
+  },
+  "profile": {
+    "behavior": "Mostly nocturnal and often solitary outside nesting; hunts from perches with quiet, broad-winged flight, taking mainly mammals and birds. Territorial pairs advertise and defend their range with deep hoots.",
+    "common_name": "Great Horned Owl",
+    "family": "Strigidae",
+    "field_marks": [
+      "Large, thick-bodied owl with prominent ear tufts and an upright posture",
+      "Bright yellow eyes set in a gray-to-cinnamon facial disc",
+      "Short, dark, hooked bill partly concealed by facial feathers",
+      "Mottled gray-brown upperparts, a white throat patch, and densely barred underparts",
+      "Broad, rounded wings and a relatively short, barred tail",
+      "Heavily feathered legs ending in powerful dark talons"
+    ],
+    "habitat": "Highly adaptable; favors mosaics of woodland and open ground but also uses forests, wetlands, grasslands, deserts, agricultural areas, and wooded developed areas. Roosts and nests in trees, cavities, snags, ledges, and abandoned nests.",
+    "measurements": {
+      "length": "46\u201363 cm (18.1\u201324.8 in)",
+      "weight": "910\u20132,500 g (32.1\u201388.2 oz)",
+      "wingspan": "101\u2013145 cm (39.8\u201357.1 in)"
+    },
+    "palette": [
+      "gray-brown",
+      "cinnamon",
+      "cream",
+      "white",
+      "yellow"
+    ],
+    "scientific_name": "Bubo virginianus",
+    "sources": [
+      {
+        "title": "Great Horned Owl Identification \u2014 Cornell Lab of Ornithology",
+        "url": "https://www.allaboutbirds.org/guide/Great_Horned_Owl/id"
+      },
+      {
+        "title": "Great Horned Owl Life History \u2014 Cornell Lab of Ornithology",
+        "url": "https://www.allaboutbirds.org/guide/Great_Horned_Owl/lifehistory"
+      },
+      {
+        "title": "Bubo virginianus \u2014 Animal Diversity Web",
+        "url": "https://animaldiversity.org/accounts/Bubo_virginianus/"
+      }
+    ],
+    "taxon_id": 20044
+  },
+  "quality_review": {
+    "anatomy_accuracy": 5,
+    "composition_quality": 5,
+    "correction_findings": [],
+    "findings": [
+      "Species identity is correct: the prominent ear tufts, bright yellow eyes, gray-to-cinnamon facial disc, white throat patch, mottled gray-brown upperparts, densely barred underparts, thick body, and upright posture agree with the references and direct source descriptions.",
+      "The primary specimen is complete and singular, with one head, one short hooked bill, two folded wings, two feathered legs with dark talons, and one short barred tail. Plumage, proportions, facial structure, and feet are credible for Great Horned Owl.",
+      "The detached flight study correctly shows broad, rounded wings and a comparatively short, barred, rounded tail. The detached side-profile head has a plausible facial disc, eye, ear tuft, and downward-hooked upper mandible; neither study appears attached to the primary specimen.",
+      "Every visible text line is legible and matches the proposed common name, scientific name, family, measurements, habitat, behavior, field marks, and palette without spelling, number, word-order, duplication, omission, or substitution errors.",
+      "Cornell directly supports length 46\u201363 cm, weight 910\u20132,500 g, and wingspan 101\u2013145 cm. Audubon independently gives the same length and weight and an effectively equivalent wingspan of 1.02\u20131.45 m.",
+      "The length ruler is explicitly labeled schematic and not to scale. Its 46 cm lower endpoint and 63 cm upper endpoint increase correctly from bottom to top, agree with the printed range, and contain exactly four evenly spaced unlabeled interior ticks forming five proportional segments.",
+      "The layout is balanced and readable, with clear separation between the primary specimen, text, scale, flight study, head study, and palette.",
+      "No place name, ZIP code, coordinates, map, or local-observation detail appears."
+    ],
+    "location_free": true,
+    "passed": true,
+    "species_accuracy": 5,
+    "text_accuracy": 5,
+    "verification_sources": [
+      {
+        "title": "Great Horned Owl Identification \u2014 Cornell Lab of Ornithology",
+        "url": "https://www.allaboutbirds.org/guide/Great_Horned_Owl/id"
+      },
+      {
+        "title": "Great Horned Owl \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/great-horned-owl"
+      },
+      {
+        "title": "Bubo virginianus \u2014 Animal Diversity Web",
+        "url": "https://animaldiversity.org/accounts/Bubo_virginianus/"
+      }
+    ]
+  },
+  "references": [
+    {
+      "attribution": "no rights reserved",
+      "filename": "01-264835127.jpeg",
+      "height": 1631,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/264835127/large.jpeg",
+      "license_code": "cc0",
+      "observation_id": 153342747,
+      "observer": "wildreturn",
+      "photo_id": 264835127,
+      "sha256": "d0eb6197c6bfa7a5070e7e3647912f50ada045f8e1ca1c9bff6d1bc965719614",
+      "source_url": "https://www.inaturalist.org/observations/153342747",
+      "width": 1998
+    },
+    {
+      "attribution": "(c) Michael Warner, some rights reserved (CC BY)",
+      "filename": "02-408807127.jpg",
+      "height": 2048,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/408807127/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 230246736,
+      "observer": "ouzel",
+      "photo_id": 408807127,
+      "sha256": "0072d2d96fa7a30a8033a6717541428542cecdc674afec688172cc99fb7b6c50",
+      "source_url": "https://www.inaturalist.org/observations/230246736",
+      "width": 1557
+    },
+    {
+      "attribution": "(c) Nelson Balcar, some rights reserved (CC BY)",
+      "filename": "03-601205359.jpg",
+      "height": 1389,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/601205359/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 331411274,
+      "observer": "nelsonb",
+      "photo_id": 601205359,
+      "sha256": "1dfef722600691fc040258e21b515005081afcd490949db2c3c9f0155cdf9e66",
+      "source_url": "https://www.inaturalist.org/observations/331411274",
+      "width": 1421
+    },
+    {
+      "attribution": "(c) Brooke J., some rights reserved (CC BY)",
+      "filename": "04-357170362.jpg",
+      "height": 2048,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/357170362/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 202251518,
+      "observer": "inkasaur",
+      "photo_id": 357170362,
+      "sha256": "3a0cf89fb50afd7266b66df49844d98ba2c897e7b54ef2df7307aa192534ba28",
+      "source_url": "https://www.inaturalist.org/observations/202251518",
+      "width": 1468
+    }
+  ],
+  "schema_version": 1,
+  "scientific_name": "Bubo virginianus",
+  "slug": "great-horned-owl",
+  "status": "approved",
+  "taxon_id": 20044
+}
