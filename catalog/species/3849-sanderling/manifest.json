@@ -1,0 +1,154 @@
+{
+  "approved_at": "2026-08-09T22:03:23+00:00",
+  "assets": {
+    "display": {
+      "filename": "display.png",
+      "sha256": "5255d3cf89f876b2950e9b5321387188965d71023d6738ebcc7a0ade28b2e281"
+    },
+    "portrait": {
+      "filename": "portrait.png",
+      "sha256": "2bda2e370303e6e993d6b5e26e476870d8df918b6edffbe3bde3fd84c58db0fd"
+    }
+  },
+  "common_name": "Sanderling",
+  "generation": {
+    "attempt": 2,
+    "correction_source_sha256": "220c8bb0b30f696e5713e0d3f23a8ce75429fb524bb713e01aea1e553553a5b7",
+    "generated_at": "2026-08-09T22:03:23+00:00",
+    "generator": "Codex subscription / built-in gpt-image-2",
+    "max_attempts": 3,
+    "prompt_version": "field-journal-v4"
+  },
+  "profile": {
+    "behavior": "Runs rapidly with advancing and retreating waves, picking prey from the surface and probing wet sand for small invertebrates; often forages and roosts in flocks.",
+    "common_name": "Sanderling",
+    "family": "Scolopacidae",
+    "field_marks": [
+      "Small, plump shorebird with a rounded body",
+      "Straight, stout black bill about as long as the head",
+      "Round dark eye set in a plain, pale face",
+      "Black legs and feet",
+      "Pale gray upperparts and clean white underparts in nonbreeding plumage; juveniles show checkered upperparts",
+      "Long, pointed wings and a short tail; a bold white wing stripe shows in flight"
+    ],
+    "habitat": "Primarily wave-washed sandy beaches, tideflats, mudflats, rocky shores, and occasional inland lakeshores during migration and the nonbreeding season; breeds on exposed gravel, rocky ridges, and low-growing tundra near ponds or other wet areas.",
+    "measurements": {
+      "length": "18\u201320 cm",
+      "weight": "40\u201390 g",
+      "wingspan": "35\u201341 cm"
+    },
+    "palette": [
+      "white",
+      "pale gray",
+      "black",
+      "sandy brown",
+      "rusty brown"
+    ],
+    "scientific_name": "Calidris alba",
+    "sources": [
+      {
+        "title": "Sanderling Identification \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Sanderling/id"
+      },
+      {
+        "title": "Sanderling \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/sanderling"
+      }
+    ],
+    "taxon_id": 3849
+  },
+  "quality_review": {
+    "anatomy_accuracy": 4,
+    "composition_quality": 5,
+    "correction_findings": [],
+    "findings": [
+      "The primary specimen is identifiable as a Sanderling: a small, plump Calidris shorebird with a rounded body, pale face and underparts, checkered pale-gray/brown upperparts, black legs, and a straight black bill. Its proportions and plumage agree with the attached juvenile and nonbreeding reference photographs.",
+      "The primary specimen has one head, one beak, two legs, a short tail, and a normally positioned folded wing; the opposite wing is naturally occluded by the side-profile pose. The feet show the expected three forward toes without an evident hind toe. No duplicated or malformed attached anatomy is visible.",
+      "The detached spread-wing and head/bill illustrations read clearly as intentional supplementary studies. The wing study correctly emphasizes the broad white wing stripe, and both depicted bills are straight, dark, mutually consistent, and approximately head-length without truncation or reversed mandibles.",
+      "The common name, scientific name, and family are correct: Sanderling, Calidris alba, Scolopacidae.",
+      "Every visible descriptive line matches the proposed research text in spelling, numbers, and word order. Habitat, behavior, field marks, and palette labels are complete and intelligible.",
+      "The printed measurements\u2014length 18\u201320 cm, wingspan 35\u201341 cm, and weight 40\u201390 g\u2014match Audubon's published ranges. Cornell independently confirms the 18\u201320 cm length but currently gives a 35 cm wingspan and 40\u2013100 g weight, reflecting source variation rather than a transcription error in this Audubon-based plate.",
+      "The ruler is internally consistent: 18 cm is at the bottom, 20 cm at the top, exactly four evenly spaced unlabeled interior ticks divide the range into five proportional segments, and the separate body-length label agrees with it. \u201cSCHEMATIC \u2014 NOT TO SCALE\u201d clearly prevents interpreting the printed bird as life-size.",
+      "The pale gray-and-white and checkered plumage treatments are supported by the reference photographs and allowed sources: nonbreeding birds are pale gray above and white below, while juveniles have checkered or speckled upperparts. No unsupported seasonal rewrite is required.",
+      "The composition cleanly separates the central specimen, measurement graphic, text, anatomical studies, and color swatches. Nothing resembles an unintended additional bird or an anatomical study attached to the primary specimen.",
+      "No place name, ZIP code, coordinates, map, range map, or local-observation detail appears."
+    ],
+    "location_free": true,
+    "passed": true,
+    "species_accuracy": 5,
+    "text_accuracy": 5,
+    "verification_sources": [
+      {
+        "title": "Sanderling Identification \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Sanderling/id"
+      },
+      {
+        "title": "Sanderling \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/sanderling"
+      },
+      {
+        "title": "Calidris alba (sanderling) \u2014 Animal Diversity Web",
+        "url": "https://animaldiversity.org/accounts/Calidris_alba/"
+      }
+    ]
+  },
+  "references": [
+    {
+      "attribution": "(c) Marco Chan, some rights reserved (CC BY)",
+      "filename": "01-232281217.jpeg",
+      "height": 1770,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/232281217/large.jpeg",
+      "license_code": "cc-by",
+      "observation_id": 136126887,
+      "observer": "that_bee_guy",
+      "photo_id": 232281217,
+      "sha256": "e1a1002e0a9047e5eaac9045d6302ac9f6d1060a49941a2b0ecf2857b717191a",
+      "source_url": "https://www.inaturalist.org/observations/136126887",
+      "width": 2048
+    },
+    {
+      "attribution": "no rights reserved",
+      "filename": "02-339539369.jpg",
+      "height": 1369,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/339539369/large.jpg",
+      "license_code": "cc0",
+      "observation_id": 193294104,
+      "observer": "rawcomposition",
+      "photo_id": 339539369,
+      "sha256": "8e68162b4dcafa8297093136383348bb3f298efed0a22b2e48b79e73554c449c",
+      "source_url": "https://www.inaturalist.org/observations/193294104",
+      "width": 2048
+    },
+    {
+      "attribution": "no rights reserved",
+      "filename": "03-109303312.jpeg",
+      "height": 2048,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/109303312/large.jpeg",
+      "license_code": "cc0",
+      "observation_id": 67624487,
+      "observer": "schylerbrown",
+      "photo_id": 109303312,
+      "sha256": "e806a9eb54f773d90de012c56d5c727e84af2d2eef980688a726138d74b763ba",
+      "source_url": "https://www.inaturalist.org/observations/67624487",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) Viktor, some rights reserved (CC BY)",
+      "filename": "04-452315720.jpeg",
+      "height": 1536,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/452315720/large.jpeg",
+      "license_code": "cc-by",
+      "observation_id": 252691570,
+      "observer": "viktor-n",
+      "photo_id": 452315720,
+      "sha256": "a87fbd2ac0ec4c51b4d9f5afba2c99f3a147b1d14681ccad5a5f256982719321",
+      "source_url": "https://www.inaturalist.org/observations/252691570",
+      "width": 2048
+    }
+  ],
+  "schema_version": 1,
+  "scientific_name": "Calidris alba",
+  "slug": "sanderling",
+  "status": "approved",
+  "taxon_id": 3849
+}
