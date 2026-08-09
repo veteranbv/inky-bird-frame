@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-09T19:34:54+00:00",
+  "generated_at": "2026-08-09T19:53:03+00:00",
   "schema_version": 1,
   "species": [
     {
@@ -727,6 +727,17 @@
       "scientific_name": "Butorides virescens",
       "slug": "green-heron",
       "taxon_id": 5020
+    },
+    {
+      "approved_at": "2026-08-09T19:53:03+00:00",
+      "common_name": "Gull-billed Tern",
+      "display_path": "species/144536-gull-billed-tern/display.png",
+      "display_sha256": "35dfd90186bc416c80e531027cfc7ab413d6387434432dc595ef7f199c9b4b15",
+      "portrait_path": "species/144536-gull-billed-tern/portrait.png",
+      "portrait_sha256": "a6693e928ccaf4fce7a92598acacfa440ef1b80fa20bdf12b749216d32c4f87b",
+      "scientific_name": "Gelochelidon nilotica",
+      "slug": "gull-billed-tern",
+      "taxon_id": 144536
     },
     {
       "approved_at": "2026-07-13T05:19:40+00:00",

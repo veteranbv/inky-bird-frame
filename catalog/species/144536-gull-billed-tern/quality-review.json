@@ -1,0 +1,35 @@
+{
+  "anatomy_accuracy": 5,
+  "composition_quality": 5,
+  "correction_findings": [],
+  "findings": [
+    "Live sources confirm the identity as Gull-billed Tern, scientific name Gelochelidon nilotica, family Laridae.",
+    "All About Birds confirms the printed measurements: length 33\u201338 cm (13\u201315 in), wingspan 85\u2013115 cm (33.5\u201345.3 in), and weight 150\u2013205 g (5.3\u20137.2 oz).",
+    "The primary specimen matches the attached references and live descriptions: stocky tern proportions, heavy short black bill, dark eye, black legs, full breeding cap, white underparts, pale gray upperparts, long pointed folded wings extending beyond the short shallowly forked tail, and dusky outer flight feathers.",
+    "The bill is consistently stout and pointed in both depicted heads, with coherent upper- and lower-mandible lengths and no truncated, reversed, or exaggerated projection.",
+    "The primary specimen is anatomically complete with one head, one bill, two folded wings, two legs, two appropriately webbed feet, and one tail. The detached wing and head are clearly separated supplementary studies and are independently well formed.",
+    "The behavioral and habitat statements agree with the allowed sources: aerial insect catching, surface swooping, rare plunge-diving, colonial shallow ground nesting, and use of coasts, marshes, beaches, islands, estuaries, wetlands, and nearby fields.",
+    "Every visible identification, measurement, habitat, behavior, field-mark, and palette line matches the proposed text without spelling, number, unit, duplication, omission, or word-order errors.",
+    "The body-length ruler is internally consistent: 33 cm is at the bottom, 38 cm at the top, the four unlabeled interior ticks are evenly spaced into five proportional segments, and the diagram is explicitly labeled schematic and not to scale.",
+    "No place name, ZIP code, coordinates, map, or local-observation detail appears.",
+    "The plate is legible and balanced, with clear separation among the primary specimen, ruler, supplementary studies, palette, and text."
+  ],
+  "location_free": true,
+  "passed": true,
+  "species_accuracy": 5,
+  "text_accuracy": 5,
+  "verification_sources": [
+    {
+      "title": "Gull-billed Tern Identification \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Gull-billed_Tern/id"
+    },
+    {
+      "title": "Gull-billed Tern \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/gull-billed-tern"
+    },
+    {
+      "title": "Gull-billed tern \u2014 Wikipedia",
+      "url": "https://en.wikipedia.org/wiki/Gull-billed_tern"
+    }
+  ]
+}

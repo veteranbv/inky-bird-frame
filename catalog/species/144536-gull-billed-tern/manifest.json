@@ -1,0 +1,157 @@
+{
+  "approved_at": "2026-08-09T19:53:03+00:00",
+  "assets": {
+    "display": {
+      "filename": "display.png",
+      "sha256": "35dfd90186bc416c80e531027cfc7ab413d6387434432dc595ef7f199c9b4b15"
+    },
+    "portrait": {
+      "filename": "portrait.png",
+      "sha256": "a6693e928ccaf4fce7a92598acacfa440ef1b80fa20bdf12b749216d32c4f87b"
+    }
+  },
+  "common_name": "Gull-billed Tern",
+  "generation": {
+    "attempt": 3,
+    "correction_source_sha256": "e5c7fcd0b493ca14940d8566c11e34a54c1fdcf008ac63133878dc4fd87722cc",
+    "generated_at": "2026-08-09T19:53:03+00:00",
+    "generator": "Codex subscription / built-in gpt-image-2",
+    "max_attempts": 3,
+    "prompt_version": "field-journal-v4"
+  },
+  "profile": {
+    "behavior": "Agile aerial forager that catches insects in flight and swoops to take prey from land or the water surface; rarely plunge-dives. Nests colonially in shallow ground scrapes.",
+    "common_name": "Gull-billed Tern",
+    "family": "Laridae",
+    "field_marks": [
+      "Heavy, short black bill",
+      "Dark eye and black legs",
+      "Black cap in breeding plumage",
+      "White head with a dark eye patch in nonbreeding plumage",
+      "Pale gray upperparts and white underparts",
+      "Long, pointed wings and a short, shallowly forked tail"
+    ],
+    "habitat": "Coasts, salt marshes, lagoons, mudflats, sandbars, sandy islands, and open wetlands or fields near water.",
+    "measurements": {
+      "length": "33\u201338 cm (13\u201315 in)",
+      "weight": "150\u2013205 g (5.3\u20137.2 oz)",
+      "wingspan": "85\u2013115 cm (33.5\u201345.3 in)"
+    },
+    "palette": [
+      "white",
+      "pale silver-gray",
+      "black",
+      "charcoal gray"
+    ],
+    "scientific_name": "Gelochelidon nilotica",
+    "sources": [
+      {
+        "title": "Gull-billed Tern Identification \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Gull-billed_Tern/id"
+      },
+      {
+        "title": "Gull-billed Tern Life History \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Gull-billed_Tern/lifehistory"
+      },
+      {
+        "title": "Gull-billed Tern \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/gull-billed-tern"
+      }
+    ],
+    "taxon_id": 144536
+  },
+  "quality_review": {
+    "anatomy_accuracy": 5,
+    "composition_quality": 5,
+    "correction_findings": [],
+    "findings": [
+      "Live sources confirm the identity as Gull-billed Tern, scientific name Gelochelidon nilotica, family Laridae.",
+      "All About Birds confirms the printed measurements: length 33\u201338 cm (13\u201315 in), wingspan 85\u2013115 cm (33.5\u201345.3 in), and weight 150\u2013205 g (5.3\u20137.2 oz).",
+      "The primary specimen matches the attached references and live descriptions: stocky tern proportions, heavy short black bill, dark eye, black legs, full breeding cap, white underparts, pale gray upperparts, long pointed folded wings extending beyond the short shallowly forked tail, and dusky outer flight feathers.",
+      "The bill is consistently stout and pointed in both depicted heads, with coherent upper- and lower-mandible lengths and no truncated, reversed, or exaggerated projection.",
+      "The primary specimen is anatomically complete with one head, one bill, two folded wings, two legs, two appropriately webbed feet, and one tail. The detached wing and head are clearly separated supplementary studies and are independently well formed.",
+      "The behavioral and habitat statements agree with the allowed sources: aerial insect catching, surface swooping, rare plunge-diving, colonial shallow ground nesting, and use of coasts, marshes, beaches, islands, estuaries, wetlands, and nearby fields.",
+      "Every visible identification, measurement, habitat, behavior, field-mark, and palette line matches the proposed text without spelling, number, unit, duplication, omission, or word-order errors.",
+      "The body-length ruler is internally consistent: 33 cm is at the bottom, 38 cm at the top, the four unlabeled interior ticks are evenly spaced into five proportional segments, and the diagram is explicitly labeled schematic and not to scale.",
+      "No place name, ZIP code, coordinates, map, or local-observation detail appears.",
+      "The plate is legible and balanced, with clear separation among the primary specimen, ruler, supplementary studies, palette, and text."
+    ],
+    "location_free": true,
+    "passed": true,
+    "species_accuracy": 5,
+    "text_accuracy": 5,
+    "verification_sources": [
+      {
+        "title": "Gull-billed Tern Identification \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Gull-billed_Tern/id"
+      },
+      {
+        "title": "Gull-billed Tern \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/gull-billed-tern"
+      },
+      {
+        "title": "Gull-billed tern \u2014 Wikipedia",
+        "url": "https://en.wikipedia.org/wiki/Gull-billed_tern"
+      }
+    ]
+  },
+  "references": [
+    {
+      "attribution": "(c) Alin, some rights reserved (CC BY)",
+      "filename": "01-664529298.jpg",
+      "height": 970,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/664529298/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 364029434,
+      "observer": "alin244",
+      "photo_id": 664529298,
+      "sha256": "c3b20076c59892785273b8ddc3a271860d57c82d072d58c421e8405726ba1757",
+      "source_url": "https://www.inaturalist.org/observations/364029434",
+      "width": 1456
+    },
+    {
+      "attribution": "no rights reserved",
+      "filename": "02-76843341.jpg",
+      "height": 1365,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/76843341/large.jpg",
+      "license_code": "cc0",
+      "observation_id": 48429111,
+      "observer": "yehoryatsiuk",
+      "photo_id": 76843341,
+      "sha256": "ab76441c3e9c8e5c6de0490a8836a12eeb678d1e9a9bb8ac7667d8ce2cc85af9",
+      "source_url": "https://www.inaturalist.org/observations/48429111",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) Amber M. King, some rights reserved (CC BY)",
+      "filename": "03-479191344.jpeg",
+      "height": 1711,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/479191344/large.jpeg",
+      "license_code": "cc-by",
+      "observation_id": 266699782,
+      "observer": "amberenergy",
+      "photo_id": 479191344,
+      "sha256": "06e98a2bcb74d5dc65b88b2425ec959e84192b86c04a7e9a034dc63ff58c7de7",
+      "source_url": "https://www.inaturalist.org/observations/266699782",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) Jan Ebr &amp; Ivana Ebrov\u00e1, some rights reserved (CC BY)",
+      "filename": "04-246669429.jpeg",
+      "height": 1355,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/246669429/large.jpeg",
+      "license_code": "cc-by",
+      "observation_id": 143793027,
+      "observer": "opisska",
+      "photo_id": 246669429,
+      "sha256": "392179451bfd53a7b978bcb15a8fd84e5d65ffffb9c136013c8cf97175054acf",
+      "source_url": "https://www.inaturalist.org/observations/143793027",
+      "width": 1392
+    }
+  ],
+  "schema_version": 1,
+  "scientific_name": "Gelochelidon nilotica",
+  "slug": "gull-billed-tern",
+  "status": "approved",
+  "taxon_id": 144536
+}
