@@ -1,0 +1,41 @@
+{
+  "behavior": "Agile aerial forager that catches insects in flight and swoops to take prey from land or the water surface; rarely plunge-dives. Nests colonially in shallow ground scrapes.",
+  "common_name": "Gull-billed Tern",
+  "family": "Laridae",
+  "field_marks": [
+    "Heavy, short black bill",
+    "Dark eye and black legs",
+    "Black cap in breeding plumage",
+    "White head with a dark eye patch in nonbreeding plumage",
+    "Pale gray upperparts and white underparts",
+    "Long, pointed wings and a short, shallowly forked tail"
+  ],
+  "habitat": "Coasts, salt marshes, lagoons, mudflats, sandbars, sandy islands, and open wetlands or fields near water.",
+  "measurements": {
+    "length": "33\u201338 cm (13\u201315 in)",
+    "weight": "150\u2013205 g (5.3\u20137.2 oz)",
+    "wingspan": "85\u2013115 cm (33.5\u201345.3 in)"
+  },
+  "palette": [
+    "white",
+    "pale silver-gray",
+    "black",
+    "charcoal gray"
+  ],
+  "scientific_name": "Gelochelidon nilotica",
+  "sources": [
+    {
+      "title": "Gull-billed Tern Identification \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Gull-billed_Tern/id"
+    },
+    {
+      "title": "Gull-billed Tern Life History \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Gull-billed_Tern/lifehistory"
+    },
+    {
+      "title": "Gull-billed Tern \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/gull-billed-tern"
+    }
+  ],
+  "taxon_id": 144536
+}
