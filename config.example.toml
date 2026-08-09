@@ -3,7 +3,9 @@
 # nearby public sightings, BirdWeather and self-hosted BirdNET-Go provide acoustic station
 # detections, BirdNET Analyzer imports private CSV history, and authorized Bird Buddy
 # accounts provide read-only feeder postcard detections.
-# Legacy singular source values remain accepted for compatibility. See docs/discovery.md.
+# Legacy singular source values remain accepted for compatibility, but source = "all" is
+# deprecated. Replace it with sources = ["inaturalist", "ebird", "birdweather"].
+# See docs/discovery.md.
 sources = ["inaturalist"]
 # Choose exactly one location form for iNaturalist or eBird. The legacy five-digit US
 # zip_code remains the no-key path. For any country, use latitude/longitude directly,

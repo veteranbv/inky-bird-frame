@@ -279,6 +279,11 @@ By default, the frame gives the newest eligible detection across BirdWeather,
 BirdNET-Go, and Bird Buddy one turn when that species already has a plate in the
 active catalog, then returns to its normal rotation.
 
+The legacy singular `source = "all"` setting is deprecated and will be removed
+in a future minor release. Replace it with
+`sources = ["inaturalist", "ebird", "birdweather"]`; the provider selection is
+identical.
+
 Choose `last-day`, `last-week`, `last-30-days`, `last-year`, or `all-time` for
 the observation window. Provider limits still apply. The
 [discovery guide](docs/discovery.md) explains credentials, merging, privacy,

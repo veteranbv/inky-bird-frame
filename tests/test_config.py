@@ -336,6 +336,21 @@ class ConfigTests(unittest.TestCase):
         self.assertNotIn(DiscoveryProvider.BIRDBUDDY, config.discovery.sources)
         self.assertNotIn(DiscoveryProvider.BIRDNET_GO, config.discovery.sources)
         self.assertNotIn(DiscoveryProvider.BIRDNET_ANALYZER, config.discovery.sources)
+        self.assertTrue(config.discovery.legacy_all_source)
+
+    def test_explicit_sources_are_not_marked_as_legacy_all(self) -> None:
+        configured = CONFIG.replace(
+            "[discovery]\n",
+            '[discovery]\nsources = ["inaturalist", "ebird", "birdweather"]\n'
+            'ebird_api_key = "ebird-secret"\n'
+            'birdweather_token = "station-secret"\n',
+        )
+        with TemporaryDirectory() as temporary:
+            path = Path(temporary) / "config.toml"
+            path.write_text(configured)
+            config = load_config(path)
+
+        self.assertFalse(config.discovery.legacy_all_source)
 
     def test_rejects_source_and_sources_together(self) -> None:
         configured = CONFIG.replace(

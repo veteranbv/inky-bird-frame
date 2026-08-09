@@ -363,10 +363,19 @@ failed. A refresh fails only when every configured provider fails. In that
 case, the prior active catalog stays in place.
 
 The legacy singular values `source = "inaturalist"`, `"ebird"`, `"combined"`,
-`"birdweather"`, and `"all"` remain accepted. Do not set both `source` and
-`sources`. The meaning of legacy `all` is frozen to the three providers present
-when it was introduced, so an application upgrade cannot silently contact a
-future provider. New configurations should use the explicit array.
+and `"birdweather"` remain accepted. Do not set both `source` and `sources`.
+`source = "all"` is deprecated and will be removed in a future minor release.
+Its meaning remains frozen to the three providers present when it was
+introduced, so an application upgrade cannot silently contact a future
+provider. Migrate it now without changing behavior:
+
+```toml
+[discovery]
+sources = ["inaturalist", "ebird", "birdweather"]
+```
+
+`config validate` reports this deprecation when the legacy setting is present.
+New configurations should always use the explicit array.
 
 iNaturalist supplies observation counts, BirdWeather supplies station detection
 counts, Bird Buddy supplies distinct postcard counts, and eBird's nearby

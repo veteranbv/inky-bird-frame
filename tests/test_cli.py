@@ -28,6 +28,7 @@ from inky_bird_frame.cli import (
     catalog_prepare_command,
     catalog_sync_command,
     config_install_command,
+    config_validate_command,
     generate_command,
     main,
     notifications_dispatch_command,
@@ -77,6 +78,44 @@ def write_test_species_identity(directory: Path) -> None:
 
 
 class CliTests(unittest.TestCase):
+    def test_config_validate_reports_legacy_all_source_deprecation(self) -> None:
+        config = SimpleNamespace(
+            discovery=SimpleNamespace(
+                legacy_all_source=True,
+                latitude=1.0,
+                longitude=2.0,
+                postal_code=None,
+                zip_code=None,
+                sources=(
+                    DiscoveryProvider.INATURALIST,
+                    DiscoveryProvider.EBIRD,
+                    DiscoveryProvider.BIRDWEATHER,
+                ),
+                geoapify_api_key=None,
+                ebird_api_key="configured",
+                birdweather_token="configured",
+                observation_window=SimpleNamespace(value="last-30-days"),
+                radius_km=8,
+            ),
+            notifications=SimpleNamespace(enabled=False),
+        )
+        output = io.StringIO()
+        args = Namespace(config=Path("instance.toml"))
+        with (
+            patch("inky_bird_frame.cli._config", return_value=config),
+            patch("inky_bird_frame.cli.validate_notification_destinations", return_value=[]),
+            redirect_stdout(output),
+        ):
+            result = config_validate_command(args)
+
+        payload = json.loads(output.getvalue())["data"]
+        self.assertEqual(result, 0)
+        self.assertEqual(payload["deprecations"][0]["setting"], "discovery.source")
+        self.assertIn(
+            'sources = ["inaturalist", "ebird", "birdweather"]',
+            payload["deprecations"][0]["replacement"],
+        )
+
     def test_birdnet_analyzer_import_parses_explicit_date_and_redacts_path(self) -> None:
         args = build_parser().parse_args(
             [
