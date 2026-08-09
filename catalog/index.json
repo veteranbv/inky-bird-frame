@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-09T11:18:55+00:00",
+  "generated_at": "2026-08-09T13:09:59+00:00",
   "schema_version": 1,
   "species": [
     {
@@ -45,6 +45,17 @@
       "scientific_name": "Spinus tristis",
       "slug": "american-goldfinch",
       "taxon_id": 145310
+    },
+    {
+      "approved_at": "2026-08-09T13:09:59+00:00",
+      "common_name": "American Redstart",
+      "display_path": "species/10247-american-redstart/display.png",
+      "display_sha256": "b46bc8edfa7745a48a6fc8713fc97f2d12dfd3938427c3d0b5b481c913bca28a",
+      "portrait_path": "species/10247-american-redstart/portrait.png",
+      "portrait_sha256": "13196e64ce711025128ea8f529506b77ddee16f85e5dee8f9b526acdcd6ba653",
+      "scientific_name": "Setophaga ruticilla",
+      "slug": "american-redstart",
+      "taxon_id": 10247
     },
     {
       "approved_at": "2026-07-09T22:38:07+00:00",
