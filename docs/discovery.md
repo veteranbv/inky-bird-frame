@@ -158,6 +158,10 @@ the imported date range.
 Every scientific name must still resolve exactly to one active iNaturalist bird
 species. Hybrids, `sp.` aggregates, domestic groups, and ambiguous or unmatched
 labels remain private unresolved diagnostics and cannot trigger generation.
+First-time taxonomy resolution is paced to iNaturalist's official guidance of
+about one API request per second; large archives can therefore take a few
+minutes to seed. Completed matches are cached atomically, so a transient error
+or rate limit preserves progress for the next run.
 Because the export supplies calendar dates rather than event instants, archive
 observations do not claim latest-detection rotation priority. Re-export and
 reimport periodically to include newly published eBird checklists; no eBird

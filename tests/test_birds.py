@@ -22,6 +22,7 @@ from inky_bird_frame.birds import (
     fetch_birdweather_species,
     fetch_ebird_observations,
     fetch_inaturalist_birds,
+    fetch_inaturalist_taxon_match,
     fetch_taxon_context,
     parse_birdnet_go_species,
     parse_birdnet_taxon,
@@ -302,6 +303,30 @@ class EbirdTests(unittest.TestCase):
 
         self.assertEqual(species.taxon_id, 12942)
         self.assertEqual(species.sources, ("eBird",))
+
+    @patch("inky_bird_frame.birds.sleep")
+    @patch("inky_bird_frame.birds.get_json")
+    def test_taxon_match_paces_inaturalist_requests(
+        self, get_json: MagicMock, sleep: MagicMock
+    ) -> None:
+        get_json.return_value = {
+            "results": [
+                {
+                    "id": 12942,
+                    "preferred_common_name": "Eastern Bluebird",
+                    "name": "Sialia sialis",
+                    "rank": "species",
+                    "is_active": True,
+                    "iconic_taxon_name": "Aves",
+                }
+            ]
+        }
+
+        species = fetch_inaturalist_taxon_match("Sialia sialis")
+
+        self.assertEqual(species.taxon_id, 12942)
+        sleep.assert_called_once_with(1.0)
+        self.assertIn("/v1/taxa?", get_json.call_args.args[0])
 
     def test_taxon_match_accepts_one_exact_scientific_synonym(self) -> None:
         payload = {
