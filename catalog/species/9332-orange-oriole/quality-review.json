@@ -1,0 +1,39 @@
+{
+  "anatomy_accuracy": 4,
+  "composition_quality": 5,
+  "correction_findings": [],
+  "findings": [
+    "Species identity is correct: the title \u201cOrange Oriole,\u201d scientific name \u201cIcterus auratus,\u201d and family \u201cIcteridae\u201d agree across eBird, Birds of the World, and Animal Diversity Web.",
+    "The primary specimen is a credible adult male Orange Oriole: orange head, back, and underparts; restricted black lores and throat bib; dark wings; white shoulder/wing markings; whitish primary edging; and a long dark tail agree with the direct sources and attached photographs.",
+    "The straight, sharply pointed bill and blue-gray coloration near the lower-mandible base are accurately rendered. The main and supplementary heads have consistent, complete, essentially co-terminal mandibles without truncation, reversal, or exaggerated projection.",
+    "The primary bird has one head and beak, two anatomically coherent legs and feet, one tail, and one visible folded wing; the far wing is naturally occluded by the side-profile pose. The detached wing and bill/head illustrations are clearly labeled supplementary studies and do not appear attached to the specimen.",
+    "Body proportions, folded-wing length, tail length, eye placement, leg attachment, anisodactyl perching feet, and grasping posture are anatomically coherent. The primary specimen is slightly fuller-bodied than the clearest field photographs but remains within plausible posture and feather-fluff variation.",
+    "The length claim \u201c19\u201321 cm (7.5\u20138.3 in)\u201d matches the direct published range. The plate consistently states that wingspan and weight were not reported in the consulted sources rather than inventing values.",
+    "The schematic ruler is internally consistent: 19 cm is at the bottom, 21 cm is at the top, values increase upward, metric and imperial endpoints match the printed range, exactly four evenly spaced unlabeled interior ticks divide it into five proportional segments, and \u201cSCHEMATIC \u2014 NOT TO SCALE\u201d prevents it from implying printed life size.",
+    "All visible habitat, behavior, and field-mark text matches the proposed wording without material duplication, omission, substitution, spelling error, numerical error, or nonsensical text. The verified claims are also consistent with the direct sources, including habitat, sedentary behavior, social foraging, diet, vocalizations, adult-male markings, and duller olive-washed female plumage.",
+    "The separate \u201cWING PATTERN\u201d and \u201cBILL / HEAD\u201d studies accurately reinforce the principal identification features. The five palette labels are correctly spelled and visually appropriate.",
+    "No place name, ZIP code, coordinates, map, locality label, or observation-specific geographic detail appears on the plate."
+  ],
+  "location_free": true,
+  "passed": true,
+  "species_accuracy": 5,
+  "text_accuracy": 5,
+  "verification_sources": [
+    {
+      "title": "Orange Oriole \u2014 eBird",
+      "url": "https://ebird.org/species/oraori1"
+    },
+    {
+      "title": "Orange Oriole \u2014 Birds of the World",
+      "url": "https://birdsoftheworld.org/bow/species/oraori1/cur/introduction"
+    },
+    {
+      "title": "Icterus auratus \u2014 Animal Diversity Web",
+      "url": "https://animaldiversity.org/accounts/Icterus_auratus/"
+    },
+    {
+      "title": "Orange oriole \u2014 Wikipedia",
+      "url": "https://en.wikipedia.org/wiki/Orange_oriole"
+    }
+  ]
+}
