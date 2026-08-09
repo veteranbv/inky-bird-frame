@@ -1,0 +1,38 @@
+{
+  "anatomy_accuracy": 5,
+  "composition_quality": 5,
+  "correction_findings": [],
+  "findings": [
+    "Species identity is correct: the title, Larus delawarensis, and family Laridae agree with the verified taxonomy.",
+    "The primary specimen accurately depicts an adult Ring-billed Gull: short slim yellow bill with a distinct black ring, pale eye, lightly flecked nonbreeding-type head, white underparts and tail, pale silver-gray mantle and wings, black primaries with white spots, and yellow-green legs.",
+    "Proportions agree with the clearest side-profile reference: the head, neck, bill, body, legs, feet, folded wings, and square-ended tail are coherent, and the long folded wings extend beyond the tail. Both depicted bills have consistent, complete mandibles and natural slightly hooked upper tips.",
+    "The primary specimen is a single complete bird with one head and bill, two overlapping wings, two legs with plausible webbed feet, and one tail. The detached wing and head are clearly separated supplementary studies and are anatomically consistent with the primary specimen.",
+    "All visible identification, habitat, and behavior text is correctly spelled, grammatical, and consistent with the verified accounts. The added breeding-versus-nonbreeding head-plumage explanation is accurate and agrees with the illustrated flecked adult and the field references.",
+    "The printed length of 43\u201354 cm (16.9\u201321.3 in), weight of 300\u2013700 g (10.6\u201324.7 oz), and wingspan of 105\u2013117 cm (41.3\u201346.1 in) exactly match Cornell's published ranges. Wikipedia publishes the same figures; Animal Diversity Web agrees on length and weight but reports an approximately 127 cm average wingspan, while Audubon gives a broader 1.2\u20131.3 m range. The plate's Cornell-sourced range is therefore supportable rather than a transcription error.",
+    "The body-length ruler repeats the correct range, is explicitly labeled \u201cSCHEMATIC \u2014 NOT TO SCALE,\u201d has matching endpoints and exactly four evenly spaced unlabeled interior ticks, and contains no contradictory marker or unit.",
+    "The palette matches the adult plumage. The layout is legible and balanced, with no text-anatomy collisions or misleading attachment of the supplementary studies.",
+    "No place name, ZIP code, coordinates, map, or local-observation detail appears on the plate."
+  ],
+  "location_free": true,
+  "passed": true,
+  "species_accuracy": 5,
+  "text_accuracy": 5,
+  "verification_sources": [
+    {
+      "title": "Ring-billed Gull Identification \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Ring-billed_Gull/id"
+    },
+    {
+      "title": "Ring-billed Gull \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/ring-billed-gull"
+    },
+    {
+      "title": "Larus delawarensis \u2014 Animal Diversity Web",
+      "url": "https://animaldiversity.org/accounts/Larus_delawarensis/"
+    },
+    {
+      "title": "Ring-billed gull \u2014 Wikipedia",
+      "url": "https://en.wikipedia.org/wiki/Ring-billed_gull"
+    }
+  ]
+}
