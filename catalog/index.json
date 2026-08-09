@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-09T21:39:21+00:00",
+  "generated_at": "2026-08-09T22:03:23+00:00",
   "schema_version": 1,
   "species": [
     {
@@ -1266,6 +1266,17 @@
       "scientific_name": "Archilochus colubris",
       "slug": "ruby-throated-hummingbird",
       "taxon_id": 6432
+    },
+    {
+      "approved_at": "2026-08-09T22:03:23+00:00",
+      "common_name": "Sanderling",
+      "display_path": "species/3849-sanderling/display.png",
+      "display_sha256": "5255d3cf89f876b2950e9b5321387188965d71023d6738ebcc7a0ade28b2e281",
+      "portrait_path": "species/3849-sanderling/portrait.png",
+      "portrait_sha256": "2bda2e370303e6e993d6b5e26e476870d8df918b6edffbe3bde3fd84c58db0fd",
+      "scientific_name": "Calidris alba",
+      "slug": "sanderling",
+      "taxon_id": 3849
     },
     {
       "approved_at": "2026-08-06T11:56:19+00:00",

@@ -1,0 +1,35 @@
+{
+  "anatomy_accuracy": 4,
+  "composition_quality": 5,
+  "correction_findings": [],
+  "findings": [
+    "The primary specimen is identifiable as a Sanderling: a small, plump Calidris shorebird with a rounded body, pale face and underparts, checkered pale-gray/brown upperparts, black legs, and a straight black bill. Its proportions and plumage agree with the attached juvenile and nonbreeding reference photographs.",
+    "The primary specimen has one head, one beak, two legs, a short tail, and a normally positioned folded wing; the opposite wing is naturally occluded by the side-profile pose. The feet show the expected three forward toes without an evident hind toe. No duplicated or malformed attached anatomy is visible.",
+    "The detached spread-wing and head/bill illustrations read clearly as intentional supplementary studies. The wing study correctly emphasizes the broad white wing stripe, and both depicted bills are straight, dark, mutually consistent, and approximately head-length without truncation or reversed mandibles.",
+    "The common name, scientific name, and family are correct: Sanderling, Calidris alba, Scolopacidae.",
+    "Every visible descriptive line matches the proposed research text in spelling, numbers, and word order. Habitat, behavior, field marks, and palette labels are complete and intelligible.",
+    "The printed measurements\u2014length 18\u201320 cm, wingspan 35\u201341 cm, and weight 40\u201390 g\u2014match Audubon's published ranges. Cornell independently confirms the 18\u201320 cm length but currently gives a 35 cm wingspan and 40\u2013100 g weight, reflecting source variation rather than a transcription error in this Audubon-based plate.",
+    "The ruler is internally consistent: 18 cm is at the bottom, 20 cm at the top, exactly four evenly spaced unlabeled interior ticks divide the range into five proportional segments, and the separate body-length label agrees with it. \u201cSCHEMATIC \u2014 NOT TO SCALE\u201d clearly prevents interpreting the printed bird as life-size.",
+    "The pale gray-and-white and checkered plumage treatments are supported by the reference photographs and allowed sources: nonbreeding birds are pale gray above and white below, while juveniles have checkered or speckled upperparts. No unsupported seasonal rewrite is required.",
+    "The composition cleanly separates the central specimen, measurement graphic, text, anatomical studies, and color swatches. Nothing resembles an unintended additional bird or an anatomical study attached to the primary specimen.",
+    "No place name, ZIP code, coordinates, map, range map, or local-observation detail appears."
+  ],
+  "location_free": true,
+  "passed": true,
+  "species_accuracy": 5,
+  "text_accuracy": 5,
+  "verification_sources": [
+    {
+      "title": "Sanderling Identification \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Sanderling/id"
+    },
+    {
+      "title": "Sanderling \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/sanderling"
+    },
+    {
+      "title": "Calidris alba (sanderling) \u2014 Animal Diversity Web",
+      "url": "https://animaldiversity.org/accounts/Calidris_alba/"
+    }
+  ]
+}

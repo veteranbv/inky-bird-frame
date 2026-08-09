@@ -1,0 +1,38 @@
+{
+  "behavior": "Runs rapidly with advancing and retreating waves, picking prey from the surface and probing wet sand for small invertebrates; often forages and roosts in flocks.",
+  "common_name": "Sanderling",
+  "family": "Scolopacidae",
+  "field_marks": [
+    "Small, plump shorebird with a rounded body",
+    "Straight, stout black bill about as long as the head",
+    "Round dark eye set in a plain, pale face",
+    "Black legs and feet",
+    "Pale gray upperparts and clean white underparts in nonbreeding plumage; juveniles show checkered upperparts",
+    "Long, pointed wings and a short tail; a bold white wing stripe shows in flight"
+  ],
+  "habitat": "Primarily wave-washed sandy beaches, tideflats, mudflats, rocky shores, and occasional inland lakeshores during migration and the nonbreeding season; breeds on exposed gravel, rocky ridges, and low-growing tundra near ponds or other wet areas.",
+  "measurements": {
+    "length": "18\u201320 cm",
+    "weight": "40\u201390 g",
+    "wingspan": "35\u201341 cm"
+  },
+  "palette": [
+    "white",
+    "pale gray",
+    "black",
+    "sandy brown",
+    "rusty brown"
+  ],
+  "scientific_name": "Calidris alba",
+  "sources": [
+    {
+      "title": "Sanderling Identification \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Sanderling/id"
+    },
+    {
+      "title": "Sanderling \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/sanderling"
+    }
+  ],
+  "taxon_id": 3849
+}
