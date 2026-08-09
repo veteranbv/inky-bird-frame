@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-09T21:30:24+00:00",
+  "generated_at": "2026-08-09T21:39:21+00:00",
   "schema_version": 1,
   "species": [
     {
@@ -1134,6 +1134,17 @@
       "scientific_name": "Melanerpes carolinus",
       "slug": "red-bellied-woodpecker",
       "taxon_id": 18205
+    },
+    {
+      "approved_at": "2026-08-09T21:39:21+00:00",
+      "common_name": "Red-breasted Nuthatch",
+      "display_path": "species/14823-red-breasted-nuthatch/display.png",
+      "display_sha256": "34735bdbf326b9c5aed60849a557321c31cebdad7703de6501406908aea987d6",
+      "portrait_path": "species/14823-red-breasted-nuthatch/portrait.png",
+      "portrait_sha256": "a1723294383c1e9ae7b7e9ab67bb9836a3fdef761ac717048cf43cf7afbf9cf7",
+      "scientific_name": "Sitta canadensis",
+      "slug": "red-breasted-nuthatch",
+      "taxon_id": 14823
     },
     {
       "approved_at": "2026-07-13T06:18:02+00:00",

@@ -1,0 +1,42 @@
+{
+  "behavior": "Active bark-forager that moves rapidly headfirst down, upward, and sideways along trunks and branches; probes bark crevices for insects and seeds, caches food, and has short, bouncy flight.",
+  "common_name": "Red-breasted Nuthatch",
+  "family": "Sittidae",
+  "field_marks": [
+    "Black crown with a bold black stripe through the eye",
+    "Broad white eyebrow and pale white face",
+    "Blue-gray back and wings with darker flight feathers",
+    "Rusty cinnamon breast, belly, and flanks",
+    "Long, straight, sharply pointed gray bill",
+    "Compact body with dark legs and a very short, square-tipped tail"
+  ],
+  "habitat": "Primarily mature coniferous and mixed forests, especially stands containing spruce, fir, pine, hemlock, or larch; may use other wooded habitats outside the breeding season.",
+  "measurements": {
+    "length": "11\u201312 cm (4.3\u20134.7 in)",
+    "weight": "8\u201313 g (0.3\u20130.5 oz)",
+    "wingspan": "17\u201321 cm (6.7\u20138.3 in)"
+  },
+  "palette": [
+    "blue-gray",
+    "rusty cinnamon",
+    "black",
+    "white",
+    "slate gray"
+  ],
+  "scientific_name": "Sitta canadensis",
+  "sources": [
+    {
+      "title": "Red-breasted Nuthatch Identification \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/red-breasted_nuthatch/id"
+    },
+    {
+      "title": "Red-breasted Nuthatch \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/red-breasted-nuthatch"
+    },
+    {
+      "title": "Sitta canadensis \u2014 Animal Diversity Web",
+      "url": "https://animaldiversity.org/accounts/Sitta_canadensis/"
+    }
+  ],
+  "taxon_id": 14823
+}

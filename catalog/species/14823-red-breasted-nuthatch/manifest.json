@@ -1,0 +1,156 @@
+{
+  "approved_at": "2026-08-09T21:39:21+00:00",
+  "assets": {
+    "display": {
+      "filename": "display.png",
+      "sha256": "34735bdbf326b9c5aed60849a557321c31cebdad7703de6501406908aea987d6"
+    },
+    "portrait": {
+      "filename": "portrait.png",
+      "sha256": "a1723294383c1e9ae7b7e9ab67bb9836a3fdef761ac717048cf43cf7afbf9cf7"
+    }
+  },
+  "common_name": "Red-breasted Nuthatch",
+  "generation": {
+    "attempt": 1,
+    "generated_at": "2026-08-09T21:39:21+00:00",
+    "generator": "Codex subscription / built-in gpt-image-2",
+    "max_attempts": 3,
+    "prompt_version": "field-journal-v4"
+  },
+  "profile": {
+    "behavior": "Active bark-forager that moves rapidly headfirst down, upward, and sideways along trunks and branches; probes bark crevices for insects and seeds, caches food, and has short, bouncy flight.",
+    "common_name": "Red-breasted Nuthatch",
+    "family": "Sittidae",
+    "field_marks": [
+      "Black crown with a bold black stripe through the eye",
+      "Broad white eyebrow and pale white face",
+      "Blue-gray back and wings with darker flight feathers",
+      "Rusty cinnamon breast, belly, and flanks",
+      "Long, straight, sharply pointed gray bill",
+      "Compact body with dark legs and a very short, square-tipped tail"
+    ],
+    "habitat": "Primarily mature coniferous and mixed forests, especially stands containing spruce, fir, pine, hemlock, or larch; may use other wooded habitats outside the breeding season.",
+    "measurements": {
+      "length": "11\u201312 cm (4.3\u20134.7 in)",
+      "weight": "8\u201313 g (0.3\u20130.5 oz)",
+      "wingspan": "17\u201321 cm (6.7\u20138.3 in)"
+    },
+    "palette": [
+      "blue-gray",
+      "rusty cinnamon",
+      "black",
+      "white",
+      "slate gray"
+    ],
+    "scientific_name": "Sitta canadensis",
+    "sources": [
+      {
+        "title": "Red-breasted Nuthatch Identification \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/red-breasted_nuthatch/id"
+      },
+      {
+        "title": "Red-breasted Nuthatch \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/red-breasted-nuthatch"
+      },
+      {
+        "title": "Sitta canadensis \u2014 Animal Diversity Web",
+        "url": "https://animaldiversity.org/accounts/Sitta_canadensis/"
+      }
+    ],
+    "taxon_id": 14823
+  },
+  "quality_review": {
+    "anatomy_accuracy": 4,
+    "composition_quality": 5,
+    "correction_findings": [],
+    "findings": [
+      "Species identity is correct: the primary specimen and supplementary studies show the diagnostic black cap and eyeline, broad white eyebrow, pale face, blue-gray upperparts, rusty-cinnamon underparts, compact body, short tail, and long pointed bill of Red-breasted Nuthatch.",
+      "The primary specimen is anatomically coherent and complete, with one head, one bill, two normally positioned wings including the naturally occluded far wing, two legs with gripping feet, and one short tail. Plumage boundaries and overall proportions agree with the reference photographs.",
+      "Both depicted bills are straight, sharply pointed, and proportionate to the head. Their closed profiles are coherent and consistent with the clearest side-profile reference; no malformed, truncated, reversed, or materially inconsistent mandible projection is evident.",
+      "The detached wing and head are clearly separated supplementary studies rather than additional birds or parts attached to the primary specimen. The wing has plausible layered coverts and flight feathers, and the head study repeats the correct facial pattern and bill structure.",
+      "All visible text was read in full. The common name, scientific name, family, habitat, behavior, six field-mark statements, palette, and measurement wording are correctly spelled and match the proposed facts without omissions, duplication, substitutions, or nonsensical text.",
+      "Audubon directly supports the printed ranges of 11\u201312 cm length, 17\u201321 cm wingspan, and 8\u201313 g weight. Animal Diversity Web reports compatible averages of 11.5 cm and 10 g. Cornell currently publishes a narrower 11 cm length and 18\u201320 cm wingspan while agreeing on the 8\u201313 g weight, but this does not invalidate the broader Audubon ranges.",
+      "The body-length ruler is internally consistent: 11 cm / 4.3 in is at the bottom, 12 cm / 4.7 in is at the top, values increase upward, and exactly four evenly spaced unlabeled interior ticks create five proportional segments. The repeated body-length range agrees with the endpoints, and \u201cSCHEMATIC \u2014 NOT TO SCALE\u201d clearly prevents interpretation as the printed bird\u2019s physical size.",
+      "The plate is cleanly organized and legible, with the main specimen dominant, supporting studies visually separate, and no text or diagram collisions.",
+      "No place name, ZIP code, coordinates, map, or local-observation detail appears."
+    ],
+    "location_free": true,
+    "passed": true,
+    "species_accuracy": 5,
+    "text_accuracy": 5,
+    "verification_sources": [
+      {
+        "title": "Red-breasted Nuthatch Identification \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Red-breasted_Nuthatch/id"
+      },
+      {
+        "title": "Red-breasted Nuthatch \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/red-breasted-nuthatch"
+      },
+      {
+        "title": "Sitta canadensis \u2014 Animal Diversity Web",
+        "url": "https://animaldiversity.org/accounts/Sitta_canadensis/"
+      }
+    ]
+  },
+  "references": [
+    {
+      "attribution": "no rights reserved",
+      "filename": "01-226568368.jpg",
+      "height": 1568,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/226568368/large.jpg",
+      "license_code": "cc0",
+      "observation_id": 133047361,
+      "observer": "lyneisfilm",
+      "photo_id": 226568368,
+      "sha256": "e52e5a90bef8a58611020c46d38bf758c93fe09ace0ae351ed32d839f6694263",
+      "source_url": "https://www.inaturalist.org/observations/133047361",
+      "width": 1919
+    },
+    {
+      "attribution": "no rights reserved",
+      "filename": "02-595255474.jpg",
+      "height": 1745,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/595255474/large.jpg",
+      "license_code": "cc0",
+      "observation_id": 328488726,
+      "observer": "terrybb",
+      "photo_id": 595255474,
+      "sha256": "4d0ab8ace6d0ff11cd184751c6521587d4d36f000d8428db3a77f0dc5e7edf54",
+      "source_url": "https://www.inaturalist.org/observations/328488726",
+      "width": 2000
+    },
+    {
+      "attribution": "(c) Matt Felperin, some rights reserved (CC BY)",
+      "filename": "03-366961489.jpg",
+      "height": 1365,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/366961489/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 207459786,
+      "observer": "mattyfelp",
+      "photo_id": 366961489,
+      "sha256": "b66b1ae9d607ce79a752d18118092c183fca4601d69fa5a8466071850c8a7bd0",
+      "source_url": "https://www.inaturalist.org/observations/207459786",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) Matt Muir, some rights reserved (CC BY)",
+      "filename": "04-176955918.jpeg",
+      "height": 1542,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/176955918/large.jpeg",
+      "license_code": "cc-by",
+      "observation_id": 105462354,
+      "observer": "muir",
+      "photo_id": 176955918,
+      "sha256": "e8943df94f59adf5d53e92833018853c2f90d947e245a82f4dd7dc6917020445",
+      "source_url": "https://www.inaturalist.org/observations/105462354",
+      "width": 2048
+    }
+  ],
+  "schema_version": 1,
+  "scientific_name": "Sitta canadensis",
+  "slug": "red-breasted-nuthatch",
+  "status": "approved",
+  "taxon_id": 14823
+}
