@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-09T22:16:03+00:00",
+  "generated_at": "2026-08-09T22:25:21+00:00",
   "schema_version": 1,
   "species": [
     {
@@ -1299,6 +1299,17 @@
       "scientific_name": "Calidris pusilla",
       "slug": "semipalmated-sandpiper",
       "taxon_id": 3862
+    },
+    {
+      "approved_at": "2026-08-09T22:25:21+00:00",
+      "common_name": "Snowy Egret",
+      "display_path": "species/4940-snowy-egret/display.png",
+      "display_sha256": "8f96680b704e492cbb81898255c9d226fc7ed67f83cf0b9130c5f2b157b04ade",
+      "portrait_path": "species/4940-snowy-egret/portrait.png",
+      "portrait_sha256": "9e17887d6e3678d572a6083ca4c3cb93b7e642513b02a5d52ed9348cfd6708af",
+      "scientific_name": "Egretta thula",
+      "slug": "snowy-egret",
+      "taxon_id": 4940
     },
     {
       "approved_at": "2026-08-03T14:12:03+00:00",
