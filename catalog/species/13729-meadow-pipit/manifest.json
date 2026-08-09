@@ -1,0 +1,165 @@
+{
+  "approved_at": "2026-08-09T20:27:44+00:00",
+  "assets": {
+    "display": {
+      "filename": "display.png",
+      "sha256": "0008252f8290d16adb639b70fc86aefc070c834750c6ddc46edf926200375fe3"
+    },
+    "portrait": {
+      "filename": "portrait.png",
+      "sha256": "859f9f331bf56ee6f0bdee24a1b60a556d1109fc34b65f8e47a9bc7c1a9eead0"
+    }
+  },
+  "common_name": "Meadow Pipit",
+  "generation": {
+    "attempt": 1,
+    "generated_at": "2026-08-09T20:27:44+00:00",
+    "generator": "Codex subscription / built-in gpt-image-2",
+    "max_attempts": 3,
+    "prompt_version": "field-journal-v4"
+  },
+  "profile": {
+    "behavior": "Terrestrial and often inconspicuous; forages on the ground for small insects and other invertebrates, adding seeds and berries especially in winter. When flushed, it rises in a slightly bounding flight that can reveal the white sides of the tail. It also uses low elevated perches and performs a short, repetitive song flight.",
+    "common_name": "Meadow Pipit",
+    "family": "Motacillidae",
+    "field_marks": [
+      "Small, slender pipit with a relatively long tail",
+      "Fine, straight, sharply pointed bill",
+      "Dark eye with a narrow pale eye-ring and weak pale eyebrow",
+      "Olive-brown upperparts with dark streaking and pale-edged wing feathers",
+      "Buff-white underparts with bold dark streaks across the breast and flanks",
+      "Pale pinkish legs; brown tail with narrow white outer edges"
+    ],
+    "habitat": "Open ground with low vegetation, including grassland, pasture, heath, moorland, bogs, and lightly farmed fields; also salt marsh and occasionally open woodland in winter.",
+    "measurements": {
+      "length": "14.5\u201315 cm",
+      "weight": "15\u201322 g",
+      "wingspan": "22\u201325 cm"
+    },
+    "palette": [
+      "olive brown",
+      "dark brown",
+      "warm buff",
+      "creamy white",
+      "dusty pink"
+    ],
+    "scientific_name": "Anthus pratensis",
+    "sources": [
+      {
+        "title": "Meadow Pipit \u2014 eBird",
+        "url": "https://ebird.org/species/meapip1"
+      },
+      {
+        "title": "Meadow pipit \u2014 Wikipedia",
+        "url": "https://en.wikipedia.org/wiki/Meadow_pipit"
+      },
+      {
+        "title": "Pipit farlouse \u2014 Wikip\u00e9dia",
+        "url": "https://fr.wikipedia.org/wiki/Pipit_farlouse"
+      }
+    ],
+    "taxon_id": 13729
+  },
+  "quality_review": {
+    "anatomy_accuracy": 5,
+    "composition_quality": 5,
+    "correction_findings": [],
+    "findings": [
+      "The species identity is correct. The illustrated small, slender, heavily streaked pipit agrees with the attached Meadow Pipit references, and the labels \u201cMeadow Pipit,\u201d \u201cAnthus pratensis,\u201d and \u201cMotacillidae\u201d are verified.",
+      "The primary specimen is a single complete bird with one head, one pointed beak, two anatomically coherent wings with the far wing largely occluded by the lateral pose, two legs, two anisodactyl feet, and one feathered tail. No duplicated or malformed attached parts are present.",
+      "The detached wing and head are clearly separated supplementary studies. Both are anatomically plausible, internally consistent with the primary specimen, and do not appear attached to it.",
+      "The primary and supplementary heads have consistent fine, straight, sharply pointed bills. Neither bill is reversed, truncated, ambiguously terminated, or materially inconsistent with the clearest side-profile references.",
+      "Plumage and proportions support Meadow Pipit: olive-brown streaked upperparts, pale-edged wing feathers, buff-white underparts with strong breast and flank streaking, a weak pale eyebrow and narrow eye-ring, pinkish legs, relatively long tail, and pale outer tail edges.",
+      "The legs, toes, curved claws, folded wing structure, primary feathers, tail-feather arrangement, eye placement, and body posture are coherent and credible for a terrestrial pipit.",
+      "All printed measurements are verified: length 14.5\u201315 cm, weight 15\u201322 g, and wingspan 22\u201325 cm. The English Wikipedia page directly supports length and weight; the French Wikipedia page directly supports the 22\u201325 cm wingspan.",
+      "The ruler is internally consistent: 14.5 cm is the lower endpoint, 15 cm is the upper endpoint, values increase upward, and exactly four evenly spaced unlabeled interior ticks divide the range into five proportional segments. The separate \u201cBODY LENGTH: 14.5\u201315 cm\u201d statement agrees with it, and \u201cSCHEMATIC \u2014 NOT TO SCALE\u201d prevents the printed specimen from being presented at literal size.",
+      "The habitat paragraph matches the proposed text completely and agrees with direct sources describing open grassy habitats, moorland, bogs, rough grassland, pasture, low-intensity farmland, salt marsh, and occasional winter use of open woodland.",
+      "The behavior paragraph matches the proposed text completely. Direct sources support ground feeding, insects and other invertebrates, winter seeds and berries, inconspicuous behavior, slightly bounding flushed flight, visible white tail sides, elevated perches, and a short flight carrying a simple repetitive song.",
+      "All six field-mark bullets match the proposed wording, spelling, and order without omissions, substitutions, duplicated words, or nonsensical text.",
+      "The palette contains all five proposed labels\u2014\u201colive brown,\u201d \u201cdark brown,\u201d \u201cwarm buff,\u201d \u201ccreamy white,\u201d and \u201cdusty pink\u201d\u2014and the swatches correspond appropriately to the illustration.",
+      "The plate is cleanly organized, legible, visually balanced, and appropriately distinguishes the principal specimen, supplementary studies, measurement schematic, and palette.",
+      "No place name, ZIP code, coordinates, map, locality label, or local-observation detail appears."
+    ],
+    "location_free": true,
+    "passed": true,
+    "species_accuracy": 5,
+    "text_accuracy": 5,
+    "verification_sources": [
+      {
+        "title": "Meadow Pipit \u2014 eBird",
+        "url": "https://ebird.org/species/meapip1"
+      },
+      {
+        "title": "Meadow Pipit \u2014 Birds of the World",
+        "url": "https://birdsoftheworld.org/bow/species/meapip1/cur/introduction"
+      },
+      {
+        "title": "Meadow pipit \u2014 Wikipedia",
+        "url": "https://en.wikipedia.org/wiki/Meadow_pipit"
+      },
+      {
+        "title": "Pipit farlouse \u2014 Wikip\u00e9dia",
+        "url": "https://fr.wikipedia.org/wiki/Pipit_farlouse"
+      }
+    ]
+  },
+  "references": [
+    {
+      "attribution": "(c) carabus123, some rights reserved (CC BY)",
+      "filename": "01-666058817.jpg",
+      "height": 2048,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/666058817/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 364841150,
+      "observer": "carabus123",
+      "photo_id": 666058817,
+      "sha256": "a537aa9214c7204acadaedb3d5798ac8a83d3076a31bfff8cd40c7d9bbe81e4a",
+      "source_url": "https://www.inaturalist.org/observations/364841150",
+      "width": 945
+    },
+    {
+      "attribution": "no rights reserved",
+      "filename": "02-226052137.jpeg",
+      "height": 1704,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/226052137/large.jpeg",
+      "license_code": "cc0",
+      "observation_id": 132772212,
+      "observer": "tcager",
+      "photo_id": 226052137,
+      "sha256": "40fd1759882e76785366fd0903c5c98dc217303c786f14540bc071d96da6aa0d",
+      "source_url": "https://www.inaturalist.org/observations/132772212",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) Donald Davesne, some rights reserved (CC BY)",
+      "filename": "03-117240441.jpg",
+      "height": 1089,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/117240441/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 71958596,
+      "observer": "donalddavesne",
+      "photo_id": 117240441,
+      "sha256": "bb632f81611015215a57d47b44c545b1594e000c21876c0f41233e69f0fd4fba",
+      "source_url": "https://www.inaturalist.org/observations/71958596",
+      "width": 1638
+    },
+    {
+      "attribution": "(c) Stefan Haag, some rights reserved (CC BY)",
+      "filename": "04-527543140.jpg",
+      "height": 1929,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/527543140/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 293116463,
+      "observer": "elebew",
+      "photo_id": 527543140,
+      "sha256": "0ce97be718761d3c5303d5b242f828b6b2e009e97e9deb49ee7a679964c86212",
+      "source_url": "https://www.inaturalist.org/observations/293116463",
+      "width": 1929
+    }
+  ],
+  "schema_version": 1,
+  "scientific_name": "Anthus pratensis",
+  "slug": "meadow-pipit",
+  "status": "approved",
+  "taxon_id": 13729
+}
