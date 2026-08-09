@@ -1,0 +1,39 @@
+{
+  "anatomy_accuracy": 5,
+  "composition_quality": 5,
+  "correction_findings": [],
+  "findings": [
+    "Species identity is correct: the primary specimen depicts an adult male Great-tailed Grackle with glossy blue-violet black plumage, a pale-yellow eye, flat-headed profile, stout straight black bill, long legs, slender body, folded wing, and exceptionally long tapered tail matching the references and verified descriptions.",
+    "The primary specimen is complete and singular, with one head, one beak, two anatomically consistent wings (the far wing is naturally occluded), two legs with plausible perching feet, and one tail. The detached wing and head are clearly separate supplementary studies and are not attached to the specimen.",
+    "Both depicted heads have complete, consistently proportioned mandibles. The upper mandible projects slightly beyond the lower in the same direction and to a similar modest degree in both studies, consistent with the clearest side-profile references; neither bill appears truncated, reversed, or malformed.",
+    "The supplementary wing has coherent coverts, secondaries, and tapered primaries without duplicated or malformed anatomy.",
+    "Every visible taxonomic, habitat, behavior, field-mark, palette, and measurement line is legible and matches the proposed wording without omissions, duplications, substitutions, spelling errors, or nonsensical text.",
+    "The scientific name Quiscalus mexicanus and family Icteridae are correct. The habitat, flocking and foraging behavior, communal roosting, and male display description are supported by the direct sources.",
+    "The printed ranges 38\u201358 cm, 46\u201361 cm, and 94\u2013265 g exactly combine Audubon's published female minima and male maxima. Cornell presents narrower generalized ranges, but the plate's broader sex-combined values are directly supported by Audubon's sex-specific measurements.",
+    "The body-length ruler is internally consistent: 38 cm is at the bottom, 58 cm at the top, values increase upward, units and endpoints match the printed range, and exactly four evenly spaced unlabeled interior ticks divide it into five proportional segments. The label SCHEMATIC \u2014 NOT TO SCALE prevents it from implying that the printed bird is life-size.",
+    "The plate contains no place name, ZIP code, coordinates, map, or local-observation detail.",
+    "The balanced specimen, reference studies, palette, text blocks, and ruler form a clear, polished scientific field-journal composition."
+  ],
+  "location_free": true,
+  "passed": true,
+  "species_accuracy": 5,
+  "text_accuracy": 5,
+  "verification_sources": [
+    {
+      "title": "Great-tailed Grackle Identification \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Great-tailed_Grackle/id"
+    },
+    {
+      "title": "Great-tailed Grackle Life History \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Great-tailed_Grackle/lifehistory"
+    },
+    {
+      "title": "Great-tailed Grackle \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/great-tailed-grackle"
+    },
+    {
+      "title": "Quiscalus mexicanus \u2014 Animal Diversity Web",
+      "url": "https://animaldiversity.org/accounts/Quiscalus_mexicanus/"
+    }
+  ]
+}

@@ -1,0 +1,165 @@
+{
+  "approved_at": "2026-08-09T19:34:54+00:00",
+  "assets": {
+    "display": {
+      "filename": "display.png",
+      "sha256": "6828fac2aad9b9908f489a0407d56c2931cf89dc48a236a0a1d08bdc9141a813"
+    },
+    "portrait": {
+      "filename": "portrait.png",
+      "sha256": "58219867ca9877dd6e8f5a01d34a90554591f648a4b7d898abd14091c2a044ed"
+    }
+  },
+  "common_name": "Great-tailed Grackle",
+  "generation": {
+    "attempt": 1,
+    "generated_at": "2026-08-09T19:34:54+00:00",
+    "generator": "Codex subscription / built-in gpt-image-2",
+    "max_attempts": 3,
+    "prompt_version": "field-journal-v4"
+  },
+  "profile": {
+    "behavior": "Highly social and vocal; usually forages in flocks on the ground or in shallow water, eating varied plant and animal foods. Large groups gather at communal roosts, while displaying males ruffle their plumage, fan the tail, and point the bill upward.",
+    "common_name": "Great-tailed Grackle",
+    "family": "Icteridae",
+    "field_marks": [
+      "Exceptionally long, tapered tail, often folded into a V-shaped keel",
+      "Adult male glossy blue-black to violet-black overall",
+      "Female dark brown above and warmer buff-brown below",
+      "Adult pale-yellow eye contrasts with the dark head",
+      "Stout, straight black bill and flat-headed profile",
+      "Long, dark legs and slender body"
+    ],
+    "habitat": "Open and semi-open landscapes, especially near water, including marsh edges, irrigated fields, farmland, lawns, parks, groves, and thickets; generally absent from dense forest and waterless desert.",
+    "measurements": {
+      "length": "38\u201358 cm (15\u201323 in)",
+      "weight": "94\u2013265 g (3.3\u20139.4 oz)",
+      "wingspan": "46\u201361 cm (18\u201324 in)"
+    },
+    "palette": [
+      "iridescent blue-black",
+      "violet-black",
+      "dark brown",
+      "warm buff",
+      "pale yellow"
+    ],
+    "scientific_name": "Quiscalus mexicanus",
+    "sources": [
+      {
+        "title": "Great-tailed Grackle Identification \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Great-tailed_Grackle/id"
+      },
+      {
+        "title": "Great-tailed Grackle Life History \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Great-tailed_Grackle/lifehistory"
+      },
+      {
+        "title": "Great-tailed Grackle \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/great-tailed-grackle"
+      },
+      {
+        "title": "Quiscalus mexicanus \u2014 Animal Diversity Web",
+        "url": "https://animaldiversity.org/accounts/Quiscalus_mexicanus/"
+      }
+    ],
+    "taxon_id": 9607
+  },
+  "quality_review": {
+    "anatomy_accuracy": 5,
+    "composition_quality": 5,
+    "correction_findings": [],
+    "findings": [
+      "Species identity is correct: the primary specimen depicts an adult male Great-tailed Grackle with glossy blue-violet black plumage, a pale-yellow eye, flat-headed profile, stout straight black bill, long legs, slender body, folded wing, and exceptionally long tapered tail matching the references and verified descriptions.",
+      "The primary specimen is complete and singular, with one head, one beak, two anatomically consistent wings (the far wing is naturally occluded), two legs with plausible perching feet, and one tail. The detached wing and head are clearly separate supplementary studies and are not attached to the specimen.",
+      "Both depicted heads have complete, consistently proportioned mandibles. The upper mandible projects slightly beyond the lower in the same direction and to a similar modest degree in both studies, consistent with the clearest side-profile references; neither bill appears truncated, reversed, or malformed.",
+      "The supplementary wing has coherent coverts, secondaries, and tapered primaries without duplicated or malformed anatomy.",
+      "Every visible taxonomic, habitat, behavior, field-mark, palette, and measurement line is legible and matches the proposed wording without omissions, duplications, substitutions, spelling errors, or nonsensical text.",
+      "The scientific name Quiscalus mexicanus and family Icteridae are correct. The habitat, flocking and foraging behavior, communal roosting, and male display description are supported by the direct sources.",
+      "The printed ranges 38\u201358 cm, 46\u201361 cm, and 94\u2013265 g exactly combine Audubon's published female minima and male maxima. Cornell presents narrower generalized ranges, but the plate's broader sex-combined values are directly supported by Audubon's sex-specific measurements.",
+      "The body-length ruler is internally consistent: 38 cm is at the bottom, 58 cm at the top, values increase upward, units and endpoints match the printed range, and exactly four evenly spaced unlabeled interior ticks divide it into five proportional segments. The label SCHEMATIC \u2014 NOT TO SCALE prevents it from implying that the printed bird is life-size.",
+      "The plate contains no place name, ZIP code, coordinates, map, or local-observation detail.",
+      "The balanced specimen, reference studies, palette, text blocks, and ruler form a clear, polished scientific field-journal composition."
+    ],
+    "location_free": true,
+    "passed": true,
+    "species_accuracy": 5,
+    "text_accuracy": 5,
+    "verification_sources": [
+      {
+        "title": "Great-tailed Grackle Identification \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Great-tailed_Grackle/id"
+      },
+      {
+        "title": "Great-tailed Grackle Life History \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Great-tailed_Grackle/lifehistory"
+      },
+      {
+        "title": "Great-tailed Grackle \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/great-tailed-grackle"
+      },
+      {
+        "title": "Quiscalus mexicanus \u2014 Animal Diversity Web",
+        "url": "https://animaldiversity.org/accounts/Quiscalus_mexicanus/"
+      }
+    ]
+  },
+  "references": [
+    {
+      "attribution": "no rights reserved",
+      "filename": "01-339601192.jpg",
+      "height": 1365,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/339601192/large.jpg",
+      "license_code": "cc0",
+      "observation_id": 193327633,
+      "observer": "rawcomposition",
+      "photo_id": 339601192,
+      "sha256": "1f8f3372d6675ffe577200ca5798e204e0d7ce831c52b26e362a907dc555803a",
+      "source_url": "https://www.inaturalist.org/observations/193327633",
+      "width": 2048
+    },
+    {
+      "attribution": "no rights reserved",
+      "filename": "02-102703179.jpeg",
+      "height": 1365,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/102703179/large.jpeg",
+      "license_code": "cc0",
+      "observation_id": 63938609,
+      "observer": "radrat",
+      "photo_id": 102703179,
+      "sha256": "03ef1ecbc4c11ba895d7bf074e1655796faa69ee5d658376749717dbee67e03f",
+      "source_url": "https://www.inaturalist.org/observations/63938609",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) Anthony Batista, some rights reserved (CC BY)",
+      "filename": "03-216292658.jpg",
+      "height": 2048,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/216292658/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 127407647,
+      "observer": "tonybatista",
+      "photo_id": 216292658,
+      "sha256": "0bf272d8141013eaa27ac4b15c1b3ad5084a0017fd5b370d256d6bfef0a44ccf",
+      "source_url": "https://www.inaturalist.org/observations/127407647",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) Annika Lindqvist, some rights reserved (CC BY)",
+      "filename": "04-32490800.jpeg",
+      "height": 1533,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/32490800/large.jpeg",
+      "license_code": "cc-by",
+      "observation_id": 21033267,
+      "observer": "annikaml",
+      "photo_id": 32490800,
+      "sha256": "ba4aa0e89420e03a9c8cb5af2e5180e863ed206cd0ae4af4b62eb314120d5b41",
+      "source_url": "https://www.inaturalist.org/observations/21033267",
+      "width": 2048
+    }
+  ],
+  "schema_version": 1,
+  "scientific_name": "Quiscalus mexicanus",
+  "slug": "great-tailed-grackle",
+  "status": "approved",
+  "taxon_id": 9607
+}

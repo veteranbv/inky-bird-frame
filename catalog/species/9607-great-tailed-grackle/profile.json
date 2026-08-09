@@ -1,0 +1,46 @@
+{
+  "behavior": "Highly social and vocal; usually forages in flocks on the ground or in shallow water, eating varied plant and animal foods. Large groups gather at communal roosts, while displaying males ruffle their plumage, fan the tail, and point the bill upward.",
+  "common_name": "Great-tailed Grackle",
+  "family": "Icteridae",
+  "field_marks": [
+    "Exceptionally long, tapered tail, often folded into a V-shaped keel",
+    "Adult male glossy blue-black to violet-black overall",
+    "Female dark brown above and warmer buff-brown below",
+    "Adult pale-yellow eye contrasts with the dark head",
+    "Stout, straight black bill and flat-headed profile",
+    "Long, dark legs and slender body"
+  ],
+  "habitat": "Open and semi-open landscapes, especially near water, including marsh edges, irrigated fields, farmland, lawns, parks, groves, and thickets; generally absent from dense forest and waterless desert.",
+  "measurements": {
+    "length": "38\u201358 cm (15\u201323 in)",
+    "weight": "94\u2013265 g (3.3\u20139.4 oz)",
+    "wingspan": "46\u201361 cm (18\u201324 in)"
+  },
+  "palette": [
+    "iridescent blue-black",
+    "violet-black",
+    "dark brown",
+    "warm buff",
+    "pale yellow"
+  ],
+  "scientific_name": "Quiscalus mexicanus",
+  "sources": [
+    {
+      "title": "Great-tailed Grackle Identification \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Great-tailed_Grackle/id"
+    },
+    {
+      "title": "Great-tailed Grackle Life History \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Great-tailed_Grackle/lifehistory"
+    },
+    {
+      "title": "Great-tailed Grackle \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/great-tailed-grackle"
+    },
+    {
+      "title": "Quiscalus mexicanus \u2014 Animal Diversity Web",
+      "url": "https://animaldiversity.org/accounts/Quiscalus_mexicanus/"
+    }
+  ],
+  "taxon_id": 9607
+}
