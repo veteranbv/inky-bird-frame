@@ -25,9 +25,10 @@
   <text x="74" y="124" style="font-family:'Inter',-apple-system,'Segoe UI',sans-serif;font-size:16px;font-weight:600;letter-spacing:1.6px;" fill="#0969da">UPSTREAM SERVICES</text>
   <circle cx="77.0" cy="168" r="4" fill="#0969da"/>
   <text x="92.0" y="174" style="font-family:'Inter',-apple-system,'Segoe UI',sans-serif;font-size:21.5px;font-weight:600;" fill="#1f2328">Observation services</text>
-  <text x="92.0" y="212" style="font-family:'Inter',-apple-system,'Segoe UI',sans-serif;font-size:20.5px;font-weight:400;" fill="#59636e">iNaturalist, eBird,</text>
-  <text x="92.0" y="242" style="font-family:'Inter',-apple-system,'Segoe UI',sans-serif;font-size:20.5px;font-weight:400;" fill="#59636e">BirdWeather, BirdNET-Go,</text>
-  <text x="92.0" y="272" style="font-family:'Inter',-apple-system,'Segoe UI',sans-serif;font-size:20.5px;font-weight:400;" fill="#59636e">BirdNET Analyzer, Bird Buddy.</text>
+  <text x="92.0" y="204" style="font-family:'Inter',-apple-system,'Segoe UI',sans-serif;font-size:20.5px;font-weight:400;" fill="#59636e">iNaturalist, eBird,</text>
+  <text x="92.0" y="232" style="font-family:'Inter',-apple-system,'Segoe UI',sans-serif;font-size:20.5px;font-weight:400;" fill="#59636e">BirdWeather, BirdNET-Go,</text>
+  <text x="92.0" y="260" style="font-family:'Inter',-apple-system,'Segoe UI',sans-serif;font-size:20.5px;font-weight:400;" fill="#59636e">BirdNET Analyzer,</text>
+  <text x="92.0" y="288" style="font-family:'Inter',-apple-system,'Segoe UI',sans-serif;font-size:20.5px;font-weight:400;" fill="#59636e">and Bird Buddy.</text>
   <text x="92.0" y="320" style="font-family:'Inter',-apple-system,'Segoe UI',sans-serif;font-size:17px;font-weight:400;" fill="#59636e">Configured sources only</text>
   <circle cx="365.0" cy="168" r="4" fill="#0969da"/>
   <text x="380.0" y="174" style="font-family:'Inter',-apple-system,'Segoe UI',sans-serif;font-size:21.5px;font-weight:600;" fill="#1f2328">Reference &amp; research</text>
