@@ -280,7 +280,19 @@ class ConfigTests(unittest.TestCase):
             path = Path(temporary) / "config.toml"
             path.write_text(configured)
 
-            with self.assertRaisesRegex(ConfigurationError, "invalid port"):
+            with self.assertRaisesRegex(ConfigurationError, "not a valid HTTP or HTTPS URL"):
+                load_config(path)
+
+    def test_birdnet_go_url_rejects_malformed_bracketed_host(self) -> None:
+        configured = CONFIG.replace(
+            "[discovery]\n",
+            '[discovery]\nsources = ["birdnet-go"]\nbirdnet_go_url = "http://[::1"\n',
+        )
+        with TemporaryDirectory() as temporary:
+            path = Path(temporary) / "config.toml"
+            path.write_text(configured)
+
+            with self.assertRaisesRegex(ConfigurationError, "not a valid HTTP or HTTPS URL"):
                 load_config(path)
 
     def test_birdnet_go_url_rejects_empty_query_or_fragment_delimiter(self) -> None:
