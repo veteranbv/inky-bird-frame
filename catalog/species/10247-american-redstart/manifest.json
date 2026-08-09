@@ -1,0 +1,161 @@
+{
+  "approved_at": "2026-08-09T13:09:59+00:00",
+  "assets": {
+    "display": {
+      "filename": "display.png",
+      "sha256": "b46bc8edfa7745a48a6fc8713fc97f2d12dfd3938427c3d0b5b481c913bca28a"
+    },
+    "portrait": {
+      "filename": "portrait.png",
+      "sha256": "13196e64ce711025128ea8f529506b77ddee16f85e5dee8f9b526acdcd6ba653"
+    }
+  },
+  "common_name": "American Redstart",
+  "generation": {
+    "attempt": 2,
+    "correction_source_sha256": "fbc3a95b4e6fa2808742e5ff3f817af711622c4021f90dcce3b7db0e5e5077d1",
+    "generated_at": "2026-08-09T13:09:59+00:00",
+    "generator": "Codex subscription / built-in gpt-image-2",
+    "max_attempts": 3,
+    "prompt_version": "field-journal-v4"
+  },
+  "profile": {
+    "behavior": "Highly active insectivore that flits through foliage, gleans prey, and darts after insects in flight. Frequently flicks and fans its wings and tail to flush prey; migrates mostly at night and defends territories.",
+    "common_name": "American Redstart",
+    "family": "Parulidae",
+    "field_marks": [
+      "Small, slim warbler with a broad, flat black bill and dark eye",
+      "Adult male mostly black with vivid orange patches on the sides, wings, and tail",
+      "Female and immature male gray and olive-brown with yellow to yellow-orange patches",
+      "Pale white to gray belly contrasts with the darker upperparts",
+      "Fairly long dark tail with colored basal panels; legs and feet black"
+    ],
+    "habitat": "Moist, open deciduous and mixed woodland, especially second-growth forest with a dense shrubby layer; also thickets and streamside woods. During migration it uses varied wooded or shrubby habitats, while nonbreeding habitats include forest, scrub, and mangroves.",
+    "measurements": {
+      "length": "11\u201313 cm (4.3\u20135.1 in)",
+      "weight": "6\u20139 g (0.2\u20130.3 oz)",
+      "wingspan": "16\u201319 cm (6.3\u20137.5 in)"
+    },
+    "palette": [
+      "coal black",
+      "flame orange",
+      "golden yellow",
+      "soft gray",
+      "creamy white"
+    ],
+    "scientific_name": "Setophaga ruticilla",
+    "sources": [
+      {
+        "title": "American Redstart Identification \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/American_Redstart/id"
+      },
+      {
+        "title": "American Redstart Life History \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/American_Redstart/lifehistory"
+      },
+      {
+        "title": "Setophaga ruticilla \u2014 Animal Diversity Web",
+        "url": "https://animaldiversity.org/accounts/Setophaga_ruticilla/"
+      },
+      {
+        "title": "American Redstart \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/american-redstart"
+      }
+    ],
+    "taxon_id": 10247
+  },
+  "quality_review": {
+    "anatomy_accuracy": 4,
+    "composition_quality": 5,
+    "correction_findings": [],
+    "findings": [
+      "Live sources confirm the identity as American Redstart, Setophaga ruticilla, family Parulidae.",
+      "The printed length 11\u201313 cm (4.3\u20135.1 in), weight 6\u20139 g (0.2\u20130.3 oz), and wingspan 16\u201319 cm (6.3\u20137.5 in) exactly match Cornell's published ranges. Audubon publishes a slightly broader 16\u201320 cm wingspan, but this does not invalidate the directly supported Cornell range.",
+      "Every visible prose line, name, measurement, and field-mark statement matches the proposed text without spelling, number, word-order, duplication, omission, or substitution errors.",
+      "The primary specimen is identifiable as an adult male: black head and upperparts, white lower underparts, vivid orange side patches, orange wing patches, and orange basal tail panels agree with the male reference photos and live descriptions.",
+      "The bill is short, dark, pointed, and relatively broad and flat; both primary and supplementary heads have coherent, consistently proportioned, co-terminal mandibles. The eye, legs, feet, folded wing, and long tail are structurally plausible. The primary bird is slightly fuller-bodied than the clearest references but remains within plausible posture variation.",
+      "The primary specimen is a single lateral-view bird with one head, one beak, two legs, two anatomically implied wings (the far wing is naturally occluded), and one tail. No attached duplicate anatomy is present.",
+      "The detached wing and head are clearly separate supplementary studies. Both are coherent and do not appear attached to the primary specimen; the wing correctly emphasizes the orange basal flight-feather region.",
+      "The body-length ruler repeats the verified 11\u201313 cm (4.3\u20135.1 in) range, has matching units, two endpoints, and exactly four evenly spaced unlabeled interior ticks forming five proportional segments. No conflicting marker appears, and \u201cSCHEMATIC \u2014 NOT TO SCALE\u201d clearly prevents interpretation as the printed bird's physical size.",
+      "The five swatches correspond in order to coal black, flame orange, golden yellow, soft gray, and creamy white, consistent with the plate text and documented plumages.",
+      "No place name, ZIP code, coordinates, map, or local-observation detail appears."
+    ],
+    "location_free": true,
+    "passed": true,
+    "species_accuracy": 5,
+    "text_accuracy": 5,
+    "verification_sources": [
+      {
+        "title": "American Redstart Identification \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/American_Redstart/id"
+      },
+      {
+        "title": "Setophaga ruticilla \u2014 Animal Diversity Web",
+        "url": "https://animaldiversity.org/accounts/Setophaga_ruticilla/"
+      },
+      {
+        "title": "American Redstart \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/american-redstart"
+      }
+    ]
+  },
+  "references": [
+    {
+      "attribution": "no rights reserved",
+      "filename": "01-154868013.jpg",
+      "height": 1348,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/154868013/large.jpg",
+      "license_code": "cc0",
+      "observation_id": 93438785,
+      "observer": "davidfbird",
+      "photo_id": 154868013,
+      "sha256": "3857b902da738e06f9de6c1002d31fa266f4ca0a894214ee276e2a619f2ed1d8",
+      "source_url": "https://www.inaturalist.org/observations/93438785",
+      "width": 1804
+    },
+    {
+      "attribution": "(c) Peter Chen 2.0, some rights reserved (CC BY)",
+      "filename": "02-71956210.jpg",
+      "height": 900,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/71956210/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 45380114,
+      "observer": "peterwchen",
+      "photo_id": 71956210,
+      "sha256": "d6c505e240a1b00c3360e1c97c5e56ad00acde30e6faae2b793d599def048973",
+      "source_url": "https://www.inaturalist.org/observations/45380114",
+      "width": 1200
+    },
+    {
+      "attribution": "no rights reserved",
+      "filename": "03-339600708.jpg",
+      "height": 1365,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/339600708/large.jpg",
+      "license_code": "cc0",
+      "observation_id": 193327356,
+      "observer": "rawcomposition",
+      "photo_id": 339600708,
+      "sha256": "4b307506b5138325543b29bf52163aa8d8b945e0b8f8222268304f6df97e2c51",
+      "source_url": "https://www.inaturalist.org/observations/193327356",
+      "width": 2048
+    },
+    {
+      "attribution": "no rights reserved",
+      "filename": "04-198925231.jpeg",
+      "height": 1365,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/198925231/large.jpeg",
+      "license_code": "cc0",
+      "observation_id": 117771853,
+      "observer": "radrat",
+      "photo_id": 198925231,
+      "sha256": "28ec9fd351639c5d84a9ac588e8a541ed32b6faaebeace37a067b03a85c09c7b",
+      "source_url": "https://www.inaturalist.org/observations/117771853",
+      "width": 2048
+    }
+  ],
+  "schema_version": 1,
+  "scientific_name": "Setophaga ruticilla",
+  "slug": "american-redstart",
+  "status": "approved",
+  "taxon_id": 10247
+}

@@ -1,0 +1,35 @@
+{
+  "anatomy_accuracy": 4,
+  "composition_quality": 5,
+  "correction_findings": [],
+  "findings": [
+    "Live sources confirm the identity as American Redstart, Setophaga ruticilla, family Parulidae.",
+    "The printed length 11\u201313 cm (4.3\u20135.1 in), weight 6\u20139 g (0.2\u20130.3 oz), and wingspan 16\u201319 cm (6.3\u20137.5 in) exactly match Cornell's published ranges. Audubon publishes a slightly broader 16\u201320 cm wingspan, but this does not invalidate the directly supported Cornell range.",
+    "Every visible prose line, name, measurement, and field-mark statement matches the proposed text without spelling, number, word-order, duplication, omission, or substitution errors.",
+    "The primary specimen is identifiable as an adult male: black head and upperparts, white lower underparts, vivid orange side patches, orange wing patches, and orange basal tail panels agree with the male reference photos and live descriptions.",
+    "The bill is short, dark, pointed, and relatively broad and flat; both primary and supplementary heads have coherent, consistently proportioned, co-terminal mandibles. The eye, legs, feet, folded wing, and long tail are structurally plausible. The primary bird is slightly fuller-bodied than the clearest references but remains within plausible posture variation.",
+    "The primary specimen is a single lateral-view bird with one head, one beak, two legs, two anatomically implied wings (the far wing is naturally occluded), and one tail. No attached duplicate anatomy is present.",
+    "The detached wing and head are clearly separate supplementary studies. Both are coherent and do not appear attached to the primary specimen; the wing correctly emphasizes the orange basal flight-feather region.",
+    "The body-length ruler repeats the verified 11\u201313 cm (4.3\u20135.1 in) range, has matching units, two endpoints, and exactly four evenly spaced unlabeled interior ticks forming five proportional segments. No conflicting marker appears, and \u201cSCHEMATIC \u2014 NOT TO SCALE\u201d clearly prevents interpretation as the printed bird's physical size.",
+    "The five swatches correspond in order to coal black, flame orange, golden yellow, soft gray, and creamy white, consistent with the plate text and documented plumages.",
+    "No place name, ZIP code, coordinates, map, or local-observation detail appears."
+  ],
+  "location_free": true,
+  "passed": true,
+  "species_accuracy": 5,
+  "text_accuracy": 5,
+  "verification_sources": [
+    {
+      "title": "American Redstart Identification \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/American_Redstart/id"
+    },
+    {
+      "title": "Setophaga ruticilla \u2014 Animal Diversity Web",
+      "url": "https://animaldiversity.org/accounts/Setophaga_ruticilla/"
+    },
+    {
+      "title": "American Redstart \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/american-redstart"
+    }
+  ]
+}

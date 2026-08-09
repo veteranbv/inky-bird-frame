@@ -1,0 +1,45 @@
+{
+  "behavior": "Highly active insectivore that flits through foliage, gleans prey, and darts after insects in flight. Frequently flicks and fans its wings and tail to flush prey; migrates mostly at night and defends territories.",
+  "common_name": "American Redstart",
+  "family": "Parulidae",
+  "field_marks": [
+    "Small, slim warbler with a broad, flat black bill and dark eye",
+    "Adult male mostly black with vivid orange patches on the sides, wings, and tail",
+    "Female and immature male gray and olive-brown with yellow to yellow-orange patches",
+    "Pale white to gray belly contrasts with the darker upperparts",
+    "Fairly long dark tail with colored basal panels; legs and feet black"
+  ],
+  "habitat": "Moist, open deciduous and mixed woodland, especially second-growth forest with a dense shrubby layer; also thickets and streamside woods. During migration it uses varied wooded or shrubby habitats, while nonbreeding habitats include forest, scrub, and mangroves.",
+  "measurements": {
+    "length": "11\u201313 cm (4.3\u20135.1 in)",
+    "weight": "6\u20139 g (0.2\u20130.3 oz)",
+    "wingspan": "16\u201319 cm (6.3\u20137.5 in)"
+  },
+  "palette": [
+    "coal black",
+    "flame orange",
+    "golden yellow",
+    "soft gray",
+    "creamy white"
+  ],
+  "scientific_name": "Setophaga ruticilla",
+  "sources": [
+    {
+      "title": "American Redstart Identification \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/American_Redstart/id"
+    },
+    {
+      "title": "American Redstart Life History \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/American_Redstart/lifehistory"
+    },
+    {
+      "title": "Setophaga ruticilla \u2014 Animal Diversity Web",
+      "url": "https://animaldiversity.org/accounts/Setophaga_ruticilla/"
+    },
+    {
+      "title": "American Redstart \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/american-redstart"
+    }
+  ],
+  "taxon_id": 10247
+}
