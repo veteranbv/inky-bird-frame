@@ -1,0 +1,35 @@
+{
+  "anatomy_accuracy": 5,
+  "composition_quality": 5,
+  "correction_findings": [],
+  "findings": [
+    "The primary specimen is a coherent single Swamp Sparrow with one head and bill, a naturally overlapped far wing, two correctly attached pinkish legs with plausible perching feet, and one moderately long graduated-to-rounded tail. No duplicated or malformed attached anatomy is present.",
+    "The detached wing and head are clearly intentional supplementary studies. The wing has plausible covert and flight-feather organization, while the study bill matches the primary bill in its short conical shape, dark upper mandible, yellowish lower base, and normal projection.",
+    "Species identity is convincing against the supplied photographs and direct source descriptions: compact robust sparrow proportions, rusty crown, gray face and nape, dark eyeline, whitish throat, reddish-brown wings, streaked upperparts, relatively long legs, and a rounded tail.",
+    "The principal plumage is consistent with an adult Swamp Sparrow. The rusty crown, gray facial pattern, pale throat, warm rufous wing coverts, and subdued underparts agree with the references; no unsupported seasonal rewrite is required.",
+    "The common name, scientific name, and family are correct: Swamp Sparrow, Melospiza georgiana, Passerellidae.",
+    "All three printed measurements exactly match the All About Birds values: length 12\u201315 cm (4.7\u20135.9 in), weight 15\u201323 g (0.5\u20130.8 oz), and wingspan 18\u201319 cm (7.1\u20137.5 in). Audubon's rounded ranges are compatible.",
+    "Every visible habitat, behavior, and field-mark line is complete, intelligible, correctly ordered, and matches the proposed wording without duplicated, omitted, substituted, or nonsensical text.",
+    "The vertical length ruler is internally consistent: 12 cm is at the bottom, 15 cm at the top, the values increase upward, and exactly four evenly spaced unlabeled interior ticks divide it into five proportional segments. The separate body-length label agrees with the ruler, and \u201cSCHEMATIC \u2014 NOT TO SCALE\u201d clearly prevents interpreting it as the printed bird's physical size.",
+    "The layout has strong hierarchy and separation among the primary specimen, text, ruler, supplementary studies, and palette. All content remains legible and unclipped.",
+    "No place name, ZIP code, coordinates, map, observation locality, or other local-observation detail appears."
+  ],
+  "location_free": true,
+  "passed": true,
+  "species_accuracy": 5,
+  "text_accuracy": 5,
+  "verification_sources": [
+    {
+      "title": "Swamp Sparrow Identification \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Swamp_Sparrow/id"
+    },
+    {
+      "title": "Swamp Sparrow \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/swamp-sparrow"
+    },
+    {
+      "title": "Swamp Sparrow \u2014 eBird",
+      "url": "https://ebird.org/species/swaspa"
+    }
+  ]
+}
