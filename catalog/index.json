@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-09T17:12:25+00:00",
+  "generated_at": "2026-08-09T17:26:29+00:00",
   "schema_version": 1,
   "species": [
     {
@@ -1090,6 +1090,17 @@
       "scientific_name": "Psittacula krameri",
       "slug": "rose-ringed-parakeet",
       "taxon_id": 18911
+    },
+    {
+      "approved_at": "2026-08-09T17:26:29+00:00",
+      "common_name": "Royal Tern",
+      "display_path": "species/144539-royal-tern/display.png",
+      "display_sha256": "3751cd184d4e0ac40f7772f5fac5ac96833c28e7d092d54dfce2913442710034",
+      "portrait_path": "species/144539-royal-tern/portrait.png",
+      "portrait_sha256": "7c394625af1403303f76a304a7054791f788bdfa581353cfdcbed4629b3e59b5",
+      "scientific_name": "Thalasseus maximus",
+      "slug": "royal-tern",
+      "taxon_id": 144539
     },
     {
       "approved_at": "2026-07-10T18:51:24+00:00",
