@@ -114,7 +114,7 @@ def get_json(
 
     try:
         return cast(object, json.loads(body))
-    except json.JSONDecodeError as exc:
+    except (json.JSONDecodeError, UnicodeDecodeError) as exc:
         raise DataSourceError(f"Invalid JSON from {display_url}") from exc
 
 
@@ -155,7 +155,7 @@ def post_json(
 
     try:
         return cast(object, json.loads(body))
-    except json.JSONDecodeError as exc:
+    except (json.JSONDecodeError, UnicodeDecodeError) as exc:
         raise DataSourceError(f"Invalid JSON from {display_url}") from exc
 
 
