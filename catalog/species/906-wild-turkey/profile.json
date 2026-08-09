@@ -1,0 +1,42 @@
+{
+  "behavior": "Social, diurnal ground forager; walks or runs in flocks while scratching for nuts, seeds, berries, insects, and other small prey. Flies short distances to tree roosts at night. Displaying males strut, lower their wings, fan their tails, and gobble.",
+  "common_name": "Wild Turkey",
+  "family": "Phasianidae",
+  "field_marks": [
+    "Very large, heavy-bodied bird with a long neck, long pinkish-gray legs, and a small head",
+    "Dark brown plumage with bronze-green iridescence and fine pale barring",
+    "Bare blue-gray head, dark eye, and short pale horn-colored bill",
+    "Adult male shows red throat wattles and often a dark breast beard",
+    "Dark, rounded wings boldly barred with white",
+    "Broad, rounded tail tipped rusty brown or whitish and fanned by displaying males"
+  ],
+  "habitat": "Mature hardwood and mixed conifer-hardwood forests interspersed with clearings, fields, grassland edges, orchards, and seasonal marshes.",
+  "measurements": {
+    "length": "110\u2013115 cm",
+    "weight": "2.5\u201310.8 kg",
+    "wingspan": "125\u2013144 cm"
+  },
+  "palette": [
+    "dark brown",
+    "bronze green",
+    "slate blue",
+    "wattle red",
+    "creamy white"
+  ],
+  "scientific_name": "Meleagris gallopavo",
+  "sources": [
+    {
+      "title": "Wild Turkey Identification \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Wild_Turkey/id"
+    },
+    {
+      "title": "Meleagris gallopavo \u2014 Animal Diversity Web",
+      "url": "https://animaldiversity.org/accounts/Meleagris_gallopavo/"
+    },
+    {
+      "title": "Wild Turkey \u2014 Smithsonian's National Zoo",
+      "url": "https://nationalzoo.si.edu/animals/wild-turkey"
+    }
+  ],
+  "taxon_id": 906
+}

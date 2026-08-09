@@ -1,0 +1,161 @@
+{
+  "approved_at": "2026-08-09T22:41:52+00:00",
+  "assets": {
+    "display": {
+      "filename": "display.png",
+      "sha256": "682ec58b8cd548374c422b0ef4d6b8c4f6faec4d1b8379b3734b5724771de2af"
+    },
+    "portrait": {
+      "filename": "portrait.png",
+      "sha256": "ea8f210a90eedf289ae859df1b202ede9e0b678ea0b1dbc12e5464272c047086"
+    }
+  },
+  "common_name": "Wild Turkey",
+  "generation": {
+    "attempt": 3,
+    "correction_source_sha256": "e4fdb2a97a9bb0e53c28273068a98f18ab3b392ded2cb510d8d7e0904fe22972",
+    "generated_at": "2026-08-09T22:41:52+00:00",
+    "generator": "Codex subscription / built-in gpt-image-2",
+    "max_attempts": 3,
+    "prompt_version": "field-journal-v4"
+  },
+  "profile": {
+    "behavior": "Social, diurnal ground forager; walks or runs in flocks while scratching for nuts, seeds, berries, insects, and other small prey. Flies short distances to tree roosts at night. Displaying males strut, lower their wings, fan their tails, and gobble.",
+    "common_name": "Wild Turkey",
+    "family": "Phasianidae",
+    "field_marks": [
+      "Very large, heavy-bodied bird with a long neck, long pinkish-gray legs, and a small head",
+      "Dark brown plumage with bronze-green iridescence and fine pale barring",
+      "Bare blue-gray head, dark eye, and short pale horn-colored bill",
+      "Adult male shows red throat wattles and often a dark breast beard",
+      "Dark, rounded wings boldly barred with white",
+      "Broad, rounded tail tipped rusty brown or whitish and fanned by displaying males"
+    ],
+    "habitat": "Mature hardwood and mixed conifer-hardwood forests interspersed with clearings, fields, grassland edges, orchards, and seasonal marshes.",
+    "measurements": {
+      "length": "110\u2013115 cm",
+      "weight": "2.5\u201310.8 kg",
+      "wingspan": "125\u2013144 cm"
+    },
+    "palette": [
+      "dark brown",
+      "bronze green",
+      "slate blue",
+      "wattle red",
+      "creamy white"
+    ],
+    "scientific_name": "Meleagris gallopavo",
+    "sources": [
+      {
+        "title": "Wild Turkey Identification \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Wild_Turkey/id"
+      },
+      {
+        "title": "Meleagris gallopavo \u2014 Animal Diversity Web",
+        "url": "https://animaldiversity.org/accounts/Meleagris_gallopavo/"
+      },
+      {
+        "title": "Wild Turkey \u2014 Smithsonian's National Zoo",
+        "url": "https://nationalzoo.si.edu/animals/wild-turkey"
+      }
+    ],
+    "taxon_id": 906
+  },
+  "quality_review": {
+    "anatomy_accuracy": 4,
+    "composition_quality": 5,
+    "correction_findings": [],
+    "findings": [
+      "Verified as Wild Turkey (Meleagris gallopavo), family Phasianidae. The primary specimen matches the attached references and direct-source descriptions in its very large heavy body, long neck, small bare head, dark iridescent plumage, barred wings, rounded tail, long pinkish-gray legs, and strong anisodactyl feet.",
+      "The adult-male treatment is coherent: blue-gray bare head, red throat wattles, dark breast beard, bronze-green iridescence, and pale horn-colored bill. Both the primary head and detached head study have intact, consistently proportioned mandibles; the upper mandible projects slightly beyond the lower without truncation, reversal, or exaggeration.",
+      "The primary specimen is a single complete bird with one head, one beak, two anatomically placed wings, two legs, and one tail. The detached wing and head are clearly separated supplementary studies and do not appear attached to the specimen.",
+      "Wing and tail studies accurately show bold pale barring, rounded wing structure, and rusty or pale tail tipping. The closed tail on the principal bird is compatible with a nondisplaying posture; the text correctly limits fanning to displaying males.",
+      "All visible factual text matches the proposed research pass: common and scientific names, family, measurements, habitat, behavior, six field-mark statements, and all five palette labels are correctly spelled and ordered, with no duplicated, omitted, substituted, or nonsensical wording.",
+      "Measurements are directly supported by All About Birds: length 110\u2013115 cm, weight 2.5\u201310.8 kg, and wingspan 125\u2013144 cm. Audubon independently gives compatible rounded equivalents, including weight 2.5\u201310.8 kg.",
+      "The body-length ruler is internally consistent: 110 cm at the bottom, 115 cm at the top, exactly four evenly spaced unlabeled interior ticks forming five proportional segments, matching units and endpoints, and an explicit \u201cSCHEMATIC \u2013 NOT TO SCALE\u201d qualification. No conflicting marker is present.",
+      "Habitat, ground foraging, flocking, short flight to tree roosts, gobbling, strutting, lowered wings, and fanned-tail display are supported across the inspected sources.",
+      "No place name, ZIP code, coordinates, map, range marker, or local-observation detail appears on the plate."
+    ],
+    "location_free": true,
+    "passed": true,
+    "species_accuracy": 5,
+    "text_accuracy": 5,
+    "verification_sources": [
+      {
+        "title": "Wild Turkey Identification \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Wild_Turkey/id"
+      },
+      {
+        "title": "Meleagris gallopavo \u2014 Animal Diversity Web",
+        "url": "https://animaldiversity.org/accounts/Meleagris_gallopavo/"
+      },
+      {
+        "title": "Turkey \u2014 Smithsonian's National Zoo",
+        "url": "https://nationalzoo.si.edu/animals/wild-turkey"
+      },
+      {
+        "title": "Wild Turkey \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/wild-turkey"
+      }
+    ]
+  },
+  "references": [
+    {
+      "attribution": "(c) Ken-ichi Ueda, some rights reserved (CC BY)",
+      "filename": "01-19232661.jpg",
+      "height": 862,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/19232661/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 13169483,
+      "observer": "kueda",
+      "photo_id": 19232661,
+      "sha256": "5d9512a9c4ee543d3daefd8728de12bed04b96614ad18623aa8bd1ef109336a6",
+      "source_url": "https://www.inaturalist.org/observations/13169483",
+      "width": 1294
+    },
+    {
+      "attribution": "(c) Tom Norton, some rights reserved (CC BY)",
+      "filename": "02-20497431.jpeg",
+      "height": 2048,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/20497431/large.jpeg",
+      "license_code": "cc-by",
+      "observation_id": 13881626,
+      "observer": "tsn",
+      "photo_id": 20497431,
+      "sha256": "5e158db3d5e937cf079f51dd5749a417bf10b2b20359d3f235fd3b9719a0c127",
+      "source_url": "https://www.inaturalist.org/observations/13881626",
+      "width": 1152
+    },
+    {
+      "attribution": "no rights reserved",
+      "filename": "03-110731312.jpeg",
+      "height": 1365,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/110731312/large.jpeg",
+      "license_code": "cc0",
+      "observation_id": 68393009,
+      "observer": "radrat",
+      "photo_id": 110731312,
+      "sha256": "9ad3d5ac47875392b8f4f0585dff90068417351bf368c884895e80df6b084a3d",
+      "source_url": "https://www.inaturalist.org/observations/68393009",
+      "width": 2048
+    },
+    {
+      "attribution": "no rights reserved",
+      "filename": "04-273311243.jpg",
+      "height": 2048,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/273311243/large.jpg",
+      "license_code": "cc0",
+      "observation_id": 158122427,
+      "observer": "morekari",
+      "photo_id": 273311243,
+      "sha256": "0b4cf65190d87324865667fb231e2ec0514a8f5ddce6910bb29655c0bc4ae4b5",
+      "source_url": "https://www.inaturalist.org/observations/158122427",
+      "width": 1536
+    }
+  ],
+  "schema_version": 1,
+  "scientific_name": "Meleagris gallopavo",
+  "slug": "wild-turkey",
+  "status": "approved",
+  "taxon_id": 906
+}
