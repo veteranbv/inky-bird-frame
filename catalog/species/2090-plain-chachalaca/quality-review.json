@@ -1,0 +1,39 @@
+{
+  "anatomy_accuracy": 5,
+  "composition_quality": 5,
+  "correction_findings": [],
+  "findings": [
+    "Species identity is correct: the plate\u2019s large chickenlike body, long neck and rounded tail, small grayish head, short dark bill, brown iris, olive-brown upperparts, buff underparts, pale-tipped blackish tail, gray legs, and exposed red throat skin agree with the attached references and the live identification pages.",
+    "The primary specimen is anatomically coherent, with one head and beak, two naturally overlapping wings, two legs with grasping feet, and one tail. No duplicated or extraneous body parts are present.",
+    "Both depicted heads have consistent short, slightly decurved bills. The modest upper-mandible projection is neither reversed nor materially exaggerated compared with the clearest attached side profiles.",
+    "The detached spread-wing and head studies are clearly supplementary and do not appear attached to the primary specimen. Their proportions, feather organization, coloration, and bill anatomy are coherent with the species.",
+    "Every visible identification, habitat, behavior, and field-mark line matches the proposed wording without material omissions, substitutions, duplication, misspellings, or nonsensical text.",
+    "Audubon directly supports the printed 50\u201366 cm length, 76\u201384 cm wingspan, and 680 g\u20131.1 kg weight ranges. Other allowed sources publish narrower or different sample ranges, but the plate\u2019s figures are accurately reproduced from the cited Audubon account.",
+    "The ruler is internally consistent: 50 cm is at the bottom, 66 cm at the top, exactly four evenly spaced unlabeled interior ticks divide the range into five proportional segments, and the separate body-length label repeats the same range.",
+    "\u201cSCHEMATIC \u2014 NOT TO SCALE\u201d clearly prevents the printed specimen from being presented as life-size.",
+    "No place name, ZIP code, coordinates, map, or local-observation detail appears.",
+    "The typography, illustrations, studies, palette, and measurement graphic are legible, balanced, unclipped, and appropriate for a scientific field-journal plate."
+  ],
+  "location_free": true,
+  "passed": true,
+  "species_accuracy": 5,
+  "text_accuracy": 5,
+  "verification_sources": [
+    {
+      "title": "Plain Chachalaca Identification \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Plain_Chachalaca/id"
+    },
+    {
+      "title": "Plain Chachalaca \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/plain-chachalaca"
+    },
+    {
+      "title": "Plain Chachalaca \u2014 eBird",
+      "url": "https://ebird.org/species/placha"
+    },
+    {
+      "title": "Plain chachalaca \u2014 Wikipedia",
+      "url": "https://en.wikipedia.org/wiki/Plain_chachalaca"
+    }
+  ]
+}
