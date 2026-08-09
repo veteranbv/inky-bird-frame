@@ -55,6 +55,7 @@ from inky_bird_frame.errors import (
     GenerationError,
     SpeciesStateError,
 )
+from inky_bird_frame.models import ProfileConflict
 from inky_bird_frame.retry import RetryStore
 
 
@@ -63,7 +64,15 @@ def controller_config(state_dir: Path, catalog_dir: Path | None = None) -> Simpl
         controller=SimpleNamespace(
             state_dir=state_dir,
             catalog_dir=catalog_dir if catalog_dir is not None else state_dir / "catalog",
-        )
+        ),
+        research=SimpleNamespace(
+            allowed_domains=(
+                "allaboutbirds.org",
+                "audubon.org",
+                "birds.example",
+                "field.example",
+            )
+        ),
     )
 
 
@@ -1018,6 +1027,23 @@ rotation_mode = "shuffle_bag"
                 ("Keep the visible eye correction.",),
                 source_plate="archive/42-source/portrait.png",
                 invariant_findings=("Keep the visible eye correction.",),
+                profile_conflicts=(
+                    {
+                        "field": "measurements.length",
+                        "profile_value": "10-20 cm",
+                        "observed_value": "12-15 cm",
+                        "sources": [
+                            {
+                                "title": "Birds",
+                                "url": "https://birds.example/length",
+                            },
+                            {
+                                "title": "Field",
+                                "url": "https://field.example/length",
+                            },
+                        ],
+                    },
+                ),
             )
             config = controller_config(state_dir)
             output = io.StringIO()
@@ -1033,6 +1059,7 @@ rotation_mode = "shuffle_bag"
         self.assertIsNone(retry)
         self.assertEqual(guidance, expected)
         self.assertEqual(result["preserved_quality_findings_count"], 1)
+        self.assertEqual(result["preserved_profile_conflicts_count"], 1)
         self.assertTrue(result["preserved_correction_source"])
 
     def test_retry_reads_findings_from_legacy_null_correction_field(self) -> None:
@@ -1240,6 +1267,262 @@ rotation_mode = "shuffle_bag"
         self.assertEqual(queue[0].source, "human-review")
         self.assertEqual(collection["taxa"], [])
         self.assertIsNotNone(collection["legacy_seed_queue_migrated_at"])
+
+    def test_retry_preserves_a_terminal_profile_conflict(self) -> None:
+        with TemporaryDirectory() as temporary:
+            state_dir = Path(temporary)
+            failed = state_dir / "failed/42-example-bird"
+            attempt = failed / "attempt-01"
+            attempt.mkdir(parents=True)
+            (attempt / "quality-review.json").write_text(
+                json.dumps(
+                    {
+                        "passed": False,
+                        "findings": ["The cached length conflicts with direct sources"],
+                        "correction_findings": [],
+                        "profile_conflicts": [
+                            {
+                                "field": "measurements.length",
+                                "profile_value": "10-20 cm",
+                                "observed_value": "12-15 cm",
+                                "sources": [
+                                    {
+                                        "title": "Birds",
+                                        "url": "https://birds.example/length",
+                                    },
+                                    {
+                                        "title": "Field",
+                                        "url": "https://field.example/length",
+                                    },
+                                ],
+                            }
+                        ],
+                    }
+                )
+            )
+            (failed / "profile.json").write_text(
+                json.dumps(
+                    {
+                        "taxon_id": 42,
+                        "common_name": "Example Bird",
+                        "scientific_name": "Avis exemplum",
+                    }
+                )
+            )
+            config = controller_config(state_dir)
+            output = io.StringIO()
+
+            with (
+                patch("inky_bird_frame.cli._config", return_value=config),
+                redirect_stdout(output),
+            ):
+                retry_command(Namespace(taxon_id=42))
+
+            guidance = RetryStore(state_dir / "generation-retries.json").quality_guidance(42)
+            result = json.loads(output.getvalue())["data"]
+
+        self.assertIsNotNone(guidance)
+        self.assertEqual(result["preserved_profile_conflicts_count"], 1)
+        if guidance is not None:
+            self.assertEqual(guidance.findings, ())
+            self.assertEqual(len(guidance.profile_conflicts), 1)
+            self.assertEqual(guidance.profile_conflicts[0]["field"], "measurements.length")
+
+    def test_retry_keeps_existing_conflict_with_new_image_guidance(self) -> None:
+        with TemporaryDirectory() as temporary:
+            state_dir = Path(temporary)
+            failed = state_dir / "failed/42-example-bird"
+            attempt = failed / "attempt-01"
+            attempt.mkdir(parents=True)
+            (attempt / "quality-review.json").write_text(
+                json.dumps(
+                    {
+                        "passed": False,
+                        "findings": ["The visible wing is malformed"],
+                        "correction_findings": ["Repair the visible wing"],
+                    }
+                )
+            )
+            (failed / "profile.json").write_text(
+                json.dumps(
+                    {
+                        "taxon_id": 42,
+                        "common_name": "Example Bird",
+                        "scientific_name": "Avis exemplum",
+                    }
+                )
+            )
+            conflict = {
+                "field": "measurements.length",
+                "profile_value": "10-20 cm",
+                "observed_value": "12-15 cm",
+                "sources": [
+                    {"title": "Birds", "url": "https://birds.example/length"},
+                    {"title": "Field", "url": "https://field.example/length"},
+                ],
+            }
+            config = controller_config(state_dir)
+            RetryStore(state_dir / "generation-retries.json").set_quality_guidance(
+                42,
+                (),
+                profile_conflicts=(cast(ProfileConflict, conflict),),
+            )
+
+            with (
+                patch("inky_bird_frame.cli._config", return_value=config),
+                redirect_stdout(io.StringIO()),
+            ):
+                retry_command(Namespace(taxon_id=42))
+
+            guidance = RetryStore(state_dir / "generation-retries.json").quality_guidance(42)
+
+        self.assertIsNotNone(guidance)
+        if guidance is not None:
+            self.assertEqual(guidance.findings, ("Repair the visible wing",))
+            self.assertEqual(guidance.profile_conflicts, (conflict,))
+
+    def test_retry_rejects_conflict_sources_outside_the_allowlist(self) -> None:
+        with TemporaryDirectory() as temporary:
+            state_dir = Path(temporary)
+            failed = state_dir / "failed/42-example-bird"
+            attempt = failed / "attempt-01"
+            attempt.mkdir(parents=True)
+            (attempt / "quality-review.json").write_text(
+                json.dumps(
+                    {
+                        "passed": False,
+                        "findings": ["Length conflict"],
+                        "correction_findings": [],
+                        "profile_conflicts": [
+                            {
+                                "field": "measurements.length",
+                                "profile_value": "10-20 cm",
+                                "observed_value": "12-15 cm",
+                                "sources": [
+                                    {
+                                        "title": "Outside",
+                                        "url": "https://outside.example/length",
+                                    },
+                                    {
+                                        "title": "Other",
+                                        "url": "https://other.example/length",
+                                    },
+                                ],
+                            }
+                        ],
+                    }
+                )
+            )
+            write_test_species_identity(failed)
+            config = controller_config(state_dir)
+
+            with (
+                patch("inky_bird_frame.cli._config", return_value=config),
+                self.assertRaisesRegex(
+                    SpeciesStateError,
+                    "outside the current research allowlist",
+                ),
+            ):
+                retry_command(Namespace(taxon_id=42))
+
+    def test_retry_refresh_research_discards_stale_profile_conflict(self) -> None:
+        with TemporaryDirectory() as temporary:
+            state_dir = Path(temporary)
+            store = RetryStore(state_dir / "generation-retries.json")
+            store.record_failure(
+                42,
+                GenerationError("profile conflict remained"),
+                now=datetime(2026, 8, 2, tzinfo=UTC),
+                initial_minutes=5,
+                maximum_minutes=60,
+                species=BirdSpecies(42, "Example Bird", "Avis exemplum", 1, "test"),
+            )
+            store.set_quality_guidance(
+                42,
+                (),
+                profile_conflicts=(
+                    cast(
+                        ProfileConflict,
+                        {
+                            "field": "measurements.length",
+                            "profile_value": "10-20 cm",
+                            "observed_value": "12-15 cm",
+                            "sources": [
+                                {
+                                    "title": "Outside",
+                                    "url": "https://outside.example/length",
+                                },
+                                {
+                                    "title": "Other",
+                                    "url": "https://other.example/length",
+                                },
+                            ],
+                        },
+                    ),
+                ),
+            )
+            config = controller_config(state_dir)
+            output = io.StringIO()
+
+            with (
+                patch("inky_bird_frame.cli._config", return_value=config),
+                redirect_stdout(output),
+            ):
+                retry_command(Namespace(taxon_id=42, refresh_research=True))
+
+            guidance = RetryStore(state_dir / "generation-retries.json").quality_guidance(42)
+            result = json.loads(output.getvalue())["data"]
+
+        self.assertIsNone(guidance)
+        self.assertEqual(result["preserved_profile_conflicts_count"], 0)
+        self.assertTrue(result["queued_for_generation"])
+
+    def test_retry_rejects_stored_conflict_outside_the_allowlist(self) -> None:
+        with TemporaryDirectory() as temporary:
+            state_dir = Path(temporary)
+            store = RetryStore(state_dir / "generation-retries.json")
+            store.record_failure(
+                42,
+                GenerationError("profile conflict remained"),
+                now=datetime(2026, 8, 2, tzinfo=UTC),
+                initial_minutes=5,
+                maximum_minutes=60,
+                species=BirdSpecies(42, "Example Bird", "Avis exemplum", 1, "test"),
+            )
+            store.set_quality_guidance(
+                42,
+                (),
+                profile_conflicts=(
+                    cast(
+                        ProfileConflict,
+                        {
+                            "field": "measurements.length",
+                            "profile_value": "10-20 cm",
+                            "observed_value": "12-15 cm",
+                            "sources": [
+                                {
+                                    "title": "Outside",
+                                    "url": "https://outside.example/length",
+                                },
+                                {
+                                    "title": "Other",
+                                    "url": "https://other.example/length",
+                                },
+                            ],
+                        },
+                    ),
+                ),
+            )
+            config = controller_config(state_dir)
+
+            with (
+                patch("inky_bird_frame.cli._config", return_value=config),
+                self.assertRaisesRegex(
+                    SpeciesStateError,
+                    "Stored profile conflict sources are outside the current research allowlist",
+                ),
+            ):
+                retry_command(Namespace(taxon_id=42))
 
     def test_retry_refreshes_stale_queued_identity(self) -> None:
         with TemporaryDirectory() as temporary:

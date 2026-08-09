@@ -276,6 +276,9 @@ Profile conflicts already reported:
 
 Check that earlier corrected image defects did not regress. Do not reverse an earlier correction
 without naming the concrete visible regression or direct-source conflict that justifies doing so.
+Copy an earlier correction into resolved_corrections only when the current image visibly satisfies
+that exact request. Do not mark a correction resolved when a new correction reverses, refines, or
+otherwise supersedes it. Every resolved_corrections entry must exactly match one earlier correction.
 Repeated or contradictory profile conflicts must remain in profile_conflicts, not be converted into
 an unsupported image edit. Re-evaluate every earlier conflict against the current profile; never
 repeat a stale profile_value from history, and drop a conflict that the current direct sources no
@@ -320,7 +323,8 @@ between the proposed profile and independently verified direct-source facts in p
 instead—state the supported profile field, proposed value, independently observed value, and at
 least two direct HTTPS sources from distinct configured domains. Do not instruct the image
 generator to apply the reviewer claim directly. profile_value must quote the current proposed
-field, not an earlier review history entry. Identity fields are not adjudicable profile conflicts.
+field, not an earlier review history entry. For field_marks, encode the current list as a compact
+JSON array. Identity fields are not adjudicable profile conflicts.
 Return at least two direct HTTPS source URLs from distinct configured domains used for overall
 verification.
 
@@ -334,7 +338,8 @@ appears attached to the primary specimen. A naturally occluded far-side wing or 
 when pose and visible attachment geometry are anatomically convincing; never excuse a malformed,
 detached, duplicated, or implausibly attached visible structure, a missing visible eye, or broken
 feet as occlusion. When passed=false, at least one of correction_findings or profile_conflicts must
-be nonempty. When passed=true, correction_findings and profile_conflicts must both be empty. Return
+be nonempty. When passed=true, correction_findings and profile_conflicts must both be empty.
+resolved_corrections may contain only exact earlier requests that this image now satisfies. Return
 only the requested JSON.
 
 Reference provenance:

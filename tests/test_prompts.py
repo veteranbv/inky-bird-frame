@@ -143,6 +143,8 @@ class PromptTests(unittest.TestCase):
         self.assertIn('"field": "measurements.length"', research)
         self.assertIn("Earlier review history for convergence checking", normalized_review)
         self.assertIn("Repair the visible leg", normalized_review)
+        self.assertIn("resolved_corrections only when", normalized_review)
+        self.assertIn("must exactly match one earlier correction", normalized_review)
         self.assertIn("never repeat a stale profile_value", normalized_review)
         self.assertIn(
             "drop a conflict that the current direct sources no longer support", normalized_review

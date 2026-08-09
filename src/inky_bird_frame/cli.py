@@ -66,6 +66,7 @@ from .ebird_archive import import_ebird_archive, read_ebird_archive_history
 from .errors import CatalogError, DataSourceError, InkyBirdFrameError, SpeciesStateError
 from .images import prepare_uploaded_image
 from .installation import InstallationRole, doctor, setup
+from .models import ProfileConflict
 from .notifications import (
     check_display_heartbeat,
     dispatch_notifications,
@@ -84,7 +85,7 @@ from .publisher import (
     validate_catalog_additions,
     validate_public_catalog,
 )
-from .retry import RetryStore
+from .retry import RetryStore, parse_retry_profile_conflicts
 from .scheduler import ScheduledJob, SubprocessCommandRunner, run_scheduler
 from .server import serve_catalog
 
@@ -421,11 +422,12 @@ def reject_command(args: argparse.Namespace) -> int:
 def _retry_quality_guidance(
     failed_directories: list[Path],
     source_attempt: int | None,
-) -> tuple[tuple[str, ...], Path | None]:
+    allowed_domains: tuple[str, ...] | None,
+) -> tuple[tuple[str, ...], Path | None, tuple[ProfileConflict, ...]]:
     if not failed_directories:
         if source_attempt is not None:
             raise ValueError("--source-attempt requires retained failed generation attempts")
-        return (), None
+        return (), None, ()
     attempts: list[tuple[int, Path]] = []
     for attempt_path in failed_directories[-1].glob("attempt-*"):
         try:
@@ -438,7 +440,7 @@ def _retry_quality_guidance(
     if not attempts:
         if source_attempt is not None:
             raise ValueError("--source-attempt requires retained failed generation attempts")
-        return (), None
+        return (), None, ()
     attempts_by_number = dict(attempts)
     if source_attempt is None:
         selected_attempt, attempt_path = max(attempts, key=lambda item: item[0])
@@ -468,6 +470,25 @@ def _retry_quality_guidance(
         not isinstance(finding, str) or not finding.strip() for finding in findings
     ):
         raise SpeciesStateError(f"Invalid quality review findings: {review_path}")
+    try:
+        profile_conflicts = parse_retry_profile_conflicts(
+            review.get("profile_conflicts", []),
+            review_path,
+        )
+    except CatalogError as exc:
+        raise SpeciesStateError(f"Invalid quality review profile conflicts: {review_path}") from exc
+    if allowed_domains is not None:
+        try:
+            profile_conflicts = parse_retry_profile_conflicts(
+                list(profile_conflicts),
+                review_path,
+                allowed_domains=allowed_domains,
+            )
+        except CatalogError as exc:
+            raise SpeciesStateError(
+                "Retained profile conflict sources are outside the current research "
+                "allowlist; restore the authorized domains or retry with --refresh-research"
+            ) from exc
     source_plate = None
     if source_attempt is not None:
         source_plate = attempt_path / "portrait.png"
@@ -475,7 +496,10 @@ def _retry_quality_guidance(
             raise SpeciesStateError(
                 f"Generation attempt {selected_attempt} has no portrait: {attempt_path}"
             )
-    return tuple(findings) or (REVIEW_FAILURE_FALLBACK,), source_plate
+    quality_findings = tuple(findings)
+    if not quality_findings and not profile_conflicts:
+        quality_findings = (REVIEW_FAILURE_FALLBACK,)
+    return quality_findings, source_plate, profile_conflicts
 
 
 def _retry_archived_quality_guidance(
@@ -483,7 +507,8 @@ def _retry_archived_quality_guidance(
     taxon_id: int,
     source_run: str,
     source_attempt: int,
-) -> tuple[tuple[str, ...], Path]:
+    allowed_domains: tuple[str, ...] | None,
+) -> tuple[tuple[str, ...], Path, tuple[ProfileConflict, ...]]:
     run_name = source_run.strip()
     if (
         not run_name
@@ -526,17 +551,21 @@ def _retry_archived_quality_guidance(
                 raise SpeciesStateError(
                     f"Retained generation artifact escapes its attempt: {artifact_path}"
                 )
-    findings, source_plate = _retry_quality_guidance([run], source_attempt)
+    findings, source_plate, profile_conflicts = _retry_quality_guidance(
+        [run],
+        source_attempt,
+        allowed_domains,
+    )
     if source_plate is None:
         raise SpeciesStateError(f"Retained generation attempt is unavailable: {run_name}")
-    return findings, source_plate
+    return findings, source_plate, profile_conflicts
 
 
 def _retry_candidate_guidance(
     state_dir: Path,
     taxon_id: int,
     source_candidate: str,
-) -> tuple[tuple[str, ...], Path]:
+) -> tuple[tuple[str, ...], Path, tuple[ProfileConflict, ...]]:
     candidate_name = source_candidate.strip()
     if (
         not candidate_name
@@ -583,7 +612,7 @@ def _retry_candidate_guidance(
         raise SpeciesStateError(f"Retained candidate has no portrait: {candidate}")
     if sha256_file(portrait) != portrait_asset["sha256"]:
         raise SpeciesStateError(f"Retained candidate portrait checksum mismatch: {portrait}")
-    return (rejection_reason.strip(),), portrait
+    return (rejection_reason.strip(),), portrait, ()
 
 
 def _retry_species_identity(
@@ -722,20 +751,25 @@ def retry_command(args: argparse.Namespace) -> int:
         )
         quality_findings: tuple[str, ...]
         correction_source: Path | None
+        profile_conflicts: tuple[ProfileConflict, ...]
         if source_run is not None and source_attempt is not None:
-            quality_findings, correction_source = _retry_archived_quality_guidance(
-                config.controller.state_dir,
-                args.taxon_id,
-                source_run,
-                source_attempt,
+            quality_findings, correction_source, profile_conflicts = (
+                _retry_archived_quality_guidance(
+                    config.controller.state_dir,
+                    args.taxon_id,
+                    source_run,
+                    source_attempt,
+                    None if refresh_research else config.research.allowed_domains,
+                )
             )
         elif source_candidate is None:
-            quality_findings, correction_source = _retry_quality_guidance(
+            quality_findings, correction_source, profile_conflicts = _retry_quality_guidance(
                 failed_directories,
                 source_attempt,
+                None if refresh_research else config.research.allowed_domains,
             )
         else:
-            quality_findings, correction_source = _retry_candidate_guidance(
+            quality_findings, correction_source, profile_conflicts = _retry_candidate_guidance(
                 config.controller.state_dir,
                 args.taxon_id,
                 source_candidate,
@@ -750,6 +784,41 @@ def retry_command(args: argparse.Namespace) -> int:
         terminal_sources = list(sources)
         retry_store = RetryStore(config.controller.state_dir / "generation-retries.json")
         existing_guidance = retry_store.quality_guidance(args.taxon_id)
+        if existing_guidance is not None and not refresh_research:
+            try:
+                existing_profile_conflicts = parse_retry_profile_conflicts(
+                    list(existing_guidance.profile_conflicts),
+                    retry_store.path,
+                    allowed_domains=config.research.allowed_domains,
+                )
+            except CatalogError as exc:
+                raise SpeciesStateError(
+                    "Stored profile conflict sources are outside the current research "
+                    "allowlist; restore the authorized domains or retry with --refresh-research"
+                ) from exc
+        else:
+            existing_profile_conflicts = ()
+        if refresh_research:
+            profile_conflicts = ()
+        selected_profile_conflicts = profile_conflicts
+        reuse_existing_guidance = (
+            not refresh_research
+            and not quality_findings
+            and not selected_profile_conflicts
+            and existing_guidance is not None
+        )
+        if reuse_existing_guidance:
+            assert existing_guidance is not None
+            quality_findings = existing_guidance.findings
+        conflicts_by_field = {
+            conflict["field"]: conflict
+            for conflicts in (
+                existing_profile_conflicts,
+                profile_conflicts,
+            )
+            for conflict in conflicts
+        }
+        profile_conflicts = tuple(conflicts_by_field.values())
         retry_record = retry_store.get(args.taxon_id)
         deferred = retry_record is not None
         if not sources and not deferred and source_candidate is None and source_run is None:
@@ -887,8 +956,10 @@ def retry_command(args: argparse.Namespace) -> int:
             correction_source,
         )
         archived_correction_source = retained_correction_source or planned_correction_source
-        final_guidance = existing_guidance
-        if quality_findings:
+        final_guidance = None if refresh_research else existing_guidance
+        if refresh_research and existing_guidance is not None:
+            retry_store.clear_quality_guidance(args.taxon_id)
+        if (quality_findings or profile_conflicts) and not reuse_existing_guidance:
             final_guidance = retry_store.set_quality_guidance(
                 args.taxon_id,
                 quality_findings,
@@ -900,6 +971,7 @@ def retry_command(args: argparse.Namespace) -> int:
                 invariant_findings=(
                     existing_guidance.invariant_findings if existing_guidance is not None else ()
                 ),
+                profile_conflicts=profile_conflicts,
             )
         terminal_source_set = set(terminal_sources)
         cache_moves = [move for move in archive_plan if move[0] not in terminal_source_set]
@@ -940,6 +1012,9 @@ def retry_command(args: argparse.Namespace) -> int:
             "cleared_cached_references": cleared_cached_references,
             "preserved_quality_findings_count": (
                 len(final_guidance.findings) if final_guidance is not None else 0
+            ),
+            "preserved_profile_conflicts_count": (
+                len(final_guidance.profile_conflicts) if final_guidance is not None else 0
             ),
             "replaced_approved": False,
             "source_attempt": source_attempt,

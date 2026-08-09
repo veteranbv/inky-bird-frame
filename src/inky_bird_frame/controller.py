@@ -88,7 +88,7 @@ from .models import ProfileConflict, ReferencePhoto, SpeciesProfileData
 from .prompts import PROMPT_VERSION
 from .references import download_references, fetch_reference_candidates
 from .research import ResearchBudget
-from .retry import RetryStore
+from .retry import RetryStore, parse_retry_profile_conflicts
 from .timeutil import parse_utc_timestamp
 
 REVIEW_FAILURE_FALLBACK = "The previous attempt did not meet every automated review threshold."
@@ -1749,6 +1749,7 @@ def generate_candidate(
     initial_correction_findings: tuple[str, ...] = (),
     initial_correction_source: Path | None = None,
     invariant_correction_findings: tuple[str, ...] = (),
+    initial_profile_conflicts: tuple[ProfileConflict, ...] = (),
 ) -> Path:
     state_dir = config.controller.state_dir
     if species.taxon_id in approved_taxon_ids(config.controller.catalog_dir):
@@ -1794,7 +1795,7 @@ def generate_candidate(
         correction_source = initial_correction_source
         resolved_corrections: tuple[str, ...] = ()
         prior_review_corrections: tuple[str, ...] = ()
-        prior_profile_conflicts: tuple[ProfileConflict, ...] = ()
+        prior_profile_conflicts = initial_profile_conflicts
         previous_scores: dict[str, int] | None = None
         profile_refresh_used = False
         terminal_detail: str | None = None
@@ -1849,6 +1850,14 @@ def generate_candidate(
             history_entry["generation_seconds"] = round(monotonic() - generation_started, 3)
 
             review_started = monotonic()
+            reviewed_corrections = _deduplicate_findings(
+                prior_review_corrections,
+                tuple(
+                    finding
+                    for finding in correction_findings
+                    if finding not in {PROFILE_REFRESH_CORRECTION, REVIEW_FAILURE_FALLBACK}
+                ),
+            )
             try:
                 review = runner.review_plate(
                     species,
@@ -1859,7 +1868,7 @@ def generate_candidate(
                     attempt_dir / "quality-review.json",
                     logs / f"03-quality-review-attempt-{attempt:02d}.log",
                     allowed_domains=config.research.allowed_domains,
-                    prior_corrections=prior_review_corrections,
+                    prior_corrections=reviewed_corrections,
                     prior_profile_conflicts=prior_profile_conflicts,
                 )
             except Exception as exc:
@@ -1891,13 +1900,12 @@ def generate_candidate(
                 axis for axis, score in current_scores.items() if score < 4
             ] + ([] if review.location_free else ["location_free"])
             new_correction_keys = {_finding_key(finding) for finding in review.correction_findings}
-            newly_resolved = tuple(
-                finding
-                for finding in correction_findings
-                if finding not in {PROFILE_REFRESH_CORRECTION, REVIEW_FAILURE_FALLBACK}
-                if _finding_key(finding) not in new_correction_keys
+            resolved_candidates = _deduplicate_findings(
+                resolved_corrections,
+                review.resolved_corrections,
             )
-            resolved_keys = {_finding_key(finding) for finding in resolved_corrections}
+            resolved_keys = {_finding_key(finding) for finding in resolved_candidates}
+            history_entry["newly_resolved_findings"] = list(review.resolved_corrections)
             history_entry["regressed_findings"] = [
                 finding
                 for finding in review.correction_findings
@@ -1945,12 +1953,13 @@ def generate_candidate(
                 shutil.copytree(attempt_dir, destination)
                 return destination
 
-            resolved_corrections = _deduplicate_findings(
-                resolved_corrections,
-                newly_resolved,
+            resolved_corrections = tuple(
+                finding
+                for finding in resolved_candidates
+                if _finding_key(finding) not in new_correction_keys
             )
             prior_review_corrections = _deduplicate_findings(
-                prior_review_corrections,
+                reviewed_corrections,
                 review.correction_findings,
             )
             prior_profile_conflicts = _deduplicate_profile_conflicts(
@@ -1995,6 +2004,12 @@ def generate_candidate(
                     _write_attempt_history(logs, work, history)
                     raise
                 profile_refresh_used = True
+                refreshed_fields = {conflict["field"] for conflict in review.profile_conflicts}
+                prior_profile_conflicts = tuple(
+                    conflict
+                    for conflict in prior_profile_conflicts
+                    if conflict["field"] not in refreshed_fields
+                )
                 history_entry["profile_refresh"] = "completed"
                 history_entry["profile_changed"] = before_refresh != profile
                 _write_attempt_history(logs, work, history)
@@ -2196,16 +2211,28 @@ def run_generation_cycle(config: AppConfig) -> dict[str, object]:
                     generate_candidate(config, species, config.controller.workspace_dir)
                 else:
                     try:
+                        profile_conflicts = parse_retry_profile_conflicts(
+                            list(guidance.profile_conflicts),
+                            retry_store.path,
+                            allowed_domains=config.research.allowed_domains,
+                        )
+                    except CatalogError as exc:
+                        raise DataSourceError(
+                            "Stored profile conflict sources are outside the current "
+                            "research allowlist"
+                        ) from exc
+                    try:
                         correction_source = _retry_source_plate(
                             config.controller.state_dir,
                             guidance.source_plate,
                         )
                     except SpeciesStateError:
-                        if guidance.invariant_findings:
+                        if guidance.invariant_findings or guidance.profile_conflicts:
                             retry_store.set_quality_guidance(
                                 species.taxon_id,
                                 guidance.invariant_findings,
                                 invariant_findings=guidance.invariant_findings,
+                                profile_conflicts=guidance.profile_conflicts,
                             )
                         else:
                             retry_store.clear_quality_guidance(species.taxon_id)
@@ -2223,6 +2250,7 @@ def run_generation_cycle(config: AppConfig) -> dict[str, object]:
                         initial_correction_findings=current_findings,
                         initial_correction_source=correction_source,
                         invariant_correction_findings=guidance.invariant_findings,
+                        initial_profile_conflicts=profile_conflicts,
                     )
                 with catalog_state_lock(config.controller.state_dir):
                     entry = approve_candidate(
@@ -2278,11 +2306,14 @@ def run_generation_cycle(config: AppConfig) -> dict[str, object]:
                 )
             except QualityReviewError as exc:
                 retry_store.clear(species.taxon_id)
-                if guidance is not None and guidance.invariant_findings:
+                if guidance is not None and (
+                    guidance.invariant_findings or guidance.profile_conflicts
+                ):
                     retry_store.set_quality_guidance(
                         species.taxon_id,
                         guidance.invariant_findings,
                         invariant_findings=guidance.invariant_findings,
+                        profile_conflicts=guidance.profile_conflicts,
                     )
                 else:
                     retry_store.clear_quality_guidance(species.taxon_id)

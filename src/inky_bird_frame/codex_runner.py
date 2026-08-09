@@ -11,18 +11,15 @@ from urllib.parse import urlsplit
 
 from .birds import BirdSpecies, TaxonContext
 from .errors import GenerationError
-from .models import ProfileConflict, QualityReview, ReferencePhoto, SourceLink, SpeciesProfileData
-from .prompts import plate_prompt, profile_prompt, review_prompt
-
-PROFILE_CONFLICT_FIELDS: Final[tuple[str, ...]] = (
-    "family",
-    "measurements.length",
-    "measurements.wingspan",
-    "measurements.weight",
-    "field_marks",
-    "habitat",
-    "behavior",
+from .models import (
+    PROFILE_CONFLICT_FIELDS,
+    ProfileConflict,
+    QualityReview,
+    ReferencePhoto,
+    SourceLink,
+    SpeciesProfileData,
 )
+from .prompts import plate_prompt, profile_prompt, review_prompt
 
 PROFILE_SCHEMA: Final[dict[str, object]] = {
     "type": "object",
@@ -81,6 +78,7 @@ REVIEW_SCHEMA: Final[dict[str, object]] = {
         "location_free": {"type": "boolean"},
         "findings": {"type": "array", "items": {"type": "string"}},
         "correction_findings": {"type": "array", "items": {"type": "string"}},
+        "resolved_corrections": {"type": "array", "items": {"type": "string"}},
         "profile_conflicts": {
             "type": "array",
             "items": {
@@ -125,6 +123,7 @@ REVIEW_SCHEMA: Final[dict[str, object]] = {
         "location_free",
         "findings",
         "correction_findings",
+        "resolved_corrections",
         "profile_conflicts",
         "verification_sources",
     ],
@@ -320,7 +319,12 @@ class CodexRunner:
             log_path,
             search=True,
         )
-        return _parse_review(raw, allowed_domains)
+        return _parse_review(
+            raw,
+            profile,
+            allowed_domains,
+            prior_corrections=prior_corrections,
+        )
 
 
 def _non_empty_string(value: object, field: str) -> str:
@@ -420,6 +424,7 @@ def _score(raw: dict[str, object], field: str) -> int:
 
 def _parse_profile_conflicts(
     value: object,
+    current_profile: SpeciesProfileData,
     allowed_domains: tuple[str, ...] | None,
 ) -> tuple[ProfileConflict, ...]:
     if value is None:
@@ -440,6 +445,40 @@ def _parse_profile_conflicts(
         profile_value = _non_empty_string(
             raw_conflict.get("profile_value"), "profile_conflicts.profile_value"
         )
+        expected_profile_value: str
+        if field == "measurements.length":
+            expected_profile_value = current_profile["measurements"]["length"]
+        elif field == "measurements.wingspan":
+            expected_profile_value = current_profile["measurements"]["wingspan"]
+        elif field == "measurements.weight":
+            expected_profile_value = current_profile["measurements"]["weight"]
+        elif field == "field_marks":
+            expected_profile_value = json.dumps(
+                current_profile["field_marks"],
+                ensure_ascii=False,
+                separators=(",", ":"),
+            )
+        elif field == "family":
+            expected_profile_value = current_profile["family"]
+        elif field == "habitat":
+            expected_profile_value = current_profile["habitat"]
+        elif field == "behavior":
+            expected_profile_value = current_profile["behavior"]
+        else:
+            raise GenerationError(f"Unsupported profile conflict field: {field}")
+        matches_current_profile = profile_value == expected_profile_value
+        if field == "field_marks":
+            try:
+                matches_current_profile = (
+                    json.loads(profile_value) == current_profile["field_marks"]
+                )
+            except json.JSONDecodeError:
+                matches_current_profile = False
+        if not matches_current_profile:
+            raise GenerationError(
+                f"Codex profile conflict does not match the current profile field: {field}"
+            )
+        profile_value = expected_profile_value
         observed_value = _non_empty_string(
             raw_conflict.get("observed_value"), "profile_conflicts.observed_value"
         )
@@ -490,7 +529,38 @@ def _parse_profile_conflicts(
     return tuple(conflicts)
 
 
-def _parse_review(raw: object, allowed_domains: tuple[str, ...] | None = None) -> QualityReview:
+def _parse_resolved_corrections(
+    value: object,
+    prior_corrections: tuple[str, ...],
+    current_corrections: tuple[str, ...],
+) -> tuple[str, ...]:
+    if value is None:
+        return ()
+    items = _string_list(value, "resolved_corrections", 0)
+    prior_by_key = {" ".join(item.split()).casefold(): item for item in prior_corrections}
+    current_keys = {" ".join(item.split()).casefold() for item in current_corrections}
+    resolved: list[str] = []
+    resolved_keys: set[str] = set()
+    for item in items:
+        key = " ".join(item.split()).casefold()
+        if key not in prior_by_key:
+            raise GenerationError("Codex resolved correction was not present in review history")
+        if key in current_keys:
+            raise GenerationError("Codex correction cannot be both resolved and actionable")
+        if key in resolved_keys:
+            raise GenerationError("Codex resolved correction is duplicated")
+        resolved_keys.add(key)
+        resolved.append(prior_by_key[key])
+    return tuple(resolved)
+
+
+def _parse_review(
+    raw: object,
+    current_profile: SpeciesProfileData,
+    allowed_domains: tuple[str, ...] | None = None,
+    *,
+    prior_corrections: tuple[str, ...] = (),
+) -> QualityReview:
     if not isinstance(raw, dict):
         raise GenerationError("Codex review output must be an object")
     reported_pass = raw.get("passed") is True
@@ -503,7 +573,16 @@ def _parse_review(raw: object, allowed_domains: tuple[str, ...] | None = None) -
     correction_findings = tuple(
         _string_list(raw.get("correction_findings"), "correction_findings", 0)
     )
-    profile_conflicts = _parse_profile_conflicts(raw.get("profile_conflicts"), allowed_domains)
+    resolved_corrections = _parse_resolved_corrections(
+        raw.get("resolved_corrections"),
+        prior_corrections,
+        correction_findings,
+    )
+    profile_conflicts = _parse_profile_conflicts(
+        raw.get("profile_conflicts"),
+        current_profile,
+        allowed_domains,
+    )
     sources = raw.get("verification_sources")
     if not isinstance(sources, list):
         raise GenerationError("Codex review verification_sources must be a list")
@@ -566,4 +645,5 @@ def _parse_review(raw: object, allowed_domains: tuple[str, ...] | None = None) -
         verification_sources=tuple(verification_sources),
         correction_findings=correction_findings,
         profile_conflicts=profile_conflicts,
+        resolved_corrections=resolved_corrections,
     )

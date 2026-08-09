@@ -7,7 +7,13 @@ from tempfile import TemporaryDirectory
 from unittest.mock import patch
 
 from inky_bird_frame.birds import BirdSpecies, TaxonContext
-from inky_bird_frame.codex_runner import CodexRunner, _parse_review, parse_species_profile
+from inky_bird_frame.codex_runner import (
+    CodexRunner,
+    parse_species_profile,
+)
+from inky_bird_frame.codex_runner import (
+    _parse_review as _parse_review_impl,
+)
 from inky_bird_frame.errors import GenerationError
 from inky_bird_frame.models import QualityReview, SpeciesProfileData
 
@@ -60,6 +66,20 @@ def _profile() -> SpeciesProfileData:
             {"title": "One", "url": "https://birds.example/one"},
             {"title": "Two", "url": "https://field.example/two"},
         ],
+    )
+
+
+def _parse_review(
+    raw: object,
+    allowed_domains: tuple[str, ...] | None = None,
+    *,
+    prior_corrections: tuple[str, ...] = (),
+) -> QualityReview:
+    return _parse_review_impl(
+        raw,
+        _profile(),
+        allowed_domains,
+        prior_corrections=prior_corrections,
     )
 
 
@@ -452,7 +472,7 @@ class CodexRunnerTests(unittest.TestCase):
                 "profile_conflicts": [
                     {
                         "field": "measurements.length",
-                        "profile_value": "10-20 cm",
+                        "profile_value": "1 in",
                         "observed_value": "12-15 cm",
                         "sources": [
                             {"title": "Birds", "url": "https://birds.example/length"},
@@ -517,7 +537,7 @@ class CodexRunnerTests(unittest.TestCase):
                     "profile_conflicts": [
                         {
                             "field": "measurements.length",
-                            "profile_value": "10-20 cm",
+                            "profile_value": "1 in",
                             "observed_value": "12-15 cm",
                             "sources": [
                                 {"title": "One", "url": "https://birds.example/one"},
@@ -531,6 +551,137 @@ class CodexRunnerTests(unittest.TestCase):
                     ],
                 },
                 ("birds.example", "field.example"),
+            )
+
+    def test_profile_conflict_must_quote_the_current_profile(self) -> None:
+        with self.assertRaisesRegex(GenerationError, "does not match the current profile"):
+            _parse_review(
+                {
+                    "passed": False,
+                    "species_accuracy": 5,
+                    "anatomy_accuracy": 5,
+                    "text_accuracy": 3,
+                    "composition_quality": 5,
+                    "location_free": True,
+                    "findings": ["A stale length conflict"],
+                    "correction_findings": [],
+                    "profile_conflicts": [
+                        {
+                            "field": "measurements.length",
+                            "profile_value": "10-20 cm",
+                            "observed_value": "12-15 cm",
+                            "sources": [
+                                {"title": "Birds", "url": "https://birds.example/length"},
+                                {"title": "Field", "url": "https://field.example/length"},
+                            ],
+                        }
+                    ],
+                    "verification_sources": [
+                        {"title": "Birds", "url": "https://birds.example/length"},
+                        {"title": "Field", "url": "https://field.example/length"},
+                    ],
+                },
+                ("birds.example", "field.example"),
+            )
+
+    def test_field_mark_conflict_accepts_equivalent_json_and_canonicalizes_it(self) -> None:
+        review = _parse_review(
+            {
+                "passed": False,
+                "species_accuracy": 3,
+                "anatomy_accuracy": 5,
+                "text_accuracy": 5,
+                "composition_quality": 5,
+                "location_free": True,
+                "findings": ["The proposed field marks conflict with direct sources"],
+                "correction_findings": [],
+                "profile_conflicts": [
+                    {
+                        "field": "field_marks",
+                        "profile_value": json.dumps(_profile()["field_marks"]),
+                        "observed_value": '["one","two","three","different"]',
+                        "sources": [
+                            {"title": "Birds", "url": "https://birds.example/marks"},
+                            {"title": "Field", "url": "https://field.example/marks"},
+                        ],
+                    }
+                ],
+                "verification_sources": [
+                    {"title": "Birds", "url": "https://birds.example/marks"},
+                    {"title": "Field", "url": "https://field.example/marks"},
+                ],
+            },
+            ("birds.example", "field.example"),
+        )
+
+        self.assertEqual(
+            review.profile_conflicts[0]["profile_value"],
+            '["one","two","three","four"]',
+        )
+
+    def test_review_accepts_only_explicit_resolutions_from_history(self) -> None:
+        review = _parse_review(
+            {
+                "passed": True,
+                "species_accuracy": 5,
+                "anatomy_accuracy": 5,
+                "text_accuracy": 5,
+                "composition_quality": 5,
+                "location_free": True,
+                "findings": ["The bill correction is now satisfied"],
+                "correction_findings": [],
+                "resolved_corrections": ["Shorten the bill"],
+                "verification_sources": [
+                    {"title": "Birds", "url": "https://birds.example/bill"},
+                    {"title": "Field", "url": "https://field.example/bill"},
+                ],
+            },
+            ("birds.example", "field.example"),
+            prior_corrections=("Shorten the bill",),
+        )
+
+        self.assertEqual(review.resolved_corrections, ("Shorten the bill",))
+
+        with self.assertRaisesRegex(GenerationError, "was not present in review history"):
+            _parse_review(
+                {
+                    "passed": True,
+                    "species_accuracy": 5,
+                    "anatomy_accuracy": 5,
+                    "text_accuracy": 5,
+                    "composition_quality": 5,
+                    "location_free": True,
+                    "findings": [],
+                    "correction_findings": [],
+                    "resolved_corrections": ["Shorten the bill"],
+                    "verification_sources": [
+                        {"title": "Birds", "url": "https://birds.example/bill"},
+                        {"title": "Field", "url": "https://field.example/bill"},
+                    ],
+                },
+                ("birds.example", "field.example"),
+            )
+
+    def test_review_rejects_a_correction_as_resolved_and_actionable(self) -> None:
+        with self.assertRaisesRegex(GenerationError, "both resolved and actionable"):
+            _parse_review(
+                {
+                    "passed": False,
+                    "species_accuracy": 3,
+                    "anatomy_accuracy": 5,
+                    "text_accuracy": 5,
+                    "composition_quality": 5,
+                    "location_free": True,
+                    "findings": ["The bill remains too long"],
+                    "correction_findings": ["Shorten the bill"],
+                    "resolved_corrections": ["Shorten the bill"],
+                    "verification_sources": [
+                        {"title": "Birds", "url": "https://birds.example/bill"},
+                        {"title": "Field", "url": "https://field.example/bill"},
+                    ],
+                },
+                ("birds.example", "field.example"),
+                prior_corrections=("Shorten the bill",),
             )
 
     def test_passing_review_shape_omits_empty_profile_conflicts(self) -> None:

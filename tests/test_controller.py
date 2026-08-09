@@ -71,7 +71,7 @@ from inky_bird_frame.errors import (
     SpeciesStateError,
 )
 from inky_bird_frame.geo import DiscoveryLocation
-from inky_bird_frame.models import QualityReview, SpeciesProfileData
+from inky_bird_frame.models import ProfileConflict, QualityReview, SpeciesProfileData
 from inky_bird_frame.prompts import PROMPT_VERSION
 from inky_bird_frame.retry import RetryStore
 
@@ -2143,6 +2143,23 @@ class ControllerTests(unittest.TestCase):
                 species.taxon_id,
                 ("Keep the bill proportion accurate",),
                 invariant_findings=("Keep the bill proportion accurate",),
+                profile_conflicts=(
+                    {
+                        "field": "measurements.length",
+                        "profile_value": "20.9-23.5 cm",
+                        "observed_value": "21-23 cm",
+                        "sources": [
+                            {
+                                "title": "Cornell",
+                                "url": "https://www.allaboutbirds.org/example",
+                            },
+                            {
+                                "title": "Audubon",
+                                "url": "https://www.audubon.org/example",
+                            },
+                        ],
+                    },
+                ),
             )
             with (
                 patch(
@@ -2174,6 +2191,10 @@ class ControllerTests(unittest.TestCase):
         self.assertEqual(
             generate.call_args.kwargs["invariant_correction_findings"],
             ("Keep the bill proportion accurate",),
+        )
+        self.assertEqual(
+            generate.call_args.kwargs["initial_profile_conflicts"][0]["field"],
+            "measurements.length",
         )
         self.assertEqual(len(queue), 1)
         self.assertEqual(queue[0].common_name, species.common_name)
@@ -2245,6 +2266,7 @@ class ControllerTests(unittest.TestCase):
             True,
             ("The remaining anatomy is correct", "Crest is too short"),
             correction_findings=("Crest is too short",),
+            resolved_corrections=("Preserve the previous scale correction",),
         )
         passed_review = QualityReview(
             True,
@@ -2494,7 +2516,12 @@ class ControllerTests(unittest.TestCase):
                 patch("inky_bird_frame.controller.CodexRunner", FakeRunner),
                 patch("inky_bird_frame.controller.prepare_generated_plate", side_effect=prepare),
             ):
-                candidate = generate_candidate(config, species, config.controller.workspace_dir)
+                candidate = generate_candidate(
+                    config,
+                    species,
+                    config.controller.workspace_dir,
+                    initial_profile_conflicts=conflict_review.profile_conflicts,
+                )
             history_path = next(
                 (config.controller.state_dir / "runs").glob("*/attempt-history.json")
             )
@@ -2532,8 +2559,16 @@ class ControllerTests(unittest.TestCase):
         self.assertEqual(FakeRunner.corrections[2], ("Repair the visible leg",))
         self.assertEqual(FakeRunner.invariants, [(), (), ()])
         self.assertEqual(
-            FakeRunner.review_kwargs[1]["prior_profile_conflicts"],
+            FakeRunner.review_kwargs[0]["prior_profile_conflicts"],
             conflict_review.profile_conflicts,
+        )
+        self.assertEqual(
+            FakeRunner.review_kwargs[1]["prior_profile_conflicts"],
+            (),
+        )
+        self.assertEqual(
+            FakeRunner.review_kwargs[2]["prior_profile_conflicts"],
+            (),
         )
         self.assertEqual(
             FakeRunner.review_kwargs[2]["prior_corrections"],
@@ -2732,6 +2767,7 @@ class ControllerTests(unittest.TestCase):
                     True,
                     ("Leg is malformed",),
                     correction_findings=("Repair the visible leg",),
+                    resolved_corrections=("Shorten the bill",),
                 ),
                 QualityReview(
                     False,
@@ -2796,6 +2832,84 @@ class ControllerTests(unittest.TestCase):
         self.assertEqual(run_history["attempts"][0]["failed_axes"], ["species_accuracy"])
         self.assertEqual(run_history["attempts"][1]["regressed_axes"], ["anatomy_accuracy"])
         self.assertEqual(run_history["attempts"][2]["regressed_findings"], ["Shorten the bill"])
+
+    def test_reversed_correction_is_not_carried_as_an_invariant(self) -> None:
+        species = BirdSpecies(9083, "Northern Cardinal", "Cardinalis cardinalis", 2, "test")
+        reviews = iter(
+            (
+                QualityReview(
+                    False,
+                    3,
+                    5,
+                    5,
+                    5,
+                    True,
+                    ("Bill is too long",),
+                    correction_findings=("Shorten the bill",),
+                ),
+                QualityReview(
+                    False,
+                    3,
+                    5,
+                    5,
+                    5,
+                    True,
+                    ("Bill is now too short",),
+                    correction_findings=("Lengthen the bill",),
+                ),
+                QualityReview(True, 5, 5, 5, 5, True, ()),
+            )
+        )
+
+        class FakeRunner:
+            invariants: list[tuple[str, ...]] = []
+            review_history: list[tuple[str, ...]] = []
+
+            def __init__(self, _executable: Path, _workspace: Path) -> None:
+                pass
+
+            def create_profile(self, *_args: object, **_kwargs: object) -> SpeciesProfileData:
+                output_path = _args[-2]
+                assert isinstance(output_path, Path)
+                output_path.write_text(json.dumps(PROFILE))
+                return PROFILE
+
+            def generate_plate(self, *_args: object, **kwargs: object) -> Path:
+                output_path = _args[-3]
+                assert isinstance(output_path, Path)
+                invariants = kwargs.get("invariant_findings")
+                assert isinstance(invariants, tuple)
+                self.invariants.append(invariants)
+                output_path.write_bytes(b"generated")
+                return output_path
+
+            def review_plate(self, *_args: object, **kwargs: object) -> QualityReview:
+                prior_corrections = kwargs.get("prior_corrections")
+                assert isinstance(prior_corrections, tuple)
+                self.review_history.append(prior_corrections)
+                return next(reviews)
+
+        def prepare(_source: Path, portrait: Path, display: Path) -> None:
+            portrait.write_bytes(b"portrait")
+            display.write_bytes(b"display")
+
+        with TemporaryDirectory() as temporary:
+            config_path = Path(temporary) / "config.toml"
+            config_path.write_text(CONFIG)
+            config = load_config(config_path)
+            with (
+                patch("inky_bird_frame.controller.load_or_fetch_references", return_value=[]),
+                patch("inky_bird_frame.controller.fetch_taxon_context"),
+                patch("inky_bird_frame.controller.CodexRunner", FakeRunner),
+                patch("inky_bird_frame.controller.prepare_generated_plate", side_effect=prepare),
+            ):
+                generate_candidate(config, species, config.controller.workspace_dir)
+
+        self.assertEqual(FakeRunner.invariants, [(), (), ()])
+        self.assertEqual(
+            FakeRunner.review_history,
+            [(), ("Shorten the bill",), ("Shorten the bill", "Lengthen the bill")],
+        )
 
     def test_generation_error_records_only_sanitized_error_type(self) -> None:
         species = BirdSpecies(9083, "Northern Cardinal", "Cardinalis cardinalis", 2, "test")
@@ -3193,6 +3307,102 @@ class ControllerTests(unittest.TestCase):
             generate.call_args.kwargs["initial_correction_findings"],
             ("Correct the ruler scale",),
         )
+
+    def test_exhausted_quality_review_preserves_conflict_only_guidance(self) -> None:
+        species = BirdSpecies(9083, "Northern Cardinal", "Cardinalis cardinalis", 2, "test")
+        location = DiscoveryLocation("12345", "Exampleville", "XY", 1.0, 2.0)
+        conflict = ProfileConflict(
+            field="measurements.length",
+            profile_value="20.9-23.5 cm",
+            observed_value="21-23 cm",
+            sources=[
+                {"title": "Cornell", "url": "https://www.allaboutbirds.org/example"},
+                {"title": "Audubon", "url": "https://www.audubon.org/example"},
+            ],
+        )
+        with TemporaryDirectory() as temporary:
+            config_path = Path(temporary) / "config.toml"
+            config_path.write_text(CONFIG)
+            config = load_config(config_path)
+            config.controller.state_dir.mkdir(parents=True)
+            RetryStore(
+                config.controller.state_dir / "generation-retries.json"
+            ).set_quality_guidance(
+                species.taxon_id,
+                (),
+                profile_conflicts=(conflict,),
+            )
+            with (
+                patch(
+                    "inky_bird_frame.controller.discover_species",
+                    return_value=discovery_result(location, [species]),
+                ),
+                patch(
+                    "inky_bird_frame.controller.generate_candidate",
+                    side_effect=QualityReviewError("profile conflict remained"),
+                ) as generate,
+            ):
+                run_controller_cycle(config)
+
+            guidance = RetryStore(
+                config.controller.state_dir / "generation-retries.json"
+            ).quality_guidance(species.taxon_id)
+
+        self.assertIsNotNone(guidance)
+        if guidance is not None:
+            self.assertEqual(guidance.findings, ())
+            self.assertEqual(guidance.profile_conflicts, (conflict,))
+        self.assertEqual(
+            generate.call_args.kwargs["initial_profile_conflicts"],
+            (conflict,),
+        )
+
+    def test_retry_conflict_outside_current_allowlist_is_deferred(self) -> None:
+        species = BirdSpecies(9083, "Northern Cardinal", "Cardinalis cardinalis", 2, "test")
+        location = DiscoveryLocation("12345", "Exampleville", "XY", 1.0, 2.0)
+        conflict = ProfileConflict(
+            field="measurements.length",
+            profile_value="20.9-23.5 cm",
+            observed_value="21-23 cm",
+            sources=[
+                {"title": "Outside", "url": "https://outside.example/one"},
+                {"title": "Other", "url": "https://other.example/two"},
+            ],
+        )
+        with TemporaryDirectory() as temporary:
+            config_path = Path(temporary) / "config.toml"
+            config_path.write_text(CONFIG)
+            config = load_config(config_path)
+            config.controller.state_dir.mkdir(parents=True)
+            RetryStore(
+                config.controller.state_dir / "generation-retries.json"
+            ).set_quality_guidance(
+                species.taxon_id,
+                (),
+                profile_conflicts=(conflict,),
+            )
+            with (
+                patch(
+                    "inky_bird_frame.controller.discover_species",
+                    return_value=discovery_result(location, [species]),
+                ),
+                patch("inky_bird_frame.controller.generate_candidate") as generate,
+            ):
+                result = run_controller_cycle(config)
+
+            retry_store = RetryStore(config.controller.state_dir / "generation-retries.json")
+
+        generate.assert_not_called()
+        failures = result["failures"]
+        self.assertIsInstance(failures, list)
+        if isinstance(failures, list):
+            self.assertFalse(failures[0]["terminal"])
+            self.assertIn("outside the current research allowlist", failures[0]["error"])
+        self.assertIsNotNone(retry_store.get(species.taxon_id))
+        guidance = retry_store.quality_guidance(species.taxon_id)
+        self.assertIsNotNone(guidance)
+        if guidance is not None:
+            self.assertEqual(guidance.profile_conflicts, (conflict,))
 
 
 class DiscoveryProviderTests(unittest.TestCase):
