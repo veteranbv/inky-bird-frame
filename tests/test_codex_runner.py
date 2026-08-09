@@ -654,6 +654,37 @@ class CodexRunnerTests(unittest.TestCase):
                 ("birds.example", "field.example"),
             )
 
+    def test_field_mark_conflict_rejects_empty_observed_value(self) -> None:
+        with self.assertRaisesRegex(GenerationError, "at least four strings"):
+            _parse_review(
+                {
+                    "passed": False,
+                    "species_accuracy": 3,
+                    "anatomy_accuracy": 5,
+                    "text_accuracy": 5,
+                    "composition_quality": 5,
+                    "location_free": True,
+                    "findings": ["The proposed field marks conflict with direct sources"],
+                    "correction_findings": [],
+                    "profile_conflicts": [
+                        {
+                            "field": "field_marks",
+                            "profile_value": '["one","two","three","four"]',
+                            "observed_value": "[]",
+                            "sources": [
+                                {"title": "Birds", "url": "https://birds.example/marks"},
+                                {"title": "Field", "url": "https://field.example/marks"},
+                            ],
+                        }
+                    ],
+                    "verification_sources": [
+                        {"title": "Birds", "url": "https://birds.example/marks"},
+                        {"title": "Field", "url": "https://field.example/marks"},
+                    ],
+                },
+                ("birds.example", "field.example"),
+            )
+
     def test_review_accepts_only_explicit_resolutions_from_history(self) -> None:
         review = _parse_review(
             {

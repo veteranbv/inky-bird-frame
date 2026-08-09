@@ -489,11 +489,15 @@ def _parse_profile_conflicts(
                 raise GenerationError(
                     "Codex field_marks conflict observed_value must be a JSON array"
                 ) from exc
-            if not isinstance(observed_field_marks, list) or any(
-                not isinstance(mark, str) or not mark.strip() for mark in observed_field_marks
+            if (
+                not isinstance(observed_field_marks, list)
+                or len(observed_field_marks) < 4
+                or any(
+                    not isinstance(mark, str) or not mark.strip() for mark in observed_field_marks
+                )
             ):
                 raise GenerationError(
-                    "Codex field_marks conflict observed_value must be a JSON array of strings"
+                    "Codex field_marks conflict observed_value must contain at least four strings"
                 )
             if observed_field_marks == current_profile["field_marks"]:
                 raise GenerationError("Codex profile conflict values must disagree")

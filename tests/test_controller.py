@@ -41,6 +41,7 @@ from inky_bird_frame.controller import (
     DiscoverySnapshot,
     ProviderStatus,
     _merge_provider_species,
+    _merge_refreshed_profile,
     add_collection_member,
     collection_status,
     discover_species,
@@ -2582,6 +2583,32 @@ class ControllerTests(unittest.TestCase):
         self.assertEqual(before_refresh, PROFILE)
         self.assertEqual(after_refresh, expected_profile)
 
+    def test_field_mark_refresh_also_replaces_the_palette(self) -> None:
+        researched_profile = SpeciesProfileData(
+            **{
+                **PROFILE,
+                "field_marks": ["crest", "blue plumage", "black mask", "orange bill"],
+                "palette": ["blue", "black", "orange"],
+            }
+        )
+        conflict = ProfileConflict(
+            field="field_marks",
+            profile_value=json.dumps(PROFILE["field_marks"], separators=(",", ":")),
+            observed_value=json.dumps(
+                researched_profile["field_marks"],
+                separators=(",", ":"),
+            ),
+            sources=[
+                {"title": "Cornell", "url": "https://www.allaboutbirds.org/example"},
+                {"title": "Audubon", "url": "https://www.audubon.org/example"},
+            ],
+        )
+
+        merged = _merge_refreshed_profile(PROFILE, researched_profile, (conflict,))
+
+        self.assertEqual(merged["field_marks"], researched_profile["field_marks"])
+        self.assertEqual(merged["palette"], researched_profile["palette"])
+
     def test_profile_conflict_is_terminal_when_research_is_disabled(self) -> None:
         species = BirdSpecies(9083, "Northern Cardinal", "Cardinalis cardinalis", 2, "test")
         cached_profile = SpeciesProfileData(
@@ -2768,6 +2795,15 @@ class ControllerTests(unittest.TestCase):
 
     def test_terminal_review_failure_retains_versioned_attempt_history(self) -> None:
         species = BirdSpecies(9083, "Northern Cardinal", "Cardinalis cardinalis", 2, "test")
+        initial_conflict = ProfileConflict(
+            field="measurements.length",
+            profile_value=PROFILE["measurements"]["length"],
+            observed_value="21-23 cm",
+            sources=[
+                {"title": "Cornell", "url": "https://www.allaboutbirds.org/example"},
+                {"title": "Audubon", "url": "https://www.audubon.org/example"},
+            ],
+        )
         failed_reviews = iter(
             (
                 QualityReview(
@@ -2836,9 +2872,14 @@ class ControllerTests(unittest.TestCase):
                 patch("inky_bird_frame.controller.fetch_taxon_context"),
                 patch("inky_bird_frame.controller.CodexRunner", FakeRunner),
                 patch("inky_bird_frame.controller.prepare_generated_plate", side_effect=prepare),
-                self.assertRaises(QualityReviewError),
+                self.assertRaises(QualityReviewError) as raised,
             ):
-                generate_candidate(config, species, config.controller.workspace_dir)
+                generate_candidate(
+                    config,
+                    species,
+                    config.controller.workspace_dir,
+                    initial_profile_conflicts=(initial_conflict,),
+                )
             run_history_path = next(
                 (config.controller.state_dir / "runs").glob("*/attempt-history.json")
             )
@@ -2849,6 +2890,7 @@ class ControllerTests(unittest.TestCase):
             failed_history = json.loads(failed_history_path.read_text())
 
         self.assertEqual(run_history, failed_history)
+        self.assertEqual(raised.exception.profile_conflicts, ())
         self.assertEqual(run_history["schema_version"], 1)
         self.assertEqual(len(run_history["attempts"]), 3)
         self.assertEqual(run_history["attempts"][0]["failed_axes"], ["species_accuracy"])

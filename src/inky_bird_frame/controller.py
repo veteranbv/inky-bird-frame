@@ -1702,6 +1702,7 @@ def _merge_refreshed_profile(
             merged["family"] = researched_profile["family"]
         elif field == "field_marks":
             merged["field_marks"] = researched_profile["field_marks"]
+            merged["palette"] = researched_profile["palette"]
         elif field == "habitat":
             merged["habitat"] = researched_profile["habitat"]
         elif field == "behavior":
@@ -1720,15 +1721,6 @@ def _deduplicate_findings(*groups: tuple[str, ...]) -> tuple[str, ...]:
 
 def _finding_key(finding: str) -> str:
     return " ".join(finding.split()).casefold()
-
-
-def _deduplicate_profile_conflicts(
-    *groups: tuple[ProfileConflict, ...],
-) -> tuple[ProfileConflict, ...]:
-    conflicts: dict[str, ProfileConflict] = {}
-    for conflict in (item for group in groups for item in group):
-        conflicts[conflict["field"]] = conflict
-    return tuple(conflicts.values())
 
 
 def _write_attempt_history(
@@ -1962,10 +1954,7 @@ def generate_candidate(
                 reviewed_corrections,
                 review.correction_findings,
             )
-            prior_profile_conflicts = _deduplicate_profile_conflicts(
-                prior_profile_conflicts,
-                review.profile_conflicts,
-            )
+            prior_profile_conflicts = review.profile_conflicts
             previous_scores = current_scores
             if review.profile_conflicts:
                 if not config.research.enabled:

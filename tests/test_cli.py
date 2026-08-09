@@ -1477,6 +1477,65 @@ rotation_mode = "shuffle_bag"
         self.assertEqual(result["preserved_profile_conflicts_count"], 0)
         self.assertTrue(result["queued_for_generation"])
 
+    def test_retry_refresh_research_preserves_non_conflict_guidance(self) -> None:
+        with TemporaryDirectory() as temporary:
+            state_dir = Path(temporary)
+            source_plate = state_dir / "archive/42-human/portrait.png"
+            source_plate.parent.mkdir(parents=True)
+            source_plate.write_bytes(b"human-reviewed source")
+            store = RetryStore(state_dir / "generation-retries.json")
+            store.record_failure(
+                42,
+                GenerationError("profile conflict remained"),
+                now=datetime(2026, 8, 2, tzinfo=UTC),
+                initial_minutes=5,
+                maximum_minutes=60,
+                species=BirdSpecies(42, "Example Bird", "Avis exemplum", 1, "test"),
+            )
+            correction = "Keep the human-reviewed eye and bill proportions"
+            store.set_quality_guidance(
+                42,
+                (correction,),
+                source_plate="archive/42-human/portrait.png",
+                invariant_findings=(correction,),
+                profile_conflicts=(
+                    cast(
+                        ProfileConflict,
+                        {
+                            "field": "measurements.length",
+                            "profile_value": "10-20 cm",
+                            "observed_value": "12-15 cm",
+                            "sources": [
+                                {
+                                    "title": "Outside",
+                                    "url": "https://outside.example/length",
+                                },
+                                {
+                                    "title": "Other",
+                                    "url": "https://other.example/length",
+                                },
+                            ],
+                        },
+                    ),
+                ),
+            )
+            config = controller_config(state_dir)
+
+            with (
+                patch("inky_bird_frame.cli._config", return_value=config),
+                redirect_stdout(io.StringIO()),
+            ):
+                retry_command(Namespace(taxon_id=42, refresh_research=True))
+
+            guidance = RetryStore(state_dir / "generation-retries.json").quality_guidance(42)
+
+        self.assertIsNotNone(guidance)
+        if guidance is not None:
+            self.assertEqual(guidance.findings, (correction,))
+            self.assertEqual(guidance.invariant_findings, (correction,))
+            self.assertEqual(guidance.source_plate, "archive/42-human/portrait.png")
+            self.assertEqual(guidance.profile_conflicts, ())
+
     def test_retry_rejects_stored_conflict_outside_the_allowlist(self) -> None:
         with TemporaryDirectory() as temporary:
             state_dir = Path(temporary)

@@ -800,6 +800,8 @@ def retry_command(args: argparse.Namespace) -> int:
             existing_profile_conflicts = ()
         if refresh_research:
             profile_conflicts = ()
+            if existing_guidance is not None and not quality_findings:
+                quality_findings = existing_guidance.findings
         selected_profile_conflicts = profile_conflicts
         reuse_existing_guidance = (
             not refresh_research
@@ -956,6 +958,13 @@ def retry_command(args: argparse.Namespace) -> int:
             correction_source,
         )
         archived_correction_source = retained_correction_source or planned_correction_source
+        guidance_source_plate = (
+            archived_correction_source.relative_to(config.controller.state_dir).as_posix()
+            if archived_correction_source is not None
+            else existing_guidance.source_plate
+            if existing_guidance is not None
+            else None
+        )
         final_guidance = None if refresh_research else existing_guidance
         if refresh_research and existing_guidance is not None:
             retry_store.clear_quality_guidance(args.taxon_id)
@@ -963,11 +972,7 @@ def retry_command(args: argparse.Namespace) -> int:
             final_guidance = retry_store.set_quality_guidance(
                 args.taxon_id,
                 quality_findings,
-                source_plate=(
-                    archived_correction_source.relative_to(config.controller.state_dir).as_posix()
-                    if archived_correction_source is not None
-                    else None
-                ),
+                source_plate=guidance_source_plate,
                 invariant_findings=(
                     existing_guidance.invariant_findings if existing_guidance is not None else ()
                 ),
