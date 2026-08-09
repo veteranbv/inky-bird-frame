@@ -3357,6 +3357,51 @@ class ControllerTests(unittest.TestCase):
             (conflict,),
         )
 
+    def test_exhausted_quality_review_clears_adjudicated_profile_conflict(self) -> None:
+        species = BirdSpecies(9083, "Northern Cardinal", "Cardinalis cardinalis", 2, "test")
+        location = DiscoveryLocation("12345", "Exampleville", "XY", 1.0, 2.0)
+        conflict = ProfileConflict(
+            field="measurements.length",
+            profile_value="20.9-23.5 cm",
+            observed_value="21-23 cm",
+            sources=[
+                {"title": "Cornell", "url": "https://www.allaboutbirds.org/example"},
+                {"title": "Audubon", "url": "https://www.audubon.org/example"},
+            ],
+        )
+        with TemporaryDirectory() as temporary:
+            config_path = Path(temporary) / "config.toml"
+            config_path.write_text(CONFIG)
+            config = load_config(config_path)
+            config.controller.state_dir.mkdir(parents=True)
+            RetryStore(
+                config.controller.state_dir / "generation-retries.json"
+            ).set_quality_guidance(
+                species.taxon_id,
+                (),
+                profile_conflicts=(conflict,),
+            )
+            with (
+                patch(
+                    "inky_bird_frame.controller.discover_species",
+                    return_value=discovery_result(location, [species]),
+                ),
+                patch(
+                    "inky_bird_frame.controller.generate_candidate",
+                    side_effect=QualityReviewError(
+                        "image quality remained below threshold",
+                        profile_conflicts=(),
+                    ),
+                ),
+            ):
+                run_controller_cycle(config)
+
+            guidance = RetryStore(
+                config.controller.state_dir / "generation-retries.json"
+            ).quality_guidance(species.taxon_id)
+
+        self.assertIsNone(guidance)
+
     def test_retry_conflict_outside_current_allowlist_is_deferred(self) -> None:
         species = BirdSpecies(9083, "Northern Cardinal", "Cardinalis cardinalis", 2, "test")
         location = DiscoveryLocation("12345", "Exampleville", "XY", 1.0, 2.0)

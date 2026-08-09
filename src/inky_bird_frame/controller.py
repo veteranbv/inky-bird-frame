@@ -2028,7 +2028,8 @@ def generate_candidate(
         )
         raise QualityReviewError(
             f"Generated plate failed automated quality review because {reason}; "
-            f"artifacts retained at {failed}"
+            f"artifacts retained at {failed}",
+            profile_conflicts=prior_profile_conflicts,
         )
 
 
@@ -2306,14 +2307,19 @@ def run_generation_cycle(config: AppConfig) -> dict[str, object]:
                 )
             except QualityReviewError as exc:
                 retry_store.clear(species.taxon_id)
+                remaining_profile_conflicts = (
+                    guidance.profile_conflicts
+                    if guidance is not None and exc.profile_conflicts is None
+                    else exc.profile_conflicts or ()
+                )
                 if guidance is not None and (
-                    guidance.invariant_findings or guidance.profile_conflicts
+                    guidance.invariant_findings or remaining_profile_conflicts
                 ):
                     retry_store.set_quality_guidance(
                         species.taxon_id,
                         guidance.invariant_findings,
                         invariant_findings=guidance.invariant_findings,
-                        profile_conflicts=guidance.profile_conflicts,
+                        profile_conflicts=remaining_profile_conflicts,
                     )
                 else:
                     retry_store.clear_quality_guidance(species.taxon_id)
