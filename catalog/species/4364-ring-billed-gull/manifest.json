@@ -1,0 +1,161 @@
+{
+  "approved_at": "2026-08-09T18:04:12+00:00",
+  "assets": {
+    "display": {
+      "filename": "display.png",
+      "sha256": "fe631c09a0cfb8340d39533055f96ae5daeda47c1f548937e8c8864f79637a40"
+    },
+    "portrait": {
+      "filename": "portrait.png",
+      "sha256": "8641077ab50c786b581487f2123b44a08034bfa93658d7acc61c5dd598a2257a"
+    }
+  },
+  "common_name": "Ring-billed Gull",
+  "generation": {
+    "attempt": 2,
+    "correction_source_sha256": "5d9d9c1507f4619f0aec203a40bc9bb74fc07b881a66f442bace6471bc30a2ae",
+    "generated_at": "2026-08-09T18:04:12+00:00",
+    "generator": "Codex subscription / built-in gpt-image-2",
+    "max_attempts": 3,
+    "prompt_version": "field-journal-v4"
+  },
+  "profile": {
+    "behavior": "A social, opportunistic omnivore that forages on foot, while swimming, and in flight; it scavenges, snatches food from the water or air, and nests colonially on the ground.",
+    "common_name": "Ring-billed Gull",
+    "family": "Laridae",
+    "field_marks": [
+      "Short yellow bill encircled by a narrow black ring",
+      "White head, neck, underparts, and tail in adults",
+      "Pale silver-gray back and upperwings",
+      "Black wingtips marked with small white spots",
+      "Pale eye and yellow to yellow-green legs",
+      "Long, slender wings extending beyond the square-tipped tail when perched"
+    ],
+    "habitat": "Freshwater lakes, ponds, rivers, reservoirs, estuaries, beaches, mudflats, and other open shorelines; also common in agricultural, suburban, and urban open spaces.",
+    "measurements": {
+      "length": "43\u201354 cm (16.9\u201321.3 in)",
+      "weight": "300\u2013700 g (10.6\u201324.7 oz)",
+      "wingspan": "105\u2013117 cm (41.3\u201346.1 in)"
+    },
+    "palette": [
+      "clean white",
+      "pale silver-gray",
+      "black",
+      "bill-and-leg yellow",
+      "muted tan-brown"
+    ],
+    "scientific_name": "Larus delawarensis",
+    "sources": [
+      {
+        "title": "Ring-billed Gull Identification \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Ring-billed_Gull/id"
+      },
+      {
+        "title": "Ring-billed Gull Life History \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Ring-billed_Gull/lifehistory"
+      },
+      {
+        "title": "Larus delawarensis \u2014 Animal Diversity Web",
+        "url": "https://animaldiversity.org/accounts/Larus_delawarensis/"
+      }
+    ],
+    "taxon_id": 4364
+  },
+  "quality_review": {
+    "anatomy_accuracy": 5,
+    "composition_quality": 5,
+    "correction_findings": [],
+    "findings": [
+      "Species identity is correct: the title, Larus delawarensis, and family Laridae agree with the verified taxonomy.",
+      "The primary specimen accurately depicts an adult Ring-billed Gull: short slim yellow bill with a distinct black ring, pale eye, lightly flecked nonbreeding-type head, white underparts and tail, pale silver-gray mantle and wings, black primaries with white spots, and yellow-green legs.",
+      "Proportions agree with the clearest side-profile reference: the head, neck, bill, body, legs, feet, folded wings, and square-ended tail are coherent, and the long folded wings extend beyond the tail. Both depicted bills have consistent, complete mandibles and natural slightly hooked upper tips.",
+      "The primary specimen is a single complete bird with one head and bill, two overlapping wings, two legs with plausible webbed feet, and one tail. The detached wing and head are clearly separated supplementary studies and are anatomically consistent with the primary specimen.",
+      "All visible identification, habitat, and behavior text is correctly spelled, grammatical, and consistent with the verified accounts. The added breeding-versus-nonbreeding head-plumage explanation is accurate and agrees with the illustrated flecked adult and the field references.",
+      "The printed length of 43\u201354 cm (16.9\u201321.3 in), weight of 300\u2013700 g (10.6\u201324.7 oz), and wingspan of 105\u2013117 cm (41.3\u201346.1 in) exactly match Cornell's published ranges. Wikipedia publishes the same figures; Animal Diversity Web agrees on length and weight but reports an approximately 127 cm average wingspan, while Audubon gives a broader 1.2\u20131.3 m range. The plate's Cornell-sourced range is therefore supportable rather than a transcription error.",
+      "The body-length ruler repeats the correct range, is explicitly labeled \u201cSCHEMATIC \u2014 NOT TO SCALE,\u201d has matching endpoints and exactly four evenly spaced unlabeled interior ticks, and contains no contradictory marker or unit.",
+      "The palette matches the adult plumage. The layout is legible and balanced, with no text-anatomy collisions or misleading attachment of the supplementary studies.",
+      "No place name, ZIP code, coordinates, map, or local-observation detail appears on the plate."
+    ],
+    "location_free": true,
+    "passed": true,
+    "species_accuracy": 5,
+    "text_accuracy": 5,
+    "verification_sources": [
+      {
+        "title": "Ring-billed Gull Identification \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Ring-billed_Gull/id"
+      },
+      {
+        "title": "Ring-billed Gull \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/ring-billed-gull"
+      },
+      {
+        "title": "Larus delawarensis \u2014 Animal Diversity Web",
+        "url": "https://animaldiversity.org/accounts/Larus_delawarensis/"
+      },
+      {
+        "title": "Ring-billed gull \u2014 Wikipedia",
+        "url": "https://en.wikipedia.org/wiki/Ring-billed_gull"
+      }
+    ]
+  },
+  "references": [
+    {
+      "attribution": "(c) Isaac Krone, some rights reserved (CC BY)",
+      "filename": "01-57372242.jpg",
+      "height": 1365,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/57372242/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 36305962,
+      "observer": "isaac_krone",
+      "photo_id": 57372242,
+      "sha256": "1404259e3e4d8cb8c9cf4c6f429f138adee500d2c3a0369e6af465861d3d91e6",
+      "source_url": "https://www.inaturalist.org/observations/36305962",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) Eric Schmidt, some rights reserved (CC BY)",
+      "filename": "02-347393953.jpg",
+      "height": 2048,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/347393953/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 197266509,
+      "observer": "eric-schmitty",
+      "photo_id": 347393953,
+      "sha256": "17159969656bbce74a2d3ae3dbdc88d428c0f2d3f29adb3254713cc4e995a7e3",
+      "source_url": "https://www.inaturalist.org/observations/197266509",
+      "width": 1152
+    },
+    {
+      "attribution": "(c) Chris Stahl, some rights reserved (CC BY)",
+      "filename": "03-597860429.jpg",
+      "height": 1063,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/597860429/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 329783358,
+      "observer": "bathroomstahl",
+      "photo_id": 597860429,
+      "sha256": "c5abd62e054e23772a4b812eb1af144a837338722a5d6fdb78d537997be2e383",
+      "source_url": "https://www.inaturalist.org/observations/329783358",
+      "width": 1518
+    },
+    {
+      "attribution": "(c) Julia Pupko, some rights reserved (CC BY)",
+      "filename": "04-117162924.jpg",
+      "height": 2048,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/117162924/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 71449429,
+      "observer": "jpupko",
+      "photo_id": 117162924,
+      "sha256": "6ff3829aa8f56554eaf8d849d5f968984a1677907a4effea9ae788cc5ae12d05",
+      "source_url": "https://www.inaturalist.org/observations/71449429",
+      "width": 1536
+    }
+  ],
+  "schema_version": 1,
+  "scientific_name": "Larus delawarensis",
+  "slug": "ring-billed-gull",
+  "status": "approved",
+  "taxon_id": 4364
+}

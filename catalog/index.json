@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-09T17:35:31+00:00",
+  "generated_at": "2026-08-09T18:04:12+00:00",
   "schema_version": 1,
   "species": [
     {
@@ -1068,6 +1068,17 @@
       "scientific_name": "Agelaius phoeniceus",
       "slug": "red-winged-blackbird",
       "taxon_id": 9744
+    },
+    {
+      "approved_at": "2026-08-09T18:04:12+00:00",
+      "common_name": "Ring-billed Gull",
+      "display_path": "species/4364-ring-billed-gull/display.png",
+      "display_sha256": "fe631c09a0cfb8340d39533055f96ae5daeda47c1f548937e8c8864f79637a40",
+      "portrait_path": "species/4364-ring-billed-gull/portrait.png",
+      "portrait_sha256": "8641077ab50c786b581487f2123b44a08034bfa93658d7acc61c5dd598a2257a",
+      "scientific_name": "Larus delawarensis",
+      "slug": "ring-billed-gull",
+      "taxon_id": 4364
     },
     {
       "approved_at": "2026-07-10T14:06:59+00:00",

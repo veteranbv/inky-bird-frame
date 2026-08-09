@@ -1,0 +1,42 @@
+{
+  "behavior": "A social, opportunistic omnivore that forages on foot, while swimming, and in flight; it scavenges, snatches food from the water or air, and nests colonially on the ground.",
+  "common_name": "Ring-billed Gull",
+  "family": "Laridae",
+  "field_marks": [
+    "Short yellow bill encircled by a narrow black ring",
+    "White head, neck, underparts, and tail in adults",
+    "Pale silver-gray back and upperwings",
+    "Black wingtips marked with small white spots",
+    "Pale eye and yellow to yellow-green legs",
+    "Long, slender wings extending beyond the square-tipped tail when perched"
+  ],
+  "habitat": "Freshwater lakes, ponds, rivers, reservoirs, estuaries, beaches, mudflats, and other open shorelines; also common in agricultural, suburban, and urban open spaces.",
+  "measurements": {
+    "length": "43\u201354 cm (16.9\u201321.3 in)",
+    "weight": "300\u2013700 g (10.6\u201324.7 oz)",
+    "wingspan": "105\u2013117 cm (41.3\u201346.1 in)"
+  },
+  "palette": [
+    "clean white",
+    "pale silver-gray",
+    "black",
+    "bill-and-leg yellow",
+    "muted tan-brown"
+  ],
+  "scientific_name": "Larus delawarensis",
+  "sources": [
+    {
+      "title": "Ring-billed Gull Identification \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Ring-billed_Gull/id"
+    },
+    {
+      "title": "Ring-billed Gull Life History \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Ring-billed_Gull/lifehistory"
+    },
+    {
+      "title": "Larus delawarensis \u2014 Animal Diversity Web",
+      "url": "https://animaldiversity.org/accounts/Larus_delawarensis/"
+    }
+  ],
+  "taxon_id": 4364
+}
