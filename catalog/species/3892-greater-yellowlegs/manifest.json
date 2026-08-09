@@ -1,0 +1,158 @@
+{
+  "approved_at": "2026-08-09T11:18:55+00:00",
+  "assets": {
+    "display": {
+      "filename": "display.png",
+      "sha256": "e94b0fe08b1f5f639d3de23f2ed894fbe48c680cfeccd71570c9368ca03bb624"
+    },
+    "portrait": {
+      "filename": "portrait.png",
+      "sha256": "51719624163b7211e6c3abb88b8fa3170d23da8e753b43091ed10019fb2c4cfd"
+    }
+  },
+  "common_name": "Greater Yellowlegs",
+  "generation": {
+    "attempt": 1,
+    "generated_at": "2026-08-09T11:18:55+00:00",
+    "generator": "Codex subscription / built-in gpt-image-2",
+    "max_attempts": 3,
+    "prompt_version": "field-journal-v4"
+  },
+  "profile": {
+    "behavior": "Forages actively in shallow water with a high-stepping walk, swift bill-stabs, and occasional runs after fish or aquatic invertebrates; often solitary or in loose groups.",
+    "common_name": "Greater Yellowlegs",
+    "family": "Scolopacidae",
+    "field_marks": [
+      "Very long, bright yellow to orange-yellow legs",
+      "Long, dark, slightly upturned bill with a sturdy base",
+      "Tall, lanky proportions with a long neck and small head",
+      "Dark gray-brown upperparts and folded wings with crisp pale spotting or checkering",
+      "Finely streaked head and neck with a distinct pale eye-ring",
+      "White belly, variably marked flanks, and a short, dark-barred white tail"
+    ],
+    "habitat": "Breeds in boreal bogs, wet meadows, sedgelands, and wet forest clearings; otherwise occupies shallow fresh, brackish, and coastal wetlands such as marshes, mudflats, pond edges, estuaries, and flooded fields.",
+    "measurements": {
+      "length": "28\u201338 cm",
+      "weight": "105\u2013210 g",
+      "wingspan": "66\u201374 cm"
+    },
+    "palette": [
+      "bright yellow",
+      "charcoal black",
+      "slate gray",
+      "earth brown",
+      "clean white"
+    ],
+    "scientific_name": "Tringa melanoleuca",
+    "sources": [
+      {
+        "title": "Greater Yellowlegs Identification \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Greater_Yellowlegs/id"
+      },
+      {
+        "title": "Greater Yellowlegs Life History \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Greater_Yellowlegs/lifehistory"
+      },
+      {
+        "title": "Greater Yellowlegs \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/greater-yellowlegs"
+      }
+    ],
+    "taxon_id": 3892
+  },
+  "quality_review": {
+    "anatomy_accuracy": 4,
+    "composition_quality": 5,
+    "correction_findings": [],
+    "findings": [
+      "The common name, scientific name, and family are correctly rendered as \u201cGreater Yellowlegs,\u201d \u201cTringa melanoleuca,\u201d and \u201cScolopacidae.\u201d",
+      "The printed length 28\u201338 cm, wingspan 66\u201374 cm, and weight 105\u2013210 g exactly match Audubon\u2019s published ranges. Cornell currently publishes different measurement ranges, reflecting source variation rather than an internal plate error.",
+      "The primary specimen matches Greater Yellowlegs in its tall, small-headed and long-necked proportions; very long yellow legs; dark, long, sturdy-based bill; gray-brown checkered upperparts; streaked head and neck; pale eye-ring; white underparts; and short barred pale tail.",
+      "Both depicted heads have coherent, complete mandibles from shared base to co-terminal tip. Their bills are long and subtly upturned without a reversed or exaggerated projection; unequal mandible length is not established as a field mark for this species.",
+      "The primary bird has one head, one bill, two anatomically coherent wings with the far folded wing naturally overlapped, two legs with plausible joints and feet, and one tail. No duplicated or malformed attached parts are present.",
+      "The detached wing and head/bill drawings are clearly separated supplementary studies. Their feather structure, eye placement, and bill proportions are consistent with the primary specimen and reference photographs.",
+      "The habitat and behavior passages agree with the direct sources: boreal wetland breeding habitat, varied shallow wetlands outside breeding, active shallow-water foraging, high-stepping walking, running after prey, swift bill-stabs, and generally solitary or loose-group behavior.",
+      "All six printed field-mark statements match the proposed wording and verified traits. No duplicated, omitted, substituted, misspelled, or nonsensical words were found.",
+      "The vertical range ruler is internally consistent: 28 cm is at the bottom, 38 cm at the top, exactly four evenly spaced unlabeled interior ticks create five proportional segments, and the separate \u201cBODY LENGTH: 28\u201338 cm\u201d marker agrees with it. \u201cSCHEMATIC \u2014 NOT TO SCALE\u201d prevents presentation as the printed bird\u2019s physical size.",
+      "The five swatches correspond recognizably to bright yellow, charcoal black, slate gray, earth brown, and white.",
+      "No place name, ZIP code, coordinates, map, or local-observation detail appears."
+    ],
+    "location_free": true,
+    "passed": true,
+    "species_accuracy": 5,
+    "text_accuracy": 5,
+    "verification_sources": [
+      {
+        "title": "Greater Yellowlegs Identification \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Greater_Yellowlegs/id"
+      },
+      {
+        "title": "Greater Yellowlegs \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/greater-yellowlegs"
+      },
+      {
+        "title": "Tringa melanoleuca \u2014 Animal Diversity Web",
+        "url": "https://animaldiversity.org/accounts/Tringa_melanoleuca/"
+      }
+    ]
+  },
+  "references": [
+    {
+      "attribution": "(c) Quinten Wiegersma, some rights reserved (CC BY)",
+      "filename": "01-23982305.jpeg",
+      "height": 1366,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/23982305/large.jpeg",
+      "license_code": "cc-by",
+      "observation_id": 16013566,
+      "observer": "birds_bugs_botany",
+      "photo_id": 23982305,
+      "sha256": "4a24ef26b998f6e230becabb302961cd60107b5ca2e8f1900830a8b3319f502e",
+      "source_url": "https://www.inaturalist.org/observations/16013566",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) Sean Frey, some rights reserved (CC BY)",
+      "filename": "02-234178376.jpeg",
+      "height": 1780,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/234178376/large.jpeg",
+      "license_code": "cc-by",
+      "observation_id": 137149048,
+      "observer": "georectified",
+      "photo_id": 234178376,
+      "sha256": "3729b0b48efada0e8429d6051bba043288e170ae016f2d8e6768e0e76880e716",
+      "source_url": "https://www.inaturalist.org/observations/137149048",
+      "width": 1938
+    },
+    {
+      "attribution": "(c) Irina Mitine, some rights reserved (CC BY)",
+      "filename": "03-481023671.jpg",
+      "height": 2048,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/481023671/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 267652848,
+      "observer": "irinamitine",
+      "photo_id": 481023671,
+      "sha256": "370a640151268b303e61176b65cbedd66871d923caab78ea052ef958031d2f58",
+      "source_url": "https://www.inaturalist.org/observations/267652848",
+      "width": 1536
+    },
+    {
+      "attribution": "(c) Ariadna Tripaldi, some rights reserved (CC BY)",
+      "filename": "04-259416057.jpg",
+      "height": 1152,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/259416057/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 150449022,
+      "observer": "ariadnat",
+      "photo_id": 259416057,
+      "sha256": "638eab5e05cebc55f825212da43fa1e305080c4a356d9a39afba33861b0d115f",
+      "source_url": "https://www.inaturalist.org/observations/150449022",
+      "width": 2048
+    }
+  ],
+  "schema_version": 1,
+  "scientific_name": "Tringa melanoleuca",
+  "slug": "greater-yellowlegs",
+  "status": "approved",
+  "taxon_id": 3892
+}

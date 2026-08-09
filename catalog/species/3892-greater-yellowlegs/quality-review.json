@@ -1,0 +1,36 @@
+{
+  "anatomy_accuracy": 4,
+  "composition_quality": 5,
+  "correction_findings": [],
+  "findings": [
+    "The common name, scientific name, and family are correctly rendered as \u201cGreater Yellowlegs,\u201d \u201cTringa melanoleuca,\u201d and \u201cScolopacidae.\u201d",
+    "The printed length 28\u201338 cm, wingspan 66\u201374 cm, and weight 105\u2013210 g exactly match Audubon\u2019s published ranges. Cornell currently publishes different measurement ranges, reflecting source variation rather than an internal plate error.",
+    "The primary specimen matches Greater Yellowlegs in its tall, small-headed and long-necked proportions; very long yellow legs; dark, long, sturdy-based bill; gray-brown checkered upperparts; streaked head and neck; pale eye-ring; white underparts; and short barred pale tail.",
+    "Both depicted heads have coherent, complete mandibles from shared base to co-terminal tip. Their bills are long and subtly upturned without a reversed or exaggerated projection; unequal mandible length is not established as a field mark for this species.",
+    "The primary bird has one head, one bill, two anatomically coherent wings with the far folded wing naturally overlapped, two legs with plausible joints and feet, and one tail. No duplicated or malformed attached parts are present.",
+    "The detached wing and head/bill drawings are clearly separated supplementary studies. Their feather structure, eye placement, and bill proportions are consistent with the primary specimen and reference photographs.",
+    "The habitat and behavior passages agree with the direct sources: boreal wetland breeding habitat, varied shallow wetlands outside breeding, active shallow-water foraging, high-stepping walking, running after prey, swift bill-stabs, and generally solitary or loose-group behavior.",
+    "All six printed field-mark statements match the proposed wording and verified traits. No duplicated, omitted, substituted, misspelled, or nonsensical words were found.",
+    "The vertical range ruler is internally consistent: 28 cm is at the bottom, 38 cm at the top, exactly four evenly spaced unlabeled interior ticks create five proportional segments, and the separate \u201cBODY LENGTH: 28\u201338 cm\u201d marker agrees with it. \u201cSCHEMATIC \u2014 NOT TO SCALE\u201d prevents presentation as the printed bird\u2019s physical size.",
+    "The five swatches correspond recognizably to bright yellow, charcoal black, slate gray, earth brown, and white.",
+    "No place name, ZIP code, coordinates, map, or local-observation detail appears."
+  ],
+  "location_free": true,
+  "passed": true,
+  "species_accuracy": 5,
+  "text_accuracy": 5,
+  "verification_sources": [
+    {
+      "title": "Greater Yellowlegs Identification \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Greater_Yellowlegs/id"
+    },
+    {
+      "title": "Greater Yellowlegs \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/greater-yellowlegs"
+    },
+    {
+      "title": "Tringa melanoleuca \u2014 Animal Diversity Web",
+      "url": "https://animaldiversity.org/accounts/Tringa_melanoleuca/"
+    }
+  ]
+}

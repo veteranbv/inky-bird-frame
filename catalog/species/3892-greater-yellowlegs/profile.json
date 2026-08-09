@@ -1,0 +1,42 @@
+{
+  "behavior": "Forages actively in shallow water with a high-stepping walk, swift bill-stabs, and occasional runs after fish or aquatic invertebrates; often solitary or in loose groups.",
+  "common_name": "Greater Yellowlegs",
+  "family": "Scolopacidae",
+  "field_marks": [
+    "Very long, bright yellow to orange-yellow legs",
+    "Long, dark, slightly upturned bill with a sturdy base",
+    "Tall, lanky proportions with a long neck and small head",
+    "Dark gray-brown upperparts and folded wings with crisp pale spotting or checkering",
+    "Finely streaked head and neck with a distinct pale eye-ring",
+    "White belly, variably marked flanks, and a short, dark-barred white tail"
+  ],
+  "habitat": "Breeds in boreal bogs, wet meadows, sedgelands, and wet forest clearings; otherwise occupies shallow fresh, brackish, and coastal wetlands such as marshes, mudflats, pond edges, estuaries, and flooded fields.",
+  "measurements": {
+    "length": "28\u201338 cm",
+    "weight": "105\u2013210 g",
+    "wingspan": "66\u201374 cm"
+  },
+  "palette": [
+    "bright yellow",
+    "charcoal black",
+    "slate gray",
+    "earth brown",
+    "clean white"
+  ],
+  "scientific_name": "Tringa melanoleuca",
+  "sources": [
+    {
+      "title": "Greater Yellowlegs Identification \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Greater_Yellowlegs/id"
+    },
+    {
+      "title": "Greater Yellowlegs Life History \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Greater_Yellowlegs/lifehistory"
+    },
+    {
+      "title": "Greater Yellowlegs \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/greater-yellowlegs"
+    }
+  ],
+  "taxon_id": 3892
+}
