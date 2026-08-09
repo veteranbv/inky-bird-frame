@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-09T17:26:29+00:00",
+  "generated_at": "2026-08-09T17:35:31+00:00",
   "schema_version": 1,
   "species": [
     {
@@ -1222,6 +1222,17 @@
       "scientific_name": "Cathartes aura",
       "slug": "turkey-vulture",
       "taxon_id": 4756
+    },
+    {
+      "approved_at": "2026-08-09T17:35:31+00:00",
+      "common_name": "White Ibis",
+      "display_path": "species/3751-white-ibis/display.png",
+      "display_sha256": "8f7fd487a947f13ea7850322bac417cf5dbe8bcc2f016e63d34e266ed4121091",
+      "portrait_path": "species/3751-white-ibis/portrait.png",
+      "portrait_sha256": "6a2f29f6bfad80e2b8eeacfdd898e8ef3c622460cabe541e485582c06f05127f",
+      "scientific_name": "Eudocimus albus",
+      "slug": "white-ibis",
+      "taxon_id": 3751
     },
     {
       "approved_at": "2026-07-12T22:52:05+00:00",

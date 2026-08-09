@@ -1,0 +1,42 @@
+{
+  "behavior": "Highly social; forages, roosts, and nests in groups. Walks slowly through shallow water, probing soft substrate by touch for crustaceans, insects, and other small aquatic prey. Flies with neck and legs extended, alternating rapid wingbeats and glides, often in lines or V formations.",
+  "common_name": "White Ibis",
+  "family": "Threskiornithidae",
+  "field_marks": [
+    "Adult plumage almost entirely white",
+    "Long, slender, strongly downcurved red-orange bill",
+    "Bare reddish-pink facial skin surrounding pale blue eyes",
+    "Long pink to red-orange legs and feet",
+    "Black outer wingtips, most conspicuous in flight",
+    "Immatures brown above with a streaked neck and white underparts"
+  ],
+  "habitat": "Fresh, brackish, and saltwater wetlands, including marshes, estuaries, mangroves, swamps, mudflats, flooded grasslands, shallow ponds, and lake edges; nests in trees, shrubs, or dense marsh vegetation near water.",
+  "measurements": {
+    "length": "53\u201370 cm (21\u201328 in)",
+    "weight": "593\u20131,261 g (1.3\u20132.8 lb)",
+    "wingspan": "90\u2013105 cm (35\u201341 in)"
+  },
+  "palette": [
+    "ivory white",
+    "coral red-orange",
+    "pale blue",
+    "jet black",
+    "warm brown"
+  ],
+  "scientific_name": "Eudocimus albus",
+  "sources": [
+    {
+      "title": "White Ibis Identification \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/White_Ibis/id"
+    },
+    {
+      "title": "White Ibis \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/white-ibis"
+    },
+    {
+      "title": "American white ibis \u2014 Wikipedia",
+      "url": "https://en.wikipedia.org/wiki/American_white_ibis"
+    }
+  ],
+  "taxon_id": 3751
+}

@@ -1,0 +1,35 @@
+{
+  "anatomy_accuracy": 5,
+  "composition_quality": 5,
+  "correction_findings": [],
+  "findings": [
+    "Species identity is correct: the adult specimen has white plumage, a long strongly downcurved red-orange bill, reddish-pink bare facial skin, pale blue eye, long reddish-pink legs, and black outer primaries\u2014the diagnostic White Ibis combination shown by the references and live sources.",
+    "The scientific name Eudocimus albus and family Threskiornithidae are correct.",
+    "The primary specimen is complete and singular, with one head, one closed bill, two wings, two legs with plausible unwebbed wading feet, and one short tail. The detached spread-wing and head studies are clearly supplementary and anatomically consistent with the primary specimen.",
+    "Both depicted heads have consistent, closed, tapered bills with the appropriate direction and degree of decurvature; neither mandible appears truncated, reversed, or inconsistently projected.",
+    "The detached wing correctly shows white coverts and black outer flight feathers. The standing specimen appropriately shows a limited black primary projection near the folded wingtip.",
+    "Every visible prose line accurately reproduces the proposed habitat, behavior, measurements, and field marks without spelling, number, duplication, omission, substitution, or word-order errors.",
+    "The displayed 53\u201370 cm length, 593\u20131,261 g weight, and 90\u2013105 cm wingspan are supported by the cited Wikipedia description, though Cornell and Audubon publish narrower guide ranges derived from different measurement summaries.",
+    "The ruler is internally consistent: 53 cm (21 in) is at the bottom, 70 cm (28 in) is at the top, values increase upward, four evenly spaced unlabeled interior ticks divide the range into five proportional segments, and the repeated body-length range agrees with both endpoints.",
+    "\u201cSCHEMATIC \u2014 NOT TO SCALE\u201d clearly prevents the ruler from implying that the printed specimen is life-size.",
+    "No place name, ZIP code, coordinates, map, or local-observation detail appears."
+  ],
+  "location_free": true,
+  "passed": true,
+  "species_accuracy": 5,
+  "text_accuracy": 4,
+  "verification_sources": [
+    {
+      "title": "White Ibis Identification \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/White_Ibis/id"
+    },
+    {
+      "title": "White Ibis \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/white-ibis"
+    },
+    {
+      "title": "American white ibis \u2014 Wikipedia",
+      "url": "https://en.wikipedia.org/wiki/American_white_ibis"
+    }
+  ]
+}

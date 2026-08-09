@@ -1,0 +1,157 @@
+{
+  "approved_at": "2026-08-09T17:35:31+00:00",
+  "assets": {
+    "display": {
+      "filename": "display.png",
+      "sha256": "8f7fd487a947f13ea7850322bac417cf5dbe8bcc2f016e63d34e266ed4121091"
+    },
+    "portrait": {
+      "filename": "portrait.png",
+      "sha256": "6a2f29f6bfad80e2b8eeacfdd898e8ef3c622460cabe541e485582c06f05127f"
+    }
+  },
+  "common_name": "White Ibis",
+  "generation": {
+    "attempt": 1,
+    "generated_at": "2026-08-09T17:35:31+00:00",
+    "generator": "Codex subscription / built-in gpt-image-2",
+    "max_attempts": 3,
+    "prompt_version": "field-journal-v4"
+  },
+  "profile": {
+    "behavior": "Highly social; forages, roosts, and nests in groups. Walks slowly through shallow water, probing soft substrate by touch for crustaceans, insects, and other small aquatic prey. Flies with neck and legs extended, alternating rapid wingbeats and glides, often in lines or V formations.",
+    "common_name": "White Ibis",
+    "family": "Threskiornithidae",
+    "field_marks": [
+      "Adult plumage almost entirely white",
+      "Long, slender, strongly downcurved red-orange bill",
+      "Bare reddish-pink facial skin surrounding pale blue eyes",
+      "Long pink to red-orange legs and feet",
+      "Black outer wingtips, most conspicuous in flight",
+      "Immatures brown above with a streaked neck and white underparts"
+    ],
+    "habitat": "Fresh, brackish, and saltwater wetlands, including marshes, estuaries, mangroves, swamps, mudflats, flooded grasslands, shallow ponds, and lake edges; nests in trees, shrubs, or dense marsh vegetation near water.",
+    "measurements": {
+      "length": "53\u201370 cm (21\u201328 in)",
+      "weight": "593\u20131,261 g (1.3\u20132.8 lb)",
+      "wingspan": "90\u2013105 cm (35\u201341 in)"
+    },
+    "palette": [
+      "ivory white",
+      "coral red-orange",
+      "pale blue",
+      "jet black",
+      "warm brown"
+    ],
+    "scientific_name": "Eudocimus albus",
+    "sources": [
+      {
+        "title": "White Ibis Identification \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/White_Ibis/id"
+      },
+      {
+        "title": "White Ibis \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/white-ibis"
+      },
+      {
+        "title": "American white ibis \u2014 Wikipedia",
+        "url": "https://en.wikipedia.org/wiki/American_white_ibis"
+      }
+    ],
+    "taxon_id": 3751
+  },
+  "quality_review": {
+    "anatomy_accuracy": 5,
+    "composition_quality": 5,
+    "correction_findings": [],
+    "findings": [
+      "Species identity is correct: the adult specimen has white plumage, a long strongly downcurved red-orange bill, reddish-pink bare facial skin, pale blue eye, long reddish-pink legs, and black outer primaries\u2014the diagnostic White Ibis combination shown by the references and live sources.",
+      "The scientific name Eudocimus albus and family Threskiornithidae are correct.",
+      "The primary specimen is complete and singular, with one head, one closed bill, two wings, two legs with plausible unwebbed wading feet, and one short tail. The detached spread-wing and head studies are clearly supplementary and anatomically consistent with the primary specimen.",
+      "Both depicted heads have consistent, closed, tapered bills with the appropriate direction and degree of decurvature; neither mandible appears truncated, reversed, or inconsistently projected.",
+      "The detached wing correctly shows white coverts and black outer flight feathers. The standing specimen appropriately shows a limited black primary projection near the folded wingtip.",
+      "Every visible prose line accurately reproduces the proposed habitat, behavior, measurements, and field marks without spelling, number, duplication, omission, substitution, or word-order errors.",
+      "The displayed 53\u201370 cm length, 593\u20131,261 g weight, and 90\u2013105 cm wingspan are supported by the cited Wikipedia description, though Cornell and Audubon publish narrower guide ranges derived from different measurement summaries.",
+      "The ruler is internally consistent: 53 cm (21 in) is at the bottom, 70 cm (28 in) is at the top, values increase upward, four evenly spaced unlabeled interior ticks divide the range into five proportional segments, and the repeated body-length range agrees with both endpoints.",
+      "\u201cSCHEMATIC \u2014 NOT TO SCALE\u201d clearly prevents the ruler from implying that the printed specimen is life-size.",
+      "No place name, ZIP code, coordinates, map, or local-observation detail appears."
+    ],
+    "location_free": true,
+    "passed": true,
+    "species_accuracy": 5,
+    "text_accuracy": 4,
+    "verification_sources": [
+      {
+        "title": "White Ibis Identification \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/White_Ibis/id"
+      },
+      {
+        "title": "White Ibis \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/white-ibis"
+      },
+      {
+        "title": "American white ibis \u2014 Wikipedia",
+        "url": "https://en.wikipedia.org/wiki/American_white_ibis"
+      }
+    ]
+  },
+  "references": [
+    {
+      "attribution": "(c) David Garza, some rights reserved (CC BY)",
+      "filename": "01-431241996.jpeg",
+      "height": 2048,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/431241996/large.jpeg",
+      "license_code": "cc-by",
+      "observation_id": 241931560,
+      "observer": "herons",
+      "photo_id": 431241996,
+      "sha256": "73ecb89de7bf5e9485fac213feeb553e6cc219ec949d41821d74e8070273dc4a",
+      "source_url": "https://www.inaturalist.org/observations/241931560",
+      "width": 1536
+    },
+    {
+      "attribution": "(c) elik03, some rights reserved (CC BY)",
+      "filename": "02-460374864.jpeg",
+      "height": 1536,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/460374864/large.jpeg",
+      "license_code": "cc-by",
+      "observation_id": 256733084,
+      "observer": "elik03",
+      "photo_id": 460374864,
+      "sha256": "4df59c9ddf8ff787843431639d6ba901e82d34704319178c0eba1170316ea4a8",
+      "source_url": "https://www.inaturalist.org/observations/256733084",
+      "width": 2048
+    },
+    {
+      "attribution": "no rights reserved",
+      "filename": "03-25122807.jpeg",
+      "height": 1536,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/25122807/large.jpeg",
+      "license_code": "cc0",
+      "observation_id": 16660970,
+      "observer": "judykayreeves",
+      "photo_id": 25122807,
+      "sha256": "cd2f65be243ed482b050c733b18582ba6db419685dd4ad1bf3db98a73a343fd3",
+      "source_url": "https://www.inaturalist.org/observations/16660970",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) Alexis L\u00f3pez Hern\u00e1ndez, some rights reserved (CC BY)",
+      "filename": "04-568928350.jpg",
+      "height": 1536,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/568928350/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 314963910,
+      "observer": "alexiz",
+      "photo_id": 568928350,
+      "sha256": "9d76f9e3d24791278e131bb9e510ab2f926cdf738854161fb7319561c588c600",
+      "source_url": "https://www.inaturalist.org/observations/314963910",
+      "width": 2048
+    }
+  ],
+  "schema_version": 1,
+  "scientific_name": "Eudocimus albus",
+  "slug": "white-ibis",
+  "status": "approved",
+  "taxon_id": 3751
+}
