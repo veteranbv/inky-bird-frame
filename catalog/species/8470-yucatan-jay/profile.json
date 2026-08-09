@@ -1,0 +1,38 @@
+{
+  "behavior": "Resident and conspicuous; usually travels through woodland and forest edge in noisy, chattering groups of 5\u201325 birds.",
+  "common_name": "Yucatan Jay",
+  "family": "Corvidae",
+  "field_marks": [
+    "Black head, nape, and underparts",
+    "Bright blue mantle, wings, and rump",
+    "Long blue to purplish-blue tail",
+    "Stout bill: black in adults, yellow in younger birds",
+    "Dark iris; orbital skin black in adults and yellow in younger birds",
+    "Strong yellow to orange-yellow legs and feet"
+  ],
+  "habitat": "Lowland humid and dry forest, scrub, woodland edge, plantations, and clearings; occasionally pine forest or swamp.",
+  "measurements": {
+    "length": "31\u201333 cm (12\u201313 in)",
+    "weight": "105.4\u2013127.8 g (3.72\u20134.51 oz)",
+    "wingspan": "Not reported; folded-wing length 13.95\u201314.1 cm (5.49\u20135.6 in)"
+  },
+  "palette": [
+    "black",
+    "cobalt blue",
+    "purplish blue",
+    "golden yellow",
+    "orange-yellow"
+  ],
+  "scientific_name": "Cyanocorax yucatanicus",
+  "sources": [
+    {
+      "title": "Yucatan Jay \u2014 eBird",
+      "url": "https://ebird.org/species/yucjay1"
+    },
+    {
+      "title": "Yucatan jay \u2014 Wikipedia",
+      "url": "https://en.wikipedia.org/wiki/Yucatan_jay"
+    }
+  ],
+  "taxon_id": 8470
+}

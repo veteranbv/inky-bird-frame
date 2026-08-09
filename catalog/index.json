@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-09T23:04:31+00:00",
+  "generated_at": "2026-08-09T23:17:55+00:00",
   "schema_version": 1,
   "species": [
     {
@@ -1563,6 +1563,17 @@
       "scientific_name": "Vireo flavifrons",
       "slug": "yellow-throated-vireo",
       "taxon_id": 17365
+    },
+    {
+      "approved_at": "2026-08-09T23:17:55+00:00",
+      "common_name": "Yucatan Jay",
+      "display_path": "species/8470-yucatan-jay/display.png",
+      "display_sha256": "ab6134035411e080cbac4a42ea79937083678e4362df35663ea65ca2615d96b9",
+      "portrait_path": "species/8470-yucatan-jay/portrait.png",
+      "portrait_sha256": "9e77f708a70fc43032c486a8f84984ea0143fc8cf80cfebe60f93ad9e7073310",
+      "scientific_name": "Cyanocorax yucatanicus",
+      "slug": "yucatan-jay",
+      "taxon_id": 8470
     }
   ]
 }
