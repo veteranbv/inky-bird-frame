@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-09T22:41:52+00:00",
+  "generated_at": "2026-08-09T22:52:23+00:00",
   "schema_version": 1,
   "species": [
     {
@@ -1475,6 +1475,17 @@
       "scientific_name": "Tringa semipalmata",
       "slug": "willet",
       "taxon_id": 144491
+    },
+    {
+      "approved_at": "2026-08-09T22:52:23+00:00",
+      "common_name": "Wilson's Plover",
+      "display_path": "species/1505633-wilson-s-plover/display.png",
+      "display_sha256": "a005abcd0f444883af6724c17c12c658cc88059d0c86b264484c7eaa5ec68929",
+      "portrait_path": "species/1505633-wilson-s-plover/portrait.png",
+      "portrait_sha256": "21b0a323b5cd1c1f0cb5570fc8e606f8e1a0f2d8d343047baac59d9fbba708fe",
+      "scientific_name": "Anarhynchus wilsonia",
+      "slug": "wilson-s-plover",
+      "taxon_id": 1505633
     },
     {
       "approved_at": "2026-07-26T01:21:30+00:00",

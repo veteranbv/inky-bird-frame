@@ -1,0 +1,42 @@
+{
+  "behavior": "Runs in short bursts, pauses to watch, then lunges or pecks at prey; forages by day and night, often taking fiddler crabs and shaking off their legs. Nests in a shallow ground scrape, with both adults sharing incubation and chick care.",
+  "common_name": "Wilson's Plover",
+  "family": "Charadriidae",
+  "field_marks": [
+    "Long, unusually thick black bill",
+    "Large dark eye with a white brow stripe",
+    "Sandy-brown upperparts and white underparts",
+    "Single broad breast band, blackish or brownish",
+    "Fairly long, pale pinkish-gray legs",
+    "Long tapered folded wings over a short tail"
+  ],
+  "habitat": "Open coastal habitats, including sandy, shelly, or gravelly beaches, barrier and dredge-spoil islands, tidal mudflats, salt flats, estuaries, and coastal-lagoon margins; nests above the high-tide line and forages on exposed flats.",
+  "measurements": {
+    "length": "16\u201320 cm (6.3\u20137.9 in)",
+    "weight": "55\u201370 g (1.9\u20132.5 oz)",
+    "wingspan": "43\u201348 cm (17\u201319 in)"
+  },
+  "palette": [
+    "sandy brown",
+    "white",
+    "black",
+    "pale pink",
+    "soft gray"
+  ],
+  "scientific_name": "Anarhynchus wilsonia",
+  "sources": [
+    {
+      "title": "Wilson's Plover Identification \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Wilsons_Plover/id"
+    },
+    {
+      "title": "Wilson's Plover Life History \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Wilsons_Plover/lifehistory"
+    },
+    {
+      "title": "Wilson's Plover \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/wilsons-plover"
+    }
+  ],
+  "taxon_id": 1505633
+}
