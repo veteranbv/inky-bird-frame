@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-07T22:50:17+00:00",
+  "generated_at": "2026-08-09T11:18:55+00:00",
   "schema_version": 1,
   "species": [
     {
@@ -628,6 +628,17 @@
       "scientific_name": "Ardea alba",
       "slug": "great-egret",
       "taxon_id": 144455
+    },
+    {
+      "approved_at": "2026-08-09T11:18:55+00:00",
+      "common_name": "Greater Yellowlegs",
+      "display_path": "species/3892-greater-yellowlegs/display.png",
+      "display_sha256": "e94b0fe08b1f5f639d3de23f2ed894fbe48c680cfeccd71570c9368ca03bb624",
+      "portrait_path": "species/3892-greater-yellowlegs/portrait.png",
+      "portrait_sha256": "51719624163b7211e6c3abb88b8fa3170d23da8e753b43091ed10019fb2c4cfd",
+      "scientific_name": "Tringa melanoleuca",
+      "slug": "greater-yellowlegs",
+      "taxon_id": 3892
     },
     {
       "approved_at": "2026-07-10T13:38:02+00:00",
