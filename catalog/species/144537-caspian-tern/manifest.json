@@ -1,0 +1,167 @@
+{
+  "approved_at": "2026-08-09T16:47:54+00:00",
+  "assets": {
+    "display": {
+      "filename": "display.png",
+      "sha256": "48300d0d8e781fd47bc637947352d37652114035093c88ebc8759243967d86ed"
+    },
+    "portrait": {
+      "filename": "portrait.png",
+      "sha256": "dd040c0b39c5509b5d1ee00322a564a18626f4a96d71b45c62941ea77f6c806f"
+    }
+  },
+  "common_name": "Caspian Tern",
+  "generation": {
+    "attempt": 3,
+    "correction_source_sha256": "4515656192e376de601fafbe40b9290ffe6051c12f4129fcdc736116a6305a0d",
+    "generated_at": "2026-08-09T16:47:54+00:00",
+    "generator": "Codex subscription / built-in gpt-image-2",
+    "max_attempts": 3,
+    "prompt_version": "field-journal-v4"
+  },
+  "profile": {
+    "behavior": "Flies slowly over water while scanning, then plunge-dives for fish. Roosts in flocks, often with other terns and gulls, and nests colonially or in solitary pairs near water.",
+    "common_name": "Caspian Tern",
+    "family": "Laridae",
+    "field_marks": [
+      "Very large, heavy-bodied tern with a large head and thick neck",
+      "Massive, straight coral-red bill, often with a dusky tip",
+      "Black cap and short crest; forehead becomes white-flecked outside breeding plumage",
+      "White body with a pale gray back and upperwings",
+      "Dark eyes and short blackish legs and feet",
+      "Broad, pointed wings with dark outer primaries below; short, shallowly forked tail"
+    ],
+    "habitat": "Freshwater and saltwater shorelines, including large lakes, rivers, estuaries, lagoons, beaches, and islands. Nests on flat, open, sparsely vegetated sand, gravel, mud, or shell-covered ground.",
+    "measurements": {
+      "length": "47\u201354 cm (18.5\u201321.3 in)",
+      "weight": "530\u2013782 g (18.7\u201327.6 oz)",
+      "wingspan": "126\u2013128 cm (49.6\u201350.4 in)"
+    },
+    "palette": [
+      "white",
+      "pale gray",
+      "black",
+      "coral red",
+      "charcoal gray"
+    ],
+    "scientific_name": "Hydroprogne caspia",
+    "sources": [
+      {
+        "title": "Caspian Tern Identification \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Caspian_Tern/id"
+      },
+      {
+        "title": "Caspian Tern Life History \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Caspian_Tern/lifehistory"
+      },
+      {
+        "title": "Caspian Tern \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/caspian-tern"
+      },
+      {
+        "title": "Caspian Tern \u2014 Animal Diversity Web",
+        "url": "https://animaldiversity.org/accounts/Sterna_caspia/"
+      }
+    ],
+    "taxon_id": 144537
+  },
+  "quality_review": {
+    "anatomy_accuracy": 4,
+    "composition_quality": 5,
+    "correction_findings": [],
+    "findings": [
+      "Species identity is confirmed as Caspian Tern (Hydroprogne caspia): the plate and reference photographs consistently show the species\u2019 very large, heavy-bodied proportions, large head, thick neck, massive coral-red pointed bill, black cap, pale-gray upperparts, white body, and blackish legs.",
+      "The printed measurements\u2014length 47\u201354 cm (18.5\u201321.3 in), weight 530\u2013782 g (18.7\u201327.6 oz), and wingspan 126\u2013128 cm (49.6\u201350.4 in)\u2014exactly match the All About Birds measurements. Audubon independently describes a broadly compatible but wider range.",
+      "Every visible text line was checked. The common name, scientific name, family, three measurements, habitat, behavior, and six field-mark statements are correctly spelled and reproduce the proposed facts without omissions, duplications, substitutions, or nonsensical wording.",
+      "The habitat and behavior text agrees with the direct sources: use of freshwater and saltwater shorelines, open sparsely vegetated nesting ground, scanning flights over water, plunge-diving for fish, flock roosting, and colonial or solitary nesting are supported.",
+      "The depicted breeding-type plumage is coherent: both heads have a full black crown and short crest, dark eye, white face and neck, and a massive coral-red bill with a dusky tip. The pale-gray back and wings, white body, and dark outer primaries are also appropriate.",
+      "Both depicted bills trace cleanly from a shared base to pointed, essentially co-terminal mandible tips. Neither has a truncated, reversed, exaggerated, or inconsistent projection; the open-gape angles in the reference photographs do not establish unequal base-to-tip lengths.",
+      "The primary specimen is a single complete bird with one head, one bill, two layered folded wings, two legs with feet, and one tail. The detached wing and detached head are clearly separated supplementary studies and do not appear attached to the specimen.",
+      "The side-profile tail is short relative to the body and only shallowly divided through overlapping feathers, consistent with the species. Legs are short and blackish; the feet are somewhat stylized but remain structurally plausible.",
+      "The ruler is internally consistent: 47 cm (18.5 in) is at the bottom, 54 cm (21.3 in) is at the top, values increase upward, and exactly four evenly spaced unlabeled interior ticks divide the range into five proportional segments. The adjacent label repeats the same range and clearly states \u201cSCHEMATIC \u2014 NOT TO SCALE.\u201d",
+      "The composition is legible and balanced, with the primary specimen visually dominant and the supplementary wing, head, and palette studies clearly subordinate.",
+      "No place name, ZIP code, coordinates, map, or local-observation detail appears. \u201cCaspian\u201d occurs only as part of the species\u2019 established common name."
+    ],
+    "location_free": true,
+    "passed": true,
+    "species_accuracy": 5,
+    "text_accuracy": 5,
+    "verification_sources": [
+      {
+        "title": "Caspian Tern Identification \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Caspian_Tern/id"
+      },
+      {
+        "title": "Caspian Tern Life History \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Caspian_Tern/lifehistory"
+      },
+      {
+        "title": "Caspian Tern \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/caspian-tern"
+      },
+      {
+        "title": "Sterna caspia (Caspian tern) \u2014 Animal Diversity Web",
+        "url": "https://animaldiversity.org/accounts/Sterna_caspia/"
+      }
+    ]
+  },
+  "references": [
+    {
+      "attribution": "(c) Daughter Dad, some rights reserved (CC BY)",
+      "filename": "01-666829308.jpg",
+      "height": 1152,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/666829308/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 365245601,
+      "observer": "daughterdad",
+      "photo_id": 666829308,
+      "sha256": "ce29bfbecc653acee30b3f5793e26eadc8402a920d39c1dcfba526b8f8c1b80e",
+      "source_url": "https://www.inaturalist.org/observations/365245601",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) Laura Gaudette, some rights reserved (CC BY)",
+      "filename": "02-618322674.jpg",
+      "height": 1282,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/618322674/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 339849886,
+      "observer": "gaudettelaura",
+      "photo_id": 618322674,
+      "sha256": "5f929963ed7eb1a57d8db4e2d8d21dcd06b8ea4b40c1465bfad3aafc7023a39f",
+      "source_url": "https://www.inaturalist.org/observations/339849886",
+      "width": 1282
+    },
+    {
+      "attribution": "(c) Bill Levine, some rights reserved (CC BY)",
+      "filename": "03-176296196.jpeg",
+      "height": 1004,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/176296196/large.jpeg",
+      "license_code": "cc-by",
+      "observation_id": 105118351,
+      "observer": "blevine",
+      "photo_id": 176296196,
+      "sha256": "7b5b6185ddaca1a73a8d5572392509e5772119ffdb1b6e2f7f2850b392184ca3",
+      "source_url": "https://www.inaturalist.org/observations/105118351",
+      "width": 1255
+    },
+    {
+      "attribution": "(c) ian_mcallan, some rights reserved (CC BY)",
+      "filename": "04-391746420.jpeg",
+      "height": 1536,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/391746420/large.jpeg",
+      "license_code": "cc-by",
+      "observation_id": 221218058,
+      "observer": "ian_mcallan",
+      "photo_id": 391746420,
+      "sha256": "597ae5e873467d356c07c4287e3830332078f802c6a08cd03634ccb46cd2ad6d",
+      "source_url": "https://www.inaturalist.org/observations/221218058",
+      "width": 2048
+    }
+  ],
+  "schema_version": 1,
+  "scientific_name": "Hydroprogne caspia",
+  "slug": "caspian-tern",
+  "status": "approved",
+  "taxon_id": 144537
+}
