@@ -1043,6 +1043,12 @@ def run_catalog_publish(config: AppConfig, *, dry_run: bool = False) -> dict[str
         raise CatalogPublishError("Catalog checkout_dir is not configured")
 
     with exclusive_publish_lock(config.controller.state_dir):
+        work_parent = config.controller.state_dir / "catalog-publish-work"
+        work_parent.mkdir(parents=True, exist_ok=True)
+        abandoned_work_directories = len(_abandoned_publish_work(work_parent))
+        cleaned_work_directories = (
+            0 if dry_run else _cleanup_abandoned_publish_work_locked(work_parent)
+        )
         repository = _validate_checkout(checkout, publication)
         remote_ref = f"refs/remotes/{publication.remote}/{publication.base_branch}"
         _git(
@@ -1051,12 +1057,6 @@ def run_catalog_publish(config: AppConfig, *, dry_run: bool = False) -> dict[str
             "--prune",
             publication.remote,
             f"+refs/heads/{publication.base_branch}:{remote_ref}",
-        )
-        work_parent = config.controller.state_dir / "catalog-publish-work"
-        work_parent.mkdir(parents=True, exist_ok=True)
-        abandoned_work_directories = len(_abandoned_publish_work(work_parent))
-        cleaned_work_directories = (
-            0 if dry_run else _cleanup_abandoned_publish_work_locked(work_parent)
         )
         _git(checkout, "worktree", "prune")
         with TemporaryDirectory(prefix="publish-", dir=work_parent) as temporary:

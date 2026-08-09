@@ -245,6 +245,26 @@ class PublisherTests(unittest.TestCase):
             ):
                 _cleanup_abandoned_publish_work_locked(work_parent)
 
+    def test_cleans_abandoned_work_before_checkout_validation(self) -> None:
+        with TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            checkout = root / "checkout"
+            checkout.mkdir()
+            config = load_config(_write_config(root, checkout))
+            abandoned = config.controller.state_dir / "catalog-publish-work/publish-abandoned"
+            abandoned.mkdir(parents=True)
+
+            with (
+                patch(
+                    "inky_bird_frame.publisher._validate_checkout",
+                    side_effect=CatalogPublishError("checkout unavailable"),
+                ),
+                self.assertRaisesRegex(CatalogPublishError, "checkout unavailable"),
+            ):
+                run_catalog_publish(config)
+
+            self.assertFalse(abandoned.exists())
+
     def test_birdbuddy_private_fields_are_rejected_from_catalog_json(self) -> None:
         for field in (
             "authorization_confirmed_at",
