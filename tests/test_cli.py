@@ -28,6 +28,9 @@ from inky_bird_frame.cli import (
     catalog_prepare_command,
     catalog_sync_command,
     config_install_command,
+    config_validate_command,
+    ebird_archive_import_command,
+    ebird_archive_status_command,
     generate_command,
     main,
     notifications_dispatch_command,
@@ -45,6 +48,7 @@ from inky_bird_frame.controller import (
     exclusive_cycle_lock,
     read_generation_queue,
 )
+from inky_bird_frame.ebird_archive import EbirdArchiveHistory, EbirdArchiveImportStats
 from inky_bird_frame.errors import (
     ConfigurationError,
     DataSourceError,
@@ -77,6 +81,117 @@ def write_test_species_identity(directory: Path) -> None:
 
 
 class CliTests(unittest.TestCase):
+    def test_ebird_archive_commands_are_private_and_parse_reduction_opt_in(self) -> None:
+        args = build_parser().parse_args(
+            [
+                "ebird",
+                "archive",
+                "import",
+                "--config",
+                "instance.toml",
+                "--archive",
+                "/private/MyEBirdData.zip",
+                "--allow-history-reduction",
+                "--dry-run",
+            ]
+        )
+        config = controller_config(Path("state"))
+        output = io.StringIO()
+        stats = EbirdArchiveImportStats(
+            3,
+            2,
+            2,
+            0,
+            2,
+            0,
+            0,
+            0,
+            "2026-08-08",
+            "2026-08-09",
+            True,
+        )
+        with (
+            patch("inky_bird_frame.cli._config", return_value=config) as load,
+            patch("inky_bird_frame.cli.import_ebird_archive", return_value=stats) as importer,
+            redirect_stdout(output),
+        ):
+            result = ebird_archive_import_command(args)
+
+        self.assertEqual(result, 0)
+        self.assertTrue(importer.call_args.kwargs["allow_history_reduction"])
+        self.assertTrue(importer.call_args.kwargs["dry_run"])
+        self.assertNotIn("/private/MyEBirdData.zip", output.getvalue())
+        load.assert_called_once_with(args, load_secrets=False)
+
+    def test_ebird_archive_status_reports_only_aggregate_history(self) -> None:
+        args = build_parser().parse_args(
+            ["ebird", "archive", "status", "--config", "instance.toml"]
+        )
+        config = controller_config(Path("state"))
+        history = EbirdArchiveHistory(
+            [],
+            2,
+            3,
+            2,
+            3,
+            0,
+            "2026-08-09T12:00:00+00:00",
+            "2026-08-09T12:00:00+00:00",
+            "2026-08-08",
+            "2026-08-09",
+        )
+        output = io.StringIO()
+        with (
+            patch("inky_bird_frame.cli._config", return_value=config),
+            patch("inky_bird_frame.cli.read_ebird_archive_history", return_value=history),
+            redirect_stdout(output),
+        ):
+            result = ebird_archive_status_command(args)
+
+        payload = json.loads(output.getvalue())["data"]
+        self.assertEqual(result, 0)
+        self.assertTrue(payload["imported"])
+        self.assertEqual(payload["total_checklists"], 2)
+        self.assertNotIn("species", payload)
+
+    def test_config_validate_reports_legacy_all_source_deprecation(self) -> None:
+        config = SimpleNamespace(
+            discovery=SimpleNamespace(
+                legacy_all_source=True,
+                latitude=1.0,
+                longitude=2.0,
+                postal_code=None,
+                zip_code=None,
+                sources=(
+                    DiscoveryProvider.INATURALIST,
+                    DiscoveryProvider.EBIRD,
+                    DiscoveryProvider.BIRDWEATHER,
+                ),
+                geoapify_api_key=None,
+                ebird_api_key="configured",
+                birdweather_token="configured",
+                observation_window=SimpleNamespace(value="last-30-days"),
+                radius_km=8,
+            ),
+            notifications=SimpleNamespace(enabled=False),
+        )
+        output = io.StringIO()
+        args = Namespace(config=Path("instance.toml"))
+        with (
+            patch("inky_bird_frame.cli._config", return_value=config),
+            patch("inky_bird_frame.cli.validate_notification_destinations", return_value=[]),
+            redirect_stdout(output),
+        ):
+            result = config_validate_command(args)
+
+        payload = json.loads(output.getvalue())["data"]
+        self.assertEqual(result, 0)
+        self.assertEqual(payload["deprecations"][0]["setting"], "discovery.source")
+        self.assertIn(
+            'sources = ["inaturalist", "ebird", "birdweather"]',
+            payload["deprecations"][0]["replacement"],
+        )
+
     def test_birdnet_analyzer_import_parses_explicit_date_and_redacts_path(self) -> None:
         args = build_parser().parse_args(
             [
@@ -2350,6 +2465,7 @@ rotation_mode = "shuffle_bag"
                 {"name": "birdbuddy", "status": "ok"},
                 {"name": "birdnet-go", "status": "ok"},
                 {"name": "birdnet-analyzer", "status": "ok"},
+                {"name": "ebird-archive", "status": "ok"},
             ],
             "unresolved_species": [
                 {
@@ -2376,6 +2492,12 @@ rotation_mode = "shuffle_bag"
                     "common_name": "Offline Bird",
                     "scientific_name": "Avis offlinea",
                 },
+                {
+                    "provider": "ebird-archive",
+                    "species_code": "Avis personalis",
+                    "common_name": "Personal Bird",
+                    "scientific_name": "Avis personalis",
+                },
             ],
             "new_species": [],
         }
@@ -2394,12 +2516,14 @@ rotation_mode = "shuffle_bag"
         self.assertIn("birdbuddy-taxonomy", degraded_keys)
         self.assertIn("birdnet-go-taxonomy", degraded_keys)
         self.assertIn("birdnet-analyzer-taxonomy", degraded_keys)
+        self.assertIn("ebird-archive-taxonomy", degraded_keys)
         self.assertNotIn("ebird-taxonomy", degraded_keys)
         self.assertIn("ebird-taxonomy", recovered_keys)
         self.assertNotIn("birdweather-taxonomy", recovered_keys)
         self.assertNotIn("birdbuddy-taxonomy", recovered_keys)
         self.assertNotIn("birdnet-go-taxonomy", recovered_keys)
         self.assertNotIn("birdnet-analyzer-taxonomy", recovered_keys)
+        self.assertNotIn("ebird-archive-taxonomy", recovered_keys)
 
     def test_refresh_recovers_birdbuddy_taxonomy_alert(self) -> None:
         config = SimpleNamespace(discovery=SimpleNamespace(sources=(DiscoveryProvider.BIRDBUDDY,)))

@@ -26,6 +26,7 @@ class RotationMode(StrEnum):
 class DiscoveryProvider(StrEnum):
     INATURALIST = "inaturalist"
     EBIRD = "ebird"
+    EBIRD_ARCHIVE = "ebird-archive"
     BIRDWEATHER = "birdweather"
     BIRDBUDDY = "birdbuddy"
     BIRDNET_ANALYZER = "birdnet-analyzer"
@@ -102,6 +103,7 @@ class DiscoveryConfig:
     birdweather_token_env: str | None = field(default=None, repr=False)
     birdbuddy_include_manual_sightings: bool = False
     birdnet_go_url: str | None = None
+    legacy_all_source: bool = False
 
 
 @dataclass(frozen=True)
@@ -415,6 +417,7 @@ def load_config(path: Path, *, load_secrets: bool = True) -> AppConfig:
     except ValueError as exc:
         raise ConfigurationError(str(exc)) from exc
 
+    legacy_all_source = False
     if "source" in discovery and "sources" in discovery:
         raise ConfigurationError("Choose discovery.source or discovery.sources, not both")
     if "sources" in discovery:
@@ -427,6 +430,7 @@ def load_config(path: Path, *, load_secrets: bool = True) -> AppConfig:
             raise ConfigurationError(str(exc)) from exc
     else:
         source_value = _optional_string(discovery, "source", default="inaturalist")
+        legacy_all_source = "source" in discovery and source_value == "all"
         try:
             discovery_sources = LEGACY_DISCOVERY_SOURCES[source_value]
         except KeyError as exc:
@@ -627,6 +631,7 @@ def load_config(path: Path, *, load_secrets: bool = True) -> AppConfig:
                 default=False,
             ),
             birdnet_go_url=birdnet_go_url,
+            legacy_all_source=legacy_all_source,
         ),
         controller=ControllerConfig(
             workspace_dir=_path(_string(controller, "workspace_dir"), base_dir),

@@ -2,7 +2,7 @@
   <title id="title">How Inky Bird Frame works</title>
   <desc id="description">
     Runtime architecture. Upstream services sit at the top: observation services
-    (iNaturalist, eBird, BirdWeather, BirdNET-Go, BirdNET Analyzer, Bird Buddy), licensed reference and research
+    (iNaturalist, eBird, eBird Archive, BirdWeather, BirdNET-Go, BirdNET Analyzer, Bird Buddy), licensed reference and research
     sources, and OpenAI services for Codex generation and review. The controller
     initiates HTTPS to internet services and HTTP or HTTPS to configured BirdNET-Go. On the trusted private network, the Raspberry Pi
     display node initiates HTTP GET requests to the controller's configured port
@@ -25,10 +25,11 @@
   <text x="74" y="124" style="font-family:'Inter',-apple-system,'Segoe UI',sans-serif;font-size:16px;font-weight:600;letter-spacing:1.6px;" fill="#58a6ff">UPSTREAM SERVICES</text>
   <circle cx="77.0" cy="168" r="4" fill="#58a6ff"/>
   <text x="92.0" y="174" style="font-family:'Inter',-apple-system,'Segoe UI',sans-serif;font-size:21.5px;font-weight:600;" fill="#e6edf3">Observation services</text>
-  <text x="92.0" y="204" style="font-family:'Inter',-apple-system,'Segoe UI',sans-serif;font-size:20.5px;font-weight:400;" fill="#9198a1">iNaturalist, eBird,</text>
-  <text x="92.0" y="232" style="font-family:'Inter',-apple-system,'Segoe UI',sans-serif;font-size:20.5px;font-weight:400;" fill="#9198a1">BirdWeather, BirdNET-Go,</text>
-  <text x="92.0" y="260" style="font-family:'Inter',-apple-system,'Segoe UI',sans-serif;font-size:20.5px;font-weight:400;" fill="#9198a1">BirdNET Analyzer,</text>
-  <text x="92.0" y="288" style="font-family:'Inter',-apple-system,'Segoe UI',sans-serif;font-size:20.5px;font-weight:400;" fill="#9198a1">and Bird Buddy.</text>
+  <text x="92.0" y="202" style="font-family:'Inter',-apple-system,'Segoe UI',sans-serif;font-size:20.5px;font-weight:400;" fill="#9198a1">iNaturalist, eBird,</text>
+  <text x="92.0" y="225" style="font-family:'Inter',-apple-system,'Segoe UI',sans-serif;font-size:20.5px;font-weight:400;" fill="#9198a1">eBird Archive,</text>
+  <text x="92.0" y="248" style="font-family:'Inter',-apple-system,'Segoe UI',sans-serif;font-size:20.5px;font-weight:400;" fill="#9198a1">BirdWeather, BirdNET-Go,</text>
+  <text x="92.0" y="271" style="font-family:'Inter',-apple-system,'Segoe UI',sans-serif;font-size:20.5px;font-weight:400;" fill="#9198a1">BirdNET Analyzer,</text>
+  <text x="92.0" y="294" style="font-family:'Inter',-apple-system,'Segoe UI',sans-serif;font-size:20.5px;font-weight:400;" fill="#9198a1">and Bird Buddy.</text>
   <text x="92.0" y="320" style="font-family:'Inter',-apple-system,'Segoe UI',sans-serif;font-size:17px;font-weight:400;" fill="#9198a1">Configured sources only</text>
   <circle cx="365.0" cy="168" r="4" fill="#58a6ff"/>
   <text x="380.0" y="174" style="font-family:'Inter',-apple-system,'Segoe UI',sans-serif;font-size:21.5px;font-weight:600;" fill="#e6edf3">Reference &amp; research</text>

@@ -69,6 +69,14 @@ stores source paths, offsets, confidence values, or audio. Reimports update a
 segment's classification atomically; date-window discovery excludes undated
 segments rather than inventing observation times.
 
+eBird Archive imports use `ebird-archive-observations.json` under `state_dir`.
+The complete-snapshot state retains one-way checklist fingerprints, calendar
+dates, and species identity only. Account details, raw checklist and location
+identifiers, coordinates, counts, comments, effort, and media metadata are
+discarded during import. A mode-`0600` atomic replacement occurs only after the
+entire export validates; a missing previously imported checklist fails closed
+unless the operator explicitly permits history reduction.
+
 A locked generation cycle completes that migration, recovers passing pending
 work, and then reads the latest non-stale snapshot and durable seed queue.
 Current observations take priority over queued seed taxa. The cycle then:
