@@ -1,0 +1,42 @@
+{
+  "anatomy_accuracy": 4,
+  "composition_quality": 5,
+  "correction_findings": [],
+  "findings": [
+    "The plate correctly identifies Wilson's Plover as Anarhynchus wilsonia in the family Charadriidae; these names agree with the live Cornell and Wikipedia pages.",
+    "The primary specimen is unmistakably Wilson's Plover: compact plover body, relatively large head and dark eye, long heavy black bill, sandy-brown upperparts, white underparts, white supercilium and partial collar, single broad dark breast band, pale pinkish-gray legs, long folded wings, and short tail all agree with the source descriptions and attached photographs.",
+    "The bill is appropriately longer and heavier than that of similar small plovers. In both depicted heads, the upper and lower mandibles run coherently from a shared base to a consistent, non-truncated tip; neither study shows a reversed or materially exaggerated projection.",
+    "The primary specimen has one head, one beak, two anatomically coherent folded wings with the far wing largely occluded, two legs, two feet, and one short tail. The detached spread-wing and head studies are clearly separate supplementary studies and do not appear attached to the specimen.",
+    "The legs, joints, toes, claws, plumage layering, folded wing, tail, and detached wing study are coherent. The extended stance makes the legs appear slightly longer than in some supplied photographs, but it remains compatible with Cornell's description of fairly long legs and does not distort the species identity.",
+    "All visible measurement text is transcribed correctly from the proposed facts: length 16\u201320 cm (6.3\u20137.9 in), wingspan 43\u201348 cm (17\u201319 in), and weight 55\u201370 g (1.9\u20132.5 oz). Cornell directly supports the stated length and weight; Audubon directly supports the stated wingspan. Audubon currently publishes a narrower 18\u201320 cm length and a higher 70\u2013100 g weight, while Wikipedia repeats Cornell's 16\u201320 cm and 55\u201370 g values, so the candidate's figures are supported published values rather than transcription errors.",
+    "The body-length diagram repeats the printed 16\u201320 cm range correctly, is explicitly labeled \u201cSCHEMATIC \u2014 NOT TO SCALE,\u201d increases from 16 cm at the bottom to 20 cm at the top, and contains exactly four evenly spaced unlabeled interior ticks forming five proportional segments.",
+    "The habitat paragraph is complete, grammatical, and agrees with the live sources: open beaches and flats, sandy/shelly/gravelly nesting areas above the high-tide line, barrier and dredge-spoil islands, estuaries, mudflats, salt flats, and coastal-lagoon margins.",
+    "The behavior paragraph is complete and supported: run-pause foraging, watching and lunging or pecking, day-and-night feeding, fiddler-crab specialization and leg shaking, shallow scrape nesting, and shared incubation and chick care.",
+    "All six printed field-mark bullets match the proposed wording and verified morphology. The candidate's dark breast band and brown facial and upperpart tones fall within the documented adult variation also represented by the supplied field photographs; no seasonal-plumage rewrite is warranted.",
+    "Every visible title, taxonomic label, paragraph, bullet, measurement, unit, and diagram label is legible and free of duplicated, omitted, substituted, or nonsensical wording.",
+    "The page is well balanced and readable: the primary specimen dominates, text remains clear, supplementary studies are separated, and the ruler and palette do not interfere with the anatomy.",
+    "No place name, ZIP code, coordinates, map, range map, or local-observation detail appears."
+  ],
+  "location_free": true,
+  "passed": true,
+  "species_accuracy": 5,
+  "text_accuracy": 5,
+  "verification_sources": [
+    {
+      "title": "Wilson's Plover Identification \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Wilsons_Plover/id"
+    },
+    {
+      "title": "Wilson's Plover Life History \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Wilsons_Plover/lifehistory"
+    },
+    {
+      "title": "Wilson's Plover \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/wilsons-plover"
+    },
+    {
+      "title": "Wilson's plover \u2014 Wikipedia",
+      "url": "https://en.wikipedia.org/wiki/Wilson%27s_plover"
+    }
+  ]
+}
