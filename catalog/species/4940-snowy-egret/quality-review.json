@@ -1,0 +1,40 @@
+{
+  "anatomy_accuracy": 5,
+  "composition_quality": 5,
+  "correction_findings": [],
+  "findings": [
+    "The candidate is identifiable as Snowy Egret: the primary specimen has entirely white plumage, a long slender black bill, yellow iris and lores, black legs, bright yellow feet, a slim body, and a long flexible neck, matching the reference photographs and direct source descriptions.",
+    "The common name \u201cSnowy Egret,\u201d scientific name \u201cEgretta thula,\u201d and family \u201cArdeidae\u201d are correct.",
+    "The printed measurements\u2014length 56\u201366 cm (22.1\u201326.0 in), weight about 370 g (13.1 oz), and wingspan about 100 cm (39.4 in)\u2014match Cornell and Animal Diversity Web. The repeated BODY LENGTH value is identical.",
+    "The habitat paragraph matches the proposed text in spelling, numbers, and word order and is consistent with the verified freshwater, brackish, saltwater, marsh, tidal-flat, estuarine, mangrove, pond, river, lake-margin, beach, and flooded-field habitats.",
+    "The behavior paragraph matches the proposed text in full. Active walking or running, patient waiting, wing-flicking, foot-stirring, shallow-water feeding, and colonial nesting with other herons are supported by the sources.",
+    "All six printed field-mark lines match the proposed wording and verified traits: white plumage; slender black bill; yellow eyes and facial skin; black legs with yellow feet; slim long-necked build; and broad white wings with a short tail.",
+    "The primary specimen is a single complete bird with one head and bill, two anatomically coherent folded wings, two legs, two yellow feet, and one short tail. No duplicated, fused, or extraneous attached parts are present.",
+    "Both depicted heads independently show consistent, untruncated, long slender bills with plausible mandible alignment and proportions matching the clearest side-profile reference. The supplementary head is clearly detached from the primary specimen.",
+    "The detached wing study is intentional, clearly separate from the specimen, and shows a coherent broad white wing with layered coverts, secondaries, and primaries.",
+    "The ruler increases correctly from 56 cm at the bottom to 66 cm at the top, has exactly four evenly spaced unlabeled interior ticks, and therefore forms five proportional segments. Its endpoints agree with both printed length statements.",
+    "\u201cSCHEMATIC \u2014 NOT TO SCALE\u201d clearly prevents the ruler from being interpreted as the printed bird\u2019s physical scale.",
+    "The palette labels \u201cSnow white,\u201d \u201cJet black,\u201d \u201cGolden yellow,\u201d and \u201cYellow-green\u201d are legible, correctly spelled, and compatible with the species\u2019 adult coloration and documented dull greenish immature leg coloration.",
+    "Every visible text line is legible and complete; no duplicated, omitted, substituted, misspelled, or nonsensical wording was found.",
+    "No place name, ZIP code, coordinates, map, or local-observation detail appears on the plate.",
+    "The layout is balanced and readable, with the main specimen, factual text, schematic ruler, anatomical studies, and palette clearly separated."
+  ],
+  "location_free": true,
+  "passed": true,
+  "species_accuracy": 5,
+  "text_accuracy": 5,
+  "verification_sources": [
+    {
+      "title": "Snowy Egret Identification \u2014 Cornell Lab of Ornithology",
+      "url": "https://www.allaboutbirds.org/guide/Snowy_Egret/id"
+    },
+    {
+      "title": "Egretta thula \u2014 Animal Diversity Web",
+      "url": "https://animaldiversity.org/accounts/Egretta_thula/"
+    },
+    {
+      "title": "Snowy Egret \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/snowy-egret"
+    }
+  ]
+}

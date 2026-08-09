@@ -1,0 +1,37 @@
+{
+  "behavior": "Wades in shallow water, alternating patient stalking with active running, wing-flicking, and foot-stirring to flush fish and other small aquatic prey. Often nests colonially with other herons.",
+  "common_name": "Snowy Egret",
+  "family": "Ardeidae",
+  "field_marks": [
+    "Entirely white plumage",
+    "Long, slender black bill",
+    "Yellow eyes and yellow facial skin at the bill base",
+    "Long black legs with bright yellow feet",
+    "Slim body with a long, flexible neck",
+    "Broad, rounded white wings and a short white tail"
+  ],
+  "habitat": "Shallow fresh, brackish, and saltwater habitats, including marshes, tidal flats, estuaries, mangroves, swamps, ponds, river and lake margins, beaches, and flooded fields.",
+  "measurements": {
+    "length": "56\u201366 cm (22.1\u201326.0 in)",
+    "weight": "about 370 g (13.1 oz)",
+    "wingspan": "about 100 cm (39.4 in)"
+  },
+  "palette": [
+    "snow white",
+    "jet black",
+    "golden yellow",
+    "yellow-green"
+  ],
+  "scientific_name": "Egretta thula",
+  "sources": [
+    {
+      "title": "Snowy Egret Identification \u2014 Cornell Lab of Ornithology",
+      "url": "https://www.allaboutbirds.org/guide/snowy_egret/id"
+    },
+    {
+      "title": "Egretta thula \u2014 Animal Diversity Web",
+      "url": "https://animaldiversity.org/accounts/Egretta_thula/"
+    }
+  ],
+  "taxon_id": 4940
+}
