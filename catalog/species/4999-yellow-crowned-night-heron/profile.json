@@ -1,0 +1,46 @@
+{
+  "behavior": "Usually forages alone, standing motionless or walking slowly through shallow water before lunging at prey. It specializes in crabs and crayfish, often breaking larger prey apart with its stout bill, and may feed by day, at dusk, or at night.",
+  "common_name": "Yellow-crowned Night Heron",
+  "family": "Ardeidae",
+  "field_marks": [
+    "Stocky, compact heron with a thick neck and blocky head",
+    "Slate-gray body with broad, rounded wings and a short tail",
+    "Black head with a broad white cheek patch",
+    "Creamy-yellow crown and long pale head plumes",
+    "Thick, stout, entirely dark bill and red eyes",
+    "Orange-yellow legs; feet project beyond the short tail in flight"
+  ],
+  "habitat": "Shallow coastal and inland wetlands, including tidal marshes, mangroves, lagoons, swamps, ponds, rivers, creeks, drainage channels, and damp fields or lawns, usually where trees or dense cover occur nearby.",
+  "measurements": {
+    "length": "55\u201370 cm",
+    "weight": "650\u2013800 g",
+    "wingspan": "1.1\u20131.2 m"
+  },
+  "palette": [
+    "slate gray",
+    "black",
+    "white",
+    "creamy yellow",
+    "orange-yellow"
+  ],
+  "scientific_name": "Nyctanassa violacea",
+  "sources": [
+    {
+      "title": "Yellow-crowned Night Heron Identification \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Yellow-crowned_Night-Heron/id"
+    },
+    {
+      "title": "Yellow-crowned Night Heron Life History \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Yellow-crowned_Night_Heron/lifehistory"
+    },
+    {
+      "title": "Yellow-crowned Night Heron \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/yellow-crowned-night-heron"
+    },
+    {
+      "title": "Nyctanassa violacea \u2014 Animal Diversity Web",
+      "url": "https://animaldiversity.org/accounts/Nyctanassa_violacea/"
+    }
+  ],
+  "taxon_id": 4999
+}

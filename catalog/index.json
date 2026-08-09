@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-09T22:52:23+00:00",
+  "generated_at": "2026-08-09T23:04:31+00:00",
   "schema_version": 1,
   "species": [
     {
@@ -1530,6 +1530,17 @@
       "scientific_name": "Icteria virens",
       "slug": "yellow-breasted-chat",
       "taxon_id": 10243
+    },
+    {
+      "approved_at": "2026-08-09T23:04:31+00:00",
+      "common_name": "Yellow-crowned Night Heron",
+      "display_path": "species/4999-yellow-crowned-night-heron/display.png",
+      "display_sha256": "dee8ff40cb1c7ce50f07c76f2d6a7a1fcbb15bac103453c34a5a73d07f669620",
+      "portrait_path": "species/4999-yellow-crowned-night-heron/portrait.png",
+      "portrait_sha256": "649f34e0e1f41562c8586823a5f360524c6927601fc0f1f5d0f42009fa9a106c",
+      "scientific_name": "Nyctanassa violacea",
+      "slug": "yellow-crowned-night-heron",
+      "taxon_id": 4999
     },
     {
       "approved_at": "2026-07-10T18:34:41+00:00",

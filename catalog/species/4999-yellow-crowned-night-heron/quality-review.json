@@ -1,0 +1,36 @@
+{
+  "anatomy_accuracy": 5,
+  "composition_quality": 5,
+  "correction_findings": [],
+  "findings": [
+    "The primary specimen is an anatomically coherent adult Yellow-crowned Night Heron: stocky body, tucked thick neck, blocky head, stout all-dark bill, red eye, short tail, broad folded wings, two orange-yellow legs with plausible anisodactyl feet, and long pale occipital plumes.",
+    "The lateral pose has one naturally exposed folded wing and an occluded contralateral wing; the specimen otherwise has exactly one head, one beak, two legs, and one tail. The detached wing and head are clearly supplementary studies and do not appear attached to the primary specimen.",
+    "The adult plumage agrees with the clearest field references and direct sources: slate/cloudy-gray body, black head, broad white cheek patch, creamy-yellow crown, pale plumes, scaled light-edged wing feathers, red eye, and orange-yellow legs.",
+    "The primary and supplementary bills are consistently broad, stout, entirely dark, and properly tapered. Neither source-supported field marks nor the reference profiles establish unequal mandibles as a diagnostic trait, and neither study shows a malformed or truncated mandible.",
+    "The common name, scientific name Nyctanassa violacea, and family Ardeidae are spelled correctly and identify the depicted species.",
+    "Every narrative line matches the proposed habitat, behavior, and field-mark wording without duplicated, omitted, substituted, or nonsensical words.",
+    "The printed length of 55\u201370 cm and weight of 650\u2013800 g are directly supported by both All About Birds and Animal Diversity Web. Audubon publishes 1.1\u20131.2 m for wingspan, while Animal Diversity Web reports an average of 1.1 m.",
+    "The schematic length ruler is internally consistent: 55 cm is at the bottom, 70 cm at the top, values increase upward, and it has exactly four evenly spaced unlabeled interior ticks dividing the range into five proportional segments. Its endpoints agree with both printed length labels, and \u201cSCHEMATIC \u2014 NOT TO SCALE\u201d clearly prevents interpreting the printed bird as life-size.",
+    "The five palette labels\u2014slate gray, black, white, creamy yellow, and orange-yellow\u2014are correctly spelled and correspond to the adult plumage shown.",
+    "The layout is legible and well balanced; text, primary specimen, ruler, supplementary studies, and palette remain distinct without overlaps that obscure content.",
+    "No place name, ZIP code, coordinates, map, range-locality label, or local-observation detail appears."
+  ],
+  "location_free": true,
+  "passed": true,
+  "species_accuracy": 5,
+  "text_accuracy": 5,
+  "verification_sources": [
+    {
+      "title": "Yellow-crowned Night Heron Identification \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Yellow-crowned_Night-Heron/id"
+    },
+    {
+      "title": "Yellow-crowned Night Heron \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/yellow-crowned-night-heron"
+    },
+    {
+      "title": "Nyctanassa violacea \u2014 Animal Diversity Web",
+      "url": "https://animaldiversity.org/accounts/Nyctanassa_violacea/"
+    }
+  ]
+}
