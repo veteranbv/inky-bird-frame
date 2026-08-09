@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-09T16:47:54+00:00",
+  "generated_at": "2026-08-09T17:12:25+00:00",
   "schema_version": 1,
   "species": [
     {
@@ -947,6 +947,17 @@
       "scientific_name": "Seiurus aurocapilla",
       "slug": "ovenbird",
       "taxon_id": 62550
+    },
+    {
+      "approved_at": "2026-08-09T17:12:25+00:00",
+      "common_name": "Painted Bunting",
+      "display_path": "species/10224-painted-bunting/display.png",
+      "display_sha256": "b17fcc3242e8361893c7ef724782e823b6e8c410c72aac46bf6e1574ad07e1a5",
+      "portrait_path": "species/10224-painted-bunting/portrait.png",
+      "portrait_sha256": "815103a74d1f8921d1d6a18f4b5dc715b869872a36e111eb3d2a708e4fcecde7",
+      "scientific_name": "Passerina ciris",
+      "slug": "painted-bunting",
+      "taxon_id": 10224
     },
     {
       "approved_at": "2026-07-10T18:19:56+00:00",

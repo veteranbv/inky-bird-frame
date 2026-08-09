@@ -1,0 +1,167 @@
+{
+  "approved_at": "2026-08-09T17:12:25+00:00",
+  "assets": {
+    "display": {
+      "filename": "display.png",
+      "sha256": "b17fcc3242e8361893c7ef724782e823b6e8c410c72aac46bf6e1574ad07e1a5"
+    },
+    "portrait": {
+      "filename": "portrait.png",
+      "sha256": "815103a74d1f8921d1d6a18f4b5dc715b869872a36e111eb3d2a708e4fcecde7"
+    }
+  },
+  "common_name": "Painted Bunting",
+  "generation": {
+    "attempt": 1,
+    "generated_at": "2026-08-09T17:12:25+00:00",
+    "generator": "Codex subscription / built-in gpt-image-2",
+    "max_attempts": 3,
+    "prompt_version": "field-journal-v4"
+  },
+  "profile": {
+    "behavior": "Secretive and often concealed; forages mainly on the ground for grass seeds, taking more insects during the breeding season. Breeding males sing from exposed perches and vigorously defend territories. Migrates chiefly at night.",
+    "common_name": "Painted Bunting",
+    "family": "Cardinalidae",
+    "field_marks": [
+      "Adult male has a deep blue head, bright green back, and scarlet-red underparts and rump.",
+      "Female and immature plumage is mostly bright yellow-green, with a paler eyering.",
+      "Small, stocky proportions with a short neck and rounded body.",
+      "Stubby, thick, conical seed-cracking bill, gray to dark in color.",
+      "Dark eyes and dusky gray-brown legs and feet.",
+      "Wings and tail are relatively dark, with a compact wing and medium-length tail."
+    ],
+    "habitat": "Dense brush and semi-open habitats with low cover, including grassy or weedy edges, riparian thickets, scrub, hedgerows, open-woodland understory, overgrown fields, and tropical forest margins or densely vegetated savannas.",
+    "measurements": {
+      "length": "12\u201313 cm (4.7\u20135.1 in)",
+      "weight": "13\u201319 g (0.5\u20130.7 oz)",
+      "wingspan": "21\u201323 cm (8.3\u20139.1 in)"
+    },
+    "palette": [
+      "deep blue",
+      "leaf green",
+      "scarlet red",
+      "yellow-green",
+      "charcoal brown"
+    ],
+    "scientific_name": "Passerina ciris",
+    "sources": [
+      {
+        "title": "Painted Bunting Identification \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/painted_bunting/id"
+      },
+      {
+        "title": "Passerina ciris \u2014 Animal Diversity Web",
+        "url": "https://animaldiversity.org/accounts/Passerina_ciris/"
+      },
+      {
+        "title": "Painted bunting \u2014 Wikipedia",
+        "url": "https://en.wikipedia.org/wiki/Painted_bunting"
+      }
+    ],
+    "taxon_id": 10224
+  },
+  "quality_review": {
+    "anatomy_accuracy": 5,
+    "composition_quality": 5,
+    "correction_findings": [],
+    "findings": [
+      "The primary specimen is an identifiable adult male Painted Bunting: deep-blue head, bright green back, scarlet-red throat, underparts, and rump, with dark folded wings and tail matching the attached references and direct source descriptions.",
+      "The primary specimen is complete and singular, with one head, one beak, two wings, two legs with grasping feet, and one tail. The detached wing and head are clearly separated supplementary studies, not attached duplicate anatomy.",
+      "The main bird has the species-appropriate small, stocky, rounded proportions and short neck. Its tail length and compact folded-wing structure agree with the reference photographs.",
+      "Both depicted heads have consistent stubby, thick, conical bills with plausible joined mandibles. Neither bill appears truncated, reversed, malformed, or materially inconsistent with the clearest side-profile references; unequal mandible projection is not established as a required field mark by the reviewed sources.",
+      "Eyes are dark, the main bird's orbital area is plausible, and the legs and feet are appropriately dusky gray-brown. Wing and tail feather groups are coherent and anatomically credible.",
+      "The supplementary wing correctly presents green coverts, darker flight feathers, and red shoulder-area plumage consistent with the adult male references. The detached head independently preserves the correct bill, eye, and blue-head/red-throat pattern.",
+      "The visible common name, scientific name, and family are correctly written as \u201cPainted Bunting,\u201d \u201cPasserina ciris,\u201d and \u201cCardinalidae.\u201d",
+      "Every visible habitat, behavior, and field-marks sentence matches the proposed wording without an omission, duplication, substitution, spelling error, or nonsensical phrase. Direct sources support the substantive claims about dense cover, ground foraging, seeds and breeding-season insects, exposed singing perches, territorial defense, and nocturnal migration.",
+      "The printed measurements\u2014length 12\u201313 cm (4.7\u20135.1 in), weight 13\u201319 g (0.5\u20130.7 oz), and wingspan 21\u201323 cm (8.3\u20139.1 in)\u2014are supported across the reviewed direct pages. The repeated body-length label agrees with the main measurement block.",
+      "The ruler is internally consistent: 12 cm is at the bottom, 13 cm is at the top, values therefore increase upward, and it contains exactly four evenly spaced unlabeled interior ticks forming five proportional segments. The separate \u201cSCHEMATIC \u2014 NOT TO SCALE\u201d label prevents it from representing the printed bird's physical size.",
+      "The five color swatches accurately summarize the adult male and female/immature palette without introducing an erroneous plumage claim.",
+      "The plate is balanced and legible, with a dominant primary specimen and clearly segregated supplementary studies. No place name, ZIP code, coordinates, map, or local-observation detail appears."
+    ],
+    "location_free": true,
+    "passed": true,
+    "species_accuracy": 5,
+    "text_accuracy": 5,
+    "verification_sources": [
+      {
+        "title": "Painted Bunting Identification \u2014 All About Birds, Cornell Lab of Ornithology",
+        "url": "https://www.allaboutbirds.org/guide/painted_bunting/id"
+      },
+      {
+        "title": "Painted bunting \u2014 Smithsonian's National Zoo and Conservation Biology Institute",
+        "url": "https://nationalzoo.si.edu/animals/painted-bunting"
+      },
+      {
+        "title": "Passerina ciris \u2014 Animal Diversity Web",
+        "url": "https://animaldiversity.org/accounts/Passerina_ciris/"
+      },
+      {
+        "title": "Painted Bunting \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/painted-bunting"
+      },
+      {
+        "title": "Painted bunting \u2014 Wikipedia",
+        "url": "https://en.wikipedia.org/wiki/Painted_bunting"
+      }
+    ]
+  },
+  "references": [
+    {
+      "attribution": "no rights reserved",
+      "filename": "01-3179793.jpg",
+      "height": 851,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/3179793/large.jpg",
+      "license_code": "cc0",
+      "observation_id": 2800791,
+      "observer": "kpmcfarland",
+      "photo_id": 3179793,
+      "sha256": "13913d3d9942ffdbb15998c0c7a89b58876606c21f807db06528566be7c03692",
+      "source_url": "http://www.inaturalist.org/observations/2800791",
+      "width": 1276
+    },
+    {
+      "attribution": "no rights reserved",
+      "filename": "02-587714516.jpg",
+      "height": 1135,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/587714516/large.jpg",
+      "license_code": "cc0",
+      "observation_id": 324511257,
+      "observer": "kcthetc1",
+      "photo_id": 587714516,
+      "sha256": "68e1685e5e304ffc1762900c53a8b06f7c1a5de69de3452d7c846adbdb5d5b3a",
+      "source_url": "https://www.inaturalist.org/observations/324511257",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) Andrew Cannizzaro, some rights reserved (CC BY)",
+      "filename": "03-2846441.jpg",
+      "height": 1366,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/2846441/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 2556752,
+      "observer": "cannizag",
+      "photo_id": 2846441,
+      "sha256": "b30f02a669d554e0658685e5bebd0d8cdd1a22ae9e74fba5328e2f73e984ba74",
+      "source_url": "http://www.inaturalist.org/observations/2556752",
+      "width": 2048
+    },
+    {
+      "attribution": "no rights reserved",
+      "filename": "04-307225241.jpeg",
+      "height": 1439,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/307225241/large.jpeg",
+      "license_code": "cc0",
+      "observation_id": 176695289,
+      "observer": "wildreturn",
+      "photo_id": 307225241,
+      "sha256": "6744ef2b3a261a58bf7e5e362867c13187abfdc07bbd8888c1fcf50063b0ced8",
+      "source_url": "https://www.inaturalist.org/observations/176695289",
+      "width": 2048
+    }
+  ],
+  "schema_version": 1,
+  "scientific_name": "Passerina ciris",
+  "slug": "painted-bunting",
+  "status": "approved",
+  "taxon_id": 10224
+}
