@@ -1,0 +1,39 @@
+{
+  "anatomy_accuracy": 5,
+  "composition_quality": 5,
+  "correction_findings": [],
+  "findings": [
+    "The primary specimen is an anatomically coherent adult male Baltimore Oriole with one head and bill, two legs gripping the branch, a normal single tail, and two anatomically implied wings with the far wing naturally obscured by the lateral pose.",
+    "Plumage agrees with the field references and direct sources: solid-black head and upper back, brilliant orange breast, belly, and rump, black wings, a broad white wing bar, orange shoulder coverts, and orange outer tail feathers surrounding a black tail center.",
+    "The long, thick-based, sharply pointed bill is consistent across the primary specimen and detached head study. Both mandibles trace cleanly from a shared base to a sharp, essentially co-terminal tip, matching the clearest closed-bill reference profiles; neither bill is truncated, reversed, or malformed.",
+    "The dark eyes, gray legs, feet, body proportions, wing structure, and tail arrangement are coherent and species-appropriate. The detached wing and head are clearly isolated supplementary studies and do not appear attached to the primary specimen.",
+    "The common name, scientific name, and family are correctly printed as \u201cBaltimore Oriole,\u201d \u201cIcterus galbula,\u201d and \u201cIcteridae.\u201d Smithsonian and Animal Diversity Web independently confirm Icterus galbula in Icteridae.",
+    "The printed measurements\u2014length 17\u201319 cm (6.7\u20137.5 in), wingspan 23\u201330 cm (9.1\u201311.8 in), and weight 30\u201340 g (1.1\u20131.4 oz)\u2014exactly match Cornell\u2019s published measurements. The repeated BODY LENGTH value also agrees.",
+    "The habitat and behavior paragraphs reproduce the proposed wording completely and coherently, with no duplicated, omitted, substituted, misspelled, or nonsensical words. Their substance is supported by the direct Cornell life-history page.",
+    "All six field-mark lines and all five palette labels are present and correctly worded. The palette accurately reflects the illustrated adult-male colors.",
+    "The vertical length ruler is explicitly labeled \u201cSCHEMATIC \u2014 NOT TO SCALE,\u201d increases from 17 cm at the bottom to 19 cm at the top, has matching imperial endpoints, and contains exactly four evenly spaced unlabeled interior ticks forming five proportional segments. No separate measurement marker disagrees with it.",
+    "The plate contains no observation locality, ZIP code, coordinates, map, or other local-observation detail; \u201cBaltimore\u201d appears only as part of the required common name."
+  ],
+  "location_free": true,
+  "passed": true,
+  "species_accuracy": 5,
+  "text_accuracy": 5,
+  "verification_sources": [
+    {
+      "title": "Baltimore Oriole Identification \u2014 Cornell Lab of Ornithology",
+      "url": "https://www.allaboutbirds.org/guide/Baltimore_Oriole/id"
+    },
+    {
+      "title": "Baltimore Oriole Life History \u2014 Cornell Lab of Ornithology",
+      "url": "https://www.allaboutbirds.org/guide/Baltimore_Oriole/lifehistory"
+    },
+    {
+      "title": "Baltimore oriole \u2014 Smithsonian\u2019s National Zoo and Conservation Biology Institute",
+      "url": "https://nationalzoo.si.edu/animals/baltimore-oriole"
+    },
+    {
+      "title": "Icterus galbula \u2014 Animal Diversity Web",
+      "url": "https://animaldiversity.org/accounts/Icterus_galbula/"
+    }
+  ]
+}

@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-09T18:16:46+00:00",
+  "generated_at": "2026-08-09T18:42:28+00:00",
   "schema_version": 1,
   "species": [
     {
@@ -78,6 +78,17 @@
       "scientific_name": "Haliaeetus leucocephalus",
       "slug": "bald-eagle",
       "taxon_id": 5305
+    },
+    {
+      "approved_at": "2026-08-09T18:42:28+00:00",
+      "common_name": "Baltimore Oriole",
+      "display_path": "species/9346-baltimore-oriole/display.png",
+      "display_sha256": "409f50a2c3a1af2c7a741ff4c8e1761c976ae5ae4f2ae258f249d1fa87f7d0a8",
+      "portrait_path": "species/9346-baltimore-oriole/portrait.png",
+      "portrait_sha256": "554f1cdfb17f8cc4587ac54556302d0cd23b67edf8e0a9cef828d12adc1c9131",
+      "scientific_name": "Icterus galbula",
+      "slug": "baltimore-oriole",
+      "taxon_id": 9346
     },
     {
       "approved_at": "2026-07-13T02:45:02+00:00",

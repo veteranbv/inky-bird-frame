@@ -1,0 +1,42 @@
+{
+  "behavior": "Agile canopy forager that gleans insects, fruit, and nectar from foliage, sometimes hangs upside down or sallies from a perch for flying insects; the female weaves a suspended, pouch-shaped nest from slender fibers.",
+  "common_name": "Baltimore Oriole",
+  "family": "Icteridae",
+  "field_marks": [
+    "Solid-black head and upper back in adult males",
+    "Brilliant orange underparts and rump",
+    "Black wings with a bold white wing bar and orange shoulder patch",
+    "Long, thick-based, sharply pointed bill",
+    "Long black tail with orange outer feathers",
+    "Dark eye and gray legs"
+  ],
+  "habitat": "Open deciduous woodland, forest edges, riverside trees, small groves, orchards, parks, and gardens; outside the breeding season also uses open woodland, flowering trees, and shade-grown plantations.",
+  "measurements": {
+    "length": "17\u201319 cm (6.7\u20137.5 in)",
+    "weight": "30\u201340 g (1.1\u20131.4 oz)",
+    "wingspan": "23\u201330 cm (9.1\u201311.8 in)"
+  },
+  "palette": [
+    "flame orange",
+    "jet black",
+    "bright white",
+    "blue-gray",
+    "charcoal gray"
+  ],
+  "scientific_name": "Icterus galbula",
+  "sources": [
+    {
+      "title": "Baltimore Oriole Identification \u2014 Cornell Lab of Ornithology",
+      "url": "https://www.allaboutbirds.org/guide/Baltimore_Oriole/id"
+    },
+    {
+      "title": "Baltimore Oriole Life History \u2014 Cornell Lab of Ornithology",
+      "url": "https://www.allaboutbirds.org/guide/Baltimore_Oriole/lifehistory"
+    },
+    {
+      "title": "Icterus galbula \u2014 Animal Diversity Web",
+      "url": "https://animaldiversity.org/accounts/Icterus_galbula/"
+    }
+  ],
+  "taxon_id": 9346
+}

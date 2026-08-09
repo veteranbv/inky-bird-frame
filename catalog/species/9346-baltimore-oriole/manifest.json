@@ -1,0 +1,162 @@
+{
+  "approved_at": "2026-08-09T18:42:28+00:00",
+  "assets": {
+    "display": {
+      "filename": "display.png",
+      "sha256": "409f50a2c3a1af2c7a741ff4c8e1761c976ae5ae4f2ae258f249d1fa87f7d0a8"
+    },
+    "portrait": {
+      "filename": "portrait.png",
+      "sha256": "554f1cdfb17f8cc4587ac54556302d0cd23b67edf8e0a9cef828d12adc1c9131"
+    }
+  },
+  "common_name": "Baltimore Oriole",
+  "generation": {
+    "attempt": 2,
+    "correction_source_sha256": "0e28f2120afe9226e8e4a2b66a536a3614ff534be3de1f12897d24c61b47a422",
+    "generated_at": "2026-08-09T18:42:28+00:00",
+    "generator": "Codex subscription / built-in gpt-image-2",
+    "max_attempts": 3,
+    "prompt_version": "field-journal-v4"
+  },
+  "profile": {
+    "behavior": "Agile canopy forager that gleans insects, fruit, and nectar from foliage, sometimes hangs upside down or sallies from a perch for flying insects; the female weaves a suspended, pouch-shaped nest from slender fibers.",
+    "common_name": "Baltimore Oriole",
+    "family": "Icteridae",
+    "field_marks": [
+      "Solid-black head and upper back in adult males",
+      "Brilliant orange underparts and rump",
+      "Black wings with a bold white wing bar and orange shoulder patch",
+      "Long, thick-based, sharply pointed bill",
+      "Long black tail with orange outer feathers",
+      "Dark eye and gray legs"
+    ],
+    "habitat": "Open deciduous woodland, forest edges, riverside trees, small groves, orchards, parks, and gardens; outside the breeding season also uses open woodland, flowering trees, and shade-grown plantations.",
+    "measurements": {
+      "length": "17\u201319 cm (6.7\u20137.5 in)",
+      "weight": "30\u201340 g (1.1\u20131.4 oz)",
+      "wingspan": "23\u201330 cm (9.1\u201311.8 in)"
+    },
+    "palette": [
+      "flame orange",
+      "jet black",
+      "bright white",
+      "blue-gray",
+      "charcoal gray"
+    ],
+    "scientific_name": "Icterus galbula",
+    "sources": [
+      {
+        "title": "Baltimore Oriole Identification \u2014 Cornell Lab of Ornithology",
+        "url": "https://www.allaboutbirds.org/guide/Baltimore_Oriole/id"
+      },
+      {
+        "title": "Baltimore Oriole Life History \u2014 Cornell Lab of Ornithology",
+        "url": "https://www.allaboutbirds.org/guide/Baltimore_Oriole/lifehistory"
+      },
+      {
+        "title": "Icterus galbula \u2014 Animal Diversity Web",
+        "url": "https://animaldiversity.org/accounts/Icterus_galbula/"
+      }
+    ],
+    "taxon_id": 9346
+  },
+  "quality_review": {
+    "anatomy_accuracy": 5,
+    "composition_quality": 5,
+    "correction_findings": [],
+    "findings": [
+      "The primary specimen is an anatomically coherent adult male Baltimore Oriole with one head and bill, two legs gripping the branch, a normal single tail, and two anatomically implied wings with the far wing naturally obscured by the lateral pose.",
+      "Plumage agrees with the field references and direct sources: solid-black head and upper back, brilliant orange breast, belly, and rump, black wings, a broad white wing bar, orange shoulder coverts, and orange outer tail feathers surrounding a black tail center.",
+      "The long, thick-based, sharply pointed bill is consistent across the primary specimen and detached head study. Both mandibles trace cleanly from a shared base to a sharp, essentially co-terminal tip, matching the clearest closed-bill reference profiles; neither bill is truncated, reversed, or malformed.",
+      "The dark eyes, gray legs, feet, body proportions, wing structure, and tail arrangement are coherent and species-appropriate. The detached wing and head are clearly isolated supplementary studies and do not appear attached to the primary specimen.",
+      "The common name, scientific name, and family are correctly printed as \u201cBaltimore Oriole,\u201d \u201cIcterus galbula,\u201d and \u201cIcteridae.\u201d Smithsonian and Animal Diversity Web independently confirm Icterus galbula in Icteridae.",
+      "The printed measurements\u2014length 17\u201319 cm (6.7\u20137.5 in), wingspan 23\u201330 cm (9.1\u201311.8 in), and weight 30\u201340 g (1.1\u20131.4 oz)\u2014exactly match Cornell\u2019s published measurements. The repeated BODY LENGTH value also agrees.",
+      "The habitat and behavior paragraphs reproduce the proposed wording completely and coherently, with no duplicated, omitted, substituted, misspelled, or nonsensical words. Their substance is supported by the direct Cornell life-history page.",
+      "All six field-mark lines and all five palette labels are present and correctly worded. The palette accurately reflects the illustrated adult-male colors.",
+      "The vertical length ruler is explicitly labeled \u201cSCHEMATIC \u2014 NOT TO SCALE,\u201d increases from 17 cm at the bottom to 19 cm at the top, has matching imperial endpoints, and contains exactly four evenly spaced unlabeled interior ticks forming five proportional segments. No separate measurement marker disagrees with it.",
+      "The plate contains no observation locality, ZIP code, coordinates, map, or other local-observation detail; \u201cBaltimore\u201d appears only as part of the required common name."
+    ],
+    "location_free": true,
+    "passed": true,
+    "species_accuracy": 5,
+    "text_accuracy": 5,
+    "verification_sources": [
+      {
+        "title": "Baltimore Oriole Identification \u2014 Cornell Lab of Ornithology",
+        "url": "https://www.allaboutbirds.org/guide/Baltimore_Oriole/id"
+      },
+      {
+        "title": "Baltimore Oriole Life History \u2014 Cornell Lab of Ornithology",
+        "url": "https://www.allaboutbirds.org/guide/Baltimore_Oriole/lifehistory"
+      },
+      {
+        "title": "Baltimore oriole \u2014 Smithsonian\u2019s National Zoo and Conservation Biology Institute",
+        "url": "https://nationalzoo.si.edu/animals/baltimore-oriole"
+      },
+      {
+        "title": "Icterus galbula \u2014 Animal Diversity Web",
+        "url": "https://animaldiversity.org/accounts/Icterus_galbula/"
+      }
+    ]
+  },
+  "references": [
+    {
+      "attribution": "no rights reserved",
+      "filename": "01-145445553.jpg",
+      "height": 1209,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/145445553/large.jpg",
+      "license_code": "cc0",
+      "observation_id": 88173051,
+      "observer": "wildreturn",
+      "photo_id": 145445553,
+      "sha256": "165ff99ff07fe4c83e57609773935360aa953e54ad9a43a21fec10a151adb52f",
+      "source_url": "https://www.inaturalist.org/observations/88173051",
+      "width": 1668
+    },
+    {
+      "attribution": "no rights reserved",
+      "filename": "02-339534144.jpg",
+      "height": 1335,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/339534144/large.jpg",
+      "license_code": "cc0",
+      "observation_id": 193289562,
+      "observer": "rawcomposition",
+      "photo_id": 339534144,
+      "sha256": "9a4a8960c6031e53cfa25c7dc1fd4ff74fbb4f66d37ad95bff3b360046cdd8e0",
+      "source_url": "https://www.inaturalist.org/observations/193289562",
+      "width": 2000
+    },
+    {
+      "attribution": "(c) Sandy Wolkenberg, some rights reserved (CC BY)",
+      "filename": "03-57922855.jpg",
+      "height": 2048,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/57922855/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 36628015,
+      "observer": "sadawolk",
+      "photo_id": 57922855,
+      "sha256": "f615ba29014bf91d91a9904310ada109d89fb27f20cafa1c67d8f8f3a7337004",
+      "source_url": "https://www.inaturalist.org/observations/36628015",
+      "width": 1510
+    },
+    {
+      "attribution": "(c) Daughter Dad, some rights reserved (CC BY)",
+      "filename": "04-510927863.jpg",
+      "height": 2048,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/510927863/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 284311444,
+      "observer": "daughterdad",
+      "photo_id": 510927863,
+      "sha256": "11829fa0f7aa9111125ce6ed9baf0ac46c1d0f7317b5c3211c3eba6483ce39b3",
+      "source_url": "https://www.inaturalist.org/observations/284311444",
+      "width": 2048
+    }
+  ],
+  "schema_version": 1,
+  "scientific_name": "Icterus galbula",
+  "slug": "baltimore-oriole",
+  "status": "approved",
+  "taxon_id": 9346
+}
