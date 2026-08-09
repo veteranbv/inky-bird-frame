@@ -4,9 +4,10 @@ import unittest
 from collections.abc import Iterator
 from contextlib import contextmanager
 from email.message import Message
+from http.client import IncompleteRead, RemoteDisconnected
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from threading import Thread
-from unittest.mock import patch
+from unittest.mock import MagicMock, patch
 from urllib.error import HTTPError
 
 import inky_bird_frame.http
@@ -114,6 +115,36 @@ class JsonHttpTests(unittest.TestCase):
 
         self.assertEqual(str(raised.exception), "HTTP 401 from BirdWeather API")
         self.assertNotIn("private-token", str(raised.exception))
+
+    def test_get_json_converts_incomplete_transport_responses(self) -> None:
+        url = "http://private-controller.local/api"
+        for error in (RemoteDisconnected("closed"), IncompleteRead(b"{}", 10)):
+            with (
+                self.subTest(error=type(error).__name__),
+                patch.object(inky_bird_frame.http._OPENER, "open", side_effect=error),
+                self.assertRaises(DataSourceError) as raised,
+            ):
+                get_json(url, error_label="BirdNET-Go API")
+
+            self.assertEqual(str(raised.exception), "Invalid HTTP response from BirdNET-Go API")
+            self.assertNotIn("private-controller.local", str(raised.exception))
+
+    def test_get_json_converts_invalid_utf8_to_sanitized_error(self) -> None:
+        response = MagicMock()
+        response.__enter__.return_value = response
+        response.read.return_value = b'\xff{"invalid": true}'
+        response.headers = Message()
+        with (
+            patch.object(inky_bird_frame.http._OPENER, "open", return_value=response),
+            self.assertRaises(DataSourceError) as raised,
+        ):
+            get_json(
+                "http://private-controller.local/api",
+                error_label="BirdNET-Go API",
+            )
+
+        self.assertEqual(str(raised.exception), "Invalid JSON from BirdNET-Go API")
+        self.assertNotIn("private-controller.local", str(raised.exception))
 
     def test_rejects_non_http_url_scheme(self) -> None:
         with self.assertRaisesRegex(DataSourceError, "non-HTTP URL scheme"):

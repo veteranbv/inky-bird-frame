@@ -7,7 +7,7 @@ bird observations.
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="images/installation-architecture-dark.png">
-  <img src="images/installation-architecture.png" alt="Inky Bird Frame runtime architecture showing iNaturalist, eBird, BirdWeather, and Bird Buddy observation services; the controller; its private HTTP connection with the Raspberry Pi display node; and the Inky Impression panel">
+  <img src="images/installation-architecture.png" alt="Inky Bird Frame runtime architecture showing iNaturalist, eBird, BirdWeather, BirdNET-Go, and Bird Buddy observation services; the controller; its private HTTP connection with the Raspberry Pi display node; and the Inky Impression panel">
 </picture>
 
 The display initiates every application connection. The controller's configured
@@ -65,7 +65,8 @@ CLI. The display requires `git`, `rsync`, and Pimoroni's Python environment.
 
 | From | To | Purpose |
 | --- | --- | --- |
-| Controller | Internet HTTPS (TCP 443) | Codex, configured observation services and geocoder, licensed references, and configured research sources |
+| Controller | Internet HTTPS (TCP 443) | Codex, internet-backed observation services and geocoder, licensed references, and configured research sources |
+| Controller | BirdNET-Go HTTP(S) endpoint | Read-only summaries from an explicitly configured self-hosted station |
 | Display node | Configured controller TCP port (8793 in the supplied example) | Read-only health, catalog, and image downloads |
 | Setup computer | Display node SSH (TCP 22) | Installation, updates, and troubleshooting |
 

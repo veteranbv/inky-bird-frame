@@ -217,6 +217,7 @@ def refresh_command(args: argparse.Namespace) -> int:
         "ebird": "eBird",
         "birdweather": "BirdWeather",
         "birdbuddy": "Bird Buddy",
+        "birdnet-go": "BirdNET-Go",
     }
     for provider, display_name in taxonomy_providers.items():
         unresolved_count = unresolved_by_provider.get(provider, 0)

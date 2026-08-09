@@ -28,6 +28,7 @@ class DiscoveryProvider(StrEnum):
     EBIRD = "ebird"
     BIRDWEATHER = "birdweather"
     BIRDBUDDY = "birdbuddy"
+    BIRDNET_GO = "birdnet-go"
 
 
 LEGACY_DISCOVERY_SOURCES: dict[str, tuple[DiscoveryProvider, ...]] = {
@@ -99,6 +100,7 @@ class DiscoveryConfig:
     birdweather_token: str | None = field(default=None, repr=False)
     birdweather_token_env: str | None = field(default=None, repr=False)
     birdbuddy_include_manual_sightings: bool = False
+    birdnet_go_url: str | None = None
 
 
 @dataclass(frozen=True)
@@ -514,6 +516,32 @@ def load_config(path: Path, *, load_secrets: bool = True) -> AppConfig:
     if DiscoveryProvider.BIRDWEATHER in discovery_sources and species_limit > 100:
         raise ConfigurationError("BirdWeather species_limit must not exceed 100")
 
+    birdnet_go_url = _string(discovery, "birdnet_go_url") if "birdnet_go_url" in discovery else None
+    if DiscoveryProvider.BIRDNET_GO in discovery_sources and birdnet_go_url is None:
+        raise ConfigurationError("BirdNET-Go discovery requires birdnet_go_url")
+    if birdnet_go_url is not None:
+        try:
+            parsed_birdnet_go_url = urlsplit(birdnet_go_url)
+            _ = parsed_birdnet_go_url.port
+        except ValueError as exc:
+            raise ConfigurationError("birdnet_go_url is not a valid HTTP or HTTPS URL") from exc
+        if (
+            parsed_birdnet_go_url.scheme not in {"http", "https"}
+            or not parsed_birdnet_go_url.netloc
+            or parsed_birdnet_go_url.hostname is None
+            or parsed_birdnet_go_url.username is not None
+            or parsed_birdnet_go_url.password is not None
+            or parsed_birdnet_go_url.query
+            or parsed_birdnet_go_url.fragment
+            or "?" in birdnet_go_url
+            or "#" in birdnet_go_url
+        ):
+            raise ConfigurationError(
+                "birdnet_go_url must be an HTTP or HTTPS base URL without credentials, "
+                "a query, or a fragment"
+            )
+        birdnet_go_url = birdnet_go_url.rstrip("/")
+
     controller_url = _string(display_node, "controller_url").rstrip("/")
     if not controller_url.startswith(("http://", "https://")):
         raise ConfigurationError("controller_url must start with http:// or https://")
@@ -597,6 +625,7 @@ def load_config(path: Path, *, load_secrets: bool = True) -> AppConfig:
                 "birdbuddy_include_manual_sightings",
                 default=False,
             ),
+            birdnet_go_url=birdnet_go_url,
         ),
         controller=ControllerConfig(
             workspace_dir=_path(_string(controller, "workspace_dir"), base_dir),

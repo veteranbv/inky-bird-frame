@@ -11,6 +11,7 @@ from unittest.mock import patch
 from inky_bird_frame.birdbuddy import BirdBuddySyncResult, BirdBuddySyncStats
 from inky_bird_frame.birds import (
     BirdBuddySpecies,
+    BirdNetGoSpecies,
     BirdSpecies,
     BirdWeatherSpecies,
     DateRange,
@@ -2599,6 +2600,78 @@ class ControllerTests(unittest.TestCase):
 
 
 class DiscoveryProviderTests(unittest.TestCase):
+    def test_birdnet_go_source_uses_station_summary_without_location_lookup(self) -> None:
+        detection = BirdNetGoSpecies(
+            "Eastern Bluebird",
+            "Sialia sialis",
+            7,
+            "2026-08-09T08:15:00-04:00",
+        )
+        resolved = BirdSpecies(12942, "Eastern Bluebird", "Sialia sialis", 7, "BirdNET-Go")
+        with TemporaryDirectory() as temporary:
+            config_path = Path(temporary) / "config.toml"
+            config_path.write_text(
+                CONFIG.replace(
+                    '[discovery]\nzip_code = "12345"\n',
+                    '[discovery]\nsources = ["birdnet-go"]\n'
+                    'birdnet_go_url = "http://birdnet-go.local:8080"\n',
+                )
+            )
+            config = load_config(config_path)
+            with (
+                patch("inky_bird_frame.controller.resolve_discovery_location") as lookup,
+                patch(
+                    "inky_bird_frame.controller.fetch_birdnet_go_species",
+                    return_value=[detection],
+                ) as fetch,
+                patch(
+                    "inky_bird_frame.controller.resolve_birdnet_go_species",
+                    return_value=([resolved], []),
+                ),
+            ):
+                result = discover_species(config)
+
+        self.assertEqual(result.species, [resolved])
+        self.assertIsNone(result.location)
+        self.assertEqual(result.providers, [ProviderStatus("birdnet-go", "ok", 1)])
+        self.assertEqual(fetch.call_args.kwargs["base_url"], "http://birdnet-go.local:8080")
+        lookup.assert_not_called()
+
+    def test_birdnet_go_failure_does_not_block_other_provider(self) -> None:
+        inaturalist = BirdSpecies(12942, "Eastern Bluebird", "Sialia sialis", 9, "iNaturalist")
+        with TemporaryDirectory() as temporary:
+            config_path = Path(temporary) / "config.toml"
+            config_path.write_text(
+                CONFIG.replace(
+                    "[discovery]\n",
+                    '[discovery]\nsources = ["inaturalist", "birdnet-go"]\n'
+                    'birdnet_go_url = "http://birdnet-go.local:8080"\n',
+                )
+            )
+            config = load_config(config_path)
+            with (
+                patch(
+                    "inky_bird_frame.controller.resolve_discovery_location",
+                    return_value=DiscoveryLocation("12345", "Exampleville", "XY", 1.0, 2.0),
+                ),
+                patch(
+                    "inky_bird_frame.controller.fetch_inaturalist_birds",
+                    return_value=[inaturalist],
+                ),
+                patch(
+                    "inky_bird_frame.controller.fetch_birdnet_go_species",
+                    side_effect=DataSourceError("Could not reach BirdNET-Go API"),
+                ),
+            ):
+                result = discover_species(config)
+
+        self.assertEqual(result.species, [inaturalist])
+        self.assertEqual(
+            [(provider.name, provider.status) for provider in result.providers],
+            [("inaturalist", "ok"), ("birdnet-go", "error")],
+        )
+        self.assertEqual(result.providers[1].error, "Could not reach BirdNET-Go API")
+
     def test_birdweather_refresh_clears_previous_location_metadata(self) -> None:
         species = BirdSpecies(12942, "Eastern Bluebird", "Sialia sialis", 7, "BirdWeather")
         with TemporaryDirectory() as temporary:

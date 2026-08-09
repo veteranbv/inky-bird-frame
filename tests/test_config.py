@@ -231,7 +231,85 @@ class ConfigTests(unittest.TestCase):
 
         self.assertTrue(config.discovery.birdbuddy_include_manual_sightings)
 
-    def test_legacy_all_source_does_not_implicitly_enable_birdbuddy(self) -> None:
+    def test_birdnet_go_source_requires_a_base_url(self) -> None:
+        configured = CONFIG.replace(
+            "[discovery]\n",
+            '[discovery]\nsources = ["birdnet-go"]\n',
+        )
+        with TemporaryDirectory() as temporary:
+            path = Path(temporary) / "config.toml"
+            path.write_text(configured)
+
+            with self.assertRaisesRegex(ConfigurationError, "requires birdnet_go_url"):
+                load_config(path)
+
+    def test_birdnet_go_source_accepts_local_http_url_without_a_location(self) -> None:
+        configured = CONFIG.replace(
+            '[discovery]\nzip_code = "12345"\n',
+            '[discovery]\nsources = ["birdnet-go"]\n'
+            'birdnet_go_url = "http://birdnet-go.local:8080/"\n',
+        )
+        with TemporaryDirectory() as temporary:
+            path = Path(temporary) / "config.toml"
+            path.write_text(configured)
+            config = load_config(path)
+
+        self.assertEqual(config.discovery.sources, (DiscoveryProvider.BIRDNET_GO,))
+        self.assertEqual(config.discovery.birdnet_go_url, "http://birdnet-go.local:8080")
+
+    def test_birdnet_go_url_rejects_embedded_credentials(self) -> None:
+        configured = CONFIG.replace(
+            "[discovery]\n",
+            '[discovery]\nsources = ["birdnet-go"]\n'
+            'birdnet_go_url = "http://user:secret@birdnet-go.local"\n',
+        )
+        with TemporaryDirectory() as temporary:
+            path = Path(temporary) / "config.toml"
+            path.write_text(configured)
+
+            with self.assertRaisesRegex(ConfigurationError, "without credentials"):
+                load_config(path)
+
+    def test_birdnet_go_url_rejects_invalid_port(self) -> None:
+        configured = CONFIG.replace(
+            "[discovery]\n",
+            '[discovery]\nsources = ["birdnet-go"]\n'
+            'birdnet_go_url = "http://birdnet-go.local:notaport"\n',
+        )
+        with TemporaryDirectory() as temporary:
+            path = Path(temporary) / "config.toml"
+            path.write_text(configured)
+
+            with self.assertRaisesRegex(ConfigurationError, "not a valid HTTP or HTTPS URL"):
+                load_config(path)
+
+    def test_birdnet_go_url_rejects_malformed_bracketed_host(self) -> None:
+        configured = CONFIG.replace(
+            "[discovery]\n",
+            '[discovery]\nsources = ["birdnet-go"]\nbirdnet_go_url = "http://[::1"\n',
+        )
+        with TemporaryDirectory() as temporary:
+            path = Path(temporary) / "config.toml"
+            path.write_text(configured)
+
+            with self.assertRaisesRegex(ConfigurationError, "not a valid HTTP or HTTPS URL"):
+                load_config(path)
+
+    def test_birdnet_go_url_rejects_empty_query_or_fragment_delimiter(self) -> None:
+        for delimiter in ("?", "#"):
+            configured = CONFIG.replace(
+                "[discovery]\n",
+                '[discovery]\nsources = ["birdnet-go"]\n'
+                f'birdnet_go_url = "http://birdnet-go.local{delimiter}"\n',
+            )
+            with self.subTest(delimiter=delimiter), TemporaryDirectory() as temporary:
+                path = Path(temporary) / "config.toml"
+                path.write_text(configured)
+
+                with self.assertRaisesRegex(ConfigurationError, "query, or a fragment"):
+                    load_config(path)
+
+    def test_legacy_all_source_does_not_implicitly_enable_new_private_sources(self) -> None:
         configured = CONFIG.replace(
             "[discovery]\n",
             '[discovery]\nsource = "all"\n'
@@ -244,6 +322,7 @@ class ConfigTests(unittest.TestCase):
             config = load_config(path)
 
         self.assertNotIn(DiscoveryProvider.BIRDBUDDY, config.discovery.sources)
+        self.assertNotIn(DiscoveryProvider.BIRDNET_GO, config.discovery.sources)
 
     def test_rejects_source_and_sources_together(self) -> None:
         configured = CONFIG.replace(

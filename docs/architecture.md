@@ -55,6 +55,13 @@ media files as several visits. Account-level manual evidence affects discovery
 only when `birdbuddy_include_manual_sightings` is enabled. Both files use atomic
 mode-`0600` writes and never enter the served or published catalog.
 
+A self-hosted BirdNET-Go provider makes one bounded, read-only species-summary
+request per refresh. The server's detection policy and false-positive state are
+authoritative; the controller then applies the same exact iNaturalist Aves
+taxonomy boundary as every external provider. Its base URL remains private
+configuration, and neither that URL nor detection times enter the reusable
+catalog.
+
 A locked generation cycle completes that migration, recovers passing pending
 work, and then reads the latest non-stale snapshot and durable seed queue.
 Current observations take priority over queued seed taxa. The cycle then:

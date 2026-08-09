@@ -47,6 +47,7 @@ _PRIVATE_KEYS = frozenset(
         "api_key",
         "apikey",
         "authorization_confirmed_at",
+        "birdnet_go_url",
         "birdbuddy",
         "catalog_dir",
         "checkout_dir",

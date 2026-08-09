@@ -1,8 +1,9 @@
 # Discovery sources
 
 Inky Bird Frame reads public observations, detections from your own acoustic
-station, authorized postcard detections from your own Bird Buddy account, or a
-combination. Every result enters the same catalog and review process.
+station through BirdWeather or self-hosted BirdNET-Go, authorized postcard
+detections from your own Bird Buddy account, or a combination. Every result
+enters the same catalog and review process.
 
 Merlin Bird ID is Cornell's identification app. Its nearby lists are powered by
 eBird, so this project uses the documented eBird API rather than trying to
@@ -15,6 +16,7 @@ automate Merlin.
 | `inaturalist` | None | All | Default setup, historical seeds, and licensed references |
 | `ebird` | Personal eBird key | 1, 7, or 30 days | Bird-specific recent public sightings |
 | `birdweather` | BirdWeather station token | All | Species acoustically detected by one station |
+| `birdnet-go` | Local BirdNET-Go base URL | All | Species acoustically detected by a self-hosted station |
 | `birdbuddy` | Authorized Bird Buddy account | All after setup | Postcard species from one feeder, plus optional manual sightings |
 
 Select any combination with a TOML array. Each configured provider runs
@@ -23,7 +25,7 @@ independently.
 ## Configure a discovery location
 
 iNaturalist and eBird need a point and radius. Choose exactly one location
-form; BirdWeather- and Bird Buddy-only setups need none.
+form; BirdWeather-, BirdNET-Go-, and Bird Buddy-only setups need none.
 
 Direct coordinates are the provider-independent option. They work worldwide,
 do not disclose a postal code to a geocoder, and cannot become ambiguous:
@@ -133,6 +135,39 @@ False positives, overlapping calls, recordings, rebroadcast audio, distant
 sounds, and detector configuration can affect the result. Inky Bird Frame uses
 the station's accepted BirdWeather species summary as supplied. Tune and review
 the detector in its own software before relying on those species for display.
+
+## Self-hosted BirdNET-Go setup
+
+BirdNET-Go is optional. Point Inky at a BirdNET-Go server reachable from the
+controller:
+
+```toml
+[discovery]
+sources = ["birdnet-go"]
+species_limit = 50
+window = "last-30-days"
+birdnet_go_url = "http://birdnet-go.local:8080"
+```
+
+The URL may use HTTP on a trusted local network or HTTPS through a reverse
+proxy. The endpoint must be reachable without HTTP authentication; keep it on a
+trusted network or VPN. Do not embed credentials, query parameters, or
+fragments. A BirdNET-Go-only configuration needs no discovery location.
+
+Inky uses BirdNET-Go's documented read-only
+`/api/v2/analytics/species/summary` endpoint. It supplies the selected date
+window and species limit, then reads only names, counts, and the last-heard
+timestamp. It does not download recordings, access media, change settings, or
+control the detector. BirdNET-Go applies the station's configured detection
+policy and excludes detections marked false-positive before producing the
+summary; Inky does not layer on an unexplained second confidence threshold.
+
+Every scientific name must still resolve exactly to one active iNaturalist bird
+species. Custom classifier labels, non-birds, and ambiguous or unmatched names
+remain private unresolved diagnostics and cannot trigger plate generation. A
+BirdNET-Go failure degrades only this provider; other configured sources keep
+running. The legacy singular `source = "all"` retains its existing meaning and
+does not silently enable access to a local BirdNET-Go server.
 
 ## Bird Buddy setup
 

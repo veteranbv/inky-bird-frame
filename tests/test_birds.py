@@ -10,16 +10,19 @@ from urllib.parse import parse_qs, urlsplit
 
 from inky_bird_frame.birds import (
     BirdBuddySpecies,
+    BirdNetGoSpecies,
     BirdSpecies,
     BirdWeatherSpecies,
     DateRange,
     EbirdSpecies,
     ObservationWindow,
     date_range_for_window,
+    fetch_birdnet_go_species,
     fetch_birdweather_species,
     fetch_ebird_observations,
     fetch_inaturalist_birds,
     fetch_taxon_context,
+    parse_birdnet_go_species,
     parse_birdnet_taxon,
     parse_birdweather_species,
     parse_ebird_observations,
@@ -28,6 +31,7 @@ from inky_bird_frame.birds import (
     parse_inaturalist_taxon_match,
     parse_observation_window,
     resolve_birdbuddy_species,
+    resolve_birdnet_go_species,
     resolve_birdweather_species,
     resolve_ebird_species,
 )
@@ -556,6 +560,81 @@ class BirdWeatherTests(unittest.TestCase):
                 "taxon_id": 1579017,
             },
         )
+
+
+class BirdNetGoTests(unittest.TestCase):
+    def test_parse_species_keeps_complete_unique_summaries(self) -> None:
+        payload = [
+            {
+                "common_name": "Eastern Bluebird",
+                "scientific_name": "Sialia sialis",
+                "count": 7,
+                "last_heard": "2026-08-09T08:15:00-04:00",
+            },
+            {
+                "common_name": "Eastern Bluebird",
+                "scientific_name": "Sialia sialis",
+                "count": 6,
+                "last_heard": "2026-08-08T08:15:00-04:00",
+            },
+            {
+                "common_name": "Invalid timestamp",
+                "scientific_name": "Avis invalida",
+                "count": 2,
+                "last_heard": "yesterday",
+            },
+        ]
+
+        self.assertEqual(
+            parse_birdnet_go_species(payload),
+            [
+                BirdNetGoSpecies(
+                    "Eastern Bluebird",
+                    "Sialia sialis",
+                    7,
+                    "2026-08-09T08:15:00-04:00",
+                )
+            ],
+        )
+
+    def test_parse_species_rejects_nonempty_unusable_response(self) -> None:
+        with self.assertRaisesRegex(DataSourceError, "usable species summaries"):
+            parse_birdnet_go_species([{"scientific_name": "Sialia sialis"}])
+
+    @patch("inky_bird_frame.birds.get_json", return_value=[])
+    def test_fetch_species_uses_summary_api_and_window(self, get_json: MagicMock) -> None:
+        fetch_birdnet_go_species(
+            base_url="http://birdnet-go.local/",
+            limit=50,
+            window=ObservationWindow.LAST_WEEK,
+            today=date(2026, 8, 9),
+        )
+
+        url = get_json.call_args.args[0]
+        self.assertEqual(urlsplit(url).path, "/api/v2/analytics/species/summary")
+        self.assertEqual(
+            parse_qs(urlsplit(url).query),
+            {"limit": ["50"], "start_date": ["2026-08-02"], "end_date": ["2026-08-09"]},
+        )
+        self.assertEqual(get_json.call_args.kwargs["error_label"], "BirdNET-Go API")
+
+    def test_resolution_preserves_count_source_and_timestamp(self) -> None:
+        detection = BirdNetGoSpecies(
+            "Eastern Bluebird",
+            "Sialia sialis",
+            7,
+            "2026-08-09T08:15:00-04:00",
+        )
+        match = BirdSpecies(12942, "Eastern Bluebird", "Sialia sialis", 1, "eBird")
+        with TemporaryDirectory() as temporary:
+            cache = Path(temporary) / "crosswalk.json"
+            with patch("inky_bird_frame.birds.fetch_inaturalist_taxon_match", return_value=match):
+                species, unresolved = resolve_birdnet_go_species([detection], cache)
+
+        self.assertEqual(unresolved, [])
+        self.assertEqual(species[0].observation_count, 7)
+        self.assertEqual(species[0].sources, ("BirdNET-Go",))
+        self.assertEqual(species[0].latest_detection_at, detection.latest_detection_at)
 
 
 class BirdBuddyTaxonomyTests(unittest.TestCase):

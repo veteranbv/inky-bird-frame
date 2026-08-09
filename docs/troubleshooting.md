@@ -126,6 +126,14 @@ generator run or invoke
 `inky-bird-frame generate --config /path/to/config.toml` for an immediate
 attempt.
 
+For BirdNET-Go, use the same commands and inspect the `birdnet-go` provider.
+Connection failures usually mean the configured base URL is not reachable from
+the controller process or container. A response-contract error can indicate an
+older or incompatible BirdNET-Go API. An `unresolved_count` means the summary
+was reachable but one or more scientific names did not exactly match an active
+iNaturalist bird species. Correct false positives in BirdNET-Go; its next
+summary will exclude detections marked false-positive.
+
 The active catalog is exactly what the display node can choose from:
 
 ```bash
