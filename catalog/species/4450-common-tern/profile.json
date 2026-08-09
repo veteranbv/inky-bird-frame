@@ -1,0 +1,42 @@
+{
+  "behavior": "A strongly migratory, vocal, colonial tern with buoyant rowing flight; forages singly or in flocks by picking prey from the surface or plunge-diving for small fish, and vigorously defends its nesting territory.",
+  "common_name": "Common Tern",
+  "family": "Laridae",
+  "field_marks": [
+    "Full black breeding cap surrounding a dark eye",
+    "Slender, straight orange-red bill, usually with a black tip",
+    "Pale gray upperparts and white to very light gray underparts",
+    "Long, narrow, pointed wings with darker outer primaries",
+    "Deeply forked tail with elongated outer feathers",
+    "Short orange-red legs"
+  ],
+  "habitat": "Breeds colonially on rocky islands, barrier beaches, saltmarshes, and sparsely vegetated sand, gravel, shell, or cobble near water. Forages over coastal waters, estuaries, inlets, and large inland lakes; chiefly marine outside the breeding season.",
+  "measurements": {
+    "length": "31\u201338 cm",
+    "weight": "93\u2013200 g",
+    "wingspan": "75\u201380 cm"
+  },
+  "palette": [
+    "black",
+    "pearl gray",
+    "white",
+    "coral red",
+    "charcoal gray"
+  ],
+  "scientific_name": "Sterna hirundo",
+  "sources": [
+    {
+      "title": "Common Tern Identification \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Common_Tern/id"
+    },
+    {
+      "title": "Common Tern Life History \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Common_Tern/lifehistory"
+    },
+    {
+      "title": "Sterna hirundo \u2014 Animal Diversity Web",
+      "url": "https://animaldiversity.org/accounts/Sterna_hirundo/"
+    }
+  ],
+  "taxon_id": 4450
+}
