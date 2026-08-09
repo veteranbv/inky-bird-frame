@@ -1,0 +1,156 @@
+{
+  "approved_at": "2026-08-09T23:17:55+00:00",
+  "assets": {
+    "display": {
+      "filename": "display.png",
+      "sha256": "ab6134035411e080cbac4a42ea79937083678e4362df35663ea65ca2615d96b9"
+    },
+    "portrait": {
+      "filename": "portrait.png",
+      "sha256": "9e77f708a70fc43032c486a8f84984ea0143fc8cf80cfebe60f93ad9e7073310"
+    }
+  },
+  "common_name": "Yucatan Jay",
+  "generation": {
+    "attempt": 2,
+    "correction_source_sha256": "de05548db3cd92ecdde27b4dc181cd4b9b8aef586ef40b868f53c1fcebac488b",
+    "generated_at": "2026-08-09T23:17:55+00:00",
+    "generator": "Codex subscription / built-in gpt-image-2",
+    "max_attempts": 3,
+    "prompt_version": "field-journal-v4"
+  },
+  "profile": {
+    "behavior": "Resident and conspicuous; usually travels through woodland and forest edge in noisy, chattering groups of 5\u201325 birds.",
+    "common_name": "Yucatan Jay",
+    "family": "Corvidae",
+    "field_marks": [
+      "Black head, nape, and underparts",
+      "Bright blue mantle, wings, and rump",
+      "Long blue to purplish-blue tail",
+      "Stout bill: black in adults, yellow in younger birds",
+      "Dark iris; orbital skin black in adults and yellow in younger birds",
+      "Strong yellow to orange-yellow legs and feet"
+    ],
+    "habitat": "Lowland humid and dry forest, scrub, woodland edge, plantations, and clearings; occasionally pine forest or swamp.",
+    "measurements": {
+      "length": "31\u201333 cm (12\u201313 in)",
+      "weight": "105.4\u2013127.8 g (3.72\u20134.51 oz)",
+      "wingspan": "Not reported; folded-wing length 13.95\u201314.1 cm (5.49\u20135.6 in)"
+    },
+    "palette": [
+      "black",
+      "cobalt blue",
+      "purplish blue",
+      "golden yellow",
+      "orange-yellow"
+    ],
+    "scientific_name": "Cyanocorax yucatanicus",
+    "sources": [
+      {
+        "title": "Yucatan Jay \u2014 eBird",
+        "url": "https://ebird.org/species/yucjay1"
+      },
+      {
+        "title": "Yucatan jay \u2014 Wikipedia",
+        "url": "https://en.wikipedia.org/wiki/Yucatan_jay"
+      }
+    ],
+    "taxon_id": 8470
+  },
+  "quality_review": {
+    "anatomy_accuracy": 4,
+    "composition_quality": 5,
+    "correction_findings": [],
+    "findings": [
+      "Species identity is correct: the primary specimen matches Yucatan Jay in its black head, nape, breast and underparts; bright-blue mantle, rump and folded wings; long blue-to-purplish-blue tail; and yellow-orange legs and feet.",
+      "The primary specimen consistently represents an adult: black bill, dark iris and dark orbital skin. The detached head study consistently represents a younger bird with a yellow bill and yellow orbital skin; its black feathering is compatible with post-juvenile first-year plumage.",
+      "In both depicted heads, the upper and lower mandibles form coherent, slightly open bills. Tracing each mandible from its shared base shows a modest upper-mandible projection comparable in direction and degree to the clearest reference profiles; neither bill is truncated, reversed or ambiguously co-terminal.",
+      "The primary bird has one head, one beak, two legs and one tail; its two folded wings are anatomically accounted for in profile, with the far wing substantially occluded. The separate wing and head studies are clearly detached supplementary illustrations rather than extra birds or parts attached to the specimen.",
+      "Overall proportions are credible for the species: stout corvid bill, compact body, long tail, folded wings reaching the rump and functional perching feet. The claws are somewhat emphatic stylistically but remain coherent and usable.",
+      "The detached wing study has a plausible arrangement of blue coverts over darker flight feathers and does not appear attached to the primary bird.",
+      "All visible taxonomy is correct: \u201cYucatan Jay,\u201d \u201cCyanocorax yucatanicus\u201d and \u201cCorvidae.\u201d",
+      "The printed length, adult folded-wing measurements and combined weight range agree with the verified measurements: 31\u201333 cm; male wing 14.1 cm, female wing 13.95 cm; and 105.4\u2013127.8 g across the reported female and male ranges. \u201cWingspan: Not reported\u201d is clearly distinguished from folded-wing length.",
+      "The habitat, behavior and field-mark text is complete, intelligible and consistent with the verified source pages and supplied facts; no duplicated, omitted, substituted or nonsensical wording was found.",
+      "The body-length diagram is internally consistent: 31 cm is at the bottom, 33 cm at the top, the units agree with the text, four evenly spaced unlabeled interior ticks divide the range into five proportional segments, and \u201cSCHEMATIC \u2014 NOT TO SCALE\u201d prevents it from implying that the printed bird is life-size.",
+      "The plate contains no map, coordinates, ZIP code, observation locality or local-observation detail. \u201cYucatan\u201d occurs only as part of the established common name.",
+      "The layout is legible and balanced, with the primary specimen clearly dominant and the ruler, supplementary studies and palette visually separated. No material species, anatomical or text error was found."
+    ],
+    "location_free": true,
+    "passed": true,
+    "species_accuracy": 5,
+    "text_accuracy": 5,
+    "verification_sources": [
+      {
+        "title": "Yucatan Jay \u2014 eBird",
+        "url": "https://ebird.org/species/yucjay1"
+      },
+      {
+        "title": "Yucatan jay \u2014 Wikipedia",
+        "url": "https://en.wikipedia.org/wiki/Yucatan_jay"
+      },
+      {
+        "title": "Yucatan Jay \u2014 Birds of the World",
+        "url": "https://birdsoftheworld.org/bow/species/yucjay1/cur/introduction"
+      }
+    ]
+  },
+  "references": [
+    {
+      "attribution": "(c) Sebasti\u00e1n de Jes\u00fas Herrera Buenfil, some rights reserved (CC BY)",
+      "filename": "01-108404030.jpeg",
+      "height": 1080,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/108404030/large.jpeg",
+      "license_code": "cc-by",
+      "observation_id": 67141690,
+      "observer": "sebastian_hb",
+      "photo_id": 108404030,
+      "sha256": "12a1b6f286c15d09410d70bb50637031b947522b36754f896738f4ab4b5121d5",
+      "source_url": "https://www.inaturalist.org/observations/67141690",
+      "width": 1620
+    },
+    {
+      "attribution": "(c) Glynn Morris, some rights reserved (CC BY)",
+      "filename": "02-185550203.jpg",
+      "height": 2000,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/185550203/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 110031290,
+      "observer": "glynn",
+      "photo_id": 185550203,
+      "sha256": "16f060d7ca446f417f59b9bc082b279a9c4f3105af402f0a838a7c2e473d8d6a",
+      "source_url": "https://www.inaturalist.org/observations/110031290",
+      "width": 2000
+    },
+    {
+      "attribution": "no rights reserved",
+      "filename": "03-14825383.jpg",
+      "height": 1365,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/14825383/large.jpg",
+      "license_code": "cc0",
+      "observation_id": 10628661,
+      "observer": "santillanaale",
+      "photo_id": 14825383,
+      "sha256": "4ef70a3aab0b8e83c694ce99d7602deb231fb1859d0ad02c627becb6c88433a5",
+      "source_url": "https://www.inaturalist.org/observations/10628661",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) DiegoH, some rights reserved (CC BY)",
+      "filename": "04-350112011.jpg",
+      "height": 1365,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/350112011/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 198620346,
+      "observer": "diego_h",
+      "photo_id": 350112011,
+      "sha256": "5e7012aadc0ac5ef4c07265d5e0d665c5b7700ad3dc26b357ceb5654640ca6ce",
+      "source_url": "https://www.inaturalist.org/observations/198620346",
+      "width": 2048
+    }
+  ],
+  "schema_version": 1,
+  "scientific_name": "Cyanocorax yucatanicus",
+  "slug": "yucatan-jay",
+  "status": "approved",
+  "taxon_id": 8470
+}

@@ -1,0 +1,37 @@
+{
+  "anatomy_accuracy": 4,
+  "composition_quality": 5,
+  "correction_findings": [],
+  "findings": [
+    "Species identity is correct: the primary specimen matches Yucatan Jay in its black head, nape, breast and underparts; bright-blue mantle, rump and folded wings; long blue-to-purplish-blue tail; and yellow-orange legs and feet.",
+    "The primary specimen consistently represents an adult: black bill, dark iris and dark orbital skin. The detached head study consistently represents a younger bird with a yellow bill and yellow orbital skin; its black feathering is compatible with post-juvenile first-year plumage.",
+    "In both depicted heads, the upper and lower mandibles form coherent, slightly open bills. Tracing each mandible from its shared base shows a modest upper-mandible projection comparable in direction and degree to the clearest reference profiles; neither bill is truncated, reversed or ambiguously co-terminal.",
+    "The primary bird has one head, one beak, two legs and one tail; its two folded wings are anatomically accounted for in profile, with the far wing substantially occluded. The separate wing and head studies are clearly detached supplementary illustrations rather than extra birds or parts attached to the specimen.",
+    "Overall proportions are credible for the species: stout corvid bill, compact body, long tail, folded wings reaching the rump and functional perching feet. The claws are somewhat emphatic stylistically but remain coherent and usable.",
+    "The detached wing study has a plausible arrangement of blue coverts over darker flight feathers and does not appear attached to the primary bird.",
+    "All visible taxonomy is correct: \u201cYucatan Jay,\u201d \u201cCyanocorax yucatanicus\u201d and \u201cCorvidae.\u201d",
+    "The printed length, adult folded-wing measurements and combined weight range agree with the verified measurements: 31\u201333 cm; male wing 14.1 cm, female wing 13.95 cm; and 105.4\u2013127.8 g across the reported female and male ranges. \u201cWingspan: Not reported\u201d is clearly distinguished from folded-wing length.",
+    "The habitat, behavior and field-mark text is complete, intelligible and consistent with the verified source pages and supplied facts; no duplicated, omitted, substituted or nonsensical wording was found.",
+    "The body-length diagram is internally consistent: 31 cm is at the bottom, 33 cm at the top, the units agree with the text, four evenly spaced unlabeled interior ticks divide the range into five proportional segments, and \u201cSCHEMATIC \u2014 NOT TO SCALE\u201d prevents it from implying that the printed bird is life-size.",
+    "The plate contains no map, coordinates, ZIP code, observation locality or local-observation detail. \u201cYucatan\u201d occurs only as part of the established common name.",
+    "The layout is legible and balanced, with the primary specimen clearly dominant and the ruler, supplementary studies and palette visually separated. No material species, anatomical or text error was found."
+  ],
+  "location_free": true,
+  "passed": true,
+  "species_accuracy": 5,
+  "text_accuracy": 5,
+  "verification_sources": [
+    {
+      "title": "Yucatan Jay \u2014 eBird",
+      "url": "https://ebird.org/species/yucjay1"
+    },
+    {
+      "title": "Yucatan jay \u2014 Wikipedia",
+      "url": "https://en.wikipedia.org/wiki/Yucatan_jay"
+    },
+    {
+      "title": "Yucatan Jay \u2014 Birds of the World",
+      "url": "https://birdsoftheworld.org/bow/species/yucjay1/cur/introduction"
+    }
+  ]
+}
