@@ -1,0 +1,46 @@
+{
+  "behavior": "Flies slowly over water while scanning, then plunge-dives for fish. Roosts in flocks, often with other terns and gulls, and nests colonially or in solitary pairs near water.",
+  "common_name": "Caspian Tern",
+  "family": "Laridae",
+  "field_marks": [
+    "Very large, heavy-bodied tern with a large head and thick neck",
+    "Massive, straight coral-red bill, often with a dusky tip",
+    "Black cap and short crest; forehead becomes white-flecked outside breeding plumage",
+    "White body with a pale gray back and upperwings",
+    "Dark eyes and short blackish legs and feet",
+    "Broad, pointed wings with dark outer primaries below; short, shallowly forked tail"
+  ],
+  "habitat": "Freshwater and saltwater shorelines, including large lakes, rivers, estuaries, lagoons, beaches, and islands. Nests on flat, open, sparsely vegetated sand, gravel, mud, or shell-covered ground.",
+  "measurements": {
+    "length": "47\u201354 cm (18.5\u201321.3 in)",
+    "weight": "530\u2013782 g (18.7\u201327.6 oz)",
+    "wingspan": "126\u2013128 cm (49.6\u201350.4 in)"
+  },
+  "palette": [
+    "white",
+    "pale gray",
+    "black",
+    "coral red",
+    "charcoal gray"
+  ],
+  "scientific_name": "Hydroprogne caspia",
+  "sources": [
+    {
+      "title": "Caspian Tern Identification \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Caspian_Tern/id"
+    },
+    {
+      "title": "Caspian Tern Life History \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Caspian_Tern/lifehistory"
+    },
+    {
+      "title": "Caspian Tern \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/caspian-tern"
+    },
+    {
+      "title": "Caspian Tern \u2014 Animal Diversity Web",
+      "url": "https://animaldiversity.org/accounts/Sterna_caspia/"
+    }
+  ],
+  "taxon_id": 144537
+}

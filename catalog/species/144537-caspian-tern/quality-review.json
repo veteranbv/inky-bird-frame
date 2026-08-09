@@ -1,0 +1,40 @@
+{
+  "anatomy_accuracy": 4,
+  "composition_quality": 5,
+  "correction_findings": [],
+  "findings": [
+    "Species identity is confirmed as Caspian Tern (Hydroprogne caspia): the plate and reference photographs consistently show the species\u2019 very large, heavy-bodied proportions, large head, thick neck, massive coral-red pointed bill, black cap, pale-gray upperparts, white body, and blackish legs.",
+    "The printed measurements\u2014length 47\u201354 cm (18.5\u201321.3 in), weight 530\u2013782 g (18.7\u201327.6 oz), and wingspan 126\u2013128 cm (49.6\u201350.4 in)\u2014exactly match the All About Birds measurements. Audubon independently describes a broadly compatible but wider range.",
+    "Every visible text line was checked. The common name, scientific name, family, three measurements, habitat, behavior, and six field-mark statements are correctly spelled and reproduce the proposed facts without omissions, duplications, substitutions, or nonsensical wording.",
+    "The habitat and behavior text agrees with the direct sources: use of freshwater and saltwater shorelines, open sparsely vegetated nesting ground, scanning flights over water, plunge-diving for fish, flock roosting, and colonial or solitary nesting are supported.",
+    "The depicted breeding-type plumage is coherent: both heads have a full black crown and short crest, dark eye, white face and neck, and a massive coral-red bill with a dusky tip. The pale-gray back and wings, white body, and dark outer primaries are also appropriate.",
+    "Both depicted bills trace cleanly from a shared base to pointed, essentially co-terminal mandible tips. Neither has a truncated, reversed, exaggerated, or inconsistent projection; the open-gape angles in the reference photographs do not establish unequal base-to-tip lengths.",
+    "The primary specimen is a single complete bird with one head, one bill, two layered folded wings, two legs with feet, and one tail. The detached wing and detached head are clearly separated supplementary studies and do not appear attached to the specimen.",
+    "The side-profile tail is short relative to the body and only shallowly divided through overlapping feathers, consistent with the species. Legs are short and blackish; the feet are somewhat stylized but remain structurally plausible.",
+    "The ruler is internally consistent: 47 cm (18.5 in) is at the bottom, 54 cm (21.3 in) is at the top, values increase upward, and exactly four evenly spaced unlabeled interior ticks divide the range into five proportional segments. The adjacent label repeats the same range and clearly states \u201cSCHEMATIC \u2014 NOT TO SCALE.\u201d",
+    "The composition is legible and balanced, with the primary specimen visually dominant and the supplementary wing, head, and palette studies clearly subordinate.",
+    "No place name, ZIP code, coordinates, map, or local-observation detail appears. \u201cCaspian\u201d occurs only as part of the species\u2019 established common name."
+  ],
+  "location_free": true,
+  "passed": true,
+  "species_accuracy": 5,
+  "text_accuracy": 5,
+  "verification_sources": [
+    {
+      "title": "Caspian Tern Identification \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Caspian_Tern/id"
+    },
+    {
+      "title": "Caspian Tern Life History \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Caspian_Tern/lifehistory"
+    },
+    {
+      "title": "Caspian Tern \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/caspian-tern"
+    },
+    {
+      "title": "Sterna caspia (Caspian tern) \u2014 Animal Diversity Web",
+      "url": "https://animaldiversity.org/accounts/Sterna_caspia/"
+    }
+  ]
+}

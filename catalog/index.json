@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-09T13:09:59+00:00",
+  "generated_at": "2026-08-09T16:47:54+00:00",
   "schema_version": 1,
   "species": [
     {
@@ -276,6 +276,17 @@
       "scientific_name": "Thryothorus ludovicianus",
       "slug": "carolina-wren",
       "taxon_id": 7513
+    },
+    {
+      "approved_at": "2026-08-09T16:47:54+00:00",
+      "common_name": "Caspian Tern",
+      "display_path": "species/144537-caspian-tern/display.png",
+      "display_sha256": "48300d0d8e781fd47bc637947352d37652114035093c88ebc8759243967d86ed",
+      "portrait_path": "species/144537-caspian-tern/portrait.png",
+      "portrait_sha256": "dd040c0b39c5509b5d1ee00322a564a18626f4a96d71b45c62941ea77f6c806f",
+      "scientific_name": "Hydroprogne caspia",
+      "slug": "caspian-tern",
+      "taxon_id": 144537
     },
     {
       "approved_at": "2026-07-10T04:11:31+00:00",
