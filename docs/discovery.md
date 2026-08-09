@@ -1,8 +1,8 @@
 # Discovery sources
 
-Inky Bird Frame reads public observations, detections from your own acoustic
-station through BirdWeather or self-hosted BirdNET-Go, private CSV history from
-BirdNET Analyzer, authorized postcard
+Inky Bird Frame reads public observations, your private exported eBird history,
+detections from your own acoustic station through BirdWeather or self-hosted
+BirdNET-Go, private CSV history from BirdNET Analyzer, authorized postcard
 detections from your own Bird Buddy account, or a combination. Every result
 enters the same catalog and review process.
 
@@ -16,6 +16,7 @@ automate Merlin.
 | --- | --- | --- | --- |
 | `inaturalist` | None | All | Default setup, historical seeds, and licensed references |
 | `ebird` | Personal eBird key | 1, 7, or 30 days | Bird-specific recent public sightings |
+| `ebird-archive` | Explicit personal-data import | All | Species from your complete personal eBird history |
 | `birdweather` | BirdWeather station token | All | Species acoustically detected by one station |
 | `birdnet-go` | Local BirdNET-Go base URL | All | Species acoustically detected by a self-hosted station |
 | `birdnet-analyzer` | Explicit CSV import | All; dated rows for finite windows | Offline acoustic-analysis history |
@@ -27,8 +28,8 @@ independently.
 ## Configure a discovery location
 
 iNaturalist and eBird need a point and radius. Choose exactly one location
-form; BirdWeather-, BirdNET-Go-, BirdNET Analyzer-, and Bird Buddy-only setups
-need none.
+form; eBird Archive-, BirdWeather-, BirdNET-Go-, BirdNET Analyzer-, and Bird
+Buddy-only setups need none.
 
 Direct coordinates are the provider-independent option. They work worldwide,
 do not disclose a postal code to a geocoder, and cannot become ambiguous:
@@ -83,6 +84,84 @@ the private mode-`0600` configuration file.
 
 Keep the configuration outside the checkout with mode `0600`. The application
 never writes the key to state, logs, catalog files, or command output.
+
+## eBird personal archive
+
+eBird Archive is optional and separate from the recent-nearby `ebird` API
+provider. Sign in to eBird's official
+[Download My Data](https://ebird.org/downloadMyData) page and request your
+complete personal export. Cornell sends a ZIP containing `MyEBirdData.csv`;
+Inky also accepts that CSV directly if you extract or rename it.
+
+Preview the complete export before replacing local history:
+
+```bash
+inky-bird-frame ebird archive import \
+  --config /path/to/config.toml \
+  --archive /path/to/ebird.zip \
+  --dry-run
+```
+
+Then import it and opt in to the provider:
+
+```bash
+inky-bird-frame ebird archive import \
+  --config /path/to/config.toml \
+  --archive /path/to/ebird.zip
+```
+
+```toml
+[discovery]
+sources = ["ebird-archive"]
+window = "all-time"
+```
+
+In a mixed-provider installation, keep the normal discovery window for live
+sources and seed the complete personal history separately. Preview first, then
+repeat without `--dry-run`:
+
+```bash
+inky-bird-frame seed --config /path/to/config.toml \
+  --source ebird-archive --window all-time --species-limit 100 --dry-run
+```
+
+That adds the resolved archive species to the private collection and queues
+only missing plates; it does not change the configured window for eBird,
+BirdWeather, or other live providers. An explicit personal travel interval is
+also supported:
+
+```bash
+inky-bird-frame seed --config /path/to/config.toml \
+  --source ebird-archive --start-date 2025-04-29 --end-date 2025-05-02 \
+  --species-limit 100 --dry-run
+```
+
+Choose a species limit appropriate to the size of the export. The command
+reports the applied limit and discovered count so a truncated selection is
+visible before it writes collection or queue state.
+
+Each import is a complete snapshot. Reimporting the same export is idempotent;
+a newer complete export atomically adds or updates checklists. Inky refuses an
+export that omits a previously imported checklist because a filtered download
+could otherwise erase history. After confirming that the file is complete and
+the reduction reflects intentional eBird edits or deletions, rerun with
+`--allow-history-reduction`.
+
+Private state retains only a one-way checklist fingerprint, the checklist date,
+and common and scientific species names. It does not retain eBird account data,
+raw submission or location IDs, coordinates, place names, observer counts,
+individual bird counts, comments, effort, or media references. One species on
+one checklist counts as one personal observation regardless of the reported
+number of individuals. `ebird archive status` reports only aggregate counts and
+the imported date range.
+
+Every scientific name must still resolve exactly to one active iNaturalist bird
+species. Hybrids, `sp.` aggregates, domestic groups, and ambiguous or unmatched
+labels remain private unresolved diagnostics and cannot trigger generation.
+Because the export supplies calendar dates rather than event instants, archive
+observations do not claim latest-detection rotation priority. Re-export and
+reimport periodically to include newly published eBird checklists; no eBird
+password, browser cookie, or unsupported live API is stored.
 
 ## BirdWeather station setup
 

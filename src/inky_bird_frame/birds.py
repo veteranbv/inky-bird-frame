@@ -42,6 +42,13 @@ class EbirdSpecies:
 
 
 @dataclass(frozen=True)
+class EbirdArchiveSpecies:
+    common_name: str
+    scientific_name: str
+    observation_count: int
+
+
+@dataclass(frozen=True)
 class BirdWeatherSpecies:
     species_id: int
     common_name: str
@@ -608,6 +615,10 @@ def _resolve_external_species_locked(
             unresolved.append(observation)
             changed = True
             continue
+        except DataSourceError:
+            if changed and persist_cache:
+                _write_taxonomy_crosswalk(cache_path, cache)
+            raise
         cache_entry: dict[str, object] = {
             "scientific_name": species.scientific_name,
             "common_name": species.common_name,
@@ -783,6 +794,41 @@ def resolve_birdnet_analyzer_species(
         raise DataSourceError("BirdNET Analyzer taxonomy resolution returned inconsistent results")
     return resolution.species, [
         item for item in detections if item.scientific_name in unresolved_names
+    ]
+
+
+def resolve_ebird_archive_species(
+    observations: list[EbirdArchiveSpecies],
+    cache_path: Path,
+    *,
+    now: datetime | None = None,
+    timeout_seconds: float = 10.0,
+    persist_cache: bool = True,
+) -> tuple[list[BirdSpecies], list[EbirdArchiveSpecies]]:
+    external = [
+        EbirdSpecies(
+            species_code=item.scientific_name,
+            common_name=item.common_name,
+            scientific_name=item.scientific_name,
+            observed_at=None,
+        )
+        for item in observations
+    ]
+    counts = {item.scientific_name: item.observation_count for item in observations}
+    resolution = _resolve_external_species(
+        external,
+        cache_path,
+        source="eBird Archive",
+        counts=counts,
+        now=now,
+        timeout_seconds=timeout_seconds,
+        persist_cache=persist_cache,
+    )
+    unresolved_names = {item.species_code for item in resolution.unresolved}
+    if len(resolution.species) + len(resolution.unresolved) != len(observations):
+        raise DataSourceError("eBird archive taxonomy resolution returned inconsistent results")
+    return resolution.species, [
+        item for item in observations if item.scientific_name in unresolved_names
     ]
 
 

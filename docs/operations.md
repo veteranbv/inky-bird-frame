@@ -51,6 +51,13 @@ state, treat the backup as private observation data, and restore it with mode
 `0600`. Removing `birdnet-analyzer` from `discovery.sources` disables the
 provider without deleting imported history.
 
+eBird Archive history lives in
+`state_dir/ebird-archive-observations.json`. Back it up and restore it with mode
+`0600`; it contains dates and species membership even though raw account,
+checklist, and location fields were discarded. Removing `ebird-archive` from
+`discovery.sources` disables the provider without deleting history. Reimport a
+fresh complete **Download My Data** export to update the snapshot.
+
 The selected feeder's confirmed metadata is always used as a safety net when a
 postcard leaves the new-postcard feed before a poll. When all of a cached
 postcard's media identifiers are present in confirmed history, the confirmed
@@ -160,11 +167,13 @@ inky-bird-frame seed --config /path/to/config.toml \
   --species-limit 500 --dry-run
 ```
 
-The configured source is used unless `--source` is provided. eBird cannot query
-beyond 30 days or guarantee arbitrary coordinate-radius historical windows, so
-exact date ranges require iNaturalist. `--latitude` and `--longitude` must be
-provided together and do not change the configured location. The configured
-radius is used unless `--radius-km` is provided. Repeating a seed
+The configured source is used unless `--source` is provided. The live eBird API
+cannot query beyond 30 days or guarantee arbitrary coordinate-radius historical
+windows, so those ranges use iNaturalist. An imported eBird Archive supports
+exact date ranges for the user's own checklists without a location or radius.
+`--latitude` and `--longitude` must be provided together and do not change the
+configured location. The configured radius is used unless `--radius-km` is
+provided. Repeating a seed
 is idempotent: collection members and queued taxa are not duplicated. Approved
 seeded taxa become active immediately; unapproved taxa remain members while
 their missing plates move through generation. Terminal taxa stay blocked until

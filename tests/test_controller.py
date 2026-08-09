@@ -17,6 +17,7 @@ from inky_bird_frame.birds import (
     BirdSpecies,
     BirdWeatherSpecies,
     DateRange,
+    EbirdArchiveSpecies,
     EbirdResolution,
     EbirdSpecies,
     ObservationWindow,
@@ -60,6 +61,7 @@ from inky_bird_frame.controller import (
     run_refresh_cycle,
     synchronize_generation_retry_identity,
 )
+from inky_bird_frame.ebird_archive import EbirdArchiveHistory
 from inky_bird_frame.errors import (
     CatalogError,
     DataSourceError,
@@ -147,6 +149,86 @@ state_dir = "display"
 
 
 class ControllerTests(unittest.TestCase):
+    def test_ebird_archive_source_uses_private_history_without_location_or_key(self) -> None:
+        observation = EbirdArchiveSpecies("Eastern Bluebird", "Sialia sialis", 3)
+        resolved = BirdSpecies(12942, "Eastern Bluebird", "Sialia sialis", 3, "eBird Archive")
+        history = EbirdArchiveHistory(
+            [observation],
+            2,
+            3,
+            1,
+            3,
+            0,
+            "2026-08-01T12:00:00+00:00",
+            "2026-08-09T12:00:00+00:00",
+            "2026-08-08",
+            "2026-08-09",
+        )
+        with TemporaryDirectory() as temporary:
+            config_path = Path(temporary) / "config.toml"
+            config_path.write_text(
+                CONFIG.replace(
+                    '[discovery]\nzip_code = "12345"\n',
+                    '[discovery]\nsources = ["ebird-archive"]\n',
+                )
+            )
+            config = load_config(config_path)
+            with (
+                patch(
+                    "inky_bird_frame.controller.read_ebird_archive_history",
+                    return_value=history,
+                ) as read_history,
+                patch(
+                    "inky_bird_frame.controller.resolve_ebird_archive_species",
+                    return_value=([resolved], []),
+                ),
+                patch("inky_bird_frame.controller.resolve_discovery_location") as location,
+            ):
+                result = discover_species(config)
+
+        self.assertEqual(result.species, [resolved])
+        self.assertEqual(result.providers[0].details, history.details())
+        self.assertEqual(read_history.call_args.kwargs["window"], ObservationWindow.LAST_WEEK)
+        self.assertIsNone(read_history.call_args.kwargs["date_range"])
+        location.assert_not_called()
+
+    def test_ebird_archive_source_accepts_an_explicit_date_range(self) -> None:
+        selected_range = DateRange(date(2025, 4, 29), date(2025, 5, 2))
+        history = EbirdArchiveHistory(
+            [],
+            66,
+            330,
+            96,
+            0,
+            330,
+            "2026-08-09T12:00:00+00:00",
+            "2026-08-09T12:00:00+00:00",
+            "2021-03-27",
+            "2026-08-07",
+        )
+        with TemporaryDirectory() as temporary:
+            config_path = Path(temporary) / "config.toml"
+            config_path.write_text(
+                CONFIG.replace(
+                    '[discovery]\nzip_code = "12345"\n',
+                    '[discovery]\nsources = ["ebird-archive"]\n',
+                )
+            )
+            config = load_config(config_path)
+            with (
+                patch(
+                    "inky_bird_frame.controller.read_ebird_archive_history",
+                    return_value=history,
+                ) as read_history,
+                patch(
+                    "inky_bird_frame.controller.resolve_ebird_archive_species",
+                    return_value=([], []),
+                ),
+            ):
+                discover_species(config, date_range=selected_range)
+
+        self.assertEqual(read_history.call_args.kwargs["date_range"], selected_range)
+
     def test_birdnet_analyzer_source_uses_private_history_without_location(self) -> None:
         detection = BirdNetAnalyzerSpecies("Eastern Bluebird", "Sialia sialis", 3)
         resolved = BirdSpecies(12942, "Eastern Bluebird", "Sialia sialis", 3, "BirdNET Analyzer")

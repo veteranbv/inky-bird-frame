@@ -14,6 +14,7 @@ from inky_bird_frame.birds import (
     BirdSpecies,
     BirdWeatherSpecies,
     DateRange,
+    EbirdArchiveSpecies,
     EbirdSpecies,
     ObservationWindow,
     date_range_for_window,
@@ -33,6 +34,7 @@ from inky_bird_frame.birds import (
     resolve_birdbuddy_species,
     resolve_birdnet_go_species,
     resolve_birdweather_species,
+    resolve_ebird_archive_species,
     resolve_ebird_species,
 )
 from inky_bird_frame.errors import DataSourceError, TaxonomyMatchError
@@ -419,6 +421,33 @@ class EbirdTests(unittest.TestCase):
         self.assertEqual(result.species, [species])
         self.assertFalse(state_exists)
 
+    def test_resolution_preserves_progress_before_transient_failure(self) -> None:
+        observations = [
+            EbirdSpecies("easblu", "Eastern Bluebird", "Sialia sialis", "2026-07-12"),
+            EbirdSpecies("norcar", "Northern Cardinal", "Cardinalis cardinalis", "2026-07-12"),
+        ]
+        bluebird = BirdSpecies(12942, "Eastern Bluebird", "Sialia sialis", 1, "eBird")
+        with TemporaryDirectory() as temporary:
+            cache = Path(temporary) / "crosswalk.json"
+            with (
+                patch(
+                    "inky_bird_frame.birds.fetch_inaturalist_taxon_match",
+                    side_effect=[bluebird, DataSourceError("temporary outage")],
+                ),
+                self.assertRaisesRegex(DataSourceError, "temporary outage"),
+            ):
+                resolve_ebird_species(observations, cache)
+            with (
+                patch(
+                    "inky_bird_frame.birds.fetch_inaturalist_taxon_match",
+                    side_effect=DataSourceError("still unavailable"),
+                ) as fetch,
+                self.assertRaisesRegex(DataSourceError, "still unavailable"),
+            ):
+                resolve_ebird_species(observations, cache)
+
+        fetch.assert_called_once_with("Cardinalis cardinalis", timeout_seconds=10.0)
+
 
 class BirdWeatherTests(unittest.TestCase):
     def test_parse_species_keeps_complete_unique_avian_detections(self) -> None:
@@ -635,6 +664,21 @@ class BirdNetGoTests(unittest.TestCase):
         self.assertEqual(species[0].observation_count, 7)
         self.assertEqual(species[0].sources, ("BirdNET-Go",))
         self.assertEqual(species[0].latest_detection_at, detection.latest_detection_at)
+
+
+class EbirdArchiveTaxonomyTests(unittest.TestCase):
+    def test_resolution_preserves_occurrence_count_without_inventing_timestamp(self) -> None:
+        observation = EbirdArchiveSpecies("Eastern Bluebird", "Sialia sialis", 7)
+        match = BirdSpecies(12942, "Eastern Bluebird", "Sialia sialis", 1, "eBird")
+        with TemporaryDirectory() as temporary:
+            cache = Path(temporary) / "crosswalk.json"
+            with patch("inky_bird_frame.birds.fetch_inaturalist_taxon_match", return_value=match):
+                species, unresolved = resolve_ebird_archive_species([observation], cache)
+
+        self.assertEqual(unresolved, [])
+        self.assertEqual(species[0].observation_count, 7)
+        self.assertEqual(species[0].sources, ("eBird Archive",))
+        self.assertIsNone(species[0].latest_detection_at)
 
 
 class BirdBuddyTaxonomyTests(unittest.TestCase):

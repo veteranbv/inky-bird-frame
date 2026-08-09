@@ -141,6 +141,14 @@ date is known. A missing-history error means no successful non-dry-run import
 exists in the configured `state_dir`. A permissions error requires the state
 file to be owned by the controller account and use mode `0600`.
 
+For eBird Archive, run `ebird archive status` and confirm the checklist,
+observation, species, and date-range aggregates. A missing-history error means
+the official **Download My Data** ZIP or CSV has not completed a non-dry-run
+import in this `state_dir`. A history-reduction error means the new file omits
+one or more previously imported checklists; verify it is a complete export
+before using `--allow-history-reduction`. Unresolved aggregate or hybrid labels
+are expected to remain private and never enter generation.
+
 The active catalog is exactly what the display node can choose from:
 
 ```bash

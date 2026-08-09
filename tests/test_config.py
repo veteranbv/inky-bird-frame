@@ -269,6 +269,19 @@ class ConfigTests(unittest.TestCase):
 
         self.assertEqual(config.discovery.sources, (DiscoveryProvider.BIRDNET_ANALYZER,))
 
+    def test_ebird_archive_source_needs_no_location_or_api_key(self) -> None:
+        configured = CONFIG.replace(
+            '[discovery]\nzip_code = "12345"\n',
+            '[discovery]\nsources = ["ebird-archive"]\n',
+        )
+        with TemporaryDirectory() as temporary:
+            path = Path(temporary) / "config.toml"
+            path.write_text(configured)
+            config = load_config(path)
+
+        self.assertEqual(config.discovery.sources, (DiscoveryProvider.EBIRD_ARCHIVE,))
+        self.assertIsNone(config.discovery.ebird_api_key)
+
     def test_birdnet_go_url_rejects_embedded_credentials(self) -> None:
         configured = CONFIG.replace(
             "[discovery]\n",
@@ -336,6 +349,7 @@ class ConfigTests(unittest.TestCase):
         self.assertNotIn(DiscoveryProvider.BIRDBUDDY, config.discovery.sources)
         self.assertNotIn(DiscoveryProvider.BIRDNET_GO, config.discovery.sources)
         self.assertNotIn(DiscoveryProvider.BIRDNET_ANALYZER, config.discovery.sources)
+        self.assertNotIn(DiscoveryProvider.EBIRD_ARCHIVE, config.discovery.sources)
         self.assertTrue(config.discovery.legacy_all_source)
 
     def test_explicit_sources_are_not_marked_as_legacy_all(self) -> None:

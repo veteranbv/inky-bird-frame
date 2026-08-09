@@ -26,6 +26,7 @@ class RotationMode(StrEnum):
 class DiscoveryProvider(StrEnum):
     INATURALIST = "inaturalist"
     EBIRD = "ebird"
+    EBIRD_ARCHIVE = "ebird-archive"
     BIRDWEATHER = "birdweather"
     BIRDBUDDY = "birdbuddy"
     BIRDNET_ANALYZER = "birdnet-analyzer"

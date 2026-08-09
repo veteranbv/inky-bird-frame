@@ -62,6 +62,7 @@ from .controller import (
 )
 from .display import show_on_inky
 from .display_node import run_display_cycle
+from .ebird_archive import import_ebird_archive, read_ebird_archive_history
 from .errors import CatalogError, DataSourceError, InkyBirdFrameError, SpeciesStateError
 from .images import prepare_uploaded_image
 from .installation import InstallationRole, doctor, setup
@@ -216,6 +217,7 @@ def refresh_command(args: argparse.Namespace) -> int:
             unresolved_by_provider[provider] = unresolved_by_provider.get(provider, 0) + 1
     taxonomy_providers = {
         "ebird": "eBird",
+        "ebird-archive": "eBird Archive",
         "birdweather": "BirdWeather",
         "birdbuddy": "Bird Buddy",
         "birdnet-analyzer": "BirdNET Analyzer",
@@ -1249,6 +1251,29 @@ def birdnet_analyzer_import_command(args: argparse.Namespace) -> int:
     return 0
 
 
+def ebird_archive_import_command(args: argparse.Namespace) -> int:
+    config = _config(args, load_secrets=False)
+    result = import_ebird_archive(
+        args.archive,
+        config.controller.state_dir,
+        allow_history_reduction=args.allow_history_reduction,
+        dry_run=args.dry_run,
+    )
+    print_result(result.as_dict())
+    return 0
+
+
+def ebird_archive_status_command(args: argparse.Namespace) -> int:
+    config = _config(args, load_secrets=False)
+    history = read_ebird_archive_history(
+        config.controller.state_dir,
+        window=ObservationWindow.ALL_TIME,
+        limit=1,
+    )
+    print_result({"imported": True, **history.details()})
+    return 0
+
+
 def notifications_status_command(args: argparse.Namespace) -> int:
     print_result(notification_status(_config(args)))
     return 0
@@ -1717,6 +1742,34 @@ def build_parser() -> argparse.ArgumentParser:
     )
     birdnet_analyzer_import_parser.add_argument("--dry-run", action="store_true")
     birdnet_analyzer_import_parser.set_defaults(func=birdnet_analyzer_import_command)
+
+    ebird_parser = subparsers.add_parser(
+        "ebird", help="Manage private history exported from your eBird account"
+    )
+    ebird_subparsers = ebird_parser.add_subparsers(dest="ebird_command", required=True)
+    ebird_archive_parser = ebird_subparsers.add_parser(
+        "archive", help="Import or inspect an official eBird Download My Data archive"
+    )
+    ebird_archive_subparsers = ebird_archive_parser.add_subparsers(
+        dest="ebird_archive_command", required=True
+    )
+    ebird_archive_import_parser = ebird_archive_subparsers.add_parser(
+        "import", help="Replace private eBird history from a complete ZIP or CSV export"
+    )
+    add_config_argument(ebird_archive_import_parser)
+    ebird_archive_import_parser.add_argument("--archive", type=Path, required=True)
+    ebird_archive_import_parser.add_argument(
+        "--allow-history-reduction",
+        action="store_true",
+        help="Accept an export that omits previously imported checklists",
+    )
+    ebird_archive_import_parser.add_argument("--dry-run", action="store_true")
+    ebird_archive_import_parser.set_defaults(func=ebird_archive_import_command)
+    ebird_archive_status_parser = ebird_archive_subparsers.add_parser(
+        "status", help="Show redacted local eBird archive history status"
+    )
+    add_config_argument(ebird_archive_status_parser)
+    ebird_archive_status_parser.set_defaults(func=ebird_archive_status_command)
 
     notifications_parser = subparsers.add_parser(
         "notifications", help="Inspect and test notification delivery"

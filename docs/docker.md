@@ -142,6 +142,22 @@ docker compose exec controller rm /tmp/results.csv
 Use `--observed-on` only when every row shares that known recording date. Add
 `"birdnet-analyzer"` to `discovery.sources` and run `refresh` after importing.
 
+For an eBird personal-data export, copy the complete ZIP into the controller's
+temporary filesystem, preview it, and then import it:
+
+```bash
+docker compose cp /path/to/ebird.zip controller:/tmp/ebird.zip
+docker compose exec controller inky-bird-frame ebird archive import \
+  --config /data/config.toml --archive /tmp/ebird.zip --dry-run
+docker compose exec controller inky-bird-frame ebird archive import \
+  --config /data/config.toml --archive /tmp/ebird.zip
+docker compose exec controller rm /tmp/ebird.zip
+```
+
+The durable private history is written under `/data/var/controller`; the raw
+export is not retained. Add `"ebird-archive"` to `discovery.sources` and run
+`refresh` after the successful import.
+
 Bird Buddy is different: its email and password are used once and must not be
 kept in `config.toml` or `controller.env`. After obtaining Bird Buddy's
 permission, add `"birdbuddy"` to `discovery.sources`, import the configuration,

@@ -23,6 +23,7 @@ from .birds import (
     BirdSpecies,
     BirdWeatherSpecies,
     DateRange,
+    EbirdArchiveSpecies,
     EbirdSpecies,
     ObservationWindow,
     fetch_birdnet_go_species,
@@ -34,6 +35,7 @@ from .birds import (
     resolve_birdnet_analyzer_species,
     resolve_birdnet_go_species,
     resolve_birdweather_species,
+    resolve_ebird_archive_species,
     resolve_ebird_species,
 )
 from .catalog import (
@@ -66,6 +68,7 @@ from .catalog import (
 )
 from .codex_runner import CodexRunner, parse_species_profile
 from .config import AppConfig, DiscoveryProvider, discovery_source_label
+from .ebird_archive import read_ebird_archive_history
 from .errors import (
     CatalogError,
     DataSourceError,
@@ -128,6 +131,7 @@ class DiscoveryResult:
     providers: list[ProviderStatus]
     unresolved: list[
         EbirdSpecies
+        | EbirdArchiveSpecies
         | BirdWeatherSpecies
         | BirdBuddySpecies
         | BirdNetAnalyzerSpecies
@@ -202,8 +206,14 @@ def discover_species(
     selected_limit = species_limit if species_limit is not None else config.discovery.species_limit
     if (latitude is None) != (longitude is None):
         raise ValueError("latitude and longitude must be provided together")
-    if date_range is not None and selected_sources != (DiscoveryProvider.INATURALIST,):
-        raise ValueError("explicit date ranges require --source inaturalist")
+    date_range_sources = {
+        (DiscoveryProvider.INATURALIST,),
+        (DiscoveryProvider.EBIRD_ARCHIVE,),
+    }
+    if date_range is not None and selected_sources not in date_range_sources:
+        raise ValueError(
+            "explicit date ranges require --source inaturalist or --source ebird-archive"
+        )
     if DiscoveryProvider.EBIRD in selected_sources:
         if selected_window in {ObservationWindow.LAST_YEAR, ObservationWindow.ALL_TIME}:
             raise ValueError("eBird discovery supports observation windows up to 30 days")
@@ -217,6 +227,7 @@ def discover_species(
     provider_species: list[list[BirdSpecies]] = []
     unresolved: list[
         EbirdSpecies
+        | EbirdArchiveSpecies
         | BirdWeatherSpecies
         | BirdBuddySpecies
         | BirdNetAnalyzerSpecies
@@ -304,6 +315,48 @@ def discover_species(
                         "ok",
                         len(resolution.species),
                         unresolved_count=len(resolution.unresolved),
+                    )
+                )
+
+    if DiscoveryProvider.EBIRD_ARCHIVE in selected_sources:
+        try:
+            ebird_archive_history = read_ebird_archive_history(
+                config.controller.state_dir,
+                window=selected_window,
+                limit=selected_limit,
+                date_range=date_range,
+            )
+            resolved, ebird_archive_unresolved = resolve_ebird_archive_species(
+                ebird_archive_history.species,
+                config.controller.state_dir / "ebird-archive-taxonomy-crosswalk.json",
+                persist_cache=persist_taxonomy_cache,
+            )
+        except (DataSourceError, ValueError) as exc:
+            providers.append(ProviderStatus("ebird-archive", "error", 0, error=str(exc)))
+        else:
+            unresolved.extend(ebird_archive_unresolved)
+            if ebird_archive_history.species and not resolved:
+                providers.append(
+                    ProviderStatus(
+                        "ebird-archive",
+                        "error",
+                        0,
+                        unresolved_count=len(ebird_archive_unresolved),
+                        error=(
+                            "No eBird archive observations had an exact iNaturalist species match"
+                        ),
+                        details=ebird_archive_history.details(),
+                    )
+                )
+            else:
+                provider_species.append(resolved)
+                providers.append(
+                    ProviderStatus(
+                        "ebird-archive",
+                        "ok",
+                        len(resolved),
+                        unresolved_count=len(ebird_archive_unresolved),
+                        details=ebird_archive_history.details(),
                     )
                 )
 
@@ -433,13 +486,13 @@ def discover_species(
 
     if DiscoveryProvider.BIRDNET_ANALYZER in selected_sources:
         try:
-            history = read_birdnet_analyzer_history(
+            birdnet_analyzer_history = read_birdnet_analyzer_history(
                 config.controller.state_dir,
                 window=selected_window,
                 limit=selected_limit,
             )
             resolved, birdnet_analyzer_unresolved = resolve_birdnet_analyzer_species(
-                history.species,
+                birdnet_analyzer_history.species,
                 config.controller.state_dir / "birdnet-analyzer-taxonomy-crosswalk.json",
                 persist_cache=persist_taxonomy_cache,
             )
@@ -447,7 +500,7 @@ def discover_species(
             providers.append(ProviderStatus("birdnet-analyzer", "error", 0, error=str(exc)))
         else:
             unresolved.extend(birdnet_analyzer_unresolved)
-            if history.species and not resolved:
+            if birdnet_analyzer_history.species and not resolved:
                 providers.append(
                     ProviderStatus(
                         "birdnet-analyzer",
@@ -457,7 +510,7 @@ def discover_species(
                         error=(
                             "No BirdNET Analyzer detections had an exact iNaturalist species match"
                         ),
-                        details=history.details(),
+                        details=birdnet_analyzer_history.details(),
                     )
                 )
             else:
@@ -468,7 +521,7 @@ def discover_species(
                         "ok",
                         len(resolved),
                         unresolved_count=len(birdnet_analyzer_unresolved),
-                        details=history.details(),
+                        details=birdnet_analyzer_history.details(),
                     )
                 )
 
@@ -547,6 +600,7 @@ def _species_payload(species: BirdSpecies) -> dict[str, object]:
 
 def _unresolved_species_payload(
     species: EbirdSpecies
+    | EbirdArchiveSpecies
     | BirdWeatherSpecies
     | BirdBuddySpecies
     | BirdNetAnalyzerSpecies
@@ -555,6 +609,9 @@ def _unresolved_species_payload(
     if isinstance(species, EbirdSpecies):
         provider = "ebird"
         provider_species_id = species.species_code
+    elif isinstance(species, EbirdArchiveSpecies):
+        provider = "ebird-archive"
+        provider_species_id = species.scientific_name
     elif isinstance(species, BirdWeatherSpecies):
         provider = "birdweather"
         provider_species_id = str(species.species_id)
