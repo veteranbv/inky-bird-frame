@@ -1,0 +1,153 @@
+{
+  "approved_at": "2026-08-09T23:31:16+00:00",
+  "assets": {
+    "display": {
+      "filename": "display.png",
+      "sha256": "dbbb976bcbf1271d5ab18801c56267a788d52e6d188a207d5143d4af7b3a1f4b"
+    },
+    "portrait": {
+      "filename": "portrait.png",
+      "sha256": "a744a38ba36b2b794f7e303ca557a65b7e3cff0eabdd0bc5358ab64bd1957190"
+    }
+  },
+  "common_name": "Zenaida Dove",
+  "generation": {
+    "attempt": 2,
+    "correction_source_sha256": "893b68d4af7efb52361de56fd1c9999ae8a42eb03c892cd5ec0643e27dbf6505",
+    "generated_at": "2026-08-09T23:31:16+00:00",
+    "generator": "Codex subscription / built-in gpt-image-2",
+    "max_attempts": 3,
+    "prompt_version": "field-journal-v4"
+  },
+  "profile": {
+    "behavior": "Diurnal, mostly resident, and often territorial. Forages mainly on the ground, alone or in pairs, eating seeds, grains, fruit, and occasional small invertebrates. Pairs share incubation and chick care; adults may feign injury to draw predators away from nests.",
+    "common_name": "Zenaida Dove",
+    "family": "Columbidae",
+    "field_marks": [
+      "Warm cinnamon-brown head and rosy-brown underparts with a gray-brown back",
+      "Iridescent violet neck patch and small dark blue-black marks on the face",
+      "Several bold black spots on the wing coverts",
+      "White outer secondaries forming a pale trailing wing edge",
+      "Short, rounded tail with a dark subterminal band and white outer tips",
+      "Slim dark bill, large dark eye, and pinkish-red legs"
+    ],
+    "habitat": "Open and semi-open habitats, especially lowland scrub, fields, forest edges, dense vegetation, coastal vegetation, mangroves, farmland, parks, and gardens.",
+    "measurements": {
+      "length": "28\u201330.5 cm",
+      "weight": "120\u2013180 g",
+      "wingspan": "36\u201341 cm"
+    },
+    "palette": [
+      "cinnamon brown",
+      "rosy buff",
+      "slate gray",
+      "violet blue",
+      "white"
+    ],
+    "scientific_name": "Zenaida aurita",
+    "sources": [
+      {
+        "title": "Zenaida aurita (Zenaida dove) \u2014 Animal Diversity Web",
+        "url": "https://animaldiversity.org/accounts/Zenaida_aurita/"
+      },
+      {
+        "title": "Zenaida dove \u2014 Wikipedia",
+        "url": "https://en.wikipedia.org/wiki/Zenaida_dove"
+      }
+    ],
+    "taxon_id": 3465
+  },
+  "quality_review": {
+    "anatomy_accuracy": 5,
+    "composition_quality": 5,
+    "correction_findings": [],
+    "findings": [
+      "The primary specimen is a convincing Zenaida Dove: stocky dove proportions, warm cinnamon and rosy-brown plumage, gray-brown back, violet neck iridescence, dark facial mark, spotted wing coverts, pale secondary edge, rounded banded tail, slim dark bill, dark eye, and reddish legs agree with the reference photographs.",
+      "The primary specimen is anatomically coherent, with one head and bill, two legs, a single tail, and normally overlapping folded wings; the detached wing and head are clearly separated supplementary studies rather than additional birds or parts attached to the specimen.",
+      "Both depicted heads have consistent, slender bill proportions and compatible mandible projection. Neither bill looks truncated, reversed, forked, or materially exaggerated relative to the clearest side-profile reference.",
+      "The detached wing study independently preserves the spotted coverts, dark flight feathers, and conspicuous white trailing-edge marking characteristic of the species.",
+      "All visible identification, taxonomy, measurement, habitat, behavior, field-mark, and palette text is legible and correctly spelled. No duplicated, omitted, substituted, or nonsensical wording was found.",
+      "The displayed measurements\u2014length 28\u201330.5 cm, wingspan 36\u201341 cm, and weight 120\u2013180 g\u2014match the direct Animal Diversity Web account. Wikipedia independently corroborates an approximately 28\u201330 cm body length.",
+      "The ruler is explicitly labeled \u201cSCHEMATIC \u2013 NOT TO SCALE.\u201d Its lower endpoint is 28 cm, its upper endpoint is 30.5 cm, values increase upward, and exactly four evenly spaced unlabeled interior ticks divide the range into five proportional segments. The separate body-length label agrees with the ruler.",
+      "The layout is balanced and readable, with no obscured labels, accidental overlaps, or supplementary studies that appear attached to the primary specimen.",
+      "No place name, ZIP code, coordinates, map, observation locality, or other local-observation detail appears."
+    ],
+    "location_free": true,
+    "passed": true,
+    "species_accuracy": 5,
+    "text_accuracy": 5,
+    "verification_sources": [
+      {
+        "title": "Zenaida aurita (Zenaida dove) \u2014 Animal Diversity Web",
+        "url": "https://animaldiversity.org/accounts/Zenaida_aurita/"
+      },
+      {
+        "title": "Zenaida Dove \u2014 eBird",
+        "url": "https://ebird.org/species/zendov/KY"
+      },
+      {
+        "title": "Zenaida dove \u2014 Wikipedia",
+        "url": "https://en.wikipedia.org/wiki/Zenaida_dove"
+      }
+    ]
+  },
+  "references": [
+    {
+      "attribution": "(c) Donald Davesne, some rights reserved (CC BY)",
+      "filename": "01-198004649.jpg",
+      "height": 1362,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/198004649/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 117255541,
+      "observer": "donalddavesne",
+      "photo_id": 198004649,
+      "sha256": "b7754a3c6ec1b26725180cb244278999429c5b348cdf20ff932d394805ca2c20",
+      "source_url": "https://www.inaturalist.org/observations/117255541",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) Cricket Raspet, some rights reserved (CC BY)",
+      "filename": "02-643344842.jpg",
+      "height": 1365,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/643344842/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 352481957,
+      "observer": "chilipossum",
+      "photo_id": 643344842,
+      "sha256": "b50900c5094ef37365be3fb91047ada96559fd875a3cfe4dc515f1c1ef29c8c6",
+      "source_url": "https://www.inaturalist.org/observations/352481957",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) eml23, some rights reserved (CC BY)",
+      "filename": "03-661409225.jpg",
+      "height": 1547,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/661409225/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 362383571,
+      "observer": "eml23",
+      "photo_id": 661409225,
+      "sha256": "ed281e8861ce1c69bed671cb7568f0e898160cf4d5f702bdec291e3ee520fcd8",
+      "source_url": "https://www.inaturalist.org/observations/362383571",
+      "width": 1473
+    },
+    {
+      "attribution": "(c) Kristy Morley, some rights reserved (CC BY)",
+      "filename": "04-33450905.jpg",
+      "height": 1536,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/33450905/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 21608901,
+      "observer": "kristym",
+      "photo_id": 33450905,
+      "sha256": "28ab718bdc5aa62b164c251067b3071a4d9da6e6efbcb5f322733472816e7933",
+      "source_url": "https://www.inaturalist.org/observations/21608901",
+      "width": 2048
+    }
+  ],
+  "schema_version": 1,
+  "scientific_name": "Zenaida aurita",
+  "slug": "zenaida-dove",
+  "status": "approved",
+  "taxon_id": 3465
+}

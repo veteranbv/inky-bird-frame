@@ -1,0 +1,34 @@
+{
+  "anatomy_accuracy": 5,
+  "composition_quality": 5,
+  "correction_findings": [],
+  "findings": [
+    "The primary specimen is a convincing Zenaida Dove: stocky dove proportions, warm cinnamon and rosy-brown plumage, gray-brown back, violet neck iridescence, dark facial mark, spotted wing coverts, pale secondary edge, rounded banded tail, slim dark bill, dark eye, and reddish legs agree with the reference photographs.",
+    "The primary specimen is anatomically coherent, with one head and bill, two legs, a single tail, and normally overlapping folded wings; the detached wing and head are clearly separated supplementary studies rather than additional birds or parts attached to the specimen.",
+    "Both depicted heads have consistent, slender bill proportions and compatible mandible projection. Neither bill looks truncated, reversed, forked, or materially exaggerated relative to the clearest side-profile reference.",
+    "The detached wing study independently preserves the spotted coverts, dark flight feathers, and conspicuous white trailing-edge marking characteristic of the species.",
+    "All visible identification, taxonomy, measurement, habitat, behavior, field-mark, and palette text is legible and correctly spelled. No duplicated, omitted, substituted, or nonsensical wording was found.",
+    "The displayed measurements\u2014length 28\u201330.5 cm, wingspan 36\u201341 cm, and weight 120\u2013180 g\u2014match the direct Animal Diversity Web account. Wikipedia independently corroborates an approximately 28\u201330 cm body length.",
+    "The ruler is explicitly labeled \u201cSCHEMATIC \u2013 NOT TO SCALE.\u201d Its lower endpoint is 28 cm, its upper endpoint is 30.5 cm, values increase upward, and exactly four evenly spaced unlabeled interior ticks divide the range into five proportional segments. The separate body-length label agrees with the ruler.",
+    "The layout is balanced and readable, with no obscured labels, accidental overlaps, or supplementary studies that appear attached to the primary specimen.",
+    "No place name, ZIP code, coordinates, map, observation locality, or other local-observation detail appears."
+  ],
+  "location_free": true,
+  "passed": true,
+  "species_accuracy": 5,
+  "text_accuracy": 5,
+  "verification_sources": [
+    {
+      "title": "Zenaida aurita (Zenaida dove) \u2014 Animal Diversity Web",
+      "url": "https://animaldiversity.org/accounts/Zenaida_aurita/"
+    },
+    {
+      "title": "Zenaida Dove \u2014 eBird",
+      "url": "https://ebird.org/species/zendov/KY"
+    },
+    {
+      "title": "Zenaida dove \u2014 Wikipedia",
+      "url": "https://en.wikipedia.org/wiki/Zenaida_dove"
+    }
+  ]
+}

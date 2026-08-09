@@ -1,0 +1,38 @@
+{
+  "behavior": "Diurnal, mostly resident, and often territorial. Forages mainly on the ground, alone or in pairs, eating seeds, grains, fruit, and occasional small invertebrates. Pairs share incubation and chick care; adults may feign injury to draw predators away from nests.",
+  "common_name": "Zenaida Dove",
+  "family": "Columbidae",
+  "field_marks": [
+    "Warm cinnamon-brown head and rosy-brown underparts with a gray-brown back",
+    "Iridescent violet neck patch and small dark blue-black marks on the face",
+    "Several bold black spots on the wing coverts",
+    "White outer secondaries forming a pale trailing wing edge",
+    "Short, rounded tail with a dark subterminal band and white outer tips",
+    "Slim dark bill, large dark eye, and pinkish-red legs"
+  ],
+  "habitat": "Open and semi-open habitats, especially lowland scrub, fields, forest edges, dense vegetation, coastal vegetation, mangroves, farmland, parks, and gardens.",
+  "measurements": {
+    "length": "28\u201330.5 cm",
+    "weight": "120\u2013180 g",
+    "wingspan": "36\u201341 cm"
+  },
+  "palette": [
+    "cinnamon brown",
+    "rosy buff",
+    "slate gray",
+    "violet blue",
+    "white"
+  ],
+  "scientific_name": "Zenaida aurita",
+  "sources": [
+    {
+      "title": "Zenaida aurita (Zenaida dove) \u2014 Animal Diversity Web",
+      "url": "https://animaldiversity.org/accounts/Zenaida_aurita/"
+    },
+    {
+      "title": "Zenaida dove \u2014 Wikipedia",
+      "url": "https://en.wikipedia.org/wiki/Zenaida_dove"
+    }
+  ],
+  "taxon_id": 3465
+}
