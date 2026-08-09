@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-09T22:25:21+00:00",
+  "generated_at": "2026-08-09T22:41:52+00:00",
   "schema_version": 1,
   "species": [
     {
@@ -1453,6 +1453,17 @@
       "scientific_name": "Zonotrichia albicollis",
       "slug": "white-throated-sparrow",
       "taxon_id": 9184
+    },
+    {
+      "approved_at": "2026-08-09T22:41:52+00:00",
+      "common_name": "Wild Turkey",
+      "display_path": "species/906-wild-turkey/display.png",
+      "display_sha256": "682ec58b8cd548374c422b0ef4d6b8c4f6faec4d1b8379b3734b5724771de2af",
+      "portrait_path": "species/906-wild-turkey/portrait.png",
+      "portrait_sha256": "ea8f210a90eedf289ae859df1b202ede9e0b678ea0b1dbc12e5464272c047086",
+      "scientific_name": "Meleagris gallopavo",
+      "slug": "wild-turkey",
+      "taxon_id": 906
     },
     {
       "approved_at": "2026-07-24T02:09:43+00:00",
