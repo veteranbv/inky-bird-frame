@@ -1,0 +1,42 @@
+{
+  "anatomy_accuracy": 5,
+  "composition_quality": 5,
+  "correction_findings": [],
+  "findings": [
+    "Species identity is correct: the common name Merlin, scientific name Falco columbarius, and family Falconidae agree with the direct source pages and attached photographs.",
+    "All printed measurements exactly match Cornell's current Merlin identification page: length 24\u201330 cm (9.4\u201311.8 in), weight 160\u2013240 g (5.6\u20138.5 oz), and wingspan 53\u201368 cm (20.9\u201326.8 in). Audubon and Animal Diversity Web publish somewhat broader alternative size ranges, but nothing on the plate exceeds the directly supported Cornell values.",
+    "The illustrated primary bird is a credible brown female or immature Merlin: compact, broad-chested proportions; blocky head; brown upperparts; buff-cream underparts with strong longitudinal streaking; barred dark tail; and subdued facial pattern agree with the references and allowed sources.",
+    "The short blue-gray bill, yellow cere, deep-brown eye, yellow legs, and black talons agree with the clearest attached head profile and Animal Diversity Web's physical description.",
+    "In both depicted heads, the upper mandible can be traced continuously from the cere to a distinct projecting, downward-curved tip. The lower mandible terminates behind it; neither bill is co-terminal, reversed, truncated, or materially inconsistent with the other head or the side-profile reference.",
+    "The primary specimen has one head, one beak, two normally overlapped folded wings, two legs with grasping feet, and one tail. No duplicated, detached, or fused primary anatomy is apparent.",
+    "The primary wings taper appropriately, and the detached wing study is clearly supplementary. Its pointed outline and barred flight-feather pattern are compatible with the flight reference and published Merlin wing descriptions.",
+    "The tail is dark, narrowly pale-banded, and broadly square-ended, consistent with the printed field mark, source descriptions, and perched references.",
+    "The habitat and behavior passages reproduce the proposed wording without omissions, substitutions, duplicated words, or nonsensical text. Their substance is supported by Cornell and Audubon, including exposed-perch hunting, midair capture of small birds, powerful rapid flight, open or semi-open habitats, and usual solitude outside breeding.",
+    "Every field-mark bullet and all five palette labels are legible, correctly spelled, and match the proposed facts. The male-versus-female/immature color statement is supported independently by Cornell, Audubon, and Animal Diversity Web.",
+    "The body-length diagram is internally consistent: 24 cm is at the bottom, 30 cm at the top, values increase upward, units and endpoints match the published range, and exactly four evenly spaced unlabeled interior ticks divide it into five proportional segments.",
+    "The ruler is explicitly labeled \u201cSCHEMATIC \u2014 NOT TO SCALE,\u201d so it does not imply that the printed specimen is life-size. Its separate body-length label also agrees with the main measurement block.",
+    "No place name, ZIP code, coordinates, map, or local-observation detail appears anywhere on the plate."
+  ],
+  "location_free": true,
+  "passed": true,
+  "species_accuracy": 5,
+  "text_accuracy": 5,
+  "verification_sources": [
+    {
+      "title": "Merlin Identification \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/merlin/id"
+    },
+    {
+      "title": "Merlin Life History \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/merlin/lifehistory"
+    },
+    {
+      "title": "Merlin \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/merlin"
+    },
+    {
+      "title": "Falco columbarius (merlin) \u2014 Animal Diversity Web",
+      "url": "https://animaldiversity.org/accounts/Falco_columbarius/"
+    }
+  ]
+}

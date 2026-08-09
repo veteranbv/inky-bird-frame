@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-09T20:46:36+00:00",
+  "generated_at": "2026-08-09T21:06:53+00:00",
   "schema_version": 1,
   "species": [
     {
@@ -903,6 +903,17 @@
       "scientific_name": "Dives dives",
       "slug": "melodious-blackbird",
       "taxon_id": 10001
+    },
+    {
+      "approved_at": "2026-08-09T21:06:53+00:00",
+      "common_name": "Merlin",
+      "display_path": "species/4672-merlin/display.png",
+      "display_sha256": "33a8863bd2e190df165aa51970b1b1b3391f3b128316c556beea680969971629",
+      "portrait_path": "species/4672-merlin/portrait.png",
+      "portrait_sha256": "47ea61e586128cdc5e205c62dd79478e7339eaaeae88886a9dda8873ed0afc76",
+      "scientific_name": "Falco columbarius",
+      "slug": "merlin",
+      "taxon_id": 4672
     },
     {
       "approved_at": "2026-07-23T21:10:05+00:00",
