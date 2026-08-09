@@ -9,8 +9,10 @@ from typing import cast
 from unittest.mock import patch
 
 from inky_bird_frame.birdbuddy import BirdBuddySyncResult, BirdBuddySyncStats
+from inky_bird_frame.birdnet_analyzer import BirdNetAnalyzerHistory
 from inky_bird_frame.birds import (
     BirdBuddySpecies,
+    BirdNetAnalyzerSpecies,
     BirdNetGoSpecies,
     BirdSpecies,
     BirdWeatherSpecies,
@@ -145,6 +147,46 @@ state_dir = "display"
 
 
 class ControllerTests(unittest.TestCase):
+    def test_birdnet_analyzer_source_uses_private_history_without_location(self) -> None:
+        detection = BirdNetAnalyzerSpecies("Eastern Bluebird", "Sialia sialis", 3)
+        resolved = BirdSpecies(12942, "Eastern Bluebird", "Sialia sialis", 3, "BirdNET Analyzer")
+        history = BirdNetAnalyzerHistory(
+            [detection],
+            4,
+            3,
+            1,
+            3,
+            1,
+            "2026-08-01T12:00:00+00:00",
+            "2026-08-09T12:00:00+00:00",
+        )
+        with TemporaryDirectory() as temporary:
+            config_path = Path(temporary) / "config.toml"
+            config_path.write_text(
+                CONFIG.replace(
+                    '[discovery]\nzip_code = "12345"\n',
+                    '[discovery]\nsources = ["birdnet-analyzer"]\n',
+                )
+            )
+            config = load_config(config_path)
+            with (
+                patch(
+                    "inky_bird_frame.controller.read_birdnet_analyzer_history",
+                    return_value=history,
+                ) as read_history,
+                patch(
+                    "inky_bird_frame.controller.resolve_birdnet_analyzer_species",
+                    return_value=([resolved], []),
+                ),
+                patch("inky_bird_frame.controller.resolve_discovery_location") as location,
+            ):
+                result = discover_species(config)
+
+        self.assertEqual(result.species, [resolved])
+        self.assertEqual(result.providers[0].details, history.details())
+        self.assertEqual(read_history.call_args.kwargs["window"], ObservationWindow.LAST_WEEK)
+        location.assert_not_called()
+
     def test_birdbuddy_source_uses_private_detection_history(self) -> None:
         detection = BirdBuddySpecies(
             "species-bluebird",

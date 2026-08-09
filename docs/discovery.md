@@ -1,7 +1,8 @@
 # Discovery sources
 
 Inky Bird Frame reads public observations, detections from your own acoustic
-station through BirdWeather or self-hosted BirdNET-Go, authorized postcard
+station through BirdWeather or self-hosted BirdNET-Go, private CSV history from
+BirdNET Analyzer, authorized postcard
 detections from your own Bird Buddy account, or a combination. Every result
 enters the same catalog and review process.
 
@@ -17,6 +18,7 @@ automate Merlin.
 | `ebird` | Personal eBird key | 1, 7, or 30 days | Bird-specific recent public sightings |
 | `birdweather` | BirdWeather station token | All | Species acoustically detected by one station |
 | `birdnet-go` | Local BirdNET-Go base URL | All | Species acoustically detected by a self-hosted station |
+| `birdnet-analyzer` | Explicit CSV import | All; dated rows for finite windows | Offline acoustic-analysis history |
 | `birdbuddy` | Authorized Bird Buddy account | All after setup | Postcard species from one feeder, plus optional manual sightings |
 
 Select any combination with a TOML array. Each configured provider runs
@@ -25,7 +27,8 @@ independently.
 ## Configure a discovery location
 
 iNaturalist and eBird need a point and radius. Choose exactly one location
-form; BirdWeather-, BirdNET-Go-, and Bird Buddy-only setups need none.
+form; BirdWeather-, BirdNET-Go-, BirdNET Analyzer-, and Bird Buddy-only setups
+need none.
 
 Direct coordinates are the provider-independent option. They work worldwide,
 do not disclose a postal code to a geocoder, and cannot become ambiguous:
@@ -168,6 +171,63 @@ remain private unresolved diagnostics and cannot trigger plate generation. A
 BirdNET-Go failure degrades only this provider; other configured sources keep
 running. The legacy singular `source = "all"` retains its existing meaning and
 does not silently enable access to a local BirdNET-Go server.
+
+## BirdNET Analyzer CSV import
+
+BirdNET Analyzer is the offline desktop and command-line analyzer from the
+BirdNET team. Its official CSV output contains segment offsets, species names,
+confidence, and a source-file field, but no absolute recording date. Inky never
+guesses one from a filename or filesystem timestamp.
+
+Import an Analyzer CSV into controller-private history, then opt in to the
+provider:
+
+```bash
+inky-bird-frame birdnet-analyzer import \
+  --config /path/to/config.toml \
+  --csv /path/to/BirdNET_Analyzer_results.csv
+```
+
+```toml
+[discovery]
+sources = ["birdnet-analyzer"]
+window = "all-time"
+```
+
+An undated import is eligible only for `all-time`. When every row in a CSV came
+from recordings made on one known calendar date, supply it explicitly:
+
+```bash
+inky-bird-frame birdnet-analyzer import \
+  --config /path/to/config.toml \
+  --csv /path/to/results.csv \
+  --observed-on 2026-08-09
+```
+
+The date applies to every row. Split multi-day results into one CSV per date;
+do not assign an approximate date merely to make detections enter a shorter
+window. Analyzer provides no absolute time, so dated imports do not invent a
+latest-detection timestamp or take latest-detection rotation priority.
+
+Imports are atomic and idempotent. Inky identifies a recording segment from
+the CSV's `File`, `Start (s)`, and `End (s)` values, allowing a later Analyzer
+classification for that same segment to replace the earlier one. Keep the
+Analyzer `File` values stable and unique across your corpus. Reusing one segment
+identity with two different explicit dates fails closed rather than silently
+mixing history. Use `--dry-run` to validate and preview counts without replacing
+history.
+
+The private mode-`0600` state retains only a one-way segment fingerprint,
+species names, and an optional explicit date. Source paths, segment offsets,
+confidence values, and audio are not retained. Every species still requires an
+exact active iNaturalist bird match; unresolved or non-bird labels cannot enter
+generation. `all-time` means all unique segments imported into this
+installation, not the complete history of the recording device.
+
+Inky validates that each CSV confidence is a finite value from zero through one
+but does not impose a second, arbitrary threshold. Set the desired minimum
+confidence when running BirdNET Analyzer and review its output before import;
+Inky uses the rows in that export as the operator-approved detection set.
 
 ## Bird Buddy setup
 

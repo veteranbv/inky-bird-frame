@@ -16,12 +16,14 @@ from typing import cast
 from unittest.mock import patch
 
 import inky_bird_frame
+from inky_bird_frame.birdnet_analyzer import BirdNetAnalyzerImportStats
 from inky_bird_frame.birds import BirdSpecies, DateRange
 from inky_bird_frame.catalog import sha256_file
 from inky_bird_frame.cli import (
     _confirm_birdbuddy_authorization,
     birdbuddy_login_command,
     birdbuddy_logout_command,
+    birdnet_analyzer_import_command,
     build_parser,
     catalog_prepare_command,
     catalog_sync_command,
@@ -75,6 +77,55 @@ def write_test_species_identity(directory: Path) -> None:
 
 
 class CliTests(unittest.TestCase):
+    def test_birdnet_analyzer_import_parses_explicit_date_and_redacts_path(self) -> None:
+        args = build_parser().parse_args(
+            [
+                "birdnet-analyzer",
+                "import",
+                "--config",
+                "instance.toml",
+                "--csv",
+                "/private/results.csv",
+                "--observed-on",
+                "2026-08-09",
+                "--dry-run",
+            ]
+        )
+        config = controller_config(Path("state"))
+        output = io.StringIO()
+        with (
+            patch("inky_bird_frame.cli._config", return_value=config) as load,
+            patch(
+                "inky_bird_frame.cli.import_birdnet_analyzer_csv",
+                return_value=BirdNetAnalyzerImportStats(2, 2, 0, 0, 2, 0, True),
+            ) as importer,
+            redirect_stdout(output),
+        ):
+            result = birdnet_analyzer_import_command(args)
+
+        self.assertEqual(result, 0)
+        self.assertEqual(importer.call_args.kwargs["observed_on"], date(2026, 8, 9))
+        self.assertTrue(importer.call_args.kwargs["dry_run"])
+        load.assert_called_once_with(args, load_secrets=False)
+        self.assertNotIn("/private/results.csv", output.getvalue())
+
+    def test_birdnet_analyzer_import_rejects_noncanonical_date(self) -> None:
+        args = build_parser().parse_args(
+            [
+                "birdnet-analyzer",
+                "import",
+                "--config",
+                "instance.toml",
+                "--csv",
+                "results.csv",
+                "--observed-on",
+                "20260809",
+            ]
+        )
+
+        with self.assertRaisesRegex(ValueError, "expected YYYY-MM-DD"):
+            birdnet_analyzer_import_command(args)
+
     def test_birdbuddy_commands_parse_explicit_authorization_and_logout(self) -> None:
         login = build_parser().parse_args(
             [
@@ -2298,6 +2349,7 @@ rotation_mode = "shuffle_bag"
                 {"name": "birdweather", "status": "ok"},
                 {"name": "birdbuddy", "status": "ok"},
                 {"name": "birdnet-go", "status": "ok"},
+                {"name": "birdnet-analyzer", "status": "ok"},
             ],
             "unresolved_species": [
                 {
@@ -2318,6 +2370,12 @@ rotation_mode = "shuffle_bag"
                     "common_name": "Network Bird",
                     "scientific_name": "Avis networka",
                 },
+                {
+                    "provider": "birdnet-analyzer",
+                    "species_code": "Avis offlinea",
+                    "common_name": "Offline Bird",
+                    "scientific_name": "Avis offlinea",
+                },
             ],
             "new_species": [],
         }
@@ -2335,11 +2393,13 @@ rotation_mode = "shuffle_bag"
         self.assertIn("birdweather-taxonomy", degraded_keys)
         self.assertIn("birdbuddy-taxonomy", degraded_keys)
         self.assertIn("birdnet-go-taxonomy", degraded_keys)
+        self.assertIn("birdnet-analyzer-taxonomy", degraded_keys)
         self.assertNotIn("ebird-taxonomy", degraded_keys)
         self.assertIn("ebird-taxonomy", recovered_keys)
         self.assertNotIn("birdweather-taxonomy", recovered_keys)
         self.assertNotIn("birdbuddy-taxonomy", recovered_keys)
         self.assertNotIn("birdnet-go-taxonomy", recovered_keys)
+        self.assertNotIn("birdnet-analyzer-taxonomy", recovered_keys)
 
     def test_refresh_recovers_birdbuddy_taxonomy_alert(self) -> None:
         config = SimpleNamespace(discovery=SimpleNamespace(sources=(DiscoveryProvider.BIRDBUDDY,)))

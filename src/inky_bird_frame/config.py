@@ -28,6 +28,7 @@ class DiscoveryProvider(StrEnum):
     EBIRD = "ebird"
     BIRDWEATHER = "birdweather"
     BIRDBUDDY = "birdbuddy"
+    BIRDNET_ANALYZER = "birdnet-analyzer"
     BIRDNET_GO = "birdnet-go"
 
 

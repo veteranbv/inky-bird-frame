@@ -62,6 +62,13 @@ taxonomy boundary as every external provider. Its base URL remains private
 configuration, and neither that URL nor detection times enter the reusable
 catalog.
 
+BirdNET Analyzer imports use `birdnet-analyzer-detections.json` under
+`state_dir`. The private mode-`0600` file stores a one-way recording-segment
+fingerprint, species names, and an optional operator-supplied date. It never
+stores source paths, offsets, confidence values, or audio. Reimports update a
+segment's classification atomically; date-window discovery excludes undated
+segments rather than inventing observation times.
+
 A locked generation cycle completes that migration, recovers passing pending
 work, and then reads the latest non-stale snapshot and durable seed queue.
 Current observations take priority over queued seed taxa. The cycle then:

@@ -134,6 +134,13 @@ was reachable but one or more scientific names did not exactly match an active
 iNaturalist bird species. Correct false positives in BirdNET-Go; its next
 summary will exclude detections marked false-positive.
 
+For BirdNET Analyzer, verify the CSV was imported before enabling the provider.
+An undated import is intentionally empty in every finite window; use
+`window = "all-time"` or reimport with `--observed-on` only when the recording
+date is known. A missing-history error means no successful non-dry-run import
+exists in the configured `state_dir`. A permissions error requires the state
+file to be owned by the controller account and use mode `0600`.
+
 The active catalog is exactly what the display node can choose from:
 
 ```bash

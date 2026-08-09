@@ -38,7 +38,7 @@ class EbirdSpecies:
     species_code: str
     common_name: str
     scientific_name: str
-    observed_at: str
+    observed_at: str | None
 
 
 @dataclass(frozen=True)
@@ -65,6 +65,13 @@ class BirdNetGoSpecies:
     scientific_name: str
     detection_count: int
     latest_detection_at: str
+
+
+@dataclass(frozen=True)
+class BirdNetAnalyzerSpecies:
+    common_name: str
+    scientific_name: str
+    detection_count: int
 
 
 @dataclass(frozen=True)
@@ -742,6 +749,41 @@ def resolve_birdnet_go_species(
         for species, detection in zip(resolution.species, resolved_detections, strict=True)
     ]
     return resolved, [item for item in detections if item.scientific_name in unresolved_names]
+
+
+def resolve_birdnet_analyzer_species(
+    detections: list[BirdNetAnalyzerSpecies],
+    cache_path: Path,
+    *,
+    now: datetime | None = None,
+    timeout_seconds: float = 10.0,
+    persist_cache: bool = True,
+) -> tuple[list[BirdSpecies], list[BirdNetAnalyzerSpecies]]:
+    observations = [
+        EbirdSpecies(
+            species_code=item.scientific_name,
+            common_name=item.common_name,
+            scientific_name=item.scientific_name,
+            observed_at=None,
+        )
+        for item in detections
+    ]
+    counts = {item.scientific_name: item.detection_count for item in detections}
+    resolution = _resolve_external_species(
+        observations,
+        cache_path,
+        source="BirdNET Analyzer",
+        counts=counts,
+        now=now,
+        timeout_seconds=timeout_seconds,
+        persist_cache=persist_cache,
+    )
+    unresolved_names = {item.species_code for item in resolution.unresolved}
+    if len(resolution.species) + len(resolution.unresolved) != len(detections):
+        raise DataSourceError("BirdNET Analyzer taxonomy resolution returned inconsistent results")
+    return resolution.species, [
+        item for item in detections if item.scientific_name in unresolved_names
+    ]
 
 
 def _resolve_external_species(
