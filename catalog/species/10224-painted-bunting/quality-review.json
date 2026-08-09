@@ -1,0 +1,45 @@
+{
+  "anatomy_accuracy": 5,
+  "composition_quality": 5,
+  "correction_findings": [],
+  "findings": [
+    "The primary specimen is an identifiable adult male Painted Bunting: deep-blue head, bright green back, scarlet-red throat, underparts, and rump, with dark folded wings and tail matching the attached references and direct source descriptions.",
+    "The primary specimen is complete and singular, with one head, one beak, two wings, two legs with grasping feet, and one tail. The detached wing and head are clearly separated supplementary studies, not attached duplicate anatomy.",
+    "The main bird has the species-appropriate small, stocky, rounded proportions and short neck. Its tail length and compact folded-wing structure agree with the reference photographs.",
+    "Both depicted heads have consistent stubby, thick, conical bills with plausible joined mandibles. Neither bill appears truncated, reversed, malformed, or materially inconsistent with the clearest side-profile references; unequal mandible projection is not established as a required field mark by the reviewed sources.",
+    "Eyes are dark, the main bird's orbital area is plausible, and the legs and feet are appropriately dusky gray-brown. Wing and tail feather groups are coherent and anatomically credible.",
+    "The supplementary wing correctly presents green coverts, darker flight feathers, and red shoulder-area plumage consistent with the adult male references. The detached head independently preserves the correct bill, eye, and blue-head/red-throat pattern.",
+    "The visible common name, scientific name, and family are correctly written as \u201cPainted Bunting,\u201d \u201cPasserina ciris,\u201d and \u201cCardinalidae.\u201d",
+    "Every visible habitat, behavior, and field-marks sentence matches the proposed wording without an omission, duplication, substitution, spelling error, or nonsensical phrase. Direct sources support the substantive claims about dense cover, ground foraging, seeds and breeding-season insects, exposed singing perches, territorial defense, and nocturnal migration.",
+    "The printed measurements\u2014length 12\u201313 cm (4.7\u20135.1 in), weight 13\u201319 g (0.5\u20130.7 oz), and wingspan 21\u201323 cm (8.3\u20139.1 in)\u2014are supported across the reviewed direct pages. The repeated body-length label agrees with the main measurement block.",
+    "The ruler is internally consistent: 12 cm is at the bottom, 13 cm is at the top, values therefore increase upward, and it contains exactly four evenly spaced unlabeled interior ticks forming five proportional segments. The separate \u201cSCHEMATIC \u2014 NOT TO SCALE\u201d label prevents it from representing the printed bird's physical size.",
+    "The five color swatches accurately summarize the adult male and female/immature palette without introducing an erroneous plumage claim.",
+    "The plate is balanced and legible, with a dominant primary specimen and clearly segregated supplementary studies. No place name, ZIP code, coordinates, map, or local-observation detail appears."
+  ],
+  "location_free": true,
+  "passed": true,
+  "species_accuracy": 5,
+  "text_accuracy": 5,
+  "verification_sources": [
+    {
+      "title": "Painted Bunting Identification \u2014 All About Birds, Cornell Lab of Ornithology",
+      "url": "https://www.allaboutbirds.org/guide/painted_bunting/id"
+    },
+    {
+      "title": "Painted bunting \u2014 Smithsonian's National Zoo and Conservation Biology Institute",
+      "url": "https://nationalzoo.si.edu/animals/painted-bunting"
+    },
+    {
+      "title": "Passerina ciris \u2014 Animal Diversity Web",
+      "url": "https://animaldiversity.org/accounts/Passerina_ciris/"
+    },
+    {
+      "title": "Painted Bunting \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/painted-bunting"
+    },
+    {
+      "title": "Painted bunting \u2014 Wikipedia",
+      "url": "https://en.wikipedia.org/wiki/Painted_bunting"
+    }
+  ]
+}

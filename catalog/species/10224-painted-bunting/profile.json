@@ -1,0 +1,42 @@
+{
+  "behavior": "Secretive and often concealed; forages mainly on the ground for grass seeds, taking more insects during the breeding season. Breeding males sing from exposed perches and vigorously defend territories. Migrates chiefly at night.",
+  "common_name": "Painted Bunting",
+  "family": "Cardinalidae",
+  "field_marks": [
+    "Adult male has a deep blue head, bright green back, and scarlet-red underparts and rump.",
+    "Female and immature plumage is mostly bright yellow-green, with a paler eyering.",
+    "Small, stocky proportions with a short neck and rounded body.",
+    "Stubby, thick, conical seed-cracking bill, gray to dark in color.",
+    "Dark eyes and dusky gray-brown legs and feet.",
+    "Wings and tail are relatively dark, with a compact wing and medium-length tail."
+  ],
+  "habitat": "Dense brush and semi-open habitats with low cover, including grassy or weedy edges, riparian thickets, scrub, hedgerows, open-woodland understory, overgrown fields, and tropical forest margins or densely vegetated savannas.",
+  "measurements": {
+    "length": "12\u201313 cm (4.7\u20135.1 in)",
+    "weight": "13\u201319 g (0.5\u20130.7 oz)",
+    "wingspan": "21\u201323 cm (8.3\u20139.1 in)"
+  },
+  "palette": [
+    "deep blue",
+    "leaf green",
+    "scarlet red",
+    "yellow-green",
+    "charcoal brown"
+  ],
+  "scientific_name": "Passerina ciris",
+  "sources": [
+    {
+      "title": "Painted Bunting Identification \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/painted_bunting/id"
+    },
+    {
+      "title": "Passerina ciris \u2014 Animal Diversity Web",
+      "url": "https://animaldiversity.org/accounts/Passerina_ciris/"
+    },
+    {
+      "title": "Painted bunting \u2014 Wikipedia",
+      "url": "https://en.wikipedia.org/wiki/Painted_bunting"
+    }
+  ],
+  "taxon_id": 10224
+}
