@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-09T22:03:23+00:00",
+  "generated_at": "2026-08-09T22:16:03+00:00",
   "schema_version": 1,
   "species": [
     {
@@ -1288,6 +1288,17 @@
       "scientific_name": "Piranga olivacea",
       "slug": "scarlet-tanager",
       "taxon_id": 9921
+    },
+    {
+      "approved_at": "2026-08-09T22:16:03+00:00",
+      "common_name": "Semipalmated Sandpiper",
+      "display_path": "species/3862-semipalmated-sandpiper/display.png",
+      "display_sha256": "9e42430c612cd7cc14d44df59f5fda75f0f33dae72ae6ccd7356457d929f9618",
+      "portrait_path": "species/3862-semipalmated-sandpiper/portrait.png",
+      "portrait_sha256": "a7bafe9c913115b7b9035cba3be25eaa3d1e2af21aed284e3a3b18f0c9e17c4a",
+      "scientific_name": "Calidris pusilla",
+      "slug": "semipalmated-sandpiper",
+      "taxon_id": 3862
     },
     {
       "approved_at": "2026-08-03T14:12:03+00:00",

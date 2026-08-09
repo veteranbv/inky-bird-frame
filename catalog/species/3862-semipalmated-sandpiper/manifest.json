@@ -1,0 +1,155 @@
+{
+  "approved_at": "2026-08-09T22:16:03+00:00",
+  "assets": {
+    "display": {
+      "filename": "display.png",
+      "sha256": "9e42430c612cd7cc14d44df59f5fda75f0f33dae72ae6ccd7356457d929f9618"
+    },
+    "portrait": {
+      "filename": "portrait.png",
+      "sha256": "a7bafe9c913115b7b9035cba3be25eaa3d1e2af21aed284e3a3b18f0c9e17c4a"
+    }
+  },
+  "common_name": "Semipalmated Sandpiper",
+  "generation": {
+    "attempt": 2,
+    "correction_source_sha256": "1ee096e7d2a459895467cb09f7e1d4f9eb3adcd04914557f4565112620a71aa8",
+    "generated_at": "2026-08-09T22:16:03+00:00",
+    "generator": "Codex subscription / built-in gpt-image-2",
+    "max_attempts": 3,
+    "prompt_version": "field-journal-v4"
+  },
+  "profile": {
+    "behavior": "Ground-foraging shorebird that walks over wet substrates, rapidly pecking and probing for tiny invertebrates; often migrates and roosts in large flocks, though individuals may aggressively defend feeding space.",
+    "common_name": "Semipalmated Sandpiper",
+    "family": "Scolopacidae",
+    "field_marks": [
+      "Very small, plump shorebird with a short neck and small head",
+      "Short, straight, dark bill with a blunt-looking tip",
+      "Dark eye accented by a weak pale eyebrow",
+      "Gray-brown to rusty-brown upperparts with dark mottling or a neat scaly pattern",
+      "Pale breast and white belly, with streaking largely confined to the breast",
+      "Blackish legs; pointed folded wings reach approximately to the short tail"
+    ],
+    "habitat": "Breeds on low tundra near ponds and marshes; during migration and the nonbreeding season, frequents tidal mudflats, estuaries, beaches, sandbars, shallow wetland margins, lakeshores, and wet fields.",
+    "measurements": {
+      "length": "15\u201318 cm (5.9\u20137.1 in)",
+      "weight": "18\u201352 g (0.6\u20131.8 oz)",
+      "wingspan": "35\u201337 cm (13.8\u201314.6 in)"
+    },
+    "palette": [
+      "gray-brown",
+      "white",
+      "black",
+      "buff",
+      "rusty brown"
+    ],
+    "scientific_name": "Calidris pusilla",
+    "sources": [
+      {
+        "title": "Semipalmated Sandpiper Identification \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Semipalmated_Sandpiper/id"
+      },
+      {
+        "title": "Semipalmated Sandpiper Life History \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Semipalmated_Sandpiper/lifehistory"
+      },
+      {
+        "title": "Semipalmated Sandpiper \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/semipalmated-sandpiper"
+      }
+    ],
+    "taxon_id": 3862
+  },
+  "quality_review": {
+    "anatomy_accuracy": 4,
+    "composition_quality": 5,
+    "correction_findings": [],
+    "findings": [
+      "The common name, scientific name, and family are correct: Semipalmated Sandpiper, Calidris pusilla, Scolopacidae.",
+      "The primary specimen matches the reference photos and published identification traits: very small plump body, short neck, small rounded head, short straight dark bill with a blunt-looking tip, dark eye with a weak pale supercilium, dark legs, pale underparts, and mottled/scaly brown upperparts.",
+      "The depicted plumage is a credible brown-to-rufous breeding-type presentation. Its breast streaking, clean white belly and flanks, layered scapular pattern, pointed folded wings, and short tail are consistent with the allowed sources and attached references.",
+      "The primary specimen is complete, with one head, one beak, two folded wings\u2014one substantially overlapped in the side view\u2014two legs, and one tail. The detached wing and head are clearly separate supplementary studies rather than extra birds or parts attached to the specimen.",
+      "Both depicted bills have coherent upper and lower mandibles running from a shared base to a co-terminal blunt tip. Their short, essentially straight profiles agree with the clearest reference photographs; neither appears truncated, reversed, or disproportionately projected.",
+      "The legs, joints, toes, and subtle basal toe webbing are anatomically credible. The detached wing has a plausible tapered outline and orderly coverts, secondaries, and primaries.",
+      "The published Cornell measurements support length 15\u201318 cm, wingspan 35\u201337 cm, and weight 18\u201351.5 g; the plate\u2019s 18\u201352 g is a valid whole-gram rounding. All metric and imperial values are mutually consistent.",
+      "Every visible taxonomy, measurement, habitat, behavior, field-mark, palette, and schematic-label line is legible and matches the proposed wording without duplicated, omitted, substituted, or nonsensical words.",
+      "The vertical body-length ruler correctly increases from 15 cm (5.9 in) at the bottom to 18 cm (7.1 in) at the top. It has exactly four evenly spaced unlabeled interior ticks, consistent endpoints and units, and an explicit \u201cSCHEMATIC \u2014 NOT TO SCALE\u201d notice.",
+      "The plate is balanced and readable, with clear separation among the primary specimen, annotations, ruler, supplementary studies, and palette.",
+      "No place name, ZIP code, coordinates, map, or local-observation detail appears."
+    ],
+    "location_free": true,
+    "passed": true,
+    "species_accuracy": 5,
+    "text_accuracy": 5,
+    "verification_sources": [
+      {
+        "title": "Semipalmated Sandpiper Identification \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Semipalmated_Sandpiper/id"
+      },
+      {
+        "title": "Semipalmated Sandpiper \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/semipalmated-sandpiper"
+      }
+    ]
+  },
+  "references": [
+    {
+      "attribution": "(c) Bill Keim, some rights reserved (CC BY)",
+      "filename": "01-56449398.jpg",
+      "height": 1200,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/56449398/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 35773036,
+      "observer": "keimwj",
+      "photo_id": 56449398,
+      "sha256": "138dbb668043d9f0b0dca8bdfa5403f917650382103b0dadc861be4a24945701",
+      "source_url": "https://www.inaturalist.org/observations/35773036",
+      "width": 1800
+    },
+    {
+      "attribution": "no rights reserved",
+      "filename": "02-353431966.jpeg",
+      "height": 1278,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/353431966/large.jpeg",
+      "license_code": "cc0",
+      "observation_id": 200335221,
+      "observer": "don54",
+      "photo_id": 353431966,
+      "sha256": "38f61bfd7bca4325db47197b489612d7b164e8ec0c76c80657609d45461ed738",
+      "source_url": "https://www.inaturalist.org/observations/200335221",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) er-birds, some rights reserved (CC BY)",
+      "filename": "03-153774677.jpg",
+      "height": 916,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/153774677/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 92838529,
+      "observer": "er-birds",
+      "photo_id": 153774677,
+      "sha256": "d4947994c88b7ec00c77ce447c187bdbcfdc03ca7c47592d8944e46077c276b6",
+      "source_url": "https://www.inaturalist.org/observations/92838529",
+      "width": 1152
+    },
+    {
+      "attribution": "(c) scaup, some rights reserved (CC BY)",
+      "filename": "04-437039251.jpeg",
+      "height": 1298,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/437039251/large.jpeg",
+      "license_code": "cc-by",
+      "observation_id": 244962925,
+      "observer": "scaup",
+      "photo_id": 437039251,
+      "sha256": "039a784d0958e6fe46fd09e8fe71b8384386ebd99ba111513337f141a6ab4e65",
+      "source_url": "https://www.inaturalist.org/observations/244962925",
+      "width": 2048
+    }
+  ],
+  "schema_version": 1,
+  "scientific_name": "Calidris pusilla",
+  "slug": "semipalmated-sandpiper",
+  "status": "approved",
+  "taxon_id": 3862
+}

@@ -1,0 +1,42 @@
+{
+  "behavior": "Ground-foraging shorebird that walks over wet substrates, rapidly pecking and probing for tiny invertebrates; often migrates and roosts in large flocks, though individuals may aggressively defend feeding space.",
+  "common_name": "Semipalmated Sandpiper",
+  "family": "Scolopacidae",
+  "field_marks": [
+    "Very small, plump shorebird with a short neck and small head",
+    "Short, straight, dark bill with a blunt-looking tip",
+    "Dark eye accented by a weak pale eyebrow",
+    "Gray-brown to rusty-brown upperparts with dark mottling or a neat scaly pattern",
+    "Pale breast and white belly, with streaking largely confined to the breast",
+    "Blackish legs; pointed folded wings reach approximately to the short tail"
+  ],
+  "habitat": "Breeds on low tundra near ponds and marshes; during migration and the nonbreeding season, frequents tidal mudflats, estuaries, beaches, sandbars, shallow wetland margins, lakeshores, and wet fields.",
+  "measurements": {
+    "length": "15\u201318 cm (5.9\u20137.1 in)",
+    "weight": "18\u201352 g (0.6\u20131.8 oz)",
+    "wingspan": "35\u201337 cm (13.8\u201314.6 in)"
+  },
+  "palette": [
+    "gray-brown",
+    "white",
+    "black",
+    "buff",
+    "rusty brown"
+  ],
+  "scientific_name": "Calidris pusilla",
+  "sources": [
+    {
+      "title": "Semipalmated Sandpiper Identification \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Semipalmated_Sandpiper/id"
+    },
+    {
+      "title": "Semipalmated Sandpiper Life History \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Semipalmated_Sandpiper/lifehistory"
+    },
+    {
+      "title": "Semipalmated Sandpiper \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/semipalmated-sandpiper"
+    }
+  ],
+  "taxon_id": 3862
+}
