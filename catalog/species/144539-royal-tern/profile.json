@@ -1,0 +1,38 @@
+{
+  "behavior": "Social and often colonial; flies over shallow water and plunge-dives for small fish and crustaceans, then gathers in flocks to rest on open shores.",
+  "common_name": "Royal Tern",
+  "family": "Laridae",
+  "field_marks": [
+    "Long, stout, daggerlike orange bill",
+    "White face and underparts",
+    "Pale silvery-gray back and upperwings",
+    "Shaggy black crown or rear crest, depending on season",
+    "Short black legs and dark eyes",
+    "Long pointed wings and a forked tail"
+  ],
+  "habitat": "Warm coastal marine waters, especially shallow bays, lagoons, and estuaries; rests and nests on open sandy beaches and low-lying islands.",
+  "measurements": {
+    "length": "45\u201350 cm",
+    "weight": "390\u2013430 g",
+    "wingspan": "100\u2013110 cm"
+  },
+  "palette": [
+    "white plumage",
+    "pale silver-gray wings",
+    "ink-black crest",
+    "tangerine-orange bill",
+    "black legs"
+  ],
+  "scientific_name": "Thalasseus maximus",
+  "sources": [
+    {
+      "title": "Royal Tern Identification \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Royal_Tern/id"
+    },
+    {
+      "title": "Royal Tern \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/royal-tern"
+    }
+  ],
+  "taxon_id": 144539
+}

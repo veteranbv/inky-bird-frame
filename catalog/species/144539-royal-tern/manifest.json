@@ -1,0 +1,150 @@
+{
+  "approved_at": "2026-08-09T17:26:29+00:00",
+  "assets": {
+    "display": {
+      "filename": "display.png",
+      "sha256": "3751cd184d4e0ac40f7772f5fac5ac96833c28e7d092d54dfce2913442710034"
+    },
+    "portrait": {
+      "filename": "portrait.png",
+      "sha256": "7c394625af1403303f76a304a7054791f788bdfa581353cfdcbed4629b3e59b5"
+    }
+  },
+  "common_name": "Royal Tern",
+  "generation": {
+    "attempt": 2,
+    "correction_source_sha256": "9343fab84e81d4bdac6428fbe9b5460a6bd45c31e51a4e02f60ae31a5b1b37e9",
+    "generated_at": "2026-08-09T17:26:29+00:00",
+    "generator": "Codex subscription / built-in gpt-image-2",
+    "max_attempts": 3,
+    "prompt_version": "field-journal-v4"
+  },
+  "profile": {
+    "behavior": "Social and often colonial; flies over shallow water and plunge-dives for small fish and crustaceans, then gathers in flocks to rest on open shores.",
+    "common_name": "Royal Tern",
+    "family": "Laridae",
+    "field_marks": [
+      "Long, stout, daggerlike orange bill",
+      "White face and underparts",
+      "Pale silvery-gray back and upperwings",
+      "Shaggy black crown or rear crest, depending on season",
+      "Short black legs and dark eyes",
+      "Long pointed wings and a forked tail"
+    ],
+    "habitat": "Warm coastal marine waters, especially shallow bays, lagoons, and estuaries; rests and nests on open sandy beaches and low-lying islands.",
+    "measurements": {
+      "length": "45\u201350 cm",
+      "weight": "390\u2013430 g",
+      "wingspan": "100\u2013110 cm"
+    },
+    "palette": [
+      "white plumage",
+      "pale silver-gray wings",
+      "ink-black crest",
+      "tangerine-orange bill",
+      "black legs"
+    ],
+    "scientific_name": "Thalasseus maximus",
+    "sources": [
+      {
+        "title": "Royal Tern Identification \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Royal_Tern/id"
+      },
+      {
+        "title": "Royal Tern \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/royal-tern"
+      }
+    ],
+    "taxon_id": 144539
+  },
+  "quality_review": {
+    "anatomy_accuracy": 4,
+    "composition_quality": 5,
+    "correction_findings": [],
+    "findings": [
+      "The primary specimen is identifiable as a Royal Tern and contains one head, one intact orange bill, two overlapping folded wings, two legs with webbed feet, and one forked tail. No unintended extra bird or attached supplementary part is present.",
+      "The long stout daggerlike orange bill, dark eye, white face and underparts, pale silver-gray upperparts, black rear crest, short black legs, pointed wings, and forked tail agree with the reference photographs and direct identification sources.",
+      "The depicted white forehead with a shaggy black rear crest is a valid nonbreeding or transitional adult pattern. Both Cornell and Audubon explicitly describe the seasonal recession of the black crown and retention of black at the rear of the head.",
+      "The detached wing and head/bill studies are clearly separated from the primary specimen. Their shapes and proportions are coherent with Royal Tern anatomy; neither bill looks truncated, reversed, or materially inconsistent with the other. Unequal mandible projection was not identified as a Royal Tern field mark by the checked sources.",
+      "The feet are somewhat stylized, but both retain recognizable black toes and interdigital webbing without a material duplication or structural impossibility.",
+      "All visible text was read in full. \u201cRoyal Tern,\u201d \u201cThalasseus maximus,\u201d \u201cLaridae,\u201d the habitat, behavior, six field-mark statements, palette, and all measurement strings are correctly spelled and contain no duplicated, omitted, substituted, or nonsensical wording.",
+      "The printed measurements\u2014length 45\u201350 cm, weight 390\u2013430 g, and wingspan 100\u2013110 cm\u2014exactly match Cornell\u2019s published values. Audubon publishes a somewhat broader alternative range, but this does not invalidate the accurately attributed Cornell measurements.",
+      "The body-length ruler is internally consistent: 45 cm is at the bottom, 50 cm is at the top, values increase upward, and exactly four evenly spaced unlabeled interior ticks divide the range into five proportional segments. Its 45\u201350 cm endpoints match the printed length range, and the plate explicitly states \u201cSCHEMATIC \u2014 NOT TO SCALE.\u201d",
+      "The layout is legible and balanced, with the primary specimen visually dominant and the supplementary studies unmistakably detached.",
+      "No place name, ZIP code, coordinates, map, observation date, or other local-observation detail appears on the candidate plate."
+    ],
+    "location_free": true,
+    "passed": true,
+    "species_accuracy": 5,
+    "text_accuracy": 5,
+    "verification_sources": [
+      {
+        "title": "Royal Tern Identification \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Royal_Tern/id"
+      },
+      {
+        "title": "Royal Tern \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/royal-tern"
+      }
+    ]
+  },
+  "references": [
+    {
+      "attribution": "(c) ecovore, some rights reserved (CC BY)",
+      "filename": "01-605120130.jpg",
+      "height": 1403,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/605120130/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 333322154,
+      "observer": "ecovore",
+      "photo_id": 605120130,
+      "sha256": "fabbf47c0ba6ced16e6d74aad7fb08a2bea26d1f7733402057f3cea26b583bdf",
+      "source_url": "https://www.inaturalist.org/observations/333322154",
+      "width": 1052
+    },
+    {
+      "attribution": "no rights reserved",
+      "filename": "02-143504009.jpg",
+      "height": 1454,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/143504009/large.jpg",
+      "license_code": "cc0",
+      "observation_id": 87062198,
+      "observer": "wildreturn",
+      "photo_id": 143504009,
+      "sha256": "e99214a2713bcd436092b5e344af37006327f1f20e904bb4c7494fcdecc57e5b",
+      "source_url": "https://www.inaturalist.org/observations/87062198",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) Ricard Busquets Reverte, some rights reserved (CC BY)",
+      "filename": "03-172473915.jpeg",
+      "height": 1225,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/172473915/large.jpeg",
+      "license_code": "cc-by",
+      "observation_id": 103095344,
+      "observer": "ricardelremate",
+      "photo_id": 172473915,
+      "sha256": "59a675764d7729a2ffc3433a97316eb99664bebd94c51f5954360e3591ee349b",
+      "source_url": "https://www.inaturalist.org/observations/103095344",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) Allison Gong, some rights reserved (CC BY)",
+      "filename": "04-170946016.jpeg",
+      "height": 1152,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/170946016/large.jpeg",
+      "license_code": "cc-by",
+      "observation_id": 102284627,
+      "observer": "allisonjgong",
+      "photo_id": 170946016,
+      "sha256": "f3d3da79d8ca8abff6c0fd989193aa2fa41cbdba7b82eb243e2e01ebaba87f63",
+      "source_url": "https://www.inaturalist.org/observations/102284627",
+      "width": 2048
+    }
+  ],
+  "schema_version": 1,
+  "scientific_name": "Thalasseus maximus",
+  "slug": "royal-tern",
+  "status": "approved",
+  "taxon_id": 144539
+}
