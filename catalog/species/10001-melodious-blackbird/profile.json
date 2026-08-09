@@ -1,0 +1,42 @@
+{
+  "behavior": "Usually seen in pairs or small groups. Forages mainly on the ground but also in trees, taking insects and other arthropods, small vertebrates, seeds, fruit, and nectar. Often flicks the tail sharply upward. Both sexes sing and frequently perform musical duets.",
+  "common_name": "Melodious Blackbird",
+  "family": "Icteridae",
+  "field_marks": [
+    "Entirely black plumage with a subtle blue-violet sheen",
+    "Sharply pointed, slightly curved black bill",
+    "Dark brown eye without a contrasting eye-ring",
+    "Long, broad, rounded black tail",
+    "Large black legs and strong feet",
+    "Plain black wings without bars or patches"
+  ],
+  "habitat": "Semi-open to open tropical and lower-subtropical landscapes, including forest edges and clearings, open woodland, plantations, pastures, parks, and gardens with scattered trees; generally avoids dense forest and thick undergrowth.",
+  "measurements": {
+    "length": "23\u201325.5 cm",
+    "weight": "83.4\u2013102 g",
+    "wingspan": "Not reported; no cm range available in the consulted species accounts"
+  },
+  "palette": [
+    "velvet black",
+    "blue-black",
+    "violet sheen",
+    "charcoal black",
+    "dark brown"
+  ],
+  "scientific_name": "Dives dives",
+  "sources": [
+    {
+      "title": "Melodious Blackbird \u2014 eBird",
+      "url": "https://ebird.org/species/melbla1"
+    },
+    {
+      "title": "Melodious Blackbird \u2014 Birds of the World",
+      "url": "https://birdsoftheworld.org/bow/species/melbla1/cur/introduction"
+    },
+    {
+      "title": "Melodious blackbird \u2014 Wikipedia",
+      "url": "https://en.wikipedia.org/wiki/Melodious_blackbird"
+    }
+  ],
+  "taxon_id": 10001
+}
