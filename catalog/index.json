@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-09T21:21:19+00:00",
+  "generated_at": "2026-08-09T21:30:24+00:00",
   "schema_version": 1,
   "species": [
     {
@@ -1101,6 +1101,17 @@
       "scientific_name": "Setophaga pinus",
       "slug": "pine-warbler",
       "taxon_id": 145244
+    },
+    {
+      "approved_at": "2026-08-09T21:30:24+00:00",
+      "common_name": "Plain Chachalaca",
+      "display_path": "species/2090-plain-chachalaca/display.png",
+      "display_sha256": "ff5e70db7dee84e0751f0188d16a90969d00a22005fdfa08fa6651c6705e603c",
+      "portrait_path": "species/2090-plain-chachalaca/portrait.png",
+      "portrait_sha256": "91e16383db53976bf29f694d816c693c0ed0955767dbca6b372a237955f3a517",
+      "scientific_name": "Ortalis vetula",
+      "slug": "plain-chachalaca",
+      "taxon_id": 2090
     },
     {
       "approved_at": "2026-07-26T00:58:12+00:00",

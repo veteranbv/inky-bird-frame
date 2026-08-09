@@ -1,0 +1,46 @@
+{
+  "behavior": "Usually seen in pairs or small family groups, foraging in trees, shrubs, and on the ground for fruit and other plant matter. Climbs and hops through branches, runs readily, and gives loud, raucous choruses most often around dawn and dusk.",
+  "common_name": "Plain Chachalaca",
+  "family": "Cracidae",
+  "field_marks": [
+    "Large, chickenlike body with a long neck",
+    "Small grayish head with a short dark bill and brown eye",
+    "Dull olive-brown back and rounded wings",
+    "Warm buff belly",
+    "Long, rounded blackish tail with pale tips",
+    "Long dull-gray legs; bare red throat patch visible when exposed"
+  ],
+  "habitat": "Dense scrub, brushland, riverine woodland, forest edge, and dry or moist forest, often where thick understory occurs near water.",
+  "measurements": {
+    "length": "50\u201366 cm",
+    "weight": "680 g\u20131.1 kg",
+    "wingspan": "76\u201384 cm"
+  },
+  "palette": [
+    "olive brown",
+    "gray",
+    "warm buff",
+    "blackish brown",
+    "throat red"
+  ],
+  "scientific_name": "Ortalis vetula",
+  "sources": [
+    {
+      "title": "Plain Chachalaca Identification \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Plain_Chachalaca/id"
+    },
+    {
+      "title": "Plain Chachalaca Life History \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Plain_Chachalaca/lifehistory"
+    },
+    {
+      "title": "Plain Chachalaca \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/plain-chachalaca"
+    },
+    {
+      "title": "Plain Chachalaca \u2014 eBird",
+      "url": "https://ebird.org/species/placha"
+    }
+  ],
+  "taxon_id": 2090
+}
