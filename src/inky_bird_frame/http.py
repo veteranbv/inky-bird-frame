@@ -5,7 +5,7 @@ from __future__ import annotations
 import json
 import os
 from collections.abc import Mapping
-from http.client import HTTPMessage, HTTPResponse
+from http.client import HTTPException, HTTPMessage, HTTPResponse
 from pathlib import Path
 from tempfile import NamedTemporaryFile
 from typing import IO, cast
@@ -107,6 +107,10 @@ def get_json(
         raise DataSourceError(f"Could not reach {display_url}: {exc.reason}") from exc
     except TimeoutError as exc:
         raise DataSourceError(f"Timed out reading {display_url}") from exc
+    except HTTPException as exc:
+        raise DataSourceError(f"Invalid HTTP response from {display_url}") from exc
+    except OSError as exc:
+        raise DataSourceError(f"Could not read response from {display_url}") from exc
 
     try:
         return cast(object, json.loads(body))
@@ -144,6 +148,10 @@ def post_json(
         raise DataSourceError(f"Could not reach {display_url}: {exc.reason}") from exc
     except TimeoutError as exc:
         raise DataSourceError(f"Timed out reading {display_url}") from exc
+    except HTTPException as exc:
+        raise DataSourceError(f"Invalid HTTP response from {display_url}") from exc
+    except OSError as exc:
+        raise DataSourceError(f"Could not read response from {display_url}") from exc
 
     try:
         return cast(object, json.loads(body))
@@ -162,6 +170,10 @@ def get_bytes(url: str, timeout_seconds: float = 30.0) -> bytes:
         raise DataSourceError(f"Could not reach {url}: {exc.reason}") from exc
     except TimeoutError as exc:
         raise DataSourceError(f"Timed out reading {url}") from exc
+    except HTTPException as exc:
+        raise DataSourceError(f"Invalid HTTP response from {url}") from exc
+    except OSError as exc:
+        raise DataSourceError(f"Could not read response from {url}") from exc
 
 
 def _fsync_directory(directory: Path) -> None:

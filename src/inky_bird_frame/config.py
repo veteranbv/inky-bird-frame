@@ -533,6 +533,8 @@ def load_config(path: Path, *, load_secrets: bool = True) -> AppConfig:
             or parsed_birdnet_go_url.password is not None
             or parsed_birdnet_go_url.query
             or parsed_birdnet_go_url.fragment
+            or "?" in birdnet_go_url
+            or "#" in birdnet_go_url
         ):
             raise ConfigurationError(
                 "birdnet_go_url must be an HTTP or HTTPS base URL without credentials, "

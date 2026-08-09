@@ -283,6 +283,20 @@ class ConfigTests(unittest.TestCase):
             with self.assertRaisesRegex(ConfigurationError, "invalid port"):
                 load_config(path)
 
+    def test_birdnet_go_url_rejects_empty_query_or_fragment_delimiter(self) -> None:
+        for delimiter in ("?", "#"):
+            configured = CONFIG.replace(
+                "[discovery]\n",
+                '[discovery]\nsources = ["birdnet-go"]\n'
+                f'birdnet_go_url = "http://birdnet-go.local{delimiter}"\n',
+            )
+            with self.subTest(delimiter=delimiter), TemporaryDirectory() as temporary:
+                path = Path(temporary) / "config.toml"
+                path.write_text(configured)
+
+                with self.assertRaisesRegex(ConfigurationError, "query, or a fragment"):
+                    load_config(path)
+
     def test_legacy_all_source_does_not_implicitly_enable_new_private_sources(self) -> None:
         configured = CONFIG.replace(
             "[discovery]\n",
