@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-09T21:06:53+00:00",
+  "generated_at": "2026-08-09T21:21:19+00:00",
   "schema_version": 1,
   "species": [
     {
@@ -1024,6 +1024,17 @@
       "scientific_name": "Setophaga aestiva",
       "slug": "northern-yellow-warbler",
       "taxon_id": 1188207
+    },
+    {
+      "approved_at": "2026-08-09T21:21:19+00:00",
+      "common_name": "Orange Oriole",
+      "display_path": "species/9332-orange-oriole/display.png",
+      "display_sha256": "e7cf787b571240d5f1e80aa730548007474badeb4da99fd395e40e965a3717df",
+      "portrait_path": "species/9332-orange-oriole/portrait.png",
+      "portrait_sha256": "60c17359a35136c33520071ae9ae80bc9b2f59ad1d5c59182634683b4a507905",
+      "scientific_name": "Icterus auratus",
+      "slug": "orange-oriole",
+      "taxon_id": 9332
     },
     {
       "approved_at": "2026-07-13T05:55:39+00:00",

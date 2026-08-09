@@ -1,0 +1,166 @@
+{
+  "approved_at": "2026-08-09T21:21:19+00:00",
+  "assets": {
+    "display": {
+      "filename": "display.png",
+      "sha256": "e7cf787b571240d5f1e80aa730548007474badeb4da99fd395e40e965a3717df"
+    },
+    "portrait": {
+      "filename": "portrait.png",
+      "sha256": "60c17359a35136c33520071ae9ae80bc9b2f59ad1d5c59182634683b4a507905"
+    }
+  },
+  "common_name": "Orange Oriole",
+  "generation": {
+    "attempt": 2,
+    "correction_source_sha256": "2cdf923e0fdb0d135caba7c734ef5404366f2936b9e851700c35f21102033b82",
+    "generated_at": "2026-08-09T21:21:19+00:00",
+    "generator": "Codex subscription / built-in gpt-image-2",
+    "max_attempts": 3,
+    "prompt_version": "field-journal-v4"
+  },
+  "profile": {
+    "behavior": "Diurnal, arboreal, and nonmigratory. Usually forages alone or in pairs and may join small flocks with other orioles, taking insects, fruit, and nectar; its straight bill can pry pulp from firm fruit. Vocalizations include melodious rising-and-falling whistles and chattering calls.",
+    "common_name": "Orange Oriole",
+    "family": "Icteridae",
+    "field_marks": [
+      "Bright orange head, back, and underparts, often yellower on the body",
+      "Restricted black lores and neatly defined black throat bib",
+      "Dark wings with two bold white wing bars and whitish primary edges",
+      "Long, straight, sharply pointed black bill with a blue-gray lower base",
+      "Fairly long, dark tail; dark eyes and grayish legs",
+      "Female duller yellow-orange with an olive-washed mantle and browner tail"
+    ],
+    "habitat": "Open tropical woodland, forest edge, second growth, scrub, and savanna, often near fresh water; also uses semi-open disturbed or agricultural habitat with hedges and scattered trees.",
+    "measurements": {
+      "length": "19\u201321 cm (7.5\u20138.3 in)",
+      "weight": "Not reported in the consulted sources (g)",
+      "wingspan": "Not reported in the consulted sources (cm)"
+    },
+    "palette": [
+      "bright orange",
+      "golden yellow",
+      "sooty black",
+      "clean white",
+      "olive green"
+    ],
+    "scientific_name": "Icterus auratus",
+    "sources": [
+      {
+        "title": "Orange Oriole \u2014 eBird",
+        "url": "https://ebird.org/species/oraori1"
+      },
+      {
+        "title": "Orange Oriole \u2014 Birds of the World",
+        "url": "https://birdsoftheworld.org/bow/species/oraori1/cur/introduction"
+      },
+      {
+        "title": "Icterus auratus \u2014 Animal Diversity Web",
+        "url": "https://animaldiversity.org/accounts/Icterus_auratus/"
+      },
+      {
+        "title": "Orange oriole \u2014 Wikipedia",
+        "url": "https://en.wikipedia.org/wiki/Orange_oriole"
+      }
+    ],
+    "taxon_id": 9332
+  },
+  "quality_review": {
+    "anatomy_accuracy": 4,
+    "composition_quality": 5,
+    "correction_findings": [],
+    "findings": [
+      "Species identity is correct: the title \u201cOrange Oriole,\u201d scientific name \u201cIcterus auratus,\u201d and family \u201cIcteridae\u201d agree across eBird, Birds of the World, and Animal Diversity Web.",
+      "The primary specimen is a credible adult male Orange Oriole: orange head, back, and underparts; restricted black lores and throat bib; dark wings; white shoulder/wing markings; whitish primary edging; and a long dark tail agree with the direct sources and attached photographs.",
+      "The straight, sharply pointed bill and blue-gray coloration near the lower-mandible base are accurately rendered. The main and supplementary heads have consistent, complete, essentially co-terminal mandibles without truncation, reversal, or exaggerated projection.",
+      "The primary bird has one head and beak, two anatomically coherent legs and feet, one tail, and one visible folded wing; the far wing is naturally occluded by the side-profile pose. The detached wing and bill/head illustrations are clearly labeled supplementary studies and do not appear attached to the specimen.",
+      "Body proportions, folded-wing length, tail length, eye placement, leg attachment, anisodactyl perching feet, and grasping posture are anatomically coherent. The primary specimen is slightly fuller-bodied than the clearest field photographs but remains within plausible posture and feather-fluff variation.",
+      "The length claim \u201c19\u201321 cm (7.5\u20138.3 in)\u201d matches the direct published range. The plate consistently states that wingspan and weight were not reported in the consulted sources rather than inventing values.",
+      "The schematic ruler is internally consistent: 19 cm is at the bottom, 21 cm is at the top, values increase upward, metric and imperial endpoints match the printed range, exactly four evenly spaced unlabeled interior ticks divide it into five proportional segments, and \u201cSCHEMATIC \u2014 NOT TO SCALE\u201d prevents it from implying printed life size.",
+      "All visible habitat, behavior, and field-mark text matches the proposed wording without material duplication, omission, substitution, spelling error, numerical error, or nonsensical text. The verified claims are also consistent with the direct sources, including habitat, sedentary behavior, social foraging, diet, vocalizations, adult-male markings, and duller olive-washed female plumage.",
+      "The separate \u201cWING PATTERN\u201d and \u201cBILL / HEAD\u201d studies accurately reinforce the principal identification features. The five palette labels are correctly spelled and visually appropriate.",
+      "No place name, ZIP code, coordinates, map, locality label, or observation-specific geographic detail appears on the plate."
+    ],
+    "location_free": true,
+    "passed": true,
+    "species_accuracy": 5,
+    "text_accuracy": 5,
+    "verification_sources": [
+      {
+        "title": "Orange Oriole \u2014 eBird",
+        "url": "https://ebird.org/species/oraori1"
+      },
+      {
+        "title": "Orange Oriole \u2014 Birds of the World",
+        "url": "https://birdsoftheworld.org/bow/species/oraori1/cur/introduction"
+      },
+      {
+        "title": "Icterus auratus \u2014 Animal Diversity Web",
+        "url": "https://animaldiversity.org/accounts/Icterus_auratus/"
+      },
+      {
+        "title": "Orange oriole \u2014 Wikipedia",
+        "url": "https://en.wikipedia.org/wiki/Orange_oriole"
+      }
+    ]
+  },
+  "references": [
+    {
+      "attribution": "(c) B. Phalan, some rights reserved (CC BY)",
+      "filename": "01-11127267.jpeg",
+      "height": 1256,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/11127267/large.jpeg",
+      "license_code": "cc-by",
+      "observation_id": 8368969,
+      "observer": "deboas",
+      "photo_id": 11127267,
+      "sha256": "5a68dbcb543d014a9d8662e2a9b48bae2ce5fbb981484e11b860c1673b05b2bf",
+      "source_url": "https://www.inaturalist.org/observations/8368969",
+      "width": 1892
+    },
+    {
+      "attribution": "(c) Ben Costamagna, some rights reserved (CC BY)",
+      "filename": "02-168693459.jpeg",
+      "height": 1150,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/168693459/large.jpeg",
+      "license_code": "cc-by",
+      "observation_id": 101035556,
+      "observer": "bencostamagna",
+      "photo_id": 168693459,
+      "sha256": "9bcf1104c7cd30eec18a1da0eaee97691f4fac129e5bba3dc5fd331e990c2711",
+      "source_url": "https://www.inaturalist.org/observations/101035556",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) Sebasti\u00e1n de Jes\u00fas Herrera Buenfil, some rights reserved (CC BY)",
+      "filename": "03-111801201.jpeg",
+      "height": 1080,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/111801201/large.jpeg",
+      "license_code": "cc-by",
+      "observation_id": 68965378,
+      "observer": "sebastian_hb",
+      "photo_id": 111801201,
+      "sha256": "d5741957b0883ddfa49672deba49e4d14d4a1206fdc75edffeb71dca2b4c3ad9",
+      "source_url": "https://www.inaturalist.org/observations/68965378",
+      "width": 1620
+    },
+    {
+      "attribution": "no rights reserved",
+      "filename": "04-181179001.jpg",
+      "height": 971,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/181179001/large.jpg",
+      "license_code": "cc0",
+      "observation_id": 107692909,
+      "observer": "jeanpaulboerekamps",
+      "photo_id": 181179001,
+      "sha256": "5a3dd60d41d242be0604565ab70b375f6ccb8c01b1afbaf8edac50fb1bbff9f7",
+      "source_url": "https://www.inaturalist.org/observations/107692909",
+      "width": 823
+    }
+  ],
+  "schema_version": 1,
+  "scientific_name": "Icterus auratus",
+  "slug": "orange-oriole",
+  "status": "approved",
+  "taxon_id": 9332
+}

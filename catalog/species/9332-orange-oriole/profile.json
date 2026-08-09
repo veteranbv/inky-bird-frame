@@ -1,0 +1,46 @@
+{
+  "behavior": "Diurnal, arboreal, and nonmigratory. Usually forages alone or in pairs and may join small flocks with other orioles, taking insects, fruit, and nectar; its straight bill can pry pulp from firm fruit. Vocalizations include melodious rising-and-falling whistles and chattering calls.",
+  "common_name": "Orange Oriole",
+  "family": "Icteridae",
+  "field_marks": [
+    "Bright orange head, back, and underparts, often yellower on the body",
+    "Restricted black lores and neatly defined black throat bib",
+    "Dark wings with two bold white wing bars and whitish primary edges",
+    "Long, straight, sharply pointed black bill with a blue-gray lower base",
+    "Fairly long, dark tail; dark eyes and grayish legs",
+    "Female duller yellow-orange with an olive-washed mantle and browner tail"
+  ],
+  "habitat": "Open tropical woodland, forest edge, second growth, scrub, and savanna, often near fresh water; also uses semi-open disturbed or agricultural habitat with hedges and scattered trees.",
+  "measurements": {
+    "length": "19\u201321 cm (7.5\u20138.3 in)",
+    "weight": "Not reported in the consulted sources (g)",
+    "wingspan": "Not reported in the consulted sources (cm)"
+  },
+  "palette": [
+    "bright orange",
+    "golden yellow",
+    "sooty black",
+    "clean white",
+    "olive green"
+  ],
+  "scientific_name": "Icterus auratus",
+  "sources": [
+    {
+      "title": "Orange Oriole \u2014 eBird",
+      "url": "https://ebird.org/species/oraori1"
+    },
+    {
+      "title": "Orange Oriole \u2014 Birds of the World",
+      "url": "https://birdsoftheworld.org/bow/species/oraori1/cur/introduction"
+    },
+    {
+      "title": "Icterus auratus \u2014 Animal Diversity Web",
+      "url": "https://animaldiversity.org/accounts/Icterus_auratus/"
+    },
+    {
+      "title": "Orange oriole \u2014 Wikipedia",
+      "url": "https://en.wikipedia.org/wiki/Orange_oriole"
+    }
+  ],
+  "taxon_id": 9332
+}
