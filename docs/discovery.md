@@ -150,8 +150,9 @@ birdnet_go_url = "http://birdnet-go.local:8080"
 ```
 
 The URL may use HTTP on a trusted local network or HTTPS through a reverse
-proxy. Do not embed credentials, query parameters, or fragments. A BirdNET-Go-
-only configuration needs no discovery location.
+proxy. The endpoint must be reachable without HTTP authentication; keep it on a
+trusted network or VPN. Do not embed credentials, query parameters, or
+fragments. A BirdNET-Go-only configuration needs no discovery location.
 
 Inky uses BirdNET-Go's documented read-only
 `/api/v2/analytics/species/summary` endpoint. It supplies the selected date

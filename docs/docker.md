@@ -123,9 +123,9 @@ sources = ["birdnet-go"]
 birdnet_go_url = "http://birdnet-go.local:8080"
 ```
 
-No detector credential or audio volume is required. Keep plain HTTP on a
-trusted network; use an authenticated TLS reverse proxy across an untrusted
-network.
+No detector credential or audio volume is required. Keep the endpoint on a
+trusted network or VPN. A TLS reverse proxy may provide transport encryption,
+but this provider does not send proxy authentication credentials.
 
 Bird Buddy is different: its email and password are used once and must not be
 kept in `config.toml` or `controller.env`. After obtaining Bird Buddy's
