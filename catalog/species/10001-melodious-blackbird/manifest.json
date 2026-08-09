@@ -1,0 +1,158 @@
+{
+  "approved_at": "2026-08-09T20:46:36+00:00",
+  "assets": {
+    "display": {
+      "filename": "display.png",
+      "sha256": "2da9af35f3aec7dce119297c2d6d883ec58f3d03f387f031099958b2e22a61fe"
+    },
+    "portrait": {
+      "filename": "portrait.png",
+      "sha256": "67f12c25c6f5092735d029b5a15b70f87a5f231b391998c52d5e5cb461704293"
+    }
+  },
+  "common_name": "Melodious Blackbird",
+  "generation": {
+    "attempt": 3,
+    "correction_source_sha256": "baf96172280d0ddcfbdb9eb56929d8f770d243ac8c7b64d82f35a45064697bc9",
+    "generated_at": "2026-08-09T20:46:36+00:00",
+    "generator": "Codex subscription / built-in gpt-image-2",
+    "max_attempts": 3,
+    "prompt_version": "field-journal-v4"
+  },
+  "profile": {
+    "behavior": "Usually seen in pairs or small groups. Forages mainly on the ground but also in trees, taking insects and other arthropods, small vertebrates, seeds, fruit, and nectar. Often flicks the tail sharply upward. Both sexes sing and frequently perform musical duets.",
+    "common_name": "Melodious Blackbird",
+    "family": "Icteridae",
+    "field_marks": [
+      "Entirely black plumage with a subtle blue-violet sheen",
+      "Sharply pointed, slightly curved black bill",
+      "Dark brown eye without a contrasting eye-ring",
+      "Long, broad, rounded black tail",
+      "Large black legs and strong feet",
+      "Plain black wings without bars or patches"
+    ],
+    "habitat": "Semi-open to open tropical and lower-subtropical landscapes, including forest edges and clearings, open woodland, plantations, pastures, parks, and gardens with scattered trees; generally avoids dense forest and thick undergrowth.",
+    "measurements": {
+      "length": "23\u201325.5 cm",
+      "weight": "83.4\u2013102 g",
+      "wingspan": "Not reported; no cm range available in the consulted species accounts"
+    },
+    "palette": [
+      "velvet black",
+      "blue-black",
+      "violet sheen",
+      "charcoal black",
+      "dark brown"
+    ],
+    "scientific_name": "Dives dives",
+    "sources": [
+      {
+        "title": "Melodious Blackbird \u2014 eBird",
+        "url": "https://ebird.org/species/melbla1"
+      },
+      {
+        "title": "Melodious Blackbird \u2014 Birds of the World",
+        "url": "https://birdsoftheworld.org/bow/species/melbla1/cur/introduction"
+      },
+      {
+        "title": "Melodious blackbird \u2014 Wikipedia",
+        "url": "https://en.wikipedia.org/wiki/Melodious_blackbird"
+      }
+    ],
+    "taxon_id": 10001
+  },
+  "quality_review": {
+    "anatomy_accuracy": 4,
+    "composition_quality": 5,
+    "correction_findings": [],
+    "findings": [
+      "Direct sources confirm the identity as Melodious Blackbird (Dives dives), family Icteridae.",
+      "The printed measurements are accurate: males average 25.5 cm and 98.3\u2013102 g; females average 23 cm and 83.4\u201395.9 g. The inspected accounts provide no numeric wingspan range, so the plate does not invent one.",
+      "All visible prose matches the proposed facts without misspellings, duplicated words, omissions, substitutions, or conflicting numbers.",
+      "The habitat and behavior text agrees with the source accounts: semi-open tropical habitat, ground and tree foraging, omnivorous diet, upward tail-flicking, and singing by both sexes\u2014including duets.",
+      "The primary specimen and both studies match the references in their entirely black plumage, restrained blue-violet sheen, pointed black bill, dark eye, plain wings, long rounded tail, and conspicuously strong black legs and feet.",
+      "The primary bird is anatomically coherent: one head, one beak, two naturally positioned wings with the far wing substantially occluded, two legs, four-toed perching feet, and one tail. No duplicated or malformed attached parts are present.",
+      "The bill on both depicted heads is pointed and mildly decurved, with consistent proportions. The verified sources do not establish unequal mandible projection as a species field mark.",
+      "The detached wing and head are clearly separated supplementary studies rather than additional birds or parts attached to the primary specimen; both are anatomically plausible and consistent with it.",
+      "The male 25.5 cm marker is positioned above the female 23 cm marker, both agree with the repeated average-length text, use centimeters, and are explicitly labeled \u201cSCHEMATIC \u2014 NOT TO SCALE.\u201d No range ruler is present.",
+      "The page contains no place name, ZIP code, coordinates, map, or local-observation detail."
+    ],
+    "location_free": true,
+    "passed": true,
+    "species_accuracy": 5,
+    "text_accuracy": 5,
+    "verification_sources": [
+      {
+        "title": "Melodious Blackbird \u2014 eBird",
+        "url": "https://ebird.org/species/melbla1"
+      },
+      {
+        "title": "Melodious Blackbird \u2014 Birds of the World",
+        "url": "https://birdsoftheworld.org/bow/species/melbla1/cur/introduction"
+      },
+      {
+        "title": "Melodious blackbird \u2014 Wikipedia",
+        "url": "https://en.wikipedia.org/wiki/Melodious_blackbird"
+      }
+    ]
+  },
+  "references": [
+    {
+      "attribution": "no rights reserved",
+      "filename": "01-441800269.jpg",
+      "height": 1365,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/441800269/large.jpg",
+      "license_code": "cc0",
+      "observation_id": 247374150,
+      "observer": "rawcomposition",
+      "photo_id": 441800269,
+      "sha256": "2f9678878c2a33fe6ef678f8bbd606f0a84b306bf4e51d2ea25e202843d75b9a",
+      "source_url": "https://www.inaturalist.org/observations/247374150",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) Ricard Busquets Reverte, some rights reserved (CC BY)",
+      "filename": "02-176156670.jpeg",
+      "height": 1365,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/176156670/large.jpeg",
+      "license_code": "cc-by",
+      "observation_id": 105044566,
+      "observer": "ricardelremate",
+      "photo_id": 176156670,
+      "sha256": "02d4f2241e9fbf4aa2b3ceebd1dfa498e191df1f992d5c9e4227f404863b04c1",
+      "source_url": "https://www.inaturalist.org/observations/105044566",
+      "width": 2048
+    },
+    {
+      "attribution": "no rights reserved",
+      "filename": "03-369879428.jpg",
+      "height": 1364,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/369879428/large.jpg",
+      "license_code": "cc0",
+      "observation_id": 209025829,
+      "observer": "juan-mt",
+      "photo_id": 369879428,
+      "sha256": "94f57b7c56814b008f53a8c4d799003dac0e72568759b1015d71c1bda226e339",
+      "source_url": "https://www.inaturalist.org/observations/209025829",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) Kat B, some rights reserved (CC BY)",
+      "filename": "04-348209288.jpg",
+      "height": 1300,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/348209288/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 197668663,
+      "observer": "sorrykb",
+      "photo_id": 348209288,
+      "sha256": "da2eb4bc9b5fb9ab0abbae22300aa9547dc6f66a77bb281b0ab4b92de77d7c0d",
+      "source_url": "https://www.inaturalist.org/observations/197668663",
+      "width": 1950
+    }
+  ],
+  "schema_version": 1,
+  "scientific_name": "Dives dives",
+  "slug": "melodious-blackbird",
+  "status": "approved",
+  "taxon_id": 10001
+}

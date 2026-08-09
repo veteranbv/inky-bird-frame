@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-09T20:27:44+00:00",
+  "generated_at": "2026-08-09T20:46:36+00:00",
   "schema_version": 1,
   "species": [
     {
@@ -892,6 +892,17 @@
       "scientific_name": "Anthus pratensis",
       "slug": "meadow-pipit",
       "taxon_id": 13729
+    },
+    {
+      "approved_at": "2026-08-09T20:46:36+00:00",
+      "common_name": "Melodious Blackbird",
+      "display_path": "species/10001-melodious-blackbird/display.png",
+      "display_sha256": "2da9af35f3aec7dce119297c2d6d883ec58f3d03f387f031099958b2e22a61fe",
+      "portrait_path": "species/10001-melodious-blackbird/portrait.png",
+      "portrait_sha256": "67f12c25c6f5092735d029b5a15b70f87a5f231b391998c52d5e5cb461704293",
+      "scientific_name": "Dives dives",
+      "slug": "melodious-blackbird",
+      "taxon_id": 10001
     },
     {
       "approved_at": "2026-07-23T21:10:05+00:00",

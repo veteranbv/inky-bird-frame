@@ -1,0 +1,35 @@
+{
+  "anatomy_accuracy": 4,
+  "composition_quality": 5,
+  "correction_findings": [],
+  "findings": [
+    "Direct sources confirm the identity as Melodious Blackbird (Dives dives), family Icteridae.",
+    "The printed measurements are accurate: males average 25.5 cm and 98.3\u2013102 g; females average 23 cm and 83.4\u201395.9 g. The inspected accounts provide no numeric wingspan range, so the plate does not invent one.",
+    "All visible prose matches the proposed facts without misspellings, duplicated words, omissions, substitutions, or conflicting numbers.",
+    "The habitat and behavior text agrees with the source accounts: semi-open tropical habitat, ground and tree foraging, omnivorous diet, upward tail-flicking, and singing by both sexes\u2014including duets.",
+    "The primary specimen and both studies match the references in their entirely black plumage, restrained blue-violet sheen, pointed black bill, dark eye, plain wings, long rounded tail, and conspicuously strong black legs and feet.",
+    "The primary bird is anatomically coherent: one head, one beak, two naturally positioned wings with the far wing substantially occluded, two legs, four-toed perching feet, and one tail. No duplicated or malformed attached parts are present.",
+    "The bill on both depicted heads is pointed and mildly decurved, with consistent proportions. The verified sources do not establish unequal mandible projection as a species field mark.",
+    "The detached wing and head are clearly separated supplementary studies rather than additional birds or parts attached to the primary specimen; both are anatomically plausible and consistent with it.",
+    "The male 25.5 cm marker is positioned above the female 23 cm marker, both agree with the repeated average-length text, use centimeters, and are explicitly labeled \u201cSCHEMATIC \u2014 NOT TO SCALE.\u201d No range ruler is present.",
+    "The page contains no place name, ZIP code, coordinates, map, or local-observation detail."
+  ],
+  "location_free": true,
+  "passed": true,
+  "species_accuracy": 5,
+  "text_accuracy": 5,
+  "verification_sources": [
+    {
+      "title": "Melodious Blackbird \u2014 eBird",
+      "url": "https://ebird.org/species/melbla1"
+    },
+    {
+      "title": "Melodious Blackbird \u2014 Birds of the World",
+      "url": "https://birdsoftheworld.org/bow/species/melbla1/cur/introduction"
+    },
+    {
+      "title": "Melodious blackbird \u2014 Wikipedia",
+      "url": "https://en.wikipedia.org/wiki/Melodious_blackbird"
+    }
+  ]
+}
