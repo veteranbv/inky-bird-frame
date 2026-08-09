@@ -1,0 +1,169 @@
+{
+  "approved_at": "2026-08-09T21:06:53+00:00",
+  "assets": {
+    "display": {
+      "filename": "display.png",
+      "sha256": "33a8863bd2e190df165aa51970b1b1b3391f3b128316c556beea680969971629"
+    },
+    "portrait": {
+      "filename": "portrait.png",
+      "sha256": "47ea61e586128cdc5e205c62dd79478e7339eaaeae88886a9dda8873ed0afc76"
+    }
+  },
+  "common_name": "Merlin",
+  "generation": {
+    "attempt": 3,
+    "correction_source_sha256": "733078ffa53c5e2edf0ca10ad3bbb4a33987193378a82fe03abb136881cc07ca",
+    "generated_at": "2026-08-09T21:06:53+00:00",
+    "generator": "Codex subscription / built-in gpt-image-2",
+    "max_attempts": 3,
+    "prompt_version": "field-journal-v4"
+  },
+  "profile": {
+    "behavior": "A swift, powerful aerial hunter that scans from exposed perches, then pursues small birds with rapid, stiff wingbeats and catches them in midair. Usually solitary outside the breeding season and seldom soars.",
+    "common_name": "Merlin",
+    "family": "Falconidae",
+    "field_marks": [
+      "Compact, stocky falcon with a broad chest and blocky head",
+      "Adult males slaty gray above; females and immatures predominantly brown",
+      "Pale buff-to-cream underparts with heavy dark streaking",
+      "Short hooked blue-gray bill, deep-brown eyes, and yellow cere and legs",
+      "Broad-based wings tapering to sharp points",
+      "Dark, square-tipped tail crossed by narrow whitish bands"
+    ],
+    "habitat": "Open and semi-open country, including forest edges and clearings, grasslands, marshes, coasts, shrublands, and developed areas with suitable trees or exposed hunting perches.",
+    "measurements": {
+      "length": "24\u201330 cm (9.4\u201311.8 in)",
+      "weight": "160\u2013240 g (5.6\u20138.5 oz)",
+      "wingspan": "53\u201368 cm (20.9\u201326.8 in)"
+    },
+    "palette": [
+      "slate gray",
+      "dark brown",
+      "buff cream",
+      "white",
+      "yellow"
+    ],
+    "scientific_name": "Falco columbarius",
+    "sources": [
+      {
+        "title": "Merlin Identification \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Merlin/id"
+      },
+      {
+        "title": "Merlin Life History \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Merlin/lifehistory"
+      },
+      {
+        "title": "Merlin \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/merlin"
+      },
+      {
+        "title": "Falco columbarius \u2014 Animal Diversity Web",
+        "url": "https://animaldiversity.org/accounts/Falco_columbarius/"
+      }
+    ],
+    "taxon_id": 4672
+  },
+  "quality_review": {
+    "anatomy_accuracy": 5,
+    "composition_quality": 5,
+    "correction_findings": [],
+    "findings": [
+      "Species identity is correct: the common name Merlin, scientific name Falco columbarius, and family Falconidae agree with the direct source pages and attached photographs.",
+      "All printed measurements exactly match Cornell's current Merlin identification page: length 24\u201330 cm (9.4\u201311.8 in), weight 160\u2013240 g (5.6\u20138.5 oz), and wingspan 53\u201368 cm (20.9\u201326.8 in). Audubon and Animal Diversity Web publish somewhat broader alternative size ranges, but nothing on the plate exceeds the directly supported Cornell values.",
+      "The illustrated primary bird is a credible brown female or immature Merlin: compact, broad-chested proportions; blocky head; brown upperparts; buff-cream underparts with strong longitudinal streaking; barred dark tail; and subdued facial pattern agree with the references and allowed sources.",
+      "The short blue-gray bill, yellow cere, deep-brown eye, yellow legs, and black talons agree with the clearest attached head profile and Animal Diversity Web's physical description.",
+      "In both depicted heads, the upper mandible can be traced continuously from the cere to a distinct projecting, downward-curved tip. The lower mandible terminates behind it; neither bill is co-terminal, reversed, truncated, or materially inconsistent with the other head or the side-profile reference.",
+      "The primary specimen has one head, one beak, two normally overlapped folded wings, two legs with grasping feet, and one tail. No duplicated, detached, or fused primary anatomy is apparent.",
+      "The primary wings taper appropriately, and the detached wing study is clearly supplementary. Its pointed outline and barred flight-feather pattern are compatible with the flight reference and published Merlin wing descriptions.",
+      "The tail is dark, narrowly pale-banded, and broadly square-ended, consistent with the printed field mark, source descriptions, and perched references.",
+      "The habitat and behavior passages reproduce the proposed wording without omissions, substitutions, duplicated words, or nonsensical text. Their substance is supported by Cornell and Audubon, including exposed-perch hunting, midair capture of small birds, powerful rapid flight, open or semi-open habitats, and usual solitude outside breeding.",
+      "Every field-mark bullet and all five palette labels are legible, correctly spelled, and match the proposed facts. The male-versus-female/immature color statement is supported independently by Cornell, Audubon, and Animal Diversity Web.",
+      "The body-length diagram is internally consistent: 24 cm is at the bottom, 30 cm at the top, values increase upward, units and endpoints match the published range, and exactly four evenly spaced unlabeled interior ticks divide it into five proportional segments.",
+      "The ruler is explicitly labeled \u201cSCHEMATIC \u2014 NOT TO SCALE,\u201d so it does not imply that the printed specimen is life-size. Its separate body-length label also agrees with the main measurement block.",
+      "No place name, ZIP code, coordinates, map, or local-observation detail appears anywhere on the plate."
+    ],
+    "location_free": true,
+    "passed": true,
+    "species_accuracy": 5,
+    "text_accuracy": 5,
+    "verification_sources": [
+      {
+        "title": "Merlin Identification \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/merlin/id"
+      },
+      {
+        "title": "Merlin Life History \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/merlin/lifehistory"
+      },
+      {
+        "title": "Merlin \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/merlin"
+      },
+      {
+        "title": "Falco columbarius (merlin) \u2014 Animal Diversity Web",
+        "url": "https://animaldiversity.org/accounts/Falco_columbarius/"
+      }
+    ]
+  },
+  "references": [
+    {
+      "attribution": "(c) Cricket Raspet, some rights reserved (CC BY)",
+      "filename": "01-162025300.jpg",
+      "height": 2048,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/162025300/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 97424010,
+      "observer": "chilipossum",
+      "photo_id": 162025300,
+      "sha256": "d969ad77f9553fce7e226fc33e15b1844cbc2287048bc7c422c418ad7f3879c7",
+      "source_url": "https://www.inaturalist.org/observations/97424010",
+      "width": 1536
+    },
+    {
+      "attribution": "(c) Esteban Poveda, some rights reserved (CC BY)",
+      "filename": "02-115831605.jpeg",
+      "height": 1435,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/115831605/large.jpeg",
+      "license_code": "cc-by",
+      "observation_id": 71171544,
+      "observer": "quilicotriste",
+      "photo_id": 115831605,
+      "sha256": "5b156f0f3ce41961dc55796958ef872dc2e95b6da2b843c47c0218c6817fbf74",
+      "source_url": "https://www.inaturalist.org/observations/71171544",
+      "width": 1913
+    },
+    {
+      "attribution": "(c) Natasha Haggard, some rights reserved (CC BY)",
+      "filename": "03-578169079.jpg",
+      "height": 1843,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/578169079/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 319822290,
+      "observer": "natashahaggard",
+      "photo_id": 578169079,
+      "sha256": "a68123d4a6717e7117bff5df4d4f8dd8ee08713f0021d36d4b20f9268be90a3b",
+      "source_url": "https://www.inaturalist.org/observations/319822290",
+      "width": 1843
+    },
+    {
+      "attribution": "no rights reserved",
+      "filename": "04-324285453.jpg",
+      "height": 1506,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/324285453/large.jpg",
+      "license_code": "cc0",
+      "observation_id": 185660720,
+      "observer": "k-simpkins",
+      "photo_id": 324285453,
+      "sha256": "d5a6fe5368775b7c8e2e02136125e93301948df2611ee824af0519287c0d1e14",
+      "source_url": "https://www.inaturalist.org/observations/185660720",
+      "width": 2008
+    }
+  ],
+  "schema_version": 1,
+  "scientific_name": "Falco columbarius",
+  "slug": "merlin",
+  "status": "approved",
+  "taxon_id": 4672
+}

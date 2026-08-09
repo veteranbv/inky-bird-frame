@@ -1,0 +1,46 @@
+{
+  "behavior": "A swift, powerful aerial hunter that scans from exposed perches, then pursues small birds with rapid, stiff wingbeats and catches them in midair. Usually solitary outside the breeding season and seldom soars.",
+  "common_name": "Merlin",
+  "family": "Falconidae",
+  "field_marks": [
+    "Compact, stocky falcon with a broad chest and blocky head",
+    "Adult males slaty gray above; females and immatures predominantly brown",
+    "Pale buff-to-cream underparts with heavy dark streaking",
+    "Short hooked blue-gray bill, deep-brown eyes, and yellow cere and legs",
+    "Broad-based wings tapering to sharp points",
+    "Dark, square-tipped tail crossed by narrow whitish bands"
+  ],
+  "habitat": "Open and semi-open country, including forest edges and clearings, grasslands, marshes, coasts, shrublands, and developed areas with suitable trees or exposed hunting perches.",
+  "measurements": {
+    "length": "24\u201330 cm (9.4\u201311.8 in)",
+    "weight": "160\u2013240 g (5.6\u20138.5 oz)",
+    "wingspan": "53\u201368 cm (20.9\u201326.8 in)"
+  },
+  "palette": [
+    "slate gray",
+    "dark brown",
+    "buff cream",
+    "white",
+    "yellow"
+  ],
+  "scientific_name": "Falco columbarius",
+  "sources": [
+    {
+      "title": "Merlin Identification \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Merlin/id"
+    },
+    {
+      "title": "Merlin Life History \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Merlin/lifehistory"
+    },
+    {
+      "title": "Merlin \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/merlin"
+    },
+    {
+      "title": "Falco columbarius \u2014 Animal Diversity Web",
+      "url": "https://animaldiversity.org/accounts/Falco_columbarius/"
+    }
+  ],
+  "taxon_id": 4672
+}
