@@ -521,9 +521,14 @@ def load_config(path: Path, *, load_secrets: bool = True) -> AppConfig:
         raise ConfigurationError("BirdNET-Go discovery requires birdnet_go_url")
     if birdnet_go_url is not None:
         parsed_birdnet_go_url = urlsplit(birdnet_go_url)
+        try:
+            _ = parsed_birdnet_go_url.port
+        except ValueError as exc:
+            raise ConfigurationError("birdnet_go_url contains an invalid port") from exc
         if (
             parsed_birdnet_go_url.scheme not in {"http", "https"}
             or not parsed_birdnet_go_url.netloc
+            or parsed_birdnet_go_url.hostname is None
             or parsed_birdnet_go_url.username is not None
             or parsed_birdnet_go_url.password is not None
             or parsed_birdnet_go_url.query

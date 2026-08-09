@@ -270,6 +270,19 @@ class ConfigTests(unittest.TestCase):
             with self.assertRaisesRegex(ConfigurationError, "without credentials"):
                 load_config(path)
 
+    def test_birdnet_go_url_rejects_invalid_port(self) -> None:
+        configured = CONFIG.replace(
+            "[discovery]\n",
+            '[discovery]\nsources = ["birdnet-go"]\n'
+            'birdnet_go_url = "http://birdnet-go.local:notaport"\n',
+        )
+        with TemporaryDirectory() as temporary:
+            path = Path(temporary) / "config.toml"
+            path.write_text(configured)
+
+            with self.assertRaisesRegex(ConfigurationError, "invalid port"):
+                load_config(path)
+
     def test_legacy_all_source_does_not_implicitly_enable_new_private_sources(self) -> None:
         configured = CONFIG.replace(
             "[discovery]\n",

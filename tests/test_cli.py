@@ -2297,6 +2297,7 @@ rotation_mode = "shuffle_bag"
                 {"name": "ebird", "status": "ok"},
                 {"name": "birdweather", "status": "ok"},
                 {"name": "birdbuddy", "status": "ok"},
+                {"name": "birdnet-go", "status": "ok"},
             ],
             "unresolved_species": [
                 {
@@ -2310,6 +2311,12 @@ rotation_mode = "shuffle_bag"
                     "species_code": "species-new",
                     "common_name": "New Bird",
                     "scientific_name": "Avis nova",
+                },
+                {
+                    "provider": "birdnet-go",
+                    "species_code": "Avis networka",
+                    "common_name": "Network Bird",
+                    "scientific_name": "Avis networka",
                 },
             ],
             "new_species": [],
@@ -2327,10 +2334,12 @@ rotation_mode = "shuffle_bag"
         recovered_keys = [call.kwargs["key"] for call in recovery.call_args_list]
         self.assertIn("birdweather-taxonomy", degraded_keys)
         self.assertIn("birdbuddy-taxonomy", degraded_keys)
+        self.assertIn("birdnet-go-taxonomy", degraded_keys)
         self.assertNotIn("ebird-taxonomy", degraded_keys)
         self.assertIn("ebird-taxonomy", recovered_keys)
         self.assertNotIn("birdweather-taxonomy", recovered_keys)
         self.assertNotIn("birdbuddy-taxonomy", recovered_keys)
+        self.assertNotIn("birdnet-go-taxonomy", recovered_keys)
 
     def test_refresh_recovers_birdbuddy_taxonomy_alert(self) -> None:
         config = SimpleNamespace(discovery=SimpleNamespace(sources=(DiscoveryProvider.BIRDBUDDY,)))
