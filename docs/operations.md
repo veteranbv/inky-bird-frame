@@ -40,6 +40,11 @@ if the session is revoked. Removing `birdbuddy` from `discovery.sources` is the
 non-destructive rollback; `birdbuddy logout --yes` additionally removes local
 authentication without deleting accumulated history.
 
+BirdNET-Go uses only the configured `birdnet_go_url`. Removing `birdnet-go`
+from `discovery.sources` is its complete rollback; Inky never changes the
+detector or downloads its recordings. Provider status reports connection,
+response-contract, and taxonomy failures without exposing the configured URL.
+
 The selected feeder's confirmed metadata is always used as a safety net when a
 postcard leaves the new-postcard feed before a poll. When all of a cached
 postcard's media identifiers are present in confirmed history, the confirmed

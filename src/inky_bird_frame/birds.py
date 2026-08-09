@@ -60,6 +60,14 @@ class BirdBuddySpecies:
 
 
 @dataclass(frozen=True)
+class BirdNetGoSpecies:
+    common_name: str
+    scientific_name: str
+    detection_count: int
+    latest_detection_at: str
+
+
+@dataclass(frozen=True)
 class EbirdResolution:
     species: list[BirdSpecies]
     unresolved: list[EbirdSpecies]
@@ -377,6 +385,72 @@ def fetch_birdweather_species(
     return parse_birdweather_species(payload)
 
 
+def parse_birdnet_go_species(payload: object) -> list[BirdNetGoSpecies]:
+    if not isinstance(payload, list):
+        raise DataSourceError("BirdNET-Go species summary response was not a list")
+
+    species: list[BirdNetGoSpecies] = []
+    seen: set[str] = set()
+    for item in payload:
+        if not isinstance(item, dict):
+            continue
+        common_name = item.get("common_name")
+        scientific_name = item.get("scientific_name")
+        count = item.get("count")
+        latest_detection_at = item.get("last_heard")
+        if (
+            not isinstance(common_name, str)
+            or not common_name.strip()
+            or not isinstance(scientific_name, str)
+            or not scientific_name.strip()
+            or scientific_name.strip() in seen
+            or not isinstance(count, int)
+            or isinstance(count, bool)
+            or count <= 0
+            or not isinstance(latest_detection_at, str)
+            or _parse_cache_datetime(latest_detection_at) is None
+        ):
+            continue
+        normalized_scientific_name = scientific_name.strip()
+        seen.add(normalized_scientific_name)
+        species.append(
+            BirdNetGoSpecies(
+                common_name=common_name.strip(),
+                scientific_name=normalized_scientific_name,
+                detection_count=count,
+                latest_detection_at=latest_detection_at.strip(),
+            )
+        )
+    if payload and not species:
+        raise DataSourceError("BirdNET-Go response did not include usable species summaries")
+    return species
+
+
+def fetch_birdnet_go_species(
+    *,
+    base_url: str,
+    limit: int,
+    window: ObservationWindow,
+    today: date | None = None,
+    timeout_seconds: float = 10.0,
+) -> list[BirdNetGoSpecies]:
+    if not base_url.strip():
+        raise ValueError("BirdNET-Go base URL must not be empty")
+    if limit <= 0:
+        raise ValueError("BirdNET-Go species_limit must be greater than zero")
+    query = {"limit": str(limit)}
+    selected_range = date_range_for_window(window, today)
+    if selected_range.start is not None and selected_range.end is not None:
+        query["start_date"] = selected_range.start.isoformat()
+        query["end_date"] = selected_range.end.isoformat()
+    payload = get_json(
+        f"{base_url.rstrip('/')}/api/v2/analytics/species/summary?{urlencode(query)}",
+        timeout_seconds,
+        error_label="BirdNET-Go API",
+    )
+    return parse_birdnet_go_species(payload)
+
+
 def parse_inaturalist_taxon_match(payload: object, scientific_name: str) -> BirdSpecies:
     if not isinstance(payload, dict):
         raise DataSourceError("iNaturalist taxon search response was not an object")
@@ -628,6 +702,46 @@ def resolve_birdbuddy_species(
         for species, detection in zip(resolution.species, resolved_detections, strict=True)
     ]
     return resolved, [item for item in detections if item.species_id in unresolved_codes]
+
+
+def resolve_birdnet_go_species(
+    detections: list[BirdNetGoSpecies],
+    cache_path: Path,
+    *,
+    now: datetime | None = None,
+    timeout_seconds: float = 10.0,
+    persist_cache: bool = True,
+) -> tuple[list[BirdSpecies], list[BirdNetGoSpecies]]:
+    observations = [
+        EbirdSpecies(
+            species_code=item.scientific_name,
+            common_name=item.common_name,
+            scientific_name=item.scientific_name,
+            observed_at=item.latest_detection_at,
+        )
+        for item in detections
+    ]
+    counts = {item.scientific_name: item.detection_count for item in detections}
+    resolution = _resolve_external_species(
+        observations,
+        cache_path,
+        source="BirdNET-Go",
+        counts=counts,
+        now=now,
+        timeout_seconds=timeout_seconds,
+        persist_cache=persist_cache,
+    )
+    unresolved_names = {item.species_code for item in resolution.unresolved}
+    resolved_detections = [
+        item for item in detections if item.scientific_name not in unresolved_names
+    ]
+    if len(resolution.species) != len(resolved_detections):
+        raise DataSourceError("BirdNET-Go taxonomy resolution returned inconsistent results")
+    resolved = [
+        replace(species, latest_detection_at=detection.latest_detection_at)
+        for species, detection in zip(resolution.species, resolved_detections, strict=True)
+    ]
+    return resolved, [item for item in detections if item.scientific_name in unresolved_names]
 
 
 def _resolve_external_species(

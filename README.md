@@ -22,9 +22,10 @@ plates on a color e-paper display.
 </p>
 
 The controller checks the observation sources you configure. iNaturalist and
-eBird use your distance and time window; BirdWeather uses recent detections from
-your station; Bird Buddy can read authorized postcard detections from one
-feeder. If a matching plate already exists, the controller uses it. If not, it
+eBird use your distance and time window; BirdWeather and self-hosted BirdNET-Go
+use recent detections from your station; Bird Buddy can read authorized
+postcard detections from one feeder. If a matching plate already exists, the
+controller uses it. If not, it
 gathers licensed reference photos, researches the species, creates a plate with
 Codex, and reviews the result before it can appear on the frame. Approved plates
 are cached and reused.
@@ -34,7 +35,7 @@ are cached and reused.
 <p align="center">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="docs/images/installation-architecture-dark.png">
-    <img src="docs/images/installation-architecture.png" alt="Inky Bird Frame runtime architecture showing iNaturalist, eBird, BirdWeather, and Bird Buddy observation services; the controller; its private HTTP connection with the Raspberry Pi display node; and the Inky Impression panel" width="760">
+    <img src="docs/images/installation-architecture.png" alt="Inky Bird Frame runtime architecture showing iNaturalist, eBird, BirdWeather, BirdNET-Go, and Bird Buddy observation services; the controller; its private HTTP connection with the Raspberry Pi display node; and the Inky Impression panel" width="760">
   </picture>
 </p>
 
@@ -263,17 +264,17 @@ uv run inky-bird-frame catalog-publish --config config.toml --dry-run
 uv run inky-bird-frame catalog-publish --config config.toml
 ```
 
-Choose any combination of `inaturalist`, `ebird`, `birdweather`, and
-`birdbuddy` in `discovery.sources`. BirdWeather reads detection summaries from
-one station; it does not receive recordings or manage microphones. Bird Buddy
-is an opt-in private-API integration that requires the user to obtain Bird
-Buddy's permission and confirm it during login. It follows the selected feeder
-by default; account-level manually added sightings require the explicit
+Choose any combination of `inaturalist`, `ebird`, `birdweather`, `birdnet-go`,
+and `birdbuddy` in `discovery.sources`. BirdWeather and BirdNET-Go read detection
+summaries from one station; they do not receive recordings or manage
+microphones. Bird Buddy is an opt-in private-API integration that requires the
+user to obtain Bird Buddy's permission and confirm it during login. It follows
+the selected feeder by default; account-level manually added sightings require the explicit
 `birdbuddy_include_manual_sightings = true` option. Every provider result is
 matched to the same iNaturalist species identity before it enters the catalog.
-By default, the frame gives the newest eligible detection across BirdWeather
-and Bird Buddy one turn when that species already has a plate in the active
-catalog, then returns to its normal rotation.
+By default, the frame gives the newest eligible detection across BirdWeather,
+BirdNET-Go, and Bird Buddy one turn when that species already has a plate in the
+active catalog, then returns to its normal rotation.
 
 Choose `last-day`, `last-week`, `last-30-days`, `last-year`, or `all-time` for
 the observation window. Provider limits still apply. The

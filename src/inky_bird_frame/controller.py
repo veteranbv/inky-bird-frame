@@ -17,16 +17,19 @@ from typing import cast
 from .birdbuddy import sync_birdbuddy_detections
 from .birds import (
     BirdBuddySpecies,
+    BirdNetGoSpecies,
     BirdSpecies,
     BirdWeatherSpecies,
     DateRange,
     EbirdSpecies,
     ObservationWindow,
+    fetch_birdnet_go_species,
     fetch_birdweather_species,
     fetch_ebird_observations,
     fetch_inaturalist_birds,
     fetch_taxon_context,
     resolve_birdbuddy_species,
+    resolve_birdnet_go_species,
     resolve_birdweather_species,
     resolve_ebird_species,
 )
@@ -120,7 +123,7 @@ class DiscoveryResult:
     location: DiscoveryLocation | None
     species: list[BirdSpecies]
     providers: list[ProviderStatus]
-    unresolved: list[EbirdSpecies | BirdWeatherSpecies | BirdBuddySpecies]
+    unresolved: list[EbirdSpecies | BirdWeatherSpecies | BirdBuddySpecies | BirdNetGoSpecies]
 
 
 @dataclass(frozen=True)
@@ -203,7 +206,7 @@ def discover_species(
         raise ValueError("BirdWeather species_limit must be between 1 and 100")
     providers: list[ProviderStatus] = []
     provider_species: list[list[BirdSpecies]] = []
-    unresolved: list[EbirdSpecies | BirdWeatherSpecies | BirdBuddySpecies] = []
+    unresolved: list[EbirdSpecies | BirdWeatherSpecies | BirdBuddySpecies | BirdNetGoSpecies] = []
     location: DiscoveryLocation | None = None
 
     location_provider_names: list[str] = []
@@ -373,6 +376,46 @@ def discover_species(
                     )
                 )
 
+    if DiscoveryProvider.BIRDNET_GO in selected_sources:
+        try:
+            base_url = config.discovery.birdnet_go_url
+            if base_url is None:
+                raise DataSourceError("BirdNET-Go base URL is not configured")
+            birdnet_go_detections = fetch_birdnet_go_species(
+                base_url=base_url,
+                limit=selected_limit,
+                window=selected_window,
+            )
+            resolved, birdnet_go_unresolved = resolve_birdnet_go_species(
+                birdnet_go_detections,
+                config.controller.state_dir / "birdnet-go-taxonomy-crosswalk.json",
+                persist_cache=persist_taxonomy_cache,
+            )
+        except (DataSourceError, ValueError) as exc:
+            providers.append(ProviderStatus("birdnet-go", "error", 0, error=str(exc)))
+        else:
+            unresolved.extend(birdnet_go_unresolved)
+            if birdnet_go_detections and not resolved:
+                providers.append(
+                    ProviderStatus(
+                        "birdnet-go",
+                        "error",
+                        0,
+                        unresolved_count=len(birdnet_go_unresolved),
+                        error="No BirdNET-Go detections had an exact iNaturalist species match",
+                    )
+                )
+            else:
+                provider_species.append(resolved)
+                providers.append(
+                    ProviderStatus(
+                        "birdnet-go",
+                        "ok",
+                        len(resolved),
+                        unresolved_count=len(birdnet_go_unresolved),
+                    )
+                )
+
     if not provider_species:
         failures = "; ".join(
             f"{provider.name}: {provider.error}" for provider in providers if provider.error
@@ -447,7 +490,7 @@ def _species_payload(species: BirdSpecies) -> dict[str, object]:
 
 
 def _unresolved_species_payload(
-    species: EbirdSpecies | BirdWeatherSpecies | BirdBuddySpecies,
+    species: EbirdSpecies | BirdWeatherSpecies | BirdBuddySpecies | BirdNetGoSpecies,
 ) -> dict[str, object]:
     if isinstance(species, EbirdSpecies):
         provider = "ebird"
@@ -455,9 +498,12 @@ def _unresolved_species_payload(
     elif isinstance(species, BirdWeatherSpecies):
         provider = "birdweather"
         provider_species_id = str(species.species_id)
-    else:
+    elif isinstance(species, BirdBuddySpecies):
         provider = "birdbuddy"
         provider_species_id = species.species_id
+    else:
+        provider = "birdnet-go"
+        provider_species_id = species.scientific_name
     return {
         "provider": provider,
         "species_code": provider_species_id,
