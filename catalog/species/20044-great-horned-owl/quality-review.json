@@ -1,0 +1,33 @@
+{
+  "anatomy_accuracy": 5,
+  "composition_quality": 5,
+  "correction_findings": [],
+  "findings": [
+    "Species identity is correct: the prominent ear tufts, bright yellow eyes, gray-to-cinnamon facial disc, white throat patch, mottled gray-brown upperparts, densely barred underparts, thick body, and upright posture agree with the references and direct source descriptions.",
+    "The primary specimen is complete and singular, with one head, one short hooked bill, two folded wings, two feathered legs with dark talons, and one short barred tail. Plumage, proportions, facial structure, and feet are credible for Great Horned Owl.",
+    "The detached flight study correctly shows broad, rounded wings and a comparatively short, barred, rounded tail. The detached side-profile head has a plausible facial disc, eye, ear tuft, and downward-hooked upper mandible; neither study appears attached to the primary specimen.",
+    "Every visible text line is legible and matches the proposed common name, scientific name, family, measurements, habitat, behavior, field marks, and palette without spelling, number, word-order, duplication, omission, or substitution errors.",
+    "Cornell directly supports length 46\u201363 cm, weight 910\u20132,500 g, and wingspan 101\u2013145 cm. Audubon independently gives the same length and weight and an effectively equivalent wingspan of 1.02\u20131.45 m.",
+    "The length ruler is explicitly labeled schematic and not to scale. Its 46 cm lower endpoint and 63 cm upper endpoint increase correctly from bottom to top, agree with the printed range, and contain exactly four evenly spaced unlabeled interior ticks forming five proportional segments.",
+    "The layout is balanced and readable, with clear separation between the primary specimen, text, scale, flight study, head study, and palette.",
+    "No place name, ZIP code, coordinates, map, or local-observation detail appears."
+  ],
+  "location_free": true,
+  "passed": true,
+  "species_accuracy": 5,
+  "text_accuracy": 5,
+  "verification_sources": [
+    {
+      "title": "Great Horned Owl Identification \u2014 Cornell Lab of Ornithology",
+      "url": "https://www.allaboutbirds.org/guide/Great_Horned_Owl/id"
+    },
+    {
+      "title": "Great Horned Owl \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/great-horned-owl"
+    },
+    {
+      "title": "Bubo virginianus \u2014 Animal Diversity Web",
+      "url": "https://animaldiversity.org/accounts/Bubo_virginianus/"
+    }
+  ]
+}

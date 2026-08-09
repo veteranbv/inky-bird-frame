@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-09T19:09:04+00:00",
+  "generated_at": "2026-08-09T19:24:26+00:00",
   "schema_version": 1,
   "species": [
     {
@@ -683,6 +683,17 @@
       "scientific_name": "Ardea alba",
       "slug": "great-egret",
       "taxon_id": 144455
+    },
+    {
+      "approved_at": "2026-08-09T19:24:26+00:00",
+      "common_name": "Great Horned Owl",
+      "display_path": "species/20044-great-horned-owl/display.png",
+      "display_sha256": "343c8142a7794a328713881c8163f1717426348033dd9e8b6fd0b0e0a0e38b12",
+      "portrait_path": "species/20044-great-horned-owl/portrait.png",
+      "portrait_sha256": "6a9c360766afcbbfd94aab22be6bc238d8ae39bee2ac7a563374b2fff0d8ea86",
+      "scientific_name": "Bubo virginianus",
+      "slug": "great-horned-owl",
+      "taxon_id": 20044
     },
     {
       "approved_at": "2026-08-09T11:18:55+00:00",
