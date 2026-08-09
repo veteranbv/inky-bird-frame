@@ -1,0 +1,42 @@
+{
+  "behavior": "Usually remains low in dense cover, walking or climbing through vegetation and making short flights when flushed. Forages on mud, at water edges, and in shallow water, picking seeds and invertebrates from the ground, plants, or water surface. Males sing a simple trill from raised perches.",
+  "common_name": "Swamp Sparrow",
+  "family": "Passerellidae",
+  "field_marks": [
+    "Compact, robust sparrow with a moderately long, rounded tail",
+    "Relatively long, pinkish legs",
+    "Short conical bill with a yellowish base",
+    "Rusty crown in breeding plumage; browner and streaked outside the breeding season",
+    "Gray face with a dark eye and dark line behind it; clean whitish throat",
+    "Rusty-chestnut wings and back marked with dark streaks"
+  ],
+  "habitat": "Densely vegetated wetlands, especially freshwater marshes, sedge swamps, bogs, wet meadows, and brushy margins with cattails, reeds, grasses, or shrubs. Also uses brackish marshes; during migration and winter it may occur in damp thickets, streamside cover, and weedy fields.",
+  "measurements": {
+    "length": "12\u201315 cm (4.7\u20135.9 in)",
+    "weight": "15\u201323 g (0.5\u20130.8 oz)",
+    "wingspan": "18\u201319 cm (7.1\u20137.5 in)"
+  },
+  "palette": [
+    "rusty chestnut",
+    "warm brown",
+    "soft gray",
+    "creamy white",
+    "black"
+  ],
+  "scientific_name": "Melospiza georgiana",
+  "sources": [
+    {
+      "title": "Swamp Sparrow Identification \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Swamp_Sparrow/id"
+    },
+    {
+      "title": "Swamp Sparrow Life History \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Swamp_Sparrow/lifehistory"
+    },
+    {
+      "title": "Swamp Sparrow \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/swamp-sparrow"
+    }
+  ],
+  "taxon_id": 9096
+}

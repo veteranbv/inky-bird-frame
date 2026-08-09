@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-09T18:04:12+00:00",
+  "generated_at": "2026-08-09T18:16:46+00:00",
   "schema_version": 1,
   "species": [
     {
@@ -1200,6 +1200,17 @@
       "scientific_name": "Piranga rubra",
       "slug": "summer-tanager",
       "taxon_id": 9915
+    },
+    {
+      "approved_at": "2026-08-09T18:16:46+00:00",
+      "common_name": "Swamp Sparrow",
+      "display_path": "species/9096-swamp-sparrow/display.png",
+      "display_sha256": "6cab9bfda4d118d6ecfc3ecaf90e623ea89fb950c6daad9761fcebb933ed4a84",
+      "portrait_path": "species/9096-swamp-sparrow/portrait.png",
+      "portrait_sha256": "7aa24cb1bc257fd7982519b7ab897e1db92aa85aa1be49413a4060d0feb27f0e",
+      "scientific_name": "Melospiza georgiana",
+      "slug": "swamp-sparrow",
+      "taxon_id": 9096
     },
     {
       "approved_at": "2026-07-09T22:29:46+00:00",
