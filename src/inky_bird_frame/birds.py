@@ -10,6 +10,7 @@ from dataclasses import dataclass, replace
 from datetime import UTC, date, datetime, timedelta
 from enum import StrEnum
 from pathlib import Path
+from time import sleep
 from typing import Final
 from urllib.parse import quote, urlencode
 
@@ -114,6 +115,9 @@ EBIRD_MAX_RADIUS_KM: Final = 50
 EBIRD_UNRESOLVED_RETRY_DAYS: Final = 7
 TAXONOMY_MATCH_STRATEGY: Final = "scientific-name-or-exact-synonym-v1"
 BIRDWEATHER_MAX_SPECIES: Final = 100
+# iNaturalist asks API clients to stay near one request per second. Taxonomy
+# lookups cannot be batched because every source name needs an exact-match check.
+INATURALIST_TAXONOMY_REQUEST_DELAY_SECONDS: Final = 1.0
 
 
 @dataclass(frozen=True)
@@ -520,6 +524,7 @@ def fetch_inaturalist_taxon_match(
             "per_page": "20",
         }
     )
+    sleep(INATURALIST_TAXONOMY_REQUEST_DELAY_SECONDS)
     payload = get_json(f"https://api.inaturalist.org/v1/taxa?{params}", timeout_seconds)
     return parse_inaturalist_taxon_match(payload, scientific_name)
 
