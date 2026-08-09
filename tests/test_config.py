@@ -65,6 +65,7 @@ class ConfigTests(unittest.TestCase):
         self.assertEqual(config.discovery.radius_km, 16)
         self.assertEqual(config.controller.catalog_dir, (Path(temporary) / "catalog").resolve())
         self.assertEqual(config.controller.max_generation_attempts, 3)
+        self.assertIsNone(config.controller.codex_model)
         self.assertEqual(config.display_node.controller_url, "http://controller.test:8793")
         self.assertEqual(config.display_node.rotation_mode, RotationMode.WEIGHTED)
         self.assertTrue(config.display_node.prioritize_latest_detection)
@@ -85,6 +86,35 @@ class ConfigTests(unittest.TestCase):
         self.assertEqual(config.schedule.rotation_jitter_seconds, 7)
         self.assertEqual(config.schedule.display_startup_delay_seconds, 30)
         self.assertEqual(config.schedule.catalog_publish_minutes, 4)
+
+    def test_loads_optional_codex_model_pin(self) -> None:
+        with TemporaryDirectory() as temporary:
+            path = Path(temporary) / "config.toml"
+            path.write_text(
+                CONFIG.replace(
+                    'codex_path = "/Applications/Codex.app/Contents/Resources/codex"',
+                    'codex_path = "/Applications/Codex.app/Contents/Resources/codex"\n'
+                    'codex_model = "tested-model"',
+                )
+            )
+
+            config = load_config(path)
+
+        self.assertEqual(config.controller.codex_model, "tested-model")
+
+    def test_rejects_blank_codex_model_pin(self) -> None:
+        with TemporaryDirectory() as temporary:
+            path = Path(temporary) / "config.toml"
+            path.write_text(
+                CONFIG.replace(
+                    'codex_path = "/Applications/Codex.app/Contents/Resources/codex"',
+                    'codex_path = "/Applications/Codex.app/Contents/Resources/codex"\n'
+                    'codex_model = "  "',
+                )
+            )
+
+            with self.assertRaisesRegex(ConfigurationError, "codex_model must be a non-empty"):
+                load_config(path)
 
     def test_ebird_source_requires_a_key(self) -> None:
         with TemporaryDirectory() as temporary:

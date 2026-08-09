@@ -30,6 +30,13 @@ class SpeciesProfileData(TypedDict):
     sources: list[SourceLink]
 
 
+class ProfileConflict(TypedDict):
+    field: str
+    profile_value: str
+    observed_value: str
+    sources: list[SourceLink]
+
+
 @dataclass(frozen=True)
 class ReferencePhoto:
     photo_id: int
@@ -71,9 +78,10 @@ class QualityReview:
     findings: tuple[str, ...]
     verification_sources: tuple[SourceLink, ...] = ()
     correction_findings: tuple[str, ...] = ()
+    profile_conflicts: tuple[ProfileConflict, ...] = ()
 
     def as_dict(self) -> dict[str, object]:
-        return {
+        result: dict[str, object] = {
             "passed": self.passed,
             "species_accuracy": self.species_accuracy,
             "anatomy_accuracy": self.anatomy_accuracy,
@@ -84,3 +92,6 @@ class QualityReview:
             "verification_sources": list(self.verification_sources),
             "correction_findings": list(self.correction_findings),
         }
+        if self.profile_conflicts:
+            result["profile_conflicts"] = list(self.profile_conflicts)
+        return result

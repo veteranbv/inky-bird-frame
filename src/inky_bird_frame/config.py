@@ -112,6 +112,7 @@ class ControllerConfig:
     catalog_dir: Path
     state_dir: Path
     codex_path: Path
+    codex_model: str | None
     bind_host: str
     port: int
     references_per_species: int
@@ -638,6 +639,7 @@ def load_config(path: Path, *, load_secrets: bool = True) -> AppConfig:
             catalog_dir=_path(_string(controller, "catalog_dir"), base_dir),
             state_dir=_path(_string(controller, "state_dir"), base_dir),
             codex_path=_executable_path(_string(controller, "codex_path"), base_dir),
+            codex_model=_optional_string(controller, "codex_model", default="") or None,
             bind_host=_string(controller, "bind_host"),
             port=_integer(controller, "port", maximum=65535),
             references_per_species=_integer(controller, "references_per_species"),

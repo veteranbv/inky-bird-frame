@@ -30,7 +30,11 @@ The controller's `workspace_dir` must be writable because the Codex image tool
 copies its final image there. Keep it separate from configuration, catalog, and
 state; the example uses a dedicated `workspace` directory. `catalog_dir` and
 `state_dir` must persist across deployments. `codex_path` must point to a Codex
-CLI whose `login status` reports a ChatGPT-authenticated session.
+CLI whose `login status` reports a ChatGPT-authenticated session. Set the
+optional `codex_model` only after validating that model for profile research,
+generation, and review; otherwise the controller inherits the machine-wide
+Codex default. Each private run record states the requested value explicitly,
+including `null` when the default was inherited.
 
 Bird Buddy uses controller-private authentication state rather than configured
 credentials. Obtain Bird Buddy's permission first, run `birdbuddy login`, and
@@ -112,6 +116,22 @@ by configured domains, per-species attempts, and a daily total. A validated
 profile is cached, so image retries do not repeat profile research. Independent
 quality review may revisit configured source domains to verify the rendered
 facts rather than trusting the profile's citations.
+
+When that review finds a material disagreement with the cached profile, it
+must identify the supported profile field and cite two independent allowed
+sources. The reviewer cannot write canonical facts directly. Instead, the
+controller permits one fresh source-backed profile research pass within the
+same generation limit and research budget. A repeated conflict becomes
+terminal. Private `runs/*/profile-before-refresh.json` and
+`profile-after-refresh.json` files preserve the adjudication evidence.
+
+`state_dir/runs/*/attempt-history.json` is a private, schema-versioned record of
+every started image attempt. It includes prompt version, requested model,
+generation and review latency, score-axis failures, correction regressions,
+profile conflicts, and sanitized process-error types. Terminal failures also
+retain a copy with their private failed artifacts. These files can contain
+source-backed species facts and review diagnostics; back them up with
+controller state, never publish them into the reusable catalog.
 
 `rotation_mode` is configured under `[display_node]`:
 

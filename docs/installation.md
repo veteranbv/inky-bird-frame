@@ -125,6 +125,10 @@ At minimum, set:
 - one discovery location from `zip_code`, `postal_code` plus `country_code`, or
   `latitude` plus `longitude` when iNaturalist or eBird is enabled;
 - `controller.codex_path` to the output of `command -v codex`;
+- optionally, `controller.codex_model` to a model you have validated for
+  source-backed profile research, image generation, and review (omit it to use
+  Codex's configured default, and run one foreground generation after changing
+  the pin);
 - `display_node.controller_url` to a name or address the Pi can reach, such as
   `http://bird-controller.local:8793`; and
 - any paths that should live outside the configuration directory.

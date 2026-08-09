@@ -2346,7 +2346,10 @@ class ControllerTests(unittest.TestCase):
             FakeRunner.invariants,
             [
                 ("Render clearly visible natural eyes",),
-                ("Render clearly visible natural eyes",),
+                (
+                    "Render clearly visible natural eyes",
+                    "Preserve the previous scale correction",
+                ),
             ],
         )
         self.assertEqual(len(FakeRunner.generated_paths), 2)
@@ -2361,6 +2364,475 @@ class ControllerTests(unittest.TestCase):
         self.assertEqual(manifest["status"], "pending")
         self.assertFalse((candidate / "attempt-history.json").exists())
         self.assertEqual(len(private_histories), 1)
+
+    def test_profile_conflict_triggers_one_source_backed_refresh(self) -> None:
+        species = BirdSpecies(9083, "Northern Cardinal", "Cardinalis cardinalis", 2, "test")
+        researched_profile = SpeciesProfileData(
+            **{
+                **PROFILE,
+                "measurements": {
+                    **PROFILE["measurements"],
+                    "length": "21-23 cm",
+                    "wingspan": "30 cm average",
+                },
+                "sources": [
+                    {"title": "Refreshed one", "url": "https://one.example/refreshed"},
+                    {"title": "Refreshed two", "url": "https://two.example/refreshed"},
+                ],
+            }
+        )
+        expected_profile = SpeciesProfileData(
+            **{
+                **PROFILE,
+                "measurements": {
+                    **PROFILE["measurements"],
+                    "length": "21-23 cm",
+                },
+                "sources": researched_profile["sources"],
+            }
+        )
+        conflict_review = QualityReview(
+            False,
+            5,
+            5,
+            3,
+            5,
+            True,
+            ("The cached length conflicts with direct sources",),
+            verification_sources=(
+                {"title": "Cornell", "url": "https://www.allaboutbirds.org/example"},
+                {"title": "Audubon", "url": "https://www.audubon.org/example"},
+            ),
+            profile_conflicts=(
+                {
+                    "field": "measurements.length",
+                    "profile_value": PROFILE["measurements"]["length"],
+                    "observed_value": "21-23 cm",
+                    "sources": [
+                        {
+                            "title": "Cornell",
+                            "url": "https://www.allaboutbirds.org/example",
+                        },
+                        {"title": "Audubon", "url": "https://www.audubon.org/example"},
+                    ],
+                },
+            ),
+        )
+        passed_review = QualityReview(
+            True,
+            5,
+            5,
+            5,
+            5,
+            True,
+            (),
+            (
+                {"title": "Cornell", "url": "https://www.allaboutbirds.org/example"},
+                {"title": "Audubon", "url": "https://www.audubon.org/example"},
+            ),
+        )
+        correction_review = QualityReview(
+            False,
+            5,
+            3,
+            5,
+            5,
+            True,
+            ("The visible leg is malformed",),
+            correction_findings=("Repair the visible leg",),
+        )
+
+        class FakeRunner:
+            profile_results = iter((PROFILE, researched_profile))
+            generated_profiles: list[SpeciesProfileData] = []
+            corrections: list[tuple[str, ...]] = []
+            invariants: list[tuple[str, ...]] = []
+            profile_calls: list[dict[str, object]] = []
+            review_kwargs: list[dict[str, object]] = []
+            reviews = iter((conflict_review, correction_review, passed_review))
+
+            def __init__(self, _executable: Path, workspace: Path) -> None:
+                self.workspace = workspace.resolve()
+
+            def create_profile(self, *_args: object, **kwargs: object) -> SpeciesProfileData:
+                output_path = _args[-2]
+                assert isinstance(output_path, Path)
+                profile = next(self.profile_results)
+                output_path.write_text(json.dumps(profile))
+                self.profile_calls.append(kwargs)
+                return profile
+
+            def generate_plate(self, *_args: object, **_kwargs: object) -> Path:
+                profile = cast(SpeciesProfileData, _args[1])
+                output_path = _args[-3]
+                correction = _args[-1]
+                assert isinstance(output_path, Path)
+                assert isinstance(correction, tuple)
+                self.generated_profiles.append(profile)
+                self.corrections.append(correction)
+                invariants = _kwargs.get("invariant_findings")
+                assert isinstance(invariants, tuple)
+                self.invariants.append(invariants)
+                output_path.write_bytes(b"generated")
+                return output_path
+
+            def review_plate(self, *_args: object, **kwargs: object) -> QualityReview:
+                self.review_kwargs.append(kwargs)
+                return next(self.reviews)
+
+        def prepare(_source: Path, portrait: Path, display: Path) -> None:
+            portrait.write_bytes(b"portrait")
+            display.write_bytes(b"display")
+
+        with TemporaryDirectory() as temporary:
+            config_path = Path(temporary) / "config.toml"
+            config_path.write_text(CONFIG)
+            config = load_config(config_path)
+            with (
+                patch("inky_bird_frame.controller.load_or_fetch_references", return_value=[]),
+                patch("inky_bird_frame.controller.fetch_taxon_context"),
+                patch("inky_bird_frame.controller.CodexRunner", FakeRunner),
+                patch("inky_bird_frame.controller.prepare_generated_plate", side_effect=prepare),
+            ):
+                candidate = generate_candidate(config, species, config.controller.workspace_dir)
+            history_path = next(
+                (config.controller.state_dir / "runs").glob("*/attempt-history.json")
+            )
+            history = json.loads(history_path.read_text())
+            before_refresh = json.loads(
+                (history_path.parent / "profile-before-refresh.json").read_text()
+            )
+            after_refresh = json.loads(
+                (history_path.parent / "profile-after-refresh.json").read_text()
+            )
+            cached_profile = json.loads(
+                (
+                    config.controller.state_dir
+                    / "profiles"
+                    / str(species.taxon_id)
+                    / "profile.json"
+                ).read_text()
+            )
+            candidate_profile = json.loads((candidate / "profile.json").read_text())
+
+        self.assertEqual(len(FakeRunner.profile_calls), 2)
+        self.assertNotIn("prior_profile", FakeRunner.profile_calls[0])
+        self.assertEqual(FakeRunner.profile_calls[1]["prior_profile"], PROFILE)
+        self.assertEqual(
+            FakeRunner.generated_profiles,
+            [PROFILE, expected_profile, expected_profile],
+        )
+        self.assertEqual(
+            FakeRunner.corrections[1],
+            (
+                "Update every visible factual note to match the refreshed source-backed "
+                "profile exactly.",
+            ),
+        )
+        self.assertEqual(FakeRunner.corrections[2], ("Repair the visible leg",))
+        self.assertEqual(FakeRunner.invariants, [(), (), ()])
+        self.assertEqual(
+            FakeRunner.review_kwargs[1]["prior_profile_conflicts"],
+            conflict_review.profile_conflicts,
+        )
+        self.assertEqual(
+            FakeRunner.review_kwargs[2]["prior_corrections"],
+            correction_review.correction_findings,
+        )
+        self.assertEqual(cached_profile, expected_profile)
+        self.assertEqual(candidate_profile, expected_profile)
+        self.assertEqual(history["schema_version"], 1)
+        self.assertEqual(history["attempts"][0]["profile_refresh"], "completed")
+        self.assertTrue(history["attempts"][0]["profile_changed"])
+        self.assertEqual(before_refresh, PROFILE)
+        self.assertEqual(after_refresh, expected_profile)
+
+    def test_profile_conflict_is_terminal_when_research_is_disabled(self) -> None:
+        species = BirdSpecies(9083, "Northern Cardinal", "Cardinalis cardinalis", 2, "test")
+        cached_profile = SpeciesProfileData(
+            **{
+                **PROFILE,
+                "sources": [
+                    {
+                        "title": "Cornell",
+                        "url": "https://www.allaboutbirds.org/example",
+                    },
+                    {"title": "Audubon", "url": "https://www.audubon.org/example"},
+                ],
+            }
+        )
+        conflict_review = QualityReview(
+            False,
+            5,
+            5,
+            3,
+            5,
+            True,
+            ("The cached length conflicts with direct sources",),
+            profile_conflicts=(
+                {
+                    "field": "measurements.length",
+                    "profile_value": PROFILE["measurements"]["length"],
+                    "observed_value": "21-23 cm",
+                    "sources": [
+                        {
+                            "title": "Cornell",
+                            "url": "https://www.allaboutbirds.org/example",
+                        },
+                        {"title": "Audubon", "url": "https://www.audubon.org/example"},
+                    ],
+                },
+            ),
+        )
+
+        class FakeRunner:
+            def __init__(self, _executable: Path, _workspace: Path) -> None:
+                pass
+
+            def generate_plate(self, *_args: object, **_kwargs: object) -> Path:
+                output_path = _args[-3]
+                assert isinstance(output_path, Path)
+                output_path.write_bytes(b"generated")
+                return output_path
+
+            def review_plate(self, *_args: object, **_kwargs: object) -> QualityReview:
+                return conflict_review
+
+        def prepare(_source: Path, portrait: Path, display: Path) -> None:
+            portrait.write_bytes(b"portrait")
+            display.write_bytes(b"display")
+
+        with TemporaryDirectory() as temporary:
+            config_path = Path(temporary) / "config.toml"
+            config_path.write_text(f"{CONFIG}\n[research]\nenabled = false\n")
+            config = load_config(config_path)
+            cache = (
+                config.controller.state_dir / "profiles" / str(species.taxon_id) / "profile.json"
+            )
+            cache.parent.mkdir(parents=True)
+            cache.write_text(json.dumps(cached_profile))
+            with (
+                patch("inky_bird_frame.controller.load_or_fetch_references", return_value=[]),
+                patch("inky_bird_frame.controller.CodexRunner", FakeRunner),
+                patch("inky_bird_frame.controller.prepare_generated_plate", side_effect=prepare),
+                self.assertRaisesRegex(QualityReviewError, "research is disabled"),
+            ):
+                generate_candidate(config, species, config.controller.workspace_dir)
+            failed_history_path = next(
+                (config.controller.state_dir / "failed").glob("*/attempt-history.json")
+            )
+            history = json.loads(failed_history_path.read_text())
+
+        self.assertEqual(history["attempts"][0]["profile_refresh"], "disabled")
+
+    def test_repeated_profile_conflict_refreshes_only_once(self) -> None:
+        species = BirdSpecies(9083, "Northern Cardinal", "Cardinalis cardinalis", 2, "test")
+        cached_profile = SpeciesProfileData(
+            **{
+                **PROFILE,
+                "sources": [
+                    {
+                        "title": "Cornell",
+                        "url": "https://www.allaboutbirds.org/example",
+                    },
+                    {"title": "Audubon", "url": "https://www.audubon.org/example"},
+                ],
+            }
+        )
+        conflict_review = QualityReview(
+            False,
+            5,
+            5,
+            3,
+            5,
+            True,
+            ("Length remains disputed",),
+            profile_conflicts=(
+                {
+                    "field": "measurements.length",
+                    "profile_value": PROFILE["measurements"]["length"],
+                    "observed_value": "21-23 cm",
+                    "sources": [
+                        {
+                            "title": "Cornell",
+                            "url": "https://www.allaboutbirds.org/example",
+                        },
+                        {"title": "Audubon", "url": "https://www.audubon.org/example"},
+                    ],
+                },
+            ),
+        )
+
+        class FakeRunner:
+            def __init__(self, _executable: Path, _workspace: Path) -> None:
+                pass
+
+            def generate_plate(self, *_args: object, **_kwargs: object) -> Path:
+                output_path = _args[-3]
+                assert isinstance(output_path, Path)
+                output_path.write_bytes(b"generated")
+                return output_path
+
+            def review_plate(self, *_args: object, **_kwargs: object) -> QualityReview:
+                return conflict_review
+
+        def prepare(_source: Path, portrait: Path, display: Path) -> None:
+            portrait.write_bytes(b"portrait")
+            display.write_bytes(b"display")
+
+        with TemporaryDirectory() as temporary:
+            config_path = Path(temporary) / "config.toml"
+            config_path.write_text(CONFIG)
+            config = load_config(config_path)
+            cache = (
+                config.controller.state_dir / "profiles" / str(species.taxon_id) / "profile.json"
+            )
+            cache.parent.mkdir(parents=True)
+            cache.write_text(json.dumps(cached_profile))
+            with (
+                patch("inky_bird_frame.controller.load_or_fetch_references", return_value=[]),
+                patch("inky_bird_frame.controller.CodexRunner", FakeRunner),
+                patch("inky_bird_frame.controller.prepare_generated_plate", side_effect=prepare),
+                patch(
+                    "inky_bird_frame.controller._refresh_profile_after_conflict",
+                    return_value=cached_profile,
+                ) as refresh,
+                self.assertRaisesRegex(QualityReviewError, "remained after one"),
+            ):
+                generate_candidate(config, species, config.controller.workspace_dir)
+            failed_history_path = next(
+                (config.controller.state_dir / "failed").glob("*/attempt-history.json")
+            )
+            history = json.loads(failed_history_path.read_text())
+
+        refresh.assert_called_once()
+        self.assertEqual(len(history["attempts"]), 2)
+        self.assertEqual(history["attempts"][1]["profile_refresh"], "conflict_remained")
+
+    def test_terminal_review_failure_retains_versioned_attempt_history(self) -> None:
+        species = BirdSpecies(9083, "Northern Cardinal", "Cardinalis cardinalis", 2, "test")
+        failed_reviews = iter(
+            (
+                QualityReview(
+                    False,
+                    3,
+                    5,
+                    5,
+                    5,
+                    True,
+                    ("Bill is too long",),
+                    correction_findings=("Shorten the bill",),
+                ),
+                QualityReview(
+                    False,
+                    5,
+                    3,
+                    5,
+                    5,
+                    True,
+                    ("Leg is malformed",),
+                    correction_findings=("Repair the visible leg",),
+                ),
+                QualityReview(
+                    False,
+                    3,
+                    5,
+                    5,
+                    5,
+                    True,
+                    ("Bill regressed",),
+                    correction_findings=("Shorten the bill",),
+                ),
+            )
+        )
+
+        class FakeRunner:
+            def __init__(self, _executable: Path, _workspace: Path) -> None:
+                pass
+
+            def create_profile(self, *_args: object, **_kwargs: object) -> SpeciesProfileData:
+                output_path = _args[-2]
+                assert isinstance(output_path, Path)
+                output_path.write_text(json.dumps(PROFILE))
+                return PROFILE
+
+            def generate_plate(self, *_args: object, **_kwargs: object) -> Path:
+                output_path = _args[-3]
+                assert isinstance(output_path, Path)
+                output_path.write_bytes(b"generated")
+                return output_path
+
+            def review_plate(self, *_args: object, **_kwargs: object) -> QualityReview:
+                return next(failed_reviews)
+
+        def prepare(_source: Path, portrait: Path, display: Path) -> None:
+            portrait.write_bytes(b"portrait")
+            display.write_bytes(b"display")
+
+        with TemporaryDirectory() as temporary:
+            config_path = Path(temporary) / "config.toml"
+            config_path.write_text(CONFIG)
+            config = load_config(config_path)
+            with (
+                patch("inky_bird_frame.controller.load_or_fetch_references", return_value=[]),
+                patch("inky_bird_frame.controller.fetch_taxon_context"),
+                patch("inky_bird_frame.controller.CodexRunner", FakeRunner),
+                patch("inky_bird_frame.controller.prepare_generated_plate", side_effect=prepare),
+                self.assertRaises(QualityReviewError),
+            ):
+                generate_candidate(config, species, config.controller.workspace_dir)
+            run_history_path = next(
+                (config.controller.state_dir / "runs").glob("*/attempt-history.json")
+            )
+            failed_history_path = next(
+                (config.controller.state_dir / "failed").glob("*/attempt-history.json")
+            )
+            run_history = json.loads(run_history_path.read_text())
+            failed_history = json.loads(failed_history_path.read_text())
+
+        self.assertEqual(run_history, failed_history)
+        self.assertEqual(run_history["schema_version"], 1)
+        self.assertEqual(len(run_history["attempts"]), 3)
+        self.assertEqual(run_history["attempts"][0]["failed_axes"], ["species_accuracy"])
+        self.assertEqual(run_history["attempts"][1]["regressed_axes"], ["anatomy_accuracy"])
+        self.assertEqual(run_history["attempts"][2]["regressed_findings"], ["Shorten the bill"])
+
+    def test_generation_error_records_only_sanitized_error_type(self) -> None:
+        species = BirdSpecies(9083, "Northern Cardinal", "Cardinalis cardinalis", 2, "test")
+
+        class FakeRunner:
+            def __init__(self, _executable: Path, _workspace: Path) -> None:
+                pass
+
+            def create_profile(self, *_args: object, **_kwargs: object) -> SpeciesProfileData:
+                output_path = _args[-2]
+                assert isinstance(output_path, Path)
+                output_path.write_text(json.dumps(PROFILE))
+                return PROFILE
+
+            def generate_plate(self, *_args: object, **_kwargs: object) -> Path:
+                raise GenerationError("sensitive upstream payload")
+
+        with TemporaryDirectory() as temporary:
+            config_path = Path(temporary) / "config.toml"
+            config_path.write_text(CONFIG)
+            config = load_config(config_path)
+            with (
+                patch("inky_bird_frame.controller.load_or_fetch_references", return_value=[]),
+                patch("inky_bird_frame.controller.fetch_taxon_context"),
+                patch("inky_bird_frame.controller.CodexRunner", FakeRunner),
+                self.assertRaisesRegex(GenerationError, "sensitive upstream payload"),
+            ):
+                generate_candidate(config, species, config.controller.workspace_dir)
+            history_path = next(
+                (config.controller.state_dir / "runs").glob("*/attempt-history.json")
+            )
+            history_text = history_path.read_text()
+            history = json.loads(history_text)
+
+        self.assertNotIn("sensitive upstream payload", history_text)
+        self.assertEqual(history["attempts"][0]["outcome"], "generation_error")
+        self.assertEqual(history["attempts"][0]["error_type"], "GenerationError")
 
     def test_runtime_generation_failure_remains_eligible(self) -> None:
         species = BirdSpecies(9083, "Northern Cardinal", "Cardinalis cardinalis", 2, "test")

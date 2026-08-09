@@ -9,7 +9,7 @@ from unittest.mock import patch
 from inky_bird_frame.birds import BirdSpecies, TaxonContext
 from inky_bird_frame.codex_runner import CodexRunner, _parse_review, parse_species_profile
 from inky_bird_frame.errors import GenerationError
-from inky_bird_frame.models import SpeciesProfileData
+from inky_bird_frame.models import QualityReview, SpeciesProfileData
 
 _CAPTURE_OUTPUT_ARGUMENT = """\
 out=""
@@ -225,6 +225,17 @@ class CodexRunnerSubprocessTests(unittest.TestCase):
 
 
 class CodexRunnerTests(unittest.TestCase):
+    def test_configured_model_is_forwarded_to_exec(self) -> None:
+        with TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            executable = root / "codex"
+            executable.touch()
+            command = CodexRunner(executable, root, model="tested-model")._base_command(
+                writable=False
+            )
+
+        self.assertEqual(command[command.index("--model") + 1], "tested-model")
+
     def test_review_uses_bounded_live_source_verification(self) -> None:
         species = BirdSpecies(1, "Test Bird", "Avis test", 1, "test")
         profile = SpeciesProfileData(
@@ -426,6 +437,106 @@ class CodexRunnerTests(unittest.TestCase):
                     ],
                 }
             )
+
+    def test_review_parses_source_backed_profile_conflict(self) -> None:
+        review = _parse_review(
+            {
+                "passed": False,
+                "species_accuracy": 5,
+                "anatomy_accuracy": 5,
+                "text_accuracy": 3,
+                "composition_quality": 5,
+                "location_free": True,
+                "findings": ["The cached length conflicts with both sources"],
+                "correction_findings": [],
+                "profile_conflicts": [
+                    {
+                        "field": "measurements.length",
+                        "profile_value": "10-20 cm",
+                        "observed_value": "12-15 cm",
+                        "sources": [
+                            {"title": "Birds", "url": "https://birds.example/length"},
+                            {"title": "Field", "url": "https://field.example/length"},
+                        ],
+                    }
+                ],
+                "verification_sources": [
+                    {"title": "Birds", "url": "https://birds.example/length"},
+                    {"title": "Field", "url": "https://field.example/length"},
+                ],
+            },
+            ("birds.example", "field.example"),
+        )
+
+        self.assertFalse(review.passed)
+        self.assertEqual(review.profile_conflicts[0]["field"], "measurements.length")
+
+    def test_profile_conflict_rejects_identity_field(self) -> None:
+        with self.assertRaisesRegex(GenerationError, "field is not supported"):
+            _parse_review(
+                {
+                    "passed": False,
+                    "species_accuracy": 3,
+                    "anatomy_accuracy": 5,
+                    "text_accuracy": 5,
+                    "composition_quality": 5,
+                    "location_free": True,
+                    "findings": ["Identity conflict"],
+                    "correction_findings": [],
+                    "profile_conflicts": [
+                        {
+                            "field": "scientific_name",
+                            "profile_value": "Avis one",
+                            "observed_value": "Avis two",
+                            "sources": [
+                                {"title": "Birds", "url": "https://birds.example/name"},
+                                {"title": "Field", "url": "https://field.example/name"},
+                            ],
+                        }
+                    ],
+                    "verification_sources": [
+                        {"title": "Birds", "url": "https://birds.example/name"},
+                        {"title": "Field", "url": "https://field.example/name"},
+                    ],
+                },
+                ("birds.example", "field.example"),
+            )
+
+    def test_profile_conflict_requires_independent_sources(self) -> None:
+        with self.assertRaisesRegex(GenerationError, "two independent verification sources"):
+            _parse_review(
+                {
+                    "passed": False,
+                    "species_accuracy": 5,
+                    "anatomy_accuracy": 5,
+                    "text_accuracy": 3,
+                    "composition_quality": 5,
+                    "location_free": True,
+                    "findings": ["Length conflict"],
+                    "correction_findings": [],
+                    "profile_conflicts": [
+                        {
+                            "field": "measurements.length",
+                            "profile_value": "10-20 cm",
+                            "observed_value": "12-15 cm",
+                            "sources": [
+                                {"title": "One", "url": "https://birds.example/one"},
+                                {"title": "Two", "url": "https://birds.example/two"},
+                            ],
+                        }
+                    ],
+                    "verification_sources": [
+                        {"title": "Birds", "url": "https://birds.example/length"},
+                        {"title": "Field", "url": "https://field.example/length"},
+                    ],
+                },
+                ("birds.example", "field.example"),
+            )
+
+    def test_passing_review_shape_omits_empty_profile_conflicts(self) -> None:
+        review = QualityReview(True, 5, 5, 5, 5, True, ())
+
+        self.assertNotIn("profile_conflicts", review.as_dict())
 
 
 if __name__ == "__main__":

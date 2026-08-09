@@ -379,6 +379,7 @@ def has_passing_sourced_review(review: object) -> bool:
     if not isinstance(review, dict):
         return False
     correction_findings = review.get("correction_findings", [])
+    profile_conflicts = review.get("profile_conflicts", [])
     score_fields = (
         "species_accuracy",
         "anatomy_accuracy",
@@ -390,6 +391,8 @@ def has_passing_sourced_review(review: object) -> bool:
         or review.get("location_free") is not True
         or not isinstance(correction_findings, list)
         or bool(correction_findings)
+        or not isinstance(profile_conflicts, list)
+        or bool(profile_conflicts)
         or any(
             not isinstance(review.get(field), int)
             or isinstance(review.get(field), bool)
