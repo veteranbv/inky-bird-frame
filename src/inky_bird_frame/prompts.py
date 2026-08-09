@@ -323,8 +323,8 @@ between the proposed profile and independently verified direct-source facts in p
 instead—state the supported profile field, proposed value, independently observed value, and at
 least two direct HTTPS sources from distinct configured domains. Do not instruct the image
 generator to apply the reviewer claim directly. profile_value must quote the current proposed
-field, not an earlier review history entry. For field_marks, encode the current list as a compact
-JSON array. Identity fields are not adjudicable profile conflicts.
+field, not an earlier review history entry. For field_marks, encode both profile_value and
+observed_value as compact JSON arrays. Identity fields are not adjudicable profile conflicts.
 Return at least two direct HTTPS source URLs from distinct configured domains used for overall
 verification.
 

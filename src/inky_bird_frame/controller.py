@@ -1727,7 +1727,7 @@ def _deduplicate_profile_conflicts(
 ) -> tuple[ProfileConflict, ...]:
     conflicts: dict[str, ProfileConflict] = {}
     for conflict in (item for group in groups for item in group):
-        conflicts[json.dumps(conflict, sort_keys=True)] = conflict
+        conflicts[conflict["field"]] = conflict
     return tuple(conflicts.values())
 
 

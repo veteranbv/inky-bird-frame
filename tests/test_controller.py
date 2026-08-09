@@ -2697,8 +2697,29 @@ class ControllerTests(unittest.TestCase):
                 },
             ),
         )
+        refined_conflict = ProfileConflict(
+            field="measurements.length",
+            profile_value=PROFILE["measurements"]["length"],
+            observed_value="21-22 cm",
+            sources=[
+                {"title": "Cornell", "url": "https://www.allaboutbirds.org/refined"},
+                {"title": "Audubon", "url": "https://www.audubon.org/refined"},
+            ],
+        )
+        refined_conflict_review = QualityReview(
+            False,
+            5,
+            5,
+            3,
+            5,
+            True,
+            ("Length remains disputed with refined evidence",),
+            profile_conflicts=(refined_conflict,),
+        )
 
         class FakeRunner:
+            reviews = iter((conflict_review, refined_conflict_review))
+
             def __init__(self, _executable: Path, _workspace: Path) -> None:
                 pass
 
@@ -2709,7 +2730,7 @@ class ControllerTests(unittest.TestCase):
                 return output_path
 
             def review_plate(self, *_args: object, **_kwargs: object) -> QualityReview:
-                return conflict_review
+                return next(self.reviews)
 
         def prepare(_source: Path, portrait: Path, display: Path) -> None:
             portrait.write_bytes(b"portrait")
@@ -2732,7 +2753,7 @@ class ControllerTests(unittest.TestCase):
                     "inky_bird_frame.controller._refresh_profile_after_conflict",
                     return_value=cached_profile,
                 ) as refresh,
-                self.assertRaisesRegex(QualityReviewError, "remained after one"),
+                self.assertRaisesRegex(QualityReviewError, "remained after one") as raised,
             ):
                 generate_candidate(config, species, config.controller.workspace_dir)
             failed_history_path = next(
@@ -2741,6 +2762,7 @@ class ControllerTests(unittest.TestCase):
             history = json.loads(failed_history_path.read_text())
 
         refresh.assert_called_once()
+        self.assertEqual(raised.exception.profile_conflicts, (refined_conflict,))
         self.assertEqual(len(history["attempts"]), 2)
         self.assertEqual(history["attempts"][1]["profile_refresh"], "conflict_remained")
 

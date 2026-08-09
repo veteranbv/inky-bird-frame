@@ -482,6 +482,26 @@ def _parse_profile_conflicts(
         observed_value = _non_empty_string(
             raw_conflict.get("observed_value"), "profile_conflicts.observed_value"
         )
+        if field == "field_marks":
+            try:
+                observed_field_marks = json.loads(observed_value)
+            except json.JSONDecodeError as exc:
+                raise GenerationError(
+                    "Codex field_marks conflict observed_value must be a JSON array"
+                ) from exc
+            if not isinstance(observed_field_marks, list) or any(
+                not isinstance(mark, str) or not mark.strip() for mark in observed_field_marks
+            ):
+                raise GenerationError(
+                    "Codex field_marks conflict observed_value must be a JSON array of strings"
+                )
+            if observed_field_marks == current_profile["field_marks"]:
+                raise GenerationError("Codex profile conflict values must disagree")
+            observed_value = json.dumps(
+                observed_field_marks,
+                ensure_ascii=False,
+                separators=(",", ":"),
+            )
         if profile_value == observed_value:
             raise GenerationError("Codex profile conflict values must disagree")
         raw_sources = raw_conflict.get("sources")
