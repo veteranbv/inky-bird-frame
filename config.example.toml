@@ -1,7 +1,8 @@
 [discovery]
 # Select one or more providers explicitly. iNaturalist needs no credentials, eBird provides
 # nearby public sightings, BirdWeather and self-hosted BirdNET-Go provide acoustic station
-# detections, and authorized Bird Buddy accounts provide read-only feeder postcard detections.
+# detections, BirdNET Analyzer imports private CSV history, and authorized Bird Buddy
+# accounts provide read-only feeder postcard detections.
 # Legacy singular source values remain accepted for compatibility. See docs/discovery.md.
 sources = ["inaturalist"]
 # Choose exactly one location form for iNaturalist or eBird. The legacy five-digit US

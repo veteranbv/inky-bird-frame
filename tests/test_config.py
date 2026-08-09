@@ -257,6 +257,18 @@ class ConfigTests(unittest.TestCase):
         self.assertEqual(config.discovery.sources, (DiscoveryProvider.BIRDNET_GO,))
         self.assertEqual(config.discovery.birdnet_go_url, "http://birdnet-go.local:8080")
 
+    def test_birdnet_analyzer_source_needs_no_location_or_credentials(self) -> None:
+        configured = CONFIG.replace(
+            '[discovery]\nzip_code = "12345"\n',
+            '[discovery]\nsources = ["birdnet-analyzer"]\n',
+        )
+        with TemporaryDirectory() as temporary:
+            path = Path(temporary) / "config.toml"
+            path.write_text(configured)
+            config = load_config(path)
+
+        self.assertEqual(config.discovery.sources, (DiscoveryProvider.BIRDNET_ANALYZER,))
+
     def test_birdnet_go_url_rejects_embedded_credentials(self) -> None:
         configured = CONFIG.replace(
             "[discovery]\n",
@@ -323,6 +335,7 @@ class ConfigTests(unittest.TestCase):
 
         self.assertNotIn(DiscoveryProvider.BIRDBUDDY, config.discovery.sources)
         self.assertNotIn(DiscoveryProvider.BIRDNET_GO, config.discovery.sources)
+        self.assertNotIn(DiscoveryProvider.BIRDNET_ANALYZER, config.discovery.sources)
 
     def test_rejects_source_and_sources_together(self) -> None:
         configured = CONFIG.replace(

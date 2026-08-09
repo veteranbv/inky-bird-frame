@@ -45,6 +45,12 @@ from `discovery.sources` is its complete rollback; Inky never changes the
 detector or downloads its recordings. Provider status reports connection,
 response-contract, and taxonomy failures without exposing the configured URL.
 
+BirdNET Analyzer history lives in
+`state_dir/birdnet-analyzer-detections.json`. Back it up with other controller
+state, treat the backup as private observation data, and restore it with mode
+`0600`. Removing `birdnet-analyzer` from `discovery.sources` disables the
+provider without deleting imported history.
+
 The selected feeder's confirmed metadata is always used as a safety net when a
 postcard leaves the new-postcard feed before a poll. When all of a cached
 postcard's media identifiers are present in confirmed history, the confirmed

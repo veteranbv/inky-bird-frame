@@ -977,6 +977,10 @@ class PublisherTests(unittest.TestCase):
             "geoapify_api_key",
             "geoapify_api_key_env",
             "birdnet_go_url",
+            "birdnet_analyzer",
+            "history_started_at",
+            "last_imported_at",
+            "observed_on",
             "apiKey",
             "api_key",
             "postalCode",
@@ -984,6 +988,10 @@ class PublisherTests(unittest.TestCase):
             "geocoderAttribution",
             "geoapifyApiKey",
             "birdnetGoUrl",
+            "birdnetAnalyzer",
+            "historyStartedAt",
+            "lastImportedAt",
+            "observedOn",
         ):
             with self.subTest(field=field), TemporaryDirectory() as temporary:
                 catalog = Path(temporary) / "catalog"

@@ -21,6 +21,7 @@ from .birdbuddy import (
     login_birdbuddy,
     logout_birdbuddy,
 )
+from .birdnet_analyzer import import_birdnet_analyzer_csv
 from .birds import BirdSpecies, DateRange, ObservationWindow, parse_observation_window
 from .catalog import (
     approve_candidate,
@@ -217,6 +218,7 @@ def refresh_command(args: argparse.Namespace) -> int:
         "ebird": "eBird",
         "birdweather": "BirdWeather",
         "birdbuddy": "Bird Buddy",
+        "birdnet-analyzer": "BirdNET Analyzer",
         "birdnet-go": "BirdNET-Go",
     }
     for provider, display_name in taxonomy_providers.items():
@@ -1215,6 +1217,26 @@ def birdbuddy_logout_command(args: argparse.Namespace) -> int:
     return 0
 
 
+def birdnet_analyzer_import_command(args: argparse.Namespace) -> int:
+    observed_on = None
+    if args.observed_on is not None:
+        try:
+            observed_on = date.fromisoformat(args.observed_on)
+        except ValueError as exc:
+            raise ValueError(f"invalid --observed-on ISO date: {exc}") from exc
+        if observed_on.isoformat() != args.observed_on:
+            raise ValueError("invalid --observed-on ISO date: expected YYYY-MM-DD")
+    config = _config(args, load_secrets=False)
+    result = import_birdnet_analyzer_csv(
+        args.csv,
+        config.controller.state_dir,
+        observed_on=observed_on,
+        dry_run=args.dry_run,
+    )
+    print_result(result.as_dict())
+    return 0
+
+
 def notifications_status_command(args: argparse.Namespace) -> int:
     print_result(notification_status(_config(args)))
     return 0
@@ -1665,6 +1687,24 @@ def build_parser() -> argparse.ArgumentParser:
         "--yes", action="store_true", help="Remove local authentication state"
     )
     birdbuddy_logout_parser.set_defaults(func=birdbuddy_logout_command)
+
+    birdnet_analyzer_parser = subparsers.add_parser(
+        "birdnet-analyzer", help="Import private BirdNET Analyzer detection history"
+    )
+    birdnet_analyzer_subparsers = birdnet_analyzer_parser.add_subparsers(
+        dest="birdnet_analyzer_command", required=True
+    )
+    birdnet_analyzer_import_parser = birdnet_analyzer_subparsers.add_parser(
+        "import", help="Import a BirdNET Analyzer CSV export"
+    )
+    add_config_argument(birdnet_analyzer_import_parser)
+    birdnet_analyzer_import_parser.add_argument("--csv", type=Path, required=True)
+    birdnet_analyzer_import_parser.add_argument(
+        "--observed-on",
+        help="Explicit recording date (YYYY-MM-DD) applied to every row",
+    )
+    birdnet_analyzer_import_parser.add_argument("--dry-run", action="store_true")
+    birdnet_analyzer_import_parser.set_defaults(func=birdnet_analyzer_import_command)
 
     notifications_parser = subparsers.add_parser(
         "notifications", help="Inspect and test notification delivery"

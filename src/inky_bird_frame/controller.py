@@ -15,8 +15,10 @@ from tempfile import TemporaryDirectory
 from typing import cast
 
 from .birdbuddy import sync_birdbuddy_detections
+from .birdnet_analyzer import read_birdnet_analyzer_history
 from .birds import (
     BirdBuddySpecies,
+    BirdNetAnalyzerSpecies,
     BirdNetGoSpecies,
     BirdSpecies,
     BirdWeatherSpecies,
@@ -29,6 +31,7 @@ from .birds import (
     fetch_inaturalist_birds,
     fetch_taxon_context,
     resolve_birdbuddy_species,
+    resolve_birdnet_analyzer_species,
     resolve_birdnet_go_species,
     resolve_birdweather_species,
     resolve_ebird_species,
@@ -123,7 +126,13 @@ class DiscoveryResult:
     location: DiscoveryLocation | None
     species: list[BirdSpecies]
     providers: list[ProviderStatus]
-    unresolved: list[EbirdSpecies | BirdWeatherSpecies | BirdBuddySpecies | BirdNetGoSpecies]
+    unresolved: list[
+        EbirdSpecies
+        | BirdWeatherSpecies
+        | BirdBuddySpecies
+        | BirdNetAnalyzerSpecies
+        | BirdNetGoSpecies
+    ]
 
 
 @dataclass(frozen=True)
@@ -206,7 +215,13 @@ def discover_species(
         raise ValueError("BirdWeather species_limit must be between 1 and 100")
     providers: list[ProviderStatus] = []
     provider_species: list[list[BirdSpecies]] = []
-    unresolved: list[EbirdSpecies | BirdWeatherSpecies | BirdBuddySpecies | BirdNetGoSpecies] = []
+    unresolved: list[
+        EbirdSpecies
+        | BirdWeatherSpecies
+        | BirdBuddySpecies
+        | BirdNetAnalyzerSpecies
+        | BirdNetGoSpecies
+    ] = []
     location: DiscoveryLocation | None = None
 
     location_provider_names: list[str] = []
@@ -416,6 +431,47 @@ def discover_species(
                     )
                 )
 
+    if DiscoveryProvider.BIRDNET_ANALYZER in selected_sources:
+        try:
+            history = read_birdnet_analyzer_history(
+                config.controller.state_dir,
+                window=selected_window,
+                limit=selected_limit,
+            )
+            resolved, birdnet_analyzer_unresolved = resolve_birdnet_analyzer_species(
+                history.species,
+                config.controller.state_dir / "birdnet-analyzer-taxonomy-crosswalk.json",
+                persist_cache=persist_taxonomy_cache,
+            )
+        except (DataSourceError, ValueError) as exc:
+            providers.append(ProviderStatus("birdnet-analyzer", "error", 0, error=str(exc)))
+        else:
+            unresolved.extend(birdnet_analyzer_unresolved)
+            if history.species and not resolved:
+                providers.append(
+                    ProviderStatus(
+                        "birdnet-analyzer",
+                        "error",
+                        0,
+                        unresolved_count=len(birdnet_analyzer_unresolved),
+                        error=(
+                            "No BirdNET Analyzer detections had an exact iNaturalist species match"
+                        ),
+                        details=history.details(),
+                    )
+                )
+            else:
+                provider_species.append(resolved)
+                providers.append(
+                    ProviderStatus(
+                        "birdnet-analyzer",
+                        "ok",
+                        len(resolved),
+                        unresolved_count=len(birdnet_analyzer_unresolved),
+                        details=history.details(),
+                    )
+                )
+
     if not provider_species:
         failures = "; ".join(
             f"{provider.name}: {provider.error}" for provider in providers if provider.error
@@ -490,7 +546,11 @@ def _species_payload(species: BirdSpecies) -> dict[str, object]:
 
 
 def _unresolved_species_payload(
-    species: EbirdSpecies | BirdWeatherSpecies | BirdBuddySpecies | BirdNetGoSpecies,
+    species: EbirdSpecies
+    | BirdWeatherSpecies
+    | BirdBuddySpecies
+    | BirdNetAnalyzerSpecies
+    | BirdNetGoSpecies,
 ) -> dict[str, object]:
     if isinstance(species, EbirdSpecies):
         provider = "ebird"
@@ -501,8 +561,11 @@ def _unresolved_species_payload(
     elif isinstance(species, BirdBuddySpecies):
         provider = "birdbuddy"
         provider_species_id = species.species_id
-    else:
+    elif isinstance(species, BirdNetGoSpecies):
         provider = "birdnet-go"
+        provider_species_id = species.scientific_name
+    else:
+        provider = "birdnet-analyzer"
         provider_species_id = species.scientific_name
     return {
         "provider": provider,

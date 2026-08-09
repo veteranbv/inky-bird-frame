@@ -127,6 +127,21 @@ No detector credential or audio volume is required. Keep the endpoint on a
 trusted network or VPN. A TLS reverse proxy may provide transport encryption,
 but this provider does not send proxy authentication credentials.
 
+To import BirdNET Analyzer results, copy the CSV to a temporary controller-
+readable path or bind-mount it read-only, then run the import command in the
+controller container. The durable result is stored in `/data/var/controller`;
+the CSV and recordings do not belong in the persistent volume. For example:
+
+```bash
+docker compose cp /path/to/results.csv controller:/tmp/results.csv
+docker compose exec controller inky-bird-frame birdnet-analyzer import \
+  --config /data/config.toml --csv /tmp/results.csv --observed-on 2026-08-09
+docker compose exec controller rm /tmp/results.csv
+```
+
+Use `--observed-on` only when every row shares that known recording date. Add
+`"birdnet-analyzer"` to `discovery.sources` and run `refresh` after importing.
+
 Bird Buddy is different: its email and password are used once and must not be
 kept in `config.toml` or `controller.env`. After obtaining Bird Buddy's
 permission, add `"birdbuddy"` to `discovery.sources`, import the configuration,
