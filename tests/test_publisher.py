@@ -15,8 +15,10 @@ from inky_bird_frame.config import PublicCatalogConfig, load_config
 from inky_bird_frame.errors import CatalogPublishError
 from inky_bird_frame.http import write_json_atomic
 from inky_bird_frame.publisher import (
+    _abandoned_publish_work,
     _catalog_transaction_prefix,
     _check_json_privacy,
+    _cleanup_abandoned_publish_work_locked,
     _remote_repository,
     _validate_checkout,
     replace_public_catalog_taxon,
@@ -191,6 +193,58 @@ def _initialize_remote(root: Path) -> tuple[Path, Path]:
 
 
 class PublisherTests(unittest.TestCase):
+    def test_cleans_only_abandoned_publish_directories(self) -> None:
+        with TemporaryDirectory() as temporary, TemporaryDirectory() as external:
+            work_parent = Path(temporary)
+            abandoned = work_parent / "publish-abandoned"
+            (abandoned / "checkout").mkdir(parents=True)
+            (abandoned / "checkout/file").write_text("scratch")
+            preserved_directory = work_parent / "other-work"
+            preserved_directory.mkdir()
+            preserved_file = work_parent / "publish-file"
+            preserved_file.write_text("not a directory")
+            publish_symlink = work_parent / "publish-link"
+            outside = Path(external)
+            publish_symlink.symlink_to(outside, target_is_directory=True)
+
+            removed = _cleanup_abandoned_publish_work_locked(work_parent)
+
+            self.assertEqual(removed, 1)
+            self.assertFalse(abandoned.exists())
+            self.assertTrue(preserved_directory.is_dir())
+            self.assertTrue(preserved_file.is_file())
+            self.assertTrue(publish_symlink.is_symlink())
+            self.assertTrue(outside.is_dir())
+
+    def test_finds_abandoned_publish_work_without_removing_it(self) -> None:
+        with TemporaryDirectory() as temporary:
+            work_parent = Path(temporary)
+            abandoned = work_parent / "publish-abandoned"
+            abandoned.mkdir()
+
+            found = _abandoned_publish_work(work_parent)
+
+            self.assertEqual(found, (abandoned,))
+            self.assertTrue(abandoned.is_dir())
+
+    def test_abandoned_publish_cleanup_fails_closed(self) -> None:
+        with TemporaryDirectory() as temporary:
+            work_parent = Path(temporary)
+            abandoned = work_parent / "publish-abandoned"
+            abandoned.mkdir()
+
+            with (
+                patch(
+                    "inky_bird_frame.publisher.shutil.rmtree",
+                    side_effect=PermissionError("denied"),
+                ),
+                self.assertRaisesRegex(
+                    CatalogPublishError,
+                    "Could not remove abandoned catalog publication work",
+                ),
+            ):
+                _cleanup_abandoned_publish_work_locked(work_parent)
+
     def test_birdbuddy_private_fields_are_rejected_from_catalog_json(self) -> None:
         for field in (
             "authorization_confirmed_at",
@@ -1173,6 +1227,9 @@ class PublisherTests(unittest.TestCase):
             config = load_config(_write_config(root, checkout))
             _create_species(config.controller.catalog_dir, 1, "Example Bird")
             (config.controller.catalog_dir / ".staging").mkdir()
+            abandoned_work = config.controller.state_dir / "catalog-publish-work/publish-abandoned"
+            abandoned_work.mkdir(parents=True)
+            (abandoned_work / "partial").write_text("scratch")
 
             def fake_gh(
                 _publication: object,
@@ -1214,6 +1271,9 @@ class PublisherTests(unittest.TestCase):
             self.assertTrue(first["pushed"])
             self.assertTrue(first["merged"])
             self.assertTrue(first["changed"])
+            self.assertEqual(first["abandoned_work_directories"], 1)
+            self.assertEqual(first["cleaned_work_directories"], 1)
+            self.assertFalse(abandoned_work.exists())
             self.assertIsInstance(first["commit"], str)
             self.assertIn(
                 "catalog/species/1-example-bird/manifest.json",
@@ -1228,8 +1288,12 @@ class PublisherTests(unittest.TestCase):
 
             self.assertFalse(second["pushed"])
             self.assertFalse(second["changed"])
+            self.assertEqual(second["abandoned_work_directories"], 0)
+            self.assertEqual(second["cleaned_work_directories"], 0)
 
             _create_species(config.controller.catalog_dir, 2, "Second Bird")
+            dry_run_abandoned = config.controller.state_dir / "catalog-publish-work/publish-dry-run"
+            dry_run_abandoned.mkdir()
             with patch(
                 "inky_bird_frame.publisher._validate_checkout",
                 return_value="example/inky-bird-frame",
@@ -1238,6 +1302,9 @@ class PublisherTests(unittest.TestCase):
 
             self.assertTrue(dry_run["changed"])
             self.assertFalse(dry_run["pushed"])
+            self.assertEqual(dry_run["abandoned_work_directories"], 1)
+            self.assertEqual(dry_run["cleaned_work_directories"], 0)
+            self.assertTrue(dry_run_abandoned.is_dir())
             self.assertNotIn(
                 "2-second-bird", _run_git(remote, "ls-tree", "-r", "--name-only", "main")
             )
@@ -1252,6 +1319,8 @@ class PublisherTests(unittest.TestCase):
                 final = run_catalog_publish(config)
 
             self.assertTrue(final["pushed"])
+            self.assertEqual(final["cleaned_work_directories"], 1)
+            self.assertFalse(dry_run_abandoned.exists())
             self.assertIn(
                 "catalog/species/2-second-bird/manifest.json",
                 _run_git(remote, "ls-tree", "-r", "--name-only", "main"),

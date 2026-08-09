@@ -109,6 +109,30 @@ def exclusive_publish_lock(state_dir: Path) -> Iterator[None]:
             fcntl.flock(handle.fileno(), fcntl.LOCK_UN)
 
 
+def _abandoned_publish_work(work_parent: Path) -> tuple[Path, ...]:
+    return tuple(
+        candidate
+        for candidate in sorted(work_parent.iterdir())
+        if candidate.name.startswith("publish-")
+        and not candidate.is_symlink()
+        and candidate.is_dir()
+    )
+
+
+def _cleanup_abandoned_publish_work_locked(work_parent: Path) -> int:
+    """Remove scratch directories left by publishers that no longer hold the lock."""
+    removed = 0
+    for candidate in _abandoned_publish_work(work_parent):
+        try:
+            shutil.rmtree(candidate)
+        except OSError as exc:
+            raise CatalogPublishError(
+                f"Could not remove abandoned catalog publication work: {candidate.name}"
+            ) from exc
+        removed += 1
+    return removed
+
+
 def _check_json_privacy(value: object, source: Path) -> None:
     if isinstance(value, dict):
         for key, child in value.items():
@@ -1028,9 +1052,13 @@ def run_catalog_publish(config: AppConfig, *, dry_run: bool = False) -> dict[str
             publication.remote,
             f"+refs/heads/{publication.base_branch}:{remote_ref}",
         )
-        _git(checkout, "worktree", "prune")
         work_parent = config.controller.state_dir / "catalog-publish-work"
         work_parent.mkdir(parents=True, exist_ok=True)
+        abandoned_work_directories = len(_abandoned_publish_work(work_parent))
+        cleaned_work_directories = (
+            0 if dry_run else _cleanup_abandoned_publish_work_locked(work_parent)
+        )
+        _git(checkout, "worktree", "prune")
         with TemporaryDirectory(prefix="publish-", dir=work_parent) as temporary:
             source_snapshot = Path(temporary) / "source-catalog"
             with catalog_state_lock(config.controller.state_dir):
@@ -1074,6 +1102,8 @@ def run_catalog_publish(config: AppConfig, *, dry_run: bool = False) -> dict[str
                     "merged": False,
                     "commit": None,
                     "pull_request": None,
+                    "abandoned_work_directories": abandoned_work_directories,
+                    "cleaned_work_directories": cleaned_work_directories,
                 }
                 if not changed:
                     return result
