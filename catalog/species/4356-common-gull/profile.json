@@ -1,0 +1,42 @@
+{
+  "behavior": "An opportunistic omnivore that swims, dips for aquatic prey, scavenges, and forages on the ground for worms and insects. Often nests colonially and is mainly migratory.",
+  "common_name": "Common Gull",
+  "family": "Laridae",
+  "field_marks": [
+    "Small, slender gull with a rounded head and long wings",
+    "White head and underparts; light brown head streaking in nonbreeding plumage",
+    "Medium-gray back and upperwings",
+    "Short, tapered greenish-yellow bill, sometimes with a dusky winter smudge",
+    "Dark eye and slender, dull yellow-green legs",
+    "Black wingtips with bold white spots; otherwise white tail"
+  ],
+  "habitat": "Breeds around wetlands, marshes, meadows, beaches, and other sites near water; winters along coasts and other waterside habitats, often also feeding in fields.",
+  "measurements": {
+    "length": "40\u201346 cm",
+    "weight": "290\u2013552 g",
+    "wingspan": "100\u2013115 cm"
+  },
+  "palette": [
+    "clean white",
+    "pearl gray",
+    "charcoal black",
+    "yellow-green",
+    "soft brown"
+  ],
+  "scientific_name": "Larus canus",
+  "sources": [
+    {
+      "title": "Common Gull \u2014 eBird",
+      "url": "https://ebird.org/species/mewgul"
+    },
+    {
+      "title": "Common gull \u2014 Wikipedia",
+      "url": "https://en.wikipedia.org/wiki/Common_gull"
+    },
+    {
+      "title": "Larus canus \u2014 Animal Diversity Web",
+      "url": "https://animaldiversity.org/accounts/Larus_canus/"
+    }
+  ],
+  "taxon_id": 4356
+}
