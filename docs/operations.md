@@ -445,6 +445,18 @@ without automatic pruning so failed and rejected work stays available for
 inspection. Check them first when investigating a generation failure. Entries
 are safe to delete once they have been reviewed.
 
+`catalog-publish-work/` is disposable publisher scratch space, not retained
+generation evidence. Each publication invocation removes abandoned
+`publish-*` directories while holding the exclusive publisher lock, before it
+creates a new work directory. Files, symbolic links, and unrelated directories
+are never removed. The command reports `abandoned_work_directories` and
+`cleaned_work_directories`. A `--dry-run` reports abandoned work but leaves it
+untouched; the next real publication removes it before Git prunes stale
+worktree registrations. If recovery cannot remove a matching directory, the
+real publication stops with an actionable error instead of creating more
+scratch state and risking further disk exhaustion; `--dry-run` remains
+available for non-destructive diagnosis.
+
 ## Log retention
 
 On systemd hosts the services log JSON to journald and rely on the
