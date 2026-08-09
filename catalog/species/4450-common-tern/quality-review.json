@@ -1,0 +1,38 @@
+{
+  "anatomy_accuracy": 4,
+  "composition_quality": 5,
+  "correction_findings": [],
+  "findings": [
+    "The plate depicts one complete primary adult Common Tern with one head and bill, two folded wings, two short legs with webbed feet, and one deeply forked tail; the detached wing and head are clearly supplementary studies.",
+    "Adult plumage agrees with the references and direct sources: full black cap, dark eye, slender red-orange black-tipped bill, pale-gray body, dark outer primaries, red-orange legs, pointed wings, and elongated outer tail feathers.",
+    "Bill proportions are consistent between both depicted heads and the clearest side-profile reference: the upper mandible projects slightly beyond the lower without truncation, reversal, or exaggerated mismatch.",
+    "The primary specimen is somewhat fuller-bodied than the photographed adults, but remains within plausible posture and feathering variation and retains diagnostic Common Tern proportions.",
+    "Common name, scientific name, and family are correct. eBird independently identifies Common Tern as Sterna hirundo in Laridae.",
+    "All visible measurement text is accurate against the Cornell source: length 31\u201338 cm, weight 93\u2013200 g, and wingspan 75\u201380 cm. Audubon publishes a different but overlapping measurement set, so the displayed Cornell ranges are supported rather than universal.",
+    "All habitat, behavior, field-mark, and palette text is complete, correctly spelled, coherent, and matches the proposed wording without omissions, substitutions, or duplicated words.",
+    "The body-length ruler is internally consistent: 31 cm is at the bottom, 38 cm at the top, four evenly spaced unlabeled interior ticks divide the range into five proportional segments, and the diagram is explicitly labeled schematic and not to scale.",
+    "No place name, ZIP code, coordinates, map, or local-observation detail appears."
+  ],
+  "location_free": true,
+  "passed": true,
+  "species_accuracy": 5,
+  "text_accuracy": 5,
+  "verification_sources": [
+    {
+      "title": "Common Tern Identification \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Common_Tern/id"
+    },
+    {
+      "title": "Common Tern \u2014 eBird",
+      "url": "https://ebird.org/species/comter"
+    },
+    {
+      "title": "Common Tern \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/common-tern"
+    },
+    {
+      "title": "Sterna hirundo \u2014 Animal Diversity Web",
+      "url": "https://animaldiversity.org/accounts/Sterna_hirundo/"
+    }
+  ]
+}

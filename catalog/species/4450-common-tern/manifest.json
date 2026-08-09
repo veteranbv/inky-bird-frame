@@ -1,0 +1,161 @@
+{
+  "approved_at": "2026-08-09T19:09:04+00:00",
+  "assets": {
+    "display": {
+      "filename": "display.png",
+      "sha256": "b2ffb5dd2928bd0ce882e117b497ffdbce126ec3e0ccb526298d54a0570aa767"
+    },
+    "portrait": {
+      "filename": "portrait.png",
+      "sha256": "66a21854a636a98ef29886ec67a351b016ff47b941fa3c182368bb6b8d9af99b"
+    }
+  },
+  "common_name": "Common Tern",
+  "generation": {
+    "attempt": 3,
+    "correction_source_sha256": "0c43432a5c64002bc11fda227148b0a4a03eac29dbe495701cc48bcc205ef7ad",
+    "generated_at": "2026-08-09T19:09:04+00:00",
+    "generator": "Codex subscription / built-in gpt-image-2",
+    "max_attempts": 3,
+    "prompt_version": "field-journal-v4"
+  },
+  "profile": {
+    "behavior": "A strongly migratory, vocal, colonial tern with buoyant rowing flight; forages singly or in flocks by picking prey from the surface or plunge-diving for small fish, and vigorously defends its nesting territory.",
+    "common_name": "Common Tern",
+    "family": "Laridae",
+    "field_marks": [
+      "Full black breeding cap surrounding a dark eye",
+      "Slender, straight orange-red bill, usually with a black tip",
+      "Pale gray upperparts and white to very light gray underparts",
+      "Long, narrow, pointed wings with darker outer primaries",
+      "Deeply forked tail with elongated outer feathers",
+      "Short orange-red legs"
+    ],
+    "habitat": "Breeds colonially on rocky islands, barrier beaches, saltmarshes, and sparsely vegetated sand, gravel, shell, or cobble near water. Forages over coastal waters, estuaries, inlets, and large inland lakes; chiefly marine outside the breeding season.",
+    "measurements": {
+      "length": "31\u201338 cm",
+      "weight": "93\u2013200 g",
+      "wingspan": "75\u201380 cm"
+    },
+    "palette": [
+      "black",
+      "pearl gray",
+      "white",
+      "coral red",
+      "charcoal gray"
+    ],
+    "scientific_name": "Sterna hirundo",
+    "sources": [
+      {
+        "title": "Common Tern Identification \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Common_Tern/id"
+      },
+      {
+        "title": "Common Tern Life History \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Common_Tern/lifehistory"
+      },
+      {
+        "title": "Sterna hirundo \u2014 Animal Diversity Web",
+        "url": "https://animaldiversity.org/accounts/Sterna_hirundo/"
+      }
+    ],
+    "taxon_id": 4450
+  },
+  "quality_review": {
+    "anatomy_accuracy": 4,
+    "composition_quality": 5,
+    "correction_findings": [],
+    "findings": [
+      "The plate depicts one complete primary adult Common Tern with one head and bill, two folded wings, two short legs with webbed feet, and one deeply forked tail; the detached wing and head are clearly supplementary studies.",
+      "Adult plumage agrees with the references and direct sources: full black cap, dark eye, slender red-orange black-tipped bill, pale-gray body, dark outer primaries, red-orange legs, pointed wings, and elongated outer tail feathers.",
+      "Bill proportions are consistent between both depicted heads and the clearest side-profile reference: the upper mandible projects slightly beyond the lower without truncation, reversal, or exaggerated mismatch.",
+      "The primary specimen is somewhat fuller-bodied than the photographed adults, but remains within plausible posture and feathering variation and retains diagnostic Common Tern proportions.",
+      "Common name, scientific name, and family are correct. eBird independently identifies Common Tern as Sterna hirundo in Laridae.",
+      "All visible measurement text is accurate against the Cornell source: length 31\u201338 cm, weight 93\u2013200 g, and wingspan 75\u201380 cm. Audubon publishes a different but overlapping measurement set, so the displayed Cornell ranges are supported rather than universal.",
+      "All habitat, behavior, field-mark, and palette text is complete, correctly spelled, coherent, and matches the proposed wording without omissions, substitutions, or duplicated words.",
+      "The body-length ruler is internally consistent: 31 cm is at the bottom, 38 cm at the top, four evenly spaced unlabeled interior ticks divide the range into five proportional segments, and the diagram is explicitly labeled schematic and not to scale.",
+      "No place name, ZIP code, coordinates, map, or local-observation detail appears."
+    ],
+    "location_free": true,
+    "passed": true,
+    "species_accuracy": 5,
+    "text_accuracy": 5,
+    "verification_sources": [
+      {
+        "title": "Common Tern Identification \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Common_Tern/id"
+      },
+      {
+        "title": "Common Tern \u2014 eBird",
+        "url": "https://ebird.org/species/comter"
+      },
+      {
+        "title": "Common Tern \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/common-tern"
+      },
+      {
+        "title": "Sterna hirundo \u2014 Animal Diversity Web",
+        "url": "https://animaldiversity.org/accounts/Sterna_hirundo/"
+      }
+    ]
+  },
+  "references": [
+    {
+      "attribution": "(c) Jonathan Layman, some rights reserved (CC BY)",
+      "filename": "01-22243644.jpeg",
+      "height": 2048,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/22243644/large.jpeg",
+      "license_code": "cc-by",
+      "observation_id": 14902467,
+      "observer": "jlayman",
+      "photo_id": 22243644,
+      "sha256": "c9c1697999ef24a73f50a718db8568a0f8ceece20076fa33180775131422318e",
+      "source_url": "https://www.inaturalist.org/observations/14902467",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) Evan M. Raskin, some rights reserved (CC BY)",
+      "filename": "02-45627261.jpeg",
+      "height": 1536,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/45627261/large.jpeg",
+      "license_code": "cc-by",
+      "observation_id": 29241901,
+      "observer": "eraskin",
+      "photo_id": 45627261,
+      "sha256": "3c6e98c719a896c1c7084b258b8a79818c11c6ebf61853a48502d971b677857f",
+      "source_url": "https://www.inaturalist.org/observations/29241901",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) Dan Riley, some rights reserved (CC BY)",
+      "filename": "03-345466573.jpg",
+      "height": 1152,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/345466573/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 196252824,
+      "observer": "driley",
+      "photo_id": 345466573,
+      "sha256": "789772f5df9c656f362d6e6dd10dbbccdb3fd09b12a7f7b9bd8aaed82874337a",
+      "source_url": "https://www.inaturalist.org/observations/196252824",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) Joey Devine, some rights reserved (CC BY)",
+      "filename": "04-301674117.jpeg",
+      "height": 1536,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/301674117/large.jpeg",
+      "license_code": "cc-by",
+      "observation_id": 173698243,
+      "observer": "wmich_birding",
+      "photo_id": 301674117,
+      "sha256": "77b9974bd59d621fa031c33a35f670482c14efe9417b7762727ce8478ce82d39",
+      "source_url": "https://www.inaturalist.org/observations/173698243",
+      "width": 2048
+    }
+  ],
+  "schema_version": 1,
+  "scientific_name": "Sterna hirundo",
+  "slug": "common-tern",
+  "status": "approved",
+  "taxon_id": 4450
+}

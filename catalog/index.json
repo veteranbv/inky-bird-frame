@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-09T18:51:46+00:00",
+  "generated_at": "2026-08-09T19:09:04+00:00",
   "schema_version": 1,
   "species": [
     {
@@ -397,6 +397,17 @@
       "scientific_name": "Corvus corax",
       "slug": "common-raven",
       "taxon_id": 8010
+    },
+    {
+      "approved_at": "2026-08-09T19:09:04+00:00",
+      "common_name": "Common Tern",
+      "display_path": "species/4450-common-tern/display.png",
+      "display_sha256": "b2ffb5dd2928bd0ce882e117b497ffdbce126ec3e0ccb526298d54a0570aa767",
+      "portrait_path": "species/4450-common-tern/portrait.png",
+      "portrait_sha256": "66a21854a636a98ef29886ec67a351b016ff47b941fa3c182368bb6b8d9af99b",
+      "scientific_name": "Sterna hirundo",
+      "slug": "common-tern",
+      "taxon_id": 4450
     },
     {
       "approved_at": "2026-07-13T03:53:44+00:00",
