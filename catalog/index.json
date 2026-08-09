@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-09T23:17:55+00:00",
+  "generated_at": "2026-08-09T23:31:16+00:00",
   "schema_version": 1,
   "species": [
     {
@@ -1574,6 +1574,17 @@
       "scientific_name": "Cyanocorax yucatanicus",
       "slug": "yucatan-jay",
       "taxon_id": 8470
+    },
+    {
+      "approved_at": "2026-08-09T23:31:16+00:00",
+      "common_name": "Zenaida Dove",
+      "display_path": "species/3465-zenaida-dove/display.png",
+      "display_sha256": "dbbb976bcbf1271d5ab18801c56267a788d52e6d188a207d5143d4af7b3a1f4b",
+      "portrait_path": "species/3465-zenaida-dove/portrait.png",
+      "portrait_sha256": "a744a38ba36b2b794f7e303ca557a65b7e3cff0eabdd0bc5358ab64bd1957190",
+      "scientific_name": "Zenaida aurita",
+      "slug": "zenaida-dove",
+      "taxon_id": 3465
     }
   ]
 }
