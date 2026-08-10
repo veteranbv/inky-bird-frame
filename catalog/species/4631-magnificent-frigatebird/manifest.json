@@ -1,0 +1,154 @@
+{
+  "approved_at": "2026-08-10T00:47:55+00:00",
+  "assets": {
+    "display": {
+      "filename": "display.png",
+      "sha256": "e91a402c6d3548ac3fca3f6fdfd049931ed07703d0e57946ff01e00521dd6877"
+    },
+    "portrait": {
+      "filename": "portrait.png",
+      "sha256": "bcb6adf2ab17fb906566066add45471ee801f2525a79d1a58321848acaa40bf5"
+    }
+  },
+  "common_name": "Magnificent Frigatebird",
+  "generation": {
+    "attempt": 1,
+    "generated_at": "2026-08-10T00:47:55+00:00",
+    "generator": "Codex subscription / built-in gpt-image-2",
+    "max_attempts": 3,
+    "prompt_version": "field-journal-v5"
+  },
+  "profile": {
+    "behavior": "An expert soarer that spends long periods aloft with few wingbeats, steering with its forked tail. It snatches fish and squid from the water\u2019s surface and also pursues other seabirds to steal dropped or regurgitated prey. Breeding is colonial; males display by inflating the red throat sac.",
+    "common_name": "Magnificent Frigatebird",
+    "family": "Fregatidae",
+    "field_marks": [
+      "Very large, lightly built seabird with extremely long, narrow, angular wings.",
+      "Long, deeply forked tail, often held closed so it appears pointed.",
+      "Long silvery-gray bill with a strongly hooked tip; dark eye, with a blue-gray eye-ring most evident on adult females.",
+      "Adult male glossy black with a conspicuous scarlet inflatable throat sac during display.",
+      "Adult female black with a clean white breast; juveniles show a white head and underparts.",
+      "Legs and feet are unusually short and small\u2014dark gray-black in males and flesh-pink in females."
+    ],
+    "habitat": "Tropical and subtropical marine waters, from shallow coastal lagoons to the open ocean. Nests and roosts colonially in mangroves, low trees, and shrubs on islands.",
+    "measurements": {
+      "length": "89\u2013114 cm (35\u201345 in)",
+      "weight": "1.0\u20131.9 kg (35\u201367 oz)",
+      "wingspan": "217\u2013224 cm (85\u201388 in)"
+    },
+    "palette": [
+      "black",
+      "white",
+      "scarlet red",
+      "silvery gray",
+      "pale pink"
+    ],
+    "scientific_name": "Fregata magnificens",
+    "sources": [
+      {
+        "title": "Magnificent Frigatebird Identification \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/magnificent_frigatebird/id"
+      },
+      {
+        "title": "Magnificent Frigatebird Life History \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Magnificent_Frigatebird/lifehistory"
+      },
+      {
+        "title": "Fregata magnificens \u2014 Animal Diversity Web",
+        "url": "https://animaldiversity.org/accounts/Fregata_magnificens/"
+      }
+    ],
+    "taxon_id": 4631
+  },
+  "quality_review": {
+    "anatomy_accuracy": 5,
+    "composition_quality": 5,
+    "correction_findings": [],
+    "findings": [
+      "The primary specimen is a convincing adult male Magnificent Frigatebird: glossy black plumage, inflated scarlet gular sac, long hooked silvery-gray bill, dark eye, short legs, small feet, and an exceptionally long deeply forked tail.",
+      "The previously missing anatomy is now present: two separate short dark legs terminate in two distinct feet gripping the branch.",
+      "The naturally occluded far-side wing is anatomically credible; the visible folded wing and detached wing study show coherent feather structure without duplicated or malformed parts.",
+      "Both depicted heads have consistent bill anatomy: the upper mandible extends beyond the lower mandible and ends in a strong downward hook, matching the side-profile references.",
+      "The title, scientific name, family, measurements, habitat, behavior, and all field-mark text are legible and consistent with the verified profile.",
+      "The body-length ruler is internally consistent: 89 cm (35 in) is at the bottom, 114 cm (45 in) is at the top, values increase upward, and the diagram is explicitly labeled schematic and not to scale.",
+      "No place name, ZIP code, coordinates, map, or local-observation detail appears."
+    ],
+    "location_free": true,
+    "passed": true,
+    "species_accuracy": 5,
+    "text_accuracy": 5,
+    "verification_sources": [
+      {
+        "title": "Magnificent Frigatebird Identification \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/magnificent_frigatebird/id"
+      },
+      {
+        "title": "Magnificent Frigatebird \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/magnificent-frigatebird"
+      },
+      {
+        "title": "Fregata magnificens \u2014 Animal Diversity Web",
+        "url": "https://animaldiversity.org/accounts/Fregata_magnificens/"
+      }
+    ]
+  },
+  "references": [
+    {
+      "attribution": "(c) Megan Massa, some rights reserved (CC BY)",
+      "filename": "01-158806319.jpeg",
+      "height": 1536,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/158806319/large.jpeg",
+      "license_code": "cc-by",
+      "observation_id": 95645162,
+      "observer": "snailkites",
+      "photo_id": 158806319,
+      "sha256": "ed957764b9ea4f4bb482aad16acdb348af251b79e167332ddfa7bcb381afb5d2",
+      "source_url": "https://www.inaturalist.org/observations/95645162",
+      "width": 2048
+    },
+    {
+      "attribution": "no rights reserved",
+      "filename": "02-463807692.jpeg",
+      "height": 1152,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/463807692/large.jpeg",
+      "license_code": "cc0",
+      "observation_id": 258500351,
+      "observer": "stevestevens",
+      "photo_id": 463807692,
+      "sha256": "16c7c2903621fd62d61edeff42a2804b22bd2f08a22173ed6610544a25aadcda",
+      "source_url": "https://www.inaturalist.org/observations/258500351",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) Xochitl Zambrano, some rights reserved (CC BY)",
+      "filename": "03-222824094.jpg",
+      "height": 905,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/222824094/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 130978797,
+      "observer": "xochitlzeta",
+      "photo_id": 222824094,
+      "sha256": "c67aca2d6f2e32c2da5cb82f13e17b8a40d6da7a19391aa169f147ff7bf7d336",
+      "source_url": "https://www.inaturalist.org/observations/130978797",
+      "width": 1357
+    },
+    {
+      "attribution": "(c) Bill Levine, some rights reserved (CC BY)",
+      "filename": "04-32754488.jpeg",
+      "height": 2048,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/32754488/large.jpeg",
+      "license_code": "cc-by",
+      "observation_id": 21191811,
+      "observer": "blevine",
+      "photo_id": 32754488,
+      "sha256": "64920fe7e474e7259125e0c607c63e1484105ccee3cacf2bf62b32eece31392a",
+      "source_url": "https://www.inaturalist.org/observations/21191811",
+      "width": 2048
+    }
+  ],
+  "schema_version": 1,
+  "scientific_name": "Fregata magnificens",
+  "slug": "magnificent-frigatebird",
+  "status": "approved",
+  "taxon_id": 4631
+}

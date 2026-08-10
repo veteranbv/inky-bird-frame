@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-10T00:43:44+00:00",
+  "generated_at": "2026-08-10T00:47:55+00:00",
   "schema_version": 1,
   "species": [
     {
@@ -870,6 +870,17 @@
       "scientific_name": "Parkesia motacilla",
       "slug": "louisiana-waterthrush",
       "taxon_id": 73148
+    },
+    {
+      "approved_at": "2026-08-10T00:47:55+00:00",
+      "common_name": "Magnificent Frigatebird",
+      "display_path": "species/4631-magnificent-frigatebird/display.png",
+      "display_sha256": "e91a402c6d3548ac3fca3f6fdfd049931ed07703d0e57946ff01e00521dd6877",
+      "portrait_path": "species/4631-magnificent-frigatebird/portrait.png",
+      "portrait_sha256": "bcb6adf2ab17fb906566066add45471ee801f2525a79d1a58321848acaa40bf5",
+      "scientific_name": "Fregata magnificens",
+      "slug": "magnificent-frigatebird",
+      "taxon_id": 4631
     },
     {
       "approved_at": "2026-07-10T18:12:40+00:00",
