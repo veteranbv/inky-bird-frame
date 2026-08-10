@@ -2553,8 +2553,9 @@ class ControllerTests(unittest.TestCase):
         self.assertEqual(
             FakeRunner.corrections[1],
             (
-                "Update every visible factual note to match the refreshed source-backed "
-                "profile exactly.",
+                "Update the primary bird, every supplementary study, and every visible factual "
+                "note to match the refreshed source-backed profile exactly, including its field "
+                "marks, palette, measurements, and anatomy.",
             ),
         )
         self.assertEqual(FakeRunner.corrections[2], ("Repair the visible leg",))

@@ -93,7 +93,9 @@ from .timeutil import parse_utc_timestamp
 
 REVIEW_FAILURE_FALLBACK = "The previous attempt did not meet every automated review threshold."
 PROFILE_REFRESH_CORRECTION = (
-    "Update every visible factual note to match the refreshed source-backed profile exactly."
+    "Update the primary bird, every supplementary study, and every visible factual note to "
+    "match the refreshed source-backed profile exactly, including its field marks, palette, "
+    "measurements, and anatomy."
 )
 HUMAN_REVIEW_SOURCE = "human-review"
 
