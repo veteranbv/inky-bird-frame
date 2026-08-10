@@ -1,0 +1,42 @@
+{
+  "behavior": "Crepuscular aerial insectivore; hunts flying insects at dawn and dusk with looping, erratic, batlike flight. Rests motionless by day, often lengthwise on a branch or on open ground. Males perform steep courtship dives that produce a booming sound, and migrants may gather in large flocks.",
+  "common_name": "Common Nighthawk",
+  "family": "Caprimulgidae",
+  "field_marks": [
+    "Cryptically mottled and barred gray, brown, black, buff, and white plumage",
+    "Very long, narrow, pointed wings",
+    "Bold white patch across the outer primaries",
+    "Medium-long, slightly notched tail; adult males show a white band near the tip",
+    "Small, flat head with a large dark eye, tiny bill, and broad gape",
+    "Extremely short legs and a short neck"
+  ],
+  "habitat": "Open ground and open-canopy habitats, including grasslands, savannas, dunes, forest clearings, burns, open forest, and rocky or gravel surfaces. Forages over open areas near woods or wetlands and lays its eggs directly on bare or sparsely vegetated ground.",
+  "measurements": {
+    "length": "22\u201324 cm",
+    "weight": "65\u201398 g",
+    "wingspan": "53\u201357 cm"
+  },
+  "palette": [
+    "charcoal black",
+    "smoky gray",
+    "earthy brown",
+    "warm buff",
+    "white"
+  ],
+  "scientific_name": "Chordeiles minor",
+  "sources": [
+    {
+      "title": "Common Nighthawk Identification \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Common_Nighthawk/id"
+    },
+    {
+      "title": "Common Nighthawk Life History \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Common_Nighthawk/lifehistory"
+    },
+    {
+      "title": "Chordeiles minor \u2014 Animal Diversity Web",
+      "url": "https://animaldiversity.org/accounts/Chordeiles_minor/"
+    }
+  ],
+  "taxon_id": 19577
+}
