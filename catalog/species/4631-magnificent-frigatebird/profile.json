@@ -1,0 +1,42 @@
+{
+  "behavior": "An expert soarer that spends long periods aloft with few wingbeats, steering with its forked tail. It snatches fish and squid from the water\u2019s surface and also pursues other seabirds to steal dropped or regurgitated prey. Breeding is colonial; males display by inflating the red throat sac.",
+  "common_name": "Magnificent Frigatebird",
+  "family": "Fregatidae",
+  "field_marks": [
+    "Very large, lightly built seabird with extremely long, narrow, angular wings.",
+    "Long, deeply forked tail, often held closed so it appears pointed.",
+    "Long silvery-gray bill with a strongly hooked tip; dark eye, with a blue-gray eye-ring most evident on adult females.",
+    "Adult male glossy black with a conspicuous scarlet inflatable throat sac during display.",
+    "Adult female black with a clean white breast; juveniles show a white head and underparts.",
+    "Legs and feet are unusually short and small\u2014dark gray-black in males and flesh-pink in females."
+  ],
+  "habitat": "Tropical and subtropical marine waters, from shallow coastal lagoons to the open ocean. Nests and roosts colonially in mangroves, low trees, and shrubs on islands.",
+  "measurements": {
+    "length": "89\u2013114 cm (35\u201345 in)",
+    "weight": "1.0\u20131.9 kg (35\u201367 oz)",
+    "wingspan": "217\u2013224 cm (85\u201388 in)"
+  },
+  "palette": [
+    "black",
+    "white",
+    "scarlet red",
+    "silvery gray",
+    "pale pink"
+  ],
+  "scientific_name": "Fregata magnificens",
+  "sources": [
+    {
+      "title": "Magnificent Frigatebird Identification \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/magnificent_frigatebird/id"
+    },
+    {
+      "title": "Magnificent Frigatebird Life History \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Magnificent_Frigatebird/lifehistory"
+    },
+    {
+      "title": "Fregata magnificens \u2014 Animal Diversity Web",
+      "url": "https://animaldiversity.org/accounts/Fregata_magnificens/"
+    }
+  ],
+  "taxon_id": 4631
+}
