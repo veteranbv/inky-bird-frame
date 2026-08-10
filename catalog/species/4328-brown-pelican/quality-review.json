@@ -1,0 +1,38 @@
+{
+  "anatomy_accuracy": 5,
+  "composition_quality": 5,
+  "correction_findings": [],
+  "findings": [
+    "The primary specimen is recognizably and accurately rendered as an adult Brown Pelican in breeding plumage: huge stocky body, slender folded neck, pale-yellow-washed white head, reddish-brown neck, silver-gray and brown-streaked upperparts, dark belly, short tail, black legs, and an extremely long grayish bill with a hooked tip and expandable pouch.",
+    "The primary specimen has exactly one head, one bill, one visible eye, one tail, two convincingly attached legs, two complete feet, and a plausible folded pair of wings with the far-side wing naturally occluded. The detached wing and head/bill illustrations read clearly as supplementary anatomical studies.",
+    "Both feet now show four toes joined by continuous webbing, including the hind toe, consistent with the totipalmate feet described by Animal Diversity Web.",
+    "The bill is coherent from base to tip in both heads. The hooked upper-mandible tip projects naturally, neither head has a truncated or reversed mandible, and the proportions agree with the attached side-profile references.",
+    "The visible brown iris is consistent with the illustrated breeding plumage. The supplementary wing correctly shows a long, broad wing with separated dark primary tips.",
+    "Every printed identity, habitat, behavior, field-mark, and palette line matches the current proposed wording, including \u201cgrayish bill\u201d and \u201cbreeding birds develop a rich reddish-brown neck.\u201d Spelling, numbers, punctuation, and word order are coherent.",
+    "The printed measurements\u2014length 100\u2013137 cm, wingspan 200 cm, and weight 2\u20135 kg\u2014are directly supported by both All About Birds and Animal Diversity Web. Although earlier history retained wider ranges from another source, the present values have current agreement across two allowed direct sources and are not an image defect.",
+    "The ruler increases correctly from 100 cm at the bottom to 137 cm at the top, repeats the printed body-length range and units, and is explicitly labeled \u201cSCHEMATIC \u2014 NOT TO SCALE.\u201d Its unlabeled interior ticks do not create a contradictory measurement.",
+    "The plate is balanced and legible, with one dominant specimen, clearly separated supplementary studies, and unobstructed labels. No place name, ZIP code, coordinates, map, or local-observation detail appears."
+  ],
+  "location_free": true,
+  "passed": true,
+  "species_accuracy": 5,
+  "text_accuracy": 5,
+  "verification_sources": [
+    {
+      "title": "Brown Pelican Identification \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Brown_Pelican/id"
+    },
+    {
+      "title": "Pelecanus occidentalis (brown pelican) \u2014 Animal Diversity Web",
+      "url": "https://animaldiversity.org/accounts/Pelecanus_occidentalis/"
+    },
+    {
+      "title": "Brown Pelican \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/brown-pelican"
+    },
+    {
+      "title": "Brown Pelican \u2014 Smithsonian's National Zoo",
+      "url": "https://nationalzoo.si.edu/animals/brown-pelican"
+    }
+  ]
+}

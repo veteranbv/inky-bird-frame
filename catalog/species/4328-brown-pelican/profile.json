@@ -1,0 +1,46 @@
+{
+  "behavior": "Forages mainly by plunge-diving headfirst for schooling fish, then drains water from its throat pouch before swallowing. Social birds often glide low over the water in lines or V formations and nest in colonies.",
+  "common_name": "Brown Pelican",
+  "family": "Pelecanidae",
+  "field_marks": [
+    "Huge, stocky seabird with a slender neck and an extremely long, grayish bill with a hooked tip and expandable throat pouch.",
+    "Adults have a white head washed pale yellow; breeding birds develop a rich reddish-brown neck.",
+    "Silver-gray and brown-streaked upperparts contrast with a dark brown belly; immatures are browner with pale underparts.",
+    "Adult irises range from pale blue to yellowish white and become brown during the breeding season; juvenile irises are dark brown.",
+    "Long, broad wings appear bowed in a glide and end in separated, fingerlike dark flight feathers.",
+    "Short dark tail and short black legs with fully webbed feet."
+  ],
+  "habitat": "Coastal marine and estuarine waters, especially shallow bays, beaches, and nearshore waters. Roosts on sandbars, pilings, jetties, mangroves, and offshore rocks; nests colonially on secluded islands or coastal vegetation.",
+  "measurements": {
+    "length": "100\u2013137 cm (both sexes)",
+    "weight": "2\u20135 kg",
+    "wingspan": "200 cm (both sexes)"
+  },
+  "palette": [
+    "silver gray",
+    "dark brown",
+    "creamy white",
+    "pale yellow",
+    "chestnut brown"
+  ],
+  "scientific_name": "Pelecanus occidentalis",
+  "sources": [
+    {
+      "title": "Brown Pelican Identification \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Brown_Pelican/id"
+    },
+    {
+      "title": "Pelecanus occidentalis (brown pelican) \u2014 Animal Diversity Web",
+      "url": "https://animaldiversity.org/accounts/Pelecanus_occidentalis/"
+    },
+    {
+      "title": "Brown Pelican \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/brown-pelican"
+    },
+    {
+      "title": "Brown Pelican \u2014 Smithsonian's National Zoo",
+      "url": "https://nationalzoo.si.edu/animals/brown-pelican"
+    }
+  ],
+  "taxon_id": 4328
+}

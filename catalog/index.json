@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-10T01:17:11+00:00",
+  "generated_at": "2026-08-10T01:55:00+00:00",
   "schema_version": 1,
   "species": [
     {
@@ -221,6 +221,17 @@
       "scientific_name": "Buteo platypterus",
       "slug": "broad-winged-hawk",
       "taxon_id": 5227
+    },
+    {
+      "approved_at": "2026-08-10T01:55:00+00:00",
+      "common_name": "Brown Pelican",
+      "display_path": "species/4328-brown-pelican/display.png",
+      "display_sha256": "7e6ee7417a59f42c1b53c0d6cd367a3c280a479161659bccaddb2fca62ce9e6b",
+      "portrait_path": "species/4328-brown-pelican/portrait.png",
+      "portrait_sha256": "6f4cf4a15b7166629ec55f87b8a7d0876f09b73d21d9826e13212c9a416ad6a2",
+      "scientific_name": "Pelecanus occidentalis",
+      "slug": "brown-pelican",
+      "taxon_id": 4328
     },
     {
       "approved_at": "2026-07-10T17:37:41+00:00",
