@@ -1,0 +1,42 @@
+{
+  "behavior": "Walks through shallow intertidal water and exposed flats, finding bivalves by sight and opening them by stabbing between the shells or hammering them apart. Often rests at communal roosts around high tide and gives loud piping calls during courtship and territorial encounters.",
+  "common_name": "American Oystercatcher",
+  "family": "Haematopodidae",
+  "field_marks": [
+    "Large, thickset shorebird with a robust neck and long legs",
+    "Long, straight, stout red-orange bill",
+    "Black head, neck, and upper breast",
+    "Dark brown back and folded wings contrasting with a white belly",
+    "Golden-yellow eye surrounded by a red orbital ring",
+    "White wing stripe and white tail base visible in flight"
+  ],
+  "habitat": "Strictly coastal intertidal habitats, including sandy or shell beaches, tidal mudflats, saltmarshes, rocky shores, shellfish reefs, dunes, and low islands used for nesting or roosting.",
+  "measurements": {
+    "length": "40\u201344 cm",
+    "weight": "400\u2013700 g",
+    "wingspan": "76\u201386 cm"
+  },
+  "palette": [
+    "coal black",
+    "dark brown",
+    "clean white",
+    "vivid red-orange",
+    "pale pink"
+  ],
+  "scientific_name": "Haematopus palliatus",
+  "sources": [
+    {
+      "title": "American Oystercatcher Identification \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/American_Oystercatcher/id"
+    },
+    {
+      "title": "Haematopus palliatus \u2014 Animal Diversity Web",
+      "url": "https://animaldiversity.org/accounts/Haematopus_palliatus/"
+    },
+    {
+      "title": "American Oystercatcher \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/american-oystercatcher"
+    }
+  ],
+  "taxon_id": 4840
+}

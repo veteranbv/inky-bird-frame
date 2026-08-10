@@ -1,0 +1,158 @@
+{
+  "approved_at": "2026-08-10T02:06:51+00:00",
+  "assets": {
+    "display": {
+      "filename": "display.png",
+      "sha256": "2f60edd5d1aa89b7a7c29e5bace971c67c0e6e81022bbea009c1480f1dfdb25c"
+    },
+    "portrait": {
+      "filename": "portrait.png",
+      "sha256": "58e93eef29c280e0dea24934c6555e6315f116ab00296820bf6699318fcdf059"
+    }
+  },
+  "common_name": "American Oystercatcher",
+  "generation": {
+    "attempt": 3,
+    "correction_source_sha256": "fb060fe42382433827cc25ca431b184b183316a8073ff753fb20875964605a45",
+    "generated_at": "2026-08-10T02:06:51+00:00",
+    "generator": "Codex subscription / built-in gpt-image-2",
+    "max_attempts": 3,
+    "prompt_version": "field-journal-v5"
+  },
+  "profile": {
+    "behavior": "Walks through shallow intertidal water and exposed flats, finding bivalves by sight and opening them by stabbing between the shells or hammering them apart. Often rests at communal roosts around high tide and gives loud piping calls during courtship and territorial encounters.",
+    "common_name": "American Oystercatcher",
+    "family": "Haematopodidae",
+    "field_marks": [
+      "Large, thickset shorebird with a robust neck and long legs",
+      "Long, straight, stout red-orange bill",
+      "Black head, neck, and upper breast",
+      "Dark brown back and folded wings contrasting with a white belly",
+      "Golden-yellow eye surrounded by a red orbital ring",
+      "White wing stripe and white tail base visible in flight"
+    ],
+    "habitat": "Strictly coastal intertidal habitats, including sandy or shell beaches, tidal mudflats, saltmarshes, rocky shores, shellfish reefs, dunes, and low islands used for nesting or roosting.",
+    "measurements": {
+      "length": "40\u201344 cm",
+      "weight": "400\u2013700 g",
+      "wingspan": "76\u201386 cm"
+    },
+    "palette": [
+      "coal black",
+      "dark brown",
+      "clean white",
+      "vivid red-orange",
+      "pale pink"
+    ],
+    "scientific_name": "Haematopus palliatus",
+    "sources": [
+      {
+        "title": "American Oystercatcher Identification \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/American_Oystercatcher/id"
+      },
+      {
+        "title": "Haematopus palliatus \u2014 Animal Diversity Web",
+        "url": "https://animaldiversity.org/accounts/Haematopus_palliatus/"
+      },
+      {
+        "title": "American Oystercatcher \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/american-oystercatcher"
+      }
+    ],
+    "taxon_id": 4840
+  },
+  "quality_review": {
+    "anatomy_accuracy": 5,
+    "composition_quality": 5,
+    "correction_findings": [],
+    "findings": [
+      "The primary specimen is a convincing adult American Oystercatcher: black head, neck, and upper breast; dark-brown back and folded wing; white underparts; long stout red-orange bill; yellow eye with red orbital ring; and pale-pink legs all agree with the references and direct sources.",
+      "The plate contains exactly one complete primary specimen with one head, one bill, one tail, two convincingly attached legs, and a naturally occluded far-side wing. The detached wing and head are clearly supplementary studies and do not appear attached to the specimen.",
+      "Both primary feet now visibly have exactly three naturally attached forward toes and no hallux, backward digit, or rear toe-like projection. This agrees with the published description that the species lacks a hallux.",
+      "The primary and supplementary bills have coherent upper and lower mandibles from base to tip, with plausible straight, stout, chisel-like proportions consistent with the clearest side-profile references.",
+      "The supplementary wing correctly depicts the broad white wing stripe, and the primary specimen shows the white tail-base pattern identified by direct sources as visible in flight.",
+      "All visible identification, habitat, behavior, and field-mark text is legible, correctly spelled, and matches the proposed profile without duplicated, omitted, substituted, or nonsensical wording.",
+      "The printed 40\u201344 cm length and 400\u2013700 g weight are directly supported by All About Birds and Animal Diversity Web. The 76\u201386 cm wingspan is directly supported by Audubon and is consistent with Animal Diversity Web's 81 cm average.",
+      "The vertical body-length diagram is internally consistent: 40 cm is the lower endpoint, 44 cm is the upper endpoint, the units agree, values increase upward, and the adjacent label explicitly states \u201cSCHEMATIC \u2014 NOT TO SCALE.\u201d",
+      "No place name, ZIP code, coordinates, map, or local-observation detail appears.",
+      "The balanced primary portrait, supporting anatomy studies, restrained palette, readable hierarchy, and uncluttered spacing form a strong scientific field-journal composition."
+    ],
+    "location_free": true,
+    "passed": true,
+    "species_accuracy": 5,
+    "text_accuracy": 5,
+    "verification_sources": [
+      {
+        "title": "American Oystercatcher Identification \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/American_Oystercatcher/id"
+      },
+      {
+        "title": "Haematopus palliatus \u2014 Animal Diversity Web",
+        "url": "https://animaldiversity.org/accounts/Haematopus_palliatus/"
+      },
+      {
+        "title": "American Oystercatcher \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/american-oystercatcher"
+      }
+    ]
+  },
+  "references": [
+    {
+      "attribution": "(c) MarvalPhotography19, some rights reserved (CC BY)",
+      "filename": "01-364544938.jpg",
+      "height": 2048,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/364544938/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 206130514,
+      "observer": "fernandoarvizu19",
+      "photo_id": 364544938,
+      "sha256": "b9275044d4a7340e4a7ca647a0d6757eed9d836f476da5b6e504df5f4cf929e7",
+      "source_url": "https://www.inaturalist.org/observations/206130514",
+      "width": 1660
+    },
+    {
+      "attribution": "no rights reserved",
+      "filename": "02-268677260.jpeg",
+      "height": 800,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/268677260/large.jpeg",
+      "license_code": "cc0",
+      "observation_id": 155430976,
+      "observer": "stevestevens",
+      "photo_id": 268677260,
+      "sha256": "54e811a15267c9d2603524bef2bcfec5bedcecd840625c675ec91660faf593e2",
+      "source_url": "https://www.inaturalist.org/observations/155430976",
+      "width": 1200
+    },
+    {
+      "attribution": "(c) Mila C., some rights reserved (CC BY)",
+      "filename": "03-201780713.jpeg",
+      "height": 1295,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/201780713/large.jpeg",
+      "license_code": "cc-by",
+      "observation_id": 119371299,
+      "observer": "millapede",
+      "photo_id": 201780713,
+      "sha256": "418ba185a8433d9c906e590d7911d79ca9ac4990804ea951afd623d80d602b76",
+      "source_url": "https://www.inaturalist.org/observations/119371299",
+      "width": 2048
+    },
+    {
+      "attribution": "no rights reserved",
+      "filename": "04-5782562.jpg",
+      "height": 1218,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/5782562/large.jpg",
+      "license_code": "cc0",
+      "observation_id": 4753882,
+      "observer": "elinpierce",
+      "photo_id": 5782562,
+      "sha256": "8ac3bae5fad8d1fe4cb71b78ae37cc2192f055b8fe618a1188c5dc45a803eefd",
+      "source_url": "http://www.inaturalist.org/observations/4753882",
+      "width": 1682
+    }
+  ],
+  "schema_version": 1,
+  "scientific_name": "Haematopus palliatus",
+  "slug": "american-oystercatcher",
+  "status": "approved",
+  "taxon_id": 4840
+}

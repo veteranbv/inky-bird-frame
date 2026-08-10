@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-10T01:55:00+00:00",
+  "generated_at": "2026-08-10T02:06:51+00:00",
   "schema_version": 1,
   "species": [
     {
@@ -45,6 +45,17 @@
       "scientific_name": "Spinus tristis",
       "slug": "american-goldfinch",
       "taxon_id": 145310
+    },
+    {
+      "approved_at": "2026-08-10T02:06:51+00:00",
+      "common_name": "American Oystercatcher",
+      "display_path": "species/4840-american-oystercatcher/display.png",
+      "display_sha256": "2f60edd5d1aa89b7a7c29e5bace971c67c0e6e81022bbea009c1480f1dfdb25c",
+      "portrait_path": "species/4840-american-oystercatcher/portrait.png",
+      "portrait_sha256": "58e93eef29c280e0dea24934c6555e6315f116ab00296820bf6699318fcdf059",
+      "scientific_name": "Haematopus palliatus",
+      "slug": "american-oystercatcher",
+      "taxon_id": 4840
     },
     {
       "approved_at": "2026-08-09T13:09:59+00:00",
