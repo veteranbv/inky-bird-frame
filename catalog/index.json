@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-09T23:31:16+00:00",
+  "generated_at": "2026-08-10T00:43:44+00:00",
   "schema_version": 1,
   "species": [
     {
@@ -375,6 +375,17 @@
       "scientific_name": "Upupa epops",
       "slug": "common-hoopoe",
       "taxon_id": 20969
+    },
+    {
+      "approved_at": "2026-08-10T00:43:44+00:00",
+      "common_name": "Common Nighthawk",
+      "display_path": "species/19577-common-nighthawk/display.png",
+      "display_sha256": "4fd958116f8fb68d3cabdd9fb0e99919022fd000bcac8471767459958ba2b8f2",
+      "portrait_path": "species/19577-common-nighthawk/portrait.png",
+      "portrait_sha256": "c1151fdeffb59dfcd521f2f1c8a431c65dd8e670488990a5ee3df54771135031",
+      "scientific_name": "Chordeiles minor",
+      "slug": "common-nighthawk",
+      "taxon_id": 19577
     },
     {
       "approved_at": "2026-07-23T23:43:48+00:00",

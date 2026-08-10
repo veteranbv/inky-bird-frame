@@ -1,0 +1,155 @@
+{
+  "approved_at": "2026-08-10T00:43:44+00:00",
+  "assets": {
+    "display": {
+      "filename": "display.png",
+      "sha256": "4fd958116f8fb68d3cabdd9fb0e99919022fd000bcac8471767459958ba2b8f2"
+    },
+    "portrait": {
+      "filename": "portrait.png",
+      "sha256": "c1151fdeffb59dfcd521f2f1c8a431c65dd8e670488990a5ee3df54771135031"
+    }
+  },
+  "common_name": "Common Nighthawk",
+  "generation": {
+    "attempt": 1,
+    "generated_at": "2026-08-10T00:43:44+00:00",
+    "generator": "Codex subscription / built-in gpt-image-2",
+    "max_attempts": 3,
+    "prompt_version": "field-journal-v5"
+  },
+  "profile": {
+    "behavior": "Crepuscular aerial insectivore; hunts flying insects at dawn and dusk with looping, erratic, batlike flight. Rests motionless by day, often lengthwise on a branch or on open ground. Males perform steep courtship dives that produce a booming sound, and migrants may gather in large flocks.",
+    "common_name": "Common Nighthawk",
+    "family": "Caprimulgidae",
+    "field_marks": [
+      "Cryptically mottled and barred gray, brown, black, buff, and white plumage",
+      "Very long, narrow, pointed wings",
+      "Bold white patch across the outer primaries",
+      "Medium-long, slightly notched tail; adult males show a white band near the tip",
+      "Small, flat head with a large dark eye, tiny bill, and broad gape",
+      "Extremely short legs and a short neck"
+    ],
+    "habitat": "Open ground and open-canopy habitats, including grasslands, savannas, dunes, forest clearings, burns, open forest, and rocky or gravel surfaces. Forages over open areas near woods or wetlands and lays its eggs directly on bare or sparsely vegetated ground.",
+    "measurements": {
+      "length": "22\u201324 cm",
+      "weight": "65\u201398 g",
+      "wingspan": "53\u201357 cm"
+    },
+    "palette": [
+      "charcoal black",
+      "smoky gray",
+      "earthy brown",
+      "warm buff",
+      "white"
+    ],
+    "scientific_name": "Chordeiles minor",
+    "sources": [
+      {
+        "title": "Common Nighthawk Identification \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Common_Nighthawk/id"
+      },
+      {
+        "title": "Common Nighthawk Life History \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Common_Nighthawk/lifehistory"
+      },
+      {
+        "title": "Chordeiles minor \u2014 Animal Diversity Web",
+        "url": "https://animaldiversity.org/accounts/Chordeiles_minor/"
+      }
+    ],
+    "taxon_id": 19577
+  },
+  "quality_review": {
+    "anatomy_accuracy": 4,
+    "composition_quality": 5,
+    "correction_findings": [],
+    "findings": [
+      "The primary specimen is identifiable as a Common Nighthawk: cryptically mottled upperparts, strongly barred underparts, white throat patch, long pointed folded wings, bold outer-primary patches, large dark eye, tiny bill with a broad gape line, short neck, and a white-banded notched tail agree with the reference photographs and direct sources.",
+      "The primary specimen has exactly one head, one beak, one visible eye, two distinguishable folded wings, two extremely short legs with coherent feet gripping the branch, and one tail. The slight distal tail notch is now readable.",
+      "The detached wing and head are clearly separated supplementary studies. The wing has coherent feather anatomy and the diagnostic white outer-primary patch; the head study consistently shows the large eye, tiny bill, flat profile, and broad gape.",
+      "All visible identification, habitat, behavior, field-mark, and palette text is legible and matches the proposed profile without material omissions, substitutions, duplicated words, or spelling errors.",
+      "The displayed measurements\u2014length 22\u201324 cm, wingspan 53\u201357 cm, and weight 65\u201398 g\u2014agree with the independently inspected sources.",
+      "The body-length diagram is explicitly labeled \u201cSCHEMATIC \u2014 NOT TO SCALE,\u201d increases from 22 cm at the bottom to 24 cm at the top, contains four evenly spaced unlabeled interior ticks, and has no contradictory marker.",
+      "The page is cleanly organized as a scientific field-journal plate, with one dominant specimen and clearly detached supporting studies.",
+      "No place name, ZIP code, coordinates, map, or local-observation detail appears."
+    ],
+    "location_free": true,
+    "passed": true,
+    "species_accuracy": 5,
+    "text_accuracy": 5,
+    "verification_sources": [
+      {
+        "title": "Common Nighthawk Identification \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Common_Nighthawk/id"
+      },
+      {
+        "title": "Common Nighthawk \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/common-nighthawk"
+      },
+      {
+        "title": "Chordeiles minor \u2014 Animal Diversity Web",
+        "url": "https://animaldiversity.org/accounts/Chordeiles_minor/"
+      }
+    ]
+  },
+  "references": [
+    {
+      "attribution": "(c) Owen Strickland, some rights reserved (CC BY)",
+      "filename": "01-471224081.jpeg",
+      "height": 1365,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/471224081/large.jpeg",
+      "license_code": "cc-by",
+      "observation_id": 262292375,
+      "observer": "owenstrickland",
+      "photo_id": 471224081,
+      "sha256": "e08adbd9e767c59291d1e5c170ae79e7112548a1c62147e034e8fe4b2a2a99bd",
+      "source_url": "https://www.inaturalist.org/observations/262292375",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) Pete Diamond, some rights reserved (CC BY)",
+      "filename": "02-14987767.jpeg",
+      "height": 2048,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/14987767/large.jpeg",
+      "license_code": "cc-by",
+      "observation_id": 10727149,
+      "observer": "lygodium63",
+      "photo_id": 14987767,
+      "sha256": "959534d09836508c27a77234ff6cf2067bd4c723d915701ae000ef4f32adb590",
+      "source_url": "https://www.inaturalist.org/observations/10727149",
+      "width": 1536
+    },
+    {
+      "attribution": "(c) Karen Szafrajda, some rights reserved (CC BY)",
+      "filename": "03-420796358.jpg",
+      "height": 1427,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/420796358/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 236522088,
+      "observer": "kszafrajda",
+      "photo_id": 420796358,
+      "sha256": "3eebebb5a35cbe686b25bc115955d7a647c370e55831551a45dbba71ca5469ba",
+      "source_url": "https://www.inaturalist.org/observations/236522088",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) Sam Eberhard, some rights reserved (CC BY)",
+      "filename": "04-92072467.jpg",
+      "height": 1536,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/92072467/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 57706119,
+      "observer": "bigsam",
+      "photo_id": 92072467,
+      "sha256": "7ff1b5a8f804fbc94095afa2373858e8dd9bdd9fa92eb3beadb2a0523ab2c8de",
+      "source_url": "https://www.inaturalist.org/observations/57706119",
+      "width": 2048
+    }
+  ],
+  "schema_version": 1,
+  "scientific_name": "Chordeiles minor",
+  "slug": "common-nighthawk",
+  "status": "approved",
+  "taxon_id": 19577
+}

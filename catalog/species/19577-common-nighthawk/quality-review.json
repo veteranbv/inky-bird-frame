@@ -1,0 +1,33 @@
+{
+  "anatomy_accuracy": 4,
+  "composition_quality": 5,
+  "correction_findings": [],
+  "findings": [
+    "The primary specimen is identifiable as a Common Nighthawk: cryptically mottled upperparts, strongly barred underparts, white throat patch, long pointed folded wings, bold outer-primary patches, large dark eye, tiny bill with a broad gape line, short neck, and a white-banded notched tail agree with the reference photographs and direct sources.",
+    "The primary specimen has exactly one head, one beak, one visible eye, two distinguishable folded wings, two extremely short legs with coherent feet gripping the branch, and one tail. The slight distal tail notch is now readable.",
+    "The detached wing and head are clearly separated supplementary studies. The wing has coherent feather anatomy and the diagnostic white outer-primary patch; the head study consistently shows the large eye, tiny bill, flat profile, and broad gape.",
+    "All visible identification, habitat, behavior, field-mark, and palette text is legible and matches the proposed profile without material omissions, substitutions, duplicated words, or spelling errors.",
+    "The displayed measurements\u2014length 22\u201324 cm, wingspan 53\u201357 cm, and weight 65\u201398 g\u2014agree with the independently inspected sources.",
+    "The body-length diagram is explicitly labeled \u201cSCHEMATIC \u2014 NOT TO SCALE,\u201d increases from 22 cm at the bottom to 24 cm at the top, contains four evenly spaced unlabeled interior ticks, and has no contradictory marker.",
+    "The page is cleanly organized as a scientific field-journal plate, with one dominant specimen and clearly detached supporting studies.",
+    "No place name, ZIP code, coordinates, map, or local-observation detail appears."
+  ],
+  "location_free": true,
+  "passed": true,
+  "species_accuracy": 5,
+  "text_accuracy": 5,
+  "verification_sources": [
+    {
+      "title": "Common Nighthawk Identification \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Common_Nighthawk/id"
+    },
+    {
+      "title": "Common Nighthawk \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/common-nighthawk"
+    },
+    {
+      "title": "Chordeiles minor \u2014 Animal Diversity Web",
+      "url": "https://animaldiversity.org/accounts/Chordeiles_minor/"
+    }
+  ]
+}
