@@ -1230,6 +1230,7 @@ rotation_mode = "shuffle_bag"
                         }
                     )
                 )
+            (failed / "attempt-history.json").write_text(json.dumps({"attempts": []}))
             (failed / "profile.json").write_text(
                 json.dumps(
                     {
