@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-10T01:07:32+00:00",
+  "generated_at": "2026-08-10T01:12:59+00:00",
   "schema_version": 1,
   "species": [
     {
@@ -914,6 +914,17 @@
       "scientific_name": "Anas platyrhynchos",
       "slug": "mallard",
       "taxon_id": 6930
+    },
+    {
+      "approved_at": "2026-08-10T01:12:59+00:00",
+      "common_name": "Mangrove Swallow",
+      "display_path": "species/11930-mangrove-swallow/display.png",
+      "display_sha256": "67ae775c4fec11cc1a0eb09da28b45647e933cedd84a40d124714b9acf18aafb",
+      "portrait_path": "species/11930-mangrove-swallow/portrait.png",
+      "portrait_sha256": "742f3ff537943b1ea1c47325cf457eb096a73140dcf56390535a03d6e9a8e978",
+      "scientific_name": "Tachycineta albilinea",
+      "slug": "mangrove-swallow",
+      "taxon_id": 11930
     },
     {
       "approved_at": "2026-08-09T20:27:44+00:00",
