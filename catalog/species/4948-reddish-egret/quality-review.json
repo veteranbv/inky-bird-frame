@@ -1,0 +1,33 @@
+{
+  "anatomy_accuracy": 5,
+  "composition_quality": 5,
+  "correction_findings": [],
+  "findings": [
+    "The primary specimen is a convincing breeding-adult dark-morph Reddish Egret, matching the references in its shaggy rusty-cinnamon head and neck, slate-gray body, pink-and-black bill, blue-violet facial skin, pale yellow eye, and blue-gray legs.",
+    "The primary specimen has one head, one complete bill, one tail, two plausibly attached legs with intact feet, and a convincing folded-wing arrangement; the far wing is naturally hidden by the lateral pose.",
+    "The detached wing and head studies are clearly supplementary, anatomically coherent, and consistent with the primary specimen and reference photographs.",
+    "All visible identification, habitat, behavior, measurement, and palette text is legible and accurately transcribed from the proposed profile.",
+    "Cornell directly supports the displayed length, weight, and wingspan ranges; it also confirms the family, dark and white morphs, shaggy plumage, heavy two-toned bill, sturdy legs, active shallow-water hunting, and coastal habitat.",
+    "The body-length diagram increases correctly from 70 cm at the bottom to 80 cm at the top, matches the printed length range, and is explicitly labeled schematic and not to scale.",
+    "The complete weight line is now unobstructed and fully readable.",
+    "No place name, ZIP code, coordinates, map, or local-observation detail appears."
+  ],
+  "location_free": true,
+  "passed": true,
+  "species_accuracy": 5,
+  "text_accuracy": 5,
+  "verification_sources": [
+    {
+      "title": "Reddish Egret Identification \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Reddish_Egret/id"
+    },
+    {
+      "title": "Reddish Egret \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/reddish-egret"
+    },
+    {
+      "title": "Reddish Egret \u2014 Birds of the World",
+      "url": "https://birdsoftheworld.org/bow/species/redegr/cur/introduction?media=photos&printable="
+    }
+  ]
+}

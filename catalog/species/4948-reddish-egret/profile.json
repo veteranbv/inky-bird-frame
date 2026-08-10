@@ -1,0 +1,38 @@
+{
+  "behavior": "An animated shallow-water hunter that runs, pivots, leaps, stirs sediment with its feet, and spreads or canopies its wings to shade, startle, and herd small fish. Usually forages alone but may join mixed feeding groups.",
+  "common_name": "Reddish Egret",
+  "family": "Ardeidae",
+  "field_marks": [
+    "Long neck, sturdy blue-gray legs, broad wings, and a short tail",
+    "Conspicuously shaggy head and neck plumes",
+    "Dark morph has a slate-gray body with a rusty cinnamon head and neck",
+    "White morph is entirely white",
+    "Heavy, straight, daggerlike bill; breeding adults show a pink base and black tip",
+    "Pale yellow eye, with blue to violet facial skin most evident in breeding plumage"
+  ],
+  "habitat": "Shallow coastal wetlands, especially tidal flats, salt marshes, lagoons, protected bays and estuaries, salt pans, mangrove flats, and barrier-island shores; occasional freshwater ponds. Nests colonially in mangroves, shrubs, low beach vegetation, or on the ground.",
+  "measurements": {
+    "length": "70\u201380 cm (27.6\u201331.5 in)",
+    "weight": "700\u2013850 g (24.7\u201330.0 oz)",
+    "wingspan": "115\u2013118 cm (45.3\u201346.5 in)"
+  },
+  "palette": [
+    "rusty cinnamon",
+    "slate gray-blue",
+    "coral pink",
+    "black",
+    "white"
+  ],
+  "scientific_name": "Egretta rufescens",
+  "sources": [
+    {
+      "title": "Reddish Egret Identification \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Reddish_Egret/id"
+    },
+    {
+      "title": "Reddish Egret \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/reddish-egret"
+    }
+  ],
+  "taxon_id": 4948
+}

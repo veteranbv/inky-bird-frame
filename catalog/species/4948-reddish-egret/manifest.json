@@ -1,0 +1,151 @@
+{
+  "approved_at": "2026-08-10T01:17:11+00:00",
+  "assets": {
+    "display": {
+      "filename": "display.png",
+      "sha256": "c4f04ab98947339213d3cfa26e600e47e5dbd484940fcb7e34bbe18ca8790286"
+    },
+    "portrait": {
+      "filename": "portrait.png",
+      "sha256": "c0ab4d1c51a5ae4a14530b4f9e2635d19ab3022b8adfb195a0bb73932fb2b19b"
+    }
+  },
+  "common_name": "Reddish Egret",
+  "generation": {
+    "attempt": 1,
+    "generated_at": "2026-08-10T01:17:11+00:00",
+    "generator": "Codex subscription / built-in gpt-image-2",
+    "max_attempts": 3,
+    "prompt_version": "field-journal-v5"
+  },
+  "profile": {
+    "behavior": "An animated shallow-water hunter that runs, pivots, leaps, stirs sediment with its feet, and spreads or canopies its wings to shade, startle, and herd small fish. Usually forages alone but may join mixed feeding groups.",
+    "common_name": "Reddish Egret",
+    "family": "Ardeidae",
+    "field_marks": [
+      "Long neck, sturdy blue-gray legs, broad wings, and a short tail",
+      "Conspicuously shaggy head and neck plumes",
+      "Dark morph has a slate-gray body with a rusty cinnamon head and neck",
+      "White morph is entirely white",
+      "Heavy, straight, daggerlike bill; breeding adults show a pink base and black tip",
+      "Pale yellow eye, with blue to violet facial skin most evident in breeding plumage"
+    ],
+    "habitat": "Shallow coastal wetlands, especially tidal flats, salt marshes, lagoons, protected bays and estuaries, salt pans, mangrove flats, and barrier-island shores; occasional freshwater ponds. Nests colonially in mangroves, shrubs, low beach vegetation, or on the ground.",
+    "measurements": {
+      "length": "70\u201380 cm (27.6\u201331.5 in)",
+      "weight": "700\u2013850 g (24.7\u201330.0 oz)",
+      "wingspan": "115\u2013118 cm (45.3\u201346.5 in)"
+    },
+    "palette": [
+      "rusty cinnamon",
+      "slate gray-blue",
+      "coral pink",
+      "black",
+      "white"
+    ],
+    "scientific_name": "Egretta rufescens",
+    "sources": [
+      {
+        "title": "Reddish Egret Identification \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Reddish_Egret/id"
+      },
+      {
+        "title": "Reddish Egret \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/reddish-egret"
+      }
+    ],
+    "taxon_id": 4948
+  },
+  "quality_review": {
+    "anatomy_accuracy": 5,
+    "composition_quality": 5,
+    "correction_findings": [],
+    "findings": [
+      "The primary specimen is a convincing breeding-adult dark-morph Reddish Egret, matching the references in its shaggy rusty-cinnamon head and neck, slate-gray body, pink-and-black bill, blue-violet facial skin, pale yellow eye, and blue-gray legs.",
+      "The primary specimen has one head, one complete bill, one tail, two plausibly attached legs with intact feet, and a convincing folded-wing arrangement; the far wing is naturally hidden by the lateral pose.",
+      "The detached wing and head studies are clearly supplementary, anatomically coherent, and consistent with the primary specimen and reference photographs.",
+      "All visible identification, habitat, behavior, measurement, and palette text is legible and accurately transcribed from the proposed profile.",
+      "Cornell directly supports the displayed length, weight, and wingspan ranges; it also confirms the family, dark and white morphs, shaggy plumage, heavy two-toned bill, sturdy legs, active shallow-water hunting, and coastal habitat.",
+      "The body-length diagram increases correctly from 70 cm at the bottom to 80 cm at the top, matches the printed length range, and is explicitly labeled schematic and not to scale.",
+      "The complete weight line is now unobstructed and fully readable.",
+      "No place name, ZIP code, coordinates, map, or local-observation detail appears."
+    ],
+    "location_free": true,
+    "passed": true,
+    "species_accuracy": 5,
+    "text_accuracy": 5,
+    "verification_sources": [
+      {
+        "title": "Reddish Egret Identification \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Reddish_Egret/id"
+      },
+      {
+        "title": "Reddish Egret \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/reddish-egret"
+      },
+      {
+        "title": "Reddish Egret \u2014 Birds of the World",
+        "url": "https://birdsoftheworld.org/bow/species/redegr/cur/introduction?media=photos&printable="
+      }
+    ]
+  },
+  "references": [
+    {
+      "attribution": "(c) Daniel Pineda Vera, some rights reserved (CC BY)",
+      "filename": "01-198129250.jpg",
+      "height": 2048,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/198129250/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 117325645,
+      "observer": "el_neotropico",
+      "photo_id": 198129250,
+      "sha256": "7aed2ead6d799096184b17ef46d88ea8d9c5491f7f153fceefd571fceba9e910",
+      "source_url": "https://www.inaturalist.org/observations/117325645",
+      "width": 1366
+    },
+    {
+      "attribution": "no rights reserved",
+      "filename": "02-196930599.jpeg",
+      "height": 1365,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/196930599/large.jpeg",
+      "license_code": "cc0",
+      "observation_id": 116652075,
+      "observer": "funvill",
+      "photo_id": 196930599,
+      "sha256": "e7c1b421caa46a05b8e640607f19eecada349edc49d31fdffdec449d2de02f54",
+      "source_url": "https://www.inaturalist.org/observations/116652075",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) MarvalPhotography19, some rights reserved (CC BY)",
+      "filename": "03-238605983.jpg",
+      "height": 1638,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/238605983/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 139498832,
+      "observer": "fernandoarvizu19",
+      "photo_id": 238605983,
+      "sha256": "461b18c1fc86682732f06f018f2870f48657a4bc475e7061816b835de36a4e26",
+      "source_url": "https://www.inaturalist.org/observations/139498832",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) Daniel S. Katz, some rights reserved (CC BY)",
+      "filename": "04-174734987.jpeg",
+      "height": 1200,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/174734987/large.jpeg",
+      "license_code": "cc-by",
+      "observation_id": 104299233,
+      "observer": "danielskatz",
+      "photo_id": 174734987,
+      "sha256": "29ff98650dd3bde86375281fc8752fb995e88dcd7b78d8b985228f2f6cd8e935",
+      "source_url": "https://www.inaturalist.org/observations/104299233",
+      "width": 1200
+    }
+  ],
+  "schema_version": 1,
+  "scientific_name": "Egretta rufescens",
+  "slug": "reddish-egret",
+  "status": "approved",
+  "taxon_id": 4948
+}
