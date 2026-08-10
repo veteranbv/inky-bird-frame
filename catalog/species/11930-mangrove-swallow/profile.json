@@ -1,0 +1,41 @@
+{
+  "behavior": "An aerial insectivore that hunts with quick wingbeats and short glides, usually low over water. Frequently perches between foraging flights. Territorial and often solitary or paired while breeding, but may join small flocks outside the breeding period. Nests in low natural or artificial cavities near water.",
+  "common_name": "Mangrove Swallow",
+  "family": "Hirundinidae",
+  "field_marks": [
+    "Iridescent blue-green crown and upperparts",
+    "Clean white throat, breast, and belly",
+    "Large, conspicuous white rump patch",
+    "Narrow white supraloral chevron above the black lores",
+    "Small black bill with dark eyes and short dark legs",
+    "Long, pointed blackish wings and a shallow-forked dark tail"
+  ],
+  "habitat": "Tropical lowlands around still or slow-moving open water, including mangrove forest, coastal lagoons, rivers, lakes, wetlands, and intertidal areas; nesting requires nearby cavities in trees, stumps, rocks, structures, or nest boxes.",
+  "measurements": {
+    "length": "11\u201312 cm",
+    "weight": "about 14 g",
+    "wingspan": "approximately 28 cm"
+  },
+  "palette": [
+    "iridescent blue-green",
+    "clean white",
+    "sooty black",
+    "dark brown"
+  ],
+  "scientific_name": "Tachycineta albilinea",
+  "sources": [
+    {
+      "title": "Mangrove Swallow \u2014 eBird",
+      "url": "https://ebird.org/species/manswa1"
+    },
+    {
+      "title": "Mangrove swallow \u2014 Wikipedia",
+      "url": "https://en.wikipedia.org/wiki/Mangrove_swallow"
+    },
+    {
+      "title": "Mangrove Swallow \u2014 Birds of the World",
+      "url": "https://birdsoftheworld.org/bow/species/manswa1/cur/introduction"
+    }
+  ],
+  "taxon_id": 11930
+}

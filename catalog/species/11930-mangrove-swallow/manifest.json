@@ -1,0 +1,154 @@
+{
+  "approved_at": "2026-08-10T01:12:59+00:00",
+  "assets": {
+    "display": {
+      "filename": "display.png",
+      "sha256": "67ae775c4fec11cc1a0eb09da28b45647e933cedd84a40d124714b9acf18aafb"
+    },
+    "portrait": {
+      "filename": "portrait.png",
+      "sha256": "742f3ff537943b1ea1c47325cf457eb096a73140dcf56390535a03d6e9a8e978"
+    }
+  },
+  "common_name": "Mangrove Swallow",
+  "generation": {
+    "attempt": 1,
+    "generated_at": "2026-08-10T01:12:59+00:00",
+    "generator": "Codex subscription / built-in gpt-image-2",
+    "max_attempts": 3,
+    "prompt_version": "field-journal-v5"
+  },
+  "profile": {
+    "behavior": "An aerial insectivore that hunts with quick wingbeats and short glides, usually low over water. Frequently perches between foraging flights. Territorial and often solitary or paired while breeding, but may join small flocks outside the breeding period. Nests in low natural or artificial cavities near water.",
+    "common_name": "Mangrove Swallow",
+    "family": "Hirundinidae",
+    "field_marks": [
+      "Iridescent blue-green crown and upperparts",
+      "Clean white throat, breast, and belly",
+      "Large, conspicuous white rump patch",
+      "Narrow white supraloral chevron above the black lores",
+      "Small black bill with dark eyes and short dark legs",
+      "Long, pointed blackish wings and a shallow-forked dark tail"
+    ],
+    "habitat": "Tropical lowlands around still or slow-moving open water, including mangrove forest, coastal lagoons, rivers, lakes, wetlands, and intertidal areas; nesting requires nearby cavities in trees, stumps, rocks, structures, or nest boxes.",
+    "measurements": {
+      "length": "11\u201312 cm",
+      "weight": "about 14 g",
+      "wingspan": "approximately 28 cm"
+    },
+    "palette": [
+      "iridescent blue-green",
+      "clean white",
+      "sooty black",
+      "dark brown"
+    ],
+    "scientific_name": "Tachycineta albilinea",
+    "sources": [
+      {
+        "title": "Mangrove Swallow \u2014 eBird",
+        "url": "https://ebird.org/species/manswa1"
+      },
+      {
+        "title": "Mangrove swallow \u2014 Wikipedia",
+        "url": "https://en.wikipedia.org/wiki/Mangrove_swallow"
+      },
+      {
+        "title": "Mangrove Swallow \u2014 Birds of the World",
+        "url": "https://birdsoftheworld.org/bow/species/manswa1/cur/introduction"
+      }
+    ],
+    "taxon_id": 11930
+  },
+  "quality_review": {
+    "anatomy_accuracy": 5,
+    "composition_quality": 5,
+    "correction_findings": [],
+    "findings": [
+      "The plate depicts Mangrove Swallow accurately: metallic blue-green crown and upperparts, white throat and underparts, black lores and flight feathers, a conspicuous white rump, and a slightly forked dark tail agree with the reference photographs and direct sources.",
+      "Both depicted heads now show the supraloral marking as a short, narrow chevron at the bill base rather than an elongated eyebrow. The small black bills have consistent, plausible profiles and approximately co-terminal mandibles.",
+      "The primary specimen is a single complete bird with one head, one bill, two anatomically plausible wings, two attached legs with intact perching feet, and one tail. The far wing is naturally occluded. The detached head and spread-wing studies are clearly supplementary and anatomically coherent.",
+      "The long pointed folded wings, shallow tail fork, short dark legs, compact swallow proportions, and perching posture are credible for the species.",
+      "All visible identification text is correctly spelled and reproduces the proposed common name, scientific name, family, measurements, and field marks without omissions, substitutions, or duplicated words.",
+      "The length schematic increases correctly from 11 cm at the bottom to 12 cm at the top, agrees with both printed length statements, and is explicitly labeled \u201cSCHEMATIC \u2014 NOT TO SCALE.\u201d",
+      "The published direct material confirms the 11\u201312 cm length and approximately 14 g weight; the displayed approximately 28 cm wingspan is consistent with the proposed profile and is not contradicted by the permitted direct sources.",
+      "The plate has a clear field-journal composition, and no place name, coordinates, ZIP code, map, or observation-locality detail appears."
+    ],
+    "location_free": true,
+    "passed": true,
+    "species_accuracy": 5,
+    "text_accuracy": 5,
+    "verification_sources": [
+      {
+        "title": "Mangrove Swallow \u2014 eBird",
+        "url": "https://ebird.org/species/manswa1"
+      },
+      {
+        "title": "Mangrove swallow \u2014 Wikipedia",
+        "url": "https://en.wikipedia.org/wiki/Mangrove_swallow"
+      },
+      {
+        "title": "Mangrove Swallow \u2014 Birds of the World",
+        "url": "https://birdsoftheworld.org/bow/species/manswa1/cur/introduction"
+      }
+    ]
+  },
+  "references": [
+    {
+      "attribution": "(c) Ricard Busquets Reverte, some rights reserved (CC BY)",
+      "filename": "01-127176520.jpeg",
+      "height": 1192,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/127176520/large.jpeg",
+      "license_code": "cc-by",
+      "observation_id": 77748882,
+      "observer": "ricardelremate",
+      "photo_id": 127176520,
+      "sha256": "7f28a22609fd6bb591cbcad847fe9740155445c5f8658d3600f395e217d2dd07",
+      "source_url": "https://www.inaturalist.org/observations/77748882",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) AJ Wacaser, some rights reserved (CC BY)",
+      "filename": "02-4752309.jpeg",
+      "height": 1152,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/4752309/large.jpeg",
+      "license_code": "cc-by",
+      "observation_id": 4021861,
+      "observer": "ajwacaser",
+      "photo_id": 4752309,
+      "sha256": "ba984c450b403b401776f4dc3691aafc74f6769e0a779433513bd554b30eab32",
+      "source_url": "http://www.inaturalist.org/observations/4021861",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) Bruno Fr\u00edas Morales, some rights reserved (CC BY)",
+      "filename": "03-579743286.jpg",
+      "height": 1365,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/579743286/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 320632247,
+      "observer": "biobr1",
+      "photo_id": 579743286,
+      "sha256": "0c62c21e4e63ed7d615fe8f0195a6caf4d172d6b4721e21d0e5d2bb3e35a7013",
+      "source_url": "https://www.inaturalist.org/observations/320632247",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) Juanito Escamilla, some rights reserved (CC BY)",
+      "filename": "04-117272429.jpeg",
+      "height": 1103,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/117272429/large.jpeg",
+      "license_code": "cc-by",
+      "observation_id": 71986793,
+      "observer": "juanitoescamilla",
+      "photo_id": 117272429,
+      "sha256": "c2b1f2416c01a2bb19d787566970502552230fe71df52c042b5764ae0d0a174f",
+      "source_url": "https://www.inaturalist.org/observations/71986793",
+      "width": 1147
+    }
+  ],
+  "schema_version": 1,
+  "scientific_name": "Tachycineta albilinea",
+  "slug": "mangrove-swallow",
+  "status": "approved",
+  "taxon_id": 11930
+}
