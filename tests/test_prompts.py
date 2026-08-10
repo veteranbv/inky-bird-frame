@@ -3,14 +3,14 @@ from __future__ import annotations
 import unittest
 from pathlib import Path
 
-from inky_bird_frame.birds import BirdSpecies
-from inky_bird_frame.models import ReferencePhoto, SpeciesProfileData
-from inky_bird_frame.prompts import PROMPT_VERSION, plate_prompt, review_prompt
+from inky_bird_frame.birds import BirdSpecies, TaxonContext
+from inky_bird_frame.models import ProfileConflict, ReferencePhoto, SpeciesProfileData
+from inky_bird_frame.prompts import PROMPT_VERSION, plate_prompt, profile_prompt, review_prompt
 
 
 class PromptTests(unittest.TestCase):
     def test_prompt_contract_version(self) -> None:
-        self.assertEqual(PROMPT_VERSION, "field-journal-v4")
+        self.assertEqual(PROMPT_VERSION, "field-journal-v5")
 
     def test_plate_prompt_contains_species_facts_and_excludes_location(self) -> None:
         species = BirdSpecies(12942, "Eastern Bluebird", "Sialia sialis", 26, "iNaturalist")
@@ -80,6 +80,76 @@ class PromptTests(unittest.TestCase):
         self.assertIn("Correct the wing bars", prompt)
         self.assertIn("Create a new image", prompt)
 
+    def test_profile_and_review_prompts_include_bounded_conflict_history(self) -> None:
+        species = BirdSpecies(1, "Test Bird", "Avis test", 1, "test")
+        profile = SpeciesProfileData(
+            taxon_id=1,
+            common_name="Test Bird",
+            scientific_name="Avis test",
+            family="Testidae",
+            measurements={"length": "10 cm", "wingspan": "20 cm", "weight": "30 g"},
+            field_marks=["one", "two", "three", "four"],
+            habitat="Woods",
+            behavior="Perches",
+            palette=["red", "green", "blue"],
+            sources=[
+                {"title": "One", "url": "https://birds.example/one"},
+                {"title": "Two", "url": "https://field.example/two"},
+            ],
+        )
+        conflict = ProfileConflict(
+            **{
+                "field": "measurements.length",
+                "profile_value": "10 cm",
+                "observed_value": "12 cm",
+                "sources": [
+                    {"title": "One", "url": "https://birds.example/length"},
+                    {"title": "Two", "url": "https://field.example/length"},
+                ],
+            }
+        )
+        context = TaxonContext(
+            taxon_id=1,
+            common_name="Test Bird",
+            scientific_name="Avis test",
+            family="Testidae",
+            summary="A test bird.",
+            source_url="https://birds.example/taxon/1",
+        )
+
+        research = profile_prompt(
+            species,
+            context,
+            [],
+            ("birds.example", "field.example"),
+            prior_profile=profile,
+            profile_conflicts=(conflict,),
+        )
+        review = review_prompt(
+            species,
+            profile,
+            [],
+            ("birds.example", "field.example"),
+            prior_corrections=("Repair the visible leg",),
+            prior_profile_conflicts=(conflict,),
+        )
+        normalized_research = " ".join(research.split())
+        normalized_review = " ".join(review.split())
+
+        self.assertIn("one bounded re-adjudication", normalized_research)
+        self.assertIn(
+            "Do not assume either the prior profile or the review claim", normalized_research
+        )
+        self.assertIn('"field": "measurements.length"', research)
+        self.assertIn("Earlier review history for convergence checking", normalized_review)
+        self.assertIn("Repair the visible leg", normalized_review)
+        self.assertIn("resolved_corrections only when", normalized_review)
+        self.assertIn("must exactly match one earlier correction", normalized_review)
+        self.assertIn("never repeat a stale profile_value", normalized_review)
+        self.assertIn(
+            "drop a conflict that the current direct sources no longer support", normalized_review
+        )
+
     def test_plate_and_review_prompts_enforce_schematic_ruler(self) -> None:
         species = BirdSpecies(12942, "Eastern Bluebird", "Sialia sialis", 26, "iNaturalist")
         profile = SpeciesProfileData(
@@ -119,8 +189,8 @@ class PromptTests(unittest.TestCase):
         self.assertIn("BODY LENGTH: 7 in", prompt)
         self.assertIn("SCHEMATIC — NOT TO SCALE", prompt)
         self.assertIn("minimum at the bottom and maximum at the top", prompt)
-        self.assertIn("exactly four evenly spaced unlabeled interior ticks", normalized_prompt)
-        self.assertIn("ticks are subdivisions, not one-unit increments", normalized_prompt)
+        self.assertIn("roughly even, unlabeled interior ticks", normalized_prompt)
+        self.assertIn("count and spacing do not encode measurement units", normalized_prompt)
         self.assertIn("Do not draw a zero-based or wider full-range axis", prompt)
         self.assertIn("do not add a separate range bracket", normalized_prompt)
         self.assertIn("Match both the direction and degree", normalized_prompt)
@@ -146,13 +216,12 @@ class PromptTests(unittest.TestCase):
         normalized_review = " ".join(review.split())
 
         self.assertIn("values must increase from bottom to top", review)
-        self.assertIn("no separate marker may disagree with it", review)
+        self.assertIn("no separate marker may disagree with it", normalized_review)
         self.assertIn(
-            "range ruler must contain exactly four evenly spaced unlabeled interior ticks",
-            normalized_review,
+            "exact count or minor spacing variation is not a factual error", normalized_review
         )
-        self.assertIn("five proportional segments, not one-unit increments", normalized_review)
-        self.assertIn("Treat any mismatch as a material text error", normalized_review)
+        self.assertIn("wrong values or units", normalized_review)
+        self.assertIn("remains a material text error", normalized_review)
         self.assertIn("Read every visible text line in full", normalized_review)
         self.assertIn("duplicated, omitted, substituted, or nonsensical words", normalized_review)
         self.assertIn(
@@ -173,6 +242,13 @@ class PromptTests(unittest.TestCase):
             normalized_review,
         )
         self.assertIn("validate each study independently", normalized_review)
+        self.assertIn("naturally occluded far-side wing or leg is acceptable", normalized_review)
+        self.assertIn("never excuse a malformed", normalized_review)
+        self.assertIn("at least two direct HTTPS sources", normalized_review)
+        self.assertIn("Do not instruct the image generator", normalized_review)
+        self.assertIn("Identity fields are not adjudicable", normalized_review)
+        self.assertNotIn("exactly four evenly spaced", normalized_prompt)
+        self.assertNotIn("exactly four evenly spaced", normalized_review)
 
 
 if __name__ == "__main__":

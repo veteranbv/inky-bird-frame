@@ -274,7 +274,13 @@ downloads, and display rotation.
 Codex handles factual synthesis, image generation, and independent factual and
 visual review. Those steps are bounded by structured schemas, attached
 references, sourced verification, versioned prompts, configurable attempts,
-and a terminal failure state. Human approval is not required for normal flow.
+and a terminal failure state. A structured profile conflict can trigger one
+fresh research pass, but reviewer prose is never written into the canonical
+profile directly. Earlier corrections are carried forward as non-regression
+constraints only when the reviewer explicitly marks the exact
+earlier request as resolved; reversed or refined corrections remain actionable
+instead of becoming contradictory invariants. Human approval is not required
+for normal flow.
 
 Application code and documentation continue through protected pull requests.
 Generated species are content artifacts: after runtime review and deterministic

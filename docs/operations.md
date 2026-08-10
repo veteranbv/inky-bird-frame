@@ -30,7 +30,11 @@ The controller's `workspace_dir` must be writable because the Codex image tool
 copies its final image there. Keep it separate from configuration, catalog, and
 state; the example uses a dedicated `workspace` directory. `catalog_dir` and
 `state_dir` must persist across deployments. `codex_path` must point to a Codex
-CLI whose `login status` reports a ChatGPT-authenticated session.
+CLI whose `login status` reports a ChatGPT-authenticated session. Set the
+optional `codex_model` only after validating that model for profile research,
+generation, and review; otherwise the controller inherits the machine-wide
+Codex default. Each private run record states the requested value explicitly,
+including `null` when the default was inherited.
 
 Bird Buddy uses controller-private authentication state rather than configured
 credentials. Obtain Bird Buddy's permission first, run `birdbuddy login`, and
@@ -112,6 +116,43 @@ by configured domains, per-species attempts, and a daily total. A validated
 profile is cached, so image retries do not repeat profile research. Independent
 quality review may revisit configured source domains to verify the rendered
 facts rather than trusting the profile's citations.
+
+When that review finds a material disagreement with the cached profile, it
+must identify the supported profile field and cite two independent allowed
+sources. The reviewer cannot write canonical facts directly. Instead, the
+controller permits one fresh source-backed profile research pass within the
+same generation limit and research budget. A repeated conflict becomes
+terminal. Private `runs/*/profile-before-refresh.json` and
+`profile-after-refresh.json` files preserve the adjudication evidence.
+Conflict output is accepted only when `profile_value` matches the exact current
+profile field. A reviewer must also explicitly identify earlier image
+corrections that the current attempt resolves; disappearance alone never turns
+a correction into a non-regression invariant.
+
+`state_dir/runs/*/attempt-history.json` is a private, schema-versioned record of
+every started image attempt. It includes prompt version, requested model,
+generation and review latency, score-axis failures, correction regressions,
+explicitly resolved corrections, profile conflicts, and sanitized process-error
+types. Terminal failures also retain a copy with their private failed artifacts.
+These files can contain source-backed species facts and review diagnostics;
+back them up with controller state, never publish them into the reusable catalog.
+
+An explicit `retry TAXON_ID` preserves a terminal structured profile conflict
+in private retry state, even when the review has no image correction. The next
+run supplies that conflict to independent review until the current profile is
+verified or the source-backed conflict is adjudicated; a generic image failure
+message never replaces it. `generation-retries.json` contains the same private
+source-backed facts while a conflict is outstanding, so protect and back it up
+with the rest of controller state and never publish it.
+Stored conflict sources are revalidated against the current research-domain
+allowlist before reuse. If the allowlist has narrowed, that taxon is deferred
+with an actionable error rather than placing an unauthorized source into a
+search-enabled review prompt.
+Use `retry TAXON_ID --refresh-research` when the authorized domains have changed
+or the stored conflict should be adjudicated from scratch. This explicitly
+discards outstanding conflict provenance and clears the cached profile and
+references so the next run researches them under the current allowlist; any
+independent image-correction guidance is preserved.
 
 `rotation_mode` is configured under `[display_node]`:
 

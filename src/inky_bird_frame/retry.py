@@ -7,11 +7,13 @@ from dataclasses import dataclass, replace
 from datetime import datetime, timedelta
 from pathlib import Path, PurePosixPath
 from typing import cast
+from urllib.parse import urlsplit
 
 from .birds import BirdSpecies
 from .catalog import utc_now
 from .errors import CatalogError
 from .http import write_json_atomic
+from .models import PROFILE_CONFLICT_FIELDS, ProfileConflict, SourceLink
 from .timeutil import parse_utc_timestamp
 
 
@@ -49,6 +51,7 @@ class RetryGuidance:
     findings: tuple[str, ...]
     source_plate: str | None = None
     invariant_findings: tuple[str, ...] = ()
+    profile_conflicts: tuple[ProfileConflict, ...] = ()
 
     def as_dict(self) -> dict[str, object]:
         value: dict[str, object] = {
@@ -59,6 +62,8 @@ class RetryGuidance:
             value["source_plate"] = self.source_plate
         if self.invariant_findings:
             value["invariant_findings"] = list(self.invariant_findings)
+        if self.profile_conflicts:
+            value["profile_conflicts"] = list(self.profile_conflicts)
         return value
 
 
@@ -182,6 +187,7 @@ class RetryStore:
         *,
         source_plate: str | None = None,
         invariant_findings: tuple[str, ...] = (),
+        profile_conflicts: tuple[ProfileConflict, ...] = (),
     ) -> RetryGuidance:
         guidance = _parse_guidance(
             {
@@ -189,6 +195,7 @@ class RetryStore:
                 "findings": list(findings),
                 "source_plate": source_plate,
                 "invariant_findings": list(invariant_findings),
+                "profile_conflicts": list(profile_conflicts),
             },
             self.path,
         )
@@ -291,6 +298,91 @@ def _parse_record(raw: object, source: Path) -> RetryRecord:
     )
 
 
+def parse_retry_profile_conflicts(
+    raw: object,
+    source: Path,
+    *,
+    allowed_domains: tuple[str, ...] | None = None,
+) -> tuple[ProfileConflict, ...]:
+    if not isinstance(raw, list):
+        raise CatalogError(f"Invalid retry quality guidance: {source}")
+    conflicts: list[ProfileConflict] = []
+    fields: set[str] = set()
+    for item in raw:
+        if not isinstance(item, dict) or set(item) != {
+            "field",
+            "profile_value",
+            "observed_value",
+            "sources",
+        }:
+            raise CatalogError(f"Invalid retry quality guidance: {source}")
+        field = item.get("field")
+        profile_value = item.get("profile_value")
+        observed_value = item.get("observed_value")
+        raw_sources = item.get("sources")
+        if (
+            not isinstance(field, str)
+            or field not in PROFILE_CONFLICT_FIELDS
+            or field in fields
+            or not isinstance(profile_value, str)
+            or not profile_value.strip()
+            or not isinstance(observed_value, str)
+            or not observed_value.strip()
+            or profile_value.strip() == observed_value.strip()
+            or not isinstance(raw_sources, list)
+        ):
+            raise CatalogError(f"Invalid retry quality guidance: {source}")
+        parsed_sources: list[SourceLink] = []
+        urls: set[str] = set()
+        domains: set[str] = set()
+        for raw_source in raw_sources:
+            if not isinstance(raw_source, dict) or set(raw_source) != {"title", "url"}:
+                raise CatalogError(f"Invalid retry quality guidance: {source}")
+            title = raw_source.get("title")
+            url = raw_source.get("url")
+            if (
+                not isinstance(title, str)
+                or not title.strip()
+                or not isinstance(url, str)
+                or not url.startswith("https://")
+            ):
+                raise CatalogError(f"Invalid retry quality guidance: {source}")
+            hostname = urlsplit(url).hostname
+            if hostname is None or (
+                allowed_domains is not None
+                and not any(
+                    hostname == domain or hostname.endswith(f".{domain}")
+                    for domain in allowed_domains
+                )
+            ):
+                raise CatalogError(f"Invalid retry quality guidance: {source}")
+            if url in urls:
+                continue
+            urls.add(url)
+            source_identity = next(
+                (
+                    domain
+                    for domain in allowed_domains or ()
+                    if hostname == domain or hostname.endswith(f".{domain}")
+                ),
+                hostname.casefold(),
+            )
+            domains.add(source_identity)
+            parsed_sources.append(SourceLink(title=title.strip(), url=url))
+        if len(parsed_sources) < 2 or len(domains) < 2:
+            raise CatalogError(f"Invalid retry quality guidance: {source}")
+        fields.add(field)
+        conflicts.append(
+            ProfileConflict(
+                field=field,
+                profile_value=profile_value.strip(),
+                observed_value=observed_value.strip(),
+                sources=parsed_sources,
+            )
+        )
+    return tuple(conflicts)
+
+
 def _parse_guidance(raw: object, source: Path) -> RetryGuidance:
     if not isinstance(raw, dict):
         raise CatalogError(f"Invalid retry quality guidance: {source}")
@@ -298,12 +390,16 @@ def _parse_guidance(raw: object, source: Path) -> RetryGuidance:
     findings = raw.get("findings")
     source_plate = raw.get("source_plate")
     invariant_findings = raw.get("invariant_findings", [])
+    profile_conflicts = parse_retry_profile_conflicts(
+        raw.get("profile_conflicts", []),
+        source,
+    )
     if (
         not isinstance(taxon_id, int)
         or isinstance(taxon_id, bool)
         or taxon_id <= 0
         or not isinstance(findings, list)
-        or not findings
+        or (not findings and not profile_conflicts)
         or any(not isinstance(finding, str) or not finding.strip() for finding in findings)
         or not isinstance(invariant_findings, list)
         or any(
@@ -332,4 +428,5 @@ def _parse_guidance(raw: object, source: Path) -> RetryGuidance:
         findings=merged_findings,
         source_plate=source_plate,
         invariant_findings=tuple(cast(list[str], invariant_findings)),
+        profile_conflicts=profile_conflicts,
     )

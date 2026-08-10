@@ -194,6 +194,22 @@ not block later queue entries. Terminal factual or visual failures require an
 explicit `retry TAXON_ID` after investigation. See
 [`operations.md`](operations.md#failure-recovery).
 
+For a specific run, inspect its private structured history before reading the
+larger Codex logs:
+
+```bash
+jq . /path/to/state/runs/TAXON-TIMESTAMP/attempt-history.json
+```
+
+`outcome` separates generation-process errors, review-process errors, ordinary
+image corrections, source-backed profile conflicts, and passing attempts.
+`regressed_findings` and `regressed_axes` show a correction that returned or a
+score that fell below the quality threshold. A profile conflict may perform
+one bounded refresh; compare `profile-before-refresh.json` and
+`profile-after-refresh.json`. Do not edit the cached profile to copy a
+reviewer's claim. If a validated model is pinned with `controller.codex_model`,
+confirm that the deployed Codex CLI still accepts it.
+
 ### Catalog publication fails
 
 Inspect the structured command result first. On macOS it is written to the

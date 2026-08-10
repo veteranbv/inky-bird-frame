@@ -50,6 +50,9 @@ catalog_dir = "catalog"
 state_dir = "var/controller"
 # Use an absolute path when a service manager does not inherit your shell PATH.
 codex_path = "codex"
+# Optional: pin profile research, image generation, and review to a tested Codex
+# model instead of inheriting the machine-wide Codex default.
+# codex_model = "gpt-5.6-sol"
 bind_host = "0.0.0.0"
 port = 8793
 references_per_species = 4
@@ -70,7 +73,7 @@ insufficient_references_retry_minutes = 10080
 # for one recovery. Raise it deliberately when generation_minutes is reduced or after seeding.
 enabled = true
 max_searches_per_day = 5
-# Two allows one normal profile attempt and one bounded recovery for the same species.
+# Two allows one normal profile attempt and one bounded conflict refresh for the same species.
 max_searches_per_species = 2
 allowed_domains = [
     "allaboutbirds.org",

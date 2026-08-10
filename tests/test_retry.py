@@ -7,7 +7,8 @@ from tempfile import TemporaryDirectory
 
 from inky_bird_frame.birds import BirdSpecies
 from inky_bird_frame.errors import CatalogError
-from inky_bird_frame.retry import RetryGuidance, RetryStore
+from inky_bird_frame.models import ProfileConflict
+from inky_bird_frame.retry import RetryGuidance, RetryStore, parse_retry_profile_conflicts
 
 
 class RetryStoreTests(unittest.TestCase):
@@ -153,6 +154,103 @@ class RetryStoreTests(unittest.TestCase):
             ("Render clearly visible natural eyes.",),
         )
         self.assertEqual(reloaded, guidance)
+
+    def test_profile_conflicts_are_durable_without_image_findings(self) -> None:
+        conflict = ProfileConflict(
+            field="measurements.length",
+            profile_value="10-20 cm",
+            observed_value="12-15 cm",
+            sources=[
+                {"title": "Birds", "url": "https://birds.example/length"},
+                {"title": "Field", "url": "https://field.example/length"},
+            ],
+        )
+        with TemporaryDirectory() as temporary:
+            path = Path(temporary) / "retries.json"
+            guidance = RetryStore(path).set_quality_guidance(
+                42,
+                (),
+                profile_conflicts=(conflict,),
+            )
+
+            reloaded = RetryStore(path).quality_guidance(42)
+
+        self.assertEqual(guidance.findings, ())
+        self.assertEqual(guidance.profile_conflicts, (conflict,))
+        self.assertEqual(reloaded, guidance)
+
+    def test_retry_profile_conflicts_must_use_allowed_independent_sources(self) -> None:
+        conflict = {
+            "field": "measurements.length",
+            "profile_value": "10-20 cm",
+            "observed_value": "12-15 cm",
+            "sources": [
+                {"title": "One", "url": "https://outside.example/one"},
+                {"title": "Two", "url": "https://other.example/two"},
+            ],
+        }
+
+        with self.assertRaisesRegex(CatalogError, "Invalid retry quality guidance"):
+            parse_retry_profile_conflicts(
+                [conflict],
+                Path("retry.json"),
+                allowed_domains=("birds.example", "field.example"),
+            )
+
+        conflict["sources"] = [
+            {"title": "One", "url": "https://one.birds.example/one"},
+            {"title": "Two", "url": "https://two.birds.example/two"},
+        ]
+        with self.assertRaisesRegex(CatalogError, "Invalid retry quality guidance"):
+            parse_retry_profile_conflicts(
+                [conflict],
+                Path("retry.json"),
+                allowed_domains=("birds.example", "field.example"),
+            )
+
+    def test_retry_profile_conflicts_reject_malformed_state(self) -> None:
+        valid = {
+            "field": "measurements.length",
+            "profile_value": "10-20 cm",
+            "observed_value": "12-15 cm",
+            "sources": [
+                {"title": "Birds", "url": "https://birds.example/length"},
+                {"title": "Field", "url": "https://field.example/length"},
+            ],
+        }
+        cases: tuple[object, ...] = (
+            [valid, valid],
+            [{**valid, "observed_value": "10-20 cm"}],
+            [
+                {
+                    **valid,
+                    "sources": [
+                        {"title": "Birds", "url": "http://birds.example/length"},
+                        {"title": "Field", "url": "https://field.example/length"},
+                    ],
+                }
+            ],
+            [{**valid, "field": "scientific_name"}],
+            [
+                {
+                    **valid,
+                    "sources": [
+                        {"url": "https://birds.example/length"},
+                        {"title": "Field", "url": "https://field.example/length"},
+                    ],
+                }
+            ],
+        )
+
+        for raw in cases:
+            with (
+                self.subTest(raw=raw),
+                self.assertRaisesRegex(
+                    CatalogError,
+                    "Invalid retry quality guidance",
+                ),
+            ):
+                parse_retry_profile_conflicts(raw, Path("retry.json"))
 
     def test_correction_source_must_remain_in_archive(self) -> None:
         with TemporaryDirectory() as temporary:

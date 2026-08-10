@@ -3,7 +3,17 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import TypedDict
+from typing import Final, TypedDict
+
+PROFILE_CONFLICT_FIELDS: Final[tuple[str, ...]] = (
+    "family",
+    "measurements.length",
+    "measurements.wingspan",
+    "measurements.weight",
+    "field_marks",
+    "habitat",
+    "behavior",
+)
 
 
 class SourceLink(TypedDict):
@@ -27,6 +37,13 @@ class SpeciesProfileData(TypedDict):
     habitat: str
     behavior: str
     palette: list[str]
+    sources: list[SourceLink]
+
+
+class ProfileConflict(TypedDict):
+    field: str
+    profile_value: str
+    observed_value: str
     sources: list[SourceLink]
 
 
@@ -71,9 +88,13 @@ class QualityReview:
     findings: tuple[str, ...]
     verification_sources: tuple[SourceLink, ...] = ()
     correction_findings: tuple[str, ...] = ()
+    profile_conflicts: tuple[ProfileConflict, ...] = ()
+    resolved_corrections: tuple[str, ...] = ()
 
     def as_dict(self) -> dict[str, object]:
-        return {
+        # Resolution claims are private within-run control state. Public quality
+        # artifacts retain only the final actionable corrections and conflicts.
+        result: dict[str, object] = {
             "passed": self.passed,
             "species_accuracy": self.species_accuracy,
             "anatomy_accuracy": self.anatomy_accuracy,
@@ -84,3 +105,6 @@ class QualityReview:
             "verification_sources": list(self.verification_sources),
             "correction_findings": list(self.correction_findings),
         }
+        if self.profile_conflicts:
+            result["profile_conflicts"] = list(self.profile_conflicts)
+        return result

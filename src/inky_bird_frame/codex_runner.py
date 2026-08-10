@@ -11,7 +11,14 @@ from urllib.parse import urlsplit
 
 from .birds import BirdSpecies, TaxonContext
 from .errors import GenerationError
-from .models import QualityReview, ReferencePhoto, SourceLink, SpeciesProfileData
+from .models import (
+    PROFILE_CONFLICT_FIELDS,
+    ProfileConflict,
+    QualityReview,
+    ReferencePhoto,
+    SourceLink,
+    SpeciesProfileData,
+)
 from .prompts import plate_prompt, profile_prompt, review_prompt
 
 PROFILE_SCHEMA: Final[dict[str, object]] = {
@@ -71,6 +78,32 @@ REVIEW_SCHEMA: Final[dict[str, object]] = {
         "location_free": {"type": "boolean"},
         "findings": {"type": "array", "items": {"type": "string"}},
         "correction_findings": {"type": "array", "items": {"type": "string"}},
+        "resolved_corrections": {"type": "array", "items": {"type": "string"}},
+        "profile_conflicts": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "field": {"type": "string", "enum": list(PROFILE_CONFLICT_FIELDS)},
+                    "profile_value": {"type": "string"},
+                    "observed_value": {"type": "string"},
+                    "sources": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "title": {"type": "string"},
+                                "url": {"type": "string"},
+                            },
+                            "required": ["title", "url"],
+                            "additionalProperties": False,
+                        },
+                    },
+                },
+                "required": ["field", "profile_value", "observed_value", "sources"],
+                "additionalProperties": False,
+            },
+        },
         "verification_sources": {
             "type": "array",
             "items": {
@@ -90,6 +123,8 @@ REVIEW_SCHEMA: Final[dict[str, object]] = {
         "location_free",
         "findings",
         "correction_findings",
+        "resolved_corrections",
+        "profile_conflicts",
         "verification_sources",
     ],
     "additionalProperties": False,
@@ -97,10 +132,18 @@ REVIEW_SCHEMA: Final[dict[str, object]] = {
 
 
 class CodexRunner:
-    def __init__(self, executable: Path, workspace: Path, timeout_seconds: int = 1200) -> None:
+    def __init__(
+        self,
+        executable: Path,
+        workspace: Path,
+        timeout_seconds: int = 1200,
+        *,
+        model: str | None = None,
+    ) -> None:
         self.executable = executable
         self.workspace = workspace.resolve()
         self.timeout_seconds = timeout_seconds
+        self.model = model
         if not self.executable.is_file():
             raise GenerationError(f"Codex executable not found: {self.executable}")
 
@@ -117,6 +160,8 @@ class CodexRunner:
                 "workspace-write" if writable else "read-only",
             ]
         )
+        if self.model is not None:
+            command.extend(["--model", self.model])
         return command
 
     def _run(
@@ -181,9 +226,18 @@ class CodexRunner:
         log_path: Path,
         *,
         allowed_domains: tuple[str, ...],
+        prior_profile: SpeciesProfileData | None = None,
+        profile_conflicts: tuple[ProfileConflict, ...] = (),
     ) -> SpeciesProfileData:
         raw = self._structured(
-            profile_prompt(species, context, references, allowed_domains),
+            profile_prompt(
+                species,
+                context,
+                references,
+                allowed_domains,
+                prior_profile=prior_profile,
+                profile_conflicts=profile_conflicts,
+            ),
             PROFILE_SCHEMA,
             reference_paths,
             output_path,
@@ -247,16 +301,30 @@ class CodexRunner:
         log_path: Path,
         *,
         allowed_domains: tuple[str, ...],
+        prior_corrections: tuple[str, ...] = (),
+        prior_profile_conflicts: tuple[ProfileConflict, ...] = (),
     ) -> QualityReview:
         raw = self._structured(
-            review_prompt(species, profile, references, allowed_domains),
+            review_prompt(
+                species,
+                profile,
+                references,
+                allowed_domains,
+                prior_corrections=prior_corrections,
+                prior_profile_conflicts=prior_profile_conflicts,
+            ),
             REVIEW_SCHEMA,
             [plate_path, *reference_paths],
             output_path,
             log_path,
             search=True,
         )
-        return _parse_review(raw, allowed_domains)
+        return _parse_review(
+            raw,
+            profile,
+            allowed_domains,
+            prior_corrections=prior_corrections,
+        )
 
 
 def _non_empty_string(value: object, field: str) -> str:
@@ -354,7 +422,169 @@ def _score(raw: dict[str, object], field: str) -> int:
     return value
 
 
-def _parse_review(raw: object, allowed_domains: tuple[str, ...] | None = None) -> QualityReview:
+def _parse_profile_conflicts(
+    value: object,
+    current_profile: SpeciesProfileData,
+    allowed_domains: tuple[str, ...] | None,
+) -> tuple[ProfileConflict, ...]:
+    if value is None:
+        return ()
+    if not isinstance(value, list):
+        raise GenerationError("Codex review field profile_conflicts must be a list")
+    conflicts: list[ProfileConflict] = []
+    fields: set[str] = set()
+    for raw_conflict in value:
+        if not isinstance(raw_conflict, dict):
+            raise GenerationError("Codex profile conflict must be an object")
+        field = _non_empty_string(raw_conflict.get("field"), "profile_conflicts.field")
+        if field not in PROFILE_CONFLICT_FIELDS:
+            raise GenerationError(f"Codex profile conflict field is not supported: {field}")
+        if field in fields:
+            raise GenerationError(f"Codex profile conflict field is duplicated: {field}")
+        fields.add(field)
+        profile_value = _non_empty_string(
+            raw_conflict.get("profile_value"), "profile_conflicts.profile_value"
+        )
+        expected_profile_value: str
+        if field == "measurements.length":
+            expected_profile_value = current_profile["measurements"]["length"]
+        elif field == "measurements.wingspan":
+            expected_profile_value = current_profile["measurements"]["wingspan"]
+        elif field == "measurements.weight":
+            expected_profile_value = current_profile["measurements"]["weight"]
+        elif field == "field_marks":
+            expected_profile_value = json.dumps(
+                current_profile["field_marks"],
+                ensure_ascii=False,
+                separators=(",", ":"),
+            )
+        elif field == "family":
+            expected_profile_value = current_profile["family"]
+        elif field == "habitat":
+            expected_profile_value = current_profile["habitat"]
+        elif field == "behavior":
+            expected_profile_value = current_profile["behavior"]
+        else:
+            raise GenerationError(f"Unsupported profile conflict field: {field}")
+        matches_current_profile = profile_value == expected_profile_value
+        if field == "field_marks":
+            try:
+                matches_current_profile = (
+                    json.loads(profile_value) == current_profile["field_marks"]
+                )
+            except json.JSONDecodeError:
+                matches_current_profile = False
+        if not matches_current_profile:
+            raise GenerationError(
+                f"Codex profile conflict does not match the current profile field: {field}"
+            )
+        profile_value = expected_profile_value
+        observed_value = _non_empty_string(
+            raw_conflict.get("observed_value"), "profile_conflicts.observed_value"
+        )
+        if field == "field_marks":
+            try:
+                observed_field_marks = json.loads(observed_value)
+            except json.JSONDecodeError as exc:
+                raise GenerationError(
+                    "Codex field_marks conflict observed_value must be a JSON array"
+                ) from exc
+            if (
+                not isinstance(observed_field_marks, list)
+                or len(observed_field_marks) < 4
+                or any(
+                    not isinstance(mark, str) or not mark.strip() for mark in observed_field_marks
+                )
+            ):
+                raise GenerationError(
+                    "Codex field_marks conflict observed_value must contain at least four strings"
+                )
+            if observed_field_marks == current_profile["field_marks"]:
+                raise GenerationError("Codex profile conflict values must disagree")
+            observed_value = json.dumps(
+                observed_field_marks,
+                ensure_ascii=False,
+                separators=(",", ":"),
+            )
+        if profile_value == observed_value:
+            raise GenerationError("Codex profile conflict values must disagree")
+        raw_sources = raw_conflict.get("sources")
+        if not isinstance(raw_sources, list):
+            raise GenerationError("Codex profile conflict sources must be a list")
+        sources: list[SourceLink] = []
+        urls: set[str] = set()
+        domains: set[str] = set()
+        for raw_source in raw_sources:
+            if not isinstance(raw_source, dict):
+                raise GenerationError("Codex profile conflict source must be an object")
+            url = _non_empty_string(raw_source.get("url"), "profile_conflicts.sources.url")
+            if not url.startswith("https://"):
+                raise GenerationError("Codex profile conflict source URLs must use HTTPS")
+            if not _allowed_source(url, allowed_domains):
+                raise GenerationError(
+                    "Codex profile conflict cited a source outside the configured allowlist"
+                )
+            if url in urls:
+                continue
+            urls.add(url)
+            identity = _source_identity(url, allowed_domains)
+            if identity is not None:
+                domains.add(identity)
+            sources.append(
+                SourceLink(
+                    title=_non_empty_string(
+                        raw_source.get("title"), "profile_conflicts.sources.title"
+                    ),
+                    url=url,
+                )
+            )
+        if len(sources) < 2 or len(domains) < 2:
+            raise GenerationError(
+                "Codex profile conflicts must cite two independent verification sources"
+            )
+        conflicts.append(
+            ProfileConflict(
+                field=field,
+                profile_value=profile_value,
+                observed_value=observed_value,
+                sources=sources,
+            )
+        )
+    return tuple(conflicts)
+
+
+def _parse_resolved_corrections(
+    value: object,
+    prior_corrections: tuple[str, ...],
+    current_corrections: tuple[str, ...],
+) -> tuple[str, ...]:
+    if value is None:
+        return ()
+    items = _string_list(value, "resolved_corrections", 0)
+    prior_by_key = {" ".join(item.split()).casefold(): item for item in prior_corrections}
+    current_keys = {" ".join(item.split()).casefold() for item in current_corrections}
+    resolved: list[str] = []
+    resolved_keys: set[str] = set()
+    for item in items:
+        key = " ".join(item.split()).casefold()
+        if key not in prior_by_key:
+            raise GenerationError("Codex resolved correction was not present in review history")
+        if key in current_keys:
+            raise GenerationError("Codex correction cannot be both resolved and actionable")
+        if key in resolved_keys:
+            raise GenerationError("Codex resolved correction is duplicated")
+        resolved_keys.add(key)
+        resolved.append(prior_by_key[key])
+    return tuple(resolved)
+
+
+def _parse_review(
+    raw: object,
+    current_profile: SpeciesProfileData,
+    allowed_domains: tuple[str, ...] | None = None,
+    *,
+    prior_corrections: tuple[str, ...] = (),
+) -> QualityReview:
     if not isinstance(raw, dict):
         raise GenerationError("Codex review output must be an object")
     reported_pass = raw.get("passed") is True
@@ -366,6 +596,16 @@ def _parse_review(raw: object, allowed_domains: tuple[str, ...] | None = None) -
     findings = tuple(_string_list(raw.get("findings"), "findings", 0))
     correction_findings = tuple(
         _string_list(raw.get("correction_findings"), "correction_findings", 0)
+    )
+    resolved_corrections = _parse_resolved_corrections(
+        raw.get("resolved_corrections"),
+        prior_corrections,
+        correction_findings,
+    )
+    profile_conflicts = _parse_profile_conflicts(
+        raw.get("profile_conflicts"),
+        current_profile,
+        allowed_domains,
     )
     sources = raw.get("verification_sources")
     if not isinstance(sources, list):
@@ -410,10 +650,14 @@ def _parse_review(raw: object, allowed_domains: tuple[str, ...] | None = None) -
         )
         >= 4
     )
-    if requires_correction and not correction_findings:
-        raise GenerationError("Failed Codex reviews must include correction_findings")
-    if not requires_correction and correction_findings:
-        raise GenerationError("Passing Codex reviews must not include correction_findings")
+    if requires_correction and not (correction_findings or profile_conflicts):
+        raise GenerationError(
+            "Failed Codex reviews must include correction_findings or profile_conflicts"
+        )
+    if not requires_correction and (correction_findings or profile_conflicts):
+        raise GenerationError(
+            "Passing Codex reviews must not include correction_findings or profile_conflicts"
+        )
     return QualityReview(
         passed=not requires_correction,
         species_accuracy=species_accuracy,
@@ -424,4 +668,6 @@ def _parse_review(raw: object, allowed_domains: tuple[str, ...] | None = None) -
         findings=findings,
         verification_sources=tuple(verification_sources),
         correction_findings=correction_findings,
+        profile_conflicts=profile_conflicts,
+        resolved_corrections=resolved_corrections,
     )

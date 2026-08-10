@@ -16,6 +16,7 @@ from inky_bird_frame.catalog import (
     approve_candidate,
     archive_invalid_approved_candidate,
     candidate_directory,
+    has_passing_sourced_review,
     has_valid_approved_candidate,
     read_catalog_entries,
     read_collection,
@@ -66,6 +67,33 @@ def make_candidate(state: Path, species: BirdSpecies, review: QualityReview) -> 
 
 
 class CatalogTests(unittest.TestCase):
+    def test_passing_review_gate_rejects_profile_conflicts(self) -> None:
+        review = QualityReview(
+            True,
+            5,
+            5,
+            5,
+            5,
+            True,
+            (),
+            (
+                {"title": "One", "url": "https://one.example/bird"},
+                {"title": "Two", "url": "https://two.example/bird"},
+            ),
+        ).as_dict()
+        review["profile_conflicts"] = [
+            {
+                "field": "measurements.length",
+                "profile_value": "10 cm",
+                "observed_value": "12 cm",
+                "sources": [],
+            }
+        ]
+
+        self.assertFalse(has_passing_sourced_review(review))
+        review["profile_conflicts"] = "invalid"
+        self.assertFalse(has_passing_sourced_review(review))
+
     def test_atomic_json_writes_support_concurrent_health_requests(self) -> None:
         with TemporaryDirectory() as temporary:
             path = Path(temporary) / "index.json"
