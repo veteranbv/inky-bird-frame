@@ -1230,6 +1230,7 @@ rotation_mode = "shuffle_bag"
                         }
                     )
                 )
+            (failed / "attempt-history.json").write_text(json.dumps({"attempts": []}))
             (failed / "profile.json").write_text(
                 json.dumps(
                     {
@@ -2326,6 +2327,7 @@ rotation_mode = "shuffle_bag"
                     }
                 )
             )
+            (run / "attempt-history.json").write_text(json.dumps({"attempts": []}))
             config = controller_config(state_dir)
             output = io.StringIO()
 
@@ -2721,6 +2723,25 @@ rotation_mode = "shuffle_bag"
                 retry_command(Namespace(taxon_id=42, source_attempt=2))
 
             self.assertTrue((state_dir / "failed/42-example-bird").is_dir())
+            self.assertFalse((state_dir / "archive").exists())
+
+    def test_retry_rejects_non_directory_attempt_before_archiving(self) -> None:
+        with TemporaryDirectory() as temporary:
+            state_dir = Path(temporary)
+            failed = state_dir / "failed/42-example-bird"
+            review = failed / "attempt-01/quality-review.json"
+            review.parent.mkdir(parents=True)
+            review.write_text(json.dumps({"passed": False, "findings": ["Fix the tail"]}))
+            (failed / "attempt-02").write_text("corrupt attempt")
+            config = controller_config(state_dir)
+
+            with (
+                patch("inky_bird_frame.cli._config", return_value=config),
+                self.assertRaisesRegex(SpeciesStateError, "Invalid generation attempt"),
+            ):
+                retry_command(Namespace(taxon_id=42, source_attempt=1))
+
+            self.assertTrue(failed.is_dir())
             self.assertFalse((state_dir / "archive").exists())
 
     def test_retry_rejects_malformed_quality_review_before_archiving(self) -> None:

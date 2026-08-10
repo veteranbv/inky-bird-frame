@@ -430,6 +430,8 @@ def _retry_quality_guidance(
         return (), None, ()
     attempts: list[tuple[int, Path]] = []
     for attempt_path in failed_directories[-1].glob("attempt-*"):
+        if attempt_path.name == "attempt-history.json":
+            continue
         try:
             attempt_number = int(attempt_path.name.removeprefix("attempt-"))
         except ValueError as exc:
@@ -535,6 +537,8 @@ def _retry_archived_quality_guidance(
             f"Retained generation profile identity does not match taxon {taxon_id}: {profile_path}"
         )
     for attempt_path in run.glob("attempt-*"):
+        if attempt_path.name == "attempt-history.json":
+            continue
         if (
             attempt_path.is_symlink()
             or not attempt_path.is_dir()
