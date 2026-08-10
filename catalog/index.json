@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-10T01:12:59+00:00",
+  "generated_at": "2026-08-10T01:17:11+00:00",
   "schema_version": 1,
   "species": [
     {
@@ -1244,6 +1244,17 @@
       "scientific_name": "Agelaius phoeniceus",
       "slug": "red-winged-blackbird",
       "taxon_id": 9744
+    },
+    {
+      "approved_at": "2026-08-10T01:17:11+00:00",
+      "common_name": "Reddish Egret",
+      "display_path": "species/4948-reddish-egret/display.png",
+      "display_sha256": "c4f04ab98947339213d3cfa26e600e47e5dbd484940fcb7e34bbe18ca8790286",
+      "portrait_path": "species/4948-reddish-egret/portrait.png",
+      "portrait_sha256": "c0ab4d1c51a5ae4a14530b4f9e2635d19ab3022b8adfb195a0bb73932fb2b19b",
+      "scientific_name": "Egretta rufescens",
+      "slug": "reddish-egret",
+      "taxon_id": 4948
     },
     {
       "approved_at": "2026-08-09T18:04:12+00:00",
