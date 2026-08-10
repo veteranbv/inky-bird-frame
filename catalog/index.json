@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-10T00:47:55+00:00",
+  "generated_at": "2026-08-10T01:07:32+00:00",
   "schema_version": 1,
   "species": [
     {
@@ -771,6 +771,17 @@
       "scientific_name": "Catharus guttatus",
       "slug": "hermit-thrush",
       "taxon_id": 12890
+    },
+    {
+      "approved_at": "2026-08-10T01:07:32+00:00",
+      "common_name": "Hooded Crow",
+      "display_path": "species/144757-hooded-crow/display.png",
+      "display_sha256": "cf916c4b73725bf198a713183bfd9e05a86c945f634b0143dcbaf149c2d5e93d",
+      "portrait_path": "species/144757-hooded-crow/portrait.png",
+      "portrait_sha256": "bb147189d8f6e51c51e4a436ed3733c078aa59c60e8cca6ca2d386d1eb419547",
+      "scientific_name": "Corvus cornix",
+      "slug": "hooded-crow",
+      "taxon_id": 144757
     },
     {
       "approved_at": "2026-07-10T18:43:08+00:00",

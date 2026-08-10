@@ -1,0 +1,38 @@
+{
+  "anatomy_accuracy": 4,
+  "composition_quality": 5,
+  "correction_findings": [],
+  "findings": [
+    "The adult ash-gray body and contrasting glossy black head, throat, wings, and tail match the diagnostic Hooded Crow pattern shown in the references and described by eBird and Wikipedia.",
+    "The primary specimen has one head, one coherent bill, two folded wings\u2014the far wing visible as a subordinate layered portion\u2014two plausibly attached legs with grasping feet, and one tail.",
+    "The primary bill is stout and proportionate; both mandibles trace coherently from the shared base to the tip. The detached head study is consistent with the primary head and the clearest side-profile references.",
+    "The tail is now medium-length and terminates in a substantially square edge rather than the previously long, rounded profile.",
+    "Both depicted irises read as dark brown, with normal highlights, rather than conspicuous amber.",
+    "The detached extended-wing study is anatomically coherent, clearly supplementary, and does not appear attached to the primary specimen.",
+    "Every visible profile line was checked: common name, scientific name, family, all three measurements, habitat, behavior, six field marks, and four palette labels are correctly spelled and agree with the proposed wording and values.",
+    "The ruler increases from 48 cm at the bottom to 52 cm at the top, agrees with the printed body-length range, uses the correct units, and is explicitly labeled \u201cSCHEMATIC \u2014 NOT TO SCALE.\u201d",
+    "The plate contains no place name, ZIP code, coordinates, map, or local-observation detail."
+  ],
+  "location_free": true,
+  "passed": true,
+  "species_accuracy": 5,
+  "text_accuracy": 5,
+  "verification_sources": [
+    {
+      "title": "Hooded Crow \u2014 eBird",
+      "url": "https://ebird.org/species/hoocro1"
+    },
+    {
+      "title": "Hooded crow \u2014 Wikipedia",
+      "url": "https://en.wikipedia.org/wiki/Hooded_crow"
+    },
+    {
+      "title": "Corvus cornix \u2014 Wikipedia (Italian)",
+      "url": "https://it.wikipedia.org/wiki/Corvus_cornix"
+    },
+    {
+      "title": "Corvus corone \u2014 Animal Diversity Web",
+      "url": "https://animaldiversity.org/accounts/Corvus_corone/"
+    }
+  ]
+}

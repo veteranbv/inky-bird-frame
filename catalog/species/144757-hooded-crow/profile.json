@@ -1,0 +1,41 @@
+{
+  "behavior": "An intelligent, opportunistic omnivore and scavenger that often forages on the ground, caches food, and is usually seen alone, in pairs, or in small groups; larger gatherings occur chiefly at communal roosts.",
+  "common_name": "Hooded Crow",
+  "family": "Corvidae",
+  "field_marks": [
+    "Robust crow shape with a rounded head and strong neck",
+    "Ash-gray mantle, breast, belly, and flanks",
+    "Glossy black head and throat forming a distinct hood and bib",
+    "Black wings contrasting sharply with the gray body",
+    "Medium-length, square-tipped black tail",
+    "Stout black bill, dark brown eyes, and black legs"
+  ],
+  "habitat": "Varied open and semiopen country, including farmland, grassland, moorland, open woodland, coasts, parks, and built environments.",
+  "measurements": {
+    "length": "48\u201352 cm",
+    "weight": "400\u2013600 g",
+    "wingspan": "92\u2013105 cm"
+  },
+  "palette": [
+    "ash gray",
+    "charcoal black",
+    "blue-black",
+    "dark brown"
+  ],
+  "scientific_name": "Corvus cornix",
+  "sources": [
+    {
+      "title": "Hooded Crow \u2014 eBird",
+      "url": "https://ebird.org/species/hoocro1"
+    },
+    {
+      "title": "Hooded crow \u2014 Wikipedia",
+      "url": "https://en.wikipedia.org/wiki/Hooded_crow"
+    },
+    {
+      "title": "Corvus cornix \u2014 Wikipedia (Italian)",
+      "url": "https://it.wikipedia.org/wiki/Corvus_cornix"
+    }
+  ],
+  "taxon_id": 144757
+}
