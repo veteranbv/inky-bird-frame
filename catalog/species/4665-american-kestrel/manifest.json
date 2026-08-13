@@ -1,0 +1,162 @@
+{
+  "approved_at": "2026-08-13T13:05:48+00:00",
+  "assets": {
+    "display": {
+      "filename": "display.png",
+      "sha256": "30b70c686f75ca80b066b3b56eae41af6e26e090150a160479df68a4e3da02ee"
+    },
+    "portrait": {
+      "filename": "portrait.png",
+      "sha256": "9bdc2cdc96098a9516ac5efd2642c5d549226aedfe30e059401b16a467326069"
+    }
+  },
+  "common_name": "American Kestrel",
+  "generation": {
+    "attempt": 1,
+    "generated_at": "2026-08-13T13:05:48+00:00",
+    "generator": "Codex subscription / built-in gpt-image-2",
+    "max_attempts": 3,
+    "prompt_version": "field-journal-v5"
+  },
+  "profile": {
+    "behavior": "A diurnal hunter that watches from raised perches or hovers over open ground, then swoops or pounces on prey; it also catches insects and small vertebrates in flight. Flight combines rapid wingbeats with short glides, and perched birds often pump their tails. It nests in existing cavities rather than excavating its own.",
+    "common_name": "American Kestrel",
+    "family": "Falconidae",
+    "field_marks": [
+      "Two bold black vertical slashes on each side of the pale face",
+      "Small hooked dark bill, large dark eyes, and yellow-orange cere",
+      "Rusty back and tail with a dark band near the tail tip",
+      "Adult male has a slate-blue crown and wings; female has reddish-brown, dark-barred wings",
+      "Long pointed wings and a long, square-tipped tail",
+      "Yellow-orange legs and feet with dark talons"
+    ],
+    "habitat": "Open and semi-open landscapes with short vegetation, scattered trees or raised perches, and available nesting cavities, including grasslands, meadows, deserts, farmland, forest clearings, parks, and other developed areas.",
+    "measurements": {
+      "length": "Both sexes: 22\u201331 cm (8.7\u201312.2 in)",
+      "weight": "Both sexes: 80\u2013165 g (2.8\u20135.8 oz)",
+      "wingspan": "Both sexes: 51\u201361 cm (20.1\u201324.0 in)"
+    },
+    "palette": [
+      "rusty brown",
+      "slate blue",
+      "cream white",
+      "charcoal black",
+      "yellow-orange"
+    ],
+    "scientific_name": "Falco sparverius",
+    "sources": [
+      {
+        "title": "American Kestrel Identification \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/American_Kestrel/id"
+      },
+      {
+        "title": "American Kestrel \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/american-kestrel"
+      },
+      {
+        "title": "American Kestrel Life History \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/American_Kestrel/lifehistory"
+      }
+    ],
+    "taxon_id": 4665
+  },
+  "quality_review": {
+    "anatomy_accuracy": 5,
+    "composition_quality": 5,
+    "correction_findings": [],
+    "findings": [
+      "The primary specimen is identifiable as an adult male American Kestrel: it has a slate-blue crown and wings, rusty spotted back, rusty tail with a dark subterminal band, pale spotted underparts, and two black vertical facial slashes.",
+      "The compact falcon proportions, hooked bill, large dark eye, yellow-orange cere, long folded pointed wing, long tail, yellow-orange legs, and dark talons agree with the reference photographs and verified source descriptions.",
+      "The primary specimen has one head, one beak, one tail, two plausibly attached legs with functional gripping feet, and one visible near-side wing; the far-side wing is naturally concealed in the side-on perched pose.",
+      "The detached wing and head are clearly supplementary studies. Their plumage and anatomy are consistent with the primary specimen, and neither appears attached to it.",
+      "Both depicted bills have consistent raptor proportions: the upper mandible projects beyond the lower mandible and forms a clear, non-truncated hook.",
+      "The common name, scientific name, and family are spelled correctly and identify American Kestrel, Falco sparverius, in Falconidae.",
+      "All printed measurements match the verified combined ranges: length 22\u201331 cm (8.7\u201312.2 in), wingspan 51\u201361 cm (20.1\u201324.0 in), and weight 80\u2013165 g (2.8\u20135.8 oz).",
+      "The vertical body-length diagram increases from 22 cm at the bottom to 31 cm at the top, agrees with the printed length range, uses matching imperial conversions, and is explicitly labeled \u201cSCHEMATIC \u2014 NOT TO SCALE.\u201d",
+      "The habitat, behavior, and field-mark text is complete, legible, and matches the proposed wording without material omissions, substitutions, duplications, or numerical errors.",
+      "The hunting, flight, tail-pumping, cavity-nesting, habitat, sexual-dimorphism, wing-shape, and tail-shape claims are supported by the direct source pages.",
+      "The plate contains no place name, ZIP code, coordinates, map, or local-observation detail."
+    ],
+    "location_free": true,
+    "passed": true,
+    "species_accuracy": 5,
+    "text_accuracy": 5,
+    "verification_sources": [
+      {
+        "title": "American Kestrel Identification \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/American_Kestrel/id"
+      },
+      {
+        "title": "American Kestrel Life History \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/American_Kestrel/lifehistory"
+      },
+      {
+        "title": "American Kestrel \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/american-kestrel"
+      },
+      {
+        "title": "Falco sparverius (American kestrel) \u2014 Animal Diversity Web",
+        "url": "https://animaldiversity.org/accounts/Falco_sparverius/"
+      }
+    ]
+  },
+  "references": [
+    {
+      "attribution": "(c) Jonathan Eisen, some rights reserved (CC BY)",
+      "filename": "01-75920516.jpg",
+      "height": 1139,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/75920516/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 47861021,
+      "observer": "phylogenomics",
+      "photo_id": 75920516,
+      "sha256": "02b4760829c32cdaea6ea28b36a291ac3ddefc3a829cc095012e14469c2bd58e",
+      "source_url": "https://www.inaturalist.org/observations/47861021",
+      "width": 1709
+    },
+    {
+      "attribution": "no rights reserved",
+      "filename": "02-465377759.jpeg",
+      "height": 1195,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/465377759/large.jpeg",
+      "license_code": "cc0",
+      "observation_id": 259269689,
+      "observer": "ftsautter",
+      "photo_id": 465377759,
+      "sha256": "0550b012ecde258066cf2ebde0b18f70ace82d70f88d2bf6783b934778278cb5",
+      "source_url": "https://www.inaturalist.org/observations/259269689",
+      "width": 1792
+    },
+    {
+      "attribution": "(c) RAP, some rights reserved (CC BY)",
+      "filename": "03-370279108.jpg",
+      "height": 853,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/370279108/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 209237412,
+      "observer": "r-a-p",
+      "photo_id": 370279108,
+      "sha256": "f6937afd5ff3670ead0f6b5383012530c51edbd9a352e3da154c6ca510e5d8b0",
+      "source_url": "https://www.inaturalist.org/observations/209237412",
+      "width": 1280
+    },
+    {
+      "attribution": "(c) MarvalPhotography19, some rights reserved (CC BY)",
+      "filename": "04-236762045.jpg",
+      "height": 2000,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/236762045/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 138513739,
+      "observer": "fernandoarvizu19",
+      "photo_id": 236762045,
+      "sha256": "755d7a6eb8a59264f2bac3ad16e9fdadb8ffa331003dd28cc20735bc7e628036",
+      "source_url": "https://www.inaturalist.org/observations/138513739",
+      "width": 2000
+    }
+  ],
+  "schema_version": 1,
+  "scientific_name": "Falco sparverius",
+  "slug": "american-kestrel",
+  "status": "approved",
+  "taxon_id": 4665
+}

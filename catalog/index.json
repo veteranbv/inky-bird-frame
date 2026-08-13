@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-10T02:06:51+00:00",
+  "generated_at": "2026-08-13T13:05:48+00:00",
   "schema_version": 1,
   "species": [
     {
@@ -45,6 +45,17 @@
       "scientific_name": "Spinus tristis",
       "slug": "american-goldfinch",
       "taxon_id": 145310
+    },
+    {
+      "approved_at": "2026-08-13T13:05:48+00:00",
+      "common_name": "American Kestrel",
+      "display_path": "species/4665-american-kestrel/display.png",
+      "display_sha256": "30b70c686f75ca80b066b3b56eae41af6e26e090150a160479df68a4e3da02ee",
+      "portrait_path": "species/4665-american-kestrel/portrait.png",
+      "portrait_sha256": "9bdc2cdc96098a9516ac5efd2642c5d549226aedfe30e059401b16a467326069",
+      "scientific_name": "Falco sparverius",
+      "slug": "american-kestrel",
+      "taxon_id": 4665
     },
     {
       "approved_at": "2026-08-10T02:06:51+00:00",
