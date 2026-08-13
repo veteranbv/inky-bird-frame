@@ -1,31 +1,40 @@
 {
-  "approved_at": "2026-08-06T15:49:59+00:00",
+  "approved_at": "2026-08-13T16:08:49+00:00",
   "assets": {
     "display": {
       "filename": "display.png",
-      "sha256": "6787ccd2cbaf4d378b0b06981137685bc9a7cc50a861297e5203db91d45c6fc5"
+      "sha256": "cc050bbcc59741f94384f71f770b5e92fd555dcb23a5f91109b016b498e295b6"
     },
     "portrait": {
       "filename": "portrait.png",
-      "sha256": "90226d76ec91fe0d7b162d79328339af288ca02aee6e7d710f423ee4f4c848d2"
+      "sha256": "81de7e05e9ed9ee98a19f536145ac82399f3e94e5a9572f0472b145663842e4a"
     }
   },
   "catalog_migration": {
-    "reason": "Human review found the published primary specimen too vertically elongated and cylindrical; the replacement uses a compact, streamlined perched posture while preserving diagnostic field marks and plate composition.",
+    "history": [
+      {
+        "reason": "Human review found the published primary specimen too vertically elongated and cylindrical; the replacement uses a compact, streamlined perched posture while preserving diagnostic field marks and plate composition.",
+        "replaces": {
+          "approved_at": "2026-08-06T12:51:19+00:00",
+          "display_sha256": "69af036d8aa08d7609691a74bce3700bf51aeb21ad8e2d6386f0c245ef7bfcda",
+          "portrait_sha256": "68e44277ca1a983d67027b1f8226fc9a8695e5f8bbde2844e23963190858c904"
+        }
+      }
+    ],
+    "reason": "Regenerate the approved Northern Rough-winged Swallow plate to replace blue annotation text with neutral dark ink, preserve strong page use, and correct the diagnostic tail to a short, nearly square silhouette with only a shallow notch. The replacement refreshes the complete plate; all visible text, anatomy, ruler semantics, and composition were independently re-reviewed.",
     "replaces": {
-      "approved_at": "2026-08-06T12:51:19+00:00",
-      "display_sha256": "69af036d8aa08d7609691a74bce3700bf51aeb21ad8e2d6386f0c245ef7bfcda",
-      "portrait_sha256": "68e44277ca1a983d67027b1f8226fc9a8695e5f8bbde2844e23963190858c904"
+      "approved_at": "2026-08-06T15:49:59+00:00",
+      "display_sha256": "6787ccd2cbaf4d378b0b06981137685bc9a7cc50a861297e5203db91d45c6fc5",
+      "portrait_sha256": "90226d76ec91fe0d7b162d79328339af288ca02aee6e7d710f423ee4f4c848d2"
     }
   },
   "common_name": "Northern Rough-winged Swallow",
   "generation": {
     "attempt": 1,
-    "correction_source_sha256": "f3384e61f886eb1d4727a51fa2f07dc07b7c4ec1d0220f323a102ca745c4e429",
-    "generated_at": "2026-08-06T15:49:59+00:00",
+    "generated_at": "2026-08-13T16:08:49+00:00",
     "generator": "Codex subscription / built-in gpt-image-2",
     "max_attempts": 3,
-    "prompt_version": "field-journal-v4"
+    "prompt_version": "field-journal-v5"
   },
   "profile": {
     "behavior": "Aerial insectivore that twists and glides low over water and open ground, using relatively slow, deliberate wingbeats. Often forages alone or in small groups and perches on exposed branches, wires, and posts.",
@@ -73,17 +82,18 @@
     "composition_quality": 5,
     "correction_findings": [],
     "findings": [
-      "The common name, scientific name, and family are correctly shown as Northern Rough-winged Swallow, Stelgidopteryx serripennis, and Hirundinidae; All About Birds, Audubon, and eBird independently confirm the identity.",
-      "All printed measurements exactly match All About Birds: length 12\u201315 cm (4.7\u20135.9 in), weight 10\u201318 g (0.3\u20130.6 oz), and wingspan 27\u201330 cm (10.6\u201311.8 in). Audubon independently confirms the length and wingspan while publishing a narrower weight range of 11\u201314 g.",
-      "Every habitat and behavior line matches the proposed text without duplicated, omitted, substituted, or nonsensical words. The claims are supported by the direct source pages.",
-      "All six printed field-mark statements match the proposed wording and verified identification traits: plain brown upperparts, diffuse dingy throat and chest, pale belly, small head and bill, long broad-based pointed wings, short square or slightly notched tail, and dark legs and feet.",
-      "The primary specimen agrees with the reference photographs in its unpatterned brown upperparts, gradual gray-brown-to-whitish underpart transition, dark eye and bill, compact tail, and dark feet. Its head and eye are slightly more rounded and prominent than in the clearest photographs, but not enough to create a conflicting species identity.",
-      "The folded primary wing and detached wing study both communicate a long, relatively broad, tapered and pointed swallow wing. The detached study is clearly supplementary and does not appear attached to the primary specimen.",
-      "The tail is short, nearly square-ended, and shallowly notched. Both legs and grasping feet are present without obvious duplication or malformation. The single lateral primary specimen has one head, one bill, two legs, one tail, and anatomically normal paired-wing organization, with the far wing naturally occluded.",
-      "The detached bill/head study is internally consistent with the primary head. Unequal mandible length is not an established field mark requiring a projected lower mandible for this species.",
-      "The body-length diagram is internally consistent: 12 cm is at the bottom, 15 cm is at the top, values increase upward, units and endpoints match the published range, and exactly four evenly spaced unlabeled interior ticks divide the range into five proportional segments. \u201cSCHEMATIC \u2014 NOT TO SCALE\u201d clearly prevents interpretation as the printed bird\u2019s physical scale.",
-      "The plate is clean, legible, balanced, and uses the supplementary studies effectively without confusing them with additional birds.",
-      "No place name, ZIP code, coordinates, map, or local-observation detail appears anywhere on the plate."
+      "Species identity is convincing: the primary specimen and both supplementary studies show the plain brown upperparts, dingy gray-brown throat and breast fading gradually into whitish underparts, small rounded head, short dark bill, dark eye, broad pointed wing, and short approximately square, shallowly notched tail documented by All About Birds, Audubon, and eBird.",
+      "The primary specimen is a single complete perched bird with one head, one bill, one tail, and anatomically convincing near-side wing, leg, and foot attachments; the far-side wing and leg are naturally occluded by the side-on pose. No visible eye, limb, or foot is broken or duplicated.",
+      "The detached extended-wing study is clearly supplementary and anatomically coherent, with layered coverts, secondaries, and long pointed primaries. The detached head study is likewise clearly separate; its short bill is complete and consistent with the primary head.",
+      "The illustration is somewhat rounder and fuller-bodied than the clearest perched reference photos, but it retains the species' small-headed, long-winged swallow structure and does not materially suggest another species.",
+      "The common name, scientific name \u201cStelgidopteryx serripennis,\u201d and family \u201cHirundinidae\u201d are correctly spelled and independently supported by the direct source pages.",
+      "Every printed measurement matches the proposed profile and the All About Birds measurements: length 12\u201315 cm (4.7\u20135.9 in), wingspan 27\u201330 cm (10.6\u201311.8 in), and weight 10\u201318 g (0.3\u20130.6 oz). Audubon independently agrees on the 12\u201315 cm length and 27\u201330 cm wingspan while publishing a narrower 11\u201314 g weight range; this does not invalidate the directly supported 10\u201318 g profile range.",
+      "The habitat paragraph is complete, grammatical, and consistent with direct descriptions of open country near water, burrow nesting in banks, and use of structural crevices or cavities.",
+      "The behavior paragraph is complete and consistent with direct accounts of low aerial foraging, relatively slow deliberate wingbeats, solitary or small-group activity, and perching on exposed branches or wires.",
+      "All six field-mark bullets are complete and correctly worded. Their claims agree with the source descriptions and attached references, including the unpatterned brown upperparts, diffuse dingy breast wash, short dark bill, relatively broad pointed wings, short square or slightly notched tail, and short dark legs and feet.",
+      "The four palette labels\u2014WARM BROWN, GRAY-BROWN, DIRTY WHITE, and CHARCOAL BLACK\u2014are legible and correspond appropriately to the depicted plumage and bare-part colors.",
+      "The vertical measurement diagram is internally consistent: 12 cm (4.7 in) is at the bottom, 15 cm (5.9 in) is at the top, and the values increase upward. It is explicitly labeled \u201cSCHEMATIC \u2014 NOT TO SCALE,\u201d while the separate \u201cBODY LENGTH: 12\u201315 cm (4.7\u20135.9 in)\u201d marker agrees with it.",
+      "No place name, ZIP code, coordinates, map, observation locality, or other local-observation detail appears."
     ],
     "location_free": true,
     "passed": true,
@@ -93,6 +103,10 @@
       {
         "title": "Northern Rough-winged Swallow Identification \u2014 All About Birds",
         "url": "https://www.allaboutbirds.org/guide/Northern_Rough-winged_Swallow/id"
+      },
+      {
+        "title": "Northern Rough-winged Swallow Life History \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Northern_Rough-winged_Swallow/lifehistory"
       },
       {
         "title": "Northern Rough-winged Swallow \u2014 Audubon Field Guide",
