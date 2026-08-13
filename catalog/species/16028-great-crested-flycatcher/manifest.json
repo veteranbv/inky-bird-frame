@@ -1,22 +1,31 @@
 {
-  "approved_at": "2026-07-13T05:08:12+00:00",
+  "approved_at": "2026-08-13T19:15:00+00:00",
   "assets": {
     "display": {
       "filename": "display.png",
-      "sha256": "17f84c58bcd67e5d5dc9340c01c47e35ed14bc1b455943f725d230330662435f"
+      "sha256": "12b36d0791886d74b4723ee5ce24e4da5eabd237908b98798425895f56f852be"
     },
     "portrait": {
       "filename": "portrait.png",
-      "sha256": "17c219dfc5d91f7c1dc67af9f4a248928631e8fbb88b10b395976af3a4723220"
+      "sha256": "66716c07e5f74a5c70d4093a7dd11ba8c8ab319dd6057994e1847e45af5e05a9"
+    }
+  },
+  "catalog_migration": {
+    "reason": "Fully regenerate the published Great Crested Flycatcher plate to correct the clipped composition, then recompose the retained candidate so the complete title, taxonomy, measurements, specimen, branch, supporting studies, ruler, and all five palette labels remain at least 60 pixels inside every portrait and display edge. The final edit preserves the accepted species anatomy, bill, crest, plumage, exact text, ruler values, studies, palette, and field-journal style; all visible content was independently re-reviewed.",
+    "replaces": {
+      "approved_at": "2026-07-13T05:08:12+00:00",
+      "display_sha256": "17f84c58bcd67e5d5dc9340c01c47e35ed14bc1b455943f725d230330662435f",
+      "portrait_sha256": "17c219dfc5d91f7c1dc67af9f4a248928631e8fbb88b10b395976af3a4723220"
     }
   },
   "common_name": "Great Crested Flycatcher",
   "generation": {
     "attempt": 2,
-    "generated_at": "2026-07-13T05:08:12+00:00",
+    "correction_source_sha256": "744bb34b5c3684483e61c2a25961f04d27b685508393a73d8823b04134d9fd29",
+    "generated_at": "2026-08-13T19:15:00+00:00",
     "generator": "Codex subscription / built-in gpt-image-2",
     "max_attempts": 3,
-    "prompt_version": "field-journal-v2"
+    "prompt_version": "field-journal-v5"
   },
   "profile": {
     "behavior": "Usually forages from high perches, making short sallies after insects and returning to a perch; spends little time on the ground.",
@@ -61,18 +70,22 @@
     "taxon_id": 16028
   },
   "quality_review": {
-    "anatomy_accuracy": 4,
+    "anatomy_accuracy": 5,
     "composition_quality": 5,
+    "correction_findings": [],
     "findings": [
-      "Passed: the illustration shows one head, one straight beak, two legs and feet, one tail, and the anatomically expected pair of wings (the far wing is occluded).",
-      "Species identity is well supported by the brownish-gray head and chest, bright lemon-yellow belly, broad-shouldered large-headed profile, straight dark bill, pale-edged brown wings with rufous primary flashes, and long rufous-brown tail; these agree with the supplied reference photos and both live field guides.",
-      "The crest is rendered somewhat more conspicuously swept-up than the usually subtle/bushy crest in the reference photos, but remains within an acceptable scientific-illustration interpretation.",
-      "All visible factual text is supported. The plate's 17\u201321 cm, 6.7\u20138.3 in, and 27\u201340 g values match All About Birds; its 33\u201338 cm, 13\u201315 in wingspan matches Audubon. No material text error found.",
-      "No place name, ZIP code, coordinates, map, or local-observation detail appears on the candidate."
+      "The primary specimen convincingly depicts Great Crested Flycatcher: a large, lean, broad-shouldered flycatcher with a large subtly crested head, thick straight bill, brownish-gray head and breast, lemon-yellow belly, rufous wing panels, and a long rufous-brown tail.",
+      "The specimen has one head, one bill, one visible eye, one tail, and anatomically coherent wings, legs, and gripping feet; far-side structures are naturally occluded. The detached wing and bill/head studies are clearly supplementary and independently well formed.",
+      "The main and supplementary bills have coherent upper and lower mandibles from base to tip, with a correctly shown pale lower-mandible base and no truncated, reversed, or materially inconsistent projection.",
+      "Every visible title, taxonomy line, measurement, habitat statement, behavior statement, field-mark line, study label, and palette label is legible and matches the proposed profile without duplicated, omitted, substituted, or nonsensical wording.",
+      "The body-length diagram correctly places 17 cm (6.7 in) at the bottom and 22 cm (8.7 in) at the top. Values increase upward, units agree, no marker contradicts the endpoints, and \u201cSCHEMATIC \u2014 NOT TO SCALE\u201d clearly prevents interpretation as the printed specimen\u2019s scale.",
+      "The proposed measurements are supportable across the allowed direct sources: Audubon publishes 20\u201322 cm length, 33\u201338 cm wingspan, and 27\u201340 g weight; All About Birds publishes 17\u201321 cm, 34 cm, and 27\u201340 g. Their differing measurement conventions do not establish a two-domain conflict with the synthesized profile range.",
+      "All specified composition elements now remain at least 60 pixels from the portrait edges, including the title, right-side ruler, supplementary studies, palette swatches, and bottom labels.",
+      "No place name, ZIP code, coordinates, map, or local-observation detail appears."
     ],
     "location_free": true,
     "passed": true,
-    "species_accuracy": 4,
+    "species_accuracy": 5,
     "text_accuracy": 5,
     "verification_sources": [
       {
@@ -82,6 +95,10 @@
       {
         "title": "Great Crested Flycatcher, Audubon Field Guide",
         "url": "https://www.audubon.org/field-guide/bird/great-crested-flycatcher"
+      },
+      {
+        "title": "Myiarchus crinitus, Animal Diversity Web",
+        "url": "https://animaldiversity.org/accounts/Myiarchus_crinitus/"
       }
     ]
   },

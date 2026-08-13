@@ -1,16 +1,20 @@
 {
-  "anatomy_accuracy": 4,
+  "anatomy_accuracy": 5,
   "composition_quality": 5,
+  "correction_findings": [],
   "findings": [
-    "Passed: the illustration shows one head, one straight beak, two legs and feet, one tail, and the anatomically expected pair of wings (the far wing is occluded).",
-    "Species identity is well supported by the brownish-gray head and chest, bright lemon-yellow belly, broad-shouldered large-headed profile, straight dark bill, pale-edged brown wings with rufous primary flashes, and long rufous-brown tail; these agree with the supplied reference photos and both live field guides.",
-    "The crest is rendered somewhat more conspicuously swept-up than the usually subtle/bushy crest in the reference photos, but remains within an acceptable scientific-illustration interpretation.",
-    "All visible factual text is supported. The plate's 17\u201321 cm, 6.7\u20138.3 in, and 27\u201340 g values match All About Birds; its 33\u201338 cm, 13\u201315 in wingspan matches Audubon. No material text error found.",
-    "No place name, ZIP code, coordinates, map, or local-observation detail appears on the candidate."
+    "The primary specimen convincingly depicts Great Crested Flycatcher: a large, lean, broad-shouldered flycatcher with a large subtly crested head, thick straight bill, brownish-gray head and breast, lemon-yellow belly, rufous wing panels, and a long rufous-brown tail.",
+    "The specimen has one head, one bill, one visible eye, one tail, and anatomically coherent wings, legs, and gripping feet; far-side structures are naturally occluded. The detached wing and bill/head studies are clearly supplementary and independently well formed.",
+    "The main and supplementary bills have coherent upper and lower mandibles from base to tip, with a correctly shown pale lower-mandible base and no truncated, reversed, or materially inconsistent projection.",
+    "Every visible title, taxonomy line, measurement, habitat statement, behavior statement, field-mark line, study label, and palette label is legible and matches the proposed profile without duplicated, omitted, substituted, or nonsensical wording.",
+    "The body-length diagram correctly places 17 cm (6.7 in) at the bottom and 22 cm (8.7 in) at the top. Values increase upward, units agree, no marker contradicts the endpoints, and \u201cSCHEMATIC \u2014 NOT TO SCALE\u201d clearly prevents interpretation as the printed specimen\u2019s scale.",
+    "The proposed measurements are supportable across the allowed direct sources: Audubon publishes 20\u201322 cm length, 33\u201338 cm wingspan, and 27\u201340 g weight; All About Birds publishes 17\u201321 cm, 34 cm, and 27\u201340 g. Their differing measurement conventions do not establish a two-domain conflict with the synthesized profile range.",
+    "All specified composition elements now remain at least 60 pixels from the portrait edges, including the title, right-side ruler, supplementary studies, palette swatches, and bottom labels.",
+    "No place name, ZIP code, coordinates, map, or local-observation detail appears."
   ],
   "location_free": true,
   "passed": true,
-  "species_accuracy": 4,
+  "species_accuracy": 5,
   "text_accuracy": 5,
   "verification_sources": [
     {
@@ -20,6 +24,10 @@
     {
       "title": "Great Crested Flycatcher, Audubon Field Guide",
       "url": "https://www.audubon.org/field-guide/bird/great-crested-flycatcher"
+    },
+    {
+      "title": "Myiarchus crinitus, Animal Diversity Web",
+      "url": "https://animaldiversity.org/accounts/Myiarchus_crinitus/"
     }
   ]
 }
