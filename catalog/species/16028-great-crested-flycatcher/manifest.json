@@ -1,17 +1,17 @@
 {
-  "approved_at": "2026-08-13T18:48:08+00:00",
+  "approved_at": "2026-08-13T19:15:00+00:00",
   "assets": {
     "display": {
       "filename": "display.png",
-      "sha256": "c4ecb36dfb738b10fb6bfb5c9fa4286c33fb3225e5fa0f27eb58c046116635c7"
+      "sha256": "12b36d0791886d74b4723ee5ce24e4da5eabd237908b98798425895f56f852be"
     },
     "portrait": {
       "filename": "portrait.png",
-      "sha256": "4c16ab5cca0fb658bfe6c6f6be8db28f7e6eac9795f35eb96923d9bd94b7b9ea"
+      "sha256": "66716c07e5f74a5c70d4093a7dd11ba8c8ab319dd6057994e1847e45af5e05a9"
     }
   },
   "catalog_migration": {
-    "reason": "Fully regenerate the published Great Crested Flycatcher plate to keep the complete title, taxonomy, measurements, specimen, supporting studies, ruler, and all five palette labels inside safe portrait and display margins. The corrected plate preserves the species identity and field-journal presentation while replacing the clipped composition; all visible content was independently re-reviewed.",
+    "reason": "Fully regenerate the published Great Crested Flycatcher plate to correct the clipped composition, then recompose the retained candidate so the complete title, taxonomy, measurements, specimen, branch, supporting studies, ruler, and all five palette labels remain at least 60 pixels inside every portrait and display edge. The final edit preserves the accepted species anatomy, bill, crest, plumage, exact text, ruler values, studies, palette, and field-journal style; all visible content was independently re-reviewed.",
     "replaces": {
       "approved_at": "2026-07-13T05:08:12+00:00",
       "display_sha256": "17f84c58bcd67e5d5dc9340c01c47e35ed14bc1b455943f725d230330662435f",
@@ -20,8 +20,9 @@
   },
   "common_name": "Great Crested Flycatcher",
   "generation": {
-    "attempt": 1,
-    "generated_at": "2026-08-13T18:48:08+00:00",
+    "attempt": 2,
+    "correction_source_sha256": "744bb34b5c3684483e61c2a25961f04d27b685508393a73d8823b04134d9fd29",
+    "generated_at": "2026-08-13T19:15:00+00:00",
     "generator": "Codex subscription / built-in gpt-image-2",
     "max_attempts": 3,
     "prompt_version": "field-journal-v5"
@@ -73,15 +74,14 @@
     "composition_quality": 5,
     "correction_findings": [],
     "findings": [
-      "The primary specimen is convincingly identifiable as a Great Crested Flycatcher: large-headed, lean proportions; subtly peaked crown; brownish-gray head and breast; lemon-yellow belly; reddish-brown upperparts; rufous wing and tail feathers; dark legs; and a thick, straight bill with a paler lower-mandible base all agree with the reference photographs and direct identification sources.",
-      "The primary specimen has one head, one beak, one visible eye, one tail, two plausibly attached legs with gripping feet, and a coherent pair of wings; the far-side wing is naturally occluded by the side-profile pose. No malformed, duplicated, or detached primary anatomy is visible.",
-      "The detached wing and bill/head studies are clearly labeled supplementary illustrations, remain visually separate from the primary specimen, and accurately reinforce the rufous flight-feather pattern, pale feather edging, peaked head, eye, and bill configuration.",
-      "Both depicted bills are complete from base to tip, straight and appropriately heavy at the base. Their mandibles are coherent and consistent with the clearest side-profile references; neither upper mandible appears truncated, reversed, or materially disproportionate.",
-      "All visible descriptive text was checked line by line. The common name, scientific name, family, habitat, behavior, six field-mark statements, measurements, study labels, and five palette labels are legible, correctly spelled, and reproduce the proposed facts without duplicated, omitted, substituted, or nonsensical wording.",
-      "Published measurements vary by source: All About Birds reports 17\u201321 cm, 27\u201340 g, and a 34 cm wingspan; Audubon reports 20\u201322 cm, 27\u201340 g, and 33\u201338 cm; Animal Diversity Web gives averages of 22.2 cm, 34 g, and 33 cm. The plate's 17\u201322 cm and 33\u201338 cm values form an inclusive synthesis of these direct measurements, and no two direct domains establish a single contrary range requiring a profile conflict.",
-      "The body-length diagram repeats the printed 17\u201322 cm (6.7\u20138.7 in) range, places 17 cm at the bottom and 22 cm at the top, increases in the correct direction, uses consistent units, contains no contradictory marker, and is explicitly labeled \u201cSCHEMATIC \u2014 NOT TO SCALE.\u201d",
-      "The plate contains no place name, ZIP code, coordinates, map, range depiction, or local-observation detail.",
-      "The composition is clear and well balanced: the primary specimen dominates appropriately, supporting studies are distinct, and the text and schematic remain readable without obscuring anatomy."
+      "The primary specimen convincingly depicts Great Crested Flycatcher: a large, lean, broad-shouldered flycatcher with a large subtly crested head, thick straight bill, brownish-gray head and breast, lemon-yellow belly, rufous wing panels, and a long rufous-brown tail.",
+      "The specimen has one head, one bill, one visible eye, one tail, and anatomically coherent wings, legs, and gripping feet; far-side structures are naturally occluded. The detached wing and bill/head studies are clearly supplementary and independently well formed.",
+      "The main and supplementary bills have coherent upper and lower mandibles from base to tip, with a correctly shown pale lower-mandible base and no truncated, reversed, or materially inconsistent projection.",
+      "Every visible title, taxonomy line, measurement, habitat statement, behavior statement, field-mark line, study label, and palette label is legible and matches the proposed profile without duplicated, omitted, substituted, or nonsensical wording.",
+      "The body-length diagram correctly places 17 cm (6.7 in) at the bottom and 22 cm (8.7 in) at the top. Values increase upward, units agree, no marker contradicts the endpoints, and \u201cSCHEMATIC \u2014 NOT TO SCALE\u201d clearly prevents interpretation as the printed specimen\u2019s scale.",
+      "The proposed measurements are supportable across the allowed direct sources: Audubon publishes 20\u201322 cm length, 33\u201338 cm wingspan, and 27\u201340 g weight; All About Birds publishes 17\u201321 cm, 34 cm, and 27\u201340 g. Their differing measurement conventions do not establish a two-domain conflict with the synthesized profile range.",
+      "All specified composition elements now remain at least 60 pixels from the portrait edges, including the title, right-side ruler, supplementary studies, palette swatches, and bottom labels.",
+      "No place name, ZIP code, coordinates, map, or local-observation detail appears."
     ],
     "location_free": true,
     "passed": true,
@@ -93,16 +93,8 @@
         "url": "https://www.allaboutbirds.org/guide/Great_Crested_Flycatcher/id"
       },
       {
-        "title": "Great Crested Flycatcher Life History, All About Birds",
-        "url": "https://www.allaboutbirds.org/guide/Great_Crested_Flycatcher/lifehistory"
-      },
-      {
         "title": "Great Crested Flycatcher, Audubon Field Guide",
         "url": "https://www.audubon.org/field-guide/bird/great-crested-flycatcher"
-      },
-      {
-        "title": "Great Crested Flycatcher, eBird",
-        "url": "https://ebird.org/species/grcfly"
       },
       {
         "title": "Myiarchus crinitus, Animal Diversity Web",
