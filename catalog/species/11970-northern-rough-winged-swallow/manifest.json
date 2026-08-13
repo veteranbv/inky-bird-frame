@@ -21,7 +21,7 @@
         }
       }
     ],
-    "reason": "Replace blue annotation text with neutral dark ink for consistent legibility while preserving the approved species content and composition.",
+    "reason": "Regenerate the approved plate to replace blue annotation text with neutral dark ink. The replacement also refreshes the specimen, branch, ruler, typography, studies, palette, and layout; all were independently re-reviewed for species accuracy, anatomy, text, composition, ruler semantics, legibility, and safe margins.",
     "replaces": {
       "approved_at": "2026-08-06T15:49:59+00:00",
       "display_sha256": "6787ccd2cbaf4d378b0b06981137685bc9a7cc50a861297e5203db91d45c6fc5",
