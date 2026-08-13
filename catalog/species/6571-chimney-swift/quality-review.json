@@ -3,17 +3,17 @@
   "composition_quality": 5,
   "correction_findings": [],
   "findings": [
-    "The primary specimen is a convincing Chimney Swift: one complete bird with one head and short bill, one visible eye, two folded wings, two legs with clinging feet, and a distinct short, tapered, bristle-tipped tail.",
-    "The two long lower projections now read as separate folded wings, while the shorter central feather group reads clearly as the tail; the detached wing and head are intentional supplementary studies.",
-    "Dark gray-brown plumage, slightly paler throat, slender body, long narrow wings, large dark eye, tiny feet, and vertical-clinging posture agree with the field references and direct sources.",
-    "All visible identification, habitat, behavior, field-mark, palette, and measurement text is legible and matches the proposed profile without material spelling, number, unit, duplication, omission, or word-order errors.",
-    "The body-length schematic increases correctly from 4.7 in (12 cm) at the bottom to 5.9 in (15 cm) at the top, agrees with the printed range, and is explicitly labeled \u201cSCHEMATIC \u2014 NOT TO SCALE.\u201d",
-    "The plate contains no place name, ZIP code, coordinates, map, or local-observation detail.",
-    "Direct sources confirm Chimney Swift, Chaetura pelagica, family Apodidae, the illustrated field marks and behavior, and the stated Cornell measurement ranges. Audubon independently corroborates the length and weight ranges and gives a broadly overlapping wingspan range."
+    "The primary specimen is a convincing Chimney Swift with a slender cigar-shaped body, long narrow curved folded wings, short stiff-tipped tail, dark gray-brown plumage, paler throat, large visible eye, short broad-based bill, and tiny grasping feet.",
+    "The corrected upper leg now visibly originates from the ventral lower-body/pelvic region near the other leg and reaches the vertical surface without emerging from the wing or mid-flank.",
+    "The primary specimen has one head, one bill, two anatomically coherent folded wings, two legs with gripping feet, and one tail. The detached wing and head studies are clearly supplementary and anatomically consistent with the main specimen.",
+    "All visible taxonomy, measurement, habitat, behavior, field-mark, palette, and schematic labels are legible and correctly spelled. The displayed 4.7\u20135.9 in length, 0.6\u20131.1 oz weight, and 10.6\u201311.8 in wingspan ranges match the All About Birds account.",
+    "Audubon publishes a somewhat broader wingspan range of 11\u201312.6 in, but the displayed range is directly supported by All About Birds; the available direct sources do not establish a two-source profile conflict.",
+    "The body-length diagram increases correctly from 4.7 in at the bottom to 5.9 in at the top, uses matching metric conversions, contains no contradictory marker, and is explicitly labeled \u201cSCHEMATIC \u2014 NOT TO SCALE.\u201d",
+    "The plate contains no place name, ZIP code, coordinates, map, or local-observation detail."
   ],
   "location_free": true,
   "passed": true,
-  "species_accuracy": 5,
+  "species_accuracy": 4,
   "text_accuracy": 5,
   "verification_sources": [
     {
