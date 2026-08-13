@@ -1,10 +1,19 @@
 {
   "anatomy_accuracy": 5,
   "composition_quality": 5,
+  "correction_findings": [],
   "findings": [
-    "Verified as an adult male Eastern Towhee (Pipilo erythrophthalmus): sooty-black hood and upperparts, rufous flanks, clean white belly, stout triangular bill, reddish-brown eye, pinkish legs, white wing markings, and long rounded tail with white outer corners agree with the field-reference photos and sources.",
-    "All visible plate text is supported: the stated length, wingspan, and mass match the verified range; habitat, ground-foraging behavior, and listed field marks are consistent with source descriptions.",
-    "Anatomy is coherent: exactly one head, one beak, two legs, one tail, and two wings (one folded wing visible and the far wing naturally occluded).",
+    "The primary specimen is an anatomically coherent adult male Eastern Towhee with one head, one complete bill, one tail, two convincingly attached legs and intact grasping feet; the visible near-side wing is complete and the far-side wing is naturally occluded.",
+    "The detached wing and head are clearly supplementary studies. Both are anatomically coherent and remain visually separate from the primary specimen.",
+    "Plumage agrees with the reference photographs and direct-source descriptions: sooty-black head and upperparts, black throat and breast, warm rufous sides, white belly, white folded-wing markings, and white outer tail corners.",
+    "The chunky sparrow proportions, thick triangular bill, rounded body, long rounded tail, reddish eye, and pinkish legs are species-appropriate. Both depicted bills have coherent, consistent mandible proportions without truncation or reversal.",
+    "The common name, scientific name, and family are correctly written as Eastern Towhee, Pipilo erythrophthalmus, and Passerellidae.",
+    "Every printed measurement matches the proposed profile and Cornell's published values: length 6.8\u20138.2 in (17.3\u201320.8 cm), wingspan 7.9\u201311.0 in (20\u201328 cm), and weight 1.1\u20131.8 oz (32\u201352 g).",
+    "The body-length diagram is internally consistent: 6.8 in (17.3 cm) is the lower endpoint, 8.2 in (20.8 cm) is the upper endpoint, and values increase from bottom to top. It is explicitly labeled \u201cSCHEMATIC \u2014 NOT TO SCALE.\u201d",
+    "The habitat and behavior paragraphs are complete, correctly ordered, and consistent with direct-source accounts of brushy, leaf-litter habitat, two-footed ground scratching, concealment in undergrowth, and singing from shrubs or low trees.",
+    "All six field-mark bullets are legible, complete, and supported by the sources and reference photographs. No duplicated, omitted, substituted, or nonsensical words were found.",
+    "The five palette labels are correctly spelled and accurately represent the illustrated adult male's plumage, bill, and leg colors.",
+    "The plate has a clear scientific field-journal composition with strong hierarchy, balanced supplementary studies, and no misleading attachment of the detached studies to the primary specimen.",
     "No place name, ZIP code, coordinates, map, or local-observation detail appears."
   ],
   "location_free": true,
@@ -13,11 +22,15 @@
   "text_accuracy": 5,
   "verification_sources": [
     {
-      "title": "Eastern Towhee | Audubon Field Guide",
-      "url": "https://www.audubon.org/field-guide/bird/eastern-towhee"
+      "title": "Eastern Towhee Identification \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Eastern_Towhee/id/"
     },
     {
-      "title": "Pipilo erythrophthalmus (eastern towhee) | Animal Diversity Web",
+      "title": "Eastern Towhee \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/eastern-towhee?nid=4186&site=pa"
+    },
+    {
+      "title": "Pipilo erythrophthalmus (eastern towhee) \u2014 Animal Diversity Web",
       "url": "https://animaldiversity.org/accounts/Pipilo_erythrophthalmus/"
     }
   ]

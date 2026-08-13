@@ -1,22 +1,30 @@
 {
-  "approved_at": "2026-07-13T03:44:32+00:00",
+  "approved_at": "2026-08-13T14:23:44+00:00",
   "assets": {
     "display": {
       "filename": "display.png",
-      "sha256": "3472a4d37b64e38986cbab7a965c7d6c52cfe355f5ca99e721881da9b43cf7c5"
+      "sha256": "1d183153e0fb5551fb58c17153dbd806459bb23dc1d501e82aa32a388eb0bc53"
     },
     "portrait": {
       "filename": "portrait.png",
-      "sha256": "835757d6976255c7722a768b9bf8c75dcfa2e49ec8f94474ecc0f791aaa076f9"
+      "sha256": "b977900dcabe84e6fd7dec998eb89aea5d91ef95add21c1e8473e7cce280b48b"
+    }
+  },
+  "catalog_migration": {
+    "reason": "Correct the approved plate layout so the complete title, taxonomy, text, specimen, ruler, studies, and palette remain inside safe page margins.",
+    "replaces": {
+      "approved_at": "2026-07-13T03:44:32+00:00",
+      "display_sha256": "3472a4d37b64e38986cbab7a965c7d6c52cfe355f5ca99e721881da9b43cf7c5",
+      "portrait_sha256": "835757d6976255c7722a768b9bf8c75dcfa2e49ec8f94474ecc0f791aaa076f9"
     }
   },
   "common_name": "Chimney Swift",
   "generation": {
-    "attempt": 2,
-    "generated_at": "2026-07-13T03:44:32+00:00",
+    "attempt": 1,
+    "generated_at": "2026-08-13T14:23:44+00:00",
     "generator": "Codex subscription / built-in gpt-image-2",
     "max_attempts": 3,
-    "prompt_version": "field-journal-v2"
+    "prompt_version": "field-journal-v5"
   },
   "profile": {
     "behavior": "An almost continuously aerial insectivore; flies rapidly with stiff, shallow wingbeats and clings rather than perches when at rest.",
@@ -63,18 +71,20 @@
   "quality_review": {
     "anatomy_accuracy": 4,
     "composition_quality": 5,
+    "correction_findings": [],
     "findings": [
-      "Identity is correct: the main bird shows the species\u2019 dark gray-brown plumage, slightly paler throat, tiny clinging feet, short broad-based bill, long narrow folded wings, and vertical-surface posture; the reference photos support these traits.",
-      "The plate\u2019s two auxiliary studies (wing and head) are labeled illustrations rather than additional whole birds; the primary bird has one head, one beak, two wings, two legs, and one tail.",
-      "All visible taxonomy, behavior, habitat, and field-mark claims agree with Cornell\u2019s live identification page. Length and weight also agree.",
-      "The printed wingspan (10.6\u201311.8 in / 27\u201330 cm) agrees with Cornell but differs from Audubon\u2019s live page, which gives 11\u201312.6 in / 27\u201332 cm. This source discrepancy should be resolved or cited before treating the plate as a single-source measurement reference.",
-      "No place name, ZIP code, coordinates, map, or local-observation detail appears in the candidate.",
-      "The illustrated eye is somewhat enlarged/stylized and the folded-wing/tail silhouette is more elongated than the clinging reference photo, but neither creates a material species-identification error."
+      "Identity is consistent with Chimney Swift: the plate shows the characteristic sooty gray-brown plumage, subtly paler throat, rounded head, large dark eye, compact cigar-shaped body, long folded wings, short central tail, and vertical-clinging posture seen in the references.",
+      "The primary specimen has one head and bill, two anatomically coherent folded wings, two attached legs with gripping feet, and one tail. The far-side structures are convincing for the pose; the detached wing and head are clearly supplementary studies.",
+      "The bill is short and broad-based relative to the head in both depicted heads. The feet and sharply curved claws plausibly engage the vertical surface.",
+      "All visible identification, habitat, behavior, and field-mark text is complete, legible, correctly ordered, and matches the proposed profile without duplicated, omitted, substituted, or nonsensical wording.",
+      "Length 4.7\u20135.9 in (12\u201315 cm), weight 0.6\u20131.1 oz (17\u201330 g), and wingspan 10.6\u201311.8 in (27\u201330 cm) match the Cornell identification page. Audubon publishes a somewhat broader wingspan range, but the plate's value remains directly supported rather than erroneous.",
+      "The schematic body-length diagram increases correctly from 4.7 in (12 cm) at the bottom to 5.9 in (15 cm) at the top, repeats the correct range, uses consistent units, and is explicitly labeled NOT TO SCALE.",
+      "No place name, ZIP code, coordinates, map, or local-observation detail appears."
     ],
     "location_free": true,
     "passed": true,
-    "species_accuracy": 5,
-    "text_accuracy": 4,
+    "species_accuracy": 4,
+    "text_accuracy": 5,
     "verification_sources": [
       {
         "title": "Chimney Swift Identification \u2014 All About Birds",
@@ -83,6 +93,14 @@
       {
         "title": "Chimney Swift \u2014 Audubon Field Guide",
         "url": "https://www.audubon.org/field-guide/bird/chimney-swift"
+      },
+      {
+        "title": "Chaetura pelagica \u2014 Animal Diversity Web",
+        "url": "https://animaldiversity.org/accounts/Chaetura_pelagica/"
+      },
+      {
+        "title": "Chimney swift \u2014 Wikipedia",
+        "url": "https://en.wikipedia.org/wiki/Chimney_swift"
       }
     ]
   },

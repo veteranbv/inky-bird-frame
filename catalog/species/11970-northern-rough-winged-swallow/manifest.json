@@ -1,31 +1,40 @@
 {
-  "approved_at": "2026-08-06T15:49:59+00:00",
+  "approved_at": "2026-08-13T14:32:42+00:00",
   "assets": {
     "display": {
       "filename": "display.png",
-      "sha256": "6787ccd2cbaf4d378b0b06981137685bc9a7cc50a861297e5203db91d45c6fc5"
+      "sha256": "f19d040dfd9d7d6f6ee285d07cfe45f79a75f88d99ba753bd190c2eec286ddef"
     },
     "portrait": {
       "filename": "portrait.png",
-      "sha256": "90226d76ec91fe0d7b162d79328339af288ca02aee6e7d710f423ee4f4c848d2"
+      "sha256": "d1edd36e3bed24432fa48b79f94181799caaa87ce90572c300cf775629a45157"
     }
   },
   "catalog_migration": {
-    "reason": "Human review found the published primary specimen too vertically elongated and cylindrical; the replacement uses a compact, streamlined perched posture while preserving diagnostic field marks and plate composition.",
+    "history": [
+      {
+        "reason": "Human review found the published primary specimen too vertically elongated and cylindrical; the replacement uses a compact, streamlined perched posture while preserving diagnostic field marks and plate composition.",
+        "replaces": {
+          "approved_at": "2026-08-06T12:51:19+00:00",
+          "display_sha256": "69af036d8aa08d7609691a74bce3700bf51aeb21ad8e2d6386f0c245ef7bfcda",
+          "portrait_sha256": "68e44277ca1a983d67027b1f8226fc9a8695e5f8bbde2844e23963190858c904"
+        }
+      }
+    ],
+    "reason": "Replace blue annotation text with neutral dark ink for consistent legibility while preserving the approved species content and composition.",
     "replaces": {
-      "approved_at": "2026-08-06T12:51:19+00:00",
-      "display_sha256": "69af036d8aa08d7609691a74bce3700bf51aeb21ad8e2d6386f0c245ef7bfcda",
-      "portrait_sha256": "68e44277ca1a983d67027b1f8226fc9a8695e5f8bbde2844e23963190858c904"
+      "approved_at": "2026-08-06T15:49:59+00:00",
+      "display_sha256": "6787ccd2cbaf4d378b0b06981137685bc9a7cc50a861297e5203db91d45c6fc5",
+      "portrait_sha256": "90226d76ec91fe0d7b162d79328339af288ca02aee6e7d710f423ee4f4c848d2"
     }
   },
   "common_name": "Northern Rough-winged Swallow",
   "generation": {
     "attempt": 1,
-    "correction_source_sha256": "f3384e61f886eb1d4727a51fa2f07dc07b7c4ec1d0220f323a102ca745c4e429",
-    "generated_at": "2026-08-06T15:49:59+00:00",
+    "generated_at": "2026-08-13T14:32:42+00:00",
     "generator": "Codex subscription / built-in gpt-image-2",
     "max_attempts": 3,
-    "prompt_version": "field-journal-v4"
+    "prompt_version": "field-journal-v5"
   },
   "profile": {
     "behavior": "Aerial insectivore that twists and glides low over water and open ground, using relatively slow, deliberate wingbeats. Often forages alone or in small groups and perches on exposed branches, wires, and posts.",
@@ -69,25 +78,24 @@
     "taxon_id": 11970
   },
   "quality_review": {
-    "anatomy_accuracy": 4,
+    "anatomy_accuracy": 5,
     "composition_quality": 5,
     "correction_findings": [],
     "findings": [
-      "The common name, scientific name, and family are correctly shown as Northern Rough-winged Swallow, Stelgidopteryx serripennis, and Hirundinidae; All About Birds, Audubon, and eBird independently confirm the identity.",
-      "All printed measurements exactly match All About Birds: length 12\u201315 cm (4.7\u20135.9 in), weight 10\u201318 g (0.3\u20130.6 oz), and wingspan 27\u201330 cm (10.6\u201311.8 in). Audubon independently confirms the length and wingspan while publishing a narrower weight range of 11\u201314 g.",
-      "Every habitat and behavior line matches the proposed text without duplicated, omitted, substituted, or nonsensical words. The claims are supported by the direct source pages.",
-      "All six printed field-mark statements match the proposed wording and verified identification traits: plain brown upperparts, diffuse dingy throat and chest, pale belly, small head and bill, long broad-based pointed wings, short square or slightly notched tail, and dark legs and feet.",
-      "The primary specimen agrees with the reference photographs in its unpatterned brown upperparts, gradual gray-brown-to-whitish underpart transition, dark eye and bill, compact tail, and dark feet. Its head and eye are slightly more rounded and prominent than in the clearest photographs, but not enough to create a conflicting species identity.",
-      "The folded primary wing and detached wing study both communicate a long, relatively broad, tapered and pointed swallow wing. The detached study is clearly supplementary and does not appear attached to the primary specimen.",
-      "The tail is short, nearly square-ended, and shallowly notched. Both legs and grasping feet are present without obvious duplication or malformation. The single lateral primary specimen has one head, one bill, two legs, one tail, and anatomically normal paired-wing organization, with the far wing naturally occluded.",
-      "The detached bill/head study is internally consistent with the primary head. Unequal mandible length is not an established field mark requiring a projected lower mandible for this species.",
-      "The body-length diagram is internally consistent: 12 cm is at the bottom, 15 cm is at the top, values increase upward, units and endpoints match the published range, and exactly four evenly spaced unlabeled interior ticks divide the range into five proportional segments. \u201cSCHEMATIC \u2014 NOT TO SCALE\u201d clearly prevents interpretation as the printed bird\u2019s physical scale.",
-      "The plate is clean, legible, balanced, and uses the supplementary studies effectively without confusing them with additional birds.",
+      "The primary specimen is a convincing Northern Rough-winged Swallow: plain brown upperparts, dingy gray-brown throat and chest grading into a whitish belly, small rounded head, short dark bill, dark eye, long pointed wings, short shallow-notched tail, and short dark legs and feet agree with the reference photographs and direct-source descriptions.",
+      "The plate contains exactly one complete primary specimen with one head, one beak, two anatomically coherent folded wings, two attached legs with intact gripping feet, and one tail. The far-side structures are naturally overlapped rather than missing or duplicated.",
+      "The detached wing and bill/head studies are clearly supplementary. The wing study has coherent feather layering and a broad-based pointed profile; the head study has a complete, proportionate bill consistent with the primary specimen and side-profile references.",
+      "The common name, scientific name, and family are correctly spelled and independently verified as Northern Rough-winged Swallow, Stelgidopteryx serripennis, and Hirundinidae.",
+      "All three printed measurements exactly match the proposed profile and Cornell's published ranges: length 12\u201315 cm (4.7\u20135.9 in), wingspan 27\u201330 cm (10.6\u201311.8 in), and weight 10\u201318 g (0.3\u20130.6 oz). Audubon independently agrees on the length and wingspan ranges and gives a narrower weight range within the plate's published range.",
+      "The habitat paragraph, behavior paragraph, and all six field-mark bullets are complete, grammatical, and match the proposed wording without omissions, substitutions, duplication, or nonsensical text.",
+      "The vertical body-length diagram is internally consistent: 12 cm (4.7 in) is the lower endpoint, 15 cm (5.9 in) is the upper endpoint, values increase from bottom to top, the adjacent range matches the printed measurement, and the explicit \u201cSCHEMATIC \u2014 NOT TO SCALE\u201d label prevents it from representing the printed bird's physical size.",
+      "The wing-pattern and bill/head captions are correct, and the four palette labels\u2014WARM BROWN, GRAY-BROWN, DIRTY WHITE, and CHARCOAL BLACK\u2014are legible and consistent with the depicted plumage.",
+      "The layout is balanced, readable, and scientifically useful; the primary specimen remains dominant while the supplementary studies, scale, and palette are clearly separated.",
       "No place name, ZIP code, coordinates, map, or local-observation detail appears anywhere on the plate."
     ],
     "location_free": true,
     "passed": true,
-    "species_accuracy": 4,
+    "species_accuracy": 5,
     "text_accuracy": 5,
     "verification_sources": [
       {
