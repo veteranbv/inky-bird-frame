@@ -1,0 +1,42 @@
+{
+  "behavior": "A diurnal hunter that watches from raised perches or hovers over open ground, then swoops or pounces on prey; it also catches insects and small vertebrates in flight. Flight combines rapid wingbeats with short glides, and perched birds often pump their tails. It nests in existing cavities rather than excavating its own.",
+  "common_name": "American Kestrel",
+  "family": "Falconidae",
+  "field_marks": [
+    "Two bold black vertical slashes on each side of the pale face",
+    "Small hooked dark bill, large dark eyes, and yellow-orange cere",
+    "Rusty back and tail with a dark band near the tail tip",
+    "Adult male has a slate-blue crown and wings; female has reddish-brown, dark-barred wings",
+    "Long pointed wings and a long, square-tipped tail",
+    "Yellow-orange legs and feet with dark talons"
+  ],
+  "habitat": "Open and semi-open landscapes with short vegetation, scattered trees or raised perches, and available nesting cavities, including grasslands, meadows, deserts, farmland, forest clearings, parks, and other developed areas.",
+  "measurements": {
+    "length": "Both sexes: 22\u201331 cm (8.7\u201312.2 in)",
+    "weight": "Both sexes: 80\u2013165 g (2.8\u20135.8 oz)",
+    "wingspan": "Both sexes: 51\u201361 cm (20.1\u201324.0 in)"
+  },
+  "palette": [
+    "rusty brown",
+    "slate blue",
+    "cream white",
+    "charcoal black",
+    "yellow-orange"
+  ],
+  "scientific_name": "Falco sparverius",
+  "sources": [
+    {
+      "title": "American Kestrel Identification \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/American_Kestrel/id"
+    },
+    {
+      "title": "American Kestrel \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/american-kestrel"
+    },
+    {
+      "title": "American Kestrel Life History \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/American_Kestrel/lifehistory"
+    }
+  ],
+  "taxon_id": 4665
+}

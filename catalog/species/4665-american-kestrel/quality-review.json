@@ -1,0 +1,40 @@
+{
+  "anatomy_accuracy": 5,
+  "composition_quality": 5,
+  "correction_findings": [],
+  "findings": [
+    "The primary specimen is identifiable as an adult male American Kestrel: it has a slate-blue crown and wings, rusty spotted back, rusty tail with a dark subterminal band, pale spotted underparts, and two black vertical facial slashes.",
+    "The compact falcon proportions, hooked bill, large dark eye, yellow-orange cere, long folded pointed wing, long tail, yellow-orange legs, and dark talons agree with the reference photographs and verified source descriptions.",
+    "The primary specimen has one head, one beak, one tail, two plausibly attached legs with functional gripping feet, and one visible near-side wing; the far-side wing is naturally concealed in the side-on perched pose.",
+    "The detached wing and head are clearly supplementary studies. Their plumage and anatomy are consistent with the primary specimen, and neither appears attached to it.",
+    "Both depicted bills have consistent raptor proportions: the upper mandible projects beyond the lower mandible and forms a clear, non-truncated hook.",
+    "The common name, scientific name, and family are spelled correctly and identify American Kestrel, Falco sparverius, in Falconidae.",
+    "All printed measurements match the verified combined ranges: length 22\u201331 cm (8.7\u201312.2 in), wingspan 51\u201361 cm (20.1\u201324.0 in), and weight 80\u2013165 g (2.8\u20135.8 oz).",
+    "The vertical body-length diagram increases from 22 cm at the bottom to 31 cm at the top, agrees with the printed length range, uses matching imperial conversions, and is explicitly labeled \u201cSCHEMATIC \u2014 NOT TO SCALE.\u201d",
+    "The habitat, behavior, and field-mark text is complete, legible, and matches the proposed wording without material omissions, substitutions, duplications, or numerical errors.",
+    "The hunting, flight, tail-pumping, cavity-nesting, habitat, sexual-dimorphism, wing-shape, and tail-shape claims are supported by the direct source pages.",
+    "The plate contains no place name, ZIP code, coordinates, map, or local-observation detail."
+  ],
+  "location_free": true,
+  "passed": true,
+  "species_accuracy": 5,
+  "text_accuracy": 5,
+  "verification_sources": [
+    {
+      "title": "American Kestrel Identification \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/American_Kestrel/id"
+    },
+    {
+      "title": "American Kestrel Life History \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/American_Kestrel/lifehistory"
+    },
+    {
+      "title": "American Kestrel \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/american-kestrel"
+    },
+    {
+      "title": "Falco sparverius (American kestrel) \u2014 Animal Diversity Web",
+      "url": "https://animaldiversity.org/accounts/Falco_sparverius/"
+    }
+  ]
+}
