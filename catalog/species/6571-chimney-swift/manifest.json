@@ -1,17 +1,17 @@
 {
-  "approved_at": "2026-08-13T15:19:13+00:00",
+  "approved_at": "2026-08-13T16:21:09+00:00",
   "assets": {
     "display": {
       "filename": "display.png",
-      "sha256": "1b485f58434bcabe845eb17b0d732f85782c2e7e546142c7badc250ffa59bdc1"
+      "sha256": "a0d4b69d821b88731c2696428ff62360e390ced913192ce632ff91f3a6a40848"
     },
     "portrait": {
       "filename": "portrait.png",
-      "sha256": "577a199ca9c50859752ef8a6a0647e4ab470e8278e7357f824a4facee8dcbb1f"
+      "sha256": "81117ad8500665e254c6bc6fe7ddf7f38179338f7b228128551015610691026c"
     }
   },
   "catalog_migration": {
-    "reason": "Correct the approved plate so the complete title, taxonomy, text, specimen, ruler, studies, and palette remain inside safe page margins; restore the exact field-mark wording \u2018Tiny feet; clings to vertical surfaces rather than perching\u2019; and improve the species-specific bill, feet, and wing-study anatomy. All visible content was independently re-reviewed.",
+    "reason": "Regenerate the approved Chimney Swift plate to correct the page layout and exact field-mark grammar, and to ensure both short legs and tiny gripping feet originate anatomically from the ventral lower body and contact the vertical surface. The replacement refreshes the complete plate; all visible text, anatomy, ruler semantics, and composition were independently re-reviewed.",
     "replaces": {
       "approved_at": "2026-07-13T03:44:32+00:00",
       "display_sha256": "3472a4d37b64e38986cbab7a965c7d6c52cfe355f5ca99e721881da9b43cf7c5",
@@ -21,8 +21,8 @@
   "common_name": "Chimney Swift",
   "generation": {
     "attempt": 3,
-    "correction_source_sha256": "b2c7af9a14434dac4d3f1d91860e8ab1743d9aa354394803d83a269f28b4f538",
-    "generated_at": "2026-08-13T15:19:13+00:00",
+    "correction_source_sha256": "574a40fd393ae53f9a9a97adc320f35c96fdf1ebf7756efb5d5b7abeb7d0ed53",
+    "generated_at": "2026-08-13T16:21:09+00:00",
     "generator": "Codex subscription / built-in gpt-image-2",
     "max_attempts": 3,
     "prompt_version": "field-journal-v5"
@@ -74,15 +74,13 @@
     "composition_quality": 5,
     "correction_findings": [],
     "findings": [
-      "The candidate is identifiable as a Chimney Swift: the primary specimen has the characteristic slender cigar-shaped body, dark gray-brown plumage, paler throat, large dark eye, short tail with stiff-looking tips, and long narrow folded wings extending beyond the tail.",
-      "The plate contains exactly one complete primary specimen. It has one head, one short bill, two folded wings, one tail, and a convincing clinging posture; the far-side leg is naturally occluded. The detached head and wing are clearly separated supplementary studies.",
-      "The primary specimen and detached head now show short, broad-based bills consistent with the species and the clearest attached side-profile reference.",
-      "The visible foot, toes, and leg are now small and short relative to the specimen and plausibly engage the vertical surface.",
-      "The detached wing study is now elongated, narrow, swept, and sharply pointed rather than broadly fan-shaped.",
-      "Every visible identification, measurement, habitat, behavior, and field-mark line is legible and agrees with the proposed profile. The common name, scientific name, and family are correctly written as Chimney Swift, Chaetura pelagica, and Apodidae.",
-      "The published length, weight, and Cornell wingspan values match the plate: 4.7\u20135.9 in (12\u201315 cm), 0.6\u20131.1 oz (17\u201330 g), and 10.6\u201311.8 in (27\u201330 cm). Audubon publishes a slightly broader wingspan range, but the proposed Cornell range remains directly supported and is not a profile conflict.",
-      "The ruler is internally consistent: 4.7 in (12 cm) is at the bottom, 5.9 in (15 cm) is at the top, values increase upward, and \u201cSCHEMATIC \u2014 NOT TO SCALE\u201d prevents it from being mistaken for the printed specimen\u2019s scale.",
-      "No place name, ZIP code, coordinates, map, or local-observation detail appears."
+      "The primary specimen is a convincing Chimney Swift: one complete bird with one head and short bill, one visible eye, two folded wings, two legs with clinging feet, and a distinct short, tapered, bristle-tipped tail.",
+      "The two long lower projections now read as separate folded wings, while the shorter central feather group reads clearly as the tail; the detached wing and head are intentional supplementary studies.",
+      "Dark gray-brown plumage, slightly paler throat, slender body, long narrow wings, large dark eye, tiny feet, and vertical-clinging posture agree with the field references and direct sources.",
+      "All visible identification, habitat, behavior, field-mark, palette, and measurement text is legible and matches the proposed profile without material spelling, number, unit, duplication, omission, or word-order errors.",
+      "The body-length schematic increases correctly from 4.7 in (12 cm) at the bottom to 5.9 in (15 cm) at the top, agrees with the printed range, and is explicitly labeled \u201cSCHEMATIC \u2014 NOT TO SCALE.\u201d",
+      "The plate contains no place name, ZIP code, coordinates, map, or local-observation detail.",
+      "Direct sources confirm Chimney Swift, Chaetura pelagica, family Apodidae, the illustrated field marks and behavior, and the stated Cornell measurement ranges. Audubon independently corroborates the length and weight ranges and gives a broadly overlapping wingspan range."
     ],
     "location_free": true,
     "passed": true,
@@ -100,10 +98,6 @@
       {
         "title": "Chaetura pelagica \u2014 Animal Diversity Web",
         "url": "https://animaldiversity.org/accounts/Chaetura_pelagica/"
-      },
-      {
-        "title": "Chimney swift \u2014 Wikipedia",
-        "url": "https://en.wikipedia.org/wiki/Chimney_swift"
       }
     ]
   },

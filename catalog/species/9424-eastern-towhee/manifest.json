@@ -11,7 +11,7 @@
     }
   },
   "catalog_migration": {
-    "reason": "Correct the approved plate layout so the complete title, taxonomy, text, specimen, ruler, studies, and palette remain inside safe page margins.",
+    "reason": "Regenerate the approved Eastern Towhee plate to correct the page layout. The replacement refreshes the specimen, branch, ruler, typography, studies, palette, and overall composition so all content remains inside safe margins; all visible text and anatomy were independently re-reviewed.",
     "replaces": {
       "approved_at": "2026-07-13T04:11:52+00:00",
       "display_sha256": "dc5f46c3d25607ed18a6179b5590506348530fba1e6543ebb5df29cf460a097d",

@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-13T15:19:13+00:00",
+  "generated_at": "2026-08-13T16:21:09+00:00",
   "schema_version": 1,
   "species": [
     {
@@ -344,12 +344,12 @@
       "taxon_id": 7428
     },
     {
-      "approved_at": "2026-08-13T15:19:13+00:00",
+      "approved_at": "2026-08-13T16:21:09+00:00",
       "common_name": "Chimney Swift",
       "display_path": "species/6571-chimney-swift/display.png",
-      "display_sha256": "1b485f58434bcabe845eb17b0d732f85782c2e7e546142c7badc250ffa59bdc1",
+      "display_sha256": "a0d4b69d821b88731c2696428ff62360e390ced913192ce632ff91f3a6a40848",
       "portrait_path": "species/6571-chimney-swift/portrait.png",
-      "portrait_sha256": "577a199ca9c50859752ef8a6a0647e4ab470e8278e7357f824a4facee8dcbb1f",
+      "portrait_sha256": "81117ad8500665e254c6bc6fe7ddf7f38179338f7b228128551015610691026c",
       "scientific_name": "Chaetura pelagica",
       "slug": "chimney-swift",
       "taxon_id": 6571
@@ -1081,12 +1081,12 @@
       "taxon_id": 145233
     },
     {
-      "approved_at": "2026-08-13T14:32:42+00:00",
+      "approved_at": "2026-08-13T16:08:49+00:00",
       "common_name": "Northern Rough-winged Swallow",
       "display_path": "species/11970-northern-rough-winged-swallow/display.png",
-      "display_sha256": "f19d040dfd9d7d6f6ee285d07cfe45f79a75f88d99ba753bd190c2eec286ddef",
+      "display_sha256": "cc050bbcc59741f94384f71f770b5e92fd555dcb23a5f91109b016b498e295b6",
       "portrait_path": "species/11970-northern-rough-winged-swallow/portrait.png",
-      "portrait_sha256": "d1edd36e3bed24432fa48b79f94181799caaa87ce90572c300cf775629a45157",
+      "portrait_sha256": "81de7e05e9ed9ee98a19f536145ac82399f3e94e5a9572f0472b145663842e4a",
       "scientific_name": "Stelgidopteryx serripennis",
       "slug": "northern-rough-winged-swallow",
       "taxon_id": 11970

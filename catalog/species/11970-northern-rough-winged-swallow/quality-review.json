@@ -1,27 +1,33 @@
 {
-  "anatomy_accuracy": 5,
+  "anatomy_accuracy": 4,
   "composition_quality": 5,
   "correction_findings": [],
   "findings": [
-    "The primary specimen is a convincing Northern Rough-winged Swallow: plain brown upperparts, dingy gray-brown throat and chest grading into a whitish belly, small rounded head, short dark bill, dark eye, long pointed wings, short shallow-notched tail, and short dark legs and feet agree with the reference photographs and direct-source descriptions.",
-    "The plate contains exactly one complete primary specimen with one head, one beak, two anatomically coherent folded wings, two attached legs with intact gripping feet, and one tail. The far-side structures are naturally overlapped rather than missing or duplicated.",
-    "The detached wing and bill/head studies are clearly supplementary. The wing study has coherent feather layering and a broad-based pointed profile; the head study has a complete, proportionate bill consistent with the primary specimen and side-profile references.",
-    "The common name, scientific name, and family are correctly spelled and independently verified as Northern Rough-winged Swallow, Stelgidopteryx serripennis, and Hirundinidae.",
-    "All three printed measurements exactly match the proposed profile and Cornell's published ranges: length 12\u201315 cm (4.7\u20135.9 in), wingspan 27\u201330 cm (10.6\u201311.8 in), and weight 10\u201318 g (0.3\u20130.6 oz). Audubon independently agrees on the length and wingspan ranges and gives a narrower weight range within the plate's published range.",
-    "The habitat paragraph, behavior paragraph, and all six field-mark bullets are complete, grammatical, and match the proposed wording without omissions, substitutions, duplication, or nonsensical text.",
-    "The vertical body-length diagram is internally consistent: 12 cm (4.7 in) is the lower endpoint, 15 cm (5.9 in) is the upper endpoint, values increase from bottom to top, the adjacent range matches the printed measurement, and the explicit \u201cSCHEMATIC \u2014 NOT TO SCALE\u201d label prevents it from representing the printed bird's physical size.",
-    "The wing-pattern and bill/head captions are correct, and the four palette labels\u2014WARM BROWN, GRAY-BROWN, DIRTY WHITE, and CHARCOAL BLACK\u2014are legible and consistent with the depicted plumage.",
-    "The layout is balanced, readable, and scientifically useful; the primary specimen remains dominant while the supplementary studies, scale, and palette are clearly separated.",
-    "No place name, ZIP code, coordinates, map, or local-observation detail appears anywhere on the plate."
+    "Species identity is convincing: the primary specimen and both supplementary studies show the plain brown upperparts, dingy gray-brown throat and breast fading gradually into whitish underparts, small rounded head, short dark bill, dark eye, broad pointed wing, and short approximately square, shallowly notched tail documented by All About Birds, Audubon, and eBird.",
+    "The primary specimen is a single complete perched bird with one head, one bill, one tail, and anatomically convincing near-side wing, leg, and foot attachments; the far-side wing and leg are naturally occluded by the side-on pose. No visible eye, limb, or foot is broken or duplicated.",
+    "The detached extended-wing study is clearly supplementary and anatomically coherent, with layered coverts, secondaries, and long pointed primaries. The detached head study is likewise clearly separate; its short bill is complete and consistent with the primary head.",
+    "The illustration is somewhat rounder and fuller-bodied than the clearest perched reference photos, but it retains the species' small-headed, long-winged swallow structure and does not materially suggest another species.",
+    "The common name, scientific name \u201cStelgidopteryx serripennis,\u201d and family \u201cHirundinidae\u201d are correctly spelled and independently supported by the direct source pages.",
+    "Every printed measurement matches the proposed profile and the All About Birds measurements: length 12\u201315 cm (4.7\u20135.9 in), wingspan 27\u201330 cm (10.6\u201311.8 in), and weight 10\u201318 g (0.3\u20130.6 oz). Audubon independently agrees on the 12\u201315 cm length and 27\u201330 cm wingspan while publishing a narrower 11\u201314 g weight range; this does not invalidate the directly supported 10\u201318 g profile range.",
+    "The habitat paragraph is complete, grammatical, and consistent with direct descriptions of open country near water, burrow nesting in banks, and use of structural crevices or cavities.",
+    "The behavior paragraph is complete and consistent with direct accounts of low aerial foraging, relatively slow deliberate wingbeats, solitary or small-group activity, and perching on exposed branches or wires.",
+    "All six field-mark bullets are complete and correctly worded. Their claims agree with the source descriptions and attached references, including the unpatterned brown upperparts, diffuse dingy breast wash, short dark bill, relatively broad pointed wings, short square or slightly notched tail, and short dark legs and feet.",
+    "The four palette labels\u2014WARM BROWN, GRAY-BROWN, DIRTY WHITE, and CHARCOAL BLACK\u2014are legible and correspond appropriately to the depicted plumage and bare-part colors.",
+    "The vertical measurement diagram is internally consistent: 12 cm (4.7 in) is at the bottom, 15 cm (5.9 in) is at the top, and the values increase upward. It is explicitly labeled \u201cSCHEMATIC \u2014 NOT TO SCALE,\u201d while the separate \u201cBODY LENGTH: 12\u201315 cm (4.7\u20135.9 in)\u201d marker agrees with it.",
+    "No place name, ZIP code, coordinates, map, observation locality, or other local-observation detail appears."
   ],
   "location_free": true,
   "passed": true,
-  "species_accuracy": 5,
+  "species_accuracy": 4,
   "text_accuracy": 5,
   "verification_sources": [
     {
       "title": "Northern Rough-winged Swallow Identification \u2014 All About Birds",
       "url": "https://www.allaboutbirds.org/guide/Northern_Rough-winged_Swallow/id"
+    },
+    {
+      "title": "Northern Rough-winged Swallow Life History \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Northern_Rough-winged_Swallow/lifehistory"
     },
     {
       "title": "Northern Rough-winged Swallow \u2014 Audubon Field Guide",
