@@ -1,0 +1,161 @@
+{
+  "approved_at": "2026-08-14T12:24:31+00:00",
+  "assets": {
+    "display": {
+      "filename": "display.png",
+      "sha256": "9665807ccf572737cf7ee6f631714a3f922d03b3935544d8660312c038d67e75"
+    },
+    "portrait": {
+      "filename": "portrait.png",
+      "sha256": "169915496a1bac1d3d95b4e421c6cb8cf57c946d976d093b2e0f3cd9d1fe55da"
+    }
+  },
+  "common_name": "Least Sandpiper",
+  "generation": {
+    "attempt": 2,
+    "correction_source_sha256": "142322ab4a3fff3d64c02776c4989474c34ffbafddc8ba76b3aabbdf7a071e8a",
+    "generated_at": "2026-08-14T12:24:31+00:00",
+    "generator": "Codex subscription / built-in gpt-image-2",
+    "max_attempts": 3,
+    "prompt_version": "field-journal-v5"
+  },
+  "profile": {
+    "behavior": "Walks slowly, often in a crouched posture, picking tiny invertebrates from the surface and probing damp mud with its bill. It commonly feeds in loose, relatively small flocks and favors slightly drier margins than other small sandpipers.",
+    "common_name": "Least Sandpiper",
+    "family": "Scolopacidae",
+    "field_marks": [
+      "Extremely small, compact shorebird with a rounded body",
+      "Thin black bill with a slightly downcurved tip",
+      "Slim, medium-length yellowish-green legs",
+      "Warm-brown upperparts with pale or rusty-edged feathers",
+      "White belly with brown smudging or streaking across the throat and breast",
+      "Relatively short, pointed wings and a short tail"
+    ],
+    "habitat": "Breeds in wet tundra, bogs, sedge meadows, and open boreal wetlands. During migration and winter it uses mudflats, marsh edges, estuaries, wet fields, rocky shores, and muddy margins of ponds, lakes, rivers, and ditches, generally favoring sheltered, muddier ground over open sandy beaches.",
+    "measurements": {
+      "length": "Both sexes: 5.1\u20135.9 in (13\u201315 cm)",
+      "weight": "Both sexes: 0.7\u20131.1 oz (19\u201330 g)",
+      "wingspan": "Both sexes: 10.6\u201311.0 in (27\u201328 cm)"
+    },
+    "palette": [
+      "warm brown",
+      "rusty tan",
+      "creamy white",
+      "black",
+      "yellow-green"
+    ],
+    "scientific_name": "Calidris minutilla",
+    "sources": [
+      {
+        "title": "Least Sandpiper Identification \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Least_Sandpiper/id"
+      },
+      {
+        "title": "Least Sandpiper Life History \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Least_Sandpiper/lifehistory"
+      },
+      {
+        "title": "Least Sandpiper \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/least-sandpiper"
+      }
+    ],
+    "taxon_id": 3864
+  },
+  "quality_review": {
+    "anatomy_accuracy": 4,
+    "composition_quality": 5,
+    "correction_findings": [],
+    "findings": [
+      "The primary specimen is a coherent, complete profile bird with one head and beak, one tail, two convincingly attached legs with intact feet, and a plausible folded wing pair with the far wing naturally occluded.",
+      "The detached wing and head studies are clearly supplementary and do not appear attached to the primary specimen; both are anatomically plausible.",
+      "The compact rounded body, thin slightly decurved black bill, yellowish-green legs, warm-brown upperparts, white belly, streaked or smudged breast, short pointed wings, and short tail agree with the reference photographs and live identification sources.",
+      "Species identity, scientific name, and family are correct: Least Sandpiper, Calidris minutilla, Scolopacidae.",
+      "All visible title, taxonomy, measurement, habitat, behavior, and field-mark text is legible and matches the proposed profile without omissions, substitutions, duplication, or nonsensical wording.",
+      "The three measurement lines exactly show length 5.1\u20135.9 in (13\u201315 cm), wingspan 10.6\u201311.0 in (27\u201328 cm), and weight 0.7\u20131.1 oz (19\u201330 g), matching the All About Birds measurements.",
+      "The body-length ruler is internally consistent: 5.1 in (13 cm) is at the bottom, 5.9 in (15 cm) is at the top, and it is explicitly labeled \u201cSCHEMATIC \u2014 NOT TO SCALE.\u201d",
+      "No place name, ZIP code, coordinates, map, or local-observation detail appears.",
+      "The balanced main specimen, supplementary studies, palette, text blocks, and ruler form a clear and effective scientific field-journal composition."
+    ],
+    "location_free": true,
+    "passed": true,
+    "species_accuracy": 5,
+    "text_accuracy": 5,
+    "verification_sources": [
+      {
+        "title": "Least Sandpiper Identification \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Least_Sandpiper/id"
+      },
+      {
+        "title": "Least Sandpiper Life History \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Least_Sandpiper/lifehistory"
+      },
+      {
+        "title": "Least Sandpiper \u2014 eBird",
+        "url": "https://ebird.org/species/leasan"
+      },
+      {
+        "title": "Least Sandpiper \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/least-sandpiper"
+      }
+    ]
+  },
+  "references": [
+    {
+      "attribution": "(c) Bill Levine, some rights reserved (CC BY)",
+      "filename": "01-170452083.jpeg",
+      "height": 1780,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/170452083/large.jpeg",
+      "license_code": "cc-by",
+      "observation_id": 102015400,
+      "observer": "blevine",
+      "photo_id": 170452083,
+      "sha256": "1dd90eee6351ad7e1b7bca824bf0a6d2c1ea6fbc1c3401810a17f47d845b6cae",
+      "source_url": "https://www.inaturalist.org/observations/102015400",
+      "width": 1780
+    },
+    {
+      "attribution": "(c) P Holroyd, some rights reserved (CC BY)",
+      "filename": "02-249160761.jpeg",
+      "height": 1536,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/249160761/large.jpeg",
+      "license_code": "cc-by",
+      "observation_id": 145086312,
+      "observer": "pholroyd",
+      "photo_id": 249160761,
+      "sha256": "ed08948dec5fc1cec1074c75b3f9c161b9ea21cb4ca101d9b3a5535d8b351588",
+      "source_url": "https://www.inaturalist.org/observations/145086312",
+      "width": 2048
+    },
+    {
+      "attribution": "no rights reserved",
+      "filename": "03-700553151.jpg",
+      "height": 1320,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/700553151/large.jpg",
+      "license_code": "cc0",
+      "observation_id": 382792181,
+      "observer": "ben142",
+      "photo_id": 700553151,
+      "sha256": "a6e95e77402df3fb284c90f705842da2a43010b99a9cdc90cce35aa88e6123b8",
+      "source_url": "https://www.inaturalist.org/observations/382792181",
+      "width": 1320
+    },
+    {
+      "attribution": "no rights reserved",
+      "filename": "04-235755767.jpeg",
+      "height": 1365,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/235755767/large.jpeg",
+      "license_code": "cc0",
+      "observation_id": 137983146,
+      "observer": "sean579",
+      "photo_id": 235755767,
+      "sha256": "19e8d970458e983ec43af063b68b0eefd4b77c676558bad0a6bb4c4b7e959c75",
+      "source_url": "https://www.inaturalist.org/observations/137983146",
+      "width": 2048
+    }
+  ],
+  "schema_version": 1,
+  "scientific_name": "Calidris minutilla",
+  "slug": "least-sandpiper",
+  "status": "approved",
+  "taxon_id": 3864
+}

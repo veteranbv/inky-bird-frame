@@ -1,0 +1,42 @@
+{
+  "behavior": "Walks slowly, often in a crouched posture, picking tiny invertebrates from the surface and probing damp mud with its bill. It commonly feeds in loose, relatively small flocks and favors slightly drier margins than other small sandpipers.",
+  "common_name": "Least Sandpiper",
+  "family": "Scolopacidae",
+  "field_marks": [
+    "Extremely small, compact shorebird with a rounded body",
+    "Thin black bill with a slightly downcurved tip",
+    "Slim, medium-length yellowish-green legs",
+    "Warm-brown upperparts with pale or rusty-edged feathers",
+    "White belly with brown smudging or streaking across the throat and breast",
+    "Relatively short, pointed wings and a short tail"
+  ],
+  "habitat": "Breeds in wet tundra, bogs, sedge meadows, and open boreal wetlands. During migration and winter it uses mudflats, marsh edges, estuaries, wet fields, rocky shores, and muddy margins of ponds, lakes, rivers, and ditches, generally favoring sheltered, muddier ground over open sandy beaches.",
+  "measurements": {
+    "length": "Both sexes: 5.1\u20135.9 in (13\u201315 cm)",
+    "weight": "Both sexes: 0.7\u20131.1 oz (19\u201330 g)",
+    "wingspan": "Both sexes: 10.6\u201311.0 in (27\u201328 cm)"
+  },
+  "palette": [
+    "warm brown",
+    "rusty tan",
+    "creamy white",
+    "black",
+    "yellow-green"
+  ],
+  "scientific_name": "Calidris minutilla",
+  "sources": [
+    {
+      "title": "Least Sandpiper Identification \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Least_Sandpiper/id"
+    },
+    {
+      "title": "Least Sandpiper Life History \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Least_Sandpiper/lifehistory"
+    },
+    {
+      "title": "Least Sandpiper \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/least-sandpiper"
+    }
+  ],
+  "taxon_id": 3864
+}

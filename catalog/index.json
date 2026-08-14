@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-13T19:15:00+00:00",
+  "generated_at": "2026-08-14T12:24:31+00:00",
   "schema_version": 1,
   "species": [
     {
@@ -881,6 +881,17 @@
       "scientific_name": "Leucophaeus atricilla",
       "slug": "laughing-gull",
       "taxon_id": 144514
+    },
+    {
+      "approved_at": "2026-08-14T12:24:31+00:00",
+      "common_name": "Least Sandpiper",
+      "display_path": "species/3864-least-sandpiper/display.png",
+      "display_sha256": "9665807ccf572737cf7ee6f631714a3f922d03b3935544d8660312c038d67e75",
+      "portrait_path": "species/3864-least-sandpiper/portrait.png",
+      "portrait_sha256": "169915496a1bac1d3d95b4e421c6cb8cf57c946d976d093b2e0f3cd9d1fe55da",
+      "scientific_name": "Calidris minutilla",
+      "slug": "least-sandpiper",
+      "taxon_id": 3864
     },
     {
       "approved_at": "2026-08-07T16:14:27+00:00",
