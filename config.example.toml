@@ -3,8 +3,8 @@
 # nearby public sightings, eBird Archive imports your private personal history, BirdWeather
 # and self-hosted BirdNET-Go provide acoustic station detections, BirdNET Analyzer imports
 # private CSV history, and authorized Bird Buddy accounts provide read-only feeder postcards.
-# Legacy singular source values remain accepted for compatibility, but source = "all" is
-# deprecated. Replace it with sources = ["inaturalist", "ebird", "birdweather"].
+# Version 0.5.0 removed the ambiguous source = "all" value. Use the explicit sources array;
+# sources = ["inaturalist", "ebird", "birdweather"] preserves its former behavior.
 # See docs/discovery.md.
 sources = ["inaturalist"]
 # Choose exactly one location form for iNaturalist or eBird. The legacy five-digit US

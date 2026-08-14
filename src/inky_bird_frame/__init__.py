@@ -1,3 +1,3 @@
 """Local bird field-journal plates for Pimoroni Inky displays."""
 
-__version__ = "0.4.1"
+__version__ = "0.5.0"

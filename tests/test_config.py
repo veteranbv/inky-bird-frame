@@ -6,7 +6,13 @@ from tempfile import TemporaryDirectory
 from unittest.mock import patch
 
 from inky_bird_frame.birds import ObservationWindow
-from inky_bird_frame.config import DiscoveryProvider, NotificationEvent, RotationMode, load_config
+from inky_bird_frame.config import (
+    DiscoveryProvider,
+    NotificationEvent,
+    RotationMode,
+    discovery_source_label,
+    load_config,
+)
 from inky_bird_frame.errors import ConfigurationError
 
 CONFIG = """
@@ -364,7 +370,7 @@ class ConfigTests(unittest.TestCase):
                 with self.assertRaisesRegex(ConfigurationError, "query, or a fragment"):
                     load_config(path)
 
-    def test_legacy_all_source_does_not_implicitly_enable_new_private_sources(self) -> None:
+    def test_rejects_removed_all_source_with_migration(self) -> None:
         configured = CONFIG.replace(
             "[discovery]\n",
             '[discovery]\nsource = "all"\n'
@@ -374,15 +380,17 @@ class ConfigTests(unittest.TestCase):
         with TemporaryDirectory() as temporary:
             path = Path(temporary) / "config.toml"
             path.write_text(configured)
-            config = load_config(path)
 
-        self.assertNotIn(DiscoveryProvider.BIRDBUDDY, config.discovery.sources)
-        self.assertNotIn(DiscoveryProvider.BIRDNET_GO, config.discovery.sources)
-        self.assertNotIn(DiscoveryProvider.BIRDNET_ANALYZER, config.discovery.sources)
-        self.assertNotIn(DiscoveryProvider.EBIRD_ARCHIVE, config.discovery.sources)
-        self.assertTrue(config.discovery.legacy_all_source)
+            with self.assertRaisesRegex(ConfigurationError, "no longer supported") as raised:
+                load_config(path)
 
-    def test_explicit_sources_are_not_marked_as_legacy_all(self) -> None:
+        self.assertIn(
+            '[discovery] with sources = ["inaturalist", "ebird", "birdweather"]',
+            str(raised.exception),
+        )
+        self.assertNotIn("discovery.sources", str(raised.exception))
+
+    def test_explicit_sources_select_former_all_providers(self) -> None:
         configured = CONFIG.replace(
             "[discovery]\n",
             '[discovery]\nsources = ["inaturalist", "ebird", "birdweather"]\n'
@@ -394,7 +402,18 @@ class ConfigTests(unittest.TestCase):
             path.write_text(configured)
             config = load_config(path)
 
-        self.assertFalse(config.discovery.legacy_all_source)
+        self.assertEqual(
+            config.discovery.sources,
+            (
+                DiscoveryProvider.INATURALIST,
+                DiscoveryProvider.EBIRD,
+                DiscoveryProvider.BIRDWEATHER,
+            ),
+        )
+        self.assertEqual(
+            discovery_source_label(config.discovery.sources),
+            "inaturalist,ebird,birdweather",
+        )
 
     def test_rejects_source_and_sources_together(self) -> None:
         configured = CONFIG.replace(
@@ -420,10 +439,11 @@ class ConfigTests(unittest.TestCase):
                 with self.assertRaisesRegex(ConfigurationError, message):
                     load_config(path)
 
-    def test_all_source_requires_both_provider_credentials(self) -> None:
+    def test_explicit_former_all_sources_require_both_provider_credentials(self) -> None:
         configured = CONFIG.replace(
             "[discovery]\n",
-            '[discovery]\nsource = "all"\nebird_api_key = "ebird-secret"\n',
+            '[discovery]\nsources = ["inaturalist", "ebird", "birdweather"]\n'
+            'ebird_api_key = "ebird-secret"\n',
         )
         with TemporaryDirectory() as temporary:
             path = Path(temporary) / "config.toml"

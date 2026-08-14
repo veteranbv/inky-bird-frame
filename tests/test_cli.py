@@ -163,10 +163,9 @@ class CliTests(unittest.TestCase):
         self.assertEqual(payload["total_checklists"], 2)
         self.assertNotIn("species", payload)
 
-    def test_config_validate_reports_legacy_all_source_deprecation(self) -> None:
+    def test_config_validate_reports_no_deprecations(self) -> None:
         config = SimpleNamespace(
             discovery=SimpleNamespace(
-                legacy_all_source=True,
                 latitude=1.0,
                 longitude=2.0,
                 postal_code=None,
@@ -195,11 +194,7 @@ class CliTests(unittest.TestCase):
 
         payload = json.loads(output.getvalue())["data"]
         self.assertEqual(result, 0)
-        self.assertEqual(payload["deprecations"][0]["setting"], "discovery.source")
-        self.assertIn(
-            'sources = ["inaturalist", "ebird", "birdweather"]',
-            payload["deprecations"][0]["replacement"],
-        )
+        self.assertEqual(payload["deprecations"], [])
 
     def test_birdnet_analyzer_import_parses_explicit_date_and_redacts_path(self) -> None:
         args = build_parser().parse_args(
