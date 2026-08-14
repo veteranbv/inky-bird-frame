@@ -385,9 +385,10 @@ class ConfigTests(unittest.TestCase):
                 load_config(path)
 
         self.assertIn(
-            'discovery.sources = ["inaturalist", "ebird", "birdweather"]',
+            '[discovery] with sources = ["inaturalist", "ebird", "birdweather"]',
             str(raised.exception),
         )
+        self.assertNotIn("discovery.sources", str(raised.exception))
 
     def test_explicit_sources_select_former_all_providers(self) -> None:
         configured = CONFIG.replace(

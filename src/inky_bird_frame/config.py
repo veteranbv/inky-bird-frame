@@ -426,8 +426,8 @@ def load_config(path: Path, *, load_secrets: bool = True) -> AppConfig:
         source_value = _optional_string(discovery, "source", default="inaturalist")
         if source_value == "all":
             raise ConfigurationError(
-                'discovery.source = "all" is no longer supported; use '
-                'discovery.sources = ["inaturalist", "ebird", "birdweather"]'
+                'discovery.source = "all" is no longer supported; replace it in '
+                '[discovery] with sources = ["inaturalist", "ebird", "birdweather"]'
             )
         try:
             discovery_sources = LEGACY_DISCOVERY_SOURCES[source_value]
