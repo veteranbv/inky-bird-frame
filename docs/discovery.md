@@ -284,17 +284,33 @@ Every scientific name must still resolve exactly to one active iNaturalist bird
 species. Custom classifier labels, non-birds, and ambiguous or unmatched names
 remain private unresolved diagnostics and cannot trigger plate generation. A
 BirdNET-Go failure degrades only this provider; other configured sources keep
-running. The legacy singular `source = "all"` retains its existing meaning and
-does not silently enable access to a local BirdNET-Go server.
+running. BirdNET-Go runs only when you include `birdnet-go` in the explicit
+`sources` array.
 
 [apple-tn3179]: https://developer.apple.com/documentation/technotes/tn3179-understanding-local-network-privacy
 
 ## BirdNET Analyzer CSV import
 
-BirdNET Analyzer is the offline desktop and command-line analyzer from the
-BirdNET team. Its official CSV output contains segment offsets, species names,
-confidence, and a source-file field, but no absolute recording date. Inky never
-guesses one from a filename or filesystem timestamp.
+[BirdNET Analyzer](https://github.com/birdnet-team/BirdNET-Analyzer) is the
+offline desktop and command-line analyzer from the BirdNET team. Its official
+CSV output contains segment offsets, species names, confidence, and a
+source-file field, but no absolute recording date. Inky never guesses one from
+a filename or filesystem timestamp.
+
+For a directory of recordings, ask Analyzer to create one importable table in
+addition to its per-file results:
+
+```bash
+python3 -m birdnet_analyzer.analyze /path/to/recordings \
+  --output /path/to/analyzer-output \
+  --rtype csv \
+  --combine_results \
+  --min_conf 0.7
+```
+
+This example uses a minimum confidence of `0.70`. Choose a threshold that fits
+your detector policy, then review `BirdNET_CombinedTable.csv` before import.
+Inky accepts one CSV per import and does not apply a second confidence filter.
 
 Import an Analyzer CSV into controller-private history, then opt in to the
 provider:
@@ -302,7 +318,7 @@ provider:
 ```bash
 inky-bird-frame birdnet-analyzer import \
   --config /path/to/config.toml \
-  --csv /path/to/BirdNET_Analyzer_results.csv
+  --csv /path/to/analyzer-output/BirdNET_CombinedTable.csv
 ```
 
 ```toml
@@ -481,18 +497,17 @@ case, the prior active catalog stays in place.
 
 The legacy singular values `source = "inaturalist"`, `"ebird"`, `"combined"`,
 and `"birdweather"` remain accepted. Do not set both `source` and `sources`.
-`source = "all"` is deprecated and will be removed in a future minor release.
-Its meaning remains frozen to the three providers present when it was
-introduced, so an application upgrade cannot silently contact a future
-provider. Migrate it now without changing behavior:
+Version 0.5.0 removed `source = "all"` because its frozen three-provider meaning
+became misleading as new providers were added. Replace it without changing
+behavior:
 
 ```toml
 [discovery]
 sources = ["inaturalist", "ebird", "birdweather"]
 ```
 
-`config validate` reports this deprecation when the legacy setting is present.
-New configurations should always use the explicit array.
+Configuration loading now fails with this migration when `source = "all"` is
+present. New configurations should always use the explicit array.
 
 iNaturalist supplies observation counts, BirdWeather supplies station detection
 counts, Bird Buddy supplies distinct postcard counts, and eBird's nearby

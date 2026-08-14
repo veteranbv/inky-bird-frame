@@ -287,10 +287,10 @@ counts, or media references. See the
 [discovery guide](docs/discovery.md#ebird-personal-archive) for the import and
 update workflow.
 
-The legacy singular `source = "all"` setting is deprecated and will be removed
-in a future minor release. Replace it with
+Version 0.5.0 removed the legacy `source = "all"` setting. Replace it with
 `sources = ["inaturalist", "ebird", "birdweather"]`; the provider selection is
-identical.
+identical. Other legacy singular values remain accepted for compatibility, but
+new configurations should use `sources`.
 
 Choose `last-day`, `last-week`, `last-30-days`, `last-year`, or `all-time` for
 the observation window. Provider limits still apply. The

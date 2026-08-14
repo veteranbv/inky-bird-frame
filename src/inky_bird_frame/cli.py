@@ -1180,16 +1180,6 @@ def config_validate_command(args: argparse.Namespace) -> int:
     config = _config(args)
     destinations = validate_notification_destinations(config)
     deprecations: list[dict[str, str]] = []
-    if config.discovery.legacy_all_source:
-        deprecations.append(
-            {
-                "setting": "discovery.source",
-                "message": (
-                    'source = "all" is deprecated and will be removed in a future minor release'
-                ),
-                "replacement": ('sources = ["inaturalist", "ebird", "birdweather"]'),
-            }
-        )
     if config.discovery.latitude is not None:
         location_mode = "coordinates"
     elif config.discovery.postal_code is not None:
