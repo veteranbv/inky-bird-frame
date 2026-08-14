@@ -1,0 +1,38 @@
+{
+  "anatomy_accuracy": 4,
+  "composition_quality": 5,
+  "correction_findings": [],
+  "findings": [
+    "The primary specimen is a coherent, complete profile bird with one head and beak, one tail, two convincingly attached legs with intact feet, and a plausible folded wing pair with the far wing naturally occluded.",
+    "The detached wing and head studies are clearly supplementary and do not appear attached to the primary specimen; both are anatomically plausible.",
+    "The compact rounded body, thin slightly decurved black bill, yellowish-green legs, warm-brown upperparts, white belly, streaked or smudged breast, short pointed wings, and short tail agree with the reference photographs and live identification sources.",
+    "Species identity, scientific name, and family are correct: Least Sandpiper, Calidris minutilla, Scolopacidae.",
+    "All visible title, taxonomy, measurement, habitat, behavior, and field-mark text is legible and matches the proposed profile without omissions, substitutions, duplication, or nonsensical wording.",
+    "The three measurement lines exactly show length 5.1\u20135.9 in (13\u201315 cm), wingspan 10.6\u201311.0 in (27\u201328 cm), and weight 0.7\u20131.1 oz (19\u201330 g), matching the All About Birds measurements.",
+    "The body-length ruler is internally consistent: 5.1 in (13 cm) is at the bottom, 5.9 in (15 cm) is at the top, and it is explicitly labeled \u201cSCHEMATIC \u2014 NOT TO SCALE.\u201d",
+    "No place name, ZIP code, coordinates, map, or local-observation detail appears.",
+    "The balanced main specimen, supplementary studies, palette, text blocks, and ruler form a clear and effective scientific field-journal composition."
+  ],
+  "location_free": true,
+  "passed": true,
+  "species_accuracy": 5,
+  "text_accuracy": 5,
+  "verification_sources": [
+    {
+      "title": "Least Sandpiper Identification \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Least_Sandpiper/id"
+    },
+    {
+      "title": "Least Sandpiper Life History \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Least_Sandpiper/lifehistory"
+    },
+    {
+      "title": "Least Sandpiper \u2014 eBird",
+      "url": "https://ebird.org/species/leasan"
+    },
+    {
+      "title": "Least Sandpiper \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/least-sandpiper"
+    }
+  ]
+}
