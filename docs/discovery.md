@@ -240,6 +240,38 @@ proxy. The endpoint must be reachable without HTTP authentication; keep it on a
 trusted network or VPN. Do not embed credentials, query parameters, or
 fragments. A BirdNET-Go-only configuration needs no discovery location.
 
+### macOS Local Network access
+
+On macOS 15 and later, Local Network privacy applies to LaunchAgents. A direct
+BirdNET-Go address on the controller's attached subnet can therefore work from
+Terminal but fail during the scheduled refresh with `[Errno 65] No route to
+host`. Apple documents the distinction between command-line tools and
+LaunchAgents in [TN3179: Understanding local network privacy][apple-tn3179].
+
+If you already run a reverse proxy on a routed network path, prefer its HTTPS
+base URL:
+
+```toml
+[discovery]
+sources = ["birdnet-go"]
+birdnet_go_url = "https://birdnet.example.net"
+```
+
+The proxy must expose the same unauthenticated BirdNET-Go API. After changing
+the URL, test the installed service instead of relying on a manual refresh:
+
+```bash
+refresh_label="gui/$(id -u)/com.inky-bird-frame.refresh"
+refresh_pid="$(launchctl kickstart -kp "$refresh_label")"
+while kill -0 "$refresh_pid" 2>/dev/null; do sleep 1; done
+tail -n 200 "$HOME/Library/Application Support/Inky Bird Frame/logs/refresh.log"
+```
+
+The newest result should show the `birdnet-go` provider with `status` set to
+`ok`. If both the direct address and the proxy fail from LaunchAgent context,
+follow Apple's current Local Network privacy guidance rather than adding a
+broad network exception without reviewing its system-wide effect.
+
 Inky uses BirdNET-Go's documented read-only
 `/api/v2/analytics/species/summary` endpoint. It supplies the selected date
 window and species limit, then reads only names, counts, and the last-heard
@@ -254,6 +286,8 @@ remain private unresolved diagnostics and cannot trigger plate generation. A
 BirdNET-Go failure degrades only this provider; other configured sources keep
 running. The legacy singular `source = "all"` retains its existing meaning and
 does not silently enable access to a local BirdNET-Go server.
+
+[apple-tn3179]: https://developer.apple.com/documentation/technotes/tn3179-understanding-local-network-privacy
 
 ## BirdNET Analyzer CSV import
 

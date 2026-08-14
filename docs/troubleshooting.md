@@ -134,6 +134,27 @@ was reachable but one or more scientific names did not exactly match an active
 iNaturalist bird species. Correct false positives in BirdNET-Go; its next
 summary will exclude detections marked false-positive.
 
+On macOS 15 or later, compare manual and scheduled refreshes before changing
+the BirdNET-Go server. If a manual refresh succeeds but the LaunchAgent reports
+`[Errno 65] No route to host`, macOS Local Network privacy may be blocking the
+background process:
+
+```bash
+inky-bird-frame refresh --config "/path/to/config.toml"
+refresh_label="gui/$(id -u)/com.inky-bird-frame.refresh"
+refresh_pid="$(launchctl kickstart -kp "$refresh_label")"
+while kill -0 "$refresh_pid" 2>/dev/null; do sleep 1; done
+tail -n 200 "$HOME/Library/Application Support/Inky Bird Frame/logs/refresh.log"
+```
+
+An unauthenticated HTTPS reverse proxy on a routed network path can avoid the
+direct-subnet restriction. Set `birdnet_go_url` to the proxy's base URL and
+repeat the LaunchAgent test. The proxy must preserve
+`/api/v2/analytics/species/summary`; Inky does not send proxy credentials. See
+the [BirdNET-Go macOS setup](discovery.md#macos-local-network-access) and
+[Apple TN3179](https://developer.apple.com/documentation/technotes/tn3179-understanding-local-network-privacy)
+for the platform behavior and system-wide alternatives.
+
 For BirdNET Analyzer, verify the CSV was imported before enabling the provider.
 An undated import is intentionally empty in every finite window; use
 `window = "all-time"` or reimport with `--observed-on` only when the recording
