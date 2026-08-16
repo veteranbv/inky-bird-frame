@@ -1,0 +1,156 @@
+{
+  "approved_at": "2026-08-16T13:46:30+00:00",
+  "assets": {
+    "display": {
+      "filename": "display.png",
+      "sha256": "dd57599e2b1dc89b181fb9ff3cb72527fbce86291d9da66055916fc3a2375695"
+    },
+    "portrait": {
+      "filename": "portrait.png",
+      "sha256": "286e59e8cca839f5b201d963e8f39723e582a1c5b0a9260349c8a424ec6ea481"
+    }
+  },
+  "common_name": "Lesser Yellowlegs",
+  "generation": {
+    "attempt": 1,
+    "generated_at": "2026-08-16T13:46:30+00:00",
+    "generator": "Codex subscription / built-in gpt-image-2",
+    "max_attempts": 3,
+    "prompt_version": "field-journal-v5"
+  },
+  "profile": {
+    "behavior": "Walks with a graceful, high-stepping gait through shallow water and mud, actively taking prey with quick bill jabs or side-to-side sweeps. Often gathers in loose flocks outside the breeding season but aggressively defends nesting territory.",
+    "common_name": "Lesser Yellowlegs",
+    "family": "Scolopacidae",
+    "field_marks": [
+      "Slender, medium-sized shorebird with a long neck and small head",
+      "Long, vivid yellow legs extending beyond the tail in flight",
+      "Straight, thin, entirely dark bill only slightly longer than the head",
+      "Gray-brown upperparts with pale or white spotting",
+      "White eyering and fine gray streaking on the head, neck, and breast",
+      "Plain dark wings with a white rump and mostly white tail in flight"
+    ],
+    "habitat": "Breeds in open or semiopen boreal woodland and wet meadows interspersed with marshes, bogs, and ponds. During migration and winter, uses shallow fresh, brackish, and coastal wetlands, including mudflats, marshes, pond and lake edges, wet meadows, lagoons, and flooded fields.",
+    "measurements": {
+      "length": "Both sexes: 23\u201327 cm (9.1\u201310.6 in)",
+      "weight": "Both sexes: 79.5\u201390.9 g (2.8\u20133.2 oz)",
+      "wingspan": "Both sexes: 59\u201364 cm (23.2\u201325.2 in)"
+    },
+    "palette": [
+      "gray-brown",
+      "white",
+      "black",
+      "bright yellow"
+    ],
+    "scientific_name": "Tringa flavipes",
+    "sources": [
+      {
+        "title": "Lesser Yellowlegs Identification \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Lesser_Yellowlegs/id"
+      },
+      {
+        "title": "Lesser Yellowlegs Life History \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Lesser_Yellowlegs/lifehistory"
+      },
+      {
+        "title": "Tringa flavipes \u2014 Animal Diversity Web",
+        "url": "https://animaldiversity.org/accounts/Tringa_flavipes/"
+      }
+    ],
+    "taxon_id": 3893
+  },
+  "quality_review": {
+    "anatomy_accuracy": 4,
+    "composition_quality": 5,
+    "correction_findings": [],
+    "findings": [
+      "Species identity is convincing: the primary specimen matches Lesser Yellowlegs in its slender shorebird build, small head, long neck, straight fine bill, long yellow legs, gray-brown spotted upperparts, white underparts, and finely streaked head, neck, and breast.",
+      "The primary specimen has one head, one complete beak, one tail, two convincingly attached folded wings with the far wing naturally occluded, and two complete articulated legs and feet. The detached wing and head studies are clearly supplementary and do not appear attached to the specimen.",
+      "Both depicted bills are straight, thin, dark, and approximately head-length to slightly longer. Neither has a visibly truncated, reversed, exaggerated, or materially inconsistent mandible.",
+      "The eye and white eyering are present on the primary specimen and detached head study. Plumage patterning and the bright yellow legs agree with the reference photographs and verified identification sources.",
+      "The detached flight-feather study appropriately shows dark flight feathers, spotted gray-brown coverts, and pale rump/tail feathering. Its anatomy is coherent as a supplementary study.",
+      "Every visible informational line is legible and matches the proposed wording, spelling, measurements, habitat, behavior, and field-mark list. The repeated body-length statement also agrees with the main measurement entry.",
+      "The displayed measurements\u2014length 23\u201327 cm, weight 79.5\u201390.9 g, and wingspan 59\u201364 cm\u2014exactly match the current All About Birds identification page. Animal Diversity Web independently confirms the 59\u201364 cm wingspan but publishes narrower length and broader mass ranges, while Audubon publishes broader ranges; the allowed direct sources do not establish a consistent two-domain replacement for the proposed measurements.",
+      "The ruler is explicitly labeled \u201cSCHEMATIC \u2014 NOT TO SCALE,\u201d uses centimeters, increases from 23 cm at the bottom to 27 cm at the top, and agrees with the published length range. Its unlabeled interior ticks are noncontradictory visual subdivisions.",
+      "The page contains no place name, ZIP code, coordinates, map, or local-observation information.",
+      "The plate is well organized, with clear hierarchy, ample separation between text and illustrations, and intentional supplementary studies and palette swatches."
+    ],
+    "location_free": true,
+    "passed": true,
+    "species_accuracy": 5,
+    "text_accuracy": 5,
+    "verification_sources": [
+      {
+        "title": "Lesser Yellowlegs Identification \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Lesser_Yellowlegs/id"
+      },
+      {
+        "title": "Tringa flavipes (lesser yellowlegs) \u2014 Animal Diversity Web",
+        "url": "https://animaldiversity.org/accounts/Tringa_flavipes/"
+      },
+      {
+        "title": "Lesser Yellowlegs \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/lesser-yellowlegs"
+      }
+    ]
+  },
+  "references": [
+    {
+      "attribution": "(c) Esteban Poveda, some rights reserved (CC BY)",
+      "filename": "01-177376819.jpeg",
+      "height": 984,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/177376819/large.jpeg",
+      "license_code": "cc-by",
+      "observation_id": 105684599,
+      "observer": "quilicotriste",
+      "photo_id": 177376819,
+      "sha256": "e5eff249e9883be590292380f5e85013c0d163fc1651a6fe96f8f06bf3c553df",
+      "source_url": "https://www.inaturalist.org/observations/105684599",
+      "width": 1310
+    },
+    {
+      "attribution": "(c) Brent Cox, some rights reserved (CC BY)",
+      "filename": "02-272729704.jpg",
+      "height": 1365,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/272729704/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 157766011,
+      "observer": "brent329",
+      "photo_id": 272729704,
+      "sha256": "be869f4c8f73306488d5bfc4f595af7cb723d8ecd2f417a3967a91a8694b847f",
+      "source_url": "https://www.inaturalist.org/observations/157766011",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) Luciano Massa, some rights reserved (CC BY)",
+      "filename": "03-116651518.jpg",
+      "height": 1280,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/116651518/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 71632163,
+      "observer": "lucianomassa",
+      "photo_id": 116651518,
+      "sha256": "92c1e10d6c87e6c04a3eda92caaa4280d589b4b5dbe76e7abc4e6227a36baf70",
+      "source_url": "https://www.inaturalist.org/observations/71632163",
+      "width": 1920
+    },
+    {
+      "attribution": "(c) Craig Hensley, some rights reserved (CC BY)",
+      "filename": "04-595406464.jpg",
+      "height": 1410,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/595406464/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 328562590,
+      "observer": "craighensley",
+      "photo_id": 595406464,
+      "sha256": "7529a53b714c5044c95383cbac96d038ea2161836d25f15e718c635c06730ab8",
+      "source_url": "https://www.inaturalist.org/observations/328562590",
+      "width": 2048
+    }
+  ],
+  "schema_version": 1,
+  "scientific_name": "Tringa flavipes",
+  "slug": "lesser-yellowlegs",
+  "status": "approved",
+  "taxon_id": 3893
+}

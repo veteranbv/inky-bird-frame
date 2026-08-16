@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-16T01:13:38+00:00",
+  "generated_at": "2026-08-16T13:46:30+00:00",
   "schema_version": 1,
   "species": [
     {
@@ -903,6 +903,17 @@
       "scientific_name": "Calidris minutilla",
       "slug": "least-sandpiper",
       "taxon_id": 3864
+    },
+    {
+      "approved_at": "2026-08-16T13:46:30+00:00",
+      "common_name": "Lesser Yellowlegs",
+      "display_path": "species/3893-lesser-yellowlegs/display.png",
+      "display_sha256": "dd57599e2b1dc89b181fb9ff3cb72527fbce86291d9da66055916fc3a2375695",
+      "portrait_path": "species/3893-lesser-yellowlegs/portrait.png",
+      "portrait_sha256": "286e59e8cca839f5b201d963e8f39723e582a1c5b0a9260349c8a424ec6ea481",
+      "scientific_name": "Tringa flavipes",
+      "slug": "lesser-yellowlegs",
+      "taxon_id": 3893
     },
     {
       "approved_at": "2026-08-07T16:14:27+00:00",

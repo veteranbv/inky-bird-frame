@@ -1,0 +1,41 @@
+{
+  "behavior": "Walks with a graceful, high-stepping gait through shallow water and mud, actively taking prey with quick bill jabs or side-to-side sweeps. Often gathers in loose flocks outside the breeding season but aggressively defends nesting territory.",
+  "common_name": "Lesser Yellowlegs",
+  "family": "Scolopacidae",
+  "field_marks": [
+    "Slender, medium-sized shorebird with a long neck and small head",
+    "Long, vivid yellow legs extending beyond the tail in flight",
+    "Straight, thin, entirely dark bill only slightly longer than the head",
+    "Gray-brown upperparts with pale or white spotting",
+    "White eyering and fine gray streaking on the head, neck, and breast",
+    "Plain dark wings with a white rump and mostly white tail in flight"
+  ],
+  "habitat": "Breeds in open or semiopen boreal woodland and wet meadows interspersed with marshes, bogs, and ponds. During migration and winter, uses shallow fresh, brackish, and coastal wetlands, including mudflats, marshes, pond and lake edges, wet meadows, lagoons, and flooded fields.",
+  "measurements": {
+    "length": "Both sexes: 23\u201327 cm (9.1\u201310.6 in)",
+    "weight": "Both sexes: 79.5\u201390.9 g (2.8\u20133.2 oz)",
+    "wingspan": "Both sexes: 59\u201364 cm (23.2\u201325.2 in)"
+  },
+  "palette": [
+    "gray-brown",
+    "white",
+    "black",
+    "bright yellow"
+  ],
+  "scientific_name": "Tringa flavipes",
+  "sources": [
+    {
+      "title": "Lesser Yellowlegs Identification \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Lesser_Yellowlegs/id"
+    },
+    {
+      "title": "Lesser Yellowlegs Life History \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Lesser_Yellowlegs/lifehistory"
+    },
+    {
+      "title": "Tringa flavipes \u2014 Animal Diversity Web",
+      "url": "https://animaldiversity.org/accounts/Tringa_flavipes/"
+    }
+  ],
+  "taxon_id": 3893
+}

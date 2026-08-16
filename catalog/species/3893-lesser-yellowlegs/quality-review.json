@@ -1,0 +1,35 @@
+{
+  "anatomy_accuracy": 4,
+  "composition_quality": 5,
+  "correction_findings": [],
+  "findings": [
+    "Species identity is convincing: the primary specimen matches Lesser Yellowlegs in its slender shorebird build, small head, long neck, straight fine bill, long yellow legs, gray-brown spotted upperparts, white underparts, and finely streaked head, neck, and breast.",
+    "The primary specimen has one head, one complete beak, one tail, two convincingly attached folded wings with the far wing naturally occluded, and two complete articulated legs and feet. The detached wing and head studies are clearly supplementary and do not appear attached to the specimen.",
+    "Both depicted bills are straight, thin, dark, and approximately head-length to slightly longer. Neither has a visibly truncated, reversed, exaggerated, or materially inconsistent mandible.",
+    "The eye and white eyering are present on the primary specimen and detached head study. Plumage patterning and the bright yellow legs agree with the reference photographs and verified identification sources.",
+    "The detached flight-feather study appropriately shows dark flight feathers, spotted gray-brown coverts, and pale rump/tail feathering. Its anatomy is coherent as a supplementary study.",
+    "Every visible informational line is legible and matches the proposed wording, spelling, measurements, habitat, behavior, and field-mark list. The repeated body-length statement also agrees with the main measurement entry.",
+    "The displayed measurements\u2014length 23\u201327 cm, weight 79.5\u201390.9 g, and wingspan 59\u201364 cm\u2014exactly match the current All About Birds identification page. Animal Diversity Web independently confirms the 59\u201364 cm wingspan but publishes narrower length and broader mass ranges, while Audubon publishes broader ranges; the allowed direct sources do not establish a consistent two-domain replacement for the proposed measurements.",
+    "The ruler is explicitly labeled \u201cSCHEMATIC \u2014 NOT TO SCALE,\u201d uses centimeters, increases from 23 cm at the bottom to 27 cm at the top, and agrees with the published length range. Its unlabeled interior ticks are noncontradictory visual subdivisions.",
+    "The page contains no place name, ZIP code, coordinates, map, or local-observation information.",
+    "The plate is well organized, with clear hierarchy, ample separation between text and illustrations, and intentional supplementary studies and palette swatches."
+  ],
+  "location_free": true,
+  "passed": true,
+  "species_accuracy": 5,
+  "text_accuracy": 5,
+  "verification_sources": [
+    {
+      "title": "Lesser Yellowlegs Identification \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Lesser_Yellowlegs/id"
+    },
+    {
+      "title": "Tringa flavipes (lesser yellowlegs) \u2014 Animal Diversity Web",
+      "url": "https://animaldiversity.org/accounts/Tringa_flavipes/"
+    },
+    {
+      "title": "Lesser Yellowlegs \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/lesser-yellowlegs"
+    }
+  ]
+}
