@@ -1,0 +1,42 @@
+{
+  "behavior": "Chiefly nocturnal and nonmigratory. Hunts from low perches by watching or listening for prey, then pouncing or making short flights; also takes insects and bats in flight. Roosts and nests in tree cavities or nest boxes and gives whinnying calls and soft trills.",
+  "common_name": "Eastern Screech-Owl",
+  "family": "Strigidae",
+  "field_marks": [
+    "Short, stocky body with a large head and almost no visible neck",
+    "Pointed ear tufts that can be raised or flattened",
+    "Bright yellow eyes",
+    "Gray, brown, or rufous plumage with dark streaks, fine barring, and pale mottling",
+    "Small hooked bill; feathered legs and strong talons",
+    "Broad, rounded wings and a short, square-tipped tail"
+  ],
+  "habitat": "Deciduous, mixed, or evergreen woodland with large cavity-bearing trees and some open understory; also wooded farmland, parks, and suburban landscapes, particularly near water. Avoids extensive treeless habitats.",
+  "measurements": {
+    "length": "Both sexes: 16\u201325 cm (6.3\u20139.8 in)",
+    "weight": "Both sexes: 121\u2013244 g (4.3\u20138.6 oz)",
+    "wingspan": "Both sexes: 48\u201361 cm (18.9\u201324.0 in)"
+  },
+  "palette": [
+    "bark gray",
+    "rufous brown",
+    "dark brown",
+    "cream white",
+    "golden yellow"
+  ],
+  "scientific_name": "Megascops asio",
+  "sources": [
+    {
+      "title": "Eastern Screech-Owl Identification \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Eastern_Screech-Owl/id"
+    },
+    {
+      "title": "Eastern Screech-Owl Life History \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Eastern_Screech-Owl/lifehistory"
+    },
+    {
+      "title": "Eastern Screech-Owl \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/eastern-screech-owl"
+    }
+  ],
+  "taxon_id": 19765
+}

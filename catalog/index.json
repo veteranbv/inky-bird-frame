@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-14T12:24:31+00:00",
+  "generated_at": "2026-08-16T01:13:38+00:00",
   "schema_version": 1,
   "species": [
     {
@@ -540,6 +540,17 @@
       "scientific_name": "Sayornis phoebe",
       "slug": "eastern-phoebe",
       "taxon_id": 17008
+    },
+    {
+      "approved_at": "2026-08-16T01:13:38+00:00",
+      "common_name": "Eastern Screech-Owl",
+      "display_path": "species/19765-eastern-screech-owl/display.png",
+      "display_sha256": "ce8e274ae8369b957df2ba10446a9e34decdf137f5ba9a6ae20ef3c20b1b2bff",
+      "portrait_path": "species/19765-eastern-screech-owl/portrait.png",
+      "portrait_sha256": "fb58f6f14c6334dfc94221529ae411fd840c8ef187410220e09be2e16402beda",
+      "scientific_name": "Megascops asio",
+      "slug": "eastern-screech-owl",
+      "taxon_id": 19765
     },
     {
       "approved_at": "2026-07-24T00:57:16+00:00",
