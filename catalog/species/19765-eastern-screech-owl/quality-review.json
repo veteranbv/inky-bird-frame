@@ -1,0 +1,39 @@
+{
+  "anatomy_accuracy": 5,
+  "composition_quality": 5,
+  "correction_findings": [],
+  "findings": [
+    "Species identity is correct: the plate depicts a compact, large-headed Eastern Screech-Owl with prominent ear tufts, yellow eyes, cryptic gray-brown plumage, dark streaking, fine barring, pale mottling, rounded wings, and a short square-ended tail. These features agree with the attached references and live Cornell, Audubon, and Smithsonian accounts.",
+    "The plate contains exactly one primary specimen with one head, one hooked bill, two visible eyes, one tail, two attached feathered legs, and two intact feet gripping the branch. The near-side folded wing is complete; the far-side wing is naturally occluded by the body with convincing attachment geometry.",
+    "The detached spread-wing and side-profile head are clearly intentional supplementary studies. The wing has coherent feather layering and a broad rounded outline. The profile study has a correctly directed, proportionate hooked bill without a reversed, truncated, or exaggerated mandible.",
+    "All visible identification text is spelled correctly: \u201cEastern Screech-Owl,\u201d \u201cMegascops asio,\u201d and \u201cStrigidae.\u201d",
+    "All three printed measurements exactly match the proposed profile and Cornell\u2019s published values: \u201cLength: Both sexes: 16\u201325 cm (6.3\u20139.8 in),\u201d \u201cWingspan: Both sexes: 48\u201361 cm (18.9\u201324.0 in),\u201d and \u201cWeight: Both sexes: 121\u2013244 g (4.3\u20138.6 oz).\u201d",
+    "The habitat and behavior paragraphs reproduce the proposed wording completely, without duplicated, omitted, substituted, or nonsensical words. Their substantive claims agree with the live sources.",
+    "Every field-mark line reproduces the proposed wording correctly. The claims about body shape, ear tufts, yellow eyes, gray/brown/rufous variation, streaking and barring, hooked bill, feathered legs, talons, rounded wings, and short square-tipped tail are supported by the direct sources.",
+    "The vertical body-length diagram is internally consistent: 16 cm (6.3 in) is the lower endpoint, 25 cm (9.8 in) is the upper endpoint, values increase upward, the adjacent range agrees, and \u201cSCHEMATIC \u2014 NOT TO SCALE\u201d clearly prevents interpreting it as the printed specimen\u2019s physical scale.",
+    "The palette labels are all legible and correctly spelled: \u201cbark gray,\u201d \u201crufous brown,\u201d \u201cdark brown,\u201d \u201ccream white,\u201d and \u201cgolden yellow.\u201d",
+    "No place name, ZIP code, coordinates, map, locality, date, or other local-observation detail appears on the plate."
+  ],
+  "location_free": true,
+  "passed": true,
+  "species_accuracy": 5,
+  "text_accuracy": 5,
+  "verification_sources": [
+    {
+      "title": "Eastern Screech-Owl Identification \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Eastern_Screech-Owl/id"
+    },
+    {
+      "title": "Eastern Screech-Owl Life History \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Eastern_Screech-Owl/lifehistory"
+    },
+    {
+      "title": "Eastern Screech-Owl \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/eastern-screech-owl"
+    },
+    {
+      "title": "Eastern screech-owl \u2014 Smithsonian\u2019s National Zoo and Conservation Biology Institute",
+      "url": "https://nationalzoo.si.edu/animals/eastern-screech-owl"
+    }
+  ]
+}

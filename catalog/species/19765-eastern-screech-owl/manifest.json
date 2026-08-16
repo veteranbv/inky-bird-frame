@@ -1,0 +1,161 @@
+{
+  "approved_at": "2026-08-16T01:13:38+00:00",
+  "assets": {
+    "display": {
+      "filename": "display.png",
+      "sha256": "ce8e274ae8369b957df2ba10446a9e34decdf137f5ba9a6ae20ef3c20b1b2bff"
+    },
+    "portrait": {
+      "filename": "portrait.png",
+      "sha256": "fb58f6f14c6334dfc94221529ae411fd840c8ef187410220e09be2e16402beda"
+    }
+  },
+  "common_name": "Eastern Screech-Owl",
+  "generation": {
+    "attempt": 1,
+    "generated_at": "2026-08-16T01:13:38+00:00",
+    "generator": "Codex subscription / built-in gpt-image-2",
+    "max_attempts": 3,
+    "prompt_version": "field-journal-v5"
+  },
+  "profile": {
+    "behavior": "Chiefly nocturnal and nonmigratory. Hunts from low perches by watching or listening for prey, then pouncing or making short flights; also takes insects and bats in flight. Roosts and nests in tree cavities or nest boxes and gives whinnying calls and soft trills.",
+    "common_name": "Eastern Screech-Owl",
+    "family": "Strigidae",
+    "field_marks": [
+      "Short, stocky body with a large head and almost no visible neck",
+      "Pointed ear tufts that can be raised or flattened",
+      "Bright yellow eyes",
+      "Gray, brown, or rufous plumage with dark streaks, fine barring, and pale mottling",
+      "Small hooked bill; feathered legs and strong talons",
+      "Broad, rounded wings and a short, square-tipped tail"
+    ],
+    "habitat": "Deciduous, mixed, or evergreen woodland with large cavity-bearing trees and some open understory; also wooded farmland, parks, and suburban landscapes, particularly near water. Avoids extensive treeless habitats.",
+    "measurements": {
+      "length": "Both sexes: 16\u201325 cm (6.3\u20139.8 in)",
+      "weight": "Both sexes: 121\u2013244 g (4.3\u20138.6 oz)",
+      "wingspan": "Both sexes: 48\u201361 cm (18.9\u201324.0 in)"
+    },
+    "palette": [
+      "bark gray",
+      "rufous brown",
+      "dark brown",
+      "cream white",
+      "golden yellow"
+    ],
+    "scientific_name": "Megascops asio",
+    "sources": [
+      {
+        "title": "Eastern Screech-Owl Identification \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Eastern_Screech-Owl/id"
+      },
+      {
+        "title": "Eastern Screech-Owl Life History \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Eastern_Screech-Owl/lifehistory"
+      },
+      {
+        "title": "Eastern Screech-Owl \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/eastern-screech-owl"
+      }
+    ],
+    "taxon_id": 19765
+  },
+  "quality_review": {
+    "anatomy_accuracy": 5,
+    "composition_quality": 5,
+    "correction_findings": [],
+    "findings": [
+      "Species identity is correct: the plate depicts a compact, large-headed Eastern Screech-Owl with prominent ear tufts, yellow eyes, cryptic gray-brown plumage, dark streaking, fine barring, pale mottling, rounded wings, and a short square-ended tail. These features agree with the attached references and live Cornell, Audubon, and Smithsonian accounts.",
+      "The plate contains exactly one primary specimen with one head, one hooked bill, two visible eyes, one tail, two attached feathered legs, and two intact feet gripping the branch. The near-side folded wing is complete; the far-side wing is naturally occluded by the body with convincing attachment geometry.",
+      "The detached spread-wing and side-profile head are clearly intentional supplementary studies. The wing has coherent feather layering and a broad rounded outline. The profile study has a correctly directed, proportionate hooked bill without a reversed, truncated, or exaggerated mandible.",
+      "All visible identification text is spelled correctly: \u201cEastern Screech-Owl,\u201d \u201cMegascops asio,\u201d and \u201cStrigidae.\u201d",
+      "All three printed measurements exactly match the proposed profile and Cornell\u2019s published values: \u201cLength: Both sexes: 16\u201325 cm (6.3\u20139.8 in),\u201d \u201cWingspan: Both sexes: 48\u201361 cm (18.9\u201324.0 in),\u201d and \u201cWeight: Both sexes: 121\u2013244 g (4.3\u20138.6 oz).\u201d",
+      "The habitat and behavior paragraphs reproduce the proposed wording completely, without duplicated, omitted, substituted, or nonsensical words. Their substantive claims agree with the live sources.",
+      "Every field-mark line reproduces the proposed wording correctly. The claims about body shape, ear tufts, yellow eyes, gray/brown/rufous variation, streaking and barring, hooked bill, feathered legs, talons, rounded wings, and short square-tipped tail are supported by the direct sources.",
+      "The vertical body-length diagram is internally consistent: 16 cm (6.3 in) is the lower endpoint, 25 cm (9.8 in) is the upper endpoint, values increase upward, the adjacent range agrees, and \u201cSCHEMATIC \u2014 NOT TO SCALE\u201d clearly prevents interpreting it as the printed specimen\u2019s physical scale.",
+      "The palette labels are all legible and correctly spelled: \u201cbark gray,\u201d \u201crufous brown,\u201d \u201cdark brown,\u201d \u201ccream white,\u201d and \u201cgolden yellow.\u201d",
+      "No place name, ZIP code, coordinates, map, locality, date, or other local-observation detail appears on the plate."
+    ],
+    "location_free": true,
+    "passed": true,
+    "species_accuracy": 5,
+    "text_accuracy": 5,
+    "verification_sources": [
+      {
+        "title": "Eastern Screech-Owl Identification \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Eastern_Screech-Owl/id"
+      },
+      {
+        "title": "Eastern Screech-Owl Life History \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Eastern_Screech-Owl/lifehistory"
+      },
+      {
+        "title": "Eastern Screech-Owl \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/eastern-screech-owl"
+      },
+      {
+        "title": "Eastern screech-owl \u2014 Smithsonian\u2019s National Zoo and Conservation Biology Institute",
+        "url": "https://nationalzoo.si.edu/animals/eastern-screech-owl"
+      }
+    ]
+  },
+  "references": [
+    {
+      "attribution": "no rights reserved",
+      "filename": "01-335312865.png",
+      "height": 1080,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/335312865/large.png",
+      "license_code": "cc0",
+      "observation_id": 191174335,
+      "observer": "bartkowski",
+      "photo_id": 335312865,
+      "sha256": "c1c5a06f8a5d400ee905fadba26669ce9544c797aab0af528bbf26ed022b7a76",
+      "source_url": "https://www.inaturalist.org/observations/191174335",
+      "width": 1920
+    },
+    {
+      "attribution": "no rights reserved",
+      "filename": "02-616228010.jpg",
+      "height": 2048,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/616228010/large.jpg",
+      "license_code": "cc0",
+      "observation_id": 338814452,
+      "observer": "kristinpiston",
+      "photo_id": 616228010,
+      "sha256": "d1899da149e71e67cfd13713728fe170ad5c6d2e4ba7eeb6fc8080aa1d1be658",
+      "source_url": "https://www.inaturalist.org/observations/338814452",
+      "width": 1534
+    },
+    {
+      "attribution": "(c) Justin Bull, some rights reserved (CC BY)",
+      "filename": "03-257205266.jpg",
+      "height": 1365,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/257205266/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 149278527,
+      "observer": "worrisomemachine",
+      "photo_id": 257205266,
+      "sha256": "359de380a71a1d1e916b5f798a806bba7cb8ddf14f00b582125f31fb71ccb8c8",
+      "source_url": "https://www.inaturalist.org/observations/149278527",
+      "width": 2048
+    },
+    {
+      "attribution": "no rights reserved",
+      "filename": "04-411478976.jpeg",
+      "height": 2048,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/411478976/large.jpeg",
+      "license_code": "cc0",
+      "observation_id": 231661536,
+      "observer": "lizardking",
+      "photo_id": 411478976,
+      "sha256": "26f76b0e7c9b0625dcc5963b4e58dc7a7d9b996e0e155004c25203ea348a70f4",
+      "source_url": "https://www.inaturalist.org/observations/231661536",
+      "width": 1536
+    }
+  ],
+  "schema_version": 1,
+  "scientific_name": "Megascops asio",
+  "slug": "eastern-screech-owl",
+  "status": "approved",
+  "taxon_id": 19765
+}
