@@ -1,0 +1,37 @@
+{
+  "anatomy_accuracy": 5,
+  "composition_quality": 5,
+  "correction_findings": [],
+  "findings": [
+    "The plate depicts an adult Mississippi Kite: the pale gray head and underparts, darker slate-gray upperparts, blackish eye patch, red iris, dark wingtips, and long black tail agree with the reference photographs and live identification sources.",
+    "The primary specimen has one head, one correctly formed beak, one tail, two convincingly attached legs with intact feet, and a complete pair of wings; the far-side wing is naturally occluded by the side-on perched pose.",
+    "Both depicted bills have small, delicate raptor proportions. In the supplementary head study, the upper mandible is visibly longer than the lower mandible, projects moderately beyond it, and terminates in a strong hook consistent with the primary head and clearest side-profile reference.",
+    "The detached wing and head are clearly supplementary studies rather than extra birds or anatomy attached to the primary specimen; both are coherent and species-appropriate.",
+    "All visible names, taxonomy, measurements, habitat, behavior, and field-mark text are legible and correctly transcribe the proposed profile. The sex-specific length and weight values and the 75\u201383 cm adult wingspan are directly supported by Animal Diversity Web.",
+    "The body-length diagram increases correctly from 34 cm at the bottom to 37 cm at the top, repeats the printed sex-specific range without contradiction, uses centimeters consistently, and is explicitly labeled \u201cSCHEMATIC \u2014 NOT TO SCALE.\u201d",
+    "The layout is balanced and readable, with useful supplementary wing, head, and palette studies and no overlapping or malformed elements.",
+    "No place name used as observation metadata, ZIP code, coordinates, map, or local-observation detail appears; \u201cMississippi\u201d occurs only within the species\u2019 established common name."
+  ],
+  "location_free": true,
+  "passed": true,
+  "species_accuracy": 5,
+  "text_accuracy": 5,
+  "verification_sources": [
+    {
+      "title": "Mississippi Kite Identification \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Mississippi_Kite/id"
+    },
+    {
+      "title": "Ictinia mississippiensis \u2014 Animal Diversity Web",
+      "url": "https://animaldiversity.org/accounts/Ictinia_mississippiensis/"
+    },
+    {
+      "title": "Mississippi Kite \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/mississippi-kite"
+    },
+    {
+      "title": "Mississippi Kite \u2014 eBird",
+      "url": "https://ebird.org/species/miskit"
+    }
+  ]
+}

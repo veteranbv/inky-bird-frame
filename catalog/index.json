@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-16T13:46:30+00:00",
+  "generated_at": "2026-08-16T22:37:01+00:00",
   "schema_version": 1,
   "species": [
     {
@@ -1024,6 +1024,17 @@
       "scientific_name": "Falco columbarius",
       "slug": "merlin",
       "taxon_id": 4672
+    },
+    {
+      "approved_at": "2026-08-16T22:37:01+00:00",
+      "common_name": "Mississippi Kite",
+      "display_path": "species/5416-mississippi-kite/display.png",
+      "display_sha256": "a2a3581363cebff1ad4ea94109687d4a5c1442b032fa292f8061806e5487b75b",
+      "portrait_path": "species/5416-mississippi-kite/portrait.png",
+      "portrait_sha256": "4c4ab94d787086e55f9188cef663c1ec6a7d3c301203b6404aead62517c393eb",
+      "scientific_name": "Ictinia mississippiensis",
+      "slug": "mississippi-kite",
+      "taxon_id": 5416
     },
     {
       "approved_at": "2026-07-23T21:10:05+00:00",

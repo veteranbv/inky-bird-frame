@@ -1,0 +1,164 @@
+{
+  "approved_at": "2026-08-16T22:37:01+00:00",
+  "assets": {
+    "display": {
+      "filename": "display.png",
+      "sha256": "a2a3581363cebff1ad4ea94109687d4a5c1442b032fa292f8061806e5487b75b"
+    },
+    "portrait": {
+      "filename": "portrait.png",
+      "sha256": "4c4ab94d787086e55f9188cef663c1ec6a7d3c301203b6404aead62517c393eb"
+    }
+  },
+  "common_name": "Mississippi Kite",
+  "generation": {
+    "attempt": 2,
+    "correction_source_sha256": "af28b75deb5d3c1f01c158f88a4f4e4eb4906470c9642c240e39bcf0241ecfd0",
+    "generated_at": "2026-08-16T22:37:01+00:00",
+    "generator": "Codex subscription / built-in gpt-image-2",
+    "max_attempts": 3,
+    "prompt_version": "field-journal-v5"
+  },
+  "profile": {
+    "behavior": "A buoyant, agile aerialist that soars and catches mostly large insects on the wing, often eating in flight; it frequently hunts, roosts, and migrates in groups.",
+    "common_name": "Mississippi Kite",
+    "family": "Accipitridae",
+    "field_marks": [
+      "Slender, small raptor with long, narrow, pointed wings",
+      "Pale gray head and underparts contrasting with a dark slate-gray back and upperwings",
+      "Black wingtips and a long, mostly square-tipped black tail",
+      "Red eye set in a blackish eye patch",
+      "Small, delicate, strongly hooked dark bill",
+      "Yellow to reddish-orange legs and feet"
+    ],
+    "habitat": "Mature bottomland and riparian forest, open woodland and savanna, shelterbelts, parks, and other tree-lined areas adjoining open pasture, prairie, farmland, or water.",
+    "measurements": {
+      "length": "Males: 34\u201336 cm; females: 34.5\u201337 cm",
+      "weight": "Males: 214\u2013304 g; females: 270\u2013388 g",
+      "wingspan": "Adults: 75\u201383 cm (average 79 cm)"
+    },
+    "palette": [
+      "pale gray",
+      "slate gray",
+      "black",
+      "red",
+      "yellow-orange"
+    ],
+    "scientific_name": "Ictinia mississippiensis",
+    "sources": [
+      {
+        "title": "Mississippi Kite Identification \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Mississippi_Kite/id"
+      },
+      {
+        "title": "Mississippi Kite Life History \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Mississippi_Kite/lifehistory"
+      },
+      {
+        "title": "Mississippi Kite \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/mississippi-kite"
+      },
+      {
+        "title": "Ictinia mississippiensis \u2014 Animal Diversity Web",
+        "url": "https://animaldiversity.org/accounts/Ictinia_mississippiensis/"
+      }
+    ],
+    "taxon_id": 5416
+  },
+  "quality_review": {
+    "anatomy_accuracy": 5,
+    "composition_quality": 5,
+    "correction_findings": [],
+    "findings": [
+      "The plate depicts an adult Mississippi Kite: the pale gray head and underparts, darker slate-gray upperparts, blackish eye patch, red iris, dark wingtips, and long black tail agree with the reference photographs and live identification sources.",
+      "The primary specimen has one head, one correctly formed beak, one tail, two convincingly attached legs with intact feet, and a complete pair of wings; the far-side wing is naturally occluded by the side-on perched pose.",
+      "Both depicted bills have small, delicate raptor proportions. In the supplementary head study, the upper mandible is visibly longer than the lower mandible, projects moderately beyond it, and terminates in a strong hook consistent with the primary head and clearest side-profile reference.",
+      "The detached wing and head are clearly supplementary studies rather than extra birds or anatomy attached to the primary specimen; both are coherent and species-appropriate.",
+      "All visible names, taxonomy, measurements, habitat, behavior, and field-mark text are legible and correctly transcribe the proposed profile. The sex-specific length and weight values and the 75\u201383 cm adult wingspan are directly supported by Animal Diversity Web.",
+      "The body-length diagram increases correctly from 34 cm at the bottom to 37 cm at the top, repeats the printed sex-specific range without contradiction, uses centimeters consistently, and is explicitly labeled \u201cSCHEMATIC \u2014 NOT TO SCALE.\u201d",
+      "The layout is balanced and readable, with useful supplementary wing, head, and palette studies and no overlapping or malformed elements.",
+      "No place name used as observation metadata, ZIP code, coordinates, map, or local-observation detail appears; \u201cMississippi\u201d occurs only within the species\u2019 established common name."
+    ],
+    "location_free": true,
+    "passed": true,
+    "species_accuracy": 5,
+    "text_accuracy": 5,
+    "verification_sources": [
+      {
+        "title": "Mississippi Kite Identification \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Mississippi_Kite/id"
+      },
+      {
+        "title": "Ictinia mississippiensis \u2014 Animal Diversity Web",
+        "url": "https://animaldiversity.org/accounts/Ictinia_mississippiensis/"
+      },
+      {
+        "title": "Mississippi Kite \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/mississippi-kite"
+      },
+      {
+        "title": "Mississippi Kite \u2014 eBird",
+        "url": "https://ebird.org/species/miskit"
+      }
+    ]
+  },
+  "references": [
+    {
+      "attribution": "no rights reserved",
+      "filename": "01-217241646.jpeg",
+      "height": 1536,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/217241646/large.jpeg",
+      "license_code": "cc0",
+      "observation_id": 127927703,
+      "observer": "kcthetc1",
+      "photo_id": 217241646,
+      "sha256": "f459990c437fc10097bebfc1af18e94dad80472efc9eab2627c46e0458ea478f",
+      "source_url": "https://www.inaturalist.org/observations/127927703",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) Michael J. Papay, some rights reserved (CC BY)",
+      "filename": "02-513594745.jpg",
+      "height": 960,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/513594745/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 285730856,
+      "observer": "mjpapay",
+      "photo_id": 513594745,
+      "sha256": "d530e08aa798f077fdd09640e224bbab6893268d2be5ae5aacec12bb459366ef",
+      "source_url": "https://www.inaturalist.org/observations/285730856",
+      "width": 1280
+    },
+    {
+      "attribution": "(c) Laura Mae, some rights reserved (CC BY)",
+      "filename": "03-422300611.jpeg",
+      "height": 2048,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/422300611/large.jpeg",
+      "license_code": "cc-by",
+      "observation_id": 237301612,
+      "observer": "lauralovesbirds",
+      "photo_id": 422300611,
+      "sha256": "aff3937e9276838e9b98c9796e0d916074189d12b5217c014e6b5d23807167e6",
+      "source_url": "https://www.inaturalist.org/observations/237301612",
+      "width": 1536
+    },
+    {
+      "attribution": "no rights reserved",
+      "filename": "04-231984500.jpeg",
+      "height": 2048,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/231984500/large.jpeg",
+      "license_code": "cc0",
+      "observation_id": 135967767,
+      "observer": "clorophonia117",
+      "photo_id": 231984500,
+      "sha256": "f08d910856786ed8ffc4bbc95b1eb3f11534a582ab1e6d9648cb2db47ad57e03",
+      "source_url": "https://www.inaturalist.org/observations/135967767",
+      "width": 1365
+    }
+  ],
+  "schema_version": 1,
+  "scientific_name": "Ictinia mississippiensis",
+  "slug": "mississippi-kite",
+  "status": "approved",
+  "taxon_id": 5416
+}

@@ -1,0 +1,46 @@
+{
+  "behavior": "A buoyant, agile aerialist that soars and catches mostly large insects on the wing, often eating in flight; it frequently hunts, roosts, and migrates in groups.",
+  "common_name": "Mississippi Kite",
+  "family": "Accipitridae",
+  "field_marks": [
+    "Slender, small raptor with long, narrow, pointed wings",
+    "Pale gray head and underparts contrasting with a dark slate-gray back and upperwings",
+    "Black wingtips and a long, mostly square-tipped black tail",
+    "Red eye set in a blackish eye patch",
+    "Small, delicate, strongly hooked dark bill",
+    "Yellow to reddish-orange legs and feet"
+  ],
+  "habitat": "Mature bottomland and riparian forest, open woodland and savanna, shelterbelts, parks, and other tree-lined areas adjoining open pasture, prairie, farmland, or water.",
+  "measurements": {
+    "length": "Males: 34\u201336 cm; females: 34.5\u201337 cm",
+    "weight": "Males: 214\u2013304 g; females: 270\u2013388 g",
+    "wingspan": "Adults: 75\u201383 cm (average 79 cm)"
+  },
+  "palette": [
+    "pale gray",
+    "slate gray",
+    "black",
+    "red",
+    "yellow-orange"
+  ],
+  "scientific_name": "Ictinia mississippiensis",
+  "sources": [
+    {
+      "title": "Mississippi Kite Identification \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Mississippi_Kite/id"
+    },
+    {
+      "title": "Mississippi Kite Life History \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Mississippi_Kite/lifehistory"
+    },
+    {
+      "title": "Mississippi Kite \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/mississippi-kite"
+    },
+    {
+      "title": "Ictinia mississippiensis \u2014 Animal Diversity Web",
+      "url": "https://animaldiversity.org/accounts/Ictinia_mississippiensis/"
+    }
+  ],
+  "taxon_id": 5416
+}
