@@ -1,0 +1,41 @@
+{
+  "behavior": "Migratory and usually forages low in vegetation, hopping along branches, fallen wood, and the ground while gleaning insects, often above water. Nests in tree cavities or nest boxes; males sing repeated ringing notes during the breeding season.",
+  "common_name": "Prothonotary Warbler",
+  "family": "Parulidae",
+  "field_marks": [
+    "Bright golden-yellow head and underparts with an unmarked face",
+    "Yellow-olive back contrasting with blue-gray wings",
+    "Short blue-gray tail with white visible beneath",
+    "Long, stout, pointed dark bill and round black eye",
+    "Stocky, big-headed proportions with short dark-gray legs"
+  ],
+  "habitat": "Breeds in wooded swamps, flooded bottomland forests, and shady woods bordering slow-moving or standing water, especially where standing dead trees provide nesting cavities. In the nonbreeding season, inhabits mangroves and lowland forests near streams and ponds.",
+  "measurements": {
+    "length": "5.1\u20135.5 in (13\u201314 cm), sexes similar",
+    "weight": "0.4\u20130.5 oz (12\u201314 g), sexes similar",
+    "wingspan": "8.7\u20139.4 in (22\u201324 cm), sexes similar"
+  },
+  "palette": [
+    "golden yellow",
+    "olive green",
+    "blue-gray",
+    "white",
+    "charcoal black"
+  ],
+  "scientific_name": "Protonotaria citrea",
+  "sources": [
+    {
+      "title": "Prothonotary Warbler Identification \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Prothonotary_Warbler/id"
+    },
+    {
+      "title": "Prothonotary Warbler \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/prothonotary-warbler?nid=4156&site=sc"
+    },
+    {
+      "title": "Protonotaria citrea \u2014 Animal Diversity Web",
+      "url": "https://animaldiversity.org/accounts/Protonotaria_citrea/"
+    }
+  ],
+  "taxon_id": 10729
+}

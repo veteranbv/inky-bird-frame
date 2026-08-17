@@ -1,0 +1,44 @@
+{
+  "anatomy_accuracy": 5,
+  "composition_quality": 5,
+  "correction_findings": [],
+  "findings": [
+    "The primary specimen is convincingly identifiable as a Prothonotary Warbler: golden-yellow head and underparts, unmarked face, olive back, blue-gray wings and tail, white undertail area, black eye, and a long, stout dark bill agree with the reference photographs and direct source descriptions.",
+    "The stocky, large-headed proportions, relatively short tail, and short dark legs are species-appropriate. The primary bird has one head, one bill, one tail, two plausibly attached legs with grasping feet, and one visible near-side wing; the far-side wing is naturally occluded by the side-on pose.",
+    "The detached wing and head are clearly supplementary studies rather than duplicate primary anatomy. Both are coherent and species-appropriate, with orderly flight feathers and a consistently proportioned pointed bill.",
+    "Every visible identification line matches the proposed field_marks wording without omissions, substitutions, duplication, or nonsensical text.",
+    "The common name, scientific name, and family are spelled correctly and agree with All About Birds, eBird, Birds of the World, and Animal Diversity Web.",
+    "The printed length, wingspan, and weight ranges exactly match the direct Audubon measurements. Wikipedia independently gives compatible approximate values; Animal Diversity Web reports a higher mass range, but that isolated source difference does not establish the required two-domain profile conflict against the Audubon-supported profile.",
+    "The habitat paragraph matches the proposed text and agrees with direct descriptions of wooded swamps, flooded forests, slow or standing water, cavity-bearing trees, mangroves, and lowland winter habitat.",
+    "The behavior paragraph matches the proposed text and is supported by direct descriptions of low understory foraging, gleaning above water, cavity or nest-box nesting, migration, and repeated ringing song.",
+    "The palette labels\u2014golden yellow, olive green, blue-gray, white, and charcoal black\u2014are legible and visually consistent with the plate.",
+    "The body-length diagram repeats the correct 5.1\u20135.5 in (13\u201314 cm) range, has intact upper and lower endcaps, contains no contradictory marker, and is explicitly labeled \u201cSCHEMATIC \u2014 NOT TO SCALE.\u201d Its unlabeled interior ticks are nonfactual subdivisions.",
+    "No place name, ZIP code, coordinates, map, or local-observation detail appears anywhere on the candidate."
+  ],
+  "location_free": true,
+  "passed": true,
+  "species_accuracy": 5,
+  "text_accuracy": 5,
+  "verification_sources": [
+    {
+      "title": "Prothonotary Warbler Identification \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Prothonotary_Warbler/id"
+    },
+    {
+      "title": "Prothonotary Warbler \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/prothonotary-warbler?nid=4156&site=sc"
+    },
+    {
+      "title": "Prothonotary Warbler \u2014 eBird",
+      "url": "https://ebird.org/species/prowar"
+    },
+    {
+      "title": "Protonotaria citrea \u2014 Animal Diversity Web",
+      "url": "https://animaldiversity.org/accounts/Protonotaria_citrea/"
+    },
+    {
+      "title": "Prothonotary warbler \u2014 Wikipedia",
+      "url": "https://en.wikipedia.org/wiki/Prothonotary_warbler"
+    }
+  ]
+}
