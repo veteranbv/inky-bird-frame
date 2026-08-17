@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-16T22:37:01+00:00",
+  "generated_at": "2026-08-17T12:36:37+00:00",
   "schema_version": 1,
   "species": [
     {
@@ -1233,6 +1233,17 @@
       "scientific_name": "Ortalis vetula",
       "slug": "plain-chachalaca",
       "taxon_id": 2090
+    },
+    {
+      "approved_at": "2026-08-17T12:36:37+00:00",
+      "common_name": "Prothonotary Warbler",
+      "display_path": "species/10729-prothonotary-warbler/display.png",
+      "display_sha256": "6a06c8222ddc0183f50bff4bcf0edd5750e1cb405164380297279f3d6a02d5d3",
+      "portrait_path": "species/10729-prothonotary-warbler/portrait.png",
+      "portrait_sha256": "8381a620cfc75ecab49ee94525adc7e66d76f77e39a1e571f9ec26e6aae0e501",
+      "scientific_name": "Protonotaria citrea",
+      "slug": "prothonotary-warbler",
+      "taxon_id": 10729
     },
     {
       "approved_at": "2026-07-26T00:58:12+00:00",

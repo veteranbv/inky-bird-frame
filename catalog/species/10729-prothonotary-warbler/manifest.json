@@ -1,0 +1,165 @@
+{
+  "approved_at": "2026-08-17T12:36:37+00:00",
+  "assets": {
+    "display": {
+      "filename": "display.png",
+      "sha256": "6a06c8222ddc0183f50bff4bcf0edd5750e1cb405164380297279f3d6a02d5d3"
+    },
+    "portrait": {
+      "filename": "portrait.png",
+      "sha256": "8381a620cfc75ecab49ee94525adc7e66d76f77e39a1e571f9ec26e6aae0e501"
+    }
+  },
+  "common_name": "Prothonotary Warbler",
+  "generation": {
+    "attempt": 1,
+    "generated_at": "2026-08-17T12:36:37+00:00",
+    "generator": "Codex subscription / built-in gpt-image-2",
+    "max_attempts": 3,
+    "prompt_version": "field-journal-v5"
+  },
+  "profile": {
+    "behavior": "Migratory and usually forages low in vegetation, hopping along branches, fallen wood, and the ground while gleaning insects, often above water. Nests in tree cavities or nest boxes; males sing repeated ringing notes during the breeding season.",
+    "common_name": "Prothonotary Warbler",
+    "family": "Parulidae",
+    "field_marks": [
+      "Bright golden-yellow head and underparts with an unmarked face",
+      "Yellow-olive back contrasting with blue-gray wings",
+      "Short blue-gray tail with white visible beneath",
+      "Long, stout, pointed dark bill and round black eye",
+      "Stocky, big-headed proportions with short dark-gray legs"
+    ],
+    "habitat": "Breeds in wooded swamps, flooded bottomland forests, and shady woods bordering slow-moving or standing water, especially where standing dead trees provide nesting cavities. In the nonbreeding season, inhabits mangroves and lowland forests near streams and ponds.",
+    "measurements": {
+      "length": "5.1\u20135.5 in (13\u201314 cm), sexes similar",
+      "weight": "0.4\u20130.5 oz (12\u201314 g), sexes similar",
+      "wingspan": "8.7\u20139.4 in (22\u201324 cm), sexes similar"
+    },
+    "palette": [
+      "golden yellow",
+      "olive green",
+      "blue-gray",
+      "white",
+      "charcoal black"
+    ],
+    "scientific_name": "Protonotaria citrea",
+    "sources": [
+      {
+        "title": "Prothonotary Warbler Identification \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Prothonotary_Warbler/id"
+      },
+      {
+        "title": "Prothonotary Warbler \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/prothonotary-warbler?nid=4156&site=sc"
+      },
+      {
+        "title": "Protonotaria citrea \u2014 Animal Diversity Web",
+        "url": "https://animaldiversity.org/accounts/Protonotaria_citrea/"
+      }
+    ],
+    "taxon_id": 10729
+  },
+  "quality_review": {
+    "anatomy_accuracy": 5,
+    "composition_quality": 5,
+    "correction_findings": [],
+    "findings": [
+      "The primary specimen is convincingly identifiable as a Prothonotary Warbler: golden-yellow head and underparts, unmarked face, olive back, blue-gray wings and tail, white undertail area, black eye, and a long, stout dark bill agree with the reference photographs and direct source descriptions.",
+      "The stocky, large-headed proportions, relatively short tail, and short dark legs are species-appropriate. The primary bird has one head, one bill, one tail, two plausibly attached legs with grasping feet, and one visible near-side wing; the far-side wing is naturally occluded by the side-on pose.",
+      "The detached wing and head are clearly supplementary studies rather than duplicate primary anatomy. Both are coherent and species-appropriate, with orderly flight feathers and a consistently proportioned pointed bill.",
+      "Every visible identification line matches the proposed field_marks wording without omissions, substitutions, duplication, or nonsensical text.",
+      "The common name, scientific name, and family are spelled correctly and agree with All About Birds, eBird, Birds of the World, and Animal Diversity Web.",
+      "The printed length, wingspan, and weight ranges exactly match the direct Audubon measurements. Wikipedia independently gives compatible approximate values; Animal Diversity Web reports a higher mass range, but that isolated source difference does not establish the required two-domain profile conflict against the Audubon-supported profile.",
+      "The habitat paragraph matches the proposed text and agrees with direct descriptions of wooded swamps, flooded forests, slow or standing water, cavity-bearing trees, mangroves, and lowland winter habitat.",
+      "The behavior paragraph matches the proposed text and is supported by direct descriptions of low understory foraging, gleaning above water, cavity or nest-box nesting, migration, and repeated ringing song.",
+      "The palette labels\u2014golden yellow, olive green, blue-gray, white, and charcoal black\u2014are legible and visually consistent with the plate.",
+      "The body-length diagram repeats the correct 5.1\u20135.5 in (13\u201314 cm) range, has intact upper and lower endcaps, contains no contradictory marker, and is explicitly labeled \u201cSCHEMATIC \u2014 NOT TO SCALE.\u201d Its unlabeled interior ticks are nonfactual subdivisions.",
+      "No place name, ZIP code, coordinates, map, or local-observation detail appears anywhere on the candidate."
+    ],
+    "location_free": true,
+    "passed": true,
+    "species_accuracy": 5,
+    "text_accuracy": 5,
+    "verification_sources": [
+      {
+        "title": "Prothonotary Warbler Identification \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Prothonotary_Warbler/id"
+      },
+      {
+        "title": "Prothonotary Warbler \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/prothonotary-warbler?nid=4156&site=sc"
+      },
+      {
+        "title": "Prothonotary Warbler \u2014 eBird",
+        "url": "https://ebird.org/species/prowar"
+      },
+      {
+        "title": "Protonotaria citrea \u2014 Animal Diversity Web",
+        "url": "https://animaldiversity.org/accounts/Protonotaria_citrea/"
+      },
+      {
+        "title": "Prothonotary warbler \u2014 Wikipedia",
+        "url": "https://en.wikipedia.org/wiki/Prothonotary_warbler"
+      }
+    ]
+  },
+  "references": [
+    {
+      "attribution": "(c) Owen Strickland, some rights reserved (CC BY)",
+      "filename": "01-164622322.jpeg",
+      "height": 1365,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/164622322/large.jpeg",
+      "license_code": "cc-by",
+      "observation_id": 98824485,
+      "observer": "owenstrickland",
+      "photo_id": 164622322,
+      "sha256": "fe65126af616cfc9aeb054ef92cd46eac8a2ba12656f50f13167d88ec2d3f35a",
+      "source_url": "https://www.inaturalist.org/observations/98824485",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) Nathan Earley, some rights reserved (CC BY)",
+      "filename": "02-75219448.jpeg",
+      "height": 1536,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/75219448/large.jpeg",
+      "license_code": "cc-by",
+      "observation_id": 47426977,
+      "observer": "earley_bird",
+      "photo_id": 75219448,
+      "sha256": "d255aa2b1158894e6d448458fa32b254922c42f6352afb3c019dd254b244d78d",
+      "source_url": "https://www.inaturalist.org/observations/47426977",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) Mason Holum, some rights reserved (CC BY)",
+      "filename": "03-498408547.jpg",
+      "height": 2048,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/498408547/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 277573395,
+      "observer": "dualluc",
+      "photo_id": 498408547,
+      "sha256": "a78faaae76275511bcf6d69428a793c51d2b2a0d64d53e1c7f782406a8b668f0",
+      "source_url": "https://www.inaturalist.org/observations/277573395",
+      "width": 1536
+    },
+    {
+      "attribution": "no rights reserved",
+      "filename": "04-191194977.jpg",
+      "height": 1758,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/191194977/large.jpg",
+      "license_code": "cc0",
+      "observation_id": 113159876,
+      "observer": "w_mark_c",
+      "photo_id": 191194977,
+      "sha256": "91b6b98c531df3af6d80d94a13fb02afd88326fd704ed495b6472e829be71aef",
+      "source_url": "https://www.inaturalist.org/observations/113159876",
+      "width": 2048
+    }
+  ],
+  "schema_version": 1,
+  "scientific_name": "Protonotaria citrea",
+  "slug": "prothonotary-warbler",
+  "status": "approved",
+  "taxon_id": 10729
+}
