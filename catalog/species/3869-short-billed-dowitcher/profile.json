@@ -1,0 +1,46 @@
+{
+  "behavior": "Wades in shallow water or walks wet mud, probing deeply with the bill in a rapid sewing-machine motion for buried invertebrates. Often feeds, rests, and preens in peaceful flocks.",
+  "common_name": "Short-billed Dowitcher",
+  "family": "Scolopacidae",
+  "field_marks": [
+    "Chunky, elongated body with a short neck",
+    "Very long, straight, dark bill and dark eye",
+    "Moderately long olive to yellow-green legs",
+    "Breeding plumage mottled brown, black, and gold above, with pale cinnamon underparts and dark spotting or barring",
+    "Nonbreeding plumage gray-brown above and pale below, with barred flanks",
+    "Long, pointed wings and a short barred tail; white upper rump visible in flight"
+  ],
+  "habitat": "Breeds in boreal wetlands near treeline, including bogs, marshes, wet meadows, lake margins, and floodplains. During migration and winter it favors shallow estuaries, lagoons, tidal flats, salt marshes, muddy pond or river margins, flooded fields, and other freshwater or brackish wetlands.",
+  "measurements": {
+    "length": "9.1\u201312.6 in (23\u201332 cm)",
+    "weight": "2.6\u20135.5 oz (73\u2013155 g)",
+    "wingspan": "18\u201322 in (46\u201356 cm)"
+  },
+  "palette": [
+    "cinnamon",
+    "warm brown",
+    "black",
+    "soft gray",
+    "white"
+  ],
+  "scientific_name": "Limnodromus griseus",
+  "sources": [
+    {
+      "title": "Short-billed dowitcher | Wikipedia",
+      "url": "https://en.wikipedia.org/wiki/Short-billed_dowitcher"
+    },
+    {
+      "title": "Short-billed Dowitcher Identification | All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Short-billed_Dowitcher/id"
+    },
+    {
+      "title": "Short-billed Dowitcher Life History | All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Short-billed_Dowitcher/lifehistory"
+    },
+    {
+      "title": "Short-billed dowitcher | Smithsonian's National Zoo and Conservation Biology Institute",
+      "url": "https://nationalzoo.si.edu/animals/short-billed-dowitcher"
+    }
+  ],
+  "taxon_id": 3869
+}

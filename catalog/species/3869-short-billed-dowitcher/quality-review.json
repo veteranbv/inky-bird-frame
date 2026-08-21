@@ -1,0 +1,51 @@
+{
+  "anatomy_accuracy": 5,
+  "composition_quality": 5,
+  "correction_findings": [],
+  "findings": [
+    "The common name, scientific name, and family are correctly printed as Short-billed Dowitcher, Limnodromus griseus, and Scolopacidae; these agree with All About Birds, eBird, and Wikipedia.",
+    "The primary specimen is a convincing breeding-plumage Short-billed Dowitcher and agrees with the supplied photographs: a plump, elongated shorebird with a short neck, very long dark bill, dark eye, moderately long olive legs, intricately patterned brown-black-gold upperparts, pale cinnamon underparts, spotted breast and barred flanks.",
+    "The primary specimen has one head, one closed bill, one visible eye, a plausible folded near-side wing with the far-side wing naturally occluded, two convincingly attached complete legs and feet, and one short barred tail. No malformed, duplicated, or detached structure is present.",
+    "Both depicted bills can be traced continuously from base to tip and have mutually consistent proportions. Neither looks truncated, reversed, or materially distorted relative to the clearest side-profile reference.",
+    "The detached wing and head-and-bill illustrations are clearly intentional supplementary studies. Their feather organization, bill geometry, and attachment boundaries are anatomically plausible, and neither appears attached to the primary specimen.",
+    "The breeding and nonbreeding plumage statements are supported by All About Birds, eBird, Audubon, and Smithsonian descriptions. The depicted pale cinnamon breeding plumage falls within the explicitly documented geographic variation and resembles the attached breeding-plumage reference.",
+    "The visible measurement lines read exactly: Length: 9.1\u201312.6 in (23\u201332 cm); Wingspan: 18\u201322 in (46\u201356 cm); Weight: 2.6\u20135.5 oz (73\u2013155 g). These match the proposed profile and the broad published ranges on Wikipedia; Smithsonian independently corroborates approximately 9\u201312.5 inches in length and 18\u201322 inches in wingspan. Other guides publish narrower sample ranges, but that does not invalidate the broader documented ranges used here.",
+    "The ruler increases correctly from 9.1 in (23 cm) at the bottom to 12.6 in (32 cm) at the top. Its endpoints, units, and adjacent body-length range agree, and the label SCHEMATIC \u2014 NOT TO SCALE clearly prevents interpretation as the printed bird's physical scale.",
+    "The habitat paragraph accurately reproduces the proposed wording and agrees with direct descriptions of boreal breeding wetlands, coastal estuaries, lagoons, mudflats, salt marshes, flooded fields, and other shallow wetlands.",
+    "The behavior paragraph accurately reproduces the proposed wording. Rapid deep probing with a sewing-machine motion, shallow-water or wet-mud foraging, flock feeding, resting, preening, and generally peaceable flock behavior are supported by the direct sources.",
+    "Every field-mark line is complete and correctly ordered: chunky elongated body and short neck; very long straight dark bill and dark eye; olive to yellow-green legs; breeding and nonbreeding plumage descriptions; pointed wings, short barred tail, and white upper rump in flight.",
+    "The five palette labels are correctly printed as cinnamon, warm brown, black, soft gray, and white, and correspond to colors visibly used in the plate.",
+    "The layout is balanced and legible, with a clearly dominant primary specimen, separated supplementary studies, unobstructed text, and an internally coherent schematic ruler.",
+    "No place name, ZIP code, coordinates, map, locality, or local-observation detail appears in the candidate."
+  ],
+  "location_free": true,
+  "passed": true,
+  "species_accuracy": 5,
+  "text_accuracy": 5,
+  "verification_sources": [
+    {
+      "title": "Short-billed Dowitcher Identification | All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Short-billed_Dowitcher/id"
+    },
+    {
+      "title": "Short-billed Dowitcher Life History | All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Short-billed_Dowitcher/lifehistory"
+    },
+    {
+      "title": "Short-billed Dowitcher | eBird",
+      "url": "https://ebird.org/species/shbdow"
+    },
+    {
+      "title": "Short-billed Dowitcher | Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/short-billed-dowitcher"
+    },
+    {
+      "title": "Short-billed dowitcher | Smithsonian's National Zoo and Conservation Biology Institute",
+      "url": "https://nationalzoo.si.edu/animals/short-billed-dowitcher"
+    },
+    {
+      "title": "Short-billed dowitcher | Wikipedia",
+      "url": "https://en.wikipedia.org/wiki/Short-billed_dowitcher"
+    }
+  ]
+}
