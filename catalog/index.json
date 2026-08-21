@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-17T12:36:37+00:00",
+  "generated_at": "2026-08-21T11:08:33+00:00",
   "schema_version": 1,
   "species": [
     {
@@ -1442,6 +1442,17 @@
       "scientific_name": "Calidris pusilla",
       "slug": "semipalmated-sandpiper",
       "taxon_id": 3862
+    },
+    {
+      "approved_at": "2026-08-21T11:08:33+00:00",
+      "common_name": "Short-billed Dowitcher",
+      "display_path": "species/3869-short-billed-dowitcher/display.png",
+      "display_sha256": "038f5f602778a26e03d672f1236b755fb614b15e033028cb1cea80855c79e890",
+      "portrait_path": "species/3869-short-billed-dowitcher/portrait.png",
+      "portrait_sha256": "73a9533a628ee8bea4d1f87f3d3924c585807f7dcfe576c05748ac225b0a3381",
+      "scientific_name": "Limnodromus griseus",
+      "slug": "short-billed-dowitcher",
+      "taxon_id": 3869
     },
     {
       "approved_at": "2026-08-09T22:25:21+00:00",

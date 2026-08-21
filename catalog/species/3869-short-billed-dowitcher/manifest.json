@@ -1,0 +1,178 @@
+{
+  "approved_at": "2026-08-21T11:08:33+00:00",
+  "assets": {
+    "display": {
+      "filename": "display.png",
+      "sha256": "038f5f602778a26e03d672f1236b755fb614b15e033028cb1cea80855c79e890"
+    },
+    "portrait": {
+      "filename": "portrait.png",
+      "sha256": "73a9533a628ee8bea4d1f87f3d3924c585807f7dcfe576c05748ac225b0a3381"
+    }
+  },
+  "common_name": "Short-billed Dowitcher",
+  "generation": {
+    "attempt": 2,
+    "correction_source_sha256": "b64afd7f34274d38a5deb47111d879d4bb2eec238f99092f08d6bf142731d147",
+    "generated_at": "2026-08-21T11:08:33+00:00",
+    "generator": "Codex subscription / built-in gpt-image-2",
+    "max_attempts": 3,
+    "prompt_version": "field-journal-v5"
+  },
+  "profile": {
+    "behavior": "Wades in shallow water or walks wet mud, probing deeply with the bill in a rapid sewing-machine motion for buried invertebrates. Often feeds, rests, and preens in peaceful flocks.",
+    "common_name": "Short-billed Dowitcher",
+    "family": "Scolopacidae",
+    "field_marks": [
+      "Chunky, elongated body with a short neck",
+      "Very long, straight, dark bill and dark eye",
+      "Moderately long olive to yellow-green legs",
+      "Breeding plumage mottled brown, black, and gold above, with pale cinnamon underparts and dark spotting or barring",
+      "Nonbreeding plumage gray-brown above and pale below, with barred flanks",
+      "Long, pointed wings and a short barred tail; white upper rump visible in flight"
+    ],
+    "habitat": "Breeds in boreal wetlands near treeline, including bogs, marshes, wet meadows, lake margins, and floodplains. During migration and winter it favors shallow estuaries, lagoons, tidal flats, salt marshes, muddy pond or river margins, flooded fields, and other freshwater or brackish wetlands.",
+    "measurements": {
+      "length": "9.1\u201312.6 in (23\u201332 cm)",
+      "weight": "2.6\u20135.5 oz (73\u2013155 g)",
+      "wingspan": "18\u201322 in (46\u201356 cm)"
+    },
+    "palette": [
+      "cinnamon",
+      "warm brown",
+      "black",
+      "soft gray",
+      "white"
+    ],
+    "scientific_name": "Limnodromus griseus",
+    "sources": [
+      {
+        "title": "Short-billed dowitcher | Wikipedia",
+        "url": "https://en.wikipedia.org/wiki/Short-billed_dowitcher"
+      },
+      {
+        "title": "Short-billed Dowitcher Identification | All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Short-billed_Dowitcher/id"
+      },
+      {
+        "title": "Short-billed Dowitcher Life History | All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Short-billed_Dowitcher/lifehistory"
+      },
+      {
+        "title": "Short-billed dowitcher | Smithsonian's National Zoo and Conservation Biology Institute",
+        "url": "https://nationalzoo.si.edu/animals/short-billed-dowitcher"
+      }
+    ],
+    "taxon_id": 3869
+  },
+  "quality_review": {
+    "anatomy_accuracy": 5,
+    "composition_quality": 5,
+    "correction_findings": [],
+    "findings": [
+      "The common name, scientific name, and family are correctly printed as Short-billed Dowitcher, Limnodromus griseus, and Scolopacidae; these agree with All About Birds, eBird, and Wikipedia.",
+      "The primary specimen is a convincing breeding-plumage Short-billed Dowitcher and agrees with the supplied photographs: a plump, elongated shorebird with a short neck, very long dark bill, dark eye, moderately long olive legs, intricately patterned brown-black-gold upperparts, pale cinnamon underparts, spotted breast and barred flanks.",
+      "The primary specimen has one head, one closed bill, one visible eye, a plausible folded near-side wing with the far-side wing naturally occluded, two convincingly attached complete legs and feet, and one short barred tail. No malformed, duplicated, or detached structure is present.",
+      "Both depicted bills can be traced continuously from base to tip and have mutually consistent proportions. Neither looks truncated, reversed, or materially distorted relative to the clearest side-profile reference.",
+      "The detached wing and head-and-bill illustrations are clearly intentional supplementary studies. Their feather organization, bill geometry, and attachment boundaries are anatomically plausible, and neither appears attached to the primary specimen.",
+      "The breeding and nonbreeding plumage statements are supported by All About Birds, eBird, Audubon, and Smithsonian descriptions. The depicted pale cinnamon breeding plumage falls within the explicitly documented geographic variation and resembles the attached breeding-plumage reference.",
+      "The visible measurement lines read exactly: Length: 9.1\u201312.6 in (23\u201332 cm); Wingspan: 18\u201322 in (46\u201356 cm); Weight: 2.6\u20135.5 oz (73\u2013155 g). These match the proposed profile and the broad published ranges on Wikipedia; Smithsonian independently corroborates approximately 9\u201312.5 inches in length and 18\u201322 inches in wingspan. Other guides publish narrower sample ranges, but that does not invalidate the broader documented ranges used here.",
+      "The ruler increases correctly from 9.1 in (23 cm) at the bottom to 12.6 in (32 cm) at the top. Its endpoints, units, and adjacent body-length range agree, and the label SCHEMATIC \u2014 NOT TO SCALE clearly prevents interpretation as the printed bird's physical scale.",
+      "The habitat paragraph accurately reproduces the proposed wording and agrees with direct descriptions of boreal breeding wetlands, coastal estuaries, lagoons, mudflats, salt marshes, flooded fields, and other shallow wetlands.",
+      "The behavior paragraph accurately reproduces the proposed wording. Rapid deep probing with a sewing-machine motion, shallow-water or wet-mud foraging, flock feeding, resting, preening, and generally peaceable flock behavior are supported by the direct sources.",
+      "Every field-mark line is complete and correctly ordered: chunky elongated body and short neck; very long straight dark bill and dark eye; olive to yellow-green legs; breeding and nonbreeding plumage descriptions; pointed wings, short barred tail, and white upper rump in flight.",
+      "The five palette labels are correctly printed as cinnamon, warm brown, black, soft gray, and white, and correspond to colors visibly used in the plate.",
+      "The layout is balanced and legible, with a clearly dominant primary specimen, separated supplementary studies, unobstructed text, and an internally coherent schematic ruler.",
+      "No place name, ZIP code, coordinates, map, locality, or local-observation detail appears in the candidate."
+    ],
+    "location_free": true,
+    "passed": true,
+    "species_accuracy": 5,
+    "text_accuracy": 5,
+    "verification_sources": [
+      {
+        "title": "Short-billed Dowitcher Identification | All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Short-billed_Dowitcher/id"
+      },
+      {
+        "title": "Short-billed Dowitcher Life History | All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Short-billed_Dowitcher/lifehistory"
+      },
+      {
+        "title": "Short-billed Dowitcher | eBird",
+        "url": "https://ebird.org/species/shbdow"
+      },
+      {
+        "title": "Short-billed Dowitcher | Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/short-billed-dowitcher"
+      },
+      {
+        "title": "Short-billed dowitcher | Smithsonian's National Zoo and Conservation Biology Institute",
+        "url": "https://nationalzoo.si.edu/animals/short-billed-dowitcher"
+      },
+      {
+        "title": "Short-billed dowitcher | Wikipedia",
+        "url": "https://en.wikipedia.org/wiki/Short-billed_dowitcher"
+      }
+    ]
+  },
+  "references": [
+    {
+      "attribution": "(c) Bill Levine, some rights reserved (CC BY)",
+      "filename": "01-176211906.jpeg",
+      "height": 1047,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/176211906/large.jpeg",
+      "license_code": "cc-by",
+      "observation_id": 105074246,
+      "observer": "blevine",
+      "photo_id": 176211906,
+      "sha256": "ddda1d88cd6e009668cf289fd83453f6a297b40deb9d51a9e0466a7c5c095754",
+      "source_url": "https://www.inaturalist.org/observations/105074246",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) Taylor DiTarando, some rights reserved (CC BY)",
+      "filename": "02-323935282.jpeg",
+      "height": 1365,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/323935282/large.jpeg",
+      "license_code": "cc-by",
+      "observation_id": 185482320,
+      "observer": "tdita",
+      "photo_id": 323935282,
+      "sha256": "48925ca787c03137cea91049b621d15725d33d087c1d8036282a6237bf0ff510",
+      "source_url": "https://www.inaturalist.org/observations/185482320",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) Nicole, some rights reserved (CC BY)",
+      "filename": "03-261679981.jpeg",
+      "height": 1536,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/261679981/large.jpeg",
+      "license_code": "cc-by",
+      "observation_id": 151644707,
+      "observer": "pineten",
+      "photo_id": 261679981,
+      "sha256": "a0495c367151e939bb7ddbfa7538aecc6cd802a573a65f93fc9364bf7f8c17df",
+      "source_url": "https://www.inaturalist.org/observations/151644707",
+      "width": 2048
+    },
+    {
+      "attribution": "no rights reserved",
+      "filename": "04-24623830.jpg",
+      "height": 1463,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/24623830/large.jpg",
+      "license_code": "cc0",
+      "observation_id": 16375968,
+      "observer": "andywilson",
+      "photo_id": 24623830,
+      "sha256": "dd3526562e4dcef41ccdee682a2fd982c0e6864abd637fdbab827c08a5dffb6f",
+      "source_url": "https://www.inaturalist.org/observations/16375968",
+      "width": 2048
+    }
+  ],
+  "schema_version": 1,
+  "scientific_name": "Limnodromus griseus",
+  "slug": "short-billed-dowitcher",
+  "status": "approved",
+  "taxon_id": 3869
+}
