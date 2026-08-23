@@ -1,0 +1,153 @@
+{
+  "approved_at": "2026-08-23T13:11:25+00:00",
+  "assets": {
+    "display": {
+      "filename": "display.png",
+      "sha256": "5efe994b507686d773380fa5e91ac667166a547eacae9eed60d3e8012fb52d3b"
+    },
+    "portrait": {
+      "filename": "portrait.png",
+      "sha256": "5bce73d32f86a1f8eed41cb565b35d421ec0aa7e36bb48166b10daa29e5fb155"
+    }
+  },
+  "common_name": "Eurasian Whimbrel",
+  "generation": {
+    "attempt": 1,
+    "generated_at": "2026-08-23T13:11:25+00:00",
+    "generator": "Codex subscription / built-in gpt-image-2",
+    "max_attempts": 3,
+    "prompt_version": "field-journal-v5"
+  },
+  "profile": {
+    "behavior": "Walks over exposed flats and shallow shorelines, probing soft mud or wet sand and picking invertebrates and small crabs from the surface; often gathers in flocks outside the breeding season.",
+    "common_name": "Eurasian Whimbrel",
+    "family": "Scolopacidae",
+    "field_marks": [
+      "Long, dark bill with a strong downward curve and subtle kink",
+      "Dark crown stripes divided by a pale central stripe, with a pale eyebrow",
+      "Dark eye crossed by a narrow dark eye-line",
+      "Gray-brown upperparts with pale-edged, scalloped feather patterning",
+      "Paler buff-gray underparts marked with fine dark streaks",
+      "Long gray legs, long pointed wings, and a short finely barred tail"
+    ],
+    "habitat": "Breeds on open tundra, moorland, and low wet grassland; during migration and the nonbreeding season uses mudflats, sandy beaches, rocky shores, saltmarshes, estuaries, and other coastal wetlands.",
+    "measurements": {
+      "length": "37\u201347 cm (15\u201319 in)",
+      "weight": "270\u2013493 g (9.5\u201317.4 oz)",
+      "wingspan": "75\u201390 cm (30\u201335 in)"
+    },
+    "palette": [
+      "cool gray-brown",
+      "dark chocolate brown",
+      "warm tan",
+      "cream-white",
+      "slate gray"
+    ],
+    "scientific_name": "Numenius phaeopus",
+    "sources": [
+      {
+        "title": "Eurasian whimbrel \u2014 Wikipedia",
+        "url": "https://en.wikipedia.org/wiki/Eurasian_whimbrel"
+      },
+      {
+        "title": "Whimbrel \u2014 eBird",
+        "url": "https://ebird.org/species/whimbr"
+      }
+    ],
+    "taxon_id": 3901
+  },
+  "quality_review": {
+    "anatomy_accuracy": 5,
+    "composition_quality": 5,
+    "correction_findings": [],
+    "findings": [
+      "The primary specimen is a convincing Eurasian Whimbrel: one head and eye, one complete closed bill, a naturally occluded far-side wing, two plausibly attached legs with intact feet, and one short barred tail.",
+      "The bill in both depicted heads has the correct direction and degree of decurvature, including a straighter proximal section and stronger distal curve. Both mandibles trace continuously from a shared base to a coherent tip, with consistent proportions between the primary specimen and supplementary head study.",
+      "The plumage agrees with the references and direct-source descriptions: striped dark crown with pale median stripe, pale supercilium, narrow dark eyeline, gray-brown pale-edged upperparts, and finely streaked paler underparts.",
+      "The folded wing is long and pointed, the tail is short and barred, and the long gray legs and shorebird feet are anatomically credible. The detached spread-wing and head studies are clearly supplementary, independently plausible, and do not appear attached to the primary specimen.",
+      "All visible identification text is correct and complete: \u201cEurasian Whimbrel,\u201d \u201cNumenius phaeopus,\u201d and \u201cScolopacidae.\u201d",
+      "All three measurement lines exactly match the proposed and published values: \u201cLength: 37\u201347 cm (15\u201319 in),\u201d \u201cWingspan: 75\u201390 cm (30\u201335 in),\u201d and \u201cWeight: 270\u2013493 g (9.5\u201317.4 oz).\u201d",
+      "The habitat and behavior paragraphs reproduce the proposed wording without visible omissions, duplicated words, substitutions, misspellings, or numerical errors.",
+      "Every field-mark callout reproduces the proposed wording accurately and points to a corresponding visible feature.",
+      "The body-length diagram is internally consistent: 37 cm (15 in) is the lower endpoint, 47 cm (19 in) is the upper endpoint, values increase from bottom to top, and \u201cSCHEMATIC \u2014 NOT TO SCALE\u201d clearly prevents interpreting it as the printed specimen\u2019s scale.",
+      "The plate is clean, legible, balanced, and location-free; it contains no place name, ZIP code, coordinates, map, or local-observation detail."
+    ],
+    "location_free": true,
+    "passed": true,
+    "species_accuracy": 5,
+    "text_accuracy": 5,
+    "verification_sources": [
+      {
+        "title": "Eurasian whimbrel \u2014 Wikipedia",
+        "url": "https://en.wikipedia.org/wiki/Eurasian_whimbrel"
+      },
+      {
+        "title": "2025 eBird Taxonomy Update \u2014 eBird Science",
+        "url": "https://science.ebird.org/es-419/use-ebird-data/the-ebird-taxonomy/2025-ebird-taxonomy-update"
+      },
+      {
+        "title": "Hudsonian Whimbrel Identification \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Whimbrel/id"
+      }
+    ]
+  },
+  "references": [
+    {
+      "attribution": "(c) Joeb, some rights reserved (CC BY)",
+      "filename": "01-603050134.jpg",
+      "height": 2048,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/603050134/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 332310192,
+      "observer": "joebrogers",
+      "photo_id": 603050134,
+      "sha256": "5ec20bb33308498b70144b2220a3600c4d0cb77e415e33c3f113cb5a6b8711c5",
+      "source_url": "https://www.inaturalist.org/observations/332310192",
+      "width": 1365
+    },
+    {
+      "attribution": "(c) Dmitry Ivanov, some rights reserved (CC BY)",
+      "filename": "02-189302362.jpg",
+      "height": 1365,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/189302362/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 112089317,
+      "observer": "ivanovdg19",
+      "photo_id": 189302362,
+      "sha256": "94861e5db0b89495d12bb90a51d919eec2ec881c11e3fdc4ce33c1aca18fb1a0",
+      "source_url": "https://www.inaturalist.org/observations/112089317",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) SteveM4560, some rights reserved (CC BY)",
+      "filename": "03-318560136.jpg",
+      "height": 1536,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/318560136/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 182681906,
+      "observer": "stevem4560",
+      "photo_id": 318560136,
+      "sha256": "6eb9e3b04a2ca0a1599f2f077efe24b34f9958f6eca7b69b98310666e65db1b2",
+      "source_url": "https://www.inaturalist.org/observations/182681906",
+      "width": 2048
+    },
+    {
+      "attribution": "no rights reserved",
+      "filename": "04-248806460.jpeg",
+      "height": 1080,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/248806460/large.jpeg",
+      "license_code": "cc0",
+      "observation_id": 144902378,
+      "observer": "bbdown",
+      "photo_id": 248806460,
+      "sha256": "701749dd16fd61303bc48ec53f456a4d226d18edd8811ba221cee0b69e2d01c2",
+      "source_url": "https://www.inaturalist.org/observations/144902378",
+      "width": 1616
+    }
+  ],
+  "schema_version": 1,
+  "scientific_name": "Numenius phaeopus",
+  "slug": "eurasian-whimbrel",
+  "status": "approved",
+  "taxon_id": 3901
+}

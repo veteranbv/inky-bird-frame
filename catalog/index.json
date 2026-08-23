@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-21T11:08:33+00:00",
+  "generated_at": "2026-08-23T13:11:25+00:00",
   "schema_version": 1,
   "species": [
     {
@@ -639,6 +639,17 @@
       "scientific_name": "Pica pica",
       "slug": "eurasian-magpie",
       "taxon_id": 891696
+    },
+    {
+      "approved_at": "2026-08-23T13:11:25+00:00",
+      "common_name": "Eurasian Whimbrel",
+      "display_path": "species/3901-eurasian-whimbrel/display.png",
+      "display_sha256": "5efe994b507686d773380fa5e91ac667166a547eacae9eed60d3e8012fb52d3b",
+      "portrait_path": "species/3901-eurasian-whimbrel/portrait.png",
+      "portrait_sha256": "5bce73d32f86a1f8eed41cb565b35d421ec0aa7e36bb48166b10daa29e5fb155",
+      "scientific_name": "Numenius phaeopus",
+      "slug": "eurasian-whimbrel",
+      "taxon_id": 3901
     },
     {
       "approved_at": "2026-07-24T00:26:51+00:00",
