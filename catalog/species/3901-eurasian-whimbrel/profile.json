@@ -1,0 +1,38 @@
+{
+  "behavior": "Walks over exposed flats and shallow shorelines, probing soft mud or wet sand and picking invertebrates and small crabs from the surface; often gathers in flocks outside the breeding season.",
+  "common_name": "Eurasian Whimbrel",
+  "family": "Scolopacidae",
+  "field_marks": [
+    "Long, dark bill with a strong downward curve and subtle kink",
+    "Dark crown stripes divided by a pale central stripe, with a pale eyebrow",
+    "Dark eye crossed by a narrow dark eye-line",
+    "Gray-brown upperparts with pale-edged, scalloped feather patterning",
+    "Paler buff-gray underparts marked with fine dark streaks",
+    "Long gray legs, long pointed wings, and a short finely barred tail"
+  ],
+  "habitat": "Breeds on open tundra, moorland, and low wet grassland; during migration and the nonbreeding season uses mudflats, sandy beaches, rocky shores, saltmarshes, estuaries, and other coastal wetlands.",
+  "measurements": {
+    "length": "37\u201347 cm (15\u201319 in)",
+    "weight": "270\u2013493 g (9.5\u201317.4 oz)",
+    "wingspan": "75\u201390 cm (30\u201335 in)"
+  },
+  "palette": [
+    "cool gray-brown",
+    "dark chocolate brown",
+    "warm tan",
+    "cream-white",
+    "slate gray"
+  ],
+  "scientific_name": "Numenius phaeopus",
+  "sources": [
+    {
+      "title": "Eurasian whimbrel \u2014 Wikipedia",
+      "url": "https://en.wikipedia.org/wiki/Eurasian_whimbrel"
+    },
+    {
+      "title": "Whimbrel \u2014 eBird",
+      "url": "https://ebird.org/species/whimbr"
+    }
+  ],
+  "taxon_id": 3901
+}

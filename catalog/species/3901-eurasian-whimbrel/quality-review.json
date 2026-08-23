@@ -1,0 +1,35 @@
+{
+  "anatomy_accuracy": 5,
+  "composition_quality": 5,
+  "correction_findings": [],
+  "findings": [
+    "The primary specimen is a convincing Eurasian Whimbrel: one head and eye, one complete closed bill, a naturally occluded far-side wing, two plausibly attached legs with intact feet, and one short barred tail.",
+    "The bill in both depicted heads has the correct direction and degree of decurvature, including a straighter proximal section and stronger distal curve. Both mandibles trace continuously from a shared base to a coherent tip, with consistent proportions between the primary specimen and supplementary head study.",
+    "The plumage agrees with the references and direct-source descriptions: striped dark crown with pale median stripe, pale supercilium, narrow dark eyeline, gray-brown pale-edged upperparts, and finely streaked paler underparts.",
+    "The folded wing is long and pointed, the tail is short and barred, and the long gray legs and shorebird feet are anatomically credible. The detached spread-wing and head studies are clearly supplementary, independently plausible, and do not appear attached to the primary specimen.",
+    "All visible identification text is correct and complete: \u201cEurasian Whimbrel,\u201d \u201cNumenius phaeopus,\u201d and \u201cScolopacidae.\u201d",
+    "All three measurement lines exactly match the proposed and published values: \u201cLength: 37\u201347 cm (15\u201319 in),\u201d \u201cWingspan: 75\u201390 cm (30\u201335 in),\u201d and \u201cWeight: 270\u2013493 g (9.5\u201317.4 oz).\u201d",
+    "The habitat and behavior paragraphs reproduce the proposed wording without visible omissions, duplicated words, substitutions, misspellings, or numerical errors.",
+    "Every field-mark callout reproduces the proposed wording accurately and points to a corresponding visible feature.",
+    "The body-length diagram is internally consistent: 37 cm (15 in) is the lower endpoint, 47 cm (19 in) is the upper endpoint, values increase from bottom to top, and \u201cSCHEMATIC \u2014 NOT TO SCALE\u201d clearly prevents interpreting it as the printed specimen\u2019s scale.",
+    "The plate is clean, legible, balanced, and location-free; it contains no place name, ZIP code, coordinates, map, or local-observation detail."
+  ],
+  "location_free": true,
+  "passed": true,
+  "species_accuracy": 5,
+  "text_accuracy": 5,
+  "verification_sources": [
+    {
+      "title": "Eurasian whimbrel \u2014 Wikipedia",
+      "url": "https://en.wikipedia.org/wiki/Eurasian_whimbrel"
+    },
+    {
+      "title": "2025 eBird Taxonomy Update \u2014 eBird Science",
+      "url": "https://science.ebird.org/es-419/use-ebird-data/the-ebird-taxonomy/2025-ebird-taxonomy-update"
+    },
+    {
+      "title": "Hudsonian Whimbrel Identification \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Whimbrel/id"
+    }
+  ]
+}
