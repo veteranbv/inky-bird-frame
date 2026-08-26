@@ -1,0 +1,37 @@
+{
+  "anatomy_accuracy": 5,
+  "composition_quality": 5,
+  "correction_findings": [],
+  "findings": [
+    "The primary specimen is a convincing Least Flycatcher: compact round-headed proportions, short folded primary projection, relatively long narrow tail, small broad-based bill, bold whitish eye ring, grayish-olive upperparts, dusky breast, pale underparts, and two contrasting wing bars agree with the reference photographs and direct source descriptions.",
+    "The primary specimen has one head, one beak, one visible eye, one tail, two plausibly attached legs with gripping feet, and one clearly visible near-side folded wing; the far-side wing is naturally occluded by the side-profile pose. The detached wing and head are clearly supplementary studies and are anatomically coherent.",
+    "Both depicted heads consistently show a short, broad-based bill with a dark upper mandible and paler yellowish lower mandible. Neither bill appears malformed, reversed, ambiguously attached, or materially inconsistent with the clearest side-profile reference.",
+    "All visible identification, taxonomy, measurement, habitat, behavior, field-mark, palette, and schematic labels are legible and correctly spelled. The prose and numerical values match the proposed profile without duplicated, omitted, substituted, or nonsensical wording.",
+    "The printed measurements\u2014length 4.7\u20135.5 in (12\u201314 cm), wingspan 7.9 in (20 cm), and weight 0.3\u20130.5 oz (8\u201313 g)\u2014are directly supported by Cornell's identification page. Audubon publishes overlapping but differently rounded measurements, which does not invalidate the Cornell-supported values used here.",
+    "The vertical measurement diagram increases correctly from 4.7 in (12 cm) at the bottom to 5.5 in (14 cm) at the top, has no contradictory marker, and is explicitly labeled \u201cSCHEMATIC \u2014 NOT TO SCALE.\u201d",
+    "The habitat and behavior text is consistent with Cornell and Audubon descriptions of deciduous or mixed woodland, clearings and edges, perch-based aerial insect capture, hovering to glean prey, frequent perch changes, clustered nesting, and the characteristic che-bec song.",
+    "No place name, ZIP code, coordinates, map, range graphic, or local-observation detail appears."
+  ],
+  "location_free": true,
+  "passed": true,
+  "species_accuracy": 5,
+  "text_accuracy": 5,
+  "verification_sources": [
+    {
+      "title": "Least Flycatcher Identification \u2014 All About Birds, Cornell Lab of Ornithology",
+      "url": "https://www.allaboutbirds.org/guide/Least_Flycatcher/id"
+    },
+    {
+      "title": "Least Flycatcher \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/least-flycatcher"
+    },
+    {
+      "title": "Least Flycatcher \u2014 eBird",
+      "url": "https://ebird.org/species/leafly"
+    },
+    {
+      "title": "Least Flycatcher \u2014 Birds of the World",
+      "url": "https://birdsoftheworld.org/bow/species/leafly/cur/introduction"
+    }
+  ]
+}

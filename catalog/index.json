@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-23T13:11:25+00:00",
+  "generated_at": "2026-08-26T18:29:03+00:00",
   "schema_version": 1,
   "species": [
     {
@@ -903,6 +903,17 @@
       "scientific_name": "Leucophaeus atricilla",
       "slug": "laughing-gull",
       "taxon_id": 144514
+    },
+    {
+      "approved_at": "2026-08-26T18:29:03+00:00",
+      "common_name": "Least Flycatcher",
+      "display_path": "species/16602-least-flycatcher/display.png",
+      "display_sha256": "09ae6e7c304718d740a9fec093ed110cc8e9fe30172b2d3f820883d4151694cc",
+      "portrait_path": "species/16602-least-flycatcher/portrait.png",
+      "portrait_sha256": "fed05a8d16c7d7fd6b3af662f674981723a2f5296cd8f9222225719d29abf1b2",
+      "scientific_name": "Empidonax minimus",
+      "slug": "least-flycatcher",
+      "taxon_id": 16602
     },
     {
       "approved_at": "2026-08-14T12:24:31+00:00",
