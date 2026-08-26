@@ -1,0 +1,155 @@
+{
+  "approved_at": "2026-08-26T18:29:03+00:00",
+  "assets": {
+    "display": {
+      "filename": "display.png",
+      "sha256": "09ae6e7c304718d740a9fec093ed110cc8e9fe30172b2d3f820883d4151694cc"
+    },
+    "portrait": {
+      "filename": "portrait.png",
+      "sha256": "fed05a8d16c7d7fd6b3af662f674981723a2f5296cd8f9222225719d29abf1b2"
+    }
+  },
+  "common_name": "Least Flycatcher",
+  "generation": {
+    "attempt": 1,
+    "generated_at": "2026-08-26T18:29:03+00:00",
+    "generator": "Codex subscription / built-in gpt-image-2",
+    "max_attempts": 3,
+    "prompt_version": "field-journal-v5"
+  },
+  "profile": {
+    "behavior": "Perches upright and makes short aerial sallies to catch insects, often returning to another exposed twig. It also hovers to take insects and spiders from foliage, frequently shifts perches, and may breed in loose clusters. Its characteristic song is a sharp, two-part \u201cche-bec.\u201d",
+    "common_name": "Least Flycatcher",
+    "family": "Tyrannidae",
+    "field_marks": [
+      "Compact, round-headed shape with short folded wings and a relatively long, thin tail",
+      "Grayish-olive crown and back with a dusky gray breast and pale underparts",
+      "Bold whitish eye ring surrounding a dark eye",
+      "Two contrasting whitish wing bars on dark brown wings",
+      "Short, broad-based bill with a dark upper mandible and paler lower mandible",
+      "Dark, slender legs and feet; narrow tail is square-tipped to slightly notched"
+    ],
+    "habitat": "Deciduous and mixed woodland ranging from second-growth to mature forest, typically with a developed canopy and some shrubs or saplings below. It often occupies clearings and woodland edges and uses edge habitat and second growth outside the breeding season.",
+    "measurements": {
+      "length": "Both sexes: 4.7\u20135.5 in (12\u201314 cm)",
+      "weight": "Both sexes: 0.3\u20130.5 oz (8\u201313 g)",
+      "wingspan": "Both sexes: 7.9 in (20 cm)"
+    },
+    "palette": [
+      "grayish olive",
+      "dusky gray",
+      "soft white",
+      "dark brown",
+      "faint yellow"
+    ],
+    "scientific_name": "Empidonax minimus",
+    "sources": [
+      {
+        "title": "Least Flycatcher Identification \u2014 All About Birds, Cornell Lab of Ornithology",
+        "url": "https://www.allaboutbirds.org/guide/Least_Flycatcher/id"
+      },
+      {
+        "title": "Least Flycatcher \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/least-flycatcher"
+      }
+    ],
+    "taxon_id": 16602
+  },
+  "quality_review": {
+    "anatomy_accuracy": 5,
+    "composition_quality": 5,
+    "correction_findings": [],
+    "findings": [
+      "The primary specimen is a convincing Least Flycatcher: compact round-headed proportions, short folded primary projection, relatively long narrow tail, small broad-based bill, bold whitish eye ring, grayish-olive upperparts, dusky breast, pale underparts, and two contrasting wing bars agree with the reference photographs and direct source descriptions.",
+      "The primary specimen has one head, one beak, one visible eye, one tail, two plausibly attached legs with gripping feet, and one clearly visible near-side folded wing; the far-side wing is naturally occluded by the side-profile pose. The detached wing and head are clearly supplementary studies and are anatomically coherent.",
+      "Both depicted heads consistently show a short, broad-based bill with a dark upper mandible and paler yellowish lower mandible. Neither bill appears malformed, reversed, ambiguously attached, or materially inconsistent with the clearest side-profile reference.",
+      "All visible identification, taxonomy, measurement, habitat, behavior, field-mark, palette, and schematic labels are legible and correctly spelled. The prose and numerical values match the proposed profile without duplicated, omitted, substituted, or nonsensical wording.",
+      "The printed measurements\u2014length 4.7\u20135.5 in (12\u201314 cm), wingspan 7.9 in (20 cm), and weight 0.3\u20130.5 oz (8\u201313 g)\u2014are directly supported by Cornell's identification page. Audubon publishes overlapping but differently rounded measurements, which does not invalidate the Cornell-supported values used here.",
+      "The vertical measurement diagram increases correctly from 4.7 in (12 cm) at the bottom to 5.5 in (14 cm) at the top, has no contradictory marker, and is explicitly labeled \u201cSCHEMATIC \u2014 NOT TO SCALE.\u201d",
+      "The habitat and behavior text is consistent with Cornell and Audubon descriptions of deciduous or mixed woodland, clearings and edges, perch-based aerial insect capture, hovering to glean prey, frequent perch changes, clustered nesting, and the characteristic che-bec song.",
+      "No place name, ZIP code, coordinates, map, range graphic, or local-observation detail appears."
+    ],
+    "location_free": true,
+    "passed": true,
+    "species_accuracy": 5,
+    "text_accuracy": 5,
+    "verification_sources": [
+      {
+        "title": "Least Flycatcher Identification \u2014 All About Birds, Cornell Lab of Ornithology",
+        "url": "https://www.allaboutbirds.org/guide/Least_Flycatcher/id"
+      },
+      {
+        "title": "Least Flycatcher \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/least-flycatcher"
+      },
+      {
+        "title": "Least Flycatcher \u2014 eBird",
+        "url": "https://ebird.org/species/leafly"
+      },
+      {
+        "title": "Least Flycatcher \u2014 Birds of the World",
+        "url": "https://birdsoftheworld.org/bow/species/leafly/cur/introduction"
+      }
+    ]
+  },
+  "references": [
+    {
+      "attribution": "(c) Haley Daniels, some rights reserved (CC BY)",
+      "filename": "01-146928874.jpg",
+      "height": 2048,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/146928874/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 89005801,
+      "observer": "eldaniels",
+      "photo_id": 146928874,
+      "sha256": "687927af932c07a8fbab7f5ae98f28ab84c77eff88246ae2b4c6d692f944d531",
+      "source_url": "https://www.inaturalist.org/observations/89005801",
+      "width": 1536
+    },
+    {
+      "attribution": "(c) Sean Vanderluit, some rights reserved (CC BY)",
+      "filename": "02-199895204.jpeg",
+      "height": 1365,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/199895204/large.jpeg",
+      "license_code": "cc-by",
+      "observation_id": 118319777,
+      "observer": "seanvanderluit",
+      "photo_id": 199895204,
+      "sha256": "4cc580e3881b28bf6d002c5995f741754f96a90111d7fc02375f52ec1d515baf",
+      "source_url": "https://www.inaturalist.org/observations/118319777",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) Madeleine Claire, some rights reserved (CC BY)",
+      "filename": "03-238238585.jpeg",
+      "height": 2048,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/238238585/large.jpeg",
+      "license_code": "cc-by",
+      "observation_id": 139303618,
+      "observer": "madily",
+      "photo_id": 238238585,
+      "sha256": "7b50bf69c2468d2225341f560c2f16e60847d9c7fd66576633327b37b27ddbe0",
+      "source_url": "https://www.inaturalist.org/observations/139303618",
+      "width": 1370
+    },
+    {
+      "attribution": "(c) Sean Frey, some rights reserved (CC BY)",
+      "filename": "04-507131445.jpg",
+      "height": 912,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/507131445/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 282280166,
+      "observer": "georectified",
+      "photo_id": 507131445,
+      "sha256": "70531b6f0175c55e9387892d8ec906af7cb404893b84a80a6b255ccb222c3e93",
+      "source_url": "https://www.inaturalist.org/observations/282280166",
+      "width": 1337
+    }
+  ],
+  "schema_version": 1,
+  "scientific_name": "Empidonax minimus",
+  "slug": "least-flycatcher",
+  "status": "approved",
+  "taxon_id": 16602
+}

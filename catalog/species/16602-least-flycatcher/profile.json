@@ -1,0 +1,38 @@
+{
+  "behavior": "Perches upright and makes short aerial sallies to catch insects, often returning to another exposed twig. It also hovers to take insects and spiders from foliage, frequently shifts perches, and may breed in loose clusters. Its characteristic song is a sharp, two-part \u201cche-bec.\u201d",
+  "common_name": "Least Flycatcher",
+  "family": "Tyrannidae",
+  "field_marks": [
+    "Compact, round-headed shape with short folded wings and a relatively long, thin tail",
+    "Grayish-olive crown and back with a dusky gray breast and pale underparts",
+    "Bold whitish eye ring surrounding a dark eye",
+    "Two contrasting whitish wing bars on dark brown wings",
+    "Short, broad-based bill with a dark upper mandible and paler lower mandible",
+    "Dark, slender legs and feet; narrow tail is square-tipped to slightly notched"
+  ],
+  "habitat": "Deciduous and mixed woodland ranging from second-growth to mature forest, typically with a developed canopy and some shrubs or saplings below. It often occupies clearings and woodland edges and uses edge habitat and second growth outside the breeding season.",
+  "measurements": {
+    "length": "Both sexes: 4.7\u20135.5 in (12\u201314 cm)",
+    "weight": "Both sexes: 0.3\u20130.5 oz (8\u201313 g)",
+    "wingspan": "Both sexes: 7.9 in (20 cm)"
+  },
+  "palette": [
+    "grayish olive",
+    "dusky gray",
+    "soft white",
+    "dark brown",
+    "faint yellow"
+  ],
+  "scientific_name": "Empidonax minimus",
+  "sources": [
+    {
+      "title": "Least Flycatcher Identification \u2014 All About Birds, Cornell Lab of Ornithology",
+      "url": "https://www.allaboutbirds.org/guide/Least_Flycatcher/id"
+    },
+    {
+      "title": "Least Flycatcher \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/least-flycatcher"
+    }
+  ],
+  "taxon_id": 16602
+}
