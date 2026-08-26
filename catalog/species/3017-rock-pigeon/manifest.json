@@ -1,0 +1,163 @@
+{
+  "approved_at": "2026-08-26T18:38:07+00:00",
+  "assets": {
+    "display": {
+      "filename": "display.png",
+      "sha256": "3ca76d81194b52663ed3a6f0e2d042b9966c1a3c2bc6e179c6e299323b15066a"
+    },
+    "portrait": {
+      "filename": "portrait.png",
+      "sha256": "9961fbced612dac68f6530b77c83c6767dbce145a09a6209af1609d873e724a9"
+    }
+  },
+  "common_name": "Rock Pigeon",
+  "generation": {
+    "attempt": 1,
+    "generated_at": "2026-08-26T18:38:07+00:00",
+    "generator": "Codex subscription / built-in gpt-image-2",
+    "max_attempts": 3,
+    "prompt_version": "field-journal-v5"
+  },
+  "profile": {
+    "behavior": "A social, diurnal ground forager that often gathers in flocks, walking or running with a head-bobbing motion while pecking for seeds and fruit. Flight is strong, steady, and direct. Courting birds bow, coo, inflate the throat, and strut; both parents incubate and feed the young.",
+    "common_name": "Rock Pigeon",
+    "family": "Columbidae",
+    "field_marks": [
+      "Stocky body with a small head and short legs",
+      "Typical plumage blue-gray, though feral birds vary widely",
+      "Two bold black bars across the folded wing",
+      "Glossy green-to-purple iridescence on the neck",
+      "Straight grayish bill with a pale, fleshy cere",
+      "Broad, rounded tail with a dark terminal band"
+    ],
+    "habitat": "Rocky cliffs and ledges, open fields, farmland, towns, and other built environments. Nests occupy sheltered crevices, ledges, and recesses in cliffs or structures.",
+    "measurements": {
+      "length": "Both sexes: 11.8\u201314.2 in (30\u201336 cm)",
+      "weight": "Both sexes: 9.3\u201313.4 oz (265\u2013380 g)",
+      "wingspan": "Both sexes: 19.7\u201326.4 in (50\u201367 cm)"
+    },
+    "palette": [
+      "blue-gray",
+      "charcoal black",
+      "iridescent green",
+      "purple",
+      "pink-red"
+    ],
+    "scientific_name": "Columba livia",
+    "sources": [
+      {
+        "title": "Rock Pigeon Identification \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/rock_pigeon/id"
+      },
+      {
+        "title": "Rock Pigeon Life History \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Rock_Pigeon/lifehistory"
+      },
+      {
+        "title": "Columba livia \u2014 Animal Diversity Web",
+        "url": "https://animaldiversity.org/accounts/Columba_livia/"
+      }
+    ],
+    "taxon_id": 3017
+  },
+  "quality_review": {
+    "anatomy_accuracy": 5,
+    "composition_quality": 5,
+    "correction_findings": [],
+    "findings": [
+      "The primary specimen is identifiable as a typical blue-bar Rock Pigeon: stocky body, small head, short pink-red legs, blue-gray plumage, two black wing bars, green-to-purple neck iridescence, pale cere, orange eye, and dark-tipped tail all agree with the references and direct sources.",
+      "The primary specimen contains one head, one bill, one tail, two convincingly attached legs with intact anisodactyl feet, and one visible near-side wing; the far-side wing is naturally occluded by the side-profile pose.",
+      "The bill is correctly short and essentially straight, with a pale fleshy cere. Both depicted heads have coherent upper and lower mandibles traced from a shared base to a natural, nearly co-terminal tip; neither bill is truncated, reversed, or inconsistent with the reference profiles.",
+      "The eye, head-to-body proportions, breast, neck, folded wing, tail, legs, and feet are anatomically coherent. The folded tail is compatible with the species' broad, rounded tail structure and retains a dark terminal region.",
+      "The detached wing and head are clearly intentional supplementary studies rather than extra birds or parts attached to the primary specimen. Each study is anatomically coherent and consistent with the primary rendering.",
+      "All visible identification text is spelled correctly and matches the proposed profile: \u201cRock Pigeon,\u201d \u201cColumba livia,\u201d \u201cColumbidae,\u201d and all six field-mark statements are intact and meaningful.",
+      "The three measurement lines exactly match the independently verified All About Birds values: length 11.8\u201314.2 in (30\u201336 cm), wingspan 19.7\u201326.4 in (50\u201367 cm), and weight 9.3\u201313.4 oz (265\u2013380 g).",
+      "The habitat paragraph agrees with direct sources describing rocky cliffs and ledges, farmland and fields, towns or cities, built structures, and nesting in sheltered ledges, nooks, crevices, or recesses.",
+      "The behavior paragraph is supported across the direct sources: flocking, daylight ground foraging, walking or running with head movement, eating seeds and fruit, strong steady direct flight, bowing/cooing/inflated-throat strutting, and care of young by both parents.",
+      "The vertical measurement diagram is internally consistent: 11.8 in (30 cm) is the lower endpoint and 14.2 in (36 cm) is the upper endpoint, so values increase from bottom to top. Its unlabeled interior ticks are harmless subdivisions, the separate BODY LENGTH line repeats the same range, and \u201cSCHEMATIC \u2014 NOT TO SCALE\u201d prevents presentation as the printed bird's physical scale.",
+      "The palette swatches correspond to visible and source-supported blue-gray, charcoal, green, purple, and pink-red coloration.",
+      "No place name, ZIP code, coordinates, map, or local-observation detail appears in the candidate plate."
+    ],
+    "location_free": true,
+    "passed": true,
+    "species_accuracy": 5,
+    "text_accuracy": 5,
+    "verification_sources": [
+      {
+        "title": "Rock Pigeon Identification \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Rock_Pigeon/id"
+      },
+      {
+        "title": "Rock Pigeon Life History \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Rock_Pigeon/lifehistory"
+      },
+      {
+        "title": "Columba livia \u2014 Animal Diversity Web",
+        "url": "https://animaldiversity.org/accounts/Columba_livia/"
+      },
+      {
+        "title": "Rock Pigeon \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/rock-pigeon"
+      }
+    ]
+  },
+  "references": [
+    {
+      "attribution": "(c) Tyler Bishop, some rights reserved (CC BY)",
+      "filename": "01-131366491.jpeg",
+      "height": 1152,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/131366491/large.jpeg",
+      "license_code": "cc-by",
+      "observation_id": 80165733,
+      "observer": "zoology123",
+      "photo_id": 131366491,
+      "sha256": "817934ed12acb06a5cb37a0df80f6ddaf52b1782ece8e30e5958433cc65a8d5e",
+      "source_url": "https://www.inaturalist.org/observations/80165733",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) Swarochi Tathagath, some rights reserved (CC BY)",
+      "filename": "02-106619240.jpeg",
+      "height": 2048,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/106619240/large.jpeg",
+      "license_code": "cc-by",
+      "observation_id": 66171836,
+      "observer": "odonut",
+      "photo_id": 106619240,
+      "sha256": "e8893fff223ba64b8179f82ae26c81f6e7f25690191426e3319b47c68697c70f",
+      "source_url": "https://www.inaturalist.org/observations/66171836",
+      "width": 1152
+    },
+    {
+      "attribution": "(c) Andrew Garn, some rights reserved (CC BY)",
+      "filename": "03-41641071.jpg",
+      "height": 2048,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/41641071/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 26803050,
+      "observer": "andrewgarn",
+      "photo_id": 41641071,
+      "sha256": "63669e2583f86c7223c2d46a419c9b8de2718efe32298e7d803ef130527bb2db",
+      "source_url": "https://www.inaturalist.org/observations/26803050",
+      "width": 1391
+    },
+    {
+      "attribution": "no rights reserved",
+      "filename": "04-27167011.jpeg",
+      "height": 900,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/27167011/large.jpeg",
+      "license_code": "cc0",
+      "observation_id": 17804031,
+      "observer": "diegocarau",
+      "photo_id": 27167011,
+      "sha256": "375fee31d5fe2a5e6ab75ebed9e1f996f53ebd71ed0f7ddd958a6890d3ce05aa",
+      "source_url": "https://www.inaturalist.org/observations/17804031",
+      "width": 1200
+    }
+  ],
+  "schema_version": 1,
+  "scientific_name": "Columba livia",
+  "slug": "rock-pigeon",
+  "status": "approved",
+  "taxon_id": 3017
+}

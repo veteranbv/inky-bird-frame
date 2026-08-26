@@ -1,0 +1,42 @@
+{
+  "behavior": "A social, diurnal ground forager that often gathers in flocks, walking or running with a head-bobbing motion while pecking for seeds and fruit. Flight is strong, steady, and direct. Courting birds bow, coo, inflate the throat, and strut; both parents incubate and feed the young.",
+  "common_name": "Rock Pigeon",
+  "family": "Columbidae",
+  "field_marks": [
+    "Stocky body with a small head and short legs",
+    "Typical plumage blue-gray, though feral birds vary widely",
+    "Two bold black bars across the folded wing",
+    "Glossy green-to-purple iridescence on the neck",
+    "Straight grayish bill with a pale, fleshy cere",
+    "Broad, rounded tail with a dark terminal band"
+  ],
+  "habitat": "Rocky cliffs and ledges, open fields, farmland, towns, and other built environments. Nests occupy sheltered crevices, ledges, and recesses in cliffs or structures.",
+  "measurements": {
+    "length": "Both sexes: 11.8\u201314.2 in (30\u201336 cm)",
+    "weight": "Both sexes: 9.3\u201313.4 oz (265\u2013380 g)",
+    "wingspan": "Both sexes: 19.7\u201326.4 in (50\u201367 cm)"
+  },
+  "palette": [
+    "blue-gray",
+    "charcoal black",
+    "iridescent green",
+    "purple",
+    "pink-red"
+  ],
+  "scientific_name": "Columba livia",
+  "sources": [
+    {
+      "title": "Rock Pigeon Identification \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/rock_pigeon/id"
+    },
+    {
+      "title": "Rock Pigeon Life History \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Rock_Pigeon/lifehistory"
+    },
+    {
+      "title": "Columba livia \u2014 Animal Diversity Web",
+      "url": "https://animaldiversity.org/accounts/Columba_livia/"
+    }
+  ],
+  "taxon_id": 3017
+}

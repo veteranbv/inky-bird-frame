@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-26T18:29:03+00:00",
+  "generated_at": "2026-08-26T18:38:07+00:00",
   "schema_version": 1,
   "species": [
     {
@@ -1376,6 +1376,17 @@
       "scientific_name": "Larus delawarensis",
       "slug": "ring-billed-gull",
       "taxon_id": 4364
+    },
+    {
+      "approved_at": "2026-08-26T18:38:07+00:00",
+      "common_name": "Rock Pigeon",
+      "display_path": "species/3017-rock-pigeon/display.png",
+      "display_sha256": "3ca76d81194b52663ed3a6f0e2d042b9966c1a3c2bc6e179c6e299323b15066a",
+      "portrait_path": "species/3017-rock-pigeon/portrait.png",
+      "portrait_sha256": "9961fbced612dac68f6530b77c83c6767dbce145a09a6209af1609d873e724a9",
+      "scientific_name": "Columba livia",
+      "slug": "rock-pigeon",
+      "taxon_id": 3017
     },
     {
       "approved_at": "2026-07-10T14:06:59+00:00",
