@@ -1,0 +1,42 @@
+{
+  "behavior": "Active foliage gleaner that forages especially among outer treetop branches, probing and picking insects, hovering at foliage, and sallying for flying prey. It also takes nectar, sap, and fruit, migrates mainly at night, and is territorial during the breeding season.",
+  "common_name": "Cape May Warbler",
+  "family": "Parulidae",
+  "field_marks": [
+    "Small, delicate warbler with a short tail",
+    "Slender, dark, slightly downcurved bill and dark eye",
+    "Yellow underparts marked with narrow dark \u201ctiger\u201d streaks",
+    "Adult male has a chestnut cheek framed by yellow; females and immatures are duller with a grayish cheek",
+    "Olive upperparts and dark wings with a conspicuous white patch or wingbars",
+    "Dark, slender legs and white undertail coverts"
+  ],
+  "habitat": "Breeds in mature boreal forests dominated by spruce and balsam fir, often near openings or forest edges. During migration it uses varied woodland, scrub, and thickets; nonbreeding habitats include shrubby plantings, second growth, pine and broadleaf forest, dry forest, and mangroves.",
+  "measurements": {
+    "length": "Both sexes: 4.7\u20135.1 in (12\u201313 cm)",
+    "weight": "Both sexes: 0.4\u20130.5 oz (10.2\u201315.2 g)",
+    "wingspan": "Both sexes: 7.9\u20138.7 in (20\u201322 cm)"
+  },
+  "palette": [
+    "bright yellow",
+    "olive green",
+    "chestnut brown",
+    "black",
+    "white"
+  ],
+  "scientific_name": "Setophaga tigrina",
+  "sources": [
+    {
+      "title": "Cape May Warbler Identification \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Cape_May_Warbler/id"
+    },
+    {
+      "title": "Cape May Warbler Life History \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Cape_May_Warbler/lifehistory"
+    },
+    {
+      "title": "Cape May Warbler \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/cape-may-warbler"
+    }
+  ],
+  "taxon_id": 145231
+}

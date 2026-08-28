@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-26T18:38:07+00:00",
+  "generated_at": "2026-08-28T00:27:04+00:00",
   "schema_version": 1,
   "species": [
     {
@@ -298,6 +298,17 @@
       "scientific_name": "Branta canadensis",
       "slug": "canada-goose",
       "taxon_id": 7089
+    },
+    {
+      "approved_at": "2026-08-28T00:27:04+00:00",
+      "common_name": "Cape May Warbler",
+      "display_path": "species/145231-cape-may-warbler/display.png",
+      "display_sha256": "e3375c22e448b972910eb4d739209ad7390737490936a9af2b1f9767c838f339",
+      "portrait_path": "species/145231-cape-may-warbler/portrait.png",
+      "portrait_sha256": "7963d33f067d45c3c61b2ec65be24d84b716df8006c55f23d21253ddbf562d60",
+      "scientific_name": "Setophaga tigrina",
+      "slug": "cape-may-warbler",
+      "taxon_id": 145231
     },
     {
       "approved_at": "2026-07-09T22:46:35+00:00",

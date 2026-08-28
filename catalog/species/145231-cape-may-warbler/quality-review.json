@@ -1,0 +1,35 @@
+{
+  "anatomy_accuracy": 4,
+  "composition_quality": 5,
+  "correction_findings": [],
+  "findings": [
+    "The primary specimen is a convincing adult male Cape May Warbler: yellow underparts with fine dark streaking, a chestnut auricular patch framed by yellow, olive upperparts, dark wings with a conspicuous white patch, white undertail coverts, and a short tail agree with the reference photographs and direct identification sources.",
+    "The proportions are credible for a small, delicate, short-tailed warbler. The dark bill is slender and only subtly downcurved, consistent with the clearest side-profile references; neither depicted head has a truncated, reversed, or materially exaggerated mandible.",
+    "The primary specimen has one head, one bill, one visible eye, one tail, two plausibly attached legs, intact grasping feet, and a convincing near-side wing. The far-side wing is naturally hidden by the side-on pose rather than visibly missing or malformed.",
+    "The detached wing and head are clearly intentional supplementary studies. The wing has coherent feather layering and a Cape May Warbler-like white patch, while the head study independently preserves the dark eye, yellow facial frame, chestnut cheek, and plausible bill geometry.",
+    "Every visible identification line matches the proposed profile in spelling and meaning: \u201cSmall, delicate warbler with a short tail\u201d; \u201cSlender, dark, slightly downcurved bill and dark eye\u201d; \u201cYellow underparts marked with narrow dark \u2018tiger\u2019 streaks\u201d; the adult-male and female/immature cheek description; the olive-upperparts and white-patch/wingbars description; and the dark-legs and white-undertail-coverts description.",
+    "The names \u201cCape May Warbler,\u201d \u201cSetophaga tigrina,\u201d and \u201cParulidae\u201d are correct. eBird independently confirms the scientific name, family, small size, very slightly downcurved bill, yellow-and-black-streaked adult-male underparts, orange/chestnut cheek, and white wing patch.",
+    "The printed measurements\u2014length 4.7\u20135.1 in (12\u201313 cm), weight 0.4\u20130.5 oz (10.2\u201315.2 g), and wingspan 7.9\u20138.7 in (20\u201322 cm)\u2014exactly match the All About Birds measurement table. The repeated BODY LENGTH value is identical and not contradictory.",
+    "The wingspan diagram is internally consistent: its 7.9 in (20 cm) minimum is at the bottom, its 8.7 in (22 cm) maximum is at the top, and the values therefore increase upward. Interior ticks are unlabeled subdivisions. \u201cSCHEMATIC \u2014 NOT TO SCALE\u201d makes clear that the printed specimen is not a life-size scale representation.",
+    "Audubon publishes a separately rounded, broader measurement summary, but this does not invalidate the plate because the plate exactly reproduces the direct All About Birds values rather than combining incompatible endpoints.",
+    "No map, coordinates, ZIP code, observation site, or local-observation detail appears. \u201cCape May\u201d occurs only as part of the species\u2019 official common name."
+  ],
+  "location_free": true,
+  "passed": true,
+  "species_accuracy": 5,
+  "text_accuracy": 5,
+  "verification_sources": [
+    {
+      "title": "Cape May Warbler Identification \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Cape_May_Warbler/id"
+    },
+    {
+      "title": "Cape May Warbler \u2014 eBird",
+      "url": "https://ebird.org/species/camwar"
+    },
+    {
+      "title": "Cape May Warbler \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/cape-may-warbler"
+    }
+  ]
+}
