@@ -1,0 +1,157 @@
+{
+  "approved_at": "2026-08-28T00:27:04+00:00",
+  "assets": {
+    "display": {
+      "filename": "display.png",
+      "sha256": "e3375c22e448b972910eb4d739209ad7390737490936a9af2b1f9767c838f339"
+    },
+    "portrait": {
+      "filename": "portrait.png",
+      "sha256": "7963d33f067d45c3c61b2ec65be24d84b716df8006c55f23d21253ddbf562d60"
+    }
+  },
+  "common_name": "Cape May Warbler",
+  "generation": {
+    "attempt": 1,
+    "generated_at": "2026-08-28T00:27:04+00:00",
+    "generator": "Codex subscription / built-in gpt-image-2",
+    "max_attempts": 3,
+    "prompt_version": "field-journal-v5"
+  },
+  "profile": {
+    "behavior": "Active foliage gleaner that forages especially among outer treetop branches, probing and picking insects, hovering at foliage, and sallying for flying prey. It also takes nectar, sap, and fruit, migrates mainly at night, and is territorial during the breeding season.",
+    "common_name": "Cape May Warbler",
+    "family": "Parulidae",
+    "field_marks": [
+      "Small, delicate warbler with a short tail",
+      "Slender, dark, slightly downcurved bill and dark eye",
+      "Yellow underparts marked with narrow dark \u201ctiger\u201d streaks",
+      "Adult male has a chestnut cheek framed by yellow; females and immatures are duller with a grayish cheek",
+      "Olive upperparts and dark wings with a conspicuous white patch or wingbars",
+      "Dark, slender legs and white undertail coverts"
+    ],
+    "habitat": "Breeds in mature boreal forests dominated by spruce and balsam fir, often near openings or forest edges. During migration it uses varied woodland, scrub, and thickets; nonbreeding habitats include shrubby plantings, second growth, pine and broadleaf forest, dry forest, and mangroves.",
+    "measurements": {
+      "length": "Both sexes: 4.7\u20135.1 in (12\u201313 cm)",
+      "weight": "Both sexes: 0.4\u20130.5 oz (10.2\u201315.2 g)",
+      "wingspan": "Both sexes: 7.9\u20138.7 in (20\u201322 cm)"
+    },
+    "palette": [
+      "bright yellow",
+      "olive green",
+      "chestnut brown",
+      "black",
+      "white"
+    ],
+    "scientific_name": "Setophaga tigrina",
+    "sources": [
+      {
+        "title": "Cape May Warbler Identification \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Cape_May_Warbler/id"
+      },
+      {
+        "title": "Cape May Warbler Life History \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Cape_May_Warbler/lifehistory"
+      },
+      {
+        "title": "Cape May Warbler \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/cape-may-warbler"
+      }
+    ],
+    "taxon_id": 145231
+  },
+  "quality_review": {
+    "anatomy_accuracy": 4,
+    "composition_quality": 5,
+    "correction_findings": [],
+    "findings": [
+      "The primary specimen is a convincing adult male Cape May Warbler: yellow underparts with fine dark streaking, a chestnut auricular patch framed by yellow, olive upperparts, dark wings with a conspicuous white patch, white undertail coverts, and a short tail agree with the reference photographs and direct identification sources.",
+      "The proportions are credible for a small, delicate, short-tailed warbler. The dark bill is slender and only subtly downcurved, consistent with the clearest side-profile references; neither depicted head has a truncated, reversed, or materially exaggerated mandible.",
+      "The primary specimen has one head, one bill, one visible eye, one tail, two plausibly attached legs, intact grasping feet, and a convincing near-side wing. The far-side wing is naturally hidden by the side-on pose rather than visibly missing or malformed.",
+      "The detached wing and head are clearly intentional supplementary studies. The wing has coherent feather layering and a Cape May Warbler-like white patch, while the head study independently preserves the dark eye, yellow facial frame, chestnut cheek, and plausible bill geometry.",
+      "Every visible identification line matches the proposed profile in spelling and meaning: \u201cSmall, delicate warbler with a short tail\u201d; \u201cSlender, dark, slightly downcurved bill and dark eye\u201d; \u201cYellow underparts marked with narrow dark \u2018tiger\u2019 streaks\u201d; the adult-male and female/immature cheek description; the olive-upperparts and white-patch/wingbars description; and the dark-legs and white-undertail-coverts description.",
+      "The names \u201cCape May Warbler,\u201d \u201cSetophaga tigrina,\u201d and \u201cParulidae\u201d are correct. eBird independently confirms the scientific name, family, small size, very slightly downcurved bill, yellow-and-black-streaked adult-male underparts, orange/chestnut cheek, and white wing patch.",
+      "The printed measurements\u2014length 4.7\u20135.1 in (12\u201313 cm), weight 0.4\u20130.5 oz (10.2\u201315.2 g), and wingspan 7.9\u20138.7 in (20\u201322 cm)\u2014exactly match the All About Birds measurement table. The repeated BODY LENGTH value is identical and not contradictory.",
+      "The wingspan diagram is internally consistent: its 7.9 in (20 cm) minimum is at the bottom, its 8.7 in (22 cm) maximum is at the top, and the values therefore increase upward. Interior ticks are unlabeled subdivisions. \u201cSCHEMATIC \u2014 NOT TO SCALE\u201d makes clear that the printed specimen is not a life-size scale representation.",
+      "Audubon publishes a separately rounded, broader measurement summary, but this does not invalidate the plate because the plate exactly reproduces the direct All About Birds values rather than combining incompatible endpoints.",
+      "No map, coordinates, ZIP code, observation site, or local-observation detail appears. \u201cCape May\u201d occurs only as part of the species\u2019 official common name."
+    ],
+    "location_free": true,
+    "passed": true,
+    "species_accuracy": 5,
+    "text_accuracy": 5,
+    "verification_sources": [
+      {
+        "title": "Cape May Warbler Identification \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Cape_May_Warbler/id"
+      },
+      {
+        "title": "Cape May Warbler \u2014 eBird",
+        "url": "https://ebird.org/species/camwar"
+      },
+      {
+        "title": "Cape May Warbler \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/cape-may-warbler"
+      }
+    ]
+  },
+  "references": [
+    {
+      "attribution": "no rights reserved",
+      "filename": "01-18089935.jpg",
+      "height": 1152,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/18089935/large.jpg",
+      "license_code": "cc0",
+      "observation_id": 12527236,
+      "observer": "mmulqueen",
+      "photo_id": 18089935,
+      "sha256": "5cf9f361fe4bd26ba76b809bae6b9a0e5eddeadf91c91efa0e83988b7fedb526",
+      "source_url": "https://www.inaturalist.org/observations/12527236",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) Court Harding, some rights reserved (CC BY)",
+      "filename": "02-123320951.jpg",
+      "height": 1365,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/123320951/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 75388800,
+      "observer": "courtharding",
+      "photo_id": 123320951,
+      "sha256": "2696ed5936206996f233aeb1206fab80cf4c86b7efc58fd12dead57a40f3093c",
+      "source_url": "https://www.inaturalist.org/observations/75388800",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) Marc-Olivier Beausoleil, some rights reserved (CC BY)",
+      "filename": "03-659319567.jpg",
+      "height": 1536,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/659319567/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 361279536,
+      "observer": "marcolivierbeausoleil",
+      "photo_id": 659319567,
+      "sha256": "a48bf14dab2af2dc21a662582491f6a5ed1cc521671a0e2d86e4ce7c8b3a5700",
+      "source_url": "https://www.inaturalist.org/observations/361279536",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) Jay Brasher, some rights reserved (CC BY)",
+      "filename": "04-212890735.jpg",
+      "height": 1200,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/212890735/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 125541304,
+      "observer": "jbrasher",
+      "photo_id": 212890735,
+      "sha256": "61a91dbfb7047b155787629e252e9723aafbe0d6b6adab5249c61d554648760f",
+      "source_url": "https://www.inaturalist.org/observations/125541304",
+      "width": 1800
+    }
+  ],
+  "schema_version": 1,
+  "scientific_name": "Setophaga tigrina",
+  "slug": "cape-may-warbler",
+  "status": "approved",
+  "taxon_id": 145231
+}
