@@ -267,6 +267,12 @@ weight of one instead of fabricated evidence.
 - `failed`: retained failed-artifact paths, which are not necessarily current
   work.
 
+The compatibility `deferred` list and nested generation view use the same
+captured retry records, while `failed` comes from the same locked local-state
+snapshot. The top-level list intentionally includes every retained retry record;
+the nested `generation.deferred` list remains the authoritative set currently
+waiting for its retry time.
+
 Use the nested `generation` object as the authoritative work view. It combines
 the current discovery snapshot with durable queue-only retries using the same
 calculation as generation. `eligible` contains every unapproved, nonterminal

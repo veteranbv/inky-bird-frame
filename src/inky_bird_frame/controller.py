@@ -1968,11 +1968,16 @@ def generate_candidate(
                     max_attempts=config.controller.max_generation_attempts,
                     correction_source_sha256=correction_source_sha256,
                 )
-                destination = candidate_directory(state_dir, species)
-                destination.parent.mkdir(parents=True, exist_ok=True)
-                if destination.exists():
-                    raise CatalogError(f"Pending destination already exists: {destination}")
-                shutil.copytree(attempt_dir, destination)
+                with catalog_state_lock(state_dir):
+                    if species.taxon_id in approved_taxon_ids(config.controller.catalog_dir):
+                        raise CatalogError(f"Taxon {species.taxon_id} is already approved")
+                    if find_taxon_directory(state_dir / "pending", species.taxon_id) is not None:
+                        raise CatalogError(
+                            f"Taxon {species.taxon_id} already has a pending candidate"
+                        )
+                    destination = candidate_directory(state_dir, species)
+                    destination.parent.mkdir(parents=True, exist_ok=True)
+                    shutil.copytree(attempt_dir, destination)
                 return destination
 
             resolved_corrections = tuple(
@@ -2038,9 +2043,10 @@ def generate_candidate(
             ) or (REVIEW_FAILURE_FALLBACK,)
             correction_source = portrait_path
 
-        failed = state_dir / "failed" / f"{species.taxon_id}-{_timestamp()}"
-        failed.parent.mkdir(parents=True, exist_ok=True)
-        shutil.copytree(work, failed)
+        with catalog_state_lock(state_dir):
+            failed = state_dir / "failed" / f"{species.taxon_id}-{_timestamp()}"
+            failed.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copytree(work, failed)
         reason = terminal_detail or (
             "the configured maximum of "
             f"{config.controller.max_generation_attempts} attempts was exhausted"
@@ -2204,11 +2210,16 @@ def read_generation_work(
     *,
     approved: set[int] | None = None,
     now: datetime | None = None,
+    retry_records: list[RetryRecord] | None = None,
 ) -> GenerationWork:
     """Read local state and return the same generation classification used by a cycle."""
     snapshot = _read_discovery_snapshot(config) if _snapshot_path(config).exists() else None
     queued_species = read_generation_queue(config)
-    retry_records = RetryStore(config.controller.state_dir / "generation-retries.json").records()
+    retained_retries = (
+        retry_records
+        if retry_records is not None
+        else RetryStore(config.controller.state_dir / "generation-retries.json").records()
+    )
     return calculate_generation_work(
         snapshot=snapshot,
         queued_species=queued_species,
@@ -2220,7 +2231,7 @@ def read_generation_work(
             snapshot.species if snapshot is not None else [],
             queued_species,
         ),
-        retry_records=retry_records,
+        retry_records=retained_retries,
         now=now or datetime.now(UTC),
         maximum_age=timedelta(minutes=config.schedule.refresh_minutes * 2),
     )
@@ -2455,24 +2466,25 @@ def run_generation_cycle(config: AppConfig) -> dict[str, object]:
                     }
                 )
             except QualityReviewError as exc:
-                retry_store.clear(species.taxon_id)
-                remaining_profile_conflicts = (
-                    guidance.profile_conflicts
-                    if guidance is not None and exc.profile_conflicts is None
-                    else exc.profile_conflicts or ()
-                )
-                if guidance is not None and (
-                    guidance.invariant_findings or remaining_profile_conflicts
-                ):
-                    retry_store.set_quality_guidance(
-                        species.taxon_id,
-                        guidance.invariant_findings,
-                        invariant_findings=guidance.invariant_findings,
-                        profile_conflicts=remaining_profile_conflicts,
+                with catalog_state_lock(config.controller.state_dir):
+                    retry_store.clear(species.taxon_id)
+                    remaining_profile_conflicts = (
+                        guidance.profile_conflicts
+                        if guidance is not None and exc.profile_conflicts is None
+                        else exc.profile_conflicts or ()
                     )
-                else:
-                    retry_store.clear_quality_guidance(species.taxon_id)
-                failure_path = record_failure(config.controller.state_dir, species, exc)
+                    if guidance is not None and (
+                        guidance.invariant_findings or remaining_profile_conflicts
+                    ):
+                        retry_store.set_quality_guidance(
+                            species.taxon_id,
+                            guidance.invariant_findings,
+                            invariant_findings=guidance.invariant_findings,
+                            profile_conflicts=remaining_profile_conflicts,
+                        )
+                    else:
+                        retry_store.clear_quality_guidance(species.taxon_id)
+                    failure_path = record_failure(config.controller.state_dir, species, exc)
                 failures.append(
                     {
                         "taxon_id": species.taxon_id,
@@ -2485,8 +2497,9 @@ def run_generation_cycle(config: AppConfig) -> dict[str, object]:
             except MissingDependencyError:
                 raise
             except SpeciesStateError as exc:
-                retry_store.clear(species.taxon_id)
-                failure_path = record_failure(config.controller.state_dir, species, exc)
+                with catalog_state_lock(config.controller.state_dir):
+                    retry_store.clear(species.taxon_id)
+                    failure_path = record_failure(config.controller.state_dir, species, exc)
                 failures.append(
                     {
                         "taxon_id": species.taxon_id,

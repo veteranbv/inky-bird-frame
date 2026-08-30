@@ -405,18 +405,20 @@ def collection_remove_command(args: argparse.Namespace) -> int:
 
 def approve_command(args: argparse.Namespace) -> int:
     config = _config(args)
-    entry = approve_candidate(
-        config.controller.state_dir,
-        config.controller.catalog_dir,
-        args.taxon_id,
-    )
+    with catalog_state_lock(config.controller.state_dir):
+        entry = approve_candidate(
+            config.controller.state_dir,
+            config.controller.catalog_dir,
+            args.taxon_id,
+        )
     print_result(entry.as_dict())
     return 0
 
 
 def reject_command(args: argparse.Namespace) -> int:
     config = _config(args)
-    destination = reject_candidate(config.controller.state_dir, args.taxon_id, args.reason)
+    with catalog_state_lock(config.controller.state_dir):
+        destination = reject_candidate(config.controller.state_dir, args.taxon_id, args.reason)
     print_result({"taxon_id": args.taxon_id, "status": "rejected", "path": str(destination)})
     return 0
 
@@ -1006,9 +1008,11 @@ def retry_command(args: argparse.Namespace) -> int:
                 identity[1],
                 identity[2],
             )
-        for source, destination in terminal_moves:
-            shutil.move(str(source), destination)
-            moved.append(str(destination))
+        if terminal_moves:
+            with catalog_state_lock(config.controller.state_dir):
+                for source, destination in terminal_moves:
+                    shutil.move(str(source), destination)
+                    moved.append(str(destination))
         retry_store.clear(args.taxon_id)
         queued_for_generation = any(
             species.taxon_id == args.taxon_id for species in read_generation_queue(config)
@@ -1047,7 +1051,8 @@ def status_command(args: argparse.Namespace) -> int:
         entries = validate_public_catalog(config.controller.catalog_dir)
         approved = {entry.taxon_id for entry in entries}
         queue = read_generation_queue_partition(config, approved=approved)
-        generation = read_generation_work(config, approved=approved)
+        retries = RetryStore(config.controller.state_dir / "generation-retries.json").records()
+        generation = read_generation_work(config, approved=approved, retry_records=retries)
         collection = collection_status(config, approved=entries)
         pending = []
         for path in sorted((config.controller.state_dir / "pending").glob("*/manifest.json")):
@@ -1061,7 +1066,7 @@ def status_command(args: argparse.Namespace) -> int:
                         "path": str(path.parent),
                     }
                 )
-    retries = RetryStore(config.controller.state_dir / "generation-retries.json")
+        failed = [str(path) for path in sorted((config.controller.state_dir / "failed").glob("*"))]
     print_result(
         {
             "approved": [entry.as_dict() for entry in entries],
@@ -1069,10 +1074,8 @@ def status_command(args: argparse.Namespace) -> int:
             "pending": pending,
             "queued": [species_to_dict(item) for item in queue.actionable],
             "terminal_blocked": [entry.as_dict() for entry in queue.terminal_blocked],
-            "deferred": [record.as_dict() for record in retries.records()],
-            "failed": [
-                str(path) for path in sorted((config.controller.state_dir / "failed").glob("*"))
-            ],
+            "deferred": [record.as_dict() for record in retries],
+            "failed": failed,
             "generation": generation.as_dict(),
         }
     )

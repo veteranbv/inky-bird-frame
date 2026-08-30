@@ -2,6 +2,8 @@ from __future__ import annotations
 
 import json
 import unittest
+from collections.abc import Iterator
+from contextlib import contextmanager
 from datetime import UTC, date, datetime, timedelta
 from pathlib import Path
 from tempfile import TemporaryDirectory
@@ -57,6 +59,7 @@ from inky_bird_frame.controller import (
     read_generation_queue,
     read_generation_queue_partition,
     read_generation_work,
+    record_failure,
     remove_collection_member,
     retry_approved_candidate,
     run_controller_cycle,
@@ -1594,6 +1597,17 @@ class ControllerTests(unittest.TestCase):
     def test_read_generation_work_includes_a_live_only_species(self) -> None:
         now = datetime(2026, 8, 30, 12, 0, tzinfo=UTC)
         species = BirdSpecies(1, "Live Bird", "Avis live", 2, "birdnet-go")
+        retained_retry = RetryRecord(
+            taxon_id=species.taxon_id,
+            attempts=1,
+            error_type="DataSourceError",
+            error="retry is due",
+            first_failed_at=now - timedelta(minutes=5),
+            last_failed_at=now - timedelta(minutes=5),
+            next_attempt_at=now,
+            common_name=species.common_name,
+            scientific_name=species.scientific_name,
+        )
         with TemporaryDirectory() as temporary:
             config_path = Path(temporary) / "config.toml"
             config_path.write_text(CONFIG)
@@ -1619,8 +1633,15 @@ class ControllerTests(unittest.TestCase):
                 )
             )
 
-            work = read_generation_work(config, approved=set(), now=now)
+            with patch("inky_bird_frame.controller.RetryStore") as retry_store:
+                work = read_generation_work(
+                    config,
+                    approved=set(),
+                    now=now,
+                    retry_records=[retained_retry],
+                )
 
+        retry_store.assert_not_called()
         self.assertTrue(work.complete)
         self.assertEqual([item.taxon_id for item in work.actionable], [species.taxon_id])
 
@@ -2550,6 +2571,8 @@ class ControllerTests(unittest.TestCase):
 
     def test_failed_review_is_corrected_and_passing_attempt_is_staged(self) -> None:
         species = BirdSpecies(9083, "Northern Cardinal", "Cardinalis cardinalis", 2, "test")
+        catalog_lock_held = False
+        catalog_lock_entries = 0
         failed_review = QualityReview(
             False,
             3,
@@ -2587,6 +2610,7 @@ class ControllerTests(unittest.TestCase):
                 self.workspace = workspace.resolve()
 
             def create_profile(self, *_args: object, **_kwargs: object) -> SpeciesProfileData:
+                assert not catalog_lock_held
                 output_path = _args[-2]
                 assert isinstance(output_path, Path)
                 assert not output_path.resolve().is_relative_to(self.workspace)
@@ -2594,6 +2618,7 @@ class ControllerTests(unittest.TestCase):
                 return PROFILE
 
             def generate_plate(self, *_args: object, **_kwargs: object) -> Path:
+                assert not catalog_lock_held
                 output_path = _args[-3]
                 correction = _args[-1]
                 assert isinstance(output_path, Path)
@@ -2611,6 +2636,7 @@ class ControllerTests(unittest.TestCase):
                 return output_path
 
             def review_plate(self, *_args: object, **_kwargs: object) -> QualityReview:
+                assert not catalog_lock_held
                 portrait_path = _args[3]
                 assert isinstance(portrait_path, Path)
                 self.review_paths.append(portrait_path)
@@ -2618,6 +2644,7 @@ class ControllerTests(unittest.TestCase):
                 return next(self.reviews)
 
         def prepare(_source: Path, portrait: Path, display: Path) -> None:
+            assert not catalog_lock_held
             portrait.write_bytes(b"portrait")
             display.write_bytes(b"display")
 
@@ -2631,11 +2658,26 @@ class ControllerTests(unittest.TestCase):
             source_plate = config.controller.state_dir / "archive/source/portrait.png"
             source_plate.parent.mkdir(parents=True)
             source_plate.write_bytes(b"source")
+
+            @contextmanager
+            def state_lock(state_dir: Path) -> Iterator[None]:
+                nonlocal catalog_lock_held, catalog_lock_entries
+                self.assertEqual(state_dir, config.controller.state_dir)
+                self.assertFalse(candidate_directory(state_dir, species).exists())
+                catalog_lock_held = True
+                catalog_lock_entries += 1
+                try:
+                    yield
+                finally:
+                    self.assertTrue(candidate_directory(state_dir, species).is_dir())
+                    catalog_lock_held = False
+
             with (
                 patch("inky_bird_frame.controller.load_or_fetch_references", return_value=[]),
                 patch("inky_bird_frame.controller.fetch_taxon_context"),
                 patch("inky_bird_frame.controller.CodexRunner", FakeRunner),
                 patch("inky_bird_frame.controller.prepare_generated_plate", side_effect=prepare),
+                patch("inky_bird_frame.controller.catalog_state_lock", side_effect=state_lock),
             ):
                 candidate = generate_candidate(
                     config,
@@ -2679,6 +2721,7 @@ class ControllerTests(unittest.TestCase):
         self.assertEqual(manifest["status"], "pending")
         self.assertFalse((candidate / "attempt-history.json").exists())
         self.assertEqual(len(private_histories), 1)
+        self.assertEqual(catalog_lock_entries, 1)
 
     def test_profile_conflict_triggers_one_source_backed_refresh(self) -> None:
         species = BirdSpecies(9083, "Northern Cardinal", "Cardinalis cardinalis", 2, "test")
@@ -3088,6 +3131,8 @@ class ControllerTests(unittest.TestCase):
 
     def test_terminal_review_failure_retains_versioned_attempt_history(self) -> None:
         species = BirdSpecies(9083, "Northern Cardinal", "Cardinalis cardinalis", 2, "test")
+        catalog_lock_held = False
+        catalog_lock_entries = 0
         initial_conflict = ProfileConflict(
             field="measurements.length",
             profile_value=PROFILE["measurements"]["length"],
@@ -3138,21 +3183,25 @@ class ControllerTests(unittest.TestCase):
                 pass
 
             def create_profile(self, *_args: object, **_kwargs: object) -> SpeciesProfileData:
+                assert not catalog_lock_held
                 output_path = _args[-2]
                 assert isinstance(output_path, Path)
                 output_path.write_text(json.dumps(PROFILE))
                 return PROFILE
 
             def generate_plate(self, *_args: object, **_kwargs: object) -> Path:
+                assert not catalog_lock_held
                 output_path = _args[-3]
                 assert isinstance(output_path, Path)
                 output_path.write_bytes(b"generated")
                 return output_path
 
             def review_plate(self, *_args: object, **_kwargs: object) -> QualityReview:
+                assert not catalog_lock_held
                 return next(failed_reviews)
 
         def prepare(_source: Path, portrait: Path, display: Path) -> None:
+            assert not catalog_lock_held
             portrait.write_bytes(b"portrait")
             display.write_bytes(b"display")
 
@@ -3160,11 +3209,26 @@ class ControllerTests(unittest.TestCase):
             config_path = Path(temporary) / "config.toml"
             config_path.write_text(CONFIG)
             config = load_config(config_path)
+
+            @contextmanager
+            def state_lock(state_dir: Path) -> Iterator[None]:
+                nonlocal catalog_lock_held, catalog_lock_entries
+                self.assertEqual(state_dir, config.controller.state_dir)
+                self.assertFalse(catalog_lock_held)
+                catalog_lock_held = True
+                catalog_lock_entries += 1
+                try:
+                    yield
+                finally:
+                    self.assertTrue(any((state_dir / "failed").glob("*/attempt-history.json")))
+                    catalog_lock_held = False
+
             with (
                 patch("inky_bird_frame.controller.load_or_fetch_references", return_value=[]),
                 patch("inky_bird_frame.controller.fetch_taxon_context"),
                 patch("inky_bird_frame.controller.CodexRunner", FakeRunner),
                 patch("inky_bird_frame.controller.prepare_generated_plate", side_effect=prepare),
+                patch("inky_bird_frame.controller.catalog_state_lock", side_effect=state_lock),
                 self.assertRaises(QualityReviewError) as raised,
             ):
                 generate_candidate(
@@ -3189,6 +3253,7 @@ class ControllerTests(unittest.TestCase):
         self.assertEqual(run_history["attempts"][0]["failed_axes"], ["species_accuracy"])
         self.assertEqual(run_history["attempts"][1]["regressed_axes"], ["anatomy_accuracy"])
         self.assertEqual(run_history["attempts"][2]["regressed_findings"], ["Shorten the bill"])
+        self.assertEqual(catalog_lock_entries, 1)
 
     def test_reversed_correction_is_not_carried_as_an_invariant(self) -> None:
         species = BirdSpecies(9083, "Northern Cardinal", "Cardinalis cardinalis", 2, "test")
@@ -3414,16 +3479,39 @@ class ControllerTests(unittest.TestCase):
     def test_catalog_failure_is_terminal_for_species_without_aborting_cycle(self) -> None:
         species = BirdSpecies(9083, "Northern Cardinal", "Cardinalis cardinalis", 2, "test")
         location = DiscoveryLocation("12345", "Exampleville", "XY", 1.0, 2.0)
+        lock_held = False
+        failure_transition_locked = False
         with TemporaryDirectory() as temporary:
             config_path = Path(temporary) / "config.toml"
             config_path.write_text(CONFIG)
             config = load_config(config_path)
+
+            @contextmanager
+            def state_lock(_state_dir: Path) -> Iterator[None]:
+                nonlocal lock_held
+                self.assertFalse(lock_held)
+                lock_held = True
+                try:
+                    yield
+                finally:
+                    lock_held = False
+
+            def record(
+                state_dir: Path, failed_species: BirdSpecies, error: SpeciesStateError
+            ) -> Path:
+                nonlocal failure_transition_locked
+                self.assertTrue(lock_held)
+                failure_transition_locked = True
+                return record_failure(state_dir, failed_species, error)
+
             with (
                 patch(
                     "inky_bird_frame.controller.discover_species",
                     return_value=discovery_result(location, [species]),
                 ),
                 patch("inky_bird_frame.controller.generate_candidate") as generate,
+                patch("inky_bird_frame.controller.catalog_state_lock", side_effect=state_lock),
+                patch("inky_bird_frame.controller.record_failure", side_effect=record),
             ):
                 generate.side_effect = SpeciesStateError("cached references are invalid")
                 result = run_controller_cycle(config)
@@ -3431,6 +3519,7 @@ class ControllerTests(unittest.TestCase):
             failures = list((config.controller.state_dir / "failed").glob("9083-*"))
 
         self.assertEqual(len(failures), 1)
+        self.assertTrue(failure_transition_locked)
         failure_results = result["failures"]
         self.assertIsInstance(failure_results, list)
         if isinstance(failure_results, list):
@@ -3624,6 +3713,8 @@ class ControllerTests(unittest.TestCase):
     def test_exhausted_quality_review_becomes_terminal(self) -> None:
         species = BirdSpecies(9083, "Northern Cardinal", "Cardinalis cardinalis", 2, "test")
         location = DiscoveryLocation("12345", "Exampleville", "XY", 1.0, 2.0)
+        lock_held = False
+        failure_transition_locked = False
         with TemporaryDirectory() as temporary:
             config_path = Path(temporary) / "config.toml"
             config_path.write_text(CONFIG)
@@ -3636,12 +3727,33 @@ class ControllerTests(unittest.TestCase):
                 ("Correct the ruler scale",),
                 invariant_findings=("Keep the eyes clearly visible",),
             )
+
+            @contextmanager
+            def state_lock(_state_dir: Path) -> Iterator[None]:
+                nonlocal lock_held
+                self.assertFalse(lock_held)
+                lock_held = True
+                try:
+                    yield
+                finally:
+                    lock_held = False
+
+            def record(
+                state_dir: Path, failed_species: BirdSpecies, error: QualityReviewError
+            ) -> Path:
+                nonlocal failure_transition_locked
+                self.assertTrue(lock_held)
+                failure_transition_locked = True
+                return record_failure(state_dir, failed_species, error)
+
             with (
                 patch(
                     "inky_bird_frame.controller.discover_species",
                     return_value=discovery_result(location, [species]),
                 ),
                 patch("inky_bird_frame.controller.generate_candidate") as generate,
+                patch("inky_bird_frame.controller.catalog_state_lock", side_effect=state_lock),
+                patch("inky_bird_frame.controller.record_failure", side_effect=record),
             ):
                 generate.side_effect = QualityReviewError("review attempts exhausted")
                 result = run_controller_cycle(config)
@@ -3652,6 +3764,7 @@ class ControllerTests(unittest.TestCase):
             ).quality_guidance(species.taxon_id)
 
         self.assertEqual(len(failures), 1)
+        self.assertTrue(failure_transition_locked)
         failure_results = result["failures"]
         self.assertIsInstance(failure_results, list)
         if isinstance(failure_results, list):

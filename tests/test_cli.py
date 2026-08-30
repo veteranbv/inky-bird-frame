@@ -22,6 +22,7 @@ from inky_bird_frame.birds import BirdSpecies, DateRange
 from inky_bird_frame.catalog import rebuild_catalog_index, sha256_file
 from inky_bird_frame.cli import (
     _confirm_birdbuddy_authorization,
+    approve_command,
     birdbuddy_login_command,
     birdbuddy_logout_command,
     birdnet_analyzer_import_command,
@@ -36,6 +37,7 @@ from inky_bird_frame.cli import (
     main,
     notifications_dispatch_command,
     refresh_command,
+    reject_command,
     retry_command,
     seed_command,
     serve_command,
@@ -92,6 +94,44 @@ def write_test_species_identity(directory: Path) -> None:
 
 
 class CliTests(unittest.TestCase):
+    def test_manual_candidate_transitions_hold_catalog_lock(self) -> None:
+        config = controller_config(Path("state"), Path("catalog"))
+        lock_held = False
+        transitions: list[tuple[str, int]] = []
+
+        @contextmanager
+        def state_lock(state_dir: Path) -> Iterator[None]:
+            nonlocal lock_held
+            self.assertEqual(state_dir, Path("state"))
+            self.assertFalse(lock_held)
+            lock_held = True
+            try:
+                yield
+            finally:
+                lock_held = False
+
+        def approve(_state_dir: Path, _catalog_dir: Path, taxon_id: int) -> SimpleNamespace:
+            self.assertTrue(lock_held)
+            transitions.append(("approve", taxon_id))
+            return SimpleNamespace(as_dict=lambda: {"taxon_id": taxon_id})
+
+        def reject(_state_dir: Path, taxon_id: int, _reason: str) -> Path:
+            self.assertTrue(lock_held)
+            transitions.append(("reject", taxon_id))
+            return Path("rejected") / str(taxon_id)
+
+        with (
+            patch("inky_bird_frame.cli._config", return_value=config),
+            patch("inky_bird_frame.cli.catalog_state_lock", side_effect=state_lock),
+            patch("inky_bird_frame.cli.approve_candidate", side_effect=approve),
+            patch("inky_bird_frame.cli.reject_candidate", side_effect=reject),
+            redirect_stdout(io.StringIO()),
+        ):
+            approve_command(Namespace(taxon_id=42))
+            reject_command(Namespace(taxon_id=43, reason="Incorrect anatomy"))
+
+        self.assertEqual(transitions, [("approve", 42), ("reject", 43)])
+
     def test_ebird_archive_commands_are_private_and_parse_reduction_opt_in(self) -> None:
         args = build_parser().parse_args(
             [
@@ -736,6 +776,8 @@ class CliTests(unittest.TestCase):
                 schedule=SimpleNamespace(refresh_minutes=15),
             )
             lock_held = False
+            retained_retries = [SimpleNamespace(as_dict=lambda: {"taxon_id": 42})]
+            output = io.StringIO()
 
             @contextmanager
             def state_lock(state_dir: Path) -> Iterator[None]:
@@ -759,10 +801,14 @@ class CliTests(unittest.TestCase):
                 return SimpleNamespace(actionable=[], terminal_blocked=[])
 
             def generation_snapshot(
-                _config: object, *, approved: set[int] | None = None
+                _config: object,
+                *,
+                approved: set[int] | None = None,
+                retry_records: list[object] | None = None,
             ) -> SimpleNamespace:
                 self.assertTrue(lock_held)
                 self.assertEqual(approved, set())
+                self.assertIs(retry_records, retained_retries)
                 return SimpleNamespace(as_dict=lambda: {})
 
             def collection_snapshot(
@@ -775,6 +821,7 @@ class CliTests(unittest.TestCase):
             with (
                 patch("inky_bird_frame.cli._config", return_value=config),
                 patch("inky_bird_frame.cli.catalog_state_lock", side_effect=state_lock),
+                patch("inky_bird_frame.cli.RetryStore") as retry_store,
                 patch("inky_bird_frame.cli.validate_public_catalog", side_effect=validating),
                 patch(
                     "inky_bird_frame.cli.read_generation_queue_partition",
@@ -785,11 +832,14 @@ class CliTests(unittest.TestCase):
                     side_effect=generation_snapshot,
                 ),
                 patch("inky_bird_frame.cli.collection_status", side_effect=collection_snapshot),
-                redirect_stdout(io.StringIO()),
+                redirect_stdout(output),
             ):
+                retry_store.return_value.records.return_value = retained_retries
                 status_command(Namespace())
 
             self.assertFalse(lock_held)
+            retry_store.return_value.records.assert_called_once_with()
+            self.assertEqual(json.loads(output.getvalue())["data"]["deferred"], [{"taxon_id": 42}])
 
     def test_status_snapshots_pending_candidates_before_releasing_state_lock(self) -> None:
         with TemporaryDirectory() as temporary:
@@ -846,6 +896,71 @@ class CliTests(unittest.TestCase):
             )
             self.assertFalse(pending_dir.exists())
             self.assertTrue(published_dir.exists())
+
+    def test_status_snapshots_failed_paths_before_releasing_state_lock(self) -> None:
+        with TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            state = root / "state"
+            failed_dir = state / "failed/42-failed-bird"
+            failed_dir.mkdir(parents=True)
+            archived_dir = state / "archive/42-failed-bird"
+            config = SimpleNamespace(
+                controller=SimpleNamespace(catalog_dir=root / "catalog", state_dir=state),
+                schedule=SimpleNamespace(refresh_minutes=15),
+            )
+            generation_payload = {
+                "terminal_blocked": [
+                    {
+                        "taxon_id": 42,
+                        "state": "failed",
+                        "paths": [str(failed_dir)],
+                    }
+                ]
+            }
+            output = io.StringIO()
+
+            @contextmanager
+            def state_lock(_state_dir: Path) -> Iterator[None]:
+                yield
+                archived_dir.parent.mkdir(parents=True)
+                failed_dir.rename(archived_dir)
+
+            def generation_snapshot(
+                _config: object,
+                *,
+                approved: set[int] | None = None,
+                retry_records: list[object] | None = None,
+            ) -> SimpleNamespace:
+                self.assertEqual(approved, set())
+                self.assertEqual(retry_records, [])
+                self.assertTrue(failed_dir.is_dir())
+                return SimpleNamespace(as_dict=lambda: generation_payload)
+
+            with (
+                patch("inky_bird_frame.cli._config", return_value=config),
+                patch("inky_bird_frame.cli.catalog_state_lock", side_effect=state_lock),
+                patch("inky_bird_frame.cli.validate_public_catalog", return_value=[]),
+                patch(
+                    "inky_bird_frame.cli.read_generation_queue_partition",
+                    return_value=SimpleNamespace(actionable=[], terminal_blocked=[]),
+                ),
+                patch(
+                    "inky_bird_frame.cli.read_generation_work",
+                    side_effect=generation_snapshot,
+                ),
+                patch(
+                    "inky_bird_frame.cli.collection_status",
+                    return_value={"members": []},
+                ),
+                redirect_stdout(output),
+            ):
+                status_command(Namespace())
+
+            payload = json.loads(output.getvalue())["data"]
+            self.assertEqual(payload["generation"], generation_payload)
+            self.assertEqual(payload["failed"], [str(failed_dir)])
+            self.assertFalse(failed_dir.exists())
+            self.assertTrue(archived_dir.exists())
 
     def test_seed_supports_historical_dates_and_coordinates(self) -> None:
         args = build_parser().parse_args(
@@ -2499,8 +2614,33 @@ rotation_mode = "shuffle_bag"
             )
             config = controller_config(state_dir)
             output = io.StringIO()
+            lock_held = False
+            pending_move_locked = False
+            real_move = shutil.move
 
-            with patch("inky_bird_frame.cli._config", return_value=config), redirect_stdout(output):
+            @contextmanager
+            def state_lock(_state_dir: Path) -> Iterator[None]:
+                nonlocal lock_held
+                self.assertFalse(lock_held)
+                lock_held = True
+                try:
+                    yield
+                finally:
+                    lock_held = False
+
+            def move(source: str, destination: Path) -> str:
+                nonlocal pending_move_locked
+                if Path(source) == pending:
+                    self.assertTrue(lock_held)
+                    pending_move_locked = True
+                return str(real_move(Path(source), destination))
+
+            with (
+                patch("inky_bird_frame.cli._config", return_value=config),
+                patch("inky_bird_frame.cli.catalog_state_lock", side_effect=state_lock),
+                patch("inky_bird_frame.cli.shutil.move", side_effect=move),
+                redirect_stdout(output),
+            ):
                 retry_command(Namespace(taxon_id=42))
 
             result = json.loads(output.getvalue())["data"]
@@ -2509,6 +2649,7 @@ rotation_mode = "shuffle_bag"
         self.assertTrue(result["queued_for_generation"])
         self.assertEqual(queue[0].common_name, "Queued Bird")
         self.assertEqual(queue[0].scientific_name, "Avis ordinata")
+        self.assertTrue(pending_move_locked)
 
     def test_retry_prefers_current_identity_over_older_edit_source(self) -> None:
         with TemporaryDirectory() as temporary:
