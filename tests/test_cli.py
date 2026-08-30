@@ -751,10 +751,40 @@ class CliTests(unittest.TestCase):
                 self.assertTrue(lock_held)
                 return []
 
+            def queue_snapshot(
+                _config: object, *, approved: set[int] | None = None
+            ) -> SimpleNamespace:
+                self.assertTrue(lock_held)
+                self.assertEqual(approved, set())
+                return SimpleNamespace(actionable=[], terminal_blocked=[])
+
+            def generation_snapshot(
+                _config: object, *, approved: set[int] | None = None
+            ) -> SimpleNamespace:
+                self.assertTrue(lock_held)
+                self.assertEqual(approved, set())
+                return SimpleNamespace(as_dict=lambda: {})
+
+            def collection_snapshot(
+                _config: object, *, approved: list[object] | None = None
+            ) -> dict[str, object]:
+                self.assertTrue(lock_held)
+                self.assertEqual(approved, [])
+                return {"members": []}
+
             with (
                 patch("inky_bird_frame.cli._config", return_value=config),
                 patch("inky_bird_frame.cli.catalog_state_lock", side_effect=state_lock),
                 patch("inky_bird_frame.cli.validate_public_catalog", side_effect=validating),
+                patch(
+                    "inky_bird_frame.cli.read_generation_queue_partition",
+                    side_effect=queue_snapshot,
+                ),
+                patch(
+                    "inky_bird_frame.cli.read_generation_work",
+                    side_effect=generation_snapshot,
+                ),
+                patch("inky_bird_frame.cli.collection_status", side_effect=collection_snapshot),
                 redirect_stdout(io.StringIO()),
             ):
                 status_command(Namespace())

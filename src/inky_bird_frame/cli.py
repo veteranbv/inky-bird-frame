@@ -1045,12 +1045,10 @@ def status_command(args: argparse.Namespace) -> int:
     config = _config(args)
     with catalog_state_lock(config.controller.state_dir):
         entries = validate_public_catalog(config.controller.catalog_dir)
-    queue = read_generation_queue_partition(config, approved={entry.taxon_id for entry in entries})
-    generation = read_generation_work(
-        config,
-        approved={entry.taxon_id for entry in entries},
-    )
-    collection = collection_status(config, approved=entries)
+        approved = {entry.taxon_id for entry in entries}
+        queue = read_generation_queue_partition(config, approved=approved)
+        generation = read_generation_work(config, approved=approved)
+        collection = collection_status(config, approved=entries)
     retries = RetryStore(config.controller.state_dir / "generation-retries.json")
     pending = []
     for path in sorted((config.controller.state_dir / "pending").glob("*/manifest.json")):

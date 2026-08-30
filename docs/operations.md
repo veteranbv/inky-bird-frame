@@ -311,12 +311,15 @@ inky-bird-frame catalog sync --source-catalog /path/to/source \
 
 The command is add-only by default. It validates both catalogs, refuses a
 destination taxon that conflicts with its immutable source version, and reports
-published and already-present taxa. Controller bootstrap adds
-`--apply-reviewed-migrations`. That option accepts only hash-bound migration
-ancestry: it applies a newer reviewed source, permits skipped intermediate
-releases, and reports a validated newer destination under `retained_newer`
-without downgrading it. An unrelated, incomplete, or tampered history still
-fails closed. Pass `--state-dir` with the controller state directory when the
+published and already-present taxa. Controller bootstrap enables reviewed
+migrations with `INKY_CATALOG_SYNC_APPLY_REVIEWED_MIGRATIONS=1` instead of a
+version-specific command argument, so the current Compose file remains usable
+with older rollback images. The equivalent manual option,
+`--apply-reviewed-migrations`, accepts only hash-bound migration ancestry: it
+applies a newer reviewed source, permits skipped intermediate releases, and
+reports a validated newer destination under `retained_newer` without
+downgrading it. An unrelated, incomplete, or tampered history still fails
+closed. Pass `--state-dir` with the controller state directory when the
 destination is live so the copy holds the same lock as generation. The Docker
 bootstrap service uses this mode to copy the image's bundled catalog into
 persistent storage; see the
