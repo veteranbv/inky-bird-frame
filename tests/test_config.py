@@ -99,7 +99,8 @@ class ConfigTests(unittest.TestCase):
             'bind_host = "0.0.0.0"',
             'bind_host = "0.0.0.0"\n'
             'cors_allowed_origins = ["HTTPS://Display.Example.Test:443/", '
-            '"http://[2001:db8::1]:8080"]',
+            '"http://[2001:0db8:0:0:0:0:0:1]:8080", '
+            '"https://xn--caf-dma.example"]',
         )
         with TemporaryDirectory() as temporary:
             path = Path(temporary) / "config.toml"
@@ -109,7 +110,11 @@ class ConfigTests(unittest.TestCase):
 
         self.assertEqual(
             config.controller.cors_allowed_origins,
-            ("https://display.example.test", "http://[2001:db8::1]:8080"),
+            (
+                "https://display.example.test",
+                "http://[2001:db8::1]:8080",
+                "https://xn--caf-dma.example",
+            ),
         )
 
     def test_rejects_invalid_trusted_browser_origins(self) -> None:
@@ -119,6 +124,7 @@ class ConfigTests(unittest.TestCase):
             "https://user@display.example.test",
             "https://display.example.test/path",
             "https://display.example.test?mode=frame",
+            "https://café.example",
         )
         for origin in invalid_origins:
             with self.subTest(origin=origin), TemporaryDirectory() as temporary:

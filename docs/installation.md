@@ -97,11 +97,12 @@ cors_allowed_origins = ["https://frame.example.test"]
 ```
 
 An origin contains only the scheme, host, and optional port. Inky rejects
-wildcards, credentials, paths, queries, and fragments. A matching origin can
-read `GET /v1/catalog` and `GET /v1/assets/*`; health and display-heartbeat
-responses do not receive cross-origin access headers. Requests from other
-origins receive the normal response without an `Access-Control-Allow-Origin`
-header.
+wildcards, credentials, paths, queries, and fragments. Use the ASCII or
+punycode hostname spelling sent by the browser for an international domain. A
+matching origin can read `GET /v1/catalog` and `GET /v1/assets/*`; health and
+display-heartbeat responses do not receive cross-origin access headers.
+Requests from other origins receive the normal response without an
+`Access-Control-Allow-Origin` header.
 
 This setting does not add authentication, TLS, or public-internet safety. Keep
 the controller private. Browsers also block an HTTPS application from fetching

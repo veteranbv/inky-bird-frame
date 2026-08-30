@@ -7,6 +7,7 @@ import tomllib
 from collections.abc import Iterable
 from dataclasses import dataclass, field
 from enum import StrEnum
+from ipaddress import ip_address
 from os import environ
 from pathlib import Path
 from shutil import which
@@ -305,7 +306,15 @@ def _http_origins(section: dict[str, object], name: str) -> tuple[str, ...]:
                 "queries, or fragments"
             )
         scheme = parsed.scheme.casefold()
-        host = parsed.hostname.casefold()
+        host = parsed.hostname
+        if not host.isascii():
+            raise ConfigurationError(
+                f"{name} hostnames must use the ASCII or punycode spelling sent by browsers"
+            )
+        try:
+            host = ip_address(host).compressed
+        except ValueError:
+            host = host.casefold()
         if ":" in host:
             host = f"[{host}]"
         default_port = (scheme == "http" and port == 80) or (scheme == "https" and port == 443)
