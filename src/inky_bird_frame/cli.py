@@ -29,7 +29,6 @@ from .catalog import (
     find_taxon_directory,
     has_valid_approved_candidate,
     read_json,
-    rebuild_catalog_index,
     reject_candidate,
     sha256_file,
 )
@@ -54,6 +53,7 @@ from .controller import (
     import_approved_collection,
     read_generation_queue,
     read_generation_queue_partition,
+    read_generation_work,
     remove_collection_member,
     retry_approved_candidate,
     run_controller_cycle,
@@ -88,6 +88,8 @@ from .publisher import (
 from .retry import RetryStore, parse_retry_profile_conflicts
 from .scheduler import ScheduledJob, SubprocessCommandRunner, run_scheduler
 from .server import serve_catalog
+
+CATALOG_SYNC_REVIEWED_MIGRATIONS_ENV = "INKY_CATALOG_SYNC_APPLY_REVIEWED_MIGRATIONS"
 
 
 def print_result(data: object) -> None:
@@ -1041,8 +1043,12 @@ def retry_command(args: argparse.Namespace) -> int:
 
 def status_command(args: argparse.Namespace) -> int:
     config = _config(args)
-    entries = rebuild_catalog_index(config.controller.catalog_dir)
+    entries = validate_public_catalog(config.controller.catalog_dir)
     queue = read_generation_queue_partition(config, approved={entry.taxon_id for entry in entries})
+    generation = read_generation_work(
+        config,
+        approved={entry.taxon_id for entry in entries},
+    )
     collection = collection_status(config, approved=entries)
     retries = RetryStore(config.controller.state_dir / "generation-retries.json")
     pending = []
@@ -1068,6 +1074,7 @@ def status_command(args: argparse.Namespace) -> int:
             "failed": [
                 str(path) for path in sorted((config.controller.state_dir / "failed").glob("*"))
             ],
+            "generation": generation.as_dict(),
         }
     )
     return 0
@@ -1145,11 +1152,14 @@ def catalog_prepare_command(args: argparse.Namespace) -> int:
 
 def catalog_sync_command(args: argparse.Namespace) -> int:
     lock = catalog_state_lock(args.state_dir) if args.state_dir is not None else nullcontext()
+    apply_reviewed_migrations = args.apply_reviewed_migrations or (
+        os.environ.get(CATALOG_SYNC_REVIEWED_MIGRATIONS_ENV) == "1"
+    )
     with lock:
         result = sync_public_catalog(
             args.source_catalog,
             args.catalog,
-            allow_replacements=False,
+            allow_replacements=apply_reviewed_migrations,
         )
     print_result(
         {
@@ -1738,6 +1748,14 @@ def build_parser() -> argparse.ArgumentParser:
         "--state-dir",
         type=Path,
         help="Optional controller state directory used to lock catalog writes",
+    )
+    catalog_sync_parser.add_argument(
+        "--apply-reviewed-migrations",
+        action="store_true",
+        help=(
+            "Apply only hash-bound reviewed replacements from the source and retain a "
+            "validated newer destination"
+        ),
     )
     catalog_sync_parser.set_defaults(func=catalog_sync_command)
     catalog_validate_parser = catalog_subparsers.add_parser(

@@ -18,7 +18,7 @@ from unittest.mock import patch
 import inky_bird_frame
 from inky_bird_frame.birdnet_analyzer import BirdNetAnalyzerImportStats
 from inky_bird_frame.birds import BirdSpecies, DateRange
-from inky_bird_frame.catalog import sha256_file
+from inky_bird_frame.catalog import rebuild_catalog_index, sha256_file
 from inky_bird_frame.cli import (
     _confirm_birdbuddy_authorization,
     birdbuddy_login_command,
@@ -50,6 +50,7 @@ from inky_bird_frame.controller import (
 )
 from inky_bird_frame.ebird_archive import EbirdArchiveHistory, EbirdArchiveImportStats
 from inky_bird_frame.errors import (
+    CatalogPublishError,
     ConfigurationError,
     DataSourceError,
     GenerationError,
@@ -449,12 +450,29 @@ class CliTests(unittest.TestCase):
         self.assertEqual(str(args.source_catalog), "bundled-catalog")
         self.assertEqual(str(args.catalog), "managed-catalog")
         self.assertEqual(str(args.state_dir), "controller-state")
+        self.assertFalse(args.apply_reviewed_migrations)
+
+    def test_catalog_sync_parses_reviewed_migration_opt_in(self) -> None:
+        args = build_parser().parse_args(
+            [
+                "catalog",
+                "sync",
+                "--source-catalog",
+                "bundled-catalog",
+                "--catalog",
+                "managed-catalog",
+                "--apply-reviewed-migrations",
+            ]
+        )
+
+        self.assertTrue(args.apply_reviewed_migrations)
 
     def test_catalog_sync_uses_controller_catalog_lock(self) -> None:
         args = Namespace(
             source_catalog=Path("bundled-catalog"),
             catalog=Path("managed-catalog"),
             state_dir=Path("controller-state"),
+            apply_reviewed_migrations=True,
         )
         with (
             patch("inky_bird_frame.cli.catalog_state_lock") as catalog_lock,
@@ -470,7 +488,65 @@ class CliTests(unittest.TestCase):
         sync.assert_called_once_with(
             Path("bundled-catalog"),
             Path("managed-catalog"),
+            allow_replacements=True,
+        )
+
+    def test_catalog_sync_remains_add_only_without_reviewed_migration_opt_in(self) -> None:
+        args = build_parser().parse_args(
+            [
+                "catalog",
+                "sync",
+                "--source-catalog",
+                "bundled-catalog",
+                "--catalog",
+                "managed-catalog",
+            ]
+        )
+        with (
+            patch.dict("os.environ", {}, clear=True),
+            patch(
+                "inky_bird_frame.cli.sync_public_catalog",
+                return_value={"published": [], "already_present": []},
+            ) as sync,
+            redirect_stdout(io.StringIO()),
+        ):
+            catalog_sync_command(args)
+
+        sync.assert_called_once_with(
+            Path("bundled-catalog"),
+            Path("managed-catalog"),
             allow_replacements=False,
+        )
+
+    def test_catalog_sync_accepts_compose_environment_opt_in(self) -> None:
+        args = build_parser().parse_args(
+            [
+                "catalog",
+                "sync",
+                "--source-catalog",
+                "bundled-catalog",
+                "--catalog",
+                "managed-catalog",
+            ]
+        )
+        with (
+            patch.dict(
+                "os.environ",
+                {"INKY_CATALOG_SYNC_APPLY_REVIEWED_MIGRATIONS": "1"},
+                clear=True,
+            ),
+            patch(
+                "inky_bird_frame.cli.sync_public_catalog",
+                return_value={"published": [], "already_present": []},
+            ) as sync,
+            redirect_stdout(io.StringIO()),
+        ):
+            catalog_sync_command(args)
+
+        sync.assert_called_once_with(
+            Path("bundled-catalog"),
+            Path("managed-catalog"),
+            allow_replacements=True,
         )
 
     def test_scheduler_requires_explicit_config(self) -> None:
@@ -555,6 +631,18 @@ class CliTests(unittest.TestCase):
             actionable=[actionable],
             terminal_blocked=[SimpleNamespace(as_dict=lambda: blocked)],
         )
+        generation_payload = {
+            "complete": False,
+            "discovery": {"status": "missing"},
+            "eligible_count": 0,
+            "eligible": [],
+            "actionable_count": 0,
+            "actionable": [],
+            "deferred_count": 0,
+            "deferred": [],
+            "terminal_blocked_count": 0,
+            "terminal_blocked": [],
+        }
         with TemporaryDirectory() as temporary:
             state = Path(temporary)
             config = SimpleNamespace(
@@ -563,8 +651,12 @@ class CliTests(unittest.TestCase):
             output = io.StringIO()
             with (
                 patch("inky_bird_frame.cli._config", return_value=config),
-                patch("inky_bird_frame.cli.rebuild_catalog_index", return_value=[]),
+                patch("inky_bird_frame.cli.validate_public_catalog", return_value=[]),
                 patch("inky_bird_frame.cli.read_generation_queue_partition", return_value=queue),
+                patch(
+                    "inky_bird_frame.cli.read_generation_work",
+                    return_value=SimpleNamespace(as_dict=lambda: generation_payload),
+                ),
                 patch(
                     "inky_bird_frame.cli.collection_status",
                     return_value={"collection_count": 0, "members": []},
@@ -577,6 +669,62 @@ class CliTests(unittest.TestCase):
         self.assertEqual([entry["taxon_id"] for entry in payload["queued"]], [1])
         self.assertEqual(payload["terminal_blocked"], [blocked])
         self.assertEqual(payload["collection"], {"collection_count": 0})
+        self.assertEqual(payload["generation"], generation_payload)
+
+    def test_status_validates_without_rewriting_catalog_or_state(self) -> None:
+        with TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            catalog = root / "catalog"
+            state = root / "state"
+            source_species = (
+                Path(__file__).resolve().parents[1] / "catalog/species/9083-northern-cardinal"
+            )
+            shutil.copytree(source_species, catalog / "species/9083-northern-cardinal")
+            rebuild_catalog_index(catalog)
+            index = catalog / "index.json"
+            index_before = index.read_bytes()
+            modified_before = index.stat().st_mtime_ns
+            config = SimpleNamespace(
+                controller=SimpleNamespace(catalog_dir=catalog, state_dir=state),
+                schedule=SimpleNamespace(refresh_minutes=15),
+            )
+            output = io.StringIO()
+
+            with patch("inky_bird_frame.cli._config", return_value=config), redirect_stdout(output):
+                status_command(Namespace())
+
+            state_entries = list(state.rglob("*"))
+            payload = json.loads(output.getvalue())["data"]
+            self.assertFalse(payload["generation"]["complete"])
+            self.assertEqual(payload["generation"]["discovery"], {"status": "missing"})
+            self.assertEqual(index.read_bytes(), index_before)
+            self.assertEqual(index.stat().st_mtime_ns, modified_before)
+            self.assertEqual(state_entries, [])
+
+    def test_status_fails_closed_without_repairing_an_invalid_catalog(self) -> None:
+        with TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            catalog = root / "catalog"
+            state = root / "state"
+            (catalog / "species").mkdir(parents=True)
+            index = catalog / "index.json"
+            index.write_text("{}")
+            index_before = index.read_bytes()
+            modified_before = index.stat().st_mtime_ns
+            config = SimpleNamespace(
+                controller=SimpleNamespace(catalog_dir=catalog, state_dir=state),
+                schedule=SimpleNamespace(refresh_minutes=15),
+            )
+
+            with (
+                patch("inky_bird_frame.cli._config", return_value=config),
+                self.assertRaisesRegex(CatalogPublishError, "index does not match"),
+            ):
+                status_command(Namespace())
+
+            self.assertEqual(index.read_bytes(), index_before)
+            self.assertEqual(index.stat().st_mtime_ns, modified_before)
+            self.assertFalse(state.exists())
 
     def test_seed_supports_historical_dates_and_coordinates(self) -> None:
         args = build_parser().parse_args(

@@ -272,7 +272,7 @@ uv run inky-bird-frame collection list --config config.toml
 uv run inky-bird-frame collection add 12942 --config config.toml
 uv run inky-bird-frame collection remove 12942 --config config.toml --dry-run
 
-# Inspect approved, actionable, deferred, terminal-blocked, and failed work.
+# Inspect current generation work and the underlying durable state.
 uv run inky-bird-frame status --config config.toml
 
 # Serve the catalog and rotate the next approved plate.

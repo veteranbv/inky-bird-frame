@@ -117,12 +117,13 @@ by `species_limit` and BirdWeather's 100-species maximum. Species are also
 deduplicated against the other discovery providers. Repeated detections update
 one species record; they do not create more plates. If a detected species is
 absent from `approved`, it still needs a plate before it can appear. Check
-`pending`, `deferred`, `terminal_blocked`, and `failed` before forcing a run. A
-plate you previously rejected or an interrupted pending directory without a
-manifest is also terminal; for a live-only detection, either state may be
-absent from those lists. Inspect the taxon and run `retry TAXON_ID` to make it
-eligible again. When no deferred or terminal state exists, let the scheduled
-generator run or invoke
+the nested `generation` object before forcing a run. It includes live-only and
+durably queued detections. `generation.complete = false` means a missing or stale
+refresh prevents immediate action even when `eligible` is nonempty. A plate you
+previously rejected or an interrupted pending directory without a manifest
+appears in `generation.terminal_blocked`; inspect the taxon and run
+`retry TAXON_ID` to make it eligible again. When `generation.actionable` is
+nonempty, let the scheduled generator run or invoke
 `inky-bird-frame generate --config /path/to/config.toml` for an immediate
 attempt.
 

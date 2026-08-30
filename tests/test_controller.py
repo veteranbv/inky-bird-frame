@@ -43,6 +43,7 @@ from inky_bird_frame.controller import (
     _merge_provider_species,
     _merge_refreshed_profile,
     add_collection_member,
+    calculate_generation_work,
     collection_status,
     discover_species,
     enqueue_seed_species,
@@ -55,6 +56,7 @@ from inky_bird_frame.controller import (
     load_or_fetch_references,
     read_generation_queue,
     read_generation_queue_partition,
+    read_generation_work,
     remove_collection_member,
     retry_approved_candidate,
     run_controller_cycle,
@@ -74,7 +76,7 @@ from inky_bird_frame.errors import (
 from inky_bird_frame.geo import DiscoveryLocation
 from inky_bird_frame.models import ProfileConflict, QualityReview, SpeciesProfileData
 from inky_bird_frame.prompts import PROMPT_VERSION
-from inky_bird_frame.retry import RetryStore
+from inky_bird_frame.retry import RetryRecord, RetryStore
 
 
 def discovery_result(location: DiscoveryLocation, species: list[BirdSpecies]) -> DiscoveryResult:
@@ -1479,6 +1481,149 @@ class ControllerTests(unittest.TestCase):
         self.assertEqual(partition.terminal_blocked[1].species.taxon_id, 3)
         self.assertEqual(partition.terminal_blocked[1].state, "incomplete_pending")
 
+    def test_generation_work_combines_live_and_queued_species(self) -> None:
+        now = datetime(2026, 8, 30, 12, 0, tzinfo=UTC)
+        deferred = BirdSpecies(1, "Current Bird", "Avis current", 4, "birdnet-go")
+        blocked = BirdSpecies(2, "Blocked Bird", "Avis blocked", 2, "birdweather")
+        pending = BirdSpecies(3, "Pending Bird", "Avis pending", 1, "birdbuddy")
+        queued = BirdSpecies(4, "Old Name", "Avis old", 0, "historical-seed")
+        approved = BirdSpecies(5, "Approved Bird", "Avis approved", 3, "inaturalist")
+        retry_records = [
+            RetryRecord(
+                taxon_id=deferred.taxon_id,
+                attempts=1,
+                error_type="DataSourceError",
+                error="temporary",
+                first_failed_at=now,
+                last_failed_at=now,
+                next_attempt_at=now + timedelta(minutes=5),
+                common_name=deferred.common_name,
+                scientific_name=deferred.scientific_name,
+            ),
+            RetryRecord(
+                taxon_id=queued.taxon_id,
+                attempts=1,
+                error_type="DataSourceError",
+                error="temporary",
+                first_failed_at=now - timedelta(minutes=5),
+                last_failed_at=now - timedelta(minutes=5),
+                next_attempt_at=now,
+                common_name="Recovered Name",
+                scientific_name="Avis recovered",
+            ),
+        ]
+
+        work = calculate_generation_work(
+            snapshot=DiscoverySnapshot(
+                now - timedelta(minutes=1),
+                "Exampleville",
+                "XY",
+                [deferred, blocked, pending, approved],
+            ),
+            queued_species=[
+                BirdSpecies(1, "Stale Bird", "Avis stale", 0, "historical-seed"),
+                queued,
+            ],
+            approved={approved.taxon_id},
+            terminal_states={
+                blocked.taxon_id: ("failed", (Path("state/failed/2-blocked"),)),
+                pending.taxon_id: ("pending", (Path("state/pending/3-pending"),)),
+            },
+            retry_records=retry_records,
+            now=now,
+            maximum_age=timedelta(minutes=30),
+        )
+
+        self.assertTrue(work.complete)
+        self.assertEqual(work.discovery_status, "fresh")
+        self.assertEqual([species.taxon_id for species in work.eligible], [1, 4])
+        self.assertEqual([species.taxon_id for species in work.actionable], [4])
+        self.assertEqual(work.actionable[0].common_name, "Recovered Name")
+        self.assertEqual([record.taxon_id for record in work.deferred], [1])
+        self.assertEqual([entry.species.taxon_id for entry in work.terminal_blocked], [2])
+
+    def test_generation_work_never_claims_actionability_without_fresh_discovery(self) -> None:
+        now = datetime(2026, 8, 30, 12, 0, tzinfo=UTC)
+        observed = BirdSpecies(1, "Observed Bird", "Avis observed", 2, "birdnet-go")
+        queued = BirdSpecies(2, "Queued Bird", "Avis queued", 0, "human-review")
+
+        stale = calculate_generation_work(
+            snapshot=DiscoverySnapshot(
+                now - timedelta(minutes=31),
+                "Exampleville",
+                "XY",
+                [observed],
+            ),
+            queued_species=[queued],
+            approved=set(),
+            terminal_states={},
+            retry_records=[],
+            now=now,
+            maximum_age=timedelta(minutes=30),
+        )
+        missing = calculate_generation_work(
+            snapshot=None,
+            queued_species=[queued],
+            approved=set(),
+            terminal_states={},
+            retry_records=[],
+            now=now,
+            maximum_age=timedelta(minutes=30),
+        )
+
+        self.assertFalse(stale.complete)
+        self.assertEqual(stale.discovery_status, "stale")
+        self.assertEqual([species.taxon_id for species in stale.eligible], [1, 2])
+        self.assertEqual(stale.actionable, [])
+        self.assertFalse(missing.complete)
+        self.assertEqual(missing.discovery_status, "missing")
+        self.assertEqual([species.taxon_id for species in missing.eligible], [2])
+        self.assertEqual(missing.actionable, [])
+
+    def test_generation_work_surfaces_corrupt_discovery_state(self) -> None:
+        with TemporaryDirectory() as temporary:
+            config_path = Path(temporary) / "config.toml"
+            config_path.write_text(CONFIG)
+            config = load_config(config_path)
+            config.controller.state_dir.mkdir(parents=True)
+            (config.controller.state_dir / "discovery.json").write_text("{")
+
+            with self.assertRaisesRegex(CatalogError, "Invalid discovery state"):
+                read_generation_work(config)
+
+    def test_read_generation_work_includes_a_live_only_species(self) -> None:
+        now = datetime(2026, 8, 30, 12, 0, tzinfo=UTC)
+        species = BirdSpecies(1, "Live Bird", "Avis live", 2, "birdnet-go")
+        with TemporaryDirectory() as temporary:
+            config_path = Path(temporary) / "config.toml"
+            config_path.write_text(CONFIG)
+            config = load_config(config_path)
+            config.controller.state_dir.mkdir(parents=True)
+            (config.controller.state_dir / "discovery.json").write_text(
+                json.dumps(
+                    {
+                        "schema_version": 1,
+                        "refreshed_at": now.isoformat(),
+                        "place_name": "Exampleville",
+                        "state": "XY",
+                        "species": [
+                            {
+                                "taxon_id": species.taxon_id,
+                                "common_name": species.common_name,
+                                "scientific_name": species.scientific_name,
+                                "observation_count": species.observation_count,
+                                "source": species.source,
+                            }
+                        ],
+                    }
+                )
+            )
+
+            work = read_generation_work(config, approved=set(), now=now)
+
+        self.assertTrue(work.complete)
+        self.assertEqual([item.taxon_id for item in work.actionable], [species.taxon_id])
+
     def test_generation_prioritizes_current_species_before_seed_queue(self) -> None:
         current = BirdSpecies(1, "Current Bird", "Avis current", 4, "iNaturalist")
         queued = BirdSpecies(2, "Queued Bird", "Avis queued", 3, "iNaturalist")
@@ -1598,6 +1743,64 @@ class ControllerTests(unittest.TestCase):
         self.assertEqual(result["attempted_count"], 1)
         self.assertEqual(result["deferred_count"], 2)
         self.assertEqual(result["outstanding_retry_count"], 2)
+
+    def test_generation_rechecks_retry_due_status_for_each_species(self) -> None:
+        first = BirdSpecies(1, "First Bird", "Avis first", 4, "iNaturalist")
+        retrying = BirdSpecies(2, "Retrying Bird", "Avis retrying", 3, "iNaturalist")
+        with TemporaryDirectory() as temporary:
+            config_path = Path(temporary) / "config.toml"
+            config_path.write_text(CONFIG)
+            config = load_config(config_path)
+            config.controller.state_dir.mkdir(parents=True)
+            (config.controller.state_dir / "discovery.json").write_text(
+                json.dumps(
+                    {
+                        "schema_version": 1,
+                        "refreshed_at": datetime.now(UTC).isoformat(),
+                        "place_name": "Exampleville",
+                        "state": "XY",
+                        "species": [
+                            {
+                                "taxon_id": species.taxon_id,
+                                "common_name": species.common_name,
+                                "scientific_name": species.scientific_name,
+                                "observation_count": species.observation_count,
+                                "source": species.source,
+                            }
+                            for species in (first, retrying)
+                        ],
+                    }
+                )
+            )
+            RetryStore(config.controller.state_dir / "generation-retries.json").record_failure(
+                retrying.taxon_id,
+                DataSourceError("temporary"),
+                now=datetime.now(UTC),
+                initial_minutes=30,
+                maximum_minutes=60,
+                species=retrying,
+            )
+            attempted: list[int] = []
+            due_checks: list[int] = []
+
+            def fail_generation(_config: object, species: BirdSpecies, _workspace: object) -> Path:
+                attempted.append(species.taxon_id)
+                raise DataSourceError("temporary")
+
+            def now_due(_store: RetryStore, taxon_id: int, _now: datetime) -> bool:
+                due_checks.append(taxon_id)
+                return True
+
+            with (
+                patch("inky_bird_frame.controller.approved_taxon_ids", return_value=set()),
+                patch("inky_bird_frame.controller.generate_candidate", side_effect=fail_generation),
+                patch.object(RetryStore, "due", autospec=True, side_effect=now_due),
+                patch("inky_bird_frame.controller.rebuild_catalog_index", return_value=[]),
+            ):
+                run_generation_cycle(config)
+
+        self.assertEqual(due_checks, [first.taxon_id, retrying.taxon_id])
+        self.assertEqual(attempted, [first.taxon_id, retrying.taxon_id])
 
     def test_due_unattempted_retry_remains_outstanding(self) -> None:
         first = BirdSpecies(1, "First Bird", "Avis first", 4, "iNaturalist")
@@ -1810,7 +2013,10 @@ class ControllerTests(unittest.TestCase):
                     "inky_bird_frame.controller._read_discovery_snapshot",
                     side_effect=[initial, latest],
                 ),
-                patch("inky_bird_frame.controller._has_terminal_state", return_value=True),
+                patch(
+                    "inky_bird_frame.controller._generation_terminal_states",
+                    return_value={1: ("failed", (Path("state/failed/1-alpha"),))},
+                ),
                 patch("inky_bird_frame.controller._write_active_catalog", return_value=0) as write,
             ):
                 run_generation_cycle(config)
@@ -1837,6 +2043,92 @@ class ControllerTests(unittest.TestCase):
 
             with self.assertRaisesRegex(DataSourceError, "stale"):
                 run_generation_cycle(config)
+
+    def test_stale_generation_does_not_refresh_retry_identity_or_archive_profile(self) -> None:
+        old = BirdSpecies(42, "Old Bird Name", "Avis old", 0, HUMAN_REVIEW_SOURCE)
+        observed = BirdSpecies(42, "Current Bird Name", "Avis current", 3, "eBird")
+        with TemporaryDirectory() as temporary:
+            config_path = Path(temporary) / "config.toml"
+            config_path.write_text(CONFIG)
+            config = load_config(config_path)
+            state_dir = config.controller.state_dir
+            state_dir.mkdir(parents=True)
+            write_collection(
+                state_dir,
+                [],
+                legacy_seed_queue_migrated_at="2026-08-05T12:00:00+00:00",
+            )
+            queue_path = state_dir / "generation-queue.json"
+            queue_path.write_text(
+                json.dumps(
+                    {
+                        "schema_version": 2,
+                        "species": [
+                            {
+                                "taxon_id": old.taxon_id,
+                                "common_name": old.common_name,
+                                "scientific_name": old.scientific_name,
+                                "observation_count": old.observation_count,
+                                "source": old.source,
+                                "sources": list(old.sources),
+                            }
+                        ],
+                    }
+                )
+            )
+            retry_path = state_dir / "generation-retries.json"
+            RetryStore(retry_path).record_failure(
+                old.taxon_id,
+                GenerationError("temporary failure"),
+                now=datetime(2026, 8, 5, tzinfo=UTC),
+                initial_minutes=5,
+                maximum_minutes=60,
+                species=old,
+            )
+            profile_path = state_dir / "profiles/42/profile.json"
+            profile_path.parent.mkdir(parents=True)
+            profile_path.write_text(
+                json.dumps(
+                    {
+                        "taxon_id": old.taxon_id,
+                        "common_name": old.common_name,
+                        "scientific_name": old.scientific_name,
+                    }
+                )
+            )
+            (state_dir / "discovery.json").write_text(
+                json.dumps(
+                    {
+                        "schema_version": 1,
+                        "refreshed_at": "2000-01-01T00:00:00+00:00",
+                        "place_name": "Exampleville",
+                        "state": "XY",
+                        "species": [
+                            {
+                                "taxon_id": observed.taxon_id,
+                                "common_name": observed.common_name,
+                                "scientific_name": observed.scientific_name,
+                                "observation_count": observed.observation_count,
+                                "source": observed.source,
+                            }
+                        ],
+                    }
+                )
+            )
+            before = {
+                queue_path: queue_path.read_bytes(),
+                retry_path: retry_path.read_bytes(),
+                profile_path: profile_path.read_bytes(),
+            }
+
+            with self.assertRaisesRegex(DataSourceError, "stale"):
+                run_generation_cycle(config)
+
+            after = {path: path.read_bytes() for path in before}
+            archive_exists = (state_dir / "archive").exists()
+
+        self.assertEqual(after, before)
+        self.assertFalse(archive_exists)
 
     def test_refresh_writes_only_observed_approved_species_to_private_active_catalog(
         self,

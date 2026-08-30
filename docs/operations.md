@@ -259,21 +259,30 @@ weight of one instead of fabricated evidence.
 
 ## Interpret generation status
 
-`status` separates persistent generation work into these views:
+`status` preserves these top-level views for compatibility:
 
-- `queued`: unapproved seed-queue taxa still eligible for automatic work;
-- `deferred`: the subset governed by a durable retry schedule after a transient
-  failure; and
-- `terminal_blocked`: queued taxa with an incomplete pending directory,
-  rejected state, or exhausted failed state that require explicit `retry`.
+- `queued`: unapproved taxa in the durable seed or human-review queue;
+- `deferred`: all retained retry records;
+- `terminal_blocked`: terminal states associated with the durable queue; and
+- `failed`: retained failed-artifact paths, which are not necessarily current
+  work.
 
-`deferred` can overlap `queued`; it explains when an otherwise actionable taxon
-will be attempted again. `terminal_blocked` never counts toward `queued_count`
-in generation-cycle output. Passing pending candidates remain visible in the
-separate `pending` view and are recovered at the start of a generation cycle.
-An interrupted pending directory without a manifest appears as
-`incomplete_pending` under `terminal_blocked`; `retry TAXON_ID` archives the
-partial directory before making the taxon eligible again.
+Use the nested `generation` object as the authoritative work view. It combines
+the current discovery snapshot with durable queue-only retries using the same
+calculation as generation. `eligible` contains every unapproved, nonterminal
+candidate; `actionable` is the retry-due subset generation can attempt now;
+`deferred` is waiting for `next_attempt_at`; and `terminal_blocked` includes live
+or queued taxa with incomplete pending, rejected, or failed state. Each list has
+a matching count.
+
+`generation.complete` is true only when the discovery snapshot exists and is no
+older than twice `schedule.refresh_minutes`. Missing or stale discovery remains
+visible as `generation.discovery.status`, preserves the candidates known from
+local state, and leaves `actionable` empty. Corrupt catalog, discovery, or retry
+state fails the command instead of being repaired or presented as healthy.
+Passing pending candidates remain visible in the separate top-level `pending`
+view and are recovered at the start of a generation cycle. `retry TAXON_ID`
+archives an incomplete or terminal candidate before making it eligible again.
 
 ## Run a combined cycle
 
@@ -300,12 +309,17 @@ inky-bird-frame catalog sync --source-catalog /path/to/source \
   --catalog /path/to/destination
 ```
 
-The command is add-only. It validates both catalogs, refuses a destination
-taxon that conflicts with its immutable source version, and reports published
-and already-present taxa. Pass `--state-dir` with the controller state
-directory when the destination is a live controller catalog, so the copy holds
-the same lock as generation. The Docker bootstrap service uses this command to
-copy the image's bundled catalog into persistent storage; see the
+The command is add-only by default. It validates both catalogs, refuses a
+destination taxon that conflicts with its immutable source version, and reports
+published and already-present taxa. Controller bootstrap adds
+`--apply-reviewed-migrations`. That option accepts only hash-bound migration
+ancestry: it applies a newer reviewed source, permits skipped intermediate
+releases, and reports a validated newer destination under `retained_newer`
+without downgrading it. An unrelated, incomplete, or tampered history still
+fails closed. Pass `--state-dir` with the controller state directory when the
+destination is live so the copy holds the same lock as generation. The Docker
+bootstrap service uses this mode to copy the image's bundled catalog into
+persistent storage; see the
 [Docker controller guide](docker.md#what-runs).
 
 ## Catalog publication
