@@ -316,8 +316,15 @@ def _http_origins(section: dict[str, object], name: str) -> tuple[str, ...]:
                 f"{name} hostnames must use the ASCII or punycode spelling sent by browsers"
             )
         try:
-            host = ip_address(host).compressed
+            address = ip_address(host)
+            if address.version == 6 and address.ipv4_mapped is not None:
+                raise ConfigurationError(f"{name} must not use IPv4-mapped IPv6 addresses")
+            host = address.compressed
         except ValueError:
+            if parsed.netloc.startswith("["):
+                raise ConfigurationError(
+                    f"{name} bracketed hosts must be valid IPv6 addresses"
+                ) from None
             if any(ord(character) <= 0x20 or character in "#/:<>?@[\\]^|" for character in host):
                 raise ConfigurationError(
                     f"{name} must use hostnames exactly as browsers serialize them"
