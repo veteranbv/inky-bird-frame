@@ -9,6 +9,7 @@ from argparse import Namespace
 from collections.abc import Iterator
 from contextlib import contextmanager, redirect_stdout
 from datetime import UTC, date, datetime
+from importlib import metadata
 from importlib.metadata import version
 from pathlib import Path
 from tempfile import TemporaryDirectory
@@ -364,6 +365,21 @@ class CliTests(unittest.TestCase):
 
     def test_runtime_version_matches_package_metadata(self) -> None:
         self.assertEqual(inky_bird_frame.__version__, version("inky-bird-frame"))
+
+    def test_source_checkout_version_falls_back_safely(self) -> None:
+        with patch(
+            "inky_bird_frame.metadata.version",
+            side_effect=metadata.PackageNotFoundError,
+        ):
+            self.assertEqual(inky_bird_frame.application_version(), "0+unknown")
+
+    def test_version_flag_reports_application_version(self) -> None:
+        output = io.StringIO()
+        with redirect_stdout(output), self.assertRaises(SystemExit) as raised:
+            main(["--version"])
+
+        self.assertEqual(raised.exception.code, 0)
+        self.assertEqual(output.getvalue(), f"inky-bird-frame {inky_bird_frame.__version__}\n")
 
     def test_status_requires_explicit_config(self) -> None:
         args = build_parser().parse_args(["status", "--config", "instance.toml"])

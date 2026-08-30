@@ -17,6 +17,7 @@ from .errors import DataSourceError
 
 MAX_JSON_BYTES = 8 * 1024 * 1024
 MAX_ASSET_BYTES = 64 * 1024 * 1024
+USER_AGENT = "inky-bird-frame/0.1"
 
 
 def _read_capped(response: HTTPResponse, limit: int, display_url: str) -> bytes:
@@ -93,7 +94,7 @@ def get_json(
     headers: Mapping[str, str] | None = None,
     error_label: str | None = None,
 ) -> object:
-    request_headers = {"User-Agent": "inky-bird-frame/0.1"}
+    request_headers = {"User-Agent": USER_AGENT}
     if headers is not None:
         request_headers.update(headers)
     display_url = error_label or url
@@ -129,7 +130,7 @@ def post_json(
     request_headers = {
         "Accept": "application/json",
         "Content-Type": "application/json",
-        "User-Agent": "inky-bird-frame/0.1",
+        "User-Agent": USER_AGENT,
     }
     if headers is not None:
         request_headers.update(headers)
@@ -160,7 +161,7 @@ def post_json(
 
 
 def get_bytes(url: str, timeout_seconds: float = 30.0) -> bytes:
-    request = _checked_request(url, {"User-Agent": "inky-bird-frame/0.1"})
+    request = _checked_request(url, {"User-Agent": USER_AGENT})
     try:
         with _OPENER.open(request, timeout=timeout_seconds) as response:
             return _read_capped(cast(HTTPResponse, response), MAX_ASSET_BYTES, url)

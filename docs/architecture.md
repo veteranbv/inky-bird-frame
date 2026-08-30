@@ -131,26 +131,66 @@ Notification delivery is an independent durable outbox. Application state is
 committed first, each destination is acknowledged separately, and provider
 failures never block controller or display work.
 
-The controller also exposes a read-only HTTP catalog:
+The controller exposes a small HTTP interface:
 
-- `GET /health`
+- `GET /health`: service state, catalog counts, and application version
 - `GET /v1/catalog`
-- `GET /v1/assets/<catalog-relative-path>`
+- `GET /v1/assets/<active-image-path>`
+- `POST /v1/display-fetch`
+- `POST /v1/display-success`
 
 Cross-origin browser access to the catalog and assets is disabled unless the
 operator configures exact trusted origins. The server echoes a matching origin
 and varies cache entries by `Origin`; it never enables credentialed browser
-requests or grants wildcard access. Health and display-heartbeat responses are
-served without cross-origin access headers.
+requests or grants wildcard access. Health and display telemetry responses are
+served without cross-origin access headers. Ordinary catalog and browser reads
+never update physical-display health.
 
-`/health` reports approved and active species counts from the last built
-catalog index and never rebuilds it, so a health check answers cheaply at any
-catalog size. The server also records the time of the last `/v1/catalog`
-fetch in `display-last-fetch.json` and of the last display-reported completed
-update (`GET /v1/display-success`) in `display-last-success.json`, both under
-`state_dir`; the notifications cycle uses them to raise the display-staleness
-events described in
-[`notifications.md`](notifications.md#events-and-noise-controls).
+Catalog schema version 1 has three top-level fields: `schema_version`,
+`generated_at`, and `species`. Each species entry contains `taxon_id`,
+`common_name`, `scientific_name`, `slug`, `portrait_path`, `portrait_sha256`,
+`display_path`, `display_sha256`, and `approved_at`. `observation_count` and
+`latest_detection_at` are optional. The server projects only these fields from
+private controller state. It never exposes provider names, raw observations,
+locations, credentials, or private provider state.
+
+The asset route serves only portrait and display PNG paths present in the
+current active catalog. It verifies each file against the catalog SHA-256 before
+sending bytes. Catalog responses use `no-store`; an image request becomes
+immutable-cacheable only when its `sha256` query matches the verified active
+catalog digest. Catalog JSON and image responses carry
+`X-Content-Type-Options: nosniff`.
+
+Schema version 1 may gain an optional field only after a privacy review.
+Removing a required field, changing a field's meaning or type, or exposing a
+different data class requires a new schema version or route. Display nodes
+reject an unsupported schema version and ignore unknown entry fields.
+
+`/health` reads the approved count from the last built catalog index and the
+active count from current active-catalog state. It never rebuilds or scans the
+catalog, so the check stays cheap at any catalog size. Its additive `version`
+field comes from installed package metadata.
+
+After a display node parses the catalog, it posts the fixed JSON payload
+`{"schema_version": 1}` to `/v1/display-fetch`. It posts the same bounded
+payload to `/v1/display-success` only after a verified panel update. The server
+records those times under `state_dir`, and the notifications cycle uses them to
+raise the display-staleness events described in
+[`notifications.md`](notifications.md#events-and-noise-controls). The POST
+routes reject browser `Origin` headers and do not grant CORS access.
+
+Display telemetry is not authenticated separately from the trusted-network
+service. A client that can reach the controller can deliberately imitate a
+display node's POST and refresh the aggregate signal. Keep the controller port
+private and do not use these heartbeats as an identity or authorization check.
+
+For one compatibility release, older display nodes may still use `GET
+/v1/catalog?reports_success=1` and `GET /v1/display-success`. The controller
+requires both the fixed Inky display user agent and no `Origin` header; current
+display nodes fall back to these routes only when a telemetry POST fails. These
+state-changing GET forms are deprecated and will be removed in the next feature
+release. The service logs each request locally with source IP address, path and
+query, and status. It does not log headers or send external browser telemetry.
 
 Native installations use launchd or systemd to schedule the controller's
 one-shot commands. Generated systemd serve and display units carry basic
@@ -166,19 +206,19 @@ enabled work.
 
 The display node does not discover birds or generate art. Each timer cycle:
 
-1. fetches the private active catalog;
+1. fetches and validates the private active catalog, then reports that fetch;
 2. selects an entry using the configured sequential, shuffle, `shuffle_bag`, or
-   observation-weighted policy and durable local state. The newest BirdWeather
-   or Bird Buddy detection may take priority once and counts as shown in the
-   current rotation. `shuffle_bag` keeps its own remaining and shown lists, so
-   a newly active species joins the current bag without restoring species
-   already shown;
+   observation-weighted policy and durable local state. The newest BirdWeather,
+   BirdNET-Go, or Bird Buddy detection may take priority once and counts as
+   shown in the current rotation. `shuffle_bag` keeps its own remaining and
+   shown lists, so a newly active species joins the current bag without
+   restoring species already shown;
 3. downloads the canonical display asset;
 4. verifies its SHA-256 checksum;
 5. writes it to a local cache atomically;
 6. fits it without cropping when the detected panel uses the 800x480 geometry;
    and
-7. updates the Inky panel before advancing state.
+7. updates the Inky panel before advancing state and reporting success.
 
 Display cycles use a nonblocking local process lock. A cycle that cannot obtain
 the lock fails without changing state, and failed panel updates also leave the

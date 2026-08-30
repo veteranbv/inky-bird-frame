@@ -15,6 +15,7 @@ from datetime import date
 from pathlib import Path
 from tempfile import NamedTemporaryFile
 
+from . import __version__
 from .birdbuddy import (
     AUTHORIZED_ACCESS_ATTESTATION,
     birdbuddy_status,
@@ -1506,6 +1507,7 @@ def build_parser() -> argparse.ArgumentParser:
         prog="inky-bird-frame",
         description="Generate, approve, serve, and display bird field-journal plates.",
     )
+    parser.add_argument("--version", action="version", version=f"%(prog)s {__version__}")
     subparsers = parser.add_subparsers(dest="command", required=True)
 
     setup_parser = subparsers.add_parser(

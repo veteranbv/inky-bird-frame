@@ -70,7 +70,7 @@ CLI. The display requires `git`, `rsync`, and Pimoroni's Python environment.
 | --- | --- | --- |
 | Controller | Internet HTTPS (TCP 443) | Codex, internet-backed observation services and geocoder, licensed references, and configured research sources |
 | Controller | BirdNET-Go HTTP(S) endpoint | Read-only summaries from an explicitly configured self-hosted station |
-| Display node | Configured controller TCP port (8793 in the supplied example) | Read-only health, catalog, and image downloads |
+| Display node | Configured controller TCP port (8793 in the supplied example) | Health and catalog reads, image downloads, and narrow display-health reports |
 | Trusted browser application | Same-origin proxy, HTTPS endpoint, or controller HTTP port for an HTTP application | Optional read-only catalog and image downloads; an exact allowed origin is required when the request is cross-origin |
 | Application proxy or TLS terminator | Configured controller TCP port (8793 in the supplied example) | Server-side catalog and image requests; keep this hop on the trusted network |
 | Setup computer | Display node SSH (TCP 22) | Installation, updates, and troubleshooting |
@@ -82,8 +82,10 @@ the display stores its URL. The display itself may use ordinary DHCP because it
 initiates every application connection.
 
 Do not expose the configured controller port to the public internet. The
-built-in server is an unauthenticated, read-only LAN service. Use a VPN or an
-authenticated TLS reverse proxy if traffic must cross an untrusted network.
+built-in server is an unauthenticated LAN service. It serves the active catalog
+and accepts only narrow display-health reports; it does not provide user
+authentication. Use a VPN or an authenticated TLS reverse proxy if traffic must
+cross an untrusted network.
 
 The example configuration sets `controller.bind_host = "0.0.0.0"`, which
 listens on every interface of the controller host. On a multi-homed
@@ -104,22 +106,36 @@ cors_allowed_origins = ["https://frame.example.test"]
 An origin contains only the scheme, host, and optional port. Inky rejects
 wildcards, credentials, paths, queries, and fragments. Use an ASCII hostname
 or the canonical form of an IP address. Internationalized and punycode
-hostnames are not supported. A matching origin can read `GET
-/v1/catalog` and `GET /v1/assets/*`; health and display-heartbeat responses do
-not receive cross-origin access headers. Requests from other origins receive
-the normal response without an `Access-Control-Allow-Origin` header.
+hostnames are not supported. A matching origin can read `GET /v1/catalog` and
+the active catalog's portrait and display PNGs under `GET /v1/assets/`. Other
+catalog files, inactive plates, health, and display telemetry do not receive
+cross-origin access. Requests from other origins receive the normal response
+without an `Access-Control-Allow-Origin` header.
+
+The browser catalog includes active species identity, approval time, image
+paths and checksums, and any available observation count and latest-detection
+time. It does not include provider names, raw observations, locations,
+credentials, or private provider state. Browser reads never refresh the
+physical display's health signals. The server also verifies an active image's
+catalog checksum before it sends the file.
 
 This setting does not add authentication, TLS, or public-internet safety. Keep
-the controller private. Browsers also block an HTTPS application from fetching
-a plain-HTTP controller as mixed content. Prefer a same-origin application
-proxy, which needs no CORS permission and can authenticate the browser before
-making a server-side request to Inky. If the browser reaches the controller
-through a VPN, terminate HTTPS for the controller endpoint as well; the VPN
-alone does not prevent mixed content. Direct cross-origin access through cookie,
-session, client-certificate, or HTTP Authorization proxies is not compatible
-with this interface because Inky does not permit credentialed CORS requests or
-implement preflight. Standard `GET` requests need no preflight or custom request
-headers.
+the controller private. Prefer a same-origin application proxy, which needs no
+CORS permission and can authenticate the browser before making a server-side
+request to Inky. Direct public-HTTPS-to-local-network behavior varies by
+browser: the browser may block mixed content, ask for local-network permission,
+or allow only specific local address forms. A VPN does not make those browser
+rules consistent. Terminate HTTPS for the controller or use the same-origin
+proxy when you need a portable path.
+
+Direct cross-origin access through cookie, session, client-certificate, or HTTP
+Authorization proxies is not compatible with this interface. Inky does not
+permit credentialed CORS requests and does not implement CORS or Private
+Network Access preflight. Standard catalog `GET` requests use no custom request
+headers. The service logs each request locally with the source IP address,
+request path and query, and HTTP status. It does not log request headers or send
+browser analytics to an external service. Normal systemd journal or macOS log
+retention applies.
 
 ## 1. Install the controller
 
@@ -283,12 +299,15 @@ IBF="$HOME/Services/inky-bird-frame/.venv/bin/inky-bird-frame"
 curl --fail --silent "http://127.0.0.1:8793/health"
 ```
 
-The health response must have `"ok": true`. `approved_species` is the reusable
-catalog size. `active_species` is the approved subset currently observed in the
-configured window and radius or retained in the private collection. It may
-initially be zero in a region whose birds have not been generated yet. Both
-counts are read from the last built catalog index rather than a fresh catalog
-scan, so the endpoint stays fast as the catalog grows.
+The health response must have `"ok": true`. `version` identifies the running
+application. `approved_species` is the reusable catalog size. `active_species`
+is the approved subset currently observed in the configured window and radius
+or retained in the private collection. It may initially be zero in a region
+whose birds have not been generated yet. The approved count comes from the last
+built catalog index; the active count comes from current active-catalog state.
+The endpoint does not rebuild or scan the catalog, so it stays fast as the
+catalog grows. Run `"$IBF" --version` to identify the command-line installation
+directly.
 
 An existing controller can explicitly retain every currently approved plate
 after upgrading by previewing and applying `collection import-approved`; see
@@ -530,6 +549,18 @@ first. The active catalog wire format is `schema_version: 1`, and a display
 node refuses a catalog with a newer schema version: the cycle fails closed
 and the panel keeps its last image until the display is updated. Private
 collection membership does not change this wire schema.
+
+Current display nodes report a parsed catalog fetch through `POST
+/v1/display-fetch` and a verified panel update through `POST
+/v1/display-success`. The reports contain only `{"schema_version": 1}`. If an
+older controller rejects either POST, the display retries that report through
+the former GET contract after it has validated the catalog or completed the
+panel update. Display rotation therefore keeps working, and health reports
+continue, during a display-first update. For one compatibility release, the
+controller accepts `GET /v1/catalog?reports_success=1` and `GET
+/v1/display-success` only from clients with no `Origin` header and the fixed
+Inky display user agent. Those GET forms are deprecated and will be removed in
+the next feature release.
 
 Docker controller updates pull a published image and recreate the services. See
 the [Docker update instructions](docker.md#update) for version pinning and
