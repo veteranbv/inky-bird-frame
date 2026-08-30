@@ -493,6 +493,24 @@ class ServerTests(unittest.TestCase):
         self.assertEqual(status, 404)
         self.assertNotIn(secret, body)
 
+    def test_allowlisted_asset_symlink_cannot_alias_unlisted_catalog_asset(self) -> None:
+        secret = b"private inactive image inside the catalog"
+        with self._environment() as (_, catalog_dir, state_dir):
+            active_catalog_path = state_dir / "active-catalog.json"
+            active_catalog_path.write_text(
+                json.dumps(_active_catalog(_catalog_entry(image=secret)))
+            )
+            species_dir = catalog_dir / "species" / "1-robin"
+            species_dir.mkdir(parents=True)
+            inactive = species_dir / "inactive.png"
+            inactive.write_bytes(secret)
+            (species_dir / "portrait.png").symlink_to(inactive)
+            with _serving(catalog_dir, active_catalog_path, state_dir) as port:
+                status, _, body = _get(port, "/v1/assets/species/1-robin/portrait.png")
+
+        self.assertEqual(status, 404)
+        self.assertNotIn(secret, body)
+
     def test_asset_path_traversal_is_rejected(self) -> None:
         secret = b"top secret"
         with self._environment() as (root, catalog_dir, state_dir):
@@ -573,6 +591,40 @@ class ServerTests(unittest.TestCase):
         self.assertEqual(heartbeat["schema_version"], 1)
         self.assertRegex(heartbeat["fetched_at"], r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}")
 
+    def test_legacy_catalog_remains_available_when_fetch_telemetry_cannot_persist(
+        self,
+    ) -> None:
+        active = _active_catalog(_catalog_entry())
+        output = io.StringIO()
+        with (
+            self._environment() as (_, catalog_dir, state_dir),
+            patch(
+                "inky_bird_frame.server.write_json_atomic",
+                side_effect=OSError("state unavailable"),
+            ),
+            redirect_stdout(output),
+        ):
+            active_catalog_path = state_dir / "active-catalog.json"
+            active_catalog_path.write_text(json.dumps(active))
+            with _serving(catalog_dir, active_catalog_path, state_dir) as port:
+                status, _, body = _get(
+                    port,
+                    "/v1/catalog?reports_success=1",
+                    headers={"User-Agent": USER_AGENT},
+                )
+
+        events = [json.loads(line) for line in output.getvalue().splitlines()]
+        self.assertEqual(status, 200)
+        self.assertEqual(json.loads(body), active)
+        self.assertFalse((state_dir / "display-last-fetch.json").exists())
+        self.assertIn(
+            {
+                "event": "display_telemetry_write_failed",
+                "file": "display-last-fetch.json",
+            },
+            events,
+        )
+
     def test_nonlegacy_gets_cannot_write_display_telemetry(self) -> None:
         with self._environment() as (_, catalog_dir, state_dir):
             active_catalog_path = state_dir / "active-catalog.json"
@@ -632,6 +684,8 @@ class ServerTests(unittest.TestCase):
                     ),
                     (b"not-json", {"Content-Type": "application/json"}, 400),
                     (b'{"schema_version": 1, "client": "browser"}', {}, 400),
+                    (b'{"schema_version": true}', {}, 400),
+                    (b'{"schema_version": 1.0}', {}, 400),
                     (b'{"schema_version": 1}', {"Content-Type": "text/plain"}, 415),
                 )
                 for body, headers, expected_status in cases:

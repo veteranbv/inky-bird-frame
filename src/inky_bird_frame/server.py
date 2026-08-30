@@ -241,6 +241,14 @@ class CatalogRequestHandler(BaseHTTPRequestHandler):
                 {"schema_version": 1, timestamp_field: utc_now()},
             )
         except OSError:
+            print(
+                json.dumps(
+                    {
+                        "event": "display_telemetry_write_failed",
+                        "file": filename,
+                    }
+                )
+            )
             return False
         return True
 
@@ -295,7 +303,13 @@ class CatalogRequestHandler(BaseHTTPRequestHandler):
                 {"ok": False, "error": "invalid JSON", "schema_version": 1},
             )
             return False
-        if payload != {"schema_version": 1}:
+        if (
+            not isinstance(payload, dict)
+            or set(payload) != {"schema_version"}
+            or not isinstance(payload.get("schema_version"), int)
+            or isinstance(payload.get("schema_version"), bool)
+            or payload["schema_version"] != 1
+        ):
             self._send_json(
                 HTTPStatus.BAD_REQUEST,
                 {"ok": False, "error": "invalid telemetry payload", "schema_version": 1},
@@ -330,13 +344,12 @@ class CatalogRequestHandler(BaseHTTPRequestHandler):
                 return
             # Compatibility bridge for one release. Only the fixed user agent
             # used by older display nodes can update physical-display health.
-            if (
-                self._is_legacy_display_request()
-                and parse_qs(split.query).get("reports_success") == ["1"]
-                and not self._record_display_event("display-last-fetch.json", "fetched_at")
-            ):
-                self._send_telemetry_unavailable()
-                return
+            if self._is_legacy_display_request() and parse_qs(split.query).get(
+                "reports_success"
+            ) == ["1"]:
+                # Legacy telemetry is best effort: a state-write failure must
+                # never withhold an otherwise valid catalog from the display.
+                self._record_display_event("display-last-fetch.json", "fetched_at")
             self._send_json(HTTPStatus.OK, payload, allow_browser_access=True)
             return
         if request_path == "/v1/display-success":
@@ -371,12 +384,14 @@ class CatalogRequestHandler(BaseHTTPRequestHandler):
             expected_sha256 = asset_hashes.get(relative_text)
             relative = Path(relative_text)
             root = self.catalog_dir.resolve()
-            candidate = (root / relative).resolve()
+            candidate = root / relative
+            resolved_candidate = candidate.resolve()
             if (
                 expected_sha256 is None
                 or relative.suffix.lower() != ".png"
                 or any(part.startswith(".") for part in relative.parts)
-                or not candidate.is_relative_to(root)
+                or not resolved_candidate.is_relative_to(root)
+                or resolved_candidate != candidate
                 or not candidate.is_file()
             ):
                 self._send_json(
