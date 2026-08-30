@@ -79,13 +79,16 @@ inky-bird-frame discover --config /path/to/config.toml
 inky-bird-frame refresh --config /path/to/config.toml
 ```
 
-Check DNS, outbound HTTPS, the configured location, and the controller clock. For eBird,
-also run `config validate` and confirm that the personal API key is available.
+Check DNS, outbound HTTPS, the configured location, and the controller clock.
+For eBird, also run `config validate` and confirm that the personal API key is
+available. For Geoapify, distinguish an invalid key from an exact-match or
+multiple-match rejection; correct the country/postal format or use direct
+coordinates rather than guessing between results.
 A multi-provider refresh reports each provider independently and continues when
 at least one configured provider is healthy. A refresh failure does not remove
 the existing active catalog.
 
-### BirdWeather shows detections, but the frame does not change
+### A source shows a bird, but the frame does not change
 
 Start at the controller. `discover` queries the configured providers
 interactively, `refresh` saves the result and rebuilds the active catalog, and
@@ -97,11 +100,12 @@ inky-bird-frame refresh --config /path/to/config.toml
 inky-bird-frame status --config /path/to/config.toml
 ```
 
-If the command returns `"ok": false`, start with its top-level `error`. When
-every configured provider fails, the command stops before it can return a
-`providers` array. A successful command may still report one failed provider.
-In that case, find the `birdweather` entry and read its `error` field before
-changing configuration.
+If `discover` or `refresh` returns `"ok": false`, start with its top-level
+`error`. When every configured provider fails, the command stops before it can
+return a `providers` array. A successful discovery result may still report one
+failed provider. In that case, find the named source in `providers` and read its
+`error` field before changing configuration. `status` reports catalog and
+generation state; it does not query providers.
 
 A BirdWeather status of `ok` means the station request and taxonomy step
 completed without a provider-level error. `species_count` is the number of
@@ -170,6 +174,17 @@ import in this `state_dir`. A history-reduction error means the new file omits
 one or more previously imported checklists; verify it is a complete export
 before using `--allow-history-reduction`. Unresolved aggregate or hybrid labels
 are expected to remain private and never enter generation.
+
+For Bird Buddy, run `birdbuddy status` first to inspect the saved attestation,
+feeder, and history. This command is local-only and cannot prove that the saved
+session remains valid. Run `discover` to perform the authenticated refresh. A
+missing, invalid, or revoked session then requires an explicit login; Inky never
+retains the password for an automatic retry. If several feeders are accessible,
+rerun login with the intended `--feeder-id`. Rate limiting or a malformed
+GraphQL response degrades only this provider. A schema or pagination error can
+mean the private, unsupported API changed; disable `birdbuddy` in
+`discovery.sources` while investigating rather than repeatedly logging in or
+editing state JSON.
 
 The active catalog is exactly what the display node can choose from:
 

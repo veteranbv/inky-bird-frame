@@ -1,0 +1,60 @@
+<!-- PNG render: npx -y @resvg/resvg-js-cli@2.6.2-beta.1 readme-overview-dark.svg readme-overview-dark.png -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 640" role="img" aria-labelledby="title description">
+  <title id="title">How Inky Bird Frame works</title>
+  <desc id="description">Configured bird observations and detections enter the private controller. The controller discovers species, reuses or creates and reviews plates, and serves only the approved catalog. A display node or optional trusted browser application pulls approved plates.</desc>
+  <defs>
+    <marker id="arrow-blue" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#58a6ff"/>
+    </marker>
+    <marker id="arrow-green" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#3fb950"/>
+    </marker>
+  </defs>
+  <rect width="1000" height="640" rx="20" fill="#0d1117"/>
+
+  <rect x="50" y="38" width="900" height="132" rx="14" fill="#161b22" stroke="#30363d" stroke-width="2"/>
+  <circle cx="93" cy="82" r="12" fill="none" stroke="#58a6ff" stroke-width="3"/>
+  <ellipse cx="93" cy="82" rx="5" ry="12" fill="none" stroke="#58a6ff" stroke-width="3"/>
+  <path d="M81 82h24" stroke="#58a6ff" stroke-width="3"/>
+  <text x="124" y="90" fill="#f0f6fc" font-family="Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="34" font-weight="650">Your bird evidence</text>
+  <text x="93" y="134" fill="#9198a1" font-family="Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="25">Nearby sightings · personal history · acoustic stations · smart feeders</text>
+
+  <path d="M500 170v52" stroke="#58a6ff" stroke-width="4" marker-end="url(#arrow-blue)"/>
+  <rect x="372" y="181" width="256" height="31" rx="15" fill="#0d1117" stroke="#30363d"/>
+  <text x="500" y="203" text-anchor="middle" fill="#58a6ff" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="17" font-weight="700">CONFIGURED SOURCES</text>
+
+  <rect x="50" y="228" width="900" height="194" rx="14" fill="#0d1117" stroke="#3fb950" stroke-width="3"/>
+  <rect x="50" y="228" width="900" height="62" rx="13" fill="#1b3222"/>
+  <path d="M50 276h900" stroke="#3fb950" stroke-width="2"/>
+  <g fill="none" stroke="#3fb950" stroke-width="3">
+    <rect x="80" y="248" width="28" height="10" rx="2"/>
+    <rect x="80" y="263" width="28" height="10" rx="2"/>
+    <circle cx="86" cy="253" r="1.7" fill="#3fb950" stroke="none"/>
+    <circle cx="86" cy="268" r="1.7" fill="#3fb950" stroke="none"/>
+  </g>
+  <text x="126" y="269" fill="#56d364" font-family="Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="34" font-weight="700">Private controller</text>
+  <line x1="350" y1="310" x2="350" y2="392" stroke="#30363d" stroke-width="2"/>
+  <line x1="650" y1="310" x2="650" y2="392" stroke="#30363d" stroke-width="2"/>
+  <text x="200" y="337" text-anchor="middle" fill="#f0f6fc" font-family="Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="29" font-weight="650">Discover</text>
+  <text x="200" y="374" text-anchor="middle" fill="#9198a1" font-family="Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="22">Match exact species</text>
+  <text x="500" y="337" text-anchor="middle" fill="#f0f6fc" font-family="Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="29" font-weight="650">Reuse or create</text>
+  <text x="500" y="374" text-anchor="middle" fill="#9198a1" font-family="Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="22">Review every new plate</text>
+  <text x="800" y="337" text-anchor="middle" fill="#f0f6fc" font-family="Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="29" font-weight="650">Serve</text>
+  <text x="800" y="374" text-anchor="middle" fill="#9198a1" font-family="Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="22">Approved catalog only</text>
+
+  <path d="M290 422v53" stroke="#3fb950" stroke-width="4" marker-end="url(#arrow-green)"/>
+  <path d="M710 422v53" stroke="#3fb950" stroke-width="4" marker-end="url(#arrow-green)"/>
+  <text x="500" y="459" text-anchor="middle" fill="#9198a1" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="17" font-weight="650">CLIENTS PULL CHECKED ASSETS</text>
+
+  <rect x="50" y="482" width="430" height="118" rx="14" fill="#25161d" stroke="#f778ba" stroke-width="2"/>
+  <rect x="82" y="512" width="27" height="35" rx="3" fill="none" stroke="#f778ba" stroke-width="3"/>
+  <rect x="87" y="518" width="17" height="23" fill="none" stroke="#f778ba" stroke-width="2"/>
+  <text x="130" y="531" fill="#f0f6fc" font-family="Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="29" font-weight="650">Inky display node</text>
+  <text x="130" y="568" fill="#9198a1" font-family="Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="21">Verify, rotate, and show plates</text>
+
+  <rect x="520" y="482" width="430" height="118" rx="14" fill="#161b22" stroke="#30363d" stroke-width="2" stroke-dasharray="8 6"/>
+  <rect x="553" y="512" width="34" height="27" rx="3" fill="none" stroke="#9198a1" stroke-width="3"/>
+  <path d="M548 547h44" stroke="#9198a1" stroke-width="3" stroke-linecap="round"/>
+  <text x="608" y="531" fill="#f0f6fc" font-family="Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="29" font-weight="650">Trusted browser app</text>
+  <text x="608" y="568" fill="#9198a1" font-family="Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="21">Optional, operator supplied</text>
+</svg>

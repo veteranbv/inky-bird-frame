@@ -52,7 +52,7 @@ physical panel independently.
 
 You need:
 
-- the framed-display parts in the [README bill of materials](../README.md#framed-display);
+- the framed-display parts in the [hardware guide](hardware.md);
 - one controller from the support table;
 - a computer with a microSD reader;
 - a GitHub connection to clone this public repository;
@@ -94,6 +94,8 @@ the service is not offered on other networks.
 
 ### Browser applications
 
+Inky does not include a browser interface. This section is for an
+operator-supplied application that consumes Inky's read-only catalog API.
 Cross-origin browser access is disabled by default. To let a trusted web
 application fetch the active catalog and its images directly, list its exact
 origin under `[controller]`:
@@ -139,8 +141,10 @@ retention applies.
 
 ## 1. Install the controller
 
-Choose the macOS or Linux path below. Keep the source checkout. Future updates
-pull that checkout and run the same setup command again.
+Choose the macOS or Linux path below. Keep the source checkout. Native
+installations use an explicit GitHub release tag; future updates fetch the
+selected tag and run the same setup command again. Replace `vX.Y.Z` in the
+examples with the exact release you intend to install.
 
 ### macOS controller
 
@@ -159,6 +163,8 @@ Clone and prepare the project:
 ```bash
 git clone https://github.com/veteranbv/inky-bird-frame.git
 cd inky-bird-frame
+INKY_VERSION=vX.Y.Z
+git checkout --detach "$INKY_VERSION"
 uv sync --extra controller --locked
 mkdir -p "$HOME/Library/Application Support/Inky Bird Frame"
 cp config.example.toml \
@@ -244,6 +250,8 @@ Clone and prepare the project:
 ```bash
 git clone https://github.com/veteranbv/inky-bird-frame.git
 cd inky-bird-frame
+INKY_VERSION=vX.Y.Z
+git checkout --detach "$INKY_VERSION"
 uv sync --extra controller --locked
 mkdir -p "$HOME/.config/inky-bird-frame"
 cp config.example.toml "$HOME/.config/inky-bird-frame/config.toml"
@@ -393,6 +401,8 @@ Clone this project and install it into the same Pimoroni environment:
 ```bash
 git clone https://github.com/veteranbv/inky-bird-frame.git
 cd inky-bird-frame
+INKY_VERSION=vX.Y.Z
+git checkout --detach "$INKY_VERSION"
 "$HOME/.virtualenvs/pimoroni/bin/python" -m pip install -e '.[inky]'
 "$HOME/.virtualenvs/pimoroni/bin/inky-bird-frame" display-image \
   catalog/species/12942-eastern-bluebird/display.png
@@ -519,12 +529,17 @@ publicly.
 
 ## Update
 
-Update each source checkout, review the changes, then rerun the same setup
+Read the release notes and take a quiesced backup using the
+[backup and restore guide](backup.md). Choose the exact target release, update
+each source checkout to that tag, review the changes, and rerun the same setup
 command. Setup is idempotent and replaces managed application code and native
-service definitions without replacing the private configuration.
+service definitions without replacing the private configuration. Replace
+`vX.Y.Z` below with that target tag.
 
 ```bash
-git pull --ff-only
+INKY_VERSION=vX.Y.Z
+git fetch --tags --prune
+git checkout --detach "$INKY_VERSION"
 uv sync --extra controller --locked       # controller checkout
 uv run inky-bird-frame setup controller --config "$CONFIG" --yes
 uv run inky-bird-frame doctor controller --config "$CONFIG"
@@ -533,7 +548,9 @@ uv run inky-bird-frame doctor controller --config "$CONFIG"
 On the display:
 
 ```bash
-git pull --ff-only
+INKY_VERSION=vX.Y.Z
+git fetch --tags --prune
+git checkout --detach "$INKY_VERSION"
 "$INKY" setup display --config "$CONFIG" --source-dir "$PWD" \
   --venv "$HOME/.virtualenvs/pimoroni" --yes
 "$INKY" doctor display --config "$CONFIG"
@@ -542,13 +559,16 @@ git pull --ff-only
 `--source-dir "$PWD"` is required in the display update path because setup
 points the Pimoroni environment at the managed runtime. The
 explicit source directory ensures each update installs the checkout that was
-just pulled rather than the previous managed copy.
+just selected rather than the previous managed copy.
 
-When the controller and display are updated separately, update display nodes
-first. The active catalog wire format is `schema_version: 1`, and a display
-node refuses a catalog with a newer schema version: the cycle fails closed
-and the panel keeps its last image until the display is updated. Private
-collection membership does not change this wire schema.
+When the controller and display are updated separately, follow the release
+notes for that upgrade. Ordinarily, update and validate the controller first.
+When the release notes require a display-first update for a new catalog schema,
+update display nodes before the controller. The active catalog wire format is
+`schema_version: 1`, and a display node refuses a catalog with a newer schema
+version: the cycle fails closed and the panel keeps its last image until the
+display is updated. Private collection membership does not change this wire
+schema.
 
 Current display nodes report a parsed catalog fetch through `POST
 /v1/display-fetch` and a verified panel update through `POST

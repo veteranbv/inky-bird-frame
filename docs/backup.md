@@ -1,0 +1,552 @@
+# Backup and restore
+
+Back up the controller before an update, host migration, storage change, or
+manual private-data removal. The display node caches approved images and keeps
+its last rendered plate without power; its state is replaceable. The controller
+holds the durable data that matters.
+
+## What to protect
+
+The paths under `[controller]` in the private `config.toml` are the source of
+truth:
+
+| Data | Why it matters | Sensitivity |
+| --- | --- | --- |
+| `config.toml` | Provider credentials, notification destinations, paths, schedules, and private location | Secret and private |
+| `catalog_dir` | Approved plates, manifests, and index | Reusable art; may also hold local-only approved work |
+| `state_dir` | Observations, collection membership, imports, retry state, notifications, run history, and optional Bird Buddy refresh token | Private; credential-sensitive when Bird Buddy is enabled |
+| `workspace_dir` | Current generated work and downloaded references | Private working data |
+
+Relative paths resolve from the directory that contains `config.toml`. Record
+the resolved source and restore paths with the backup. A source checkout,
+virtual environment, container image, and display cache can be recreated and do
+not replace a state backup.
+
+Bird Buddy authentication lives in `state_dir/birdbuddy-auth.json`. It contains
+a rotating refresh token and makes every backup that includes it
+credential-sensitive. `birdbuddy-detections.json`, eBird Archive state, BirdNET
+Analyzer state, discovery snapshots, and run records contain private species and
+time history even when they contain no account credentials or precise location.
+
+Codex and optional GitHub authentication are separate from the application
+paths. Reauthentication on a restored host is safer than copying those stores.
+If an operator chooses to back them up, the backup must receive the same
+protection as a password or long-lived token.
+
+## Native controller backup
+
+### 1. Prepare a private destination
+
+Create a backup directory on encrypted storage and restrict it to the controller
+operator. Keep it outside the source checkout and outside any public issue
+attachment.
+
+```bash
+BACKUP=/path/to/private-backup/inky-bird-frame
+mkdir -p "$BACKUP"
+chmod 700 "$BACKUP"
+```
+
+Set these paths from the deployment’s private configuration. Use absolute,
+resolved paths; do not copy the placeholders.
+
+```bash
+CONFIG=/absolute/path/to/config.toml
+WORKSPACE=/absolute/path/to/workspace
+CATALOG=/absolute/path/to/catalog
+STATE=/absolute/path/to/controller-state
+IBF="$HOME/Services/inky-bird-frame/.venv/bin/inky-bird-frame"
+```
+
+`IBF` is the default managed-runtime path. Replace it when setup used a custom
+application directory.
+
+Validate the configuration before stopping services:
+
+```bash
+"$IBF" config validate --config "$CONFIG"
+```
+
+### 2. Quiesce scheduled work
+
+Do not copy controller state while refresh, generation, notification dispatch,
+or publication is writing it. Wait for any running job to finish, then stop its
+timer before copying data.
+
+On systemd Linux, stop the timers first. Confirm that their corresponding
+one-shot services are inactive, then stop the HTTP service:
+
+```bash
+sudo systemctl stop \
+  inky-bird-frame-refresh.timer \
+  inky-bird-frame-generate.timer \
+  inky-bird-frame-catalog-publish.timer \
+  inky-bird-frame-notifications.timer
+
+systemctl is-active \
+  inky-bird-frame-refresh.service \
+  inky-bird-frame-generate.service \
+  inky-bird-frame-catalog-publish.service \
+  inky-bird-frame-notifications.service
+
+sudo systemctl stop inky-bird-frame-controller.service
+```
+
+Optional units can report `unknown` when the feature is disabled. Do not copy
+until every installed one-shot service reports `inactive` or `failed`; an
+`active`, `activating`, or `deactivating` job is still running.
+
+On macOS, first inspect the LaunchAgents and wait for one-shot work to finish:
+
+```bash
+for label in refresh generate catalog-publish notifications; do
+  launchctl print "gui/$(id -u)/com.inky-bird-frame.$label" 2>/dev/null || true
+done
+```
+
+Then quiesce the installed agents. `bootout` stops scheduling and may terminate
+an active job, so use it only after the inspection shows that no one-shot job is
+running:
+
+```bash
+for label in serve refresh generate catalog-publish notifications; do
+  launchctl bootout "gui/$(id -u)/com.inky-bird-frame.$label" 2>/dev/null || true
+done
+```
+
+### 3. Copy a consistent snapshot
+
+`rsync -a` preserves timestamps and permission bits. The separate destination
+directories make restore targets explicit even when the original paths live in
+different parent directories.
+
+```bash
+mkdir -p "$BACKUP/config" "$BACKUP/workspace" "$BACKUP/catalog" "$BACKUP/state"
+rsync -a "$CONFIG" "$BACKUP/config/config.toml"
+rsync -a "$WORKSPACE/" "$BACKUP/workspace/"
+rsync -a "$CATALOG/" "$BACKUP/catalog/"
+rsync -a "$STATE/" "$BACKUP/state/"
+chmod 600 "$BACKUP/config/config.toml"
+```
+
+While writers are still stopped, checksum the copied file contents. These
+commands produce no output when the backup matches the source:
+
+```bash
+cmp "$CONFIG" "$BACKUP/config/config.toml"
+rsync -acni --delete "$WORKSPACE/" "$BACKUP/workspace/"
+rsync -acni --delete "$CATALOG/" "$BACKUP/catalog/"
+rsync -acni --delete "$STATE/" "$BACKUP/state/"
+```
+
+Record the application release or commit and the four original absolute paths
+beside the backup. Do not put credentials into that note.
+
+### 4. Restart and verify
+
+On systemd Linux:
+
+```bash
+sudo systemctl start inky-bird-frame-controller.service
+sudo systemctl start \
+  inky-bird-frame-refresh.timer \
+  inky-bird-frame-generate.timer
+sudo systemctl start inky-bird-frame-catalog-publish.timer 2>/dev/null || true
+sudo systemctl start inky-bird-frame-notifications.timer 2>/dev/null || true
+"$IBF" doctor controller --config "$CONFIG"
+```
+
+On macOS, bootstrap only plist files that exist:
+
+```bash
+for label in serve refresh generate catalog-publish notifications; do
+  plist="$HOME/Library/LaunchAgents/com.inky-bird-frame.$label.plist"
+  if [ -f "$plist" ]; then
+    launchctl bootstrap "gui/$(id -u)" "$plist"
+  fi
+done
+"$IBF" doctor controller --config "$CONFIG"
+```
+
+## Native controller restore
+
+Stage the same release that created the backup before restoring. Preserve the
+current destination as a separate recovery copy; do not merge an unverified
+backup over the only working state. The supported setup command performs a
+persisted refresh immediately and enables scheduled work, so do not run it
+until the restored baseline has passed the checks below. That refresh runs in
+the foreground on systemd Linux and through `RunAtLoad` on macOS.
+
+On a new host, follow the native [installation guide](installation.md) through
+cloning the project, but stop before its setup command. On either a new or an
+existing host, start a new shell in that source checkout and re-declare the
+paths recorded with the backup. Replace every placeholder with the actual
+private path before continuing:
+
+```bash
+cd /path/to/inky-bird-frame
+BACKUP=/path/to/private-backup/inky-bird-frame
+CONFIG=/absolute/path/to/config.toml
+WORKSPACE=/absolute/path/to/workspace
+CATALOG=/absolute/path/to/catalog
+STATE=/absolute/path/to/controller-state
+HEALTH_URL=http://127.0.0.1:8793/health
+```
+
+Set `HEALTH_URL` to the controller's actual local bind address and port. A
+wildcard bind such as `0.0.0.0` is checked through `127.0.0.1`.
+
+1. Prepare the matching tagged checkout and environment without running setup:
+
+   ```bash
+   INKY_VERSION=vX.Y.Z
+   git fetch --tags --prune
+   git checkout --detach "$INKY_VERSION"
+   uv sync --extra controller --locked
+   ```
+
+2. On an existing host, stop the controller and scheduled jobs as described
+   above. A new host has no installed services to stop.
+3. Move any existing destination directories aside. Create empty replacement
+   directories at the recorded paths, then restore as the controller account:
+
+   ```bash
+   for target in "$CONFIG" "$WORKSPACE" "$CATALOG" "$STATE"; do
+     if [ -e "$target" ] || [ -L "$target" ]; then
+       printf 'Refusing to merge restored state into existing path: %s\n' "$target" >&2
+       exit 1
+     fi
+   done
+   mkdir -p "$(dirname "$CONFIG")" "$WORKSPACE" "$CATALOG" "$STATE"
+   rsync -a "$BACKUP/config/config.toml" "$CONFIG"
+   rsync -a "$BACKUP/workspace/" "$WORKSPACE/"
+   rsync -a "$BACKUP/catalog/" "$CATALOG/"
+   rsync -a "$BACKUP/state/" "$STATE/"
+   chmod 600 "$CONFIG"
+   ```
+
+4. Confirm that the controller account owns the restored paths. If a privileged
+   operator performed the copy, correct ownership to the actual service account
+   before starting anything; do not copy a placeholder user or group.
+5. With every installed service and timer still stopped, inspect the restored
+   files without contacting providers:
+
+   ```bash
+   uv run inky-bird-frame config validate --config "$CONFIG"
+   uv run inky-bird-frame catalog validate --catalog "$CATALOG"
+   uv run inky-bird-frame status --config "$CONFIG"
+   ```
+
+6. Test HTTP serving without installing or enabling a service. Run the server
+   in one terminal, check it from another, then stop it with Control-C:
+
+   ```bash
+   uv run inky-bird-frame serve --config "$CONFIG"
+   ```
+
+   ```bash
+   curl --fail --silent "$HEALTH_URL"
+   ```
+
+7. Run `uv run inky-bird-frame discover --config "$CONFIG"` as a deliberate
+   live provider check and inspect its JSON output. It does not replace the
+   saved observation snapshot. Bird Buddy is the narrow stateful exception:
+   authenticated discovery rotates its saved refresh token and makes the saved
+   session in the recovery copy stale. Keep the old controller stopped; if you
+   revert to it, run an explicit `birdbuddy login` before discovery.
+8. Before activation, verify Codex authentication as the controller account.
+   On a new host, use one of the login methods from the installation guide
+   first. When catalog publication is enabled, also install GitHub CLI and
+   verify or restore its owner authentication:
+
+   ```bash
+   codex login status
+   # Only when public_catalog.enabled = true:
+   gh auth status --hostname github.com
+   # If that status fails:
+   gh auth login --hostname github.com --web
+   gh auth setup-git
+   ```
+
+9. Once the offline baseline, HTTP health, provider result, and required
+   credentials are correct, activate the restored controller. This is the point
+   where setup triggers the persisted refresh and installs or reloads scheduled
+   services:
+
+   ```bash
+   uv run inky-bird-frame setup controller \
+     --config "$CONFIG" --source-dir "$PWD" --yes
+   uv run inky-bird-frame doctor controller --config "$CONFIG"
+   uv run inky-bird-frame status --config "$CONFIG"
+   ```
+
+If the restore moves data to different paths, edit the private configuration
+before validation. Do not rewrite state-file contents or catalog manifests to
+perform a path migration.
+
+## Docker backup
+
+Compose stores application data in three named volumes:
+
+- `controller-data` contains `/data`, including private configuration, approved
+  catalog, state, workspace, and optional Bird Buddy authentication;
+- `codex-auth` contains Codex authentication; and
+- `github-auth` contains optional publication authentication.
+
+The host-side `config.toml`, `controller.env`, and `.env` are also required to
+reproduce the deployment. Treat all four controller artifacts as private.
+
+### 1. Stop writers
+
+Run from the directory containing the release bundle:
+
+```bash
+docker compose stop scheduler controller bootstrap
+docker compose ps --all
+```
+
+Confirm that `scheduler` and `controller` are stopped and that the one-shot
+`bootstrap` service is exited or stopped. Bootstrap writes the persistent
+catalog and must not overlap the archive. Do not use `docker compose down
+--volumes`; that deletes the state being backed up.
+
+### 2. Archive the volumes and host files
+
+Create a private destination and archive the controller volume through the
+project image. The temporary container runs `tar` instead of the application and
+does not start the scheduler. Set `HEALTH_URL` to the published host port from
+`INKY_BIRD_PORT`; the default is shown.
+
+```bash
+BACKUP=/path/to/private-backup/inky-bird-frame-docker
+HEALTH_URL=http://127.0.0.1:8793/health
+mkdir -p "$BACKUP"
+chmod 700 "$BACKUP"
+
+docker compose run --rm --no-deps -T --entrypoint tar controller \
+  -C /data -czf - . > "$BACKUP/controller-data.tar.gz"
+
+cp config.toml controller.env .env "$BACKUP/"
+chmod 600 \
+  "$BACKUP/controller-data.tar.gz" \
+  "$BACKUP/config.toml" \
+  "$BACKUP/controller.env" \
+  "$BACKUP/.env"
+tar -tzf "$BACKUP/controller-data.tar.gz" >/dev/null
+```
+
+Reauthenticate Codex and GitHub after restore unless policy requires backing up
+their credential volumes. If those volumes are included, archive them through
+the scheduler service and protect the result as password-equivalent material:
+
+```bash
+docker compose run --rm --no-deps -T --entrypoint tar scheduler \
+  -C /home/inky/.codex -czf - . > "$BACKUP/codex-auth.tar.gz"
+docker compose run --rm --no-deps -T --entrypoint tar scheduler \
+  -C /home/inky/.config -czf - . > "$BACKUP/github-auth.tar.gz"
+chmod 600 "$BACKUP/codex-auth.tar.gz" "$BACKUP/github-auth.tar.gz"
+tar -tzf "$BACKUP/codex-auth.tar.gz" >/dev/null
+tar -tzf "$BACKUP/github-auth.tar.gz" >/dev/null
+```
+
+Restart and verify the original deployment:
+
+```bash
+docker compose up --detach
+docker compose ps
+curl --fail --silent "$HEALTH_URL"
+```
+
+## Docker restore
+
+Restore into a distinct Compose project so the original named volumes remain
+untouched until the restored controller passes validation. Run every restore
+command with the same project name.
+
+1. Download and extract the same release bundle. Start a new shell in that
+   bundle, re-declare the private backup location, then restore its `.env`,
+   `controller.env`, and host-side `config.toml`:
+
+   ```bash
+   cd /path/to/inky-bird-frame-docker
+   BACKUP=/path/to/private-backup/inky-bird-frame-docker
+   HEALTH_URL=http://127.0.0.1:8793/health
+   cp "$BACKUP/.env" "$BACKUP/controller.env" "$BACKUP/config.toml" .
+   chmod 600 .env controller.env config.toml
+   ```
+
+   Set `HEALTH_URL` to the controller's published host port from
+   `INKY_BIRD_PORT`; the default is shown.
+2. Choose a restore project name that does not appear in `docker compose ls` or
+   in the matching volume-label query. If the original deployment exists on
+   this host, also copy its exact project name from `docker compose ls`; do not
+   infer it from the directory or `.env`. Leave `ORIGINAL_PROJECT` empty on a
+   migration host. If either query finds the restore name, choose a different
+   one. Then create new project volumes without starting services:
+
+   ```bash
+   docker compose ls --all
+   ORIGINAL_PROJECT=
+   RESTORE_PROJECT=inky-bird-frame-restore
+   if [ -n "$(docker compose -p "$RESTORE_PROJECT" ps --all --quiet)" ]; then
+     printf 'Restore project already has containers: %s\n' "$RESTORE_PROJECT" >&2
+     exit 1
+   fi
+   if [ -n "$(docker volume ls --quiet \
+     --filter "label=com.docker.compose.project=$RESTORE_PROJECT")" ]; then
+     printf 'Restore project already has volumes: %s\n' "$RESTORE_PROJECT" >&2
+     exit 1
+   fi
+   for volume in controller-data codex-auth github-auth; do
+     if docker volume inspect "${RESTORE_PROJECT}_${volume}" >/dev/null 2>&1; then
+       printf 'Restore volume already exists: %s\n' \
+         "${RESTORE_PROJECT}_${volume}" >&2
+       exit 1
+     fi
+   done
+   docker compose -p "$RESTORE_PROJECT" create
+   ```
+
+3. Restore the controller archive through the project image:
+
+   ```bash
+   docker compose -p "$RESTORE_PROJECT" run \
+     --rm --no-deps -T --entrypoint tar controller \
+     -C /data -xzf - < "$BACKUP/controller-data.tar.gz"
+   ```
+
+4. If credential volumes were deliberately archived, restore them through the
+   scheduler service. Otherwise, authenticate Codex and optional GitHub
+   publication again.
+
+   ```bash
+   docker compose -p "$RESTORE_PROJECT" run \
+     --rm --no-deps -T --entrypoint tar scheduler \
+     -C /home/inky/.codex -xzf - < "$BACKUP/codex-auth.tar.gz"
+   docker compose -p "$RESTORE_PROJECT" run \
+     --rm --no-deps -T --entrypoint tar scheduler \
+     -C /home/inky/.config -xzf - < "$BACKUP/github-auth.tar.gz"
+   ```
+
+5. Run the read-only Docker baseline below before starting services. On a
+   same-host restore, stop the explicitly identified original project and
+   confirm it is down; the conditional is skipped on a migration host. The
+   `-p "$RESTORE_PROJECT"` commands continue to target the isolated restore.
+   Start only the restored controller, which runs the one-shot bootstrap first.
+   Do not start the scheduler yet:
+
+   ```bash
+   docker compose -p "$RESTORE_PROJECT" run --rm --no-deps scheduler \
+     config validate --config /data/config.toml
+   docker compose -p "$RESTORE_PROJECT" run --rm --no-deps scheduler \
+     catalog validate --catalog /data/catalog
+   docker compose -p "$RESTORE_PROJECT" run --rm --no-deps scheduler \
+     status --config /data/config.toml
+   if [ -n "$ORIGINAL_PROJECT" ]; then
+     docker compose -p "$ORIGINAL_PROJECT" stop scheduler controller bootstrap
+     docker compose -p "$ORIGINAL_PROJECT" ps --all
+   fi
+   docker compose -p "$RESTORE_PROJECT" up --detach controller
+   docker compose -p "$RESTORE_PROJECT" run --rm --no-deps scheduler \
+     catalog validate --catalog /data/catalog
+   docker compose -p "$RESTORE_PROJECT" ps
+   curl --fail --silent "$HEALTH_URL"
+   ```
+
+Bird Buddy permits one current rotating refresh token. `birdbuddy status` reads
+only the restored local state and does not rotate that token. The authenticated
+`discover` in the next step does rotate it, so the original project's saved
+session becomes stale even though its volume is untouched. Keep the original
+controller stopped. If you return to it after validating Bird Buddy on the
+restored copy, run an explicit `birdbuddy login` there; do not query Bird Buddy
+from both controllers.
+
+6. Complete the deliberate provider check below through a one-off container and
+   inspect the command's JSON output. It does not replace the saved observation
+   snapshot. After the restored catalog, state, provider result, and controller
+   health are correct, enable scheduled work:
+
+   ```bash
+   docker compose -p "$RESTORE_PROJECT" run --rm --no-deps scheduler \
+     discover --config /data/config.toml
+   docker compose -p "$RESTORE_PROJECT" up --detach scheduler
+   docker compose -p "$RESTORE_PROJECT" ps
+   ```
+
+7. If the restored project becomes the live deployment, add
+   `COMPOSE_PROJECT_NAME=<the chosen restore project name>` to the private
+   `.env` so future unprefixed Compose commands target these restored volumes.
+   Keep the original project and volumes until the new deployment has passed
+   the full validation and an operator has deliberately retired the old copy.
+
+Do not restore one application-state directory into a different volume layout
+or combine state from separate controllers.
+
+## Validate a restore
+
+Use the same application release that created the backup for the first
+validation. The native and Docker procedures above run configuration, catalog,
+and status checks before starting scheduled writers. `status` is read-only; it
+does not rebuild the catalog or change controller state.
+
+When Bird Buddy is enabled, also run `birdbuddy status --config
+/path/to/config.toml` to inspect its local attestation, selected feeder, and
+history. This does not contact Bird Buddy or prove the token remains valid.
+When eBird Archive is enabled, run `ebird archive status --config
+/path/to/config.toml` and compare its aggregate counts and date range with the
+pre-backup record. Use `/data/config.toml` and the same Compose prefix for those
+commands in Docker.
+
+After the read-only baseline and HTTP health pass, run `discover` once as a
+deliberate live provider check and inspect that command's JSON result. Discovery
+does not replace the saved observation snapshot. For Bird Buddy it does detect
+a revoked session and rotate the saved refresh token. `refresh`, including the
+immediate refresh triggered by native setup, is the explicit persisted-state
+transition. Enable native setup or the Docker scheduler only after the live
+provider result is correct.
+
+Confirm that:
+
+- the catalog validates with the expected species count;
+- collection, approved, queued, deferred, and failed counts are plausible;
+- configured providers complete or return an actionable, redacted error;
+- the display can fetch and show an approved plate; and
+- notification and publication credentials are reauthenticated or deliberately
+  restored before those optional jobs are enabled.
+
+Only after this baseline passes should you follow the normal release upgrade
+procedure.
+
+## Private-data lifecycle and removal
+
+Disabling a provider stops future collection but does not silently delete its
+history. That makes the change reversible and prevents a configuration typo
+from erasing data.
+
+- Remove a provider from `discovery.sources` to stop querying or reading it.
+- `birdbuddy logout --yes` removes local Bird Buddy authentication and
+  authorization-attestation state. It deliberately preserves accumulated
+  detection history.
+- `collection remove TAXON_ID --dry-run` and the same command without
+  `--dry-run` remove one species from persistent local membership; they do not
+  delete its reusable approved plate.
+- eBird Archive, BirdNET Analyzer, and Bird Buddy history remain in their named
+  mode-`0600` state files until the operator deliberately removes that private
+  state.
+
+There is no bulk provider-history purge command. If complete erasure is
+required, disable the provider, quiesce the controller, and make a separately
+protected recovery backup if policy permits. The provider-owned history files
+are `ebird-archive-observations.json`, `birdnet-analyzer-detections.json`, and
+`birdbuddy-detections.json`. Use `birdbuddy logout --yes` for Bird Buddy auth
+rather than editing or selectively deleting fields from `birdbuddy-auth.json`.
+The corresponding `*-taxonomy-crosswalk.json` files may also be removed when
+cached species-resolution history is in scope. Remove only the intended files
+with normal filesystem administration, then start the controller and verify the
+expected missing-history or logged-out state before disposing of the recovery
+copy. Do not edit JSON records in place.
+
+Deleting live state does not remove copies from backups, snapshots, or remote
+storage. Apply the same retention decision to every copy. Public catalog plates
+are location-neutral and contain no account or observation history, so private
+history removal does not require deleting reusable catalog art.

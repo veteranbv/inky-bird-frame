@@ -1,0 +1,75 @@
+name: Published plate problem
+description: Report a factual, visual, or readability problem in an approved catalog plate.
+title: "[Plate]: "
+labels:
+  - catalog
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking a close look. Link the published plate and describe one
+        concrete problem. Do not include a sighting location, private controller
+        output, or copyrighted reference images.
+  - type: input
+    id: common_name
+    attributes:
+      label: Common name
+      placeholder: Eastern Bluebird
+    validations:
+      required: true
+  - type: input
+    id: scientific_name
+    attributes:
+      label: Scientific name
+      placeholder: Sialia sialis
+    validations:
+      required: true
+  - type: input
+    id: plate
+    attributes:
+      label: Plate link or iNaturalist taxon ID
+      description: Link the catalog image or provide the numeric taxon ID so the exact plate is unambiguous.
+    validations:
+      required: true
+  - type: dropdown
+    id: problem_type
+    attributes:
+      label: Problem type
+      options:
+        - Anatomy or proportions
+        - Plumage or field marks
+        - Composition, scale, or use of space
+        - Text or readability
+        - Factual content
+        - Source or provenance
+        - Other
+    validations:
+      required: true
+  - type: textarea
+    id: problem
+    attributes:
+      label: What looks wrong?
+      description: Identify the affected bird, study, label, ruler, or fact and explain the mismatch precisely.
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Supporting sources
+      description: Link authoritative species accounts or appropriately licensed references. Do not upload copyrighted field-guide or reference images.
+  - type: input
+    id: version
+    attributes:
+      label: Release or catalog revision
+      description: Include the release, commit, or gallery URL when known.
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Checks
+      options:
+        - label: I checked the current catalog or gallery and searched open issues for this plate.
+          required: true
+        - label: This report contains no precise sighting location, credential, or private deployment detail.
+          required: true
+        - label: I linked sources instead of uploading copyrighted reference material.
+          required: true

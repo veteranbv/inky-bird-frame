@@ -202,8 +202,8 @@ docker compose run --rm --no-deps scheduler \
   birdbuddy logout --config /data/config.toml --yes
 ```
 
-The `.env` file controls the container image tag. A release bundle pins a
-version such as `0.1.0`. Keep that pin for repeatable updates and rollback. Use
+The `.env` file controls the container image tag. A release bundle pins its
+exact release version. Keep that pin for repeatable updates and rollback. Use
 `latest` only when you want the newest trusted `main` build.
 
 ## 3. Install the Ubuntu AppArmor profile
@@ -308,6 +308,8 @@ volume. Treat every backup containing `controller-data` as credential-sensitive
 when Bird Buddy is enabled. Protect authentication volumes if you include them.
 `docker compose down` keeps all volumes. `docker compose down --volumes`
 deletes permanent controller state and should not be part of a normal update.
+Use the [backup and restore guide](backup.md) for a quiesced volume snapshot,
+credential options, restore procedure, and validation.
 
 Before an update, take a restorable point-in-time snapshot of `controller-data`
 and the matching configuration files. Stop `scheduler` and `controller` while
@@ -317,8 +319,8 @@ bootstrap, refresh, generation status, and display verification.
 
 ## Update
 
-Read the release notes, then change `INKY_BIRD_IMAGE` in `.env` to the desired
-version:
+Read the release notes and take a verified backup, then change
+`INKY_BIRD_IMAGE` in `.env` to the desired version:
 
 ```bash
 docker compose pull

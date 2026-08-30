@@ -4,7 +4,8 @@ Inky Bird Frame has three roles. The controller discovers birds and creates
 plates. The display node pulls approved images. An optional publisher sends new
 plates to a shared GitHub catalog. A trusted browser application can also read
 the active catalog through a same-origin proxy or, for direct cross-origin
-access, after the operator allows its exact origin.
+access, after the operator allows its exact origin. Inky provides that read-only
+interface but does not include the browser application.
 
 ```mermaid
 flowchart LR
@@ -20,6 +21,27 @@ flowchart LR
     X -- "Approved catalog" --> B
     A -. "optional catalog-only PR" .-> P["Public catalog"]
 ```
+
+## Design principles
+
+- **Private evidence, reusable art.** Locations, observation history,
+  credentials, and work records stay in controller state. Approved plates stay
+  location-neutral so every installation can reuse them.
+- **Reuse before generation.** The controller checks the approved catalog
+  before spending generation work on a missing species.
+- **Deterministic safety around generative work.** Typed parsing, taxonomy,
+  licensing, dimensions, checksums, publishing, and display behavior remain in
+  application code. Codex creates and independently reviews candidate content.
+- **Isolated external boundaries.** One provider, notification destination, or
+  publisher failure must not stop healthy discovery sources or erase the last
+  good display state.
+- **Pull-only display.** The display reads approved assets and never receives
+  controller credentials or runs discovery and generation.
+- **Explicit opt-in.** Private imports, unsupported APIs, publication, browser
+  origins, and notifications do nothing until the operator enables them.
+- **Small supported topology.** One controller and one active display are the
+  monitored contract. Broader deployments need explicit identity and health
+  semantics rather than an accidental extension.
 
 ## Roles
 

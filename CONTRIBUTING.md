@@ -1,7 +1,7 @@
 # Contributing
 
 Contributions are welcome. Useful changes include bug fixes, focused features,
-hardware support, documentation, tests, and new bird plates for the reusable
+hardware compatibility, documentation, tests, and new bird plates for the reusable
 catalog.
 
 ## Before starting
@@ -11,6 +11,8 @@ catalog.
   policy, external APIs, configuration compatibility, or a major dependency.
 - Use the bird request template to claim a species before investing in a new
   plate. This helps avoid duplicate generation work.
+- Use the published plate problem template for a concrete factual, visual, or
+  readability issue in an approved catalog plate.
 - Report vulnerabilities privately as described in [`SECURITY.md`](SECURITY.md).
 
 ## Development setup
@@ -116,6 +118,10 @@ not hand-edit generated JSON or checksums.
 Published taxa remain immutable by default. After a replacement has completed
 the controller's explicit human-review workflow, a maintainer can prepare the
 approved correction with a required reason:
+
+Before proposing a replacement, open a published plate problem with the exact
+plate and supporting evidence. Do not upload copyrighted field-guide or
+reference images.
 
 ```bash
 uv run inky-bird-frame catalog prepare <taxon-id> \
