@@ -10,10 +10,12 @@ bird observations.
   <img src="images/installation-architecture.png" alt="Inky Bird Frame runtime architecture showing observation and generation services; the controller; the Raspberry Pi display node and an optional trusted browser application reading the approved catalog over a private network; and the Inky Impression panel">
 </picture>
 
-The display node and any optional browser application initiate every application
-connection to the controller. The controller's configured port (8793 in the
-supplied example configuration) must remain on a trusted network and must not be
-forwarded from the public internet.
+Every application connection is client-initiated. The display node connects
+directly to the controller. A browser connects directly only from a trusted HTTP
+origin; otherwise, its application proxy or TLS terminator connects to the
+controller. The controller's configured port (8793 in the supplied example
+configuration) must remain on a trusted network and must not be forwarded from
+the public internet.
 
 ## Choose the two computers
 
