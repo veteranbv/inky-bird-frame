@@ -36,7 +36,7 @@ are cached and reused.
 <p align="center">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="docs/images/installation-architecture-dark.png">
-    <img src="docs/images/installation-architecture.png" alt="Inky Bird Frame runtime architecture showing iNaturalist, eBird, eBird Archive, BirdWeather, BirdNET-Go, BirdNET Analyzer, and Bird Buddy observation services; the controller; its private HTTP connection with the Raspberry Pi display node; and the Inky Impression panel" width="760">
+    <img src="docs/images/installation-architecture.png" alt="Inky Bird Frame runtime architecture showing observation and generation services; the controller; the Raspberry Pi display node and an optional trusted browser application reading the approved catalog over a private network; and the Inky Impression panel" width="760">
   </picture>
 </p>
 
@@ -48,6 +48,23 @@ The project has two jobs:
   catalog and images.
 - The **display node** downloads approved assets, verifies their checksums, and
   rotates them on the Inky panel. It never runs discovery or Codex.
+
+Browser access is optional. If a trusted web application reads the controller
+from a separate origin, add that exact origin:
+
+```toml
+[controller]
+cors_allowed_origins = ["https://frame.example.test"]
+```
+
+An HTTPS application must use a same-origin application proxy or reach the
+controller through an HTTPS endpoint. A VPN alone does not prevent mixed
+content. A same-origin proxy makes the request server-side and does not need a
+CORS setting. Cross-origin access is disabled by default, does not add
+authentication, and does not make the controller safe to expose to the
+internet. See
+[Browser applications](docs/installation.md#browser-applications) for the
+configuration and network limits.
 
 The roles may run on one capable Raspberry Pi, but the recommended wall build
 keeps the lightweight display node behind the frame and runs the controller on

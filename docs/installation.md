@@ -7,12 +7,15 @@ bird observations.
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="images/installation-architecture-dark.png">
-  <img src="images/installation-architecture.png" alt="Inky Bird Frame runtime architecture showing iNaturalist, eBird, eBird Archive, BirdWeather, BirdNET-Go, BirdNET Analyzer, and Bird Buddy observation services; the controller; its private HTTP connection with the Raspberry Pi display node; and the Inky Impression panel">
+  <img src="images/installation-architecture.png" alt="Inky Bird Frame runtime architecture showing observation and generation services; the controller; the Raspberry Pi display node and an optional trusted browser application reading the approved catalog over a private network; and the Inky Impression panel">
 </picture>
 
-The display initiates every application connection. The controller's configured
-port (8793 in the supplied example configuration) must remain on a trusted
-network and must not be forwarded from the public internet.
+Every application connection is client-initiated. The display node connects
+directly to the controller. A browser connects directly only from a trusted HTTP
+origin; otherwise, its application proxy or TLS terminator connects to the
+controller. The controller's configured port (8793 in the supplied example
+configuration) must remain on a trusted network and must not be forwarded from
+the public internet.
 
 ## Choose the two computers
 
@@ -68,6 +71,8 @@ CLI. The display requires `git`, `rsync`, and Pimoroni's Python environment.
 | Controller | Internet HTTPS (TCP 443) | Codex, internet-backed observation services and geocoder, licensed references, and configured research sources |
 | Controller | BirdNET-Go HTTP(S) endpoint | Read-only summaries from an explicitly configured self-hosted station |
 | Display node | Configured controller TCP port (8793 in the supplied example) | Read-only health, catalog, and image downloads |
+| Trusted browser application | Same-origin proxy, HTTPS endpoint, or controller HTTP port for an HTTP application | Optional read-only catalog and image downloads; an exact allowed origin is required when the request is cross-origin |
+| Application proxy or TLS terminator | Configured controller TCP port (8793 in the supplied example) | Server-side catalog and image requests; keep this hop on the trusted network |
 | Setup computer | Display node SSH (TCP 22) | Installation, updates, and troubleshooting |
 
 The two computers do not have to share a subnet. They must be routable to each
@@ -107,11 +112,14 @@ the normal response without an `Access-Control-Allow-Origin` header.
 This setting does not add authentication, TLS, or public-internet safety. Keep
 the controller private. Browsers also block an HTTPS application from fetching
 a plain-HTTP controller as mixed content. Prefer a same-origin application
-proxy, which needs no CORS permission, or protect a separate HTTPS controller
-endpoint with a VPN or browser mutual TLS. Cookie, session, and HTTP
-Authorization proxies are not compatible with this interface because Inky does
-not permit credentialed CORS requests or implement preflight. Standard `GET`
-requests need no preflight or custom request headers.
+proxy, which needs no CORS permission and can authenticate the browser before
+making a server-side request to Inky. If the browser reaches the controller
+through a VPN, terminate HTTPS for the controller endpoint as well; the VPN
+alone does not prevent mixed content. Direct cross-origin access through cookie,
+session, client-certificate, or HTTP Authorization proxies is not compatible
+with this interface because Inky does not permit credentialed CORS requests or
+implement preflight. Standard `GET` requests need no preflight or custom request
+headers.
 
 ## 1. Install the controller
 
