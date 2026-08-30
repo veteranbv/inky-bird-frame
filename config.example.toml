@@ -57,8 +57,8 @@ bind_host = "0.0.0.0"
 port = 8793
 # Cross-origin browser access is disabled by default. List the exact HTTP or HTTPS origins
 # of trusted browser applications that need to fetch /v1/catalog and /v1/assets/*.
-# Use ASCII or punycode hostnames and canonical IP addresses. Wildcards, credentials,
-# paths, queries, and fragments are rejected.
+# Use ASCII hostnames or canonical IP addresses. Internationalized names, punycode,
+# wildcards, credentials, paths, queries, and fragments are rejected.
 # cors_allowed_origins = ["https://frame.example.test"]
 references_per_species = 4
 generations_per_cycle = 1

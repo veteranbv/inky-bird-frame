@@ -97,9 +97,9 @@ cors_allowed_origins = ["https://frame.example.test"]
 ```
 
 An origin contains only the scheme, host, and optional port. Inky rejects
-wildcards, credentials, paths, queries, and fragments. Use the ASCII or
-punycode hostname spelling sent by the browser for an international domain and
-the canonical form of an IP address. A matching origin can read `GET
+wildcards, credentials, paths, queries, and fragments. Use an ASCII hostname
+or the canonical form of an IP address. Internationalized and punycode
+hostnames are not supported. A matching origin can read `GET
 /v1/catalog` and `GET /v1/assets/*`; health and display-heartbeat responses do
 not receive cross-origin access headers. Requests from other origins receive
 the normal response without an `Access-Control-Allow-Origin` header.

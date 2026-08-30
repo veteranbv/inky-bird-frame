@@ -100,7 +100,7 @@ class ConfigTests(unittest.TestCase):
             'bind_host = "0.0.0.0"\n'
             'cors_allowed_origins = ["HTTPS://Display.Example.Test:443/", '
             '"http://[2001:0db8:0:0:0:0:0:1]:8080", '
-            '"https://xn--caf-dma.example", "https://zero.example:0"]',
+            '"https://frame_server.local", "https://zero.example:0"]',
         )
         with TemporaryDirectory() as temporary:
             path = Path(temporary) / "config.toml"
@@ -113,7 +113,7 @@ class ConfigTests(unittest.TestCase):
             (
                 "https://display.example.test",
                 "http://[2001:db8::1]:8080",
-                "https://xn--caf-dma.example",
+                "https://frame_server.local",
                 "https://zero.example:0",
             ),
         )
@@ -129,6 +129,8 @@ class ConfigTests(unittest.TestCase):
             "https://127.1",
             "https://2130706433",
             "https://0x7f.1",
+            "https://0x",
+            "https://1.2.3.0x",
             "https://0177.0.0.1",
             "https://127.0.0.1.",
             "https://example.1",
@@ -136,6 +138,11 @@ class ConfigTests(unittest.TestCase):
             "https://[::ffff:127.0.0.1]",
             "https://[::ffff:7f00:1]",
             "https://[v1.example.com]",
+            "https://xn--caf-dma.example",
+            "https://xn--abc.com",
+            "https://-display.example",
+            "https://display-.example",
+            "https://display..example",
             "https://%65xample.com",
             "https://example.test\\path",
             "https://exam ple.com",

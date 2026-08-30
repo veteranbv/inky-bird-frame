@@ -332,11 +332,23 @@ def _http_origins(section: dict[str, object], name: str) -> tuple[str, ...]:
             final_label = host.removesuffix(".").casefold().rsplit(".", 1)[-1]
             if final_label.isdecimal() or (
                 final_label.startswith("0x")
-                and len(final_label) > 2
                 and all(character in "0123456789abcdef" for character in final_label[2:])
             ):
                 raise ConfigurationError(f"{name} must use canonical IPv4 addresses") from None
             host = host.casefold()
+            dns_host = host.removesuffix(".")
+            labels = dns_host.split(".")
+            if len(dns_host) > 253 or any(
+                not label
+                or len(label) > 63
+                or label.startswith(("-", "xn--"))
+                or label.endswith("-")
+                or any(not (character.isalnum() or character in "-_") for character in label)
+                for label in labels
+            ):
+                raise ConfigurationError(
+                    f"{name} must use valid ASCII hostnames without punycode"
+                ) from None
         if ":" in host:
             host = f"[{host}]"
         default_port = (scheme == "http" and port == 80) or (scheme == "https" and port == 443)
