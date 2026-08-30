@@ -72,6 +72,7 @@ class ConfigTests(unittest.TestCase):
         self.assertEqual(config.controller.catalog_dir, (Path(temporary) / "catalog").resolve())
         self.assertEqual(config.controller.max_generation_attempts, 3)
         self.assertIsNone(config.controller.codex_model)
+        self.assertEqual(config.controller.cors_allowed_origins, ())
         self.assertEqual(config.display_node.controller_url, "http://controller.test:8793")
         self.assertEqual(config.display_node.rotation_mode, RotationMode.WEIGHTED)
         self.assertTrue(config.display_node.prioritize_latest_detection)
@@ -92,6 +93,89 @@ class ConfigTests(unittest.TestCase):
         self.assertEqual(config.schedule.rotation_jitter_seconds, 7)
         self.assertEqual(config.schedule.display_startup_delay_seconds, 30)
         self.assertEqual(config.schedule.catalog_publish_minutes, 4)
+
+    def test_loads_and_normalizes_trusted_browser_origins(self) -> None:
+        configured = CONFIG.replace(
+            'bind_host = "0.0.0.0"',
+            'bind_host = "0.0.0.0"\n'
+            'cors_allowed_origins = ["HTTPS://Display.Example.Test:443/", '
+            '"http://[2001:0db8:0:0:0:0:0:1]:8080", '
+            '"https://frame_server.local", "https://zero.example:0"]',
+        )
+        with TemporaryDirectory() as temporary:
+            path = Path(temporary) / "config.toml"
+            path.write_text(configured)
+
+            config = load_config(path)
+
+        self.assertEqual(
+            config.controller.cors_allowed_origins,
+            (
+                "https://display.example.test",
+                "http://[2001:db8::1]:8080",
+                "https://frame_server.local",
+                "https://zero.example:0",
+            ),
+        )
+
+    def test_rejects_invalid_trusted_browser_origins(self) -> None:
+        invalid_origins = (
+            "*",
+            "ftp://display.example.test",
+            "https://user@display.example.test",
+            "https://display.example.test/path",
+            "https://display.example.test?mode=frame",
+            "https://café.example",
+            "https://127.1",
+            "https://2130706433",
+            "https://0x7f.1",
+            "https://0x",
+            "https://1.2.3.0x",
+            "https://0177.0.0.1",
+            "https://127.0.0.1.",
+            "https://example.1",
+            "https://1.2.3.4.5",
+            "https://[::ffff:127.0.0.1]",
+            "https://[::ffff:7f00:1]",
+            "https://[v1.example.com]",
+            "https://xn--caf-dma.example",
+            "https://xn--abc.com",
+            "https://-display.example",
+            "https://display-.example",
+            "https://display..example",
+            "https://%65xample.com",
+            "https://example.test\\path",
+            "https://exam ple.com",
+        )
+        for origin in invalid_origins:
+            with self.subTest(origin=origin), TemporaryDirectory() as temporary:
+                path = Path(temporary) / "config.toml"
+                toml_origin = origin.replace("\\", "\\\\")
+                path.write_text(
+                    CONFIG.replace(
+                        'bind_host = "0.0.0.0"',
+                        f'bind_host = "0.0.0.0"\ncors_allowed_origins = ["{toml_origin}"]',
+                    )
+                )
+
+                with self.assertRaisesRegex(ConfigurationError, "cors_allowed_origins") as raised:
+                    load_config(path)
+                if origin == "https://café.example":
+                    self.assertNotIn("punycode", str(raised.exception).casefold())
+
+    def test_rejects_equivalent_duplicate_browser_origins(self) -> None:
+        configured = CONFIG.replace(
+            'bind_host = "0.0.0.0"',
+            'bind_host = "0.0.0.0"\n'
+            'cors_allowed_origins = ["https://display.example.test", '
+            '"HTTPS://DISPLAY.EXAMPLE.TEST:443/"]',
+        )
+        with TemporaryDirectory() as temporary:
+            path = Path(temporary) / "config.toml"
+            path.write_text(configured)
+
+            with self.assertRaisesRegex(ConfigurationError, "equivalent duplicate origins"):
+                load_config(path)
 
     def test_loads_optional_codex_model_pin(self) -> None:
         with TemporaryDirectory() as temporary:

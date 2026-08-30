@@ -43,7 +43,9 @@ are cached and reused.
 The project has two jobs:
 
 - The **controller** checks observations, creates and reviews missing plates,
-  and serves approved images on the private network.
+  and serves approved images on the private network. It can also grant
+  explicitly trusted browser applications cross-origin access to the active
+  catalog and images.
 - The **display node** downloads approved assets, verifies their checksums, and
   rotates them on the Inky panel. It never runs discovery or Codex.
 

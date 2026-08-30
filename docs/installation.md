@@ -85,6 +85,34 @@ listens on every interface of the controller host. On a multi-homed
 controller, set `bind_host` to the specific LAN address the display uses so
 the service is not offered on other networks.
 
+### Browser applications
+
+Cross-origin browser access is disabled by default. To let a trusted web
+application fetch the active catalog and its images directly, list its exact
+origin under `[controller]`:
+
+```toml
+[controller]
+cors_allowed_origins = ["https://frame.example.test"]
+```
+
+An origin contains only the scheme, host, and optional port. Inky rejects
+wildcards, credentials, paths, queries, and fragments. Use an ASCII hostname
+or the canonical form of an IP address. Internationalized and punycode
+hostnames are not supported. A matching origin can read `GET
+/v1/catalog` and `GET /v1/assets/*`; health and display-heartbeat responses do
+not receive cross-origin access headers. Requests from other origins receive
+the normal response without an `Access-Control-Allow-Origin` header.
+
+This setting does not add authentication, TLS, or public-internet safety. Keep
+the controller private. Browsers also block an HTTPS application from fetching
+a plain-HTTP controller as mixed content. Prefer a same-origin application
+proxy, which needs no CORS permission, or protect a separate HTTPS controller
+endpoint with a VPN or browser mutual TLS. Cookie, session, and HTTP
+Authorization proxies are not compatible with this interface because Inky does
+not permit credentialed CORS requests or implement preflight. Standard `GET`
+requests need no preflight or custom request headers.
+
 ## 1. Install the controller
 
 Choose the macOS or Linux path below. Keep the source checkout. Future updates

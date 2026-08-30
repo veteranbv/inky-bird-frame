@@ -7,6 +7,7 @@ import tomllib
 from collections.abc import Iterable
 from dataclasses import dataclass, field
 from enum import StrEnum
+from ipaddress import ip_address
 from os import environ
 from pathlib import Path
 from shutil import which
@@ -116,6 +117,7 @@ class ControllerConfig:
     retry_initial_minutes: int = 30
     retry_max_minutes: int = 1440
     insufficient_references_retry_minutes: int = 10080
+    cors_allowed_origins: tuple[str, ...] = ()
 
 
 @dataclass(frozen=True)
@@ -280,6 +282,80 @@ def _string_tuple(
     if len(parsed) != len(set(parsed)):
         raise ConfigurationError(f"{name} must not contain duplicates")
     return tuple(parsed)
+
+
+def _http_origins(section: dict[str, object], name: str) -> tuple[str, ...]:
+    origins: list[str] = []
+    for value in _string_tuple(section, name):
+        try:
+            parsed = urlsplit(value)
+            port = parsed.port
+        except ValueError as exc:
+            raise ConfigurationError(f"{name} must contain valid HTTP or HTTPS origins") from exc
+        if (
+            parsed.scheme.casefold() not in {"http", "https"}
+            or parsed.hostname is None
+            or parsed.username is not None
+            or parsed.password is not None
+            or parsed.path not in {"", "/"}
+            or parsed.query
+            or parsed.fragment
+        ):
+            raise ConfigurationError(
+                f"{name} must contain HTTP or HTTPS origins without credentials, paths, "
+                "queries, or fragments"
+            )
+        scheme = parsed.scheme.casefold()
+        host = parsed.hostname
+        if "%" in host or "\\" in value or any(character in value for character in "\r\n\t"):
+            raise ConfigurationError(
+                f"{name} must use hostnames exactly as browsers serialize them"
+            )
+        if not host.isascii():
+            raise ConfigurationError(f"{name} must use ASCII hostnames")
+        try:
+            address = ip_address(host)
+            if address.version == 6 and address.ipv4_mapped is not None:
+                raise ConfigurationError(f"{name} must not use IPv4-mapped IPv6 addresses")
+            host = address.compressed
+        except ValueError:
+            if parsed.netloc.startswith("["):
+                raise ConfigurationError(
+                    f"{name} bracketed hosts must be valid IPv6 addresses"
+                ) from None
+            if any(ord(character) <= 0x20 or character in "#/:<>?@[\\]^|" for character in host):
+                raise ConfigurationError(
+                    f"{name} must use hostnames exactly as browsers serialize them"
+                ) from None
+            final_label = host.removesuffix(".").casefold().rsplit(".", 1)[-1]
+            if final_label.isdecimal() or (
+                final_label.startswith("0x")
+                and all(character in "0123456789abcdef" for character in final_label[2:])
+            ):
+                raise ConfigurationError(f"{name} must use canonical IPv4 addresses") from None
+            host = host.casefold()
+            dns_host = host.removesuffix(".")
+            labels = dns_host.split(".")
+            if len(dns_host) > 253 or any(
+                not label
+                or len(label) > 63
+                or label.startswith(("-", "xn--"))
+                or label.endswith("-")
+                or any(not (character.isalnum() or character in "-_") for character in label)
+                for label in labels
+            ):
+                raise ConfigurationError(
+                    f"{name} must use valid ASCII hostnames without punycode"
+                ) from None
+        if ":" in host:
+            host = f"[{host}]"
+        default_port = (scheme == "http" and port == 80) or (scheme == "https" and port == 443)
+        origins.append(
+            f"{scheme}://{host}{f':{port}' if port is not None and not default_port else ''}"
+        )
+    if len(origins) != len(set(origins)):
+        raise ConfigurationError(f"{name} must not contain equivalent duplicate origins")
+    return tuple(origins)
 
 
 def _notification_destinations(
@@ -651,6 +727,7 @@ def load_config(path: Path, *, load_secrets: bool = True) -> AppConfig:
             insufficient_references_retry_minutes=_optional_integer(
                 controller, "insufficient_references_retry_minutes", default=10080
             ),
+            cors_allowed_origins=_http_origins(controller, "cors_allowed_origins"),
         ),
         display_node=DisplayNodeConfig(
             controller_url=controller_url,

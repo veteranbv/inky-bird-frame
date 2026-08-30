@@ -17,7 +17,13 @@ PNG_BYTES = b"\x89PNG\r\n\x1a\n" + b"\x00" * 16
 
 
 @contextmanager
-def _serving(catalog_dir: Path, active_catalog_path: Path, state_dir: Path) -> Iterator[int]:
+def _serving(
+    catalog_dir: Path,
+    active_catalog_path: Path,
+    state_dir: Path,
+    *,
+    cors_allowed_origins: tuple[str, ...] = (),
+) -> Iterator[int]:
     handler = type(
         "TestCatalogRequestHandler",
         (CatalogRequestHandler,),
@@ -25,6 +31,7 @@ def _serving(catalog_dir: Path, active_catalog_path: Path, state_dir: Path) -> I
             "catalog_dir": catalog_dir,
             "active_catalog_path": active_catalog_path,
             "state_dir": state_dir,
+            "cors_allowed_origins": cors_allowed_origins,
         },
     )
     server = ThreadingHTTPServer(("127.0.0.1", 0), handler)
@@ -38,10 +45,12 @@ def _serving(catalog_dir: Path, active_catalog_path: Path, state_dir: Path) -> I
         thread.join()
 
 
-def _get(port: int, path: str) -> tuple[int, dict[str, str], bytes]:
+def _get(
+    port: int, path: str, *, headers: dict[str, str] | None = None
+) -> tuple[int, dict[str, str], bytes]:
     connection = HTTPConnection("127.0.0.1", port, timeout=5)
     try:
-        connection.request("GET", path)
+        connection.request("GET", path, headers=headers or {})
         response = connection.getresponse()
         return response.status, dict(response.getheaders()), response.read()
     finally:
@@ -68,6 +77,100 @@ class ServerTests(unittest.TestCase):
 
         self.assertEqual(status, 200)
         self.assertEqual(headers.get("Cache-Control"), "no-store")
+
+    def test_browser_access_is_disabled_by_default(self) -> None:
+        with self._environment() as (_, catalog_dir, state_dir):
+            active_catalog_path = state_dir / "active-catalog.json"
+            active_catalog_path.write_text(json.dumps({"schema_version": 1, "species": []}))
+            with _serving(catalog_dir, active_catalog_path, state_dir) as port:
+                status, headers, _ = _get(
+                    port,
+                    "/v1/catalog",
+                    headers={"Origin": "https://display.example.test"},
+                )
+
+        self.assertEqual(status, 200)
+        self.assertNotIn("Access-Control-Allow-Origin", headers)
+        self.assertNotIn("Vary", headers)
+
+    def test_trusted_browser_origin_can_read_catalog_and_assets(self) -> None:
+        trusted_origin = "https://display.example.test"
+        with self._environment() as (_, catalog_dir, state_dir):
+            active_catalog_path = state_dir / "active-catalog.json"
+            active_catalog_path.write_text(json.dumps({"schema_version": 1, "species": []}))
+            asset = catalog_dir / "species" / "1-robin" / "portrait.png"
+            asset.parent.mkdir(parents=True)
+            asset.write_bytes(PNG_BYTES)
+            with _serving(
+                catalog_dir,
+                active_catalog_path,
+                state_dir,
+                cors_allowed_origins=(trusted_origin,),
+            ) as port:
+                catalog_status, catalog_headers, _ = _get(
+                    port,
+                    "/v1/catalog",
+                    headers={"Origin": trusted_origin},
+                )
+                asset_status, asset_headers, _ = _get(
+                    port,
+                    "/v1/assets/species/1-robin/portrait.png",
+                    headers={"Origin": trusted_origin},
+                )
+
+        self.assertEqual(catalog_status, 200)
+        self.assertEqual(catalog_headers.get("Access-Control-Allow-Origin"), trusted_origin)
+        self.assertEqual(catalog_headers.get("Vary"), "Origin")
+        self.assertEqual(asset_status, 200)
+        self.assertEqual(asset_headers.get("Access-Control-Allow-Origin"), trusted_origin)
+        self.assertEqual(asset_headers.get("Vary"), "Origin")
+
+    def test_untrusted_browser_origin_is_not_allowed(self) -> None:
+        with self._environment() as (_, catalog_dir, state_dir):
+            active_catalog_path = state_dir / "active-catalog.json"
+            active_catalog_path.write_text(json.dumps({"schema_version": 1, "species": []}))
+            with _serving(
+                catalog_dir,
+                active_catalog_path,
+                state_dir,
+                cors_allowed_origins=("https://display.example.test",),
+            ) as port:
+                status, headers, _ = _get(
+                    port,
+                    "/v1/catalog",
+                    headers={"Origin": "https://untrusted.example.test"},
+                )
+
+        self.assertEqual(status, 200)
+        self.assertNotIn("Access-Control-Allow-Origin", headers)
+        self.assertEqual(headers.get("Vary"), "Origin")
+
+    def test_browser_access_does_not_cover_health_or_display_heartbeat(self) -> None:
+        trusted_origin = "https://display.example.test"
+        with (
+            self._environment() as (_, catalog_dir, state_dir),
+            _serving(
+                catalog_dir,
+                state_dir / "active-catalog.json",
+                state_dir,
+                cors_allowed_origins=(trusted_origin,),
+            ) as port,
+        ):
+            health_status, health_headers, _ = _get(
+                port,
+                "/health",
+                headers={"Origin": trusted_origin},
+            )
+            heartbeat_status, heartbeat_headers, _ = _get(
+                port,
+                "/v1/display-success",
+                headers={"Origin": trusted_origin},
+            )
+
+        self.assertEqual(health_status, 200)
+        self.assertNotIn("Access-Control-Allow-Origin", health_headers)
+        self.assertEqual(heartbeat_status, 200)
+        self.assertNotIn("Access-Control-Allow-Origin", heartbeat_headers)
 
     def test_non_utf8_state_files_degrade_gracefully(self) -> None:
         with self._environment() as (_, catalog_dir, state_dir):

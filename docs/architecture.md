@@ -129,6 +129,12 @@ The controller also exposes a read-only HTTP catalog:
 - `GET /v1/catalog`
 - `GET /v1/assets/<catalog-relative-path>`
 
+Cross-origin browser access to the catalog and assets is disabled unless the
+operator configures exact trusted origins. The server echoes a matching origin
+and varies cache entries by `Origin`; it never enables credentialed browser
+requests or grants wildcard access. Health and display-heartbeat responses are
+served without cross-origin access headers.
+
 `/health` reports approved and active species counts from the last built
 catalog index and never rebuilds it, so a health check answers cheaply at any
 catalog size. The server also records the time of the last `/v1/catalog`
