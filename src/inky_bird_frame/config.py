@@ -116,6 +116,7 @@ class ControllerConfig:
     retry_initial_minutes: int = 30
     retry_max_minutes: int = 1440
     insufficient_references_retry_minutes: int = 10080
+    cors_allowed_origins: tuple[str, ...] = ()
 
 
 @dataclass(frozen=True)
@@ -280,6 +281,38 @@ def _string_tuple(
     if len(parsed) != len(set(parsed)):
         raise ConfigurationError(f"{name} must not contain duplicates")
     return tuple(parsed)
+
+
+def _http_origins(section: dict[str, object], name: str) -> tuple[str, ...]:
+    origins: list[str] = []
+    for value in _string_tuple(section, name):
+        try:
+            parsed = urlsplit(value)
+            port = parsed.port
+        except ValueError as exc:
+            raise ConfigurationError(f"{name} must contain valid HTTP or HTTPS origins") from exc
+        if (
+            parsed.scheme.casefold() not in {"http", "https"}
+            or parsed.hostname is None
+            or parsed.username is not None
+            or parsed.password is not None
+            or parsed.path not in {"", "/"}
+            or parsed.query
+            or parsed.fragment
+        ):
+            raise ConfigurationError(
+                f"{name} must contain HTTP or HTTPS origins without credentials, paths, "
+                "queries, or fragments"
+            )
+        scheme = parsed.scheme.casefold()
+        host = parsed.hostname.casefold()
+        if ":" in host:
+            host = f"[{host}]"
+        default_port = (scheme == "http" and port == 80) or (scheme == "https" and port == 443)
+        origins.append(f"{scheme}://{host}{f':{port}' if port and not default_port else ''}")
+    if len(origins) != len(set(origins)):
+        raise ConfigurationError(f"{name} must not contain equivalent duplicate origins")
+    return tuple(origins)
 
 
 def _notification_destinations(
@@ -651,6 +684,7 @@ def load_config(path: Path, *, load_secrets: bool = True) -> AppConfig:
             insufficient_references_retry_minutes=_optional_integer(
                 controller, "insufficient_references_retry_minutes", default=10080
             ),
+            cors_allowed_origins=_http_origins(controller, "cors_allowed_origins"),
         ),
         display_node=DisplayNodeConfig(
             controller_url=controller_url,

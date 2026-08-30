@@ -31,13 +31,30 @@ class CatalogRequestHandler(BaseHTTPRequestHandler):
     catalog_dir: Path
     active_catalog_path: Path
     state_dir: Path
+    cors_allowed_origins: tuple[str, ...] = ()
 
-    def _send_json(self, status: HTTPStatus, payload: object) -> None:
+    def _send_browser_access_headers(self) -> None:
+        if not self.cors_allowed_origins:
+            return
+        self.send_header("Vary", "Origin")
+        origins = self.headers.get_all("Origin", failobj=[])
+        if len(origins) == 1 and origins[0] in self.cors_allowed_origins:
+            self.send_header("Access-Control-Allow-Origin", origins[0])
+
+    def _send_json(
+        self,
+        status: HTTPStatus,
+        payload: object,
+        *,
+        allow_browser_access: bool = False,
+    ) -> None:
         body = json.dumps(payload, sort_keys=True).encode()
         self.send_response(status)
         self.send_header("Content-Type", "application/json")
         self.send_header("Content-Length", str(len(body)))
         self.send_header("Cache-Control", "no-store")
+        if allow_browser_access:
+            self._send_browser_access_headers()
         self.end_headers()
         self.wfile.write(body)
 
@@ -48,6 +65,7 @@ class CatalogRequestHandler(BaseHTTPRequestHandler):
         self.send_response(HTTPStatus.OK)
         self.send_header("Content-Type", content_type)
         self.send_header("Content-Length", str(len(body)))
+        self._send_browser_access_headers()
         self.send_header(
             "Cache-Control",
             "public, max-age=86400, immutable" if content_addressed else "no-cache",
@@ -76,6 +94,7 @@ class CatalogRequestHandler(BaseHTTPRequestHandler):
                 self._send_json(
                     HTTPStatus.SERVICE_UNAVAILABLE,
                     {"ok": False, "error": "active catalog unavailable", "schema_version": 1},
+                    allow_browser_access=True,
                 )
                 return
             # Only display nodes send the marker; a curl or monitor fetch must
@@ -86,7 +105,7 @@ class CatalogRequestHandler(BaseHTTPRequestHandler):
                         self.state_dir / "display-last-fetch.json",
                         {"schema_version": 1, "fetched_at": utc_now()},
                     )
-            self._send_json(HTTPStatus.OK, payload)
+            self._send_json(HTTPStatus.OK, payload, allow_browser_access=True)
             return
         if request_path == "/v1/display-success":
             with suppress(OSError):
@@ -106,7 +125,11 @@ class CatalogRequestHandler(BaseHTTPRequestHandler):
                 or not candidate.is_relative_to(root)
                 or not candidate.is_file()
             ):
-                self._send_json(HTTPStatus.NOT_FOUND, {"ok": False, "error": "not found"})
+                self._send_json(
+                    HTTPStatus.NOT_FOUND,
+                    {"ok": False, "error": "not found"},
+                    allow_browser_access=True,
+                )
                 return
             self._send_file(candidate, parse_qs(split.query).get("sha256"))
             return
@@ -138,6 +161,7 @@ def serve_catalog(config: ControllerConfig) -> None:
             "catalog_dir": config.catalog_dir,
             "active_catalog_path": config.state_dir / "active-catalog.json",
             "state_dir": config.state_dir,
+            "cors_allowed_origins": config.cors_allowed_origins,
         },
     )
     server = ThreadingHTTPServer((config.bind_host, config.port), handler)
