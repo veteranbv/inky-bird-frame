@@ -49,8 +49,8 @@ The project has two jobs:
 - The **display node** downloads approved assets, verifies their checksums, and
   rotates them on the Inky panel. It never runs discovery or Codex.
 
-Browser access is optional and disabled by default. To let a trusted web
-application read the active catalog and images, add its exact origin:
+Browser access is optional. If a trusted web application reads the controller
+from a separate origin, add that exact origin:
 
 ```toml
 [controller]
@@ -59,8 +59,10 @@ cors_allowed_origins = ["https://frame.example.test"]
 
 An HTTPS application must use a same-origin application proxy or reach the
 controller through an HTTPS endpoint. A VPN alone does not prevent mixed
-content. This setting does not add authentication or make the controller safe
-to expose to the internet. See
+content. A same-origin proxy makes the request server-side and does not need a
+CORS setting. Cross-origin access is disabled by default, does not add
+authentication, and does not make the controller safe to expose to the
+internet. See
 [Browser applications](docs/installation.md#browser-applications) for the
 configuration and network limits.
 

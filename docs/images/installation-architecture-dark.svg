@@ -6,9 +6,10 @@
     sources, and OpenAI services for Codex generation and review. The controller
     initiates HTTPS to internet services and HTTP or HTTPS to configured BirdNET-Go. On the trusted private network, the Raspberry Pi
     display node initiates HTTP GET requests to the controller's configured port (8793
-    in the example configuration). An optional trusted browser application reads through
-    a same-origin proxy or HTTPS endpoint, and the controller returns approved catalog
-    metadata and PNG plate images. Direct cross-origin browser access is disabled by
+    in the example configuration). An optional trusted browser application connects to
+    a same-origin proxy or HTTPS endpoint, which forwards the request to the controller's
+    configured port. The controller returns approved catalog metadata and PNG plate
+    images. Direct cross-origin browser access is disabled by
     default and requires an exact allowed Origin. The display node verifies checksums, applies the
     rotation mode, and drives the Inky Impression panel over GPIO/SPI. A closing note
     warns that the controller port is unauthenticated and must stay off the public
@@ -97,10 +98,10 @@
   <line x1="882" y1="814" x2="882" y2="1138" stroke="#3fb950" stroke-width="2.5"/>
   <path d="M 882 1148 L 876 1138 L 888 1138 Z" fill="#3fb950"/>
   <text x="164" y="974" style="font-family:'Mono',ui-monospace,'SFMono-Regular',monospace;font-size:15px;font-weight:600;letter-spacing:1.5px;" fill="#f0668b">CLIENT REQUEST</text>
-  <text x="164" y="1008" style="font-family:'Inter',-apple-system,'Segoe UI',sans-serif;font-size:20.5px;font-weight:400;" fill="#e6edf3">Display uses the controller port;</text>
+  <text x="164" y="1008" style="font-family:'Inter',-apple-system,'Segoe UI',sans-serif;font-size:20.5px;font-weight:400;" fill="#e6edf3">Display / proxy use controller;</text>
   <text x="164" y="1038" style="font-family:'Inter',-apple-system,'Segoe UI',sans-serif;font-size:20.5px;font-weight:400;" fill="#e6edf3">browser uses proxy / HTTPS.</text>
-  <rect x="164" y="1049" width="210.1" height="30" fill="#161b22" stroke="#3d444d" stroke-width="1" rx="6"/>
-  <text x="175" y="1070" style="font-family:'Mono',ui-monospace,'SFMono-Regular',monospace;font-size:16.5px;font-weight:600;" fill="#f0668b">display GET :8793</text>
+  <rect x="164" y="1049" width="235" height="30" fill="#161b22" stroke="#3d444d" stroke-width="1" rx="6"/>
+  <text x="175" y="1070" style="font-family:'Mono',ui-monospace,'SFMono-Regular',monospace;font-size:16.5px;font-weight:600;" fill="#f0668b">display / proxy :8793</text>
   <text x="530" y="974" style="font-family:'Mono',ui-monospace,'SFMono-Regular',monospace;font-size:15px;font-weight:600;letter-spacing:1.5px;" fill="#3fb950">CONTROLLER RESPONSE</text>
   <text x="530" y="1008" style="font-family:'Inter',-apple-system,'Segoe UI',sans-serif;font-size:20.5px;font-weight:400;" fill="#e6edf3">Controller returns the active</text>
   <text x="530" y="1038" style="font-family:'Inter',-apple-system,'Segoe UI',sans-serif;font-size:20.5px;font-weight:400;" fill="#e6edf3">catalog and approved PNG plates.</text>

@@ -69,7 +69,8 @@ CLI. The display requires `git`, `rsync`, and Pimoroni's Python environment.
 | Controller | Internet HTTPS (TCP 443) | Codex, internet-backed observation services and geocoder, licensed references, and configured research sources |
 | Controller | BirdNET-Go HTTP(S) endpoint | Read-only summaries from an explicitly configured self-hosted station |
 | Display node | Configured controller TCP port (8793 in the supplied example) | Read-only health, catalog, and image downloads |
-| Trusted browser application | Application's same-origin proxy or an HTTPS endpoint that terminates TLS before the controller | Optional read-only catalog and image downloads; direct controller HTTP works only for an HTTP application on the trusted network |
+| Trusted browser application | Same-origin proxy, HTTPS endpoint, or controller HTTP port for an HTTP application | Optional read-only catalog and image downloads; an exact allowed origin is required when the request is cross-origin |
+| Application proxy or TLS terminator | Configured controller TCP port (8793 in the supplied example) | Server-side catalog and image requests; keep this hop on the trusted network |
 | Setup computer | Display node SSH (TCP 22) | Installation, updates, and troubleshooting |
 
 The two computers do not have to share a subnet. They must be routable to each
