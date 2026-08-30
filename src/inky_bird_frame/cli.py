@@ -1043,7 +1043,8 @@ def retry_command(args: argparse.Namespace) -> int:
 
 def status_command(args: argparse.Namespace) -> int:
     config = _config(args)
-    entries = validate_public_catalog(config.controller.catalog_dir)
+    with catalog_state_lock(config.controller.state_dir):
+        entries = validate_public_catalog(config.controller.catalog_dir)
     queue = read_generation_queue_partition(config, approved={entry.taxon_id for entry in entries})
     generation = read_generation_work(
         config,

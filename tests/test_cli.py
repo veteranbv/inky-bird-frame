@@ -6,7 +6,8 @@ import shutil
 import stat
 import unittest
 from argparse import Namespace
-from contextlib import redirect_stdout
+from collections.abc import Iterator
+from contextlib import contextmanager, redirect_stdout
 from datetime import UTC, date, datetime
 from importlib.metadata import version
 from pathlib import Path
@@ -671,7 +672,7 @@ class CliTests(unittest.TestCase):
         self.assertEqual(payload["collection"], {"collection_count": 0})
         self.assertEqual(payload["generation"], generation_payload)
 
-    def test_status_validates_without_rewriting_catalog_or_state(self) -> None:
+    def test_status_validates_without_rewriting_catalog_data(self) -> None:
         with TemporaryDirectory() as temporary:
             root = Path(temporary)
             catalog = root / "catalog"
@@ -699,7 +700,7 @@ class CliTests(unittest.TestCase):
             self.assertEqual(payload["generation"]["discovery"], {"status": "missing"})
             self.assertEqual(index.read_bytes(), index_before)
             self.assertEqual(index.stat().st_mtime_ns, modified_before)
-            self.assertEqual(state_entries, [])
+            self.assertEqual(state_entries, [state / "catalog-state.lock"])
 
     def test_status_fails_closed_without_repairing_an_invalid_catalog(self) -> None:
         with TemporaryDirectory() as temporary:
@@ -724,7 +725,41 @@ class CliTests(unittest.TestCase):
 
             self.assertEqual(index.read_bytes(), index_before)
             self.assertEqual(index.stat().st_mtime_ns, modified_before)
-            self.assertFalse(state.exists())
+            self.assertEqual(list(state.rglob("*")), [state / "catalog-state.lock"])
+
+    def test_status_validates_catalog_while_state_lock_is_held(self) -> None:
+        with TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            state = root / "state"
+            config = SimpleNamespace(
+                controller=SimpleNamespace(catalog_dir=root / "catalog", state_dir=state),
+                schedule=SimpleNamespace(refresh_minutes=15),
+            )
+            lock_held = False
+
+            @contextmanager
+            def state_lock(state_dir: Path) -> Iterator[None]:
+                nonlocal lock_held
+                self.assertEqual(state_dir, state)
+                lock_held = True
+                try:
+                    yield
+                finally:
+                    lock_held = False
+
+            def validating(_catalog_dir: Path) -> list[object]:
+                self.assertTrue(lock_held)
+                return []
+
+            with (
+                patch("inky_bird_frame.cli._config", return_value=config),
+                patch("inky_bird_frame.cli.catalog_state_lock", side_effect=state_lock),
+                patch("inky_bird_frame.cli.validate_public_catalog", side_effect=validating),
+                redirect_stdout(io.StringIO()),
+            ):
+                status_command(Namespace())
+
+            self.assertFalse(lock_held)
 
     def test_seed_supports_historical_dates_and_coordinates(self) -> None:
         args = build_parser().parse_args(
