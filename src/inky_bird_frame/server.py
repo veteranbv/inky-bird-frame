@@ -52,6 +52,7 @@ def _catalog_asset_path(value: object, field: str) -> str:
 def _project_active_catalog(payload: object) -> tuple[dict[str, object], dict[str, str]]:
     if (
         not isinstance(payload, dict)
+        or not isinstance(payload.get("schema_version"), int)
         or payload.get("schema_version") != CATALOG_SCHEMA_VERSION
         or isinstance(payload.get("schema_version"), bool)
     ):
@@ -382,13 +383,27 @@ class CatalogRequestHandler(BaseHTTPRequestHandler):
                 )
                 return
             expected_sha256 = asset_hashes.get(relative_text)
-            relative = Path(relative_text)
-            root = self.catalog_dir.resolve()
-            candidate = root / relative
-            resolved_candidate = candidate.resolve()
+            if expected_sha256 is None:
+                self._send_json(
+                    HTTPStatus.NOT_FOUND,
+                    {"ok": False, "error": "not found"},
+                    allow_browser_access=True,
+                )
+                return
+            try:
+                relative = Path(relative_text)
+                root = self.catalog_dir.resolve()
+                candidate = root / relative
+                resolved_candidate = candidate.resolve()
+            except (OSError, RuntimeError, ValueError):
+                self._send_json(
+                    HTTPStatus.NOT_FOUND,
+                    {"ok": False, "error": "not found"},
+                    allow_browser_access=True,
+                )
+                return
             if (
-                expected_sha256 is None
-                or relative.suffix.lower() != ".png"
+                relative.suffix.lower() != ".png"
                 or any(part.startswith(".") for part in relative.parts)
                 or not resolved_candidate.is_relative_to(root)
                 or resolved_candidate != candidate

@@ -310,6 +310,27 @@ class ServerTests(unittest.TestCase):
             {"ok": False, "error": "active catalog unavailable", "schema_version": 1},
         )
 
+    def test_catalog_rejects_non_integer_schema_versions(self) -> None:
+        for schema_version in (True, 1.0):
+            with self.subTest(schema_version=schema_version):
+                active = _active_catalog()
+                active["schema_version"] = schema_version
+                with self._environment() as (_, catalog_dir, state_dir):
+                    active_catalog_path = state_dir / "active-catalog.json"
+                    active_catalog_path.write_text(json.dumps(active))
+                    with _serving(catalog_dir, active_catalog_path, state_dir) as port:
+                        status, _, body = _get(port, "/v1/catalog")
+
+                self.assertEqual(status, 503)
+                self.assertEqual(
+                    json.loads(body),
+                    {
+                        "ok": False,
+                        "error": "active catalog unavailable",
+                        "schema_version": 1,
+                    },
+                )
+
     def test_non_utf8_state_files_degrade_gracefully(self) -> None:
         with self._environment() as (_, catalog_dir, state_dir):
             active_catalog_path = state_dir / "active-catalog.json"
@@ -511,6 +532,20 @@ class ServerTests(unittest.TestCase):
         self.assertEqual(status, 404)
         self.assertNotIn(secret, body)
 
+    def test_allowlisted_asset_symlink_loop_returns_controlled_not_found(self) -> None:
+        with self._environment() as (_, catalog_dir, state_dir):
+            active_catalog_path = state_dir / "active-catalog.json"
+            active_catalog_path.write_text(json.dumps(_active_catalog(_catalog_entry())))
+            species_dir = catalog_dir / "species" / "1-robin"
+            species_dir.mkdir(parents=True)
+            portrait = species_dir / "portrait.png"
+            portrait.symlink_to(portrait)
+            with _serving(catalog_dir, active_catalog_path, state_dir) as port:
+                status, _, body = _get(port, "/v1/assets/species/1-robin/portrait.png")
+
+        self.assertEqual(status, 404)
+        self.assertEqual(json.loads(body), {"ok": False, "error": "not found"})
+
     def test_asset_path_traversal_is_rejected(self) -> None:
         secret = b"top secret"
         with self._environment() as (root, catalog_dir, state_dir):
@@ -522,6 +557,7 @@ class ServerTests(unittest.TestCase):
                     "/v1/assets/..%2f..%2fsecret.txt",
                     "/v1/assets/%2e%2e/%2e%2e/secret.txt",
                     "/v1/assets//etc/hostname",
+                    "/v1/assets/bad%00.png",
                 ):
                     status, _, body = _get(port, path)
                     self.assertEqual(status, 404, path)
