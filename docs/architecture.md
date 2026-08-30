@@ -13,7 +13,7 @@ flowchart LR
     A --> C
     D["Display node"] -- "GET catalog and images" --> C
     C -- "Approved plates" --> D
-    B["Trusted browser app (optional)"] -- "GET catalog and images (allowed Origin)" --> C
+    B["Trusted browser app (optional)"] -- "GET via proxy or HTTPS endpoint" --> C
     C -- "Approved catalog" --> B
     A -. "optional catalog-only PR" .-> P["Public catalog"]
 ```

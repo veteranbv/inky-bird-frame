@@ -57,8 +57,10 @@ application read the active catalog and images, add its exact origin:
 cors_allowed_origins = ["https://frame.example.test"]
 ```
 
-This does not add authentication or make the controller safe to expose to the
-internet. See
+An HTTPS application must use a same-origin application proxy or reach the
+controller through an HTTPS endpoint. A VPN alone does not prevent mixed
+content. This setting does not add authentication or make the controller safe
+to expose to the internet. See
 [Browser applications](docs/installation.md#browser-applications) for the
 configuration and network limits.
 
