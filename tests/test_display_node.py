@@ -13,7 +13,7 @@ from urllib.parse import urlsplit
 
 from inky_bird_frame.config import DisplayNodeConfig, RotationMode
 from inky_bird_frame.display_node import _read_state, parse_catalog_entries, run_display_cycle
-from inky_bird_frame.errors import CatalogError
+from inky_bird_frame.errors import CatalogError, DataSourceError
 
 
 def catalog_payload(images: dict[int, bytes]) -> dict[str, object]:
@@ -47,11 +47,17 @@ def asset_response(images: dict[int, bytes]) -> Callable[[str, float], bytes]:
 class DisplayNodeTests(unittest.TestCase):
     def setUp(self) -> None:
         self.display = SimpleNamespace(width=1600, height=1200)
-        patcher = patch(
+        display_patcher = patch(
             "inky_bird_frame.display_node.detect_inky_display", return_value=self.display
         )
-        patcher.start()
-        self.addCleanup(patcher.stop)
+        display_patcher.start()
+        self.addCleanup(display_patcher.stop)
+        telemetry_patcher = patch(
+            "inky_bird_frame.display_node.post_json",
+            return_value={"ok": True, "schema_version": 1},
+        )
+        self.post_json = telemetry_patcher.start()
+        self.addCleanup(telemetry_patcher.stop)
 
     def test_downloads_verifies_displays_then_skips_unchanged_single_plate(self) -> None:
         image = b"display-image"
@@ -165,42 +171,87 @@ class DisplayNodeTests(unittest.TestCase):
 
     def test_successful_cycle_reports_display_success(self) -> None:
         payload = catalog_payload({1: b"one"})
-        requested: list[str] = []
-
-        def fake_get_json(url: str, timeout: float) -> object:
-            requested.append(url)
-            return payload if "/v1/catalog" in url else {"ok": True}
 
         with TemporaryDirectory() as temporary:
             config = DisplayNodeConfig("http://controller.test", Path(temporary))
             with (
-                patch("inky_bird_frame.display_node.get_json", side_effect=fake_get_json),
+                patch("inky_bird_frame.display_node.get_json", return_value=payload) as get_json,
                 patch("inky_bird_frame.display_node.get_bytes", return_value=b"one"),
                 patch("inky_bird_frame.display_node.show_on_inky", return_value=(1600, 1200)),
             ):
                 run_display_cycle(config)
 
-        self.assertEqual(requested[-1], "http://controller.test/v1/display-success")
+        get_json.assert_called_once_with("http://controller.test/v1/catalog", 20.0)
+        self.assertEqual(
+            [call.args for call in self.post_json.call_args_list],
+            [
+                (
+                    "http://controller.test/v1/display-fetch",
+                    {"schema_version": 1},
+                    10.0,
+                ),
+                (
+                    "http://controller.test/v1/display-success",
+                    {"schema_version": 1},
+                    10.0,
+                ),
+            ],
+        )
 
     def test_failed_cycle_does_not_report_display_success(self) -> None:
         payload = catalog_payload({1: b"one"})
-        requested: list[str] = []
-
-        def fake_get_json(url: str, timeout: float) -> object:
-            requested.append(url)
-            return payload
 
         with TemporaryDirectory() as temporary:
             config = DisplayNodeConfig("http://controller.test", Path(temporary))
             with (
-                patch("inky_bird_frame.display_node.get_json", side_effect=fake_get_json),
+                patch("inky_bird_frame.display_node.get_json", return_value=payload),
                 patch("inky_bird_frame.display_node.get_bytes", return_value=b"tampered"),
                 patch("inky_bird_frame.display_node.show_on_inky"),
                 self.assertRaisesRegex(CatalogError, "checksum mismatch"),
             ):
                 run_display_cycle(config)
 
-        self.assertEqual([url for url in requested if url.endswith("/v1/display-success")], [])
+        self.assertEqual(
+            [call.args[0] for call in self.post_json.call_args_list],
+            ["http://controller.test/v1/display-fetch"],
+        )
+
+    def test_invalid_catalog_does_not_report_display_fetch(self) -> None:
+        with TemporaryDirectory() as temporary:
+            config = DisplayNodeConfig("http://controller.test", Path(temporary))
+            with (
+                patch(
+                    "inky_bird_frame.display_node.get_json",
+                    return_value={"schema_version": 1, "species": "invalid"},
+                ),
+                self.assertRaisesRegex(CatalogError, "no species list"),
+            ):
+                run_display_cycle(config)
+
+        self.post_json.assert_not_called()
+
+    def test_older_controller_without_post_telemetry_does_not_block_display(self) -> None:
+        payload = catalog_payload({1: b"one"})
+        self.post_json.side_effect = DataSourceError("HTTP 501 from controller")
+        with TemporaryDirectory() as temporary:
+            config = DisplayNodeConfig("http://controller.test", Path(temporary))
+            with (
+                patch("inky_bird_frame.display_node.get_json", return_value=payload) as get_json,
+                patch("inky_bird_frame.display_node.get_bytes", return_value=b"one"),
+                patch("inky_bird_frame.display_node.show_on_inky", return_value=(1600, 1200)),
+            ):
+                result = run_display_cycle(config)
+
+        self.assertEqual(result["display_update"], "sent")
+        self.assertEqual(self.post_json.call_count, 2)
+        self.assertEqual(
+            [call.args for call in get_json.call_args_list],
+            [
+                ("http://controller.test/v1/catalog", 20.0),
+                ("http://controller.test/v1/catalog?reports_success=1", 10.0),
+                ("http://controller.test/v1/display-success", 10.0),
+            ],
+        )
 
     def test_unsupported_hardware_fails_before_controller_fetch(self) -> None:
         with TemporaryDirectory() as temporary:

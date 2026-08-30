@@ -493,7 +493,9 @@ only; they never enter the approved catalog or rotation.
   ancestry when an installation skips an intermediate release.
 - Controller unavailable: the current e-paper image remains visible. Display
   state is not advanced.
-- Checksum mismatch: the display refuses the asset and preserves current state.
+- Checksum mismatch: the controller refuses an active on-disk asset that no
+  longer matches its catalog digest. The display also verifies every downloaded
+  image and preserves its current state if that check fails.
 - Catalog publication failure: inspect `catalog-publish.log` for the structured
   command error; `catalog-publish.error.log` is reserved for process-level
   diagnostics. Run `gh auth status --hostname github.com` as the

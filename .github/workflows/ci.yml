@@ -140,6 +140,7 @@ jobs:
           trap 'docker volume rm --force "$config_volume"' EXIT
           docker volume create "$config_volume"
           docker run --rm inky-bird-frame:ci --help
+          docker run --rm inky-bird-frame:ci --version
           docker run --rm --entrypoint codex inky-bird-frame:ci --version
           run_sandbox() {
             docker run --rm --read-only --cap-drop ALL \
@@ -159,6 +160,14 @@ jobs:
             exit 1
           fi
           docker run --rm --entrypoint gh inky-bird-frame:ci --version
+          docker run --rm --entrypoint test inky-bird-frame:ci \
+            -s /usr/share/licenses/inky-bird-frame/third-party/codex/LICENSE
+          docker run --rm --entrypoint test inky-bird-frame:ci \
+            -s /usr/share/licenses/inky-bird-frame/third-party/codex/NOTICE
+          docker run --rm --entrypoint test inky-bird-frame:ci \
+            -s /usr/share/licenses/inky-bird-frame/third-party/github-cli/LICENSE
+          docker run --rm --entrypoint test inky-bird-frame:ci \
+            -s /usr/share/licenses/inky-bird-frame/THIRD_PARTY_NOTICES.md
           docker run --rm inky-bird-frame:ci catalog validate --catalog /app/catalog
           docker run --rm --interactive \
             --volume "$config_volume:/data" \

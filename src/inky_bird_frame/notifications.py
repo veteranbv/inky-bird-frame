@@ -419,10 +419,11 @@ def check_display_heartbeat(config: AppConfig, *, now: datetime | None = None) -
         stale = current - success_at > threshold
         described = f"completed a display update at {success_at.isoformat()}"
     else:
-        # Only display nodes write the fetch heartbeat, so fetches without a
-        # completed update mean every cycle fails after the catalog download;
-        # the incident failure threshold absorbs the window between a node's
-        # first fetch and its first success.
+        # The supported display client reports a fetch only after parsing the
+        # catalog. A fetch without a completed update therefore indicates a
+        # later cycle failure. Heartbeats are unauthenticated trusted-network
+        # health hints, not client identity proof; the incident failure
+        # threshold also absorbs the first-fetch-to-first-success window.
         assert fetched_at is not None
         signal = "catalog-fetch"
         seen_at = fetched_at

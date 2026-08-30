@@ -18,7 +18,7 @@ from .catalog import CatalogEntry
 from .config import DisplayNodeConfig, RotationMode
 from .display import detect_inky_display, show_on_inky
 from .errors import CatalogError, DataSourceError
-from .http import get_bytes, get_json, write_bytes_atomic, write_json_atomic
+from .http import get_bytes, get_json, post_json, write_bytes_atomic, write_json_atomic
 from .selection import select_catalog_entry, select_shuffle_bag_entry
 from .timeutil import parse_utc_timestamp
 
@@ -305,10 +305,26 @@ def _evict_stale_cache_entries(current_image_path: Path, taxon_id: int) -> None:
                 stale.unlink(missing_ok=True)
 
 
-def _report_display_success(controller_url: str) -> None:
-    # Best-effort: the update already succeeded; an older controller returns 404.
+def _report_display_event(controller_url: str, event: str) -> None:
+    # Best-effort: retry the one-release GET contract when an older controller
+    # rejects the POST route. Both forms run only after the corresponding
+    # catalog or panel state has been verified.
+    try:
+        post_json(
+            f"{controller_url}/v1/display-{event}",
+            {"schema_version": 1},
+            10.0,
+        )
+        return
+    except DataSourceError:
+        pass
+    legacy_url = (
+        f"{controller_url}/v1/catalog?reports_success=1"
+        if event == "fetch"
+        else f"{controller_url}/v1/display-success"
+    )
     with suppress(DataSourceError):
-        get_json(f"{controller_url}/v1/display-success", 10.0)
+        get_json(legacy_url, 10.0)
 
 
 def run_display_cycle(
@@ -324,8 +340,9 @@ def run_display_cycle(
         state = _read_state(state_path)
         display = detect_inky_display()
         display_size = (display.width, display.height)
-        catalog_payload = get_json(f"{config.controller_url}/v1/catalog?reports_success=1", 20.0)
+        catalog_payload = get_json(f"{config.controller_url}/v1/catalog", 20.0)
         entries = parse_catalog_entries(catalog_payload)
+        _report_display_event(config.controller_url, "fetch")
         shuffle_remaining = list(state.shuffle_remaining)
         shuffle_bag_remaining = list(state.shuffle_bag_remaining)
         shuffle_bag_seen = list(state.shuffle_bag_seen)
@@ -405,7 +422,7 @@ def run_display_cycle(
             # is only ever recorded after a successful panel update, so the
             # current plate is verifiably on the panel; without this report a
             # single-species catalog would go stale despite being correct.
-            _report_display_success(config.controller_url)
+            _report_display_event(config.controller_url, "success")
             return {
                 "display_update": "unchanged",
                 "taxon_id": selected.taxon_id,
@@ -439,7 +456,7 @@ def run_display_cycle(
             last_display_size=display_size,
         )
         _evict_stale_cache_entries(image_path, selected.taxon_id)
-        _report_display_success(config.controller_url)
+        _report_display_event(config.controller_url, "success")
         return {
             "display_update": "sent",
             "taxon_id": selected.taxon_id,

@@ -18,9 +18,12 @@ ARG TARGETARCH
 ARG CODEX_VERSION=0.144.3
 ARG CODEX_AMD64_SHA256=b9b4ae8e9b561c64dfbc5ef52c6319cba750ac87de3c7f55885026231e3aea89
 ARG CODEX_ARM64_SHA256=dd76cfd5a2cf9bcf0e3224afe28e23065cfd27262e06e0ffbc8fa40343f0905a
+ARG CODEX_LICENSE_SHA256=d17f227e4df5da1600391338865ce0f3055211760a36688f816941d58232d8dc
+ARG CODEX_NOTICE_SHA256=9d71575ecfd9a843fc1677b0efb08053c6ba9fd686a0de1a6f5382fd3c220915
 ARG GH_VERSION=2.95.0
 ARG GH_AMD64_SHA256=25d1e4729e8808c9ed3d613e96ebd3f3e44446f2d368c89d878a71a36ddb3d8c
 ARG GH_ARM64_SHA256=d41e0b3b6218e5741c8bb4db39b16e53a59e0e06299a8489bd38f623ef7ebaae
+ARG GH_LICENSE_SHA256=6da4adc42392c8485e40b4251c7e332fc3352df1947c9ffade71dd60b14a7a4f
 RUN apt-get update \
     && apt-get install --yes --no-install-recommends ca-certificates curl \
     && rm -rf /var/lib/apt/lists/*
@@ -30,18 +33,25 @@ RUN set -eux; \
       arm64) codex_arch=aarch64; codex_sha="${CODEX_ARM64_SHA256}"; gh_arch=arm64; gh_sha="${GH_ARM64_SHA256}" ;; \
       *) echo "Unsupported architecture: ${TARGETARCH}" >&2; exit 1 ;; \
     esac; \
-    mkdir -p /out; \
+    mkdir -p /out/licenses/codex /out/licenses/github-cli; \
     codex_archive=/tmp/codex.tar.gz; \
     curl -fsSL "https://github.com/openai/codex/releases/download/rust-v${CODEX_VERSION}/codex-${codex_arch}-unknown-linux-musl.tar.gz" -o "${codex_archive}"; \
     printf '%s  %s\n' "${codex_sha}" "${codex_archive}" | sha256sum -c -; \
     tar -xzf "${codex_archive}" -C /out; \
     mv "/out/codex-${codex_arch}-unknown-linux-musl" /out/codex; \
+    curl -fsSL "https://raw.githubusercontent.com/openai/codex/rust-v${CODEX_VERSION}/LICENSE" -o /out/licenses/codex/LICENSE; \
+    curl -fsSL "https://raw.githubusercontent.com/openai/codex/rust-v${CODEX_VERSION}/NOTICE" -o /out/licenses/codex/NOTICE; \
+    printf '%s  %s\n' "${CODEX_LICENSE_SHA256}" /out/licenses/codex/LICENSE | sha256sum -c -; \
+    printf '%s  %s\n' "${CODEX_NOTICE_SHA256}" /out/licenses/codex/NOTICE | sha256sum -c -; \
     gh_archive=/tmp/gh.tar.gz; \
     curl -fsSL "https://github.com/cli/cli/releases/download/v${GH_VERSION}/gh_${GH_VERSION}_linux_${gh_arch}.tar.gz" -o "${gh_archive}"; \
     printf '%s  %s\n' "${gh_sha}" "${gh_archive}" | sha256sum -c -; \
     tar -xzf "${gh_archive}" -C /tmp; \
     mv "/tmp/gh_${GH_VERSION}_linux_${gh_arch}/bin/gh" /out/gh; \
-    chmod 0755 /out/codex /out/gh
+    mv "/tmp/gh_${GH_VERSION}_linux_${gh_arch}/LICENSE" /out/licenses/github-cli/LICENSE; \
+    printf '%s  %s\n' "${GH_LICENSE_SHA256}" /out/licenses/github-cli/LICENSE | sha256sum -c -; \
+    chmod 0755 /out/codex /out/gh; \
+    chmod 0644 /out/licenses/codex/LICENSE /out/licenses/codex/NOTICE /out/licenses/github-cli/LICENSE
 
 FROM ${PYTHON_IMAGE} AS runtime
 ARG VCS_REF=unknown
@@ -61,6 +71,8 @@ RUN apt-get update \
 COPY --from=build /app/.venv /app/.venv
 COPY --from=tool-downloads /out/codex /usr/local/bin/codex
 COPY --from=tool-downloads /out/gh /usr/local/bin/gh
+COPY --from=tool-downloads /out/licenses/ /usr/share/licenses/inky-bird-frame/third-party/
+COPY LICENSE THIRD_PARTY_NOTICES.md /usr/share/licenses/inky-bird-frame/
 COPY --chown=10001:10001 catalog /app/catalog
 RUN mkdir -p \
       /data/catalog/species \

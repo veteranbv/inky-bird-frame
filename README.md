@@ -57,14 +57,15 @@ from a separate origin, add that exact origin:
 cors_allowed_origins = ["https://frame.example.test"]
 ```
 
-An HTTPS application must use a same-origin application proxy or reach the
-controller through an HTTPS endpoint. A VPN alone does not prevent mixed
-content. A same-origin proxy makes the request server-side and does not need a
-CORS setting. Cross-origin access is disabled by default, does not add
-authentication, and does not make the controller safe to expose to the
-internet. See
+A same-origin application proxy is the recommended browser path. It can
+authenticate users, keeps the controller on the trusted network, and needs no
+CORS setting. Direct cross-origin access is disabled by default. Browser local
+network and mixed-content policies vary, so a direct connection may prompt for
+permission or fail even when its origin is allowed. Browser reads never count
+as display-node health. Allowing an origin does not add authentication or make
+the controller safe to expose to the internet. See
 [Browser applications](docs/installation.md#browser-applications) for the
-configuration and network limits.
+API, privacy, and network limits.
 
 The roles may run on one capable Raspberry Pi, but the recommended wall build
 keeps the lightweight display node behind the frame and runs the controller on
@@ -246,6 +247,9 @@ inky-bird-frame doctor display --config /path/to/config.toml
 ## Operate
 
 ```bash
+# Identify the installed application before an update or bug report.
+uv run inky-bird-frame --version
+
 # Refresh observations and the private active catalog without invoking Codex.
 uv run inky-bird-frame refresh --config config.toml
 
@@ -402,6 +406,13 @@ or publisher credentials. See
 [`CONTRIBUTING.md`](CONTRIBUTING.md) for the complete workflow and engineering
 expectations, and [`SECURITY.md`](SECURITY.md) for private vulnerability
 reporting.
+
+## License
+
+Inky Bird Frame is available under the [MIT License](LICENSE). The controller
+container also includes Codex CLI and GitHub CLI. Their licenses and the exact
+in-image notice paths are listed in
+[`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md).
 
 ## Development
 

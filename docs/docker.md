@@ -7,6 +7,10 @@ The normal Docker path pulls a published image from GitHub Container Registry.
 It does not build the project from source. Images are available for AMD64 and
 ARM64 hosts.
 
+The image includes the project license and the pinned Codex CLI and GitHub CLI
+license material under `/usr/share/licenses/inky-bird-frame/`. See
+[`THIRD_PARTY_NOTICES.md`](../THIRD_PARTY_NOTICES.md) for component details.
+
 ## What runs
 
 Compose starts three services from the same image:
@@ -46,8 +50,9 @@ You need:
   billing; and
 - a controller address that the display Pi can reach on TCP 8793.
 
-Do not expose port 8793 to the public internet. It is an unauthenticated,
-read-only service intended for a trusted network.
+Do not expose port 8793 to the public internet. It serves a read-only catalog
+and accepts narrow, unauthenticated display-health reports on a trusted
+network.
 
 ## 1. Download the deployment bundle
 
@@ -256,11 +261,13 @@ secret.
 ```bash
 docker compose up --detach
 docker compose ps
+docker compose run --rm --no-deps controller --version
 curl --fail --silent http://127.0.0.1:8793/health
 docker compose logs --tail 100 scheduler
 ```
 
-The health response should contain `"ok": true`. The first scheduler pass
+The command and the health response identify the running application version.
+The health response should also contain `"ok": true`. The first scheduler pass
 refreshes observations before generation is allowed. `bootstrap` should finish
 with exit code zero; it safely checks the catalog again whenever Compose
 recreates the project.
@@ -318,6 +325,7 @@ docker compose pull
 docker compose run --rm --no-deps -T scheduler \
   config install --destination /data/config.toml < config.toml
 docker compose up --detach --remove-orphans --force-recreate
+docker compose run --rm --no-deps controller --version
 curl --fail --silent http://127.0.0.1:8793/health
 ```
 
