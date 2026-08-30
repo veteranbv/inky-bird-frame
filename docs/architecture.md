@@ -2,7 +2,8 @@
 
 Inky Bird Frame has three roles. The controller discovers birds and creates
 plates. The display node pulls approved images. An optional publisher sends new
-plates to a shared GitHub catalog.
+plates to a shared GitHub catalog. A trusted browser application can also read
+the active catalog after the operator allows its exact origin.
 
 ```mermaid
 flowchart LR
@@ -12,6 +13,8 @@ flowchart LR
     A --> C
     D["Display node"] -- "GET catalog and images" --> C
     C -- "Approved plates" --> D
+    B["Trusted browser app (optional)"] -- "GET catalog and images (allowed Origin)" --> C
+    C -- "Approved catalog" --> B
     A -. "optional catalog-only PR" .-> P["Public catalog"]
 ```
 

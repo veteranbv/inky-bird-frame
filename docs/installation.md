@@ -7,12 +7,13 @@ bird observations.
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="images/installation-architecture-dark.png">
-  <img src="images/installation-architecture.png" alt="Inky Bird Frame runtime architecture showing iNaturalist, eBird, eBird Archive, BirdWeather, BirdNET-Go, BirdNET Analyzer, and Bird Buddy observation services; the controller; its private HTTP connection with the Raspberry Pi display node; and the Inky Impression panel">
+  <img src="images/installation-architecture.png" alt="Inky Bird Frame runtime architecture showing observation and generation services; the controller; the Raspberry Pi display node and an optional trusted browser application reading the approved catalog over a private network; and the Inky Impression panel">
 </picture>
 
-The display initiates every application connection. The controller's configured
-port (8793 in the supplied example configuration) must remain on a trusted
-network and must not be forwarded from the public internet.
+The display node and any optional browser application initiate every application
+connection to the controller. The controller's configured port (8793 in the
+supplied example configuration) must remain on a trusted network and must not be
+forwarded from the public internet.
 
 ## Choose the two computers
 
@@ -68,6 +69,7 @@ CLI. The display requires `git`, `rsync`, and Pimoroni's Python environment.
 | Controller | Internet HTTPS (TCP 443) | Codex, internet-backed observation services and geocoder, licensed references, and configured research sources |
 | Controller | BirdNET-Go HTTP(S) endpoint | Read-only summaries from an explicitly configured self-hosted station |
 | Display node | Configured controller TCP port (8793 in the supplied example) | Read-only health, catalog, and image downloads |
+| Trusted browser application | Configured controller TCP port (8793 in the supplied example) | Optional read-only catalog and image downloads from an allowed exact origin |
 | Setup computer | Display node SSH (TCP 22) | Installation, updates, and troubleshooting |
 
 The two computers do not have to share a subnet. They must be routable to each
