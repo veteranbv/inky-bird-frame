@@ -158,8 +158,10 @@ class ConfigTests(unittest.TestCase):
                     )
                 )
 
-                with self.assertRaisesRegex(ConfigurationError, "cors_allowed_origins"):
+                with self.assertRaisesRegex(ConfigurationError, "cors_allowed_origins") as raised:
                     load_config(path)
+                if origin == "https://café.example":
+                    self.assertNotIn("punycode", str(raised.exception).casefold())
 
     def test_rejects_equivalent_duplicate_browser_origins(self) -> None:
         configured = CONFIG.replace(

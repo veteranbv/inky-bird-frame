@@ -312,9 +312,7 @@ def _http_origins(section: dict[str, object], name: str) -> tuple[str, ...]:
                 f"{name} must use hostnames exactly as browsers serialize them"
             )
         if not host.isascii():
-            raise ConfigurationError(
-                f"{name} hostnames must use the ASCII or punycode spelling sent by browsers"
-            )
+            raise ConfigurationError(f"{name} must use ASCII hostnames")
         try:
             address = ip_address(host)
             if address.version == 6 and address.ipv4_mapped is not None:
