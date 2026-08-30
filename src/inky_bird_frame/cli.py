@@ -29,7 +29,6 @@ from .catalog import (
     find_taxon_directory,
     has_valid_approved_candidate,
     read_json,
-    rebuild_catalog_index,
     reject_candidate,
     sha256_file,
 )
@@ -54,6 +53,7 @@ from .controller import (
     import_approved_collection,
     read_generation_queue,
     read_generation_queue_partition,
+    read_generation_work,
     remove_collection_member,
     retry_approved_candidate,
     run_controller_cycle,
@@ -88,6 +88,8 @@ from .publisher import (
 from .retry import RetryStore, parse_retry_profile_conflicts
 from .scheduler import ScheduledJob, SubprocessCommandRunner, run_scheduler
 from .server import serve_catalog
+
+CATALOG_SYNC_REVIEWED_MIGRATIONS_ENV = "INKY_CATALOG_SYNC_APPLY_REVIEWED_MIGRATIONS"
 
 
 def print_result(data: object) -> None:
@@ -403,18 +405,20 @@ def collection_remove_command(args: argparse.Namespace) -> int:
 
 def approve_command(args: argparse.Namespace) -> int:
     config = _config(args)
-    entry = approve_candidate(
-        config.controller.state_dir,
-        config.controller.catalog_dir,
-        args.taxon_id,
-    )
+    with catalog_state_lock(config.controller.state_dir):
+        entry = approve_candidate(
+            config.controller.state_dir,
+            config.controller.catalog_dir,
+            args.taxon_id,
+        )
     print_result(entry.as_dict())
     return 0
 
 
 def reject_command(args: argparse.Namespace) -> int:
     config = _config(args)
-    destination = reject_candidate(config.controller.state_dir, args.taxon_id, args.reason)
+    with catalog_state_lock(config.controller.state_dir):
+        destination = reject_candidate(config.controller.state_dir, args.taxon_id, args.reason)
     print_result({"taxon_id": args.taxon_id, "status": "rejected", "path": str(destination)})
     return 0
 
@@ -1004,9 +1008,11 @@ def retry_command(args: argparse.Namespace) -> int:
                 identity[1],
                 identity[2],
             )
-        for source, destination in terminal_moves:
-            shutil.move(str(source), destination)
-            moved.append(str(destination))
+        if terminal_moves:
+            with catalog_state_lock(config.controller.state_dir):
+                for source, destination in terminal_moves:
+                    shutil.move(str(source), destination)
+                    moved.append(str(destination))
         retry_store.clear(args.taxon_id)
         queued_for_generation = any(
             species.taxon_id == args.taxon_id for species in read_generation_queue(config)
@@ -1041,22 +1047,26 @@ def retry_command(args: argparse.Namespace) -> int:
 
 def status_command(args: argparse.Namespace) -> int:
     config = _config(args)
-    entries = rebuild_catalog_index(config.controller.catalog_dir)
-    queue = read_generation_queue_partition(config, approved={entry.taxon_id for entry in entries})
-    collection = collection_status(config, approved=entries)
-    retries = RetryStore(config.controller.state_dir / "generation-retries.json")
-    pending = []
-    for path in sorted((config.controller.state_dir / "pending").glob("*/manifest.json")):
-        manifest = read_json(path)
-        if isinstance(manifest, dict):
-            pending.append(
-                {
-                    "taxon_id": manifest.get("taxon_id"),
-                    "common_name": manifest.get("common_name"),
-                    "quality_review": manifest.get("quality_review"),
-                    "path": str(path.parent),
-                }
-            )
+    with catalog_state_lock(config.controller.state_dir):
+        entries = validate_public_catalog(config.controller.catalog_dir)
+        approved = {entry.taxon_id for entry in entries}
+        queue = read_generation_queue_partition(config, approved=approved)
+        retries = RetryStore(config.controller.state_dir / "generation-retries.json").records()
+        generation = read_generation_work(config, approved=approved, retry_records=retries)
+        collection = collection_status(config, approved=entries)
+        pending = []
+        for path in sorted((config.controller.state_dir / "pending").glob("*/manifest.json")):
+            manifest = read_json(path)
+            if isinstance(manifest, dict):
+                pending.append(
+                    {
+                        "taxon_id": manifest.get("taxon_id"),
+                        "common_name": manifest.get("common_name"),
+                        "quality_review": manifest.get("quality_review"),
+                        "path": str(path.parent),
+                    }
+                )
+        failed = [str(path) for path in sorted((config.controller.state_dir / "failed").glob("*"))]
     print_result(
         {
             "approved": [entry.as_dict() for entry in entries],
@@ -1064,10 +1074,9 @@ def status_command(args: argparse.Namespace) -> int:
             "pending": pending,
             "queued": [species_to_dict(item) for item in queue.actionable],
             "terminal_blocked": [entry.as_dict() for entry in queue.terminal_blocked],
-            "deferred": [record.as_dict() for record in retries.records()],
-            "failed": [
-                str(path) for path in sorted((config.controller.state_dir / "failed").glob("*"))
-            ],
+            "deferred": [record.as_dict() for record in retries],
+            "failed": failed,
+            "generation": generation.as_dict(),
         }
     )
     return 0
@@ -1145,11 +1154,14 @@ def catalog_prepare_command(args: argparse.Namespace) -> int:
 
 def catalog_sync_command(args: argparse.Namespace) -> int:
     lock = catalog_state_lock(args.state_dir) if args.state_dir is not None else nullcontext()
+    apply_reviewed_migrations = args.apply_reviewed_migrations or (
+        os.environ.get(CATALOG_SYNC_REVIEWED_MIGRATIONS_ENV) == "1"
+    )
     with lock:
         result = sync_public_catalog(
             args.source_catalog,
             args.catalog,
-            allow_replacements=False,
+            allow_replacements=apply_reviewed_migrations,
         )
     print_result(
         {
@@ -1738,6 +1750,14 @@ def build_parser() -> argparse.ArgumentParser:
         "--state-dir",
         type=Path,
         help="Optional controller state directory used to lock catalog writes",
+    )
+    catalog_sync_parser.add_argument(
+        "--apply-reviewed-migrations",
+        action="store_true",
+        help=(
+            "Apply only hash-bound reviewed replacements from the source and retain a "
+            "validated newer destination"
+        ),
     )
     catalog_sync_parser.set_defaults(func=catalog_sync_command)
     catalog_validate_parser = catalog_subparsers.add_parser(

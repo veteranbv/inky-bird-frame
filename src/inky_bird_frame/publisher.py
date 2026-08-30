@@ -458,7 +458,7 @@ def _validate_catalog_replacement(
         (index for index, record in enumerate(records) if record[1:] == base_approval),
         None,
     )
-    if matching_index is None or (not allow_ancestor and matching_index != len(records) - 1):
+    if matching_index != len(base_records):
         raise CatalogPublishError("Catalog migration does not match the approved base artifacts")
     candidate_approved_at = parse_utc_timestamp(candidate.get("approved_at"))
     replaced_approved_at = parse_utc_timestamp(records[matching_index][1])
@@ -516,6 +516,30 @@ def _validate_catalog_migration_convergence(
         raise CatalogPublishError(
             f"Catalog taxon {destination.get('taxon_id')} conflicts with immutable local approval"
         )
+
+
+def _catalog_sync_should_replace(destination: Path, source: Path) -> bool:
+    """Validate migration ancestry and return whether source is newer."""
+    if _trees_match_without_catalog_migration(destination, source):
+        try:
+            _validate_catalog_migration_convergence(destination, source)
+        except CatalogPublishError as forward_error:
+            try:
+                _validate_catalog_migration_convergence(source, destination)
+            except CatalogPublishError as reverse_error:
+                raise forward_error from reverse_error
+            return False
+        return True
+
+    try:
+        _validate_catalog_replacement(destination, source, allow_ancestor=True)
+    except CatalogPublishError as forward_error:
+        try:
+            _validate_catalog_replacement(source, destination, allow_ancestor=True)
+        except CatalogPublishError as reverse_error:
+            raise forward_error from reverse_error
+        return False
+    return True
 
 
 def validate_catalog_additions(
@@ -757,6 +781,7 @@ def sync_public_catalog(
 
     published: list[dict[str, object]] = []
     replaced: list[dict[str, object]] = []
+    retained_newer: list[dict[str, object]] = []
     existing: list[int] = []
 
     transaction = _new_catalog_transaction(destination_catalog)
@@ -779,14 +804,16 @@ def sync_public_catalog(
                         raise CatalogPublishError(
                             f"Catalog taxon {taxon_id} conflicts with immutable local approval"
                         )
-                    if _trees_match_without_catalog_migration(destination, source):
-                        _validate_catalog_migration_convergence(destination, source)
-                    else:
-                        _validate_catalog_replacement(
-                            destination,
-                            source,
-                            allow_ancestor=True,
+                    if not _catalog_sync_should_replace(destination, source):
+                        retained_newer.append(
+                            {
+                                "taxon_id": entry.taxon_id,
+                                "common_name": entry.common_name,
+                                "scientific_name": entry.scientific_name,
+                                "slug": entry.slug,
+                            }
                         )
+                        continue
                     staged = transaction / "replacement" / source.name
                     backup = transaction / "approved" / destination.name
                     backup.parent.mkdir(exist_ok=True)
@@ -826,7 +853,12 @@ def sync_public_catalog(
         transaction.mkdir(exist_ok=True)
         raise
     _commit_catalog_transaction(transaction, destination_catalog)
-    return {"published": published, "replaced": replaced, "already_present": existing}
+    return {
+        "published": published,
+        "replaced": replaced,
+        "retained_newer": retained_newer,
+        "already_present": existing,
+    }
 
 
 def _redact_command_output(value: str) -> str:

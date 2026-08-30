@@ -11,6 +11,14 @@ def _controller_installers() -> list[str]:
     ]
 
 
+def test_docker_bootstrap_applies_only_reviewed_catalog_migrations() -> None:
+    compose = (Path(__file__).resolve().parents[1] / "compose.yaml").read_text()
+
+    bootstrap = compose.split("  controller:", maxsplit=1)[0]
+    assert 'INKY_CATALOG_SYNC_APPLY_REVIEWED_MIGRATIONS: "1"' in bootstrap
+    assert "--apply-reviewed-migrations" not in bootstrap
+
+
 def test_controller_installers_use_provider_lists_for_managed_credentials() -> None:
     for script in _controller_installers():
         assert 'environment_credentials.append("geoapify_api_key_env")' in script

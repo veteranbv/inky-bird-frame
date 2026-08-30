@@ -16,6 +16,8 @@ x-controller-common: &controller-common
 services:
   bootstrap:
     <<: *controller-common
+    environment:
+      INKY_CATALOG_SYNC_APPLY_REVIEWED_MIGRATIONS: "1"
     command:
       - catalog
       - sync

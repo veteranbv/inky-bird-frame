@@ -84,8 +84,10 @@ entire export validates; a missing previously imported checklist fails closed
 unless the operator explicitly permits history reduction.
 
 A locked generation cycle completes that migration, recovers passing pending
-work, and then reads the latest non-stale snapshot and durable seed queue.
-Current observations take priority over queued seed taxa. The cycle then:
+work, and then passes the latest non-stale snapshot, durable queue, retry
+schedule, approvals, and terminal states through the same side-effect-free work
+calculation exposed by `status`. Current observations take priority over queued
+taxa, and retry-due candidates are actionable. The cycle then:
 
 1. selects taxa without a terminal local state;
 2. acquires and verifies licensed references;

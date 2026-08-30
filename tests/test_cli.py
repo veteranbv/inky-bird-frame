@@ -6,7 +6,8 @@ import shutil
 import stat
 import unittest
 from argparse import Namespace
-from contextlib import redirect_stdout
+from collections.abc import Iterator
+from contextlib import contextmanager, redirect_stdout
 from datetime import UTC, date, datetime
 from importlib.metadata import version
 from pathlib import Path
@@ -18,9 +19,10 @@ from unittest.mock import patch
 import inky_bird_frame
 from inky_bird_frame.birdnet_analyzer import BirdNetAnalyzerImportStats
 from inky_bird_frame.birds import BirdSpecies, DateRange
-from inky_bird_frame.catalog import sha256_file
+from inky_bird_frame.catalog import rebuild_catalog_index, sha256_file
 from inky_bird_frame.cli import (
     _confirm_birdbuddy_authorization,
+    approve_command,
     birdbuddy_login_command,
     birdbuddy_logout_command,
     birdnet_analyzer_import_command,
@@ -35,6 +37,7 @@ from inky_bird_frame.cli import (
     main,
     notifications_dispatch_command,
     refresh_command,
+    reject_command,
     retry_command,
     seed_command,
     serve_command,
@@ -50,6 +53,7 @@ from inky_bird_frame.controller import (
 )
 from inky_bird_frame.ebird_archive import EbirdArchiveHistory, EbirdArchiveImportStats
 from inky_bird_frame.errors import (
+    CatalogPublishError,
     ConfigurationError,
     DataSourceError,
     GenerationError,
@@ -90,6 +94,44 @@ def write_test_species_identity(directory: Path) -> None:
 
 
 class CliTests(unittest.TestCase):
+    def test_manual_candidate_transitions_hold_catalog_lock(self) -> None:
+        config = controller_config(Path("state"), Path("catalog"))
+        lock_held = False
+        transitions: list[tuple[str, int]] = []
+
+        @contextmanager
+        def state_lock(state_dir: Path) -> Iterator[None]:
+            nonlocal lock_held
+            self.assertEqual(state_dir, Path("state"))
+            self.assertFalse(lock_held)
+            lock_held = True
+            try:
+                yield
+            finally:
+                lock_held = False
+
+        def approve(_state_dir: Path, _catalog_dir: Path, taxon_id: int) -> SimpleNamespace:
+            self.assertTrue(lock_held)
+            transitions.append(("approve", taxon_id))
+            return SimpleNamespace(as_dict=lambda: {"taxon_id": taxon_id})
+
+        def reject(_state_dir: Path, taxon_id: int, _reason: str) -> Path:
+            self.assertTrue(lock_held)
+            transitions.append(("reject", taxon_id))
+            return Path("rejected") / str(taxon_id)
+
+        with (
+            patch("inky_bird_frame.cli._config", return_value=config),
+            patch("inky_bird_frame.cli.catalog_state_lock", side_effect=state_lock),
+            patch("inky_bird_frame.cli.approve_candidate", side_effect=approve),
+            patch("inky_bird_frame.cli.reject_candidate", side_effect=reject),
+            redirect_stdout(io.StringIO()),
+        ):
+            approve_command(Namespace(taxon_id=42))
+            reject_command(Namespace(taxon_id=43, reason="Incorrect anatomy"))
+
+        self.assertEqual(transitions, [("approve", 42), ("reject", 43)])
+
     def test_ebird_archive_commands_are_private_and_parse_reduction_opt_in(self) -> None:
         args = build_parser().parse_args(
             [
@@ -449,12 +491,29 @@ class CliTests(unittest.TestCase):
         self.assertEqual(str(args.source_catalog), "bundled-catalog")
         self.assertEqual(str(args.catalog), "managed-catalog")
         self.assertEqual(str(args.state_dir), "controller-state")
+        self.assertFalse(args.apply_reviewed_migrations)
+
+    def test_catalog_sync_parses_reviewed_migration_opt_in(self) -> None:
+        args = build_parser().parse_args(
+            [
+                "catalog",
+                "sync",
+                "--source-catalog",
+                "bundled-catalog",
+                "--catalog",
+                "managed-catalog",
+                "--apply-reviewed-migrations",
+            ]
+        )
+
+        self.assertTrue(args.apply_reviewed_migrations)
 
     def test_catalog_sync_uses_controller_catalog_lock(self) -> None:
         args = Namespace(
             source_catalog=Path("bundled-catalog"),
             catalog=Path("managed-catalog"),
             state_dir=Path("controller-state"),
+            apply_reviewed_migrations=True,
         )
         with (
             patch("inky_bird_frame.cli.catalog_state_lock") as catalog_lock,
@@ -470,7 +529,65 @@ class CliTests(unittest.TestCase):
         sync.assert_called_once_with(
             Path("bundled-catalog"),
             Path("managed-catalog"),
+            allow_replacements=True,
+        )
+
+    def test_catalog_sync_remains_add_only_without_reviewed_migration_opt_in(self) -> None:
+        args = build_parser().parse_args(
+            [
+                "catalog",
+                "sync",
+                "--source-catalog",
+                "bundled-catalog",
+                "--catalog",
+                "managed-catalog",
+            ]
+        )
+        with (
+            patch.dict("os.environ", {}, clear=True),
+            patch(
+                "inky_bird_frame.cli.sync_public_catalog",
+                return_value={"published": [], "already_present": []},
+            ) as sync,
+            redirect_stdout(io.StringIO()),
+        ):
+            catalog_sync_command(args)
+
+        sync.assert_called_once_with(
+            Path("bundled-catalog"),
+            Path("managed-catalog"),
             allow_replacements=False,
+        )
+
+    def test_catalog_sync_accepts_compose_environment_opt_in(self) -> None:
+        args = build_parser().parse_args(
+            [
+                "catalog",
+                "sync",
+                "--source-catalog",
+                "bundled-catalog",
+                "--catalog",
+                "managed-catalog",
+            ]
+        )
+        with (
+            patch.dict(
+                "os.environ",
+                {"INKY_CATALOG_SYNC_APPLY_REVIEWED_MIGRATIONS": "1"},
+                clear=True,
+            ),
+            patch(
+                "inky_bird_frame.cli.sync_public_catalog",
+                return_value={"published": [], "already_present": []},
+            ) as sync,
+            redirect_stdout(io.StringIO()),
+        ):
+            catalog_sync_command(args)
+
+        sync.assert_called_once_with(
+            Path("bundled-catalog"),
+            Path("managed-catalog"),
+            allow_replacements=True,
         )
 
     def test_scheduler_requires_explicit_config(self) -> None:
@@ -555,6 +672,18 @@ class CliTests(unittest.TestCase):
             actionable=[actionable],
             terminal_blocked=[SimpleNamespace(as_dict=lambda: blocked)],
         )
+        generation_payload = {
+            "complete": False,
+            "discovery": {"status": "missing"},
+            "eligible_count": 0,
+            "eligible": [],
+            "actionable_count": 0,
+            "actionable": [],
+            "deferred_count": 0,
+            "deferred": [],
+            "terminal_blocked_count": 0,
+            "terminal_blocked": [],
+        }
         with TemporaryDirectory() as temporary:
             state = Path(temporary)
             config = SimpleNamespace(
@@ -563,8 +692,12 @@ class CliTests(unittest.TestCase):
             output = io.StringIO()
             with (
                 patch("inky_bird_frame.cli._config", return_value=config),
-                patch("inky_bird_frame.cli.rebuild_catalog_index", return_value=[]),
+                patch("inky_bird_frame.cli.validate_public_catalog", return_value=[]),
                 patch("inky_bird_frame.cli.read_generation_queue_partition", return_value=queue),
+                patch(
+                    "inky_bird_frame.cli.read_generation_work",
+                    return_value=SimpleNamespace(as_dict=lambda: generation_payload),
+                ),
                 patch(
                     "inky_bird_frame.cli.collection_status",
                     return_value={"collection_count": 0, "members": []},
@@ -577,6 +710,257 @@ class CliTests(unittest.TestCase):
         self.assertEqual([entry["taxon_id"] for entry in payload["queued"]], [1])
         self.assertEqual(payload["terminal_blocked"], [blocked])
         self.assertEqual(payload["collection"], {"collection_count": 0})
+        self.assertEqual(payload["generation"], generation_payload)
+
+    def test_status_validates_without_rewriting_catalog_data(self) -> None:
+        with TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            catalog = root / "catalog"
+            state = root / "state"
+            source_species = (
+                Path(__file__).resolve().parents[1] / "catalog/species/9083-northern-cardinal"
+            )
+            shutil.copytree(source_species, catalog / "species/9083-northern-cardinal")
+            rebuild_catalog_index(catalog)
+            index = catalog / "index.json"
+            index_before = index.read_bytes()
+            modified_before = index.stat().st_mtime_ns
+            config = SimpleNamespace(
+                controller=SimpleNamespace(catalog_dir=catalog, state_dir=state),
+                schedule=SimpleNamespace(refresh_minutes=15),
+            )
+            output = io.StringIO()
+
+            with patch("inky_bird_frame.cli._config", return_value=config), redirect_stdout(output):
+                status_command(Namespace())
+
+            state_entries = list(state.rglob("*"))
+            payload = json.loads(output.getvalue())["data"]
+            self.assertFalse(payload["generation"]["complete"])
+            self.assertEqual(payload["generation"]["discovery"], {"status": "missing"})
+            self.assertEqual(index.read_bytes(), index_before)
+            self.assertEqual(index.stat().st_mtime_ns, modified_before)
+            self.assertEqual(state_entries, [state / "catalog-state.lock"])
+
+    def test_status_fails_closed_without_repairing_an_invalid_catalog(self) -> None:
+        with TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            catalog = root / "catalog"
+            state = root / "state"
+            (catalog / "species").mkdir(parents=True)
+            index = catalog / "index.json"
+            index.write_text("{}")
+            index_before = index.read_bytes()
+            modified_before = index.stat().st_mtime_ns
+            config = SimpleNamespace(
+                controller=SimpleNamespace(catalog_dir=catalog, state_dir=state),
+                schedule=SimpleNamespace(refresh_minutes=15),
+            )
+
+            with (
+                patch("inky_bird_frame.cli._config", return_value=config),
+                self.assertRaisesRegex(CatalogPublishError, "index does not match"),
+            ):
+                status_command(Namespace())
+
+            self.assertEqual(index.read_bytes(), index_before)
+            self.assertEqual(index.stat().st_mtime_ns, modified_before)
+            self.assertEqual(list(state.rglob("*")), [state / "catalog-state.lock"])
+
+    def test_status_validates_catalog_while_state_lock_is_held(self) -> None:
+        with TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            state = root / "state"
+            config = SimpleNamespace(
+                controller=SimpleNamespace(catalog_dir=root / "catalog", state_dir=state),
+                schedule=SimpleNamespace(refresh_minutes=15),
+            )
+            lock_held = False
+            retained_retries = [SimpleNamespace(as_dict=lambda: {"taxon_id": 42})]
+            output = io.StringIO()
+
+            @contextmanager
+            def state_lock(state_dir: Path) -> Iterator[None]:
+                nonlocal lock_held
+                self.assertEqual(state_dir, state)
+                lock_held = True
+                try:
+                    yield
+                finally:
+                    lock_held = False
+
+            def validating(_catalog_dir: Path) -> list[object]:
+                self.assertTrue(lock_held)
+                return []
+
+            def queue_snapshot(
+                _config: object, *, approved: set[int] | None = None
+            ) -> SimpleNamespace:
+                self.assertTrue(lock_held)
+                self.assertEqual(approved, set())
+                return SimpleNamespace(actionable=[], terminal_blocked=[])
+
+            def generation_snapshot(
+                _config: object,
+                *,
+                approved: set[int] | None = None,
+                retry_records: list[object] | None = None,
+            ) -> SimpleNamespace:
+                self.assertTrue(lock_held)
+                self.assertEqual(approved, set())
+                self.assertIs(retry_records, retained_retries)
+                return SimpleNamespace(as_dict=lambda: {})
+
+            def collection_snapshot(
+                _config: object, *, approved: list[object] | None = None
+            ) -> dict[str, object]:
+                self.assertTrue(lock_held)
+                self.assertEqual(approved, [])
+                return {"members": []}
+
+            with (
+                patch("inky_bird_frame.cli._config", return_value=config),
+                patch("inky_bird_frame.cli.catalog_state_lock", side_effect=state_lock),
+                patch("inky_bird_frame.cli.RetryStore") as retry_store,
+                patch("inky_bird_frame.cli.validate_public_catalog", side_effect=validating),
+                patch(
+                    "inky_bird_frame.cli.read_generation_queue_partition",
+                    side_effect=queue_snapshot,
+                ),
+                patch(
+                    "inky_bird_frame.cli.read_generation_work",
+                    side_effect=generation_snapshot,
+                ),
+                patch("inky_bird_frame.cli.collection_status", side_effect=collection_snapshot),
+                redirect_stdout(output),
+            ):
+                retry_store.return_value.records.return_value = retained_retries
+                status_command(Namespace())
+
+            self.assertFalse(lock_held)
+            retry_store.return_value.records.assert_called_once_with()
+            self.assertEqual(json.loads(output.getvalue())["data"]["deferred"], [{"taxon_id": 42}])
+
+    def test_status_snapshots_pending_candidates_before_releasing_state_lock(self) -> None:
+        with TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            state = root / "state"
+            pending_dir = state / "pending/42-pending-bird"
+            pending_dir.mkdir(parents=True)
+            pending_manifest = pending_dir / "manifest.json"
+            pending_manifest.write_text(json.dumps({"taxon_id": 42, "common_name": "Pending Bird"}))
+            published_dir = state / "published/42-pending-bird"
+            config = SimpleNamespace(
+                controller=SimpleNamespace(catalog_dir=root / "catalog", state_dir=state),
+                schedule=SimpleNamespace(refresh_minutes=15),
+            )
+            output = io.StringIO()
+
+            @contextmanager
+            def state_lock(_state_dir: Path) -> Iterator[None]:
+                yield
+                published_dir.parent.mkdir(parents=True)
+                pending_dir.rename(published_dir)
+
+            with (
+                patch("inky_bird_frame.cli._config", return_value=config),
+                patch("inky_bird_frame.cli.catalog_state_lock", side_effect=state_lock),
+                patch("inky_bird_frame.cli.validate_public_catalog", return_value=[]),
+                patch(
+                    "inky_bird_frame.cli.read_generation_queue_partition",
+                    return_value=SimpleNamespace(actionable=[], terminal_blocked=[]),
+                ),
+                patch(
+                    "inky_bird_frame.cli.read_generation_work",
+                    return_value=SimpleNamespace(as_dict=lambda: {}),
+                ),
+                patch(
+                    "inky_bird_frame.cli.collection_status",
+                    return_value={"members": []},
+                ),
+                redirect_stdout(output),
+            ):
+                status_command(Namespace())
+
+            payload = json.loads(output.getvalue())["data"]
+            self.assertEqual(
+                payload["pending"],
+                [
+                    {
+                        "taxon_id": 42,
+                        "common_name": "Pending Bird",
+                        "quality_review": None,
+                        "path": str(pending_dir),
+                    }
+                ],
+            )
+            self.assertFalse(pending_dir.exists())
+            self.assertTrue(published_dir.exists())
+
+    def test_status_snapshots_failed_paths_before_releasing_state_lock(self) -> None:
+        with TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            state = root / "state"
+            failed_dir = state / "failed/42-failed-bird"
+            failed_dir.mkdir(parents=True)
+            archived_dir = state / "archive/42-failed-bird"
+            config = SimpleNamespace(
+                controller=SimpleNamespace(catalog_dir=root / "catalog", state_dir=state),
+                schedule=SimpleNamespace(refresh_minutes=15),
+            )
+            generation_payload = {
+                "terminal_blocked": [
+                    {
+                        "taxon_id": 42,
+                        "state": "failed",
+                        "paths": [str(failed_dir)],
+                    }
+                ]
+            }
+            output = io.StringIO()
+
+            @contextmanager
+            def state_lock(_state_dir: Path) -> Iterator[None]:
+                yield
+                archived_dir.parent.mkdir(parents=True)
+                failed_dir.rename(archived_dir)
+
+            def generation_snapshot(
+                _config: object,
+                *,
+                approved: set[int] | None = None,
+                retry_records: list[object] | None = None,
+            ) -> SimpleNamespace:
+                self.assertEqual(approved, set())
+                self.assertEqual(retry_records, [])
+                self.assertTrue(failed_dir.is_dir())
+                return SimpleNamespace(as_dict=lambda: generation_payload)
+
+            with (
+                patch("inky_bird_frame.cli._config", return_value=config),
+                patch("inky_bird_frame.cli.catalog_state_lock", side_effect=state_lock),
+                patch("inky_bird_frame.cli.validate_public_catalog", return_value=[]),
+                patch(
+                    "inky_bird_frame.cli.read_generation_queue_partition",
+                    return_value=SimpleNamespace(actionable=[], terminal_blocked=[]),
+                ),
+                patch(
+                    "inky_bird_frame.cli.read_generation_work",
+                    side_effect=generation_snapshot,
+                ),
+                patch(
+                    "inky_bird_frame.cli.collection_status",
+                    return_value={"members": []},
+                ),
+                redirect_stdout(output),
+            ):
+                status_command(Namespace())
+
+            payload = json.loads(output.getvalue())["data"]
+            self.assertEqual(payload["generation"], generation_payload)
+            self.assertEqual(payload["failed"], [str(failed_dir)])
+            self.assertFalse(failed_dir.exists())
+            self.assertTrue(archived_dir.exists())
 
     def test_seed_supports_historical_dates_and_coordinates(self) -> None:
         args = build_parser().parse_args(
@@ -2230,8 +2614,33 @@ rotation_mode = "shuffle_bag"
             )
             config = controller_config(state_dir)
             output = io.StringIO()
+            lock_held = False
+            pending_move_locked = False
+            real_move = shutil.move
 
-            with patch("inky_bird_frame.cli._config", return_value=config), redirect_stdout(output):
+            @contextmanager
+            def state_lock(_state_dir: Path) -> Iterator[None]:
+                nonlocal lock_held
+                self.assertFalse(lock_held)
+                lock_held = True
+                try:
+                    yield
+                finally:
+                    lock_held = False
+
+            def move(source: str, destination: Path) -> str:
+                nonlocal pending_move_locked
+                if Path(source) == pending:
+                    self.assertTrue(lock_held)
+                    pending_move_locked = True
+                return str(real_move(Path(source), destination))
+
+            with (
+                patch("inky_bird_frame.cli._config", return_value=config),
+                patch("inky_bird_frame.cli.catalog_state_lock", side_effect=state_lock),
+                patch("inky_bird_frame.cli.shutil.move", side_effect=move),
+                redirect_stdout(output),
+            ):
                 retry_command(Namespace(taxon_id=42))
 
             result = json.loads(output.getvalue())["data"]
@@ -2240,6 +2649,7 @@ rotation_mode = "shuffle_bag"
         self.assertTrue(result["queued_for_generation"])
         self.assertEqual(queue[0].common_name, "Queued Bird")
         self.assertEqual(queue[0].scientific_name, "Avis ordinata")
+        self.assertTrue(pending_move_locked)
 
     def test_retry_prefers_current_identity_over_older_edit_source(self) -> None:
         with TemporaryDirectory() as temporary:

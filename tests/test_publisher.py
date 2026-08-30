@@ -493,6 +493,91 @@ class PublisherTests(unittest.TestCase):
             )
             self.assertEqual(len(validate_public_catalog(corrected_local)), 1)
 
+    def test_sync_retains_a_newer_reviewed_destination(self) -> None:
+        with TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            source = root / "source"
+            destination = root / "destination"
+            replacement = root / "replacement"
+            _create_species(source, 1, "Example Bird")
+            shutil.copytree(source, destination)
+            replacement_directory = _create_portrait_replacement(
+                replacement,
+                1,
+                "Example Bird",
+                approved_at="2026-07-10T00:00:00+00:00",
+                color="black",
+            )
+            replace_public_catalog_taxon(
+                replacement,
+                destination,
+                1,
+                "Human review found incorrect proportions.",
+            )
+            newer_portrait = (replacement_directory / "portrait.png").read_bytes()
+
+            result = sync_public_catalog(source, destination, allow_replacements=True)
+
+            self.assertEqual(result["published"], [])
+            self.assertEqual(result["replaced"], [])
+            self.assertEqual(
+                result["retained_newer"],
+                [
+                    {
+                        "taxon_id": 1,
+                        "common_name": "Example Bird",
+                        "scientific_name": "Avis exemplaris",
+                        "slug": "example-bird",
+                    }
+                ],
+            )
+            self.assertEqual(
+                (destination / "species/1-example-bird/portrait.png").read_bytes(),
+                newer_portrait,
+            )
+            self.assertEqual(len(validate_public_catalog(destination)), 1)
+
+    def test_sync_retains_newer_migration_metadata_for_matching_assets(self) -> None:
+        with TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            original = root / "original"
+            published = root / "published"
+            corrected_without_migration = root / "corrected-without-migration"
+            replacement = root / "replacement"
+            _create_species(original, 1, "Example Bird")
+            shutil.copytree(original, published)
+            _create_portrait_replacement(
+                replacement,
+                1,
+                "Example Bird",
+                approved_at="2026-07-10T00:00:00+00:00",
+                color="black",
+            )
+            shutil.copytree(replacement, corrected_without_migration)
+            replace_public_catalog_taxon(
+                replacement,
+                published,
+                1,
+                "Human review found incorrect proportions.",
+            )
+
+            result = sync_public_catalog(
+                corrected_without_migration,
+                published,
+                allow_replacements=True,
+            )
+
+            self.assertEqual(result["replaced"], [])
+            retained_newer = result["retained_newer"]
+            self.assertIsInstance(retained_newer, list)
+            assert isinstance(retained_newer, list)
+            self.assertEqual([item["taxon_id"] for item in retained_newer], [1])
+            manifest = json.loads((published / "species/1-example-bird/manifest.json").read_text())
+            self.assertEqual(
+                manifest["catalog_migration"]["reason"],
+                "Human review found incorrect proportions.",
+            )
+
     def test_sync_rejects_a_valid_replacement_without_explicit_opt_in(self) -> None:
         with TemporaryDirectory() as temporary:
             root = Path(temporary)
@@ -583,6 +668,38 @@ class PublisherTests(unittest.TestCase):
             with self.assertRaisesRegex(CatalogPublishError, "preserve migration history"):
                 validate_catalog_additions(first, tampered)
 
+            forked = root / "forked"
+            shutil.copytree(second, forked)
+            forked_manifest_path = forked / "species/1-example-bird/manifest.json"
+            forked_manifest = json.loads(forked_manifest_path.read_text())
+            forked_migration = forked_manifest["catalog_migration"]
+            forked_migration["history"].append(
+                {
+                    "reason": "Unrelated fork.",
+                    "replaces": {
+                        "approved_at": "2026-07-09T12:00:00+00:00",
+                        "display_sha256": "c" * 64,
+                        "portrait_sha256": "d" * 64,
+                    },
+                }
+            )
+            write_json_atomic(forked_manifest_path, forked_manifest)
+            rebuild_catalog_index(forked)
+            self.assertEqual(len(validate_public_catalog(forked)), 1)
+
+            forked_destination = root / "forked-destination"
+            shutil.copytree(first, forked_destination)
+            with self.assertRaisesRegex(
+                CatalogPublishError,
+                "does not match the approved base artifacts",
+            ):
+                sync_public_catalog(forked, forked_destination, allow_replacements=True)
+            with self.assertRaisesRegex(
+                CatalogPublishError,
+                "preserve migration history",
+            ):
+                sync_public_catalog(first, forked, allow_replacements=True)
+
             shutil.copytree(original, skipped_controller)
             result = sync_public_catalog(
                 second,
@@ -599,6 +716,17 @@ class PublisherTests(unittest.TestCase):
                 (second / "species/1-example-bird/portrait.png").read_bytes(),
             )
             self.assertEqual(len(validate_public_catalog(skipped_controller)), 1)
+
+            retained = sync_public_catalog(original, second, allow_replacements=True)
+
+            retained_newer = retained["retained_newer"]
+            self.assertIsInstance(retained_newer, list)
+            assert isinstance(retained_newer, list)
+            self.assertEqual([item["taxon_id"] for item in retained_newer], [1])
+            self.assertEqual(
+                (second / "species/1-example-bird/portrait.png").read_bytes(),
+                (second_source / "species/1-example-bird/portrait.png").read_bytes(),
+            )
 
     def test_interrupted_committed_cleanup_keeps_the_installed_replacement(self) -> None:
         with TemporaryDirectory() as temporary:

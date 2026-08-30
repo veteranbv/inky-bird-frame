@@ -22,10 +22,16 @@ One failed scheduled job is logged and retried later without stopping the HTTP
 service or unrelated jobs.
 
 `bootstrap` runs `catalog sync --source-catalog /app/catalog --catalog
-/data/catalog --state-dir /data/var/controller`. The sync is add-only: it
-validates the bundled public catalog, copies only species missing from the
-persistent catalog, rebuilds the index, and holds the controller state lock so
-it cannot overwrite an approved plate or race a running cycle. The
+/data/catalog --state-dir /data/var/controller`. Compose opts into reviewed
+migrations through `INKY_CATALOG_SYNC_APPLY_REVIEWED_MIGRATIONS=1` instead of a
+version-specific command-line argument, so the current Compose definition can
+still start an older image after the matching persistent snapshot is restored.
+Bootstrap validates the bundled and persistent catalogs, copies missing species, and
+applies only replacements whose recorded approval hashes and complete migration
+ancestry match the persistent plate. A validated persistent descendant is
+retained and reported as `retained_newer`; bootstrap never downgrades it.
+Unrelated or tampered conflicts fail closed. The sync rebuilds the index and
+holds the controller state lock so it cannot race a running cycle. The
 [operations guide](operations.md#copy-species-between-catalogs) describes the
 command in general.
 
@@ -296,6 +302,12 @@ when Bird Buddy is enabled. Protect authentication volumes if you include them.
 `docker compose down` keeps all volumes. `docker compose down --volumes`
 deletes permanent controller state and should not be part of a normal update.
 
+Before an update, take a restorable point-in-time snapshot of `controller-data`
+and the matching configuration files. Stop `scheduler` and `controller` while
+capturing a filesystem-level copy if the backup system cannot snapshot the
+volume atomically. Keep that snapshot until the updated controller has completed
+bootstrap, refresh, generation status, and display verification.
+
 ## Update
 
 Read the release notes, then change `INKY_BIRD_IMAGE` in `.env` to the desired
@@ -312,8 +324,14 @@ curl --fail --silent http://127.0.0.1:8793/health
 Recreating the services is required after changing `controller.env`; a restart
 does not reload a container's environment.
 
-For rollback, restore the prior image tag in `.env` and repeat the same `pull`
-and `up` commands. Persistent data is not removed.
+Changing the image tag rolls back application code only; it does not roll back
+persistent state. Reviewed catalog sync is forward-only. A newer, validated
+persistent descendant is retained rather than replaced with an older bundled
+plate. To roll back catalog or state migrations, stop the stack, restore the
+matching pre-update `controller-data` snapshot and configuration, select the
+prior image tag, and repeat the `pull` and `up` commands. Do not combine an old
+image with newer persistent state unless that release's notes explicitly state
+that the combination is compatible.
 
 ## Build from source
 

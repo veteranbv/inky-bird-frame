@@ -131,7 +131,9 @@ reviewed replacements as migration history, replaces the entry transactionally,
 rebuilds the index, and validates the result. Pull-request CI accepts the
 replacement only when the newest record exactly matches the base catalog.
 Ordinary catalog contributions remain add-only. Controller catalog sync accepts
-the recorded ancestry so an installation may safely skip intermediate releases.
+the recorded ancestry only when deployment explicitly enables reviewed
+migrations, so an installation may safely skip intermediate releases. A
+validated destination descendant is retained; catalog sync never downgrades it.
 
 ### Required plate contents
 

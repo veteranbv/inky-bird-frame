@@ -88,7 +88,7 @@ from .models import ProfileConflict, ReferencePhoto, SpeciesProfileData
 from .prompts import PROMPT_VERSION
 from .references import download_references, fetch_reference_candidates
 from .research import ResearchBudget
-from .retry import RetryStore, parse_retry_profile_conflicts
+from .retry import RetryRecord, RetryStore, parse_retry_profile_conflicts
 from .timeutil import parse_utc_timestamp
 
 REVIEW_FAILURE_FALLBACK = "The previous attempt did not meet every automated review threshold."
@@ -164,6 +164,34 @@ class TerminalQueueEntry:
 class GenerationQueuePartition:
     actionable: list[BirdSpecies]
     terminal_blocked: list[TerminalQueueEntry]
+
+
+@dataclass(frozen=True)
+class GenerationWork:
+    complete: bool
+    discovery_status: str
+    discovery_refreshed_at: datetime | None
+    eligible: list[BirdSpecies]
+    actionable: list[BirdSpecies]
+    deferred: list[RetryRecord]
+    terminal_blocked: list[TerminalQueueEntry]
+
+    def as_dict(self) -> dict[str, object]:
+        discovery: dict[str, object] = {"status": self.discovery_status}
+        if self.discovery_refreshed_at is not None:
+            discovery["refreshed_at"] = self.discovery_refreshed_at.isoformat()
+        return {
+            "complete": self.complete,
+            "discovery": discovery,
+            "eligible_count": len(self.eligible),
+            "eligible": [_species_payload(species) for species in self.eligible],
+            "actionable_count": len(self.actionable),
+            "actionable": [_species_payload(species) for species in self.actionable],
+            "deferred_count": len(self.deferred),
+            "deferred": [record.as_dict() for record in self.deferred],
+            "terminal_blocked_count": len(self.terminal_blocked),
+            "terminal_blocked": [entry.as_dict() for entry in self.terminal_blocked],
+        }
 
 
 @contextmanager
@@ -1940,11 +1968,16 @@ def generate_candidate(
                     max_attempts=config.controller.max_generation_attempts,
                     correction_source_sha256=correction_source_sha256,
                 )
-                destination = candidate_directory(state_dir, species)
-                destination.parent.mkdir(parents=True, exist_ok=True)
-                if destination.exists():
-                    raise CatalogError(f"Pending destination already exists: {destination}")
-                shutil.copytree(attempt_dir, destination)
+                with catalog_state_lock(state_dir):
+                    if species.taxon_id in approved_taxon_ids(config.controller.catalog_dir):
+                        raise CatalogError(f"Taxon {species.taxon_id} is already approved")
+                    if find_taxon_directory(state_dir / "pending", species.taxon_id) is not None:
+                        raise CatalogError(
+                            f"Taxon {species.taxon_id} already has a pending candidate"
+                        )
+                    destination = candidate_directory(state_dir, species)
+                    destination.parent.mkdir(parents=True, exist_ok=True)
+                    shutil.copytree(attempt_dir, destination)
                 return destination
 
             resolved_corrections = tuple(
@@ -2010,9 +2043,10 @@ def generate_candidate(
             ) or (REVIEW_FAILURE_FALLBACK,)
             correction_source = portrait_path
 
-        failed = state_dir / "failed" / f"{species.taxon_id}-{_timestamp()}"
-        failed.parent.mkdir(parents=True, exist_ok=True)
-        shutil.copytree(work, failed)
+        with catalog_state_lock(state_dir):
+            failed = state_dir / "failed" / f"{species.taxon_id}-{_timestamp()}"
+            failed.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copytree(work, failed)
         reason = terminal_detail or (
             "the configured maximum of "
             f"{config.controller.max_generation_attempts} attempts was exhausted"
@@ -2071,6 +2105,136 @@ def _partition_generation_queue(
             continue
         terminal_blocked.append(TerminalQueueEntry(species, state, paths))
     return GenerationQueuePartition(actionable, terminal_blocked)
+
+
+def calculate_generation_work(
+    *,
+    snapshot: DiscoverySnapshot | None,
+    queued_species: list[BirdSpecies],
+    approved: set[int],
+    terminal_states: dict[int, tuple[str, tuple[Path, ...]]],
+    retry_records: list[RetryRecord],
+    now: datetime,
+    maximum_age: timedelta,
+) -> GenerationWork:
+    """Classify generation work from an explicit, side-effect-free state snapshot."""
+    if snapshot is None:
+        discovery_status = "missing"
+        complete = False
+        observed_species: list[BirdSpecies] = []
+        refreshed_at = None
+    else:
+        refreshed_at = snapshot.refreshed_at.astimezone(UTC)
+        complete = now.astimezone(UTC) - refreshed_at <= maximum_age
+        discovery_status = "fresh" if complete else "stale"
+        observed_species = snapshot.species
+
+    retry_by_taxon = {record.taxon_id: record for record in retry_records}
+    generation_species = list(observed_species)
+    observed_taxa = {species.taxon_id for species in observed_species}
+    for queued in queued_species:
+        if queued.taxon_id in observed_taxa:
+            continue
+        retry = retry_by_taxon.get(queued.taxon_id)
+        if (
+            HUMAN_REVIEW_SOURCE not in queued.sources
+            and retry is not None
+            and retry.common_name is not None
+            and retry.scientific_name is not None
+        ):
+            queued = BirdSpecies(
+                taxon_id=queued.taxon_id,
+                common_name=retry.common_name,
+                scientific_name=retry.scientific_name,
+                observation_count=queued.observation_count,
+                source=queued.source,
+                sources=queued.sources,
+                latest_detection_at=queued.latest_detection_at,
+            )
+        generation_species.append(queued)
+
+    eligible: list[BirdSpecies] = []
+    terminal_blocked: list[TerminalQueueEntry] = []
+    for species in generation_species:
+        if species.taxon_id in approved:
+            continue
+        terminal = terminal_states.get(species.taxon_id)
+        if terminal is None:
+            eligible.append(species)
+            continue
+        state, paths = terminal
+        if state != "pending":
+            terminal_blocked.append(TerminalQueueEntry(species, state, paths))
+
+    eligible_taxa = {species.taxon_id for species in eligible}
+    deferred = sorted(
+        (
+            record
+            for record in retry_records
+            if record.taxon_id in eligible_taxa and record.next_attempt_at > now
+        ),
+        key=lambda record: record.next_attempt_at,
+    )
+    deferred_taxa = {record.taxon_id for record in deferred}
+    actionable = (
+        [species for species in eligible if species.taxon_id not in deferred_taxa]
+        if complete
+        else []
+    )
+    return GenerationWork(
+        complete,
+        discovery_status,
+        refreshed_at,
+        eligible,
+        actionable,
+        deferred,
+        terminal_blocked,
+    )
+
+
+def _generation_terminal_states(
+    state_dir: Path,
+    observed_species: list[BirdSpecies],
+    queued_species: list[BirdSpecies],
+) -> dict[int, tuple[str, tuple[Path, ...]]]:
+    taxon_ids = {species.taxon_id for species in (*observed_species, *queued_species)}
+    return {
+        taxon_id: terminal
+        for taxon_id in taxon_ids
+        if (terminal := _terminal_state(state_dir, taxon_id)) is not None
+    }
+
+
+def read_generation_work(
+    config: AppConfig,
+    *,
+    approved: set[int] | None = None,
+    now: datetime | None = None,
+    retry_records: list[RetryRecord] | None = None,
+) -> GenerationWork:
+    """Read local state and return the same generation classification used by a cycle."""
+    snapshot = _read_discovery_snapshot(config) if _snapshot_path(config).exists() else None
+    queued_species = read_generation_queue(config)
+    retained_retries = (
+        retry_records
+        if retry_records is not None
+        else RetryStore(config.controller.state_dir / "generation-retries.json").records()
+    )
+    return calculate_generation_work(
+        snapshot=snapshot,
+        queued_species=queued_species,
+        approved=(
+            approved if approved is not None else approved_taxon_ids(config.controller.catalog_dir)
+        ),
+        terminal_states=_generation_terminal_states(
+            config.controller.state_dir,
+            snapshot.species if snapshot is not None else [],
+            queued_species,
+        ),
+        retry_records=retained_retries,
+        now=now or datetime.now(UTC),
+        maximum_age=timedelta(minutes=config.schedule.refresh_minutes * 2),
+    )
 
 
 def read_generation_queue_partition(
@@ -2146,28 +2310,40 @@ def run_generation_cycle(config: AppConfig) -> dict[str, object]:
                 )
             published = approve_passing_candidates(config)
         snapshot = _read_discovery_snapshot(config)
-        maximum_age = timedelta(minutes=config.schedule.refresh_minutes * 2)
-        if datetime.now(UTC) - snapshot.refreshed_at.astimezone(UTC) > maximum_age:
+        species_list = snapshot.species
+        retry_store = RetryStore(config.controller.state_dir / "generation-retries.json")
+        work = calculate_generation_work(
+            snapshot=snapshot,
+            queued_species=queued_species,
+            approved=approved_taxon_ids(config.controller.catalog_dir),
+            terminal_states=_generation_terminal_states(
+                config.controller.state_dir,
+                species_list,
+                queued_species,
+            ),
+            retry_records=retry_store.records(),
+            now=datetime.now(UTC),
+            maximum_age=timedelta(minutes=config.schedule.refresh_minutes * 2),
+        )
+        if not work.complete:
             raise DataSourceError(
                 "Discovery state is stale; a successful refresh is required before generation"
             )
-        species_list = snapshot.species
         for species in species_list:
             synchronize_generation_retry_identity(config, queued_species, species)
-        generation_species = list(species_list)
         observed_taxa = {species.taxon_id for species in species_list}
-        retry_store = RetryStore(config.controller.state_dir / "generation-retries.json")
         for queued in queued_species:
             if queued.taxon_id in observed_taxa:
                 continue
             retry = retry_store.get(queued.taxon_id)
+            synchronized = queued
             if (
                 HUMAN_REVIEW_SOURCE not in queued.sources
                 and retry is not None
                 and retry.common_name is not None
                 and retry.scientific_name is not None
             ):
-                queued = BirdSpecies(
+                synchronized = BirdSpecies(
                     taxon_id=queued.taxon_id,
                     common_name=retry.common_name,
                     scientific_name=retry.scientific_name,
@@ -2176,16 +2352,9 @@ def run_generation_cycle(config: AppConfig) -> dict[str, object]:
                     sources=queued.sources,
                     latest_detection_at=queued.latest_detection_at,
                 )
-            synchronize_generation_retry_identity(config, queued_species, queued)
-            generation_species.append(queued)
+            synchronize_generation_retry_identity(config, queued_species, synchronized)
         retry_store = RetryStore(config.controller.state_dir / "generation-retries.json")
-        approved = approved_taxon_ids(config.controller.catalog_dir)
-        eligible = [
-            species
-            for species in generation_species
-            if species.taxon_id not in approved
-            and not _has_terminal_state(config.controller.state_dir, species.taxon_id)
-        ]
+        eligible = work.eligible
         generated: list[dict[str, object]] = []
         failures: list[dict[str, object]] = []
         attempted_count = 0
@@ -2297,24 +2466,25 @@ def run_generation_cycle(config: AppConfig) -> dict[str, object]:
                     }
                 )
             except QualityReviewError as exc:
-                retry_store.clear(species.taxon_id)
-                remaining_profile_conflicts = (
-                    guidance.profile_conflicts
-                    if guidance is not None and exc.profile_conflicts is None
-                    else exc.profile_conflicts or ()
-                )
-                if guidance is not None and (
-                    guidance.invariant_findings or remaining_profile_conflicts
-                ):
-                    retry_store.set_quality_guidance(
-                        species.taxon_id,
-                        guidance.invariant_findings,
-                        invariant_findings=guidance.invariant_findings,
-                        profile_conflicts=remaining_profile_conflicts,
+                with catalog_state_lock(config.controller.state_dir):
+                    retry_store.clear(species.taxon_id)
+                    remaining_profile_conflicts = (
+                        guidance.profile_conflicts
+                        if guidance is not None and exc.profile_conflicts is None
+                        else exc.profile_conflicts or ()
                     )
-                else:
-                    retry_store.clear_quality_guidance(species.taxon_id)
-                failure_path = record_failure(config.controller.state_dir, species, exc)
+                    if guidance is not None and (
+                        guidance.invariant_findings or remaining_profile_conflicts
+                    ):
+                        retry_store.set_quality_guidance(
+                            species.taxon_id,
+                            guidance.invariant_findings,
+                            invariant_findings=guidance.invariant_findings,
+                            profile_conflicts=remaining_profile_conflicts,
+                        )
+                    else:
+                        retry_store.clear_quality_guidance(species.taxon_id)
+                    failure_path = record_failure(config.controller.state_dir, species, exc)
                 failures.append(
                     {
                         "taxon_id": species.taxon_id,
@@ -2327,8 +2497,9 @@ def run_generation_cycle(config: AppConfig) -> dict[str, object]:
             except MissingDependencyError:
                 raise
             except SpeciesStateError as exc:
-                retry_store.clear(species.taxon_id)
-                failure_path = record_failure(config.controller.state_dir, species, exc)
+                with catalog_state_lock(config.controller.state_dir):
+                    retry_store.clear(species.taxon_id)
+                    failure_path = record_failure(config.controller.state_dir, species, exc)
                 failures.append(
                     {
                         "taxon_id": species.taxon_id,
