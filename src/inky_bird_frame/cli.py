@@ -1049,19 +1049,19 @@ def status_command(args: argparse.Namespace) -> int:
         queue = read_generation_queue_partition(config, approved=approved)
         generation = read_generation_work(config, approved=approved)
         collection = collection_status(config, approved=entries)
+        pending = []
+        for path in sorted((config.controller.state_dir / "pending").glob("*/manifest.json")):
+            manifest = read_json(path)
+            if isinstance(manifest, dict):
+                pending.append(
+                    {
+                        "taxon_id": manifest.get("taxon_id"),
+                        "common_name": manifest.get("common_name"),
+                        "quality_review": manifest.get("quality_review"),
+                        "path": str(path.parent),
+                    }
+                )
     retries = RetryStore(config.controller.state_dir / "generation-retries.json")
-    pending = []
-    for path in sorted((config.controller.state_dir / "pending").glob("*/manifest.json")):
-        manifest = read_json(path)
-        if isinstance(manifest, dict):
-            pending.append(
-                {
-                    "taxon_id": manifest.get("taxon_id"),
-                    "common_name": manifest.get("common_name"),
-                    "quality_review": manifest.get("quality_review"),
-                    "path": str(path.parent),
-                }
-            )
     print_result(
         {
             "approved": [entry.as_dict() for entry in entries],

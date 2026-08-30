@@ -791,6 +791,62 @@ class CliTests(unittest.TestCase):
 
             self.assertFalse(lock_held)
 
+    def test_status_snapshots_pending_candidates_before_releasing_state_lock(self) -> None:
+        with TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            state = root / "state"
+            pending_dir = state / "pending/42-pending-bird"
+            pending_dir.mkdir(parents=True)
+            pending_manifest = pending_dir / "manifest.json"
+            pending_manifest.write_text(json.dumps({"taxon_id": 42, "common_name": "Pending Bird"}))
+            published_dir = state / "published/42-pending-bird"
+            config = SimpleNamespace(
+                controller=SimpleNamespace(catalog_dir=root / "catalog", state_dir=state),
+                schedule=SimpleNamespace(refresh_minutes=15),
+            )
+            output = io.StringIO()
+
+            @contextmanager
+            def state_lock(_state_dir: Path) -> Iterator[None]:
+                yield
+                published_dir.parent.mkdir(parents=True)
+                pending_dir.rename(published_dir)
+
+            with (
+                patch("inky_bird_frame.cli._config", return_value=config),
+                patch("inky_bird_frame.cli.catalog_state_lock", side_effect=state_lock),
+                patch("inky_bird_frame.cli.validate_public_catalog", return_value=[]),
+                patch(
+                    "inky_bird_frame.cli.read_generation_queue_partition",
+                    return_value=SimpleNamespace(actionable=[], terminal_blocked=[]),
+                ),
+                patch(
+                    "inky_bird_frame.cli.read_generation_work",
+                    return_value=SimpleNamespace(as_dict=lambda: {}),
+                ),
+                patch(
+                    "inky_bird_frame.cli.collection_status",
+                    return_value={"members": []},
+                ),
+                redirect_stdout(output),
+            ):
+                status_command(Namespace())
+
+            payload = json.loads(output.getvalue())["data"]
+            self.assertEqual(
+                payload["pending"],
+                [
+                    {
+                        "taxon_id": 42,
+                        "common_name": "Pending Bird",
+                        "quality_review": None,
+                        "path": str(pending_dir),
+                    }
+                ],
+            )
+            self.assertFalse(pending_dir.exists())
+            self.assertTrue(published_dir.exists())
+
     def test_seed_supports_historical_dates_and_coordinates(self) -> None:
         args = build_parser().parse_args(
             [
