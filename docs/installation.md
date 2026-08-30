@@ -109,11 +109,12 @@ the normal response without an `Access-Control-Allow-Origin` header.
 This setting does not add authentication, TLS, or public-internet safety. Keep
 the controller private. Browsers also block an HTTPS application from fetching
 a plain-HTTP controller as mixed content. Prefer a same-origin application
-proxy, which needs no CORS permission, or protect a separate HTTPS controller
-endpoint with a VPN or browser mutual TLS. Cookie, session, and HTTP
-Authorization proxies are not compatible with this interface because Inky does
-not permit credentialed CORS requests or implement preflight. Standard `GET`
-requests need no preflight or custom request headers.
+proxy, which needs no CORS permission and can authenticate the browser before
+making a server-side request to Inky, or reach the private controller through a
+VPN. Direct cross-origin access through cookie, session, client-certificate, or
+HTTP Authorization proxies is not compatible with this interface because Inky
+does not permit credentialed CORS requests or implement preflight. Standard
+`GET` requests need no preflight or custom request headers.
 
 ## 1. Install the controller
 

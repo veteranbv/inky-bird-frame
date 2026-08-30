@@ -137,7 +137,7 @@
   <g fill="none" stroke="#cf222e" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M 81 1525 L 90 1528.5 V 1536 C 90 1542 85.5 1545 81 1546.5 C 76.5 1545 72 1542 72 1536 V 1528.5 Z"/><path d="M 81 1531 v 5"/><circle cx="81" cy="1539.6" r="0.6" fill="#cf222e"/></g>
   <text x="104" y="1542" style="font-family:'Inter',-apple-system,'Segoe UI',sans-serif;font-size:20.5px;font-weight:600;" fill="#cf222e">Keep the controller port private</text>
   <text x="70" y="1578" style="font-family:'Inter',-apple-system,'Segoe UI',sans-serif;font-size:20.5px;font-weight:400;" fill="#59636e">The service has no built-in authentication or TLS, so never expose its configured port to</text>
-  <text x="70" y="1608" style="font-family:'Inter',-apple-system,'Segoe UI',sans-serif;font-size:20.5px;font-weight:400;" fill="#59636e">the internet. Across untrusted networks, use a VPN or an authenticated TLS reverse</text>
-  <text x="70" y="1638" style="font-family:'Inter',-apple-system,'Segoe UI',sans-serif;font-size:20.5px;font-weight:400;" fill="#59636e">proxy.</text>
+  <text x="70" y="1608" style="font-family:'Inter',-apple-system,'Segoe UI',sans-serif;font-size:20.5px;font-weight:400;" fill="#59636e">the internet. Across untrusted networks, use a VPN. Browser apps can use a same-origin</text>
+  <text x="70" y="1638" style="font-family:'Inter',-apple-system,'Segoe UI',sans-serif;font-size:20.5px;font-weight:400;" fill="#59636e">application proxy.</text>
   <text x="500.0" y="1718" style="font-family:'Inter',-apple-system,'Segoe UI',sans-serif;font-size:17.5px;font-weight:400;" fill="#59636e" text-anchor="middle">Optional display administration: SSH (TCP 22) from your setup computer</text>
 </svg>
