@@ -100,7 +100,7 @@ class ConfigTests(unittest.TestCase):
             'bind_host = "0.0.0.0"\n'
             'cors_allowed_origins = ["HTTPS://Display.Example.Test:443/", '
             '"http://[2001:0db8:0:0:0:0:0:1]:8080", '
-            '"https://xn--caf-dma.example"]',
+            '"https://xn--caf-dma.example", "https://zero.example:0"]',
         )
         with TemporaryDirectory() as temporary:
             path = Path(temporary) / "config.toml"
@@ -114,6 +114,7 @@ class ConfigTests(unittest.TestCase):
                 "https://display.example.test",
                 "http://[2001:db8::1]:8080",
                 "https://xn--caf-dma.example",
+                "https://zero.example:0",
             ),
         )
 
@@ -130,14 +131,18 @@ class ConfigTests(unittest.TestCase):
             "https://0x7f.1",
             "https://0177.0.0.1",
             "https://127.0.0.1.",
+            "https://%65xample.com",
+            "https://example.test\\path",
+            "https://exam ple.com",
         )
         for origin in invalid_origins:
             with self.subTest(origin=origin), TemporaryDirectory() as temporary:
                 path = Path(temporary) / "config.toml"
+                toml_origin = origin.replace("\\", "\\\\")
                 path.write_text(
                     CONFIG.replace(
                         'bind_host = "0.0.0.0"',
-                        f'bind_host = "0.0.0.0"\ncors_allowed_origins = ["{origin}"]',
+                        f'bind_host = "0.0.0.0"\ncors_allowed_origins = ["{toml_origin}"]',
                     )
                 )
 

@@ -307,6 +307,10 @@ def _http_origins(section: dict[str, object], name: str) -> tuple[str, ...]:
             )
         scheme = parsed.scheme.casefold()
         host = parsed.hostname
+        if "%" in host or "\\" in value or any(character in value for character in "\r\n\t"):
+            raise ConfigurationError(
+                f"{name} must use hostnames exactly as browsers serialize them"
+            )
         if not host.isascii():
             raise ConfigurationError(
                 f"{name} hostnames must use the ASCII or punycode spelling sent by browsers"
@@ -314,6 +318,10 @@ def _http_origins(section: dict[str, object], name: str) -> tuple[str, ...]:
         try:
             host = ip_address(host).compressed
         except ValueError:
+            if any(ord(character) <= 0x20 or character in "#/:<>?@[\\]^|" for character in host):
+                raise ConfigurationError(
+                    f"{name} must use hostnames exactly as browsers serialize them"
+                ) from None
             ipv4_parts = host.removesuffix(".").casefold().split(".")
             if len(ipv4_parts) <= 4 and all(
                 part.isdecimal()
@@ -329,7 +337,9 @@ def _http_origins(section: dict[str, object], name: str) -> tuple[str, ...]:
         if ":" in host:
             host = f"[{host}]"
         default_port = (scheme == "http" and port == 80) or (scheme == "https" and port == 443)
-        origins.append(f"{scheme}://{host}{f':{port}' if port and not default_port else ''}")
+        origins.append(
+            f"{scheme}://{host}{f':{port}' if port is not None and not default_port else ''}"
+        )
     if len(origins) != len(set(origins)):
         raise ConfigurationError(f"{name} must not contain equivalent duplicate origins")
     return tuple(origins)
