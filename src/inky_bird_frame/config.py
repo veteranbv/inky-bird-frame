@@ -314,6 +314,17 @@ def _http_origins(section: dict[str, object], name: str) -> tuple[str, ...]:
         try:
             host = ip_address(host).compressed
         except ValueError:
+            ipv4_parts = host.removesuffix(".").casefold().split(".")
+            if len(ipv4_parts) <= 4 and all(
+                part.isdecimal()
+                or (
+                    part.startswith("0x")
+                    and len(part) > 2
+                    and all(character in "0123456789abcdef" for character in part[2:])
+                )
+                for part in ipv4_parts
+            ):
+                raise ConfigurationError(f"{name} must use canonical IPv4 addresses") from None
             host = host.casefold()
         if ":" in host:
             host = f"[{host}]"

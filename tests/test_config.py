@@ -125,6 +125,11 @@ class ConfigTests(unittest.TestCase):
             "https://display.example.test/path",
             "https://display.example.test?mode=frame",
             "https://café.example",
+            "https://127.1",
+            "https://2130706433",
+            "https://0x7f.1",
+            "https://0177.0.0.1",
+            "https://127.0.0.1.",
         )
         for origin in invalid_origins:
             with self.subTest(origin=origin), TemporaryDirectory() as temporary:
