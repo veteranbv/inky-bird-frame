@@ -322,15 +322,11 @@ def _http_origins(section: dict[str, object], name: str) -> tuple[str, ...]:
                 raise ConfigurationError(
                     f"{name} must use hostnames exactly as browsers serialize them"
                 ) from None
-            ipv4_parts = host.removesuffix(".").casefold().split(".")
-            if len(ipv4_parts) <= 4 and all(
-                part.isdecimal()
-                or (
-                    part.startswith("0x")
-                    and len(part) > 2
-                    and all(character in "0123456789abcdef" for character in part[2:])
-                )
-                for part in ipv4_parts
+            final_label = host.removesuffix(".").casefold().rsplit(".", 1)[-1]
+            if final_label.isdecimal() or (
+                final_label.startswith("0x")
+                and len(final_label) > 2
+                and all(character in "0123456789abcdef" for character in final_label[2:])
             ):
                 raise ConfigurationError(f"{name} must use canonical IPv4 addresses") from None
             host = host.casefold()

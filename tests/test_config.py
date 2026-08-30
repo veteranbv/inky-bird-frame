@@ -131,6 +131,8 @@ class ConfigTests(unittest.TestCase):
             "https://0x7f.1",
             "https://0177.0.0.1",
             "https://127.0.0.1.",
+            "https://example.1",
+            "https://1.2.3.4.5",
             "https://%65xample.com",
             "https://example.test\\path",
             "https://exam ple.com",
