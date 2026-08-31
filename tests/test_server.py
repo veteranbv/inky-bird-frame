@@ -28,21 +28,29 @@ GENERATED_AT = "2026-08-30T12:00:00+00:00"
 def _catalog_entry(
     *,
     taxon_id: int = 1,
-    directory: str = "species/1-robin",
+    common_name: str = "Robin",
+    scientific_name: str = "Turdus migratorius",
+    slug: str = "robin",
+    approved_at: str = "2026-07-10T00:00:00+00:00",
+    latest_detection_at: str | None = None,
     image: bytes = PNG_BYTES,
 ) -> dict[str, object]:
     digest = hashlib.sha256(image).hexdigest()
-    return {
+    directory = f"species/{taxon_id}-{slug}"
+    entry: dict[str, object] = {
         "taxon_id": taxon_id,
-        "common_name": "Robin",
-        "scientific_name": "Turdus migratorius",
-        "slug": "robin",
+        "common_name": common_name,
+        "scientific_name": scientific_name,
+        "slug": slug,
         "portrait_path": f"{directory}/portrait.png",
         "portrait_sha256": digest,
         "display_path": f"{directory}/display.png",
         "display_sha256": digest,
-        "approved_at": "2026-07-10T00:00:00+00:00",
+        "approved_at": approved_at,
     }
+    if latest_detection_at is not None:
+        entry["latest_detection_at"] = latest_detection_at
+    return entry
 
 
 def _active_catalog(*species: dict[str, object]) -> dict[str, object]:
@@ -60,6 +68,7 @@ def _serving(
     state_dir: Path,
     *,
     cors_allowed_origins: tuple[str, ...] = (),
+    embed_allowed_origins: tuple[str, ...] = (),
 ) -> Iterator[int]:
     handler = type(
         "TestCatalogRequestHandler",
@@ -69,6 +78,7 @@ def _serving(
             "active_catalog_path": active_catalog_path,
             "state_dir": state_dir,
             "cors_allowed_origins": cors_allowed_origins,
+            "embed_allowed_origins": embed_allowed_origins,
         },
     )
     server = ThreadingHTTPServer(("127.0.0.1", 0), handler)
@@ -88,6 +98,18 @@ def _get(
     connection = HTTPConnection("127.0.0.1", port, timeout=5)
     try:
         connection.request("GET", path, headers=headers or {})
+        response = connection.getresponse()
+        return response.status, dict(response.getheaders()), response.read()
+    finally:
+        connection.close()
+
+
+def _head(
+    port: int, path: str, *, headers: dict[str, str] | None = None
+) -> tuple[int, dict[str, str], bytes]:
+    connection = HTTPConnection("127.0.0.1", port, timeout=5)
+    try:
+        connection.request("HEAD", path, headers=headers or {})
         response = connection.getresponse()
         return response.status, dict(response.getheaders()), response.read()
     finally:
@@ -251,6 +273,267 @@ class ServerTests(unittest.TestCase):
         self.assertEqual(legacy_status, 403)
         self.assertNotIn("Access-Control-Allow-Origin", heartbeat_headers)
         self.assertFalse(heartbeat_written)
+
+    def test_featured_plate_uses_the_newest_detection_across_timezone_offsets(self) -> None:
+        older = _catalog_entry(
+            taxon_id=1,
+            common_name="Older Bird",
+            scientific_name="Avis prior",
+            slug="older-bird",
+            approved_at="2026-08-29T12:00:00+00:00",
+            latest_detection_at="2026-08-30T08:00:00-04:00",
+        )
+        newer = _catalog_entry(
+            taxon_id=2,
+            common_name="Newer Bird",
+            scientific_name="Avis recentior",
+            slug="newer-bird",
+            approved_at="2026-08-28T12:00:00+00:00",
+            latest_detection_at="2026-08-30T12:01:00+00:00",
+        )
+        with self._environment() as (_, catalog_dir, state_dir):
+            active_catalog_path = state_dir / "active-catalog.json"
+            active_catalog_path.write_text(json.dumps(_active_catalog(older, newer)))
+            with _serving(catalog_dir, active_catalog_path, state_dir) as port:
+                status, _, body = _get(port, "/v1/embed/featured-plate")
+
+        self.assertEqual(status, 200)
+        self.assertIn(b"Newer Bird", body)
+        self.assertNotIn(b"Older Bird", body)
+
+    def test_featured_plate_prefers_any_detection_over_approval_only_entries(self) -> None:
+        detected = _catalog_entry(
+            taxon_id=1,
+            common_name="Detected Bird",
+            scientific_name="Avis observata",
+            slug="detected-bird",
+            approved_at="2026-08-01T00:00:00+00:00",
+            latest_detection_at="2026-08-02T00:00:00+00:00",
+        )
+        approval_only = _catalog_entry(
+            taxon_id=2,
+            common_name="Recently Approved Bird",
+            scientific_name="Avis probata",
+            slug="recently-approved-bird",
+            approved_at="2026-08-30T00:00:00+00:00",
+        )
+        with self._environment() as (_, catalog_dir, state_dir):
+            active_catalog_path = state_dir / "active-catalog.json"
+            active_catalog_path.write_text(json.dumps(_active_catalog(detected, approval_only)))
+            with _serving(catalog_dir, active_catalog_path, state_dir) as port:
+                status, _, body = _get(port, "/v1/embed/featured-plate")
+
+        self.assertEqual(status, 200)
+        self.assertIn(b"Detected Bird", body)
+        self.assertNotIn(b"Recently Approved Bird", body)
+
+    def test_featured_plate_selection_has_deterministic_ties_and_approval_fallback(
+        self,
+    ) -> None:
+        detection = "2026-08-30T12:00:00+00:00"
+        tied_newer_approval = _catalog_entry(
+            taxon_id=20,
+            common_name="Newer Approval",
+            scientific_name="Avis viginti",
+            slug="newer-approval",
+            approved_at="2026-08-30T11:00:00+00:00",
+            latest_detection_at=detection,
+        )
+        tied_older_approval = _catalog_entry(
+            taxon_id=10,
+            common_name="Older Approval",
+            scientific_name="Avis decem",
+            slug="older-approval",
+            approved_at="2026-08-30T10:00:00+00:00",
+            latest_detection_at=detection,
+        )
+        tied_higher_taxon = _catalog_entry(
+            taxon_id=20,
+            common_name="Higher Taxon",
+            scientific_name="Avis viginti",
+            slug="higher-taxon",
+            approved_at="2026-08-30T10:00:00+00:00",
+            latest_detection_at=detection,
+        )
+        tied_lower_taxon = _catalog_entry(
+            taxon_id=10,
+            common_name="Lower Taxon",
+            scientific_name="Avis decem",
+            slug="lower-taxon",
+            approved_at="2026-08-30T10:00:00+00:00",
+            latest_detection_at=detection,
+        )
+        older_approval = _catalog_entry(
+            taxon_id=30,
+            common_name="Older Approval",
+            scientific_name="Avis prior",
+            slug="older-approval",
+            approved_at="2026-08-29T10:00:00+00:00",
+        )
+        newer_approval = _catalog_entry(
+            taxon_id=40,
+            common_name="Approval Winner",
+            scientific_name="Avis probata",
+            slug="approval-winner",
+            approved_at="2026-08-30T10:00:00+00:00",
+        )
+        with self._environment() as (_, catalog_dir, state_dir):
+            active_catalog_path = state_dir / "active-catalog.json"
+            with _serving(catalog_dir, active_catalog_path, state_dir) as port:
+                active_catalog_path.write_text(
+                    json.dumps(_active_catalog(tied_newer_approval, tied_older_approval))
+                )
+                approval_tie_status, _, approval_tie_body = _get(port, "/v1/embed/featured-plate")
+                active_catalog_path.write_text(
+                    json.dumps(_active_catalog(tied_higher_taxon, tied_lower_taxon))
+                )
+                taxon_tie_status, _, taxon_tie_body = _get(port, "/v1/embed/featured-plate")
+                active_catalog_path.write_text(
+                    json.dumps(_active_catalog(older_approval, newer_approval))
+                )
+                fallback_status, _, fallback_body = _get(port, "/v1/embed/featured-plate")
+
+        self.assertEqual(approval_tie_status, 200)
+        self.assertIn(b"Newer Approval", approval_tie_body)
+        self.assertEqual(taxon_tie_status, 200)
+        self.assertIn(b"Lower Taxon", taxon_tie_body)
+        self.assertEqual(fallback_status, 200)
+        self.assertIn(b"Approval Winner", fallback_body)
+
+    def test_featured_plate_is_an_upright_content_addressed_private_embed(self) -> None:
+        entry = _catalog_entry(
+            common_name='Robin <script>alert("private")</script>',
+            latest_detection_at="2026-08-30T11:45:00+00:00",
+        )
+        entry.update(
+            {
+                "observation_count": 7,
+                "provider": "private-provider",
+                "internal_path": "/private/controller/state",
+            }
+        )
+        digest = hashlib.sha256(PNG_BYTES).hexdigest()
+        with self._environment() as (_, catalog_dir, state_dir):
+            active_catalog_path = state_dir / "active-catalog.json"
+            active_catalog_path.write_text(json.dumps(_active_catalog(entry)))
+            portrait = catalog_dir / "species" / "1-robin" / "portrait.png"
+            portrait.parent.mkdir(parents=True)
+            portrait.write_bytes(PNG_BYTES)
+            with _serving(catalog_dir, active_catalog_path, state_dir) as port:
+                status, headers, body = _get(port, "/v1/embed/featured-plate")
+                asset_status, asset_headers, asset_body = _get(
+                    port,
+                    f"/v1/assets/species/1-robin/portrait.png?sha256={digest}",
+                )
+
+        rendered = body.decode()
+        self.assertEqual(status, 200)
+        self.assertEqual(headers.get("Content-Type"), "text/html; charset=utf-8")
+        self.assertEqual(headers.get("Cache-Control"), "no-store")
+        self.assertEqual(headers.get("Referrer-Policy"), "no-referrer")
+        self.assertEqual(headers.get("X-Content-Type-Options"), "nosniff")
+        self.assertIn(
+            f"../assets/species/1-robin/portrait.png?sha256={digest}",
+            rendered,
+        )
+        self.assertNotIn("display.png", rendered)
+        self.assertNotIn("<script>alert", rendered)
+        self.assertIn("&lt;script&gt;alert", rendered)
+        self.assertNotIn("private-provider", rendered)
+        self.assertNotIn("/private/controller/state", rendered)
+        self.assertNotIn("2026-08-30T11:45:00", rendered)
+        self.assertNotIn(">7<", rendered)
+        self.assertIn('<meta http-equiv="refresh" content="900">', rendered)
+        self.assertNotIn("<script", rendered)
+        self.assertIn("inset:0;min-height:0;min-width:0", rendered)
+        self.assertIn("position:fixed", rendered)
+        self.assertIn("height:100vh;object-fit:contain;width:100vw", rendered)
+        self.assertEqual(asset_status, 200)
+        self.assertEqual(asset_headers.get("Cache-Control"), "public, max-age=86400, immutable")
+        self.assertEqual(asset_body, PNG_BYTES)
+        self.assertEqual(list(state_dir.glob("display-last-*.json")), [])
+
+    def test_featured_plate_csp_allows_only_configured_frame_ancestors(self) -> None:
+        trusted_origins = (
+            "https://home.example.test",
+            "https://secondary.example.test:8443",
+        )
+        with self._environment() as (_, catalog_dir, state_dir):
+            active_catalog_path = state_dir / "active-catalog.json"
+            active_catalog_path.write_text(json.dumps(_active_catalog(_catalog_entry())))
+            with _serving(
+                catalog_dir,
+                active_catalog_path,
+                state_dir,
+                embed_allowed_origins=trusted_origins,
+            ) as port:
+                status, headers, _ = _get(port, "/v1/embed/featured-plate")
+
+        csp = headers["Content-Security-Policy"]
+        self.assertEqual(status, 200)
+        self.assertIn("default-src 'none'", csp)
+        self.assertIn("img-src 'self'", csp)
+        self.assertIn("script-src 'none'", csp)
+        self.assertIn("object-src 'none'", csp)
+        self.assertIn("base-uri 'none'", csp)
+        self.assertIn("form-action 'none'", csp)
+        self.assertRegex(csp, r"style-src 'sha256-[A-Za-z0-9+/=]+'")
+        self.assertNotIn("'unsafe-inline'", csp)
+        self.assertIn(
+            "frame-ancestors 'self' https://home.example.test https://secondary.example.test:8443",
+            csp,
+        )
+
+    def test_featured_plate_keeps_cors_and_framing_permissions_separate(self) -> None:
+        catalog_reader = "https://reader.example.test"
+        frame_parent = "https://home.example.test"
+        with self._environment() as (_, catalog_dir, state_dir):
+            active_catalog_path = state_dir / "active-catalog.json"
+            active_catalog_path.write_text(json.dumps(_active_catalog(_catalog_entry())))
+            with _serving(
+                catalog_dir,
+                active_catalog_path,
+                state_dir,
+                cors_allowed_origins=(catalog_reader,),
+                embed_allowed_origins=(frame_parent,),
+            ) as port:
+                status, headers, _ = _get(
+                    port,
+                    "/v1/embed/featured-plate",
+                    headers={"Origin": catalog_reader},
+                )
+
+        csp = headers["Content-Security-Policy"]
+        self.assertEqual(status, 200)
+        self.assertIn(f"frame-ancestors 'self' {frame_parent}", csp)
+        self.assertNotIn(catalog_reader, csp)
+        self.assertNotIn("Access-Control-Allow-Origin", headers)
+
+    def test_featured_plate_empty_and_unavailable_states_are_distinct(self) -> None:
+        with self._environment() as (_, catalog_dir, state_dir):
+            active_catalog_path = state_dir / "active-catalog.json"
+            with _serving(catalog_dir, active_catalog_path, state_dir) as port:
+                missing_status, _, missing_body = _get(port, "/v1/embed/featured-plate")
+                active_catalog_path.write_text(json.dumps(_active_catalog()))
+                empty_status, empty_headers, empty_body = _get(port, "/v1/embed/featured-plate")
+                active_catalog_path.write_text('{"schema_version": 1, "species"')
+                invalid_status, invalid_headers, invalid_body = _get(
+                    port, "/v1/embed/featured-plate"
+                )
+
+        self.assertEqual(missing_status, 503)
+        self.assertIn(b"Featured plate unavailable", missing_body)
+        self.assertEqual(empty_status, 200)
+        self.assertIn(b"No active plate yet", empty_body)
+        self.assertEqual(invalid_status, 503)
+        self.assertIn(b"Featured plate unavailable", invalid_body)
+        self.assertNotIn(b"schema_version", invalid_body)
+        self.assertEqual(empty_headers.get("Cache-Control"), "no-store")
+        self.assertEqual(invalid_headers.get("Cache-Control"), "no-store")
+        self.assertRegex(
+            empty_headers["Content-Security-Policy"],
+            r"(?:^|; )frame-ancestors 'self'(?:;|$)",
+        )
 
     def test_catalog_projects_only_documented_v1_fields(self) -> None:
         entry = _catalog_entry()
@@ -602,6 +885,47 @@ class ServerTests(unittest.TestCase):
             json.loads(body),
             {"ok": False, "error": "active catalog unavailable", "schema_version": 1},
         )
+
+    def test_catalog_head_reports_readiness_without_body_or_telemetry(self) -> None:
+        trusted_origin = "https://reader.example.test"
+        with self._environment() as (_, catalog_dir, state_dir):
+            active_catalog_path = state_dir / "active-catalog.json"
+            active_catalog_path.write_text(json.dumps(_active_catalog(_catalog_entry())))
+            with _serving(
+                catalog_dir,
+                active_catalog_path,
+                state_dir,
+                cors_allowed_origins=(trusted_origin,),
+            ) as port:
+                ready_status, ready_headers, ready_body = _head(
+                    port,
+                    "/v1/catalog?reports_success=1",
+                    headers={"User-Agent": USER_AGENT},
+                )
+                browser_status, browser_headers, browser_body = _head(
+                    port,
+                    "/v1/catalog",
+                    headers={"Origin": trusted_origin},
+                )
+                active_catalog_path.write_text('{"schema_version": 1, "species"')
+                unavailable_status, unavailable_headers, unavailable_body = _head(
+                    port, "/v1/catalog"
+                )
+                unknown_status, _, unknown_body = _head(port, "/nope")
+
+        self.assertEqual(ready_status, 200)
+        self.assertEqual(ready_headers.get("Content-Type"), "application/json")
+        self.assertGreater(int(ready_headers["Content-Length"]), 0)
+        self.assertEqual(ready_body, b"")
+        self.assertFalse((state_dir / "display-last-fetch.json").exists())
+        self.assertEqual(browser_status, 200)
+        self.assertEqual(browser_headers.get("Access-Control-Allow-Origin"), trusted_origin)
+        self.assertEqual(browser_body, b"")
+        self.assertEqual(unavailable_status, 503)
+        self.assertGreater(int(unavailable_headers["Content-Length"]), 0)
+        self.assertEqual(unavailable_body, b"")
+        self.assertEqual(unknown_status, 404)
+        self.assertEqual(unknown_body, b"")
 
     def test_legacy_catalog_marker_without_origin_records_display_fetch(self) -> None:
         active = _active_catalog(_catalog_entry())

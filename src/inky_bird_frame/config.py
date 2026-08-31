@@ -118,6 +118,7 @@ class ControllerConfig:
     retry_max_minutes: int = 1440
     insufficient_references_retry_minutes: int = 10080
     cors_allowed_origins: tuple[str, ...] = ()
+    embed_allowed_origins: tuple[str, ...] = ()
 
 
 @dataclass(frozen=True)
@@ -356,6 +357,27 @@ def _http_origins(section: dict[str, object], name: str) -> tuple[str, ...]:
     if len(origins) != len(set(origins)):
         raise ConfigurationError(f"{name} must not contain equivalent duplicate origins")
     return tuple(origins)
+
+
+def _csp_frame_origins(section: dict[str, object], name: str) -> tuple[str, ...]:
+    origins = _http_origins(section, name)
+    for origin in origins:
+        host = urlsplit(origin).hostname
+        if host is None:
+            raise ConfigurationError(f"{name} must contain valid HTTP or HTTPS origins")
+        try:
+            ip_address(host)
+        except ValueError:
+            if "_" in host or host.endswith("."):
+                raise ConfigurationError(
+                    f"{name} must use DNS hostnames supported by Content Security Policy"
+                ) from None
+        else:
+            raise ConfigurationError(
+                f"{name} must use DNS hostnames because Content Security Policy does not "
+                "reliably match IP addresses"
+            )
+    return origins
 
 
 def _notification_destinations(
@@ -728,6 +750,7 @@ def load_config(path: Path, *, load_secrets: bool = True) -> AppConfig:
                 controller, "insufficient_references_retry_minutes", default=10080
             ),
             cors_allowed_origins=_http_origins(controller, "cors_allowed_origins"),
+            embed_allowed_origins=_csp_frame_origins(controller, "embed_allowed_origins"),
         ),
         display_node=DisplayNodeConfig(
             controller_url=controller_url,

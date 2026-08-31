@@ -94,11 +94,12 @@ the service is not offered on other networks.
 
 ### Browser applications
 
-Inky does not include a browser interface. This section is for an
-operator-supplied application that consumes Inky's read-only catalog API.
-Cross-origin browser access is disabled by default. To let a trusted web
-application fetch the active catalog and its images directly, list its exact
-origin under `[controller]`:
+Inky does not include a standalone browser application. This section is for an
+operator-supplied application that consumes Inky's read-only catalog API or
+frames its narrow featured-plate embed.
+Both permissions are disabled by default. To let a trusted web application
+fetch the active catalog and its images directly, list its exact origin under
+`[controller]`:
 
 ```toml
 [controller]
@@ -110,9 +111,23 @@ wildcards, credentials, paths, queries, and fragments. Use an ASCII hostname
 or the canonical form of an IP address. Internationalized and punycode
 hostnames are not supported. A matching origin can read `GET /v1/catalog` and
 the active catalog's portrait and display PNGs under `GET /v1/assets/`. Other
-catalog files, inactive plates, health, and display telemetry do not receive
-cross-origin access. Requests from other origins receive the normal response
-without an `Access-Control-Allow-Origin` header.
+catalog files, inactive plates, health, the featured-plate embed, and display
+telemetry do not receive cross-origin access. Requests from other origins
+receive the normal response without an `Access-Control-Allow-Origin` header.
+
+Framing is a separate permission. List each trusted parent origin explicitly:
+
+```toml
+[controller]
+embed_allowed_origins = ["https://home.example.test"]
+```
+
+The controller adds those origins to the embed's Content Security Policy
+`frame-ancestors` directive. CSP does not reliably match IP-address sources, so
+framing origins must use DNS hostnames. Underscores and trailing dots are also
+rejected. Unlisted sites cannot frame the embed. Keeping CORS and framing
+separate means an existing catalog reader does not silently gain permission to
+present controller content inside its pages.
 
 The browser catalog includes active species identity, approval time, image
 paths and checksums, and any available observation count and latest-detection
@@ -138,6 +153,77 @@ headers. The service logs each request locally with the source IP address,
 request path and query, and HTTP status. It does not log request headers or send
 browser analytics to an external service. Normal systemd journal or macOS log
 retention applies.
+
+#### Homepage dashboard
+
+[Homepage](https://gethomepage.dev/) can show Inky with its stock service
+widgets; no Homepage fork, custom JavaScript, or Inky-specific plugin is
+required. Its `customapi` widget fetches through the Homepage server, while its
+`iframe` widget loads in the browser. A compact card can use both:
+
+```yaml
+- Birds:
+    - Inky Bird Frame:
+        icon: mdi-bird
+        href: https://github.com/veteranbv/inky-bird-frame
+        description: Observation-driven field-journal plates
+        siteMonitor: http://inky-controller:8793/v1/catalog
+        widgets:
+          - type: customapi
+            url: http://inky-controller:8793/health
+            refreshInterval: 300000
+            mappings:
+              - field: active_species
+                label: Active
+                format: number
+              - field: approved_species
+                label: Plates
+                format: number
+              - field: version
+                label: Version
+                format: text
+          - type: iframe
+            src: https://inky.example.test/v1/embed/featured-plate
+            classes: h-60
+            allowScrolling: no
+            referrerPolicy: no-referrer
+```
+
+Replace the names and URLs with addresses reachable from the Homepage server
+and browser. `siteMonitor` uses `/v1/catalog`, not `/health`, because the
+catalog route fails closed when active catalog state is unavailable. Inky
+answers Homepage's `HEAD` readiness probe without transferring the catalog.
+The stats request is server-side and needs no CORS permission. Polling every
+five minutes avoids Homepage's much noisier default while keeping the counts
+useful.
+
+The optional image needs a browser-reachable HTTPS route for the controller. A
+true same-origin proxy beneath the Homepage origin works with the default
+`frame-ancestors 'self'` policy. For a separate controller origin, as shown
+above, add the Homepage origin to `embed_allowed_origins`. Make sure a reverse
+proxy forwards both `/v1/embed/featured-plate` and `/v1/assets/`, and does not
+replace the controller's CSP with a conflicting frame-denial header. The embed
+uses a relative asset URL so those routes can share a direct origin or the same
+proxy path prefix. Keep the route private; use authentication or a VPN before
+traffic crosses an untrusted boundary. Allowing the origin does not secure the
+controller. The iframe refreshes every 15 minutes and displays the upright
+portrait, never the rotated hardware image. The embed refreshes itself, so do
+not add Homepage's `refreshInterval` option. Homepage 2.1.2 accumulates iframe
+timers when that option is enabled. That release also drops its documented
+iframe `name` setting before rendering, so the example omits an ineffective
+setting. This is an upstream accessibility limitation: Homepage 2.1.2 renders
+the stock iframe without an accessible frame name. The embedded document itself
+still has a descriptive title, and its image has alternative text.
+
+Whenever any active entry has a valid detection time, the featured plate comes
+from that set: newest detection wins, with approval time and taxon ID breaking
+ties. Only when no active entry has a detection time does newest approval become
+the fallback. BirdWeather, BirdNET-Go, and Bird Buddy are currently the only
+sources that contribute those times, so this is not a universal
+latest-observation view and does not claim to match the plate currently on the
+frame. The embed exposes only the selected approved bird identity and image. A
+valid empty catalog shows a quiet empty state; invalid or unavailable catalog
+state returns `503`.
 
 ## 1. Install the controller
 
