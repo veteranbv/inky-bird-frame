@@ -10,7 +10,7 @@ from inky_bird_frame.prompts import PROMPT_VERSION, plate_prompt, profile_prompt
 
 class PromptTests(unittest.TestCase):
     def test_prompt_contract_version(self) -> None:
-        self.assertEqual(PROMPT_VERSION, "field-journal-v5")
+        self.assertEqual(PROMPT_VERSION, "field-journal-v6")
 
     def test_plate_prompt_contains_species_facts_and_excludes_location(self) -> None:
         species = BirdSpecies(12942, "Eastern Bluebird", "Sialia sialis", 26, "iNaturalist")
@@ -149,6 +149,12 @@ class PromptTests(unittest.TestCase):
         self.assertIn(
             "drop a conflict that the current direct sources no longer support", normalized_review
         )
+        self.assertIn(
+            "Do not report a profile conflict merely because another allowed source publishes a "
+            "different supported set",
+            normalized_review,
+        )
+        self.assertIn("required to use one compatible published measurement set", normalized_review)
 
     def test_plate_and_review_prompts_enforce_schematic_ruler(self) -> None:
         species = BirdSpecies(12942, "Eastern Bluebird", "Sialia sialis", 26, "iNaturalist")

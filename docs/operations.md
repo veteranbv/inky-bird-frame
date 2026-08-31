@@ -129,6 +129,15 @@ profile field. A reviewer must also explicitly identify earlier image
 corrections that the current attempt resolves; disappearance alone never turns
 a correction into a non-regression invariant.
 
+Published dimensions can differ across reputable sources because their samples
+or methods differ. A profile uses one compatible, directly supported
+measurement set and preserves any material sex, age, or season qualifier. The
+reviewer does not fail that choice merely because another allowed source
+publishes a different supported set. It reports a profile conflict when the
+chosen value is unsupported, misquoted, assembled from incompatible endpoints,
+missing a material qualifier, or presented as broader agreement than its source
+establishes.
+
 `state_dir/runs/*/attempt-history.json` is a private, schema-versioned record of
 every started image attempt. It includes prompt version, requested model,
 generation and review latency, score-axis failures, correction regressions,
