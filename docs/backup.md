@@ -87,9 +87,25 @@ for unit in \
   inky-bird-frame-generate.timer \
   inky-bird-frame-catalog-publish.timer \
   inky-bird-frame-notifications.timer; do
-  if systemctl is-active --quiet "$unit"; then
-    printf '%s\n' "$unit" >> "$SYSTEMD_STATE"
-  fi
+  state=$(systemctl is-active "$unit" 2>/dev/null || true)
+  case "$state" in
+    active) printf '%s\n' "$unit" >> "$SYSTEMD_STATE" ;;
+    inactive | failed) ;;
+    unknown)
+      case "$unit" in
+        inky-bird-frame-catalog-publish.timer | \
+        inky-bird-frame-notifications.timer) ;;
+        *)
+          echo "Required unit state is unknown: $unit" >&2
+          exit 1
+          ;;
+      esac
+      ;;
+    *)
+      echo "Could not determine stable pre-backup state: $unit (${state:-no state})" >&2
+      exit 1
+      ;;
+  esac
 done
 chmod 600 "$SYSTEMD_STATE"
 
@@ -99,13 +115,33 @@ sudo systemctl stop \
   inky-bird-frame-catalog-publish.timer \
   inky-bird-frame-notifications.timer
 
-systemctl is-active \
+for service in \
   inky-bird-frame-refresh.service \
   inky-bird-frame-generate.service \
   inky-bird-frame-catalog-publish.service \
-  inky-bird-frame-notifications.service
+  inky-bird-frame-notifications.service; do
+  state=$(systemctl is-active "$service" 2>/dev/null || true)
+  case "$state" in
+    inactive | failed | unknown) ;;
+    *)
+      echo "One-shot service is not quiesced: $service ($state)" >&2
+      exit 1
+      ;;
+  esac
+done
 
 sudo systemctl stop inky-bird-frame-controller.service
+
+while IFS= read -r unit; do
+  state=$(systemctl is-active "$unit" 2>/dev/null || true)
+  case "$state" in
+    inactive | failed) ;;
+    *)
+      echo "Could not confirm recorded unit stopped: $unit (${state:-no state})" >&2
+      exit 1
+      ;;
+  esac
+done < "$SYSTEMD_STATE"
 ```
 
 Optional units can report `unknown` when the feature is disabled. Do not copy
@@ -129,14 +165,22 @@ done
 chmod 600 "$LAUNCHD_STATE"
 ```
 
-Then quiesce the installed agents. `bootout` stops scheduling and may terminate
-an active job, so use it only after the inspection shows that no one-shot job is
-running:
+Then quiesce exactly the recorded agents. `bootout` stops scheduling and may
+terminate an active job, so use it only after the inspection shows that no
+one-shot job is running. Every recorded agent must unload successfully and be
+absent before the copy begins:
 
 ```bash
-for label in serve refresh generate catalog-publish notifications; do
-  launchctl bootout "gui/$(id -u)/com.inky-bird-frame.$label" 2>/dev/null || true
-done
+while IFS= read -r label; do
+  launchctl bootout "gui/$(id -u)/com.inky-bird-frame.$label" || exit 1
+done < "$LAUNCHD_STATE"
+
+while IFS= read -r label; do
+  if launchctl print "gui/$(id -u)/com.inky-bird-frame.$label" >/dev/null 2>&1; then
+    echo "Recorded LaunchAgent is still loaded after bootout: $label" >&2
+    exit 1
+  fi
+done < "$LAUNCHD_STATE"
 ```
 
 ### 3. Copy a consistent snapshot
@@ -366,30 +410,70 @@ reproduce the deployment. Treat all four controller artifacts as private.
 
 ### 1. Stop writers
 
-Run from the directory containing the release bundle:
-
-```bash
-docker compose stop scheduler controller bootstrap
-docker compose ps --all
-```
-
-Confirm that `scheduler` and `controller` are stopped and that the one-shot
-`bootstrap` service is exited or stopped. Bootstrap writes the persistent
-catalog and must not overlap the archive. Do not use `docker compose down
---volumes`; that deletes the state being backed up.
-
-### 2. Archive the volumes and host files
-
-Create a private destination and archive the controller volume through the
-project image. The temporary container runs `tar` instead of the application and
-does not start the scheduler. Set `HEALTH_URL` to the published host port from
-`INKY_BIRD_PORT`; the default is shown.
+Run from the directory containing the release bundle. Create the protected
+backup directory and record the running long-lived services before stopping
+anything. A running `bootstrap` is an active catalog writer; wait for it to exit
+and repeat this step instead of interrupting and later restarting it.
 
 ```bash
 BACKUP=/path/to/private-backup/inky-bird-frame-docker
-HEALTH_URL=http://127.0.0.1:8793/health
 mkdir -p "$BACKUP"
 chmod 700 "$BACKUP"
+DOCKER_STATE="$BACKUP/docker-running-services.txt"
+if ! docker compose ps --status running --services > "$DOCKER_STATE"; then
+  echo "Could not capture running Compose services" >&2
+  exit 1
+fi
+chmod 600 "$DOCKER_STATE"
+
+while IFS= read -r service; do
+  case "$service" in
+    controller | scheduler) ;;
+    bootstrap)
+      echo "Bootstrap is still running; wait for it to exit before backup" >&2
+      exit 1
+      ;;
+    *)
+      echo "Unexpected running service in $DOCKER_STATE: $service" >&2
+      exit 1
+      ;;
+  esac
+done < "$DOCKER_STATE"
+
+docker compose stop scheduler controller bootstrap
+docker compose ps --all
+
+STOPPED_STATE="$BACKUP/docker-running-after-stop.txt"
+if ! docker compose ps --status running --services > "$STOPPED_STATE"; then
+  echo "Could not verify stopped Compose services" >&2
+  exit 1
+fi
+chmod 600 "$STOPPED_STATE"
+for service in scheduler controller bootstrap; do
+  if grep -Fxq "$service" "$STOPPED_STATE"; then
+    echo "Compose writer is still running: $service" >&2
+    exit 1
+  fi
+done
+```
+
+Do not continue unless the final loop confirms that `scheduler`, `controller`,
+and `bootstrap` are not running. Do not use `docker compose down --volumes`;
+that deletes the state being backed up.
+
+### 2. Archive the volumes and host files
+
+Reuse the protected destination from step 1 and archive the controller volume
+through the project image. The temporary container runs `tar` instead of the
+application and does not start the scheduler. Set `HEALTH_URL` to the published
+host port from `INKY_BIRD_PORT`; the default is shown.
+
+```bash
+HEALTH_URL=http://127.0.0.1:8793/health
+if [ ! -f "$BACKUP/docker-running-services.txt" ]; then
+  echo "Missing pre-backup Compose service snapshot" >&2
+  exit 1
+fi
 
 docker compose run --rm --no-deps -T --entrypoint tar controller \
   -C /data -czf - . > "$BACKUP/controller-data.tar.gz"
@@ -417,12 +501,45 @@ tar -tzf "$BACKUP/codex-auth.tar.gz" >/dev/null
 tar -tzf "$BACKUP/github-auth.tar.gz" >/dev/null
 ```
 
-Restart and verify the original deployment:
+Validate the complete saved service set before restarting anything. Then start
+only the existing containers that were running before the backup, in dependency
+order. `docker compose start` does not recreate dependencies or rerun
+`bootstrap`. Check controller health only when it was previously running.
 
 ```bash
-docker compose up --detach
-docker compose ps
-curl --fail --silent "$HEALTH_URL"
+DOCKER_STATE="$BACKUP/docker-running-services.txt"
+while IFS= read -r service; do
+  case "$service" in
+    controller | scheduler) ;;
+    *)
+      echo "Unexpected service in $DOCKER_STATE: $service" >&2
+      exit 1
+      ;;
+  esac
+done < "$DOCKER_STATE"
+
+if grep -Fxq controller "$DOCKER_STATE"; then
+  docker compose start controller || exit 1
+  curl --fail --silent --show-error \
+    --retry 12 --retry-connrefused --retry-delay 5 "$HEALTH_URL" || exit 1
+fi
+if grep -Fxq scheduler "$DOCKER_STATE"; then
+  docker compose start scheduler || exit 1
+fi
+
+RESTARTED_STATE="$BACKUP/docker-running-after-restart.txt"
+if ! docker compose ps --status running --services > "$RESTARTED_STATE"; then
+  echo "Could not verify restarted Compose services" >&2
+  exit 1
+fi
+chmod 600 "$RESTARTED_STATE"
+while IFS= read -r service; do
+  if ! grep -Fxq "$service" "$RESTARTED_STATE"; then
+    echo "Recorded Compose service did not restart: $service" >&2
+    exit 1
+  fi
+done < "$DOCKER_STATE"
+docker compose ps --all
 ```
 
 ## Docker restore

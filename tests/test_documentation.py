@@ -136,6 +136,41 @@ def test_backup_restores_only_the_previously_active_native_services() -> None:
     assert "Unexpected unit in $SYSTEMD_STATE" in backup
     assert "Unexpected label in $LAUNCHD_STATE" in backup
     assert "Recorded LaunchAgent is missing" in backup
+    assert "One-shot service is not quiesced" in backup
+    assert "Could not determine stable pre-backup state" in backup
+    assert "Could not confirm recorded unit stopped" in backup
+    quiesce = backup.split("Then quiesce exactly the recorded agents", 1)[1].split(
+        "\n### 3. Copy", 1
+    )[0]
+    assert 'launchctl bootout "gui/$(id -u)/com.inky-bird-frame.$label" || exit 1' in quiesce
+    assert 'done < "$LAUNCHD_STATE"' in quiesce
+    assert "|| true" not in quiesce
+    assert "Recorded LaunchAgent is still loaded after bootout" in quiesce
+
+
+def test_docker_backup_restores_only_the_previously_running_services() -> None:
+    guide = (ROOT / "docs/backup.md").read_text(encoding="utf-8")
+    section = guide.split("## Docker backup", 1)[1].split("\n## Docker restore", 1)[0]
+
+    capture = 'docker compose ps --status running --services > "$DOCKER_STATE"'
+    stop = "docker compose stop scheduler controller bootstrap"
+    restart = section.split("Validate the complete saved service set", 1)[1]
+    validate = 'done < "$DOCKER_STATE"'
+    controller_start = "docker compose start controller"
+    scheduler_start = "docker compose start scheduler"
+    assert section.index(capture) < section.index(stop)
+    assert restart.index(validate) < restart.index(controller_start)
+    assert section.index('STOPPED_STATE="$BACKUP/docker-running-after-stop.txt"') < section.index(
+        "docker compose run --rm --no-deps -T --entrypoint tar controller"
+    )
+    assert "Bootstrap is still running; wait for it to exit before backup" in section
+    assert "docker compose start bootstrap" not in section
+    assert "docker compose up --detach" not in section
+    assert 'if grep -Fxq controller "$DOCKER_STATE"; then' in section
+    assert '"$HEALTH_URL" || exit 1' in section
+    assert restart.index(controller_start) < restart.index(scheduler_start)
+    assert "Compose writer is still running" in section
+    assert "Recorded Compose service did not restart" in section
 
 
 def test_sole_provider_removal_fails_closed_until_a_replacement_exists() -> None:
