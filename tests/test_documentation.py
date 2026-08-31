@@ -118,3 +118,34 @@ def test_private_history_removal_documents_retained_state_and_refresh() -> None:
     assert "clearing all controller observation and generation state" in section
     for retained_store in ("config.toml", "GitHub authentication", "service logs", "backups"):
         assert retained_store in section
+
+
+def test_backup_restores_only_the_previously_active_native_services() -> None:
+    guide = (ROOT / "docs/backup.md").read_text(encoding="utf-8")
+    backup = guide.split("## Native controller backup", 1)[1].split(
+        "\n## Native controller restore", 1
+    )[0]
+
+    assert 'SYSTEMD_STATE="$BACKUP/native-active-systemd-units.txt"' in backup
+    assert 'LAUNCHD_STATE="$BACKUP/native-loaded-launchagents.txt"' in backup
+    assert 'done < "$SYSTEMD_STATE"' in backup
+    assert 'done < "$LAUNCHD_STATE"' in backup
+    assert "Restore only the services recorded before the backup" in backup
+    assert backup.index('done < "$SYSTEMD_STATE"') < backup.index('sudo systemctl start "$unit"')
+    assert backup.index('done < "$LAUNCHD_STATE"') < backup.index("launchctl bootstrap")
+    assert "Unexpected unit in $SYSTEMD_STATE" in backup
+    assert "Unexpected label in $LAUNCHD_STATE" in backup
+    assert "Recorded LaunchAgent is missing" in backup
+
+
+def test_sole_provider_removal_fails_closed_until_a_replacement_exists() -> None:
+    guide = (ROOT / "docs/backup.md").read_text(encoding="utf-8")
+    section = guide.split("## Private-data lifecycle and removal", 1)[1]
+    normalized = " ".join(section.split())
+
+    assert "rejects an empty `discovery.sources` list" in normalized
+    assert "deleting the setting selects the default iNaturalist source" in normalized
+    assert (
+        "Do not restart the controller until a valid replacement source is configured" in normalized
+    )
+    assert "Only after the replacement configuration validates" in normalized

@@ -71,12 +71,28 @@ Validate the configuration before stopping services:
 
 Do not copy controller state while refresh, generation, notification dispatch,
 or publication is writing it. Wait for any running job to finish, then stop its
-timer before copying data.
+timer before copying data. Record what was active first so the backup does not
+silently resume work that an operator had intentionally suspended.
 
-On systemd Linux, stop the timers first. Confirm that their corresponding
-one-shot services are inactive, then stop the HTTP service:
+On systemd Linux, capture the active controller and timer set in the protected
+backup directory, then stop the timers. Confirm that their corresponding
+one-shot services are inactive before stopping the HTTP service:
 
 ```bash
+SYSTEMD_STATE="$BACKUP/native-active-systemd-units.txt"
+: > "$SYSTEMD_STATE"
+for unit in \
+  inky-bird-frame-controller.service \
+  inky-bird-frame-refresh.timer \
+  inky-bird-frame-generate.timer \
+  inky-bird-frame-catalog-publish.timer \
+  inky-bird-frame-notifications.timer; do
+  if systemctl is-active --quiet "$unit"; then
+    printf '%s\n' "$unit" >> "$SYSTEMD_STATE"
+  fi
+done
+chmod 600 "$SYSTEMD_STATE"
+
 sudo systemctl stop \
   inky-bird-frame-refresh.timer \
   inky-bird-frame-generate.timer \
@@ -99,9 +115,18 @@ until every installed one-shot service reports `inactive` or `failed`; an
 On macOS, first inspect the LaunchAgents and wait for one-shot work to finish:
 
 ```bash
+LAUNCHD_STATE="$BACKUP/native-loaded-launchagents.txt"
+: > "$LAUNCHD_STATE"
 for label in refresh generate catalog-publish notifications; do
   launchctl print "gui/$(id -u)/com.inky-bird-frame.$label" 2>/dev/null || true
 done
+
+for label in serve refresh generate catalog-publish notifications; do
+  if launchctl print "gui/$(id -u)/com.inky-bird-frame.$label" >/dev/null 2>&1; then
+    printf '%s\n' "$label" >> "$LAUNCHD_STATE"
+  fi
+done
+chmod 600 "$LAUNCHD_STATE"
 ```
 
 Then quiesce the installed agents. `bootout` stops scheduling and may terminate
@@ -144,29 +169,72 @@ beside the backup. Do not put credentials into that note.
 
 ### 4. Restart and verify
 
-On systemd Linux:
+Restore only the services recorded before the backup. On systemd Linux, reject
+unexpected unit names before starting the saved active set:
 
 ```bash
-sudo systemctl start inky-bird-frame-controller.service
-sudo systemctl start \
-  inky-bird-frame-refresh.timer \
-  inky-bird-frame-generate.timer
-sudo systemctl start inky-bird-frame-catalog-publish.timer 2>/dev/null || true
-sudo systemctl start inky-bird-frame-notifications.timer 2>/dev/null || true
-"$IBF" doctor controller --config "$CONFIG"
+SYSTEMD_STATE="$BACKUP/native-active-systemd-units.txt"
+while IFS= read -r unit; do
+  case "$unit" in
+    inky-bird-frame-controller.service | \
+    inky-bird-frame-refresh.timer | \
+    inky-bird-frame-generate.timer | \
+    inky-bird-frame-catalog-publish.timer | \
+    inky-bird-frame-notifications.timer) ;;
+    *)
+      echo "Unexpected unit in $SYSTEMD_STATE: $unit" >&2
+      exit 1
+      ;;
+  esac
+done < "$SYSTEMD_STATE"
+
+while IFS= read -r unit; do
+  sudo systemctl start "$unit" || exit 1
+done < "$SYSTEMD_STATE"
+
+while IFS= read -r unit; do
+  systemctl is-active "$unit" || exit 1
+done < "$SYSTEMD_STATE"
 ```
 
-On macOS, bootstrap only plist files that exist:
+On macOS, bootstrap only the LaunchAgents that were loaded before the backup:
 
 ```bash
-for label in serve refresh generate catalog-publish notifications; do
+LAUNCHD_STATE="$BACKUP/native-loaded-launchagents.txt"
+while IFS= read -r label; do
+  case "$label" in
+    serve | refresh | generate | catalog-publish | notifications) ;;
+    *)
+      echo "Unexpected label in $LAUNCHD_STATE: $label" >&2
+      exit 1
+      ;;
+  esac
   plist="$HOME/Library/LaunchAgents/com.inky-bird-frame.$label.plist"
-  if [ -f "$plist" ]; then
-    launchctl bootstrap "gui/$(id -u)" "$plist"
+  if [ ! -f "$plist" ]; then
+    echo "Recorded LaunchAgent is missing: $plist" >&2
+    exit 1
   fi
-done
-"$IBF" doctor controller --config "$CONFIG"
+done < "$LAUNCHD_STATE"
+
+while IFS= read -r label; do
+  plist="$HOME/Library/LaunchAgents/com.inky-bird-frame.$label.plist"
+  launchctl bootstrap "gui/$(id -u)" "$plist" || exit 1
+done < "$LAUNCHD_STATE"
+
+while IFS= read -r label; do
+  launchctl print "gui/$(id -u)/com.inky-bird-frame.$label" >/dev/null || exit 1
+done < "$LAUNCHD_STATE"
 ```
+
+Restored systemd timers schedule their next activation. Several macOS
+LaunchAgents use `RunAtLoad` and may run immediately when bootstrapped; preserving
+the recorded set prevents the backup itself from resuming intentionally
+suspended work.
+
+If no installed component was deliberately suspended before the backup, finish
+with `"$IBF" doctor controller --config "$CONFIG"`. When a component was already
+stopped, the service-specific checks above are authoritative and `doctor` is
+expected to report that intentional suspension.
 
 ## Native controller restore
 
@@ -543,6 +611,13 @@ may still reveal species, counts, timestamps, research, or generated artifacts.
 Once observations have been merged, shared derived state cannot be attributed
 safely to one provider. Do not hand-edit those derived JSON files.
 
+The selective removal path requires at least one configured provider that you
+intend to keep. Inky rejects an empty `discovery.sources` list, and deleting the
+setting selects the default iNaturalist source rather than disabling discovery.
+If the provider being removed is the only source and no replacement is intended,
+keep scheduled work stopped and use the full state-and-workspace reset below. Do
+not restart the controller until a valid replacement source is configured.
+
 For provider-owned history removal, first disable the provider, quiesce every
 writer, and make a separately protected recovery backup if policy permits. The
 history files are `ebird-archive-observations.json`,
@@ -576,10 +651,10 @@ research, and retained run or failure evidence. It does **not** remove private
 `config.toml` values, Codex or GitHub authentication stores, service logs,
 backups, or snapshots. Remove unwanted providers and credentials from the
 private configuration before refresh; any enabled live source can repopulate
-the fresh state. Reauthorize or reimport only the sources you intend to keep,
-then perform a controlled refresh and verify the new state before discarding the
-protected recovery copy. Do not copy selected derived files back into the fresh
-directories.
+the fresh state. Only after the replacement configuration validates, reauthorize
+or reimport the sources you intend to keep, perform a controlled refresh, and
+verify the new state before discarding the protected recovery copy. Do not copy
+selected derived files back into the fresh directories.
 
 Deleting live state does not remove copies from backups, snapshots, or remote
 storage. Apply the same retention decision to every copy. Public catalog plates
