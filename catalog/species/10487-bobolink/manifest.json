@@ -1,0 +1,157 @@
+{
+  "approved_at": "2026-08-31T18:43:31+00:00",
+  "assets": {
+    "display": {
+      "filename": "display.png",
+      "sha256": "ec5d15f0efcd60527087f7987f7490a22a6d5b4680c388eee162e30085db5734"
+    },
+    "portrait": {
+      "filename": "portrait.png",
+      "sha256": "643ddc8e401e07288999344a0872540fcd58bb99f3b55388918f203f865236c4"
+    }
+  },
+  "common_name": "Bobolink",
+  "generation": {
+    "attempt": 1,
+    "generated_at": "2026-08-31T18:43:29+00:00",
+    "generator": "Codex subscription / built-in gpt-image-2",
+    "max_attempts": 3,
+    "prompt_version": "field-journal-v5"
+  },
+  "profile": {
+    "behavior": "Forages for seeds and insects on the ground and among grass stems, often clinging to seed heads. Breeding males perform low, fluttering song flights; outside the nesting season, Bobolinks are social and often travel or feed in flocks.",
+    "common_name": "Bobolink",
+    "family": "Icteridae",
+    "field_marks": [
+      "Compact songbird with a large, somewhat flat head and short neck.",
+      "Short, sharply pointed bill; pinkish in female and nonbreeding plumages, darker in breeding males.",
+      "Breeding male is black below and on the face, with a white back, shoulders, and rump plus a straw-colored nape.",
+      "Female and nonbreeding plumages are warm buff-brown with bold dark crown stripes, a dark eyeline, and streaked back and flanks.",
+      "Pointed wings and a short, rounded, multi-pointed tail.",
+      "Dark eyes and slender pinkish legs and feet."
+    ],
+    "habitat": "Tall grasslands, uncut pastures, overgrown fields, meadows, and prairies; also marshes and agricultural fields during molt and migration.",
+    "measurements": {
+      "length": "Female and male: 6.3\u20137.1 in (16\u201318 cm)",
+      "weight": "Female: 1.0\u20131.6 oz (28\u201345 g); male: 1.1\u20132.1 oz (30\u201360 g)",
+      "wingspan": "Female and male: 10.6\u201311.8 in (27\u201330 cm)"
+    },
+    "palette": [
+      "jet black",
+      "clean white",
+      "straw yellow",
+      "warm buff brown",
+      "dark brown"
+    ],
+    "scientific_name": "Dolichonyx oryzivorus",
+    "sources": [
+      {
+        "title": "Bobolink Identification \u2014 All About Birds, Cornell Lab of Ornithology",
+        "url": "https://www.allaboutbirds.org/guide/Bobolink/id"
+      },
+      {
+        "title": "Bobolink Life History \u2014 All About Birds, Cornell Lab of Ornithology",
+        "url": "https://www.allaboutbirds.org/guide/bobolink/lifehistory"
+      },
+      {
+        "title": "Bobolink \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/bobolink"
+      }
+    ],
+    "taxon_id": 10487
+  },
+  "quality_review": {
+    "anatomy_accuracy": 4,
+    "composition_quality": 5,
+    "correction_findings": [],
+    "findings": [
+      "The primary specimen is identifiable as an adult breeding male Bobolink: black face and underparts, extensive white back/shoulder/rump area, and a straw-colored nape agree with the attached male references and direct source descriptions.",
+      "The compact, large-headed, short-necked proportions and short, sharply pointed dark bill are species-appropriate. Both depicted heads have complete, consistent bills and visible dark eyes.",
+      "The primary specimen has one head, one beak, one tail, two attached legs, and two feet. The far-side wing is naturally hidden by the side-profile pose; the visible folded wing attaches convincingly. The crossed feet are visually crowded but remain traceable as two separate feet rather than duplicated or broken anatomy.",
+      "The detached spread-wing and head illustrations read as intentional supplementary studies, are not attached to the primary specimen, and show plausible Bobolink feather structure and head anatomy.",
+      "The tail is rounded and multi-pointed, the wings are pointed, and the slender pinkish legs agree with the proposed field marks and references.",
+      "All visible identification, measurement, habitat, behavior, and field-mark text is legible, correctly spelled, and matches the proposed wording and numbers. The repeated BODY LENGTH line agrees with the main length statement.",
+      "The printed sex-specific measurements exactly match Audubon's direct Bobolink account. Cornell currently publishes broader combined-sex values, while Animal Diversity Web gives averages that fall within the plate's ranges; this source variation does not establish a two-domain conflict with the proposed profile.",
+      "The vertical length diagram is internally consistent: 6.3 in (16 cm) is at the bottom, 7.1 in (18 cm) is at the top, values increase upward, and the nearby SCHEMATIC\u2014NOT TO SCALE label prevents it from implying that the printed bird is life-size.",
+      "The habitat and behavior claims agree with Cornell and Audubon descriptions of tall grasslands, fields, marshes during migration, ground and grass-stem foraging, fluttering display flights, and flocking outside nesting.",
+      "No place name, ZIP code, coordinates, map, or local-observation detail appears."
+    ],
+    "location_free": true,
+    "passed": true,
+    "species_accuracy": 5,
+    "text_accuracy": 5,
+    "verification_sources": [
+      {
+        "title": "Bobolink Identification \u2014 All About Birds, Cornell Lab of Ornithology",
+        "url": "https://www.allaboutbirds.org/guide/Bobolink/id"
+      },
+      {
+        "title": "Bobolink \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/bobolink"
+      },
+      {
+        "title": "Dolichonyx oryzivorus (bobolink) \u2014 Animal Diversity Web",
+        "url": "https://animaldiversity.org/accounts/Dolichonyx_oryzivorus/"
+      }
+    ]
+  },
+  "references": [
+    {
+      "attribution": "(c) Julien Renoult, some rights reserved (CC BY)",
+      "filename": "01-445805732.jpg",
+      "height": 904,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/445805732/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 249400638,
+      "observer": "jujurenoult",
+      "photo_id": 445805732,
+      "sha256": "b39ea3122ec0f07e9ff02a81a2a495cd0d7edf501dead4f9b64402f9ace89e69",
+      "source_url": "https://www.inaturalist.org/observations/249400638",
+      "width": 1355
+    },
+    {
+      "attribution": "no rights reserved",
+      "filename": "02-298600568.jpeg",
+      "height": 1536,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/298600568/large.jpeg",
+      "license_code": "cc0",
+      "observation_id": 172062670,
+      "observer": "ellyne",
+      "photo_id": 298600568,
+      "sha256": "be105c61ae6138cba553e5a02d94dc0e75dd090cd00f2c81067a52986dd47312",
+      "source_url": "https://www.inaturalist.org/observations/172062670",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) Marc-Olivier Beausoleil, some rights reserved (CC BY)",
+      "filename": "03-660448602.jpg",
+      "height": 2048,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/660448602/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 361872320,
+      "observer": "marcolivierbeausoleil",
+      "photo_id": 660448602,
+      "sha256": "4c59fb7d8b151afba97f5a8a891dec8a37ca8cfbfa224bcabc8d809784fd3bb7",
+      "source_url": "https://www.inaturalist.org/observations/361872320",
+      "width": 1536
+    },
+    {
+      "attribution": "(c) Derek Spencer, some rights reserved (CC BY)",
+      "filename": "04-502943552.jpg",
+      "height": 1536,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/502943552/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 280052401,
+      "observer": "djs39",
+      "photo_id": 502943552,
+      "sha256": "33032bf22e4392ccdd442f617d8d7c6f0c5d7bf332a0ca0f36d30f2b45ded889",
+      "source_url": "https://www.inaturalist.org/observations/280052401",
+      "width": 1920
+    }
+  ],
+  "schema_version": 1,
+  "scientific_name": "Dolichonyx oryzivorus",
+  "slug": "bobolink",
+  "status": "approved",
+  "taxon_id": 10487
+}

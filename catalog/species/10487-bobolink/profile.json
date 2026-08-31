@@ -1,0 +1,42 @@
+{
+  "behavior": "Forages for seeds and insects on the ground and among grass stems, often clinging to seed heads. Breeding males perform low, fluttering song flights; outside the nesting season, Bobolinks are social and often travel or feed in flocks.",
+  "common_name": "Bobolink",
+  "family": "Icteridae",
+  "field_marks": [
+    "Compact songbird with a large, somewhat flat head and short neck.",
+    "Short, sharply pointed bill; pinkish in female and nonbreeding plumages, darker in breeding males.",
+    "Breeding male is black below and on the face, with a white back, shoulders, and rump plus a straw-colored nape.",
+    "Female and nonbreeding plumages are warm buff-brown with bold dark crown stripes, a dark eyeline, and streaked back and flanks.",
+    "Pointed wings and a short, rounded, multi-pointed tail.",
+    "Dark eyes and slender pinkish legs and feet."
+  ],
+  "habitat": "Tall grasslands, uncut pastures, overgrown fields, meadows, and prairies; also marshes and agricultural fields during molt and migration.",
+  "measurements": {
+    "length": "Female and male: 6.3\u20137.1 in (16\u201318 cm)",
+    "weight": "Female: 1.0\u20131.6 oz (28\u201345 g); male: 1.1\u20132.1 oz (30\u201360 g)",
+    "wingspan": "Female and male: 10.6\u201311.8 in (27\u201330 cm)"
+  },
+  "palette": [
+    "jet black",
+    "clean white",
+    "straw yellow",
+    "warm buff brown",
+    "dark brown"
+  ],
+  "scientific_name": "Dolichonyx oryzivorus",
+  "sources": [
+    {
+      "title": "Bobolink Identification \u2014 All About Birds, Cornell Lab of Ornithology",
+      "url": "https://www.allaboutbirds.org/guide/Bobolink/id"
+    },
+    {
+      "title": "Bobolink Life History \u2014 All About Birds, Cornell Lab of Ornithology",
+      "url": "https://www.allaboutbirds.org/guide/bobolink/lifehistory"
+    },
+    {
+      "title": "Bobolink \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/bobolink"
+    }
+  ],
+  "taxon_id": 10487
+}
