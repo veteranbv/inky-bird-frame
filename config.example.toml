@@ -58,6 +58,10 @@ port = 8793
 # Use ASCII hostnames or canonical IP addresses. Internationalized names, punycode,
 # wildcards, credentials, paths, queries, and fragments are rejected.
 # cors_allowed_origins = ["https://frame.example.test"]
+# Cross-origin framing of the featured plate is a separate permission. Content Security
+# Policy does not reliably match IP address sources, so these origins must use DNS hostnames.
+# Underscores and trailing dots are also rejected.
+# embed_allowed_origins = ["https://home.example.test"]
 references_per_species = 4
 generations_per_cycle = 1
 # Failed visual reviews are regenerated with their findings as corrective input.

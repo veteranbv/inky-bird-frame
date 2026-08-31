@@ -73,6 +73,7 @@ class ConfigTests(unittest.TestCase):
         self.assertEqual(config.controller.max_generation_attempts, 3)
         self.assertIsNone(config.controller.codex_model)
         self.assertEqual(config.controller.cors_allowed_origins, ())
+        self.assertEqual(config.controller.embed_allowed_origins, ())
         self.assertEqual(config.display_node.controller_url, "http://controller.test:8793")
         self.assertEqual(config.display_node.rotation_mode, RotationMode.WEIGHTED)
         self.assertTrue(config.display_node.prioritize_latest_detection)
@@ -176,6 +177,43 @@ class ConfigTests(unittest.TestCase):
 
             with self.assertRaisesRegex(ConfigurationError, "equivalent duplicate origins"):
                 load_config(path)
+
+    def test_loads_and_normalizes_featured_plate_embed_origins(self) -> None:
+        configured = CONFIG.replace(
+            'bind_host = "0.0.0.0"',
+            'bind_host = "0.0.0.0"\n'
+            'embed_allowed_origins = ["HTTPS://Home.Example.Test:443/", '
+            '"http://dashboard.local:8080"]',
+        )
+        with TemporaryDirectory() as temporary:
+            path = Path(temporary) / "config.toml"
+            path.write_text(configured)
+
+            config = load_config(path)
+
+        self.assertEqual(
+            config.controller.embed_allowed_origins,
+            ("https://home.example.test", "http://dashboard.local:8080"),
+        )
+
+    def test_rejects_embed_origins_that_csp_cannot_reliably_match(self) -> None:
+        for origin in (
+            "https://10.0.0.1",
+            "http://[2001:db8::1]:8080",
+            "https://frame_server.local",
+            "https://home.example.test.",
+        ):
+            with self.subTest(origin=origin), TemporaryDirectory() as temporary:
+                path = Path(temporary) / "config.toml"
+                path.write_text(
+                    CONFIG.replace(
+                        'bind_host = "0.0.0.0"',
+                        f'bind_host = "0.0.0.0"\nembed_allowed_origins = ["{origin}"]',
+                    )
+                )
+
+                with self.assertRaisesRegex(ConfigurationError, "embed_allowed_origins"):
+                    load_config(path)
 
     def test_loads_optional_codex_model_pin(self) -> None:
         with TemporaryDirectory() as temporary:

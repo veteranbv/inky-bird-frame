@@ -2,13 +2,16 @@
 
 from __future__ import annotations
 
+import base64
 import hashlib
 import json
 import re
+from datetime import datetime
+from html import escape
 from http import HTTPStatus
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path, PurePosixPath
-from urllib.parse import parse_qs, unquote, urlsplit
+from urllib.parse import parse_qs, quote, unquote, urlsplit
 
 from . import __version__
 from .catalog import read_json, rebuild_catalog_index, utc_now
@@ -20,6 +23,7 @@ from .timeutil import parse_utc_timestamp
 
 CATALOG_SCHEMA_VERSION = 1
 MAX_TELEMETRY_REQUEST_BYTES = 1024
+FEATURED_PLATE_REFRESH_SECONDS = 15 * 60
 _SHA256_PATTERN = re.compile(r"[0-9a-f]{64}")
 _CATALOG_STRING_FIELDS = (
     "common_name",
@@ -31,6 +35,18 @@ _CATALOG_STRING_FIELDS = (
     "display_sha256",
     "approved_at",
 )
+_FEATURED_PLATE_STYLE = (
+    "html,body{height:100%;margin:0;width:100%}"
+    "body{background:transparent;color:#94a3b8;display:grid;font:500 14px "
+    "system-ui,sans-serif;overflow:hidden;place-items:center}"
+    "main{display:grid;inset:0;min-height:0;min-width:0;place-items:center;"
+    "position:fixed}"
+    "img{display:block;height:100vh;object-fit:contain;width:100vw}"
+    "p{margin:1rem;text-align:center}"
+)
+_FEATURED_PLATE_STYLE_HASH = base64.b64encode(
+    hashlib.sha256(_FEATURED_PLATE_STYLE.encode()).digest()
+).decode("ascii")
 
 
 def _catalog_asset_path(value: object, field: str) -> str:
@@ -156,11 +172,76 @@ def _species_count(path: Path) -> int:
     return 0
 
 
+def _featured_plate_entry(payload: dict[str, object]) -> dict[str, object] | None:
+    raw_species = payload.get("species")
+    if not isinstance(raw_species, list):
+        raise CatalogError("Active catalog has no species list")
+
+    candidates: list[dict[str, object]] = []
+    for entry in raw_species:
+        if not isinstance(entry, dict):
+            raise CatalogError("Active catalog entry must be an object")
+        candidates.append(entry)
+
+    def rank(entry: dict[str, object]) -> tuple[int, datetime, datetime, int]:
+        detected_at = parse_utc_timestamp(entry.get("latest_detection_at"))
+        approved_at = parse_utc_timestamp(entry.get("approved_at"))
+        taxon_id = entry.get("taxon_id")
+        if approved_at is None or not isinstance(taxon_id, int) or isinstance(taxon_id, bool):
+            raise CatalogError("Active catalog entry has invalid featured-plate fields")
+        return (
+            1 if detected_at is not None else 0,
+            detected_at or approved_at,
+            approved_at,
+            -taxon_id,
+        )
+
+    return max(candidates, key=rank, default=None)
+
+
+def _featured_plate_document(
+    entry: dict[str, object] | None,
+    *,
+    empty_message: str,
+) -> bytes:
+    if entry is None:
+        title = "Inky Bird Frame"
+        content = f'<p role="status">{escape(empty_message)}</p>'
+    else:
+        common_name = entry.get("common_name")
+        portrait_path = entry.get("portrait_path")
+        portrait_sha256 = entry.get("portrait_sha256")
+        if not isinstance(common_name, str) or not common_name:
+            raise CatalogError("Active catalog entry has invalid featured-plate fields")
+        if not isinstance(portrait_path, str) or not portrait_path:
+            raise CatalogError("Active catalog entry has invalid featured-plate fields")
+        if (
+            not isinstance(portrait_sha256, str)
+            or _SHA256_PATTERN.fullmatch(portrait_sha256) is None
+        ):
+            raise CatalogError("Active catalog entry has invalid featured-plate checksum")
+        title = f"{common_name} | Inky Bird Frame"
+        portrait_url = f"../assets/{quote(portrait_path, safe='/')}?sha256={portrait_sha256}"
+        content = (
+            f'<img src="{escape(portrait_url, quote=True)}" '
+            f'alt="Field-journal plate for {escape(common_name, quote=True)}">'
+        )
+
+    return (
+        '<!doctype html><html lang="en"><head><meta charset="utf-8">'
+        '<meta name="viewport" content="width=device-width,initial-scale=1">'
+        f'<meta http-equiv="refresh" content="{FEATURED_PLATE_REFRESH_SECONDS}">'
+        f"<title>{escape(title)}</title><style>{_FEATURED_PLATE_STYLE}</style>"
+        f"</head><body><main>{content}</main></body></html>"
+    ).encode()
+
+
 class CatalogRequestHandler(BaseHTTPRequestHandler):
     catalog_dir: Path
     active_catalog_path: Path
     state_dir: Path
     cors_allowed_origins: tuple[str, ...] = ()
+    embed_allowed_origins: tuple[str, ...] = ()
 
     def _has_origin(self) -> bool:
         return bool(self.headers.get_all("Origin", failobj=[]))
@@ -187,6 +268,7 @@ class CatalogRequestHandler(BaseHTTPRequestHandler):
         payload: object,
         *,
         allow_browser_access: bool = False,
+        head_only: bool = False,
     ) -> None:
         body = json.dumps(payload, sort_keys=True).encode()
         self.send_response(status)
@@ -196,6 +278,38 @@ class CatalogRequestHandler(BaseHTTPRequestHandler):
         self.send_header("X-Content-Type-Options", "nosniff")
         if allow_browser_access:
             self._send_browser_access_headers()
+        self.end_headers()
+        if not head_only:
+            self.wfile.write(body)
+
+    def _send_featured_plate(
+        self,
+        status: HTTPStatus,
+        entry: dict[str, object] | None,
+        *,
+        empty_message: str,
+    ) -> None:
+        body = _featured_plate_document(entry, empty_message=empty_message)
+        frame_ancestors = " ".join(("'self'", *self.embed_allowed_origins))
+        content_security_policy = "; ".join(
+            (
+                "default-src 'none'",
+                "img-src 'self'",
+                f"style-src 'sha256-{_FEATURED_PLATE_STYLE_HASH}'",
+                "script-src 'none'",
+                "object-src 'none'",
+                "base-uri 'none'",
+                "form-action 'none'",
+                f"frame-ancestors {frame_ancestors}",
+            )
+        )
+        self.send_response(status)
+        self.send_header("Content-Type", "text/html; charset=utf-8")
+        self.send_header("Content-Length", str(len(body)))
+        self.send_header("Cache-Control", "no-store")
+        self.send_header("Content-Security-Policy", content_security_policy)
+        self.send_header("Referrer-Policy", "no-referrer")
+        self.send_header("X-Content-Type-Options", "nosniff")
         self.end_headers()
         self.wfile.write(body)
 
@@ -353,6 +467,23 @@ class CatalogRequestHandler(BaseHTTPRequestHandler):
                 self._record_display_event("display-last-fetch.json", "fetched_at")
             self._send_json(HTTPStatus.OK, payload, allow_browser_access=True)
             return
+        if request_path == "/v1/embed/featured-plate":
+            try:
+                payload, _asset_hashes = self._load_active_catalog()
+                entry = _featured_plate_entry(payload)
+            except (CatalogError, OSError):
+                self._send_featured_plate(
+                    HTTPStatus.SERVICE_UNAVAILABLE,
+                    None,
+                    empty_message="Featured plate unavailable",
+                )
+                return
+            self._send_featured_plate(
+                HTTPStatus.OK,
+                entry,
+                empty_message="No active plate yet",
+            )
+            return
         if request_path == "/v1/display-success":
             if not self._is_legacy_display_request():
                 self._send_json(
@@ -423,6 +554,32 @@ class CatalogRequestHandler(BaseHTTPRequestHandler):
             return
         self._send_json(HTTPStatus.NOT_FOUND, {"ok": False, "error": "not found"})
 
+    def do_HEAD(self) -> None:  # noqa: N802 - BaseHTTPRequestHandler API
+        request_path = urlsplit(self.path).path
+        if request_path != "/v1/catalog":
+            self._send_json(
+                HTTPStatus.NOT_FOUND,
+                {"ok": False, "error": "not found"},
+                head_only=True,
+            )
+            return
+        try:
+            payload, _asset_hashes = self._load_active_catalog()
+        except (CatalogError, OSError):
+            self._send_json(
+                HTTPStatus.SERVICE_UNAVAILABLE,
+                {"ok": False, "error": "active catalog unavailable", "schema_version": 1},
+                allow_browser_access=True,
+                head_only=True,
+            )
+            return
+        self._send_json(
+            HTTPStatus.OK,
+            payload,
+            allow_browser_access=True,
+            head_only=True,
+        )
+
     def do_POST(self) -> None:  # noqa: N802 - BaseHTTPRequestHandler API
         request_path = urlsplit(self.path).path
         events = {
@@ -467,6 +624,7 @@ def serve_catalog(config: ControllerConfig) -> None:
             "active_catalog_path": config.state_dir / "active-catalog.json",
             "state_dir": config.state_dir,
             "cors_allowed_origins": config.cors_allowed_origins,
+            "embed_allowed_origins": config.embed_allowed_origins,
         },
     )
     server = ThreadingHTTPServer((config.bind_host, config.port), handler)

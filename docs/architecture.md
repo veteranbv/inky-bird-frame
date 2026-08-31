@@ -157,16 +157,21 @@ The controller exposes a small HTTP interface:
 
 - `GET /health`: service state, catalog counts, and application version
 - `GET /v1/catalog`
+- `HEAD /v1/catalog`: the same fail-closed readiness status without a body
 - `GET /v1/assets/<active-image-path>`
+- `GET /v1/embed/featured-plate`
 - `POST /v1/display-fetch`
 - `POST /v1/display-success`
 
-Cross-origin browser access to the catalog and assets is disabled unless the
-operator configures exact trusted origins. The server echoes a matching origin
-and varies cache entries by `Origin`; it never enables credentialed browser
-requests or grants wildcard access. Health and display telemetry responses are
-served without cross-origin access headers. Ordinary catalog and browser reads
-never update physical-display health.
+Cross-origin browser access to the catalog and assets, and cross-origin framing
+of the plate embed, are separate, disabled-by-default permissions. The server
+echoes a matching `cors_allowed_origins` request origin and varies cache entries
+by `Origin`; it never enables credentialed browser requests or grants wildcard
+access. `embed_allowed_origins` becomes the embed's Content Security Policy
+`frame-ancestors` allowlist. Framing origins must use DNS hostnames because CSP
+does not reliably match IP-address sources. Health, embed, and display telemetry
+responses are served without cross-origin access headers. Ordinary catalog,
+asset, and embed reads never update physical-display health.
 
 Catalog schema version 1 has three top-level fields: `schema_version`,
 `generated_at`, and `species`. Each species entry contains `taxon_id`,
@@ -182,6 +187,21 @@ sending bytes. Catalog responses use `no-store`; an image request becomes
 immutable-cacheable only when its `sha256` query matches the verified active
 catalog digest. Catalog JSON and image responses carry
 `X-Content-Type-Options: nosniff`.
+
+The featured-plate route is a small HTML representation for dashboards. It
+selects the active entry with the newest valid `latest_detection_at`, then the
+newest `approved_at`, then the lower taxon ID for a deterministic tie. Entries
+without detection times participate only when no active entry has one. Because
+only BirdWeather, BirdNET-Go, and Bird Buddy currently provide detection
+timestamps, the result is deliberately called featured: it is neither the
+newest observation across every provider nor the plate currently shown on the
+physical frame. The page loads the selected upright portrait through its
+content-addressed asset URL and exposes no observation count, timestamp,
+provider, location, or private controller field. It contains no JavaScript,
+form, control, external resource, or display-health write. A script-free HTML
+refresh reloads the no-store document every 15 minutes, replacing the old page
+instead of accumulating client timers. A valid empty catalog returns a quiet
+empty state; unavailable or invalid catalog state returns a generic `503` page.
 
 Schema version 1 may gain an optional field only after a privacy review.
 Removing a required field, changing a field's meaning or type, or exposing a

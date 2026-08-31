@@ -63,7 +63,11 @@ appear. Your discovery location and observation history stay private.
   the [discovery guide](docs/discovery.md).
 - **Connect a trusted browser application:** read the
   [browser application boundary](docs/installation.md#browser-applications).
-  Inky provides a read-only catalog and image interface, not a browser UI.
+  Inky provides a read-only catalog, image interface, and narrow plate embed,
+  not a standalone browser application.
+- **Add Inky to a Homepage dashboard:** use the
+  [stock Homepage recipe](docs/installation.md#homepage-dashboard) for compact
+  catalog stats and an optional upright plate.
 - **Request or contribute a bird:** start with
   [Contributing](CONTRIBUTING.md).
 
@@ -87,9 +91,10 @@ The project has two installed roles:
   rotates them on the Inky panel. It never runs discovery or Codex.
 
 A trusted browser application may also read the catalog through a same-origin
-proxy or an explicitly allowed origin. Inky supplies the interface, not the
-browser application. The controller has no built-in authentication or TLS and
-must not be exposed directly to the internet.
+proxy or an explicitly allowed origin. Inky supplies the data interface and a
+narrow, script-free plate embed, not a standalone application. The controller
+has no built-in authentication or TLS and must not be exposed directly to the
+internet.
 
 The controller and display may run on one capable Raspberry Pi, but the
 recommended wall build keeps a lightweight Pi behind the frame and runs the
@@ -105,7 +110,7 @@ permission or fail even when its origin is allowed. Browser reads never count
 as display-node health. Allowing an origin does not add authentication or make
 the controller safe to expose to the internet. See
 [Browser applications](docs/installation.md#browser-applications) for the
-API, privacy, and network limits.
+API, embed, privacy, and network limits.
 
 ## Observation sources
 
