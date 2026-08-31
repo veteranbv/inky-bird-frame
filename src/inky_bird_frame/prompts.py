@@ -9,7 +9,7 @@ from pathlib import Path
 from .birds import BirdSpecies, TaxonContext
 from .models import ProfileConflict, ReferencePhoto, SpeciesProfileData
 
-PROMPT_VERSION = "field-journal-v5"
+PROMPT_VERSION = "field-journal-v6"
 
 
 class _TextExtractor(HTMLParser):
@@ -307,6 +307,14 @@ interior ticks are visual subdivisions, not unit increments: their exact count o
 variation is not a factual error and must not lower a score below 4 by itself. Missing or reversed
 endpoints, wrong values or units, a contradictory marker, or a ruler presented as the printed
 bird's scale remains a material text error with a specific correction.
+Authoritative sources may publish different measurements because they use different samples,
+methods, ages, sexes, or seasons. The proposed profile is required to use one compatible published
+measurement set, not synthesize a consensus range. Do not report a profile conflict merely because
+another allowed source publishes a different supported set. Accept a measurement when its value
+and material qualifiers faithfully match a direct allowed source. Report a measurement conflict
+only when the proposed value has no direct support, misstates its supporting source, combines
+incompatible endpoints, omits a material qualifier, or falsely claims broader agreement than the
+source establishes.
 Read every visible text line in full rather than summarizing it. Compare its spelling, numbers,
 and word order to the proposed facts; treat duplicated, omitted, substituted, or nonsensical words
 as material text errors and give the exact replacement. When unequal mandibles are a field mark,
