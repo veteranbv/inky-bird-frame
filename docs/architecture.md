@@ -153,6 +153,8 @@ Notification delivery is an independent durable outbox. Application state is
 committed first, each destination is acknowledged separately, and provider
 failures never block controller or display work.
 
+#### HTTP interface
+
 The controller exposes a small HTTP interface:
 
 - `GET /health`: service state, catalog counts, and application version

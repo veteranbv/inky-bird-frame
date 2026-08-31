@@ -414,6 +414,43 @@ compatible within their minor line. Before version 1.0, a minor release may
 include a documented configuration or operational migration. Release notes are
 the source of truth for each upgrade.
 
+### Version 1 compatibility contract
+
+Beginning with v1.0.0, the version number describes the compatibility promise:
+
+- A patch release fixes defects, security issues, dependencies, documentation,
+  or catalog content without requiring a configuration or private-state
+  migration.
+- A minor release adds backward-compatible behavior. Existing valid 1.x
+  configuration continues to load, new providers and network permissions remain
+  opt-in, and documented command names, options, and machine-readable JSON keep
+  their meaning.
+- An incompatible configuration, CLI, or network-interface change waits for a
+  new major release. A deprecated 1.x interface remains available for the rest
+  of the 1.x line; its replacement and eventual removal are announced in the
+  documentation and release notes.
+
+Private controller files are implementation state, not an API for other tools
+to edit. When a minor release must evolve that state, Inky owns an atomic,
+restart-safe migration and explains its rollback boundary in the release notes.
+Keep the pre-upgrade backup until the new release is proven: an older binary is
+not expected to understand state written by a newer release unless that release
+explicitly says otherwise.
+
+The public catalog and HTTP interface follow the versioned schema rules in the
+[architecture guide](architecture.md#http-interface). A 1.x release
+may add an optional, privacy-reviewed field, command, or route. It does not
+remove a required field, change a documented field's type or meaning, or reuse a
+route for a different data class. Human-readable log and error wording may
+improve without being a compatibility break.
+
+Observation providers remain isolated external dependencies. An upstream API,
+authorization, or schema change may temporarily degrade that provider, but it
+must not corrupt saved state or stop the other configured providers. If a
+security or privacy flaw makes a compatibility promise unsafe, a release may
+close that boundary earlier; the release notes must identify the exception,
+impact, and safest upgrade or rollback path.
+
 Before changing versions:
 
 1. read every release note between the installed and target versions;
