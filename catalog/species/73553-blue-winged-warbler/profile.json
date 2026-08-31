@@ -1,0 +1,42 @@
+{
+  "behavior": "Moves with quick flights and short hops through low vegetation, gleaning insects from leaves and branch tips and often hanging upside down; males sing from exposed perches.",
+  "common_name": "Blue-winged Warbler",
+  "family": "Parulidae",
+  "field_marks": [
+    "Bright yellow head and underparts with an olive-green back",
+    "Thin black eyeline passing through the dark eye; typically grayer and less distinct in females",
+    "Sharp, pointed black bill that appears relatively substantial for a small warbler",
+    "Blue-gray wings crossed by two prominent white wing bars",
+    "Short tail with white outer-feather markings and white undertail coverts",
+    "Small, well-proportioned body with slender legs"
+  ],
+  "habitat": "Breeds in shrublands, brushy fields, thickets, and forest edges. During migration it uses open woodland, scrub, gardens, and parks; nonbreeding habitat includes evergreen or tropical deciduous forest edges, scrub, and hedgerows.",
+  "measurements": {
+    "length": "11\u201312 cm (4.3\u20134.7 in), both sexes",
+    "weight": "9 g (0.3 oz), both sexes",
+    "wingspan": "15 cm (5.9 in), both sexes"
+  },
+  "palette": [
+    "bright yellow",
+    "olive green",
+    "blue gray",
+    "black",
+    "white"
+  ],
+  "scientific_name": "Vermivora cyanoptera",
+  "sources": [
+    {
+      "title": "Blue-winged Warbler Identification \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Blue-winged_Warbler/id"
+    },
+    {
+      "title": "Blue-winged Warbler Life History \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Blue-winged_Warbler/lifehistory"
+    },
+    {
+      "title": "Blue-winged Warbler \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/blue-winged-warbler"
+    }
+  ],
+  "taxon_id": 73553
+}

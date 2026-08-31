@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-31T18:43:31+00:00",
+  "generated_at": "2026-08-31T21:11:55+00:00",
   "schema_version": 1,
   "species": [
     {
@@ -221,6 +221,17 @@
       "scientific_name": "Polioptila caerulea",
       "slug": "blue-gray-gnatcatcher",
       "taxon_id": 7493
+    },
+    {
+      "approved_at": "2026-08-31T21:11:55+00:00",
+      "common_name": "Blue-winged Warbler",
+      "display_path": "species/73553-blue-winged-warbler/display.png",
+      "display_sha256": "cdedd697ecfc91cd28c555d0d404c6c5a580869466fc8f34039b92a9bd69f6a7",
+      "portrait_path": "species/73553-blue-winged-warbler/portrait.png",
+      "portrait_sha256": "48a53f7c090f7f23016088e94f33c3ae3409bce9c03318ce1aa3a4a422143869",
+      "scientific_name": "Vermivora cyanoptera",
+      "slug": "blue-winged-warbler",
+      "taxon_id": 73553
     },
     {
       "approved_at": "2026-07-24T01:59:12+00:00",

@@ -1,0 +1,160 @@
+{
+  "approved_at": "2026-08-31T21:11:55+00:00",
+  "assets": {
+    "display": {
+      "filename": "display.png",
+      "sha256": "cdedd697ecfc91cd28c555d0d404c6c5a580869466fc8f34039b92a9bd69f6a7"
+    },
+    "portrait": {
+      "filename": "portrait.png",
+      "sha256": "48a53f7c090f7f23016088e94f33c3ae3409bce9c03318ce1aa3a4a422143869"
+    }
+  },
+  "common_name": "Blue-winged Warbler",
+  "generation": {
+    "attempt": 2,
+    "correction_source_sha256": "3f01a4699507918bdbe982e85d52aec71fde8ea577e4b05a5ece6decf0ede9e9",
+    "generated_at": "2026-08-31T21:11:54+00:00",
+    "generator": "Codex subscription / built-in gpt-image-2",
+    "max_attempts": 3,
+    "prompt_version": "field-journal-v6"
+  },
+  "profile": {
+    "behavior": "Moves with quick flights and short hops through low vegetation, gleaning insects from leaves and branch tips and often hanging upside down; males sing from exposed perches.",
+    "common_name": "Blue-winged Warbler",
+    "family": "Parulidae",
+    "field_marks": [
+      "Bright yellow head and underparts with an olive-green back",
+      "Thin black eyeline passing through the dark eye; typically grayer and less distinct in females",
+      "Sharp, pointed black bill that appears relatively substantial for a small warbler",
+      "Blue-gray wings crossed by two prominent white wing bars",
+      "Short tail with white outer-feather markings and white undertail coverts",
+      "Small, well-proportioned body with slender legs"
+    ],
+    "habitat": "Breeds in shrublands, brushy fields, thickets, and forest edges. During migration it uses open woodland, scrub, gardens, and parks; nonbreeding habitat includes evergreen or tropical deciduous forest edges, scrub, and hedgerows.",
+    "measurements": {
+      "length": "11\u201312 cm (4.3\u20134.7 in), both sexes",
+      "weight": "9 g (0.3 oz), both sexes",
+      "wingspan": "15 cm (5.9 in), both sexes"
+    },
+    "palette": [
+      "bright yellow",
+      "olive green",
+      "blue gray",
+      "black",
+      "white"
+    ],
+    "scientific_name": "Vermivora cyanoptera",
+    "sources": [
+      {
+        "title": "Blue-winged Warbler Identification \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Blue-winged_Warbler/id"
+      },
+      {
+        "title": "Blue-winged Warbler Life History \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Blue-winged_Warbler/lifehistory"
+      },
+      {
+        "title": "Blue-winged Warbler \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/blue-winged-warbler"
+      }
+    ],
+    "taxon_id": 73553
+  },
+  "quality_review": {
+    "anatomy_accuracy": 4,
+    "composition_quality": 5,
+    "correction_findings": [],
+    "findings": [
+      "The primary specimen is identifiable as an adult male Blue-winged Warbler: bright yellow head and underparts, olive-green back, thin black eyeline, pointed black bill, blue-gray wing, two white wing bars, white undertail area, and white outer-tail markings agree with the references and live sources.",
+      "The specimen has one head, one bill, one visible eye, one tail, two convincingly attached legs with complete gripping feet, and a coherent folded near-side wing; the far-side wing is naturally occluded by the strict side-profile pose.",
+      "The detached expanded-wing and head studies are clearly supplementary, remain separate from the primary specimen, and show consistent species anatomy and markings without malformed or contradictory structures.",
+      "The bird is somewhat rounded in artistic treatment, but its head, body, bill, wing, tail, leg, and foot proportions remain plausible for the species and do not create a material anatomical or identity error.",
+      "Every visible identification, habitat, behavior, taxonomy, palette, and measurement statement matches the proposed profile. The 11\u201312 cm length, 9 g weight, and 15 cm wingspan set is directly supported by All About Birds for both sexes.",
+      "The vertical schematic now labels 11 cm at the bottom and 12 cm at the top, increases bottom-to-top, and is explicitly marked \u201cSCHEMATIC \u2014 NOT TO SCALE.\u201d The repeated body-length caption agrees with it.",
+      "The plate is legible, balanced, and scientifically organized; the primary specimen, supplementary studies, field notes, measurement schematic, and palette remain visually distinct.",
+      "No place name, ZIP code, coordinates, map, or local-observation detail appears."
+    ],
+    "location_free": true,
+    "passed": true,
+    "species_accuracy": 5,
+    "text_accuracy": 5,
+    "verification_sources": [
+      {
+        "title": "Blue-winged Warbler Identification \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Blue-winged_Warbler/id"
+      },
+      {
+        "title": "Blue-winged Warbler Life History \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Blue-winged_Warbler/lifehistory"
+      },
+      {
+        "title": "Blue-winged Warbler \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/blue-winged-warbler"
+      },
+      {
+        "title": "Blue-winged warbler \u2014 Wikipedia",
+        "url": "https://en.wikipedia.org/wiki/Blue-winged_warbler"
+      }
+    ]
+  },
+  "references": [
+    {
+      "attribution": "no rights reserved",
+      "filename": "01-282637714.jpg",
+      "height": 952,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/282637714/large.jpg",
+      "license_code": "cc0",
+      "observation_id": 163414657,
+      "observer": "davidfbird",
+      "photo_id": 282637714,
+      "sha256": "f3faac32c3ee88871237f8f2e09470c2e818d45a9669d574fa88cecbd3b02c38",
+      "source_url": "https://www.inaturalist.org/observations/163414657",
+      "width": 1201
+    },
+    {
+      "attribution": "(c) er-birds, some rights reserved (CC BY)",
+      "filename": "02-490386002.jpeg",
+      "height": 1365,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/490386002/large.jpeg",
+      "license_code": "cc-by",
+      "observation_id": 272576499,
+      "observer": "er-birds",
+      "photo_id": 490386002,
+      "sha256": "b482a67966ff4599f41ba8a3dc83bfa3805ba80ea3d432a9c77e365d5392c305",
+      "source_url": "https://www.inaturalist.org/observations/272576499",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) Brandon Johnson, some rights reserved (CC BY)",
+      "filename": "03-658345419.jpg",
+      "height": 1365,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/658345419/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 360772215,
+      "observer": "brandonjjohnson",
+      "photo_id": 658345419,
+      "sha256": "138d83ca0cbb490b9ebbbba72622cdf3ca86f7580465b6cb4a4508d0200bb97e",
+      "source_url": "https://www.inaturalist.org/observations/360772215",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) Terry Woodward, some rights reserved (CC BY)",
+      "filename": "04-15468440.jpg",
+      "height": 1000,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/15468440/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 10983546,
+      "observer": "terrywoodward",
+      "photo_id": 15468440,
+      "sha256": "d124c31157547c6bc119e385da5f741eae51eb12529b5421fc14bc49510c39cb",
+      "source_url": "https://www.inaturalist.org/observations/10983546",
+      "width": 1500
+    }
+  ],
+  "schema_version": 1,
+  "scientific_name": "Vermivora cyanoptera",
+  "slug": "blue-winged-warbler",
+  "status": "approved",
+  "taxon_id": 73553
+}
