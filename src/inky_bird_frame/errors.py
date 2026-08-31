@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from datetime import datetime
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
@@ -54,6 +55,14 @@ class CatalogPublishError(InkyBirdFrameError):
 
 class GenerationError(InkyBirdFrameError):
     """Raised when Codex cannot produce or validate an artifact."""
+
+
+class ResearchLimitError(GenerationError):
+    """Raised when durable research capacity is unavailable until a known time."""
+
+    def __init__(self, message: str, *, retry_at: datetime) -> None:
+        super().__init__(message)
+        self.retry_at = retry_at
 
 
 class QualityReviewError(GenerationError):

@@ -60,6 +60,37 @@ class RetryStoreTests(unittest.TestCase):
         self.assertEqual(record.next_attempt_at, now + timedelta(days=7))
         self.assertIsNone(store.get(42))
 
+    def test_explicit_retry_time_is_durable_and_exclusive(self) -> None:
+        now = datetime(2026, 7, 10, 23, 30, tzinfo=UTC)
+        retry_at = datetime(2026, 7, 11, tzinfo=UTC)
+        with TemporaryDirectory() as temporary:
+            path = Path(temporary) / "retries.json"
+            store = RetryStore(path)
+            record = store.record_failure(
+                42,
+                RuntimeError("research limit"),
+                now=now,
+                initial_minutes=30,
+                maximum_minutes=60,
+                retry_at=retry_at,
+            )
+
+            with self.assertRaisesRegex(ValueError, "mutually exclusive"):
+                store.record_failure(
+                    43,
+                    RuntimeError("invalid"),
+                    now=now,
+                    initial_minutes=30,
+                    maximum_minutes=60,
+                    fixed_minutes=60,
+                    retry_at=retry_at,
+                )
+
+            reloaded = RetryStore(path).get(42)
+
+        self.assertEqual(record.next_attempt_at, retry_at)
+        self.assertEqual(reloaded, record)
+
     def test_identity_can_be_added_without_changing_backoff(self) -> None:
         now = datetime(2026, 7, 10, tzinfo=UTC)
         with TemporaryDirectory() as temporary:

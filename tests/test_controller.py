@@ -74,6 +74,7 @@ from inky_bird_frame.errors import (
     GenerationError,
     InsufficientReferencesError,
     QualityReviewError,
+    ResearchLimitError,
     SpeciesStateError,
 )
 from inky_bird_frame.geo import DiscoveryLocation
@@ -3423,6 +3424,42 @@ class ControllerTests(unittest.TestCase):
             generate.call_args.kwargs["invariant_correction_findings"],
             ("Keep the eyes clearly visible",),
         )
+
+    def test_research_limit_retries_at_the_budget_reset(self) -> None:
+        species = BirdSpecies(9083, "Northern Cardinal", "Cardinalis cardinalis", 2, "test")
+        location = DiscoveryLocation("12345", "Exampleville", "XY", 1.0, 2.0)
+        retry_at = datetime(2099, 1, 2, tzinfo=UTC)
+        with TemporaryDirectory() as temporary:
+            config_path = Path(temporary) / "config.toml"
+            config_path.write_text(CONFIG)
+            config = load_config(config_path)
+            config.controller.state_dir.mkdir(parents=True)
+            with (
+                patch(
+                    "inky_bird_frame.controller.discover_species",
+                    return_value=discovery_result(location, [species]),
+                ),
+                patch("inky_bird_frame.controller.generate_candidate") as generate,
+            ):
+                generate.side_effect = ResearchLimitError(
+                    "research limit reached",
+                    retry_at=retry_at,
+                )
+                result = run_controller_cycle(config)
+
+            retry = RetryStore(config.controller.state_dir / "generation-retries.json").get(
+                species.taxon_id
+            )
+
+        self.assertIsNotNone(retry)
+        if retry is not None:
+            self.assertEqual(retry.next_attempt_at, retry_at)
+            self.assertEqual(retry.error_type, "ResearchLimitError")
+        failures = result["failures"]
+        self.assertIsInstance(failures, list)
+        if isinstance(failures, list):
+            self.assertEqual(failures[0]["retry_at"], retry_at.isoformat())
+            self.assertFalse(failures[0]["terminal"])
 
     def test_catalog_wide_error_still_aborts_the_cycle(self) -> None:
         species = BirdSpecies(9083, "Northern Cardinal", "Cardinalis cardinalis", 2, "test")

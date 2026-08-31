@@ -79,6 +79,7 @@ from .errors import (
     InsufficientReferencesError,
     MissingDependencyError,
     QualityReviewError,
+    ResearchLimitError,
     SpeciesStateError,
 )
 from .geo import DiscoveryLocation, resolve_discovery_location
@@ -2454,6 +2455,26 @@ def run_generation_cycle(config: AppConfig) -> dict[str, object]:
                     now=datetime.now(UTC),
                     initial_minutes=config.controller.retry_initial_minutes,
                     maximum_minutes=config.controller.retry_max_minutes,
+                    species=species,
+                )
+                failures.append(
+                    {
+                        "taxon_id": species.taxon_id,
+                        "common_name": species.common_name,
+                        "error": str(exc),
+                        "retry_at": retry.next_attempt_at.isoformat(),
+                        "terminal": False,
+                    }
+                )
+            except ResearchLimitError as exc:
+                now = datetime.now(UTC)
+                retry = retry_store.record_failure(
+                    species.taxon_id,
+                    exc,
+                    now=now,
+                    initial_minutes=config.controller.retry_initial_minutes,
+                    maximum_minutes=config.controller.retry_max_minutes,
+                    retry_at=max(exc.retry_at, now),
                     species=species,
                 )
                 failures.append(
