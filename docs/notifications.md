@@ -72,12 +72,13 @@ completing an update, so a panel that fails before its first success is still
 detected. Ordinary catalog reads never refresh either signal or mask a silent
 display. Browser requests with an `Origin` header cannot write either signal.
 The endpoints are otherwise unauthenticated inside the trusted network, so a
-client that deliberately calls them can imitate a display node. For one
-compatibility release, older display nodes can also use the former GET marker
-and success route when they send the fixed Inky display user agent without an
-`Origin` header. Current displays use those routes only as a fallback when a
-telemetry POST fails. These GET forms are deprecated; update display nodes
-first. `display_recovered` is sent once updates resume.
+client that deliberately calls them can imitate a display node. Catalog `GET`
+and `HEAD` requests never write heartbeat state. Releases before v0.7.0 used a
+former GET telemetry contract that is no longer accepted. A direct split
+upgrade from an older release has a temporary telemetry gap regardless of
+upgrade order. Update the controller first and then the display promptly, or
+move both roles through v0.7.0 first when uninterrupted heartbeat monitoring is
+required. `display_recovered` is sent once updates resume.
 
 Routine successes do not notify. Transient failures notify only after
 `degradation_failure_threshold` consecutive failures or

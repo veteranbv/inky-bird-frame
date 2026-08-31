@@ -687,14 +687,14 @@ schema.
 Current display nodes report a parsed catalog fetch through `POST
 /v1/display-fetch` and a verified panel update through `POST
 /v1/display-success`. The reports contain only `{"schema_version": 1}`. If an
-older controller rejects either POST, the display retries that report through
-the former GET contract after it has validated the catalog or completed the
-panel update. Display rotation therefore keeps working, and health reports
-continue, during a display-first update. For one compatibility release, the
-controller accepts `GET /v1/catalog?reports_success=1` and `GET
-/v1/display-success` only from clients with no `Origin` header and the fixed
-Inky display user agent. Those GET forms are deprecated and will be removed in
-the next feature release.
+older controller rejects either POST, the display ignores the telemetry
+failure and continues rotating plates. Controller and display releases before
+v0.7.0 used state-changing GET telemetry that is no longer accepted. A direct
+split upgrade from an older release cannot preserve heartbeat reporting: the
+old role uses GET while the new role uses POST. Update the controller first,
+then update the display promptly, and expect a temporary telemetry gap. If
+uninterrupted heartbeat monitoring is required, update both roles to v0.7.0
+first, verify POST telemetry, and then continue to the newer release.
 
 Docker controller updates pull a published image and recreate the services. See
 the [Docker update instructions](docker.md#update) for version pinning and

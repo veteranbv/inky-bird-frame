@@ -17,7 +17,7 @@ from . import __version__
 from .catalog import read_json, rebuild_catalog_index, utc_now
 from .config import ControllerConfig
 from .errors import CatalogError
-from .http import USER_AGENT, write_json_atomic
+from .http import write_json_atomic
 from .images import slugify
 from .timeutil import parse_utc_timestamp
 
@@ -246,11 +246,6 @@ class CatalogRequestHandler(BaseHTTPRequestHandler):
     def _has_origin(self) -> bool:
         return bool(self.headers.get_all("Origin", failobj=[]))
 
-    def _is_legacy_display_request(self) -> bool:
-        return not self._has_origin() and self.headers.get_all("User-Agent", failobj=[]) == [
-            USER_AGENT
-        ]
-
     def _load_active_catalog(self) -> tuple[dict[str, object], dict[str, str]]:
         return _project_active_catalog(read_json(self.active_catalog_path))
 
@@ -457,14 +452,6 @@ class CatalogRequestHandler(BaseHTTPRequestHandler):
                     allow_browser_access=True,
                 )
                 return
-            # Compatibility bridge for one release. Only the fixed user agent
-            # used by older display nodes can update physical-display health.
-            if self._is_legacy_display_request() and parse_qs(split.query).get(
-                "reports_success"
-            ) == ["1"]:
-                # Legacy telemetry is best effort: a state-write failure must
-                # never withhold an otherwise valid catalog from the display.
-                self._record_display_event("display-last-fetch.json", "fetched_at")
             self._send_json(HTTPStatus.OK, payload, allow_browser_access=True)
             return
         if request_path == "/v1/embed/featured-plate":
@@ -483,23 +470,6 @@ class CatalogRequestHandler(BaseHTTPRequestHandler):
                 entry,
                 empty_message="No active plate yet",
             )
-            return
-        if request_path == "/v1/display-success":
-            if not self._is_legacy_display_request():
-                self._send_json(
-                    HTTPStatus.FORBIDDEN,
-                    {
-                        "ok": False,
-                        "error": "browser telemetry is not accepted",
-                        "schema_version": 1,
-                    },
-                )
-                return
-            # Compatibility bridge for one release. New display nodes use POST.
-            if not self._record_display_event("display-last-success.json", "succeeded_at"):
-                self._send_telemetry_unavailable()
-                return
-            self._send_json(HTTPStatus.OK, {"ok": True, "schema_version": 1})
             return
         prefix = "/v1/assets/"
         if request_path.startswith(prefix):

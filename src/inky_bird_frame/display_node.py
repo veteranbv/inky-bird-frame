@@ -306,25 +306,14 @@ def _evict_stale_cache_entries(current_image_path: Path, taxon_id: int) -> None:
 
 
 def _report_display_event(controller_url: str, event: str) -> None:
-    # Best-effort: retry the one-release GET contract when an older controller
-    # rejects the POST route. Both forms run only after the corresponding
-    # catalog or panel state has been verified.
-    try:
+    # Telemetry is best effort and runs only after the corresponding catalog or
+    # panel state has been verified. A reporting failure never blocks rotation.
+    with suppress(DataSourceError):
         post_json(
             f"{controller_url}/v1/display-{event}",
             {"schema_version": 1},
             10.0,
         )
-        return
-    except DataSourceError:
-        pass
-    legacy_url = (
-        f"{controller_url}/v1/catalog?reports_success=1"
-        if event == "fetch"
-        else f"{controller_url}/v1/display-success"
-    )
-    with suppress(DataSourceError):
-        get_json(legacy_url, 10.0)
 
 
 def run_display_cycle(
