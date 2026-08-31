@@ -226,12 +226,9 @@ service. A client that can reach the controller can deliberately imitate a
 display node's POST and refresh the aggregate signal. Keep the controller port
 private and do not use these heartbeats as an identity or authorization check.
 
-For one compatibility release, older display nodes may still use `GET
-/v1/catalog?reports_success=1` and `GET /v1/display-success`. The controller
-requires both the fixed Inky display user agent and no `Origin` header; current
-display nodes fall back to these routes only when a telemetry POST fails. These
-state-changing GET forms are deprecated and will be removed in the next feature
-release. The service logs each request locally with source IP address, path and
+Catalog `GET` and `HEAD` requests are side-effect free, including requests with
+query parameters. Display health changes only through the two bounded POST
+routes. The service logs each request locally with source IP address, path and
 query, and status. It does not log headers or send external browser telemetry.
 
 Native installations use launchd or systemd to schedule the controller's

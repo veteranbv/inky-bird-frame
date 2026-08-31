@@ -230,7 +230,7 @@ class DisplayNodeTests(unittest.TestCase):
 
         self.post_json.assert_not_called()
 
-    def test_older_controller_without_post_telemetry_does_not_block_display(self) -> None:
+    def test_controller_without_post_telemetry_does_not_block_display(self) -> None:
         payload = catalog_payload({1: b"one"})
         self.post_json.side_effect = DataSourceError("HTTP 501 from controller")
         with TemporaryDirectory() as temporary:
@@ -244,14 +244,7 @@ class DisplayNodeTests(unittest.TestCase):
 
         self.assertEqual(result["display_update"], "sent")
         self.assertEqual(self.post_json.call_count, 2)
-        self.assertEqual(
-            [call.args for call in get_json.call_args_list],
-            [
-                ("http://controller.test/v1/catalog", 20.0),
-                ("http://controller.test/v1/catalog?reports_success=1", 10.0),
-                ("http://controller.test/v1/display-success", 10.0),
-            ],
-        )
+        get_json.assert_called_once_with("http://controller.test/v1/catalog", 20.0)
 
     def test_unsupported_hardware_fails_before_controller_fetch(self) -> None:
         with TemporaryDirectory() as temporary:

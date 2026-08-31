@@ -260,7 +260,7 @@ class ServerTests(unittest.TestCase):
                 "/v1/display-success",
                 headers={"Origin": trusted_origin},
             )
-            legacy_status, _, _ = _get(
+            get_status, _, _ = _get(
                 port,
                 "/v1/display-success",
                 headers={"Origin": trusted_origin},
@@ -270,7 +270,7 @@ class ServerTests(unittest.TestCase):
         self.assertEqual(health_status, 200)
         self.assertNotIn("Access-Control-Allow-Origin", health_headers)
         self.assertEqual(heartbeat_status, 403)
-        self.assertEqual(legacy_status, 403)
+        self.assertEqual(get_status, 404)
         self.assertNotIn("Access-Control-Allow-Origin", heartbeat_headers)
         self.assertFalse(heartbeat_written)
 
@@ -672,21 +672,20 @@ class ServerTests(unittest.TestCase):
         self.assertEqual(hidden_status, 404)
         self.assertNotIn(b"{}", staging_body)
 
-    def test_legacy_display_success_get_without_origin_is_recorded(self) -> None:
-        with self._environment() as (_, catalog_dir, state_dir):
-            with _serving(catalog_dir, state_dir / "active-catalog.json", state_dir) as port:
-                status, _, body = _get(
-                    port,
-                    "/v1/display-success",
-                    headers={"User-Agent": USER_AGENT},
-                )
+    def test_display_success_get_is_not_found_and_does_not_write(self) -> None:
+        with (
+            self._environment() as (_, catalog_dir, state_dir),
+            _serving(catalog_dir, state_dir / "active-catalog.json", state_dir) as port,
+        ):
+            status, _, body = _get(
+                port,
+                "/v1/display-success",
+                headers={"User-Agent": USER_AGENT},
+            )
 
-            recorded = json.loads((state_dir / "display-last-success.json").read_text())
-
-        self.assertEqual(status, 200)
-        self.assertTrue(json.loads(body)["ok"])
-        self.assertEqual(recorded["schema_version"], 1)
-        self.assertIn("succeeded_at", recorded)
+        self.assertEqual(status, 404)
+        self.assertEqual(json.loads(body), {"ok": False, "error": "not found"})
+        self.assertFalse((state_dir / "display-last-success.json").exists())
 
     def test_asset_is_served_with_png_content_type(self) -> None:
         with self._environment() as (_, catalog_dir, state_dir):
@@ -900,7 +899,6 @@ class ServerTests(unittest.TestCase):
                 ready_status, ready_headers, ready_body = _head(
                     port,
                     "/v1/catalog?reports_success=1",
-                    headers={"User-Agent": USER_AGENT},
                 )
                 browser_status, browser_headers, browser_body = _head(
                     port,
@@ -927,65 +925,28 @@ class ServerTests(unittest.TestCase):
         self.assertEqual(unknown_status, 404)
         self.assertEqual(unknown_body, b"")
 
-    def test_legacy_catalog_marker_without_origin_records_display_fetch(self) -> None:
+    def test_catalog_queries_never_record_display_fetch(self) -> None:
         active = _active_catalog(_catalog_entry())
         with self._environment() as (_, catalog_dir, state_dir):
             active_catalog_path = state_dir / "active-catalog.json"
             active_catalog_path.write_text(json.dumps(active))
             with _serving(catalog_dir, active_catalog_path, state_dir) as port:
-                plain_status, _, _ = _get(port, "/v1/catalog")
-                _get(port, "/v1/catalog?not_reports_success=1")
-                _get(port, "/v1/catalog?reports_success=10")
-                plain_written = (state_dir / "display-last-fetch.json").exists()
-                status, _, body = _get(
-                    port,
-                    "/v1/catalog?reports_success=1",
-                    headers={"User-Agent": USER_AGENT},
-                )
-            heartbeat = json.loads((state_dir / "display-last-fetch.json").read_text())
+                responses = [
+                    _get(port, "/v1/catalog"),
+                    _get(port, "/v1/catalog?not_reports_success=1"),
+                    _get(port, "/v1/catalog?reports_success=10"),
+                    _get(
+                        port,
+                        "/v1/catalog?reports_success=1",
+                        headers={"User-Agent": USER_AGENT},
+                    ),
+                ]
 
-        self.assertEqual(plain_status, 200)
-        self.assertFalse(plain_written)
-        self.assertEqual(status, 200)
-        self.assertEqual(json.loads(body), active)
-        self.assertEqual(heartbeat["schema_version"], 1)
-        self.assertRegex(heartbeat["fetched_at"], r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}")
-
-    def test_legacy_catalog_remains_available_when_fetch_telemetry_cannot_persist(
-        self,
-    ) -> None:
-        active = _active_catalog(_catalog_entry())
-        output = io.StringIO()
-        with (
-            self._environment() as (_, catalog_dir, state_dir),
-            patch(
-                "inky_bird_frame.server.write_json_atomic",
-                side_effect=OSError("state unavailable"),
-            ),
-            redirect_stdout(output),
-        ):
-            active_catalog_path = state_dir / "active-catalog.json"
-            active_catalog_path.write_text(json.dumps(active))
-            with _serving(catalog_dir, active_catalog_path, state_dir) as port:
-                status, _, body = _get(
-                    port,
-                    "/v1/catalog?reports_success=1",
-                    headers={"User-Agent": USER_AGENT},
-                )
-
-        events = [json.loads(line) for line in output.getvalue().splitlines()]
-        self.assertEqual(status, 200)
-        self.assertEqual(json.loads(body), active)
+        self.assertTrue(all(status == 200 for status, _, _ in responses))
+        self.assertTrue(all(json.loads(body) == active for _, _, body in responses))
         self.assertFalse((state_dir / "display-last-fetch.json").exists())
-        self.assertIn(
-            {
-                "event": "display_telemetry_write_failed",
-                "file": "display-last-fetch.json",
-            },
-            events,
-        )
 
-    def test_nonlegacy_gets_cannot_write_display_telemetry(self) -> None:
+    def test_gets_cannot_write_display_telemetry(self) -> None:
         with self._environment() as (_, catalog_dir, state_dir):
             active_catalog_path = state_dir / "active-catalog.json"
             active_catalog_path.write_text(json.dumps(_active_catalog()))
@@ -994,7 +955,7 @@ class ServerTests(unittest.TestCase):
                 success_status, _, _ = _get(port, "/v1/display-success")
 
         self.assertEqual(catalog_status, 200)
-        self.assertEqual(success_status, 403)
+        self.assertEqual(success_status, 404)
         self.assertFalse((state_dir / "display-last-fetch.json").exists())
         self.assertFalse((state_dir / "display-last-success.json").exists())
 
@@ -1127,7 +1088,7 @@ class ServerTests(unittest.TestCase):
         self.assertNotIn("display.example.test", output.getvalue())
         self.assertNotIn("private-browser-detail", output.getvalue())
 
-    def test_browser_catalog_marker_never_records_display_fetch(self) -> None:
+    def test_browser_catalog_query_never_records_display_fetch(self) -> None:
         trusted_origin = "https://display.example.test"
         with self._environment() as (_, catalog_dir, state_dir):
             active_catalog_path = state_dir / "active-catalog.json"
