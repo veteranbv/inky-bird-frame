@@ -1,14 +1,40 @@
 [project]
 name = "inky-bird-frame"
 version = "0.6.0"
-description = "Generate and display reusable bird field-journal plates"
+description = "Discover birds and display reviewed field-journal plates on color e-paper"
 readme = "README.md"
 requires-python = ">=3.11"
 license = "MIT"
 authors = [{ name = "Henry Sowell" }]
+keywords = [
+    "birding",
+    "birdnet",
+    "ebird",
+    "e-paper",
+    "inaturalist",
+    "raspberry-pi",
+    "self-hosted",
+]
+classifiers = [
+    "Environment :: Console",
+    "Intended Audience :: End Users/Desktop",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: MacOS",
+    "Operating System :: POSIX :: Linux",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Topic :: Multimedia :: Graphics",
+]
 dependencies = [
     "pillow>=10.0",
 ]
+
+[project.urls]
+Homepage = "https://henrysowell.com/birds"
+Documentation = "https://github.com/veteranbv/inky-bird-frame#readme"
+Issues = "https://github.com/veteranbv/inky-bird-frame/issues"
+Releases = "https://github.com/veteranbv/inky-bird-frame/releases"
+Repository = "https://github.com/veteranbv/inky-bird-frame"
 
 [project.optional-dependencies]
 controller = [

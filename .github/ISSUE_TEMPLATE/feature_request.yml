@@ -43,7 +43,7 @@ body:
     attributes:
       label: Checks
       options:
-        - label: I searched existing issues and discussions for this request.
+        - label: I searched existing issues and pull requests for this request.
           required: true
         - label: This request does not include secrets or private deployment details.
           required: true

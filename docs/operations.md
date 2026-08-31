@@ -41,11 +41,11 @@ credentials. Obtain Bird Buddy's permission first, run `birdbuddy login`, and
 verify the selected feeder with `birdbuddy status`. The controller stores only
 the rotating refresh token and fails that provider with a re-login instruction
 if the session is revoked. Removing `birdbuddy` from `discovery.sources` is the
-non-destructive rollback; `birdbuddy logout --yes` additionally removes local
+non-destructive disable path; `birdbuddy logout --yes` additionally removes local
 authentication without deleting accumulated history.
 
 BirdNET-Go uses only the configured `birdnet_go_url`. Removing `birdnet-go`
-from `discovery.sources` is its complete rollback; Inky never changes the
+from `discovery.sources` is its complete disable path; Inky never changes the
 detector or downloads its recordings. Provider status reports connection,
 response-contract, and taxonomy failures without exposing the configured URL.
 
@@ -167,14 +167,14 @@ independent image-correction guidance is preserved.
   immediate repeats when another species is active.
 
 `prioritize_latest_detection = true` is the default. When the active catalog
-contains BirdWeather timestamps, the newest detection later than the display
-node's durable watermark is shown once before the configured rotation resumes.
-The priority display counts as shown when that bird is already next in sequence
-or present in a shuffle pool, which prevents an immediate duplicate without
-reordering the other birds. A failed panel update does not consume the
-detection, and a first run shows only the current newest detection rather than
-replaying the historical window. Set the option to `false` to use
-`rotation_mode` for every update.
+contains BirdWeather, BirdNET-Go, or Bird Buddy timestamps, the newest detection
+later than the display node's durable watermark is shown once before the
+configured rotation resumes. The priority display counts as shown when that
+bird is already next in sequence or present in a shuffle pool, which prevents
+an immediate duplicate without reordering the other birds. A failed panel
+update does not consume the detection, and a first run shows only the current
+newest detection rather than replaying the historical window. Set the option to
+`false` to use `rotation_mode` for every update.
 
 Approved plates use the project's canonical 1200x1600 portrait and 1600x1200
 display assets. This geometry remains the catalog contract. PIM774 consumes the
@@ -253,9 +253,10 @@ or provider counts.
 
 The active catalog contains approved taxa in either current observations or the
 private collection. When both contain a taxon, current observation count and
-latest BirdWeather detection metadata take precedence. Collection-only entries
-omit both fields; weighted rotation uses the display node's existing neutral
-weight of one instead of fabricated evidence.
+the newest available BirdWeather, BirdNET-Go, or Bird Buddy detection timestamp
+take precedence. Collection-only entries omit both fields; weighted rotation
+uses the display node's existing neutral weight of one instead of fabricated
+evidence.
 
 ## Interpret generation status
 
@@ -395,6 +396,31 @@ INKY_BIRD_DISPLAY_VENV=/home/display-user/.virtualenvs/inky-bird-frame
 
 All six values are deployment-specific and required. Keep this file on the
 controller. It is not part of the repository.
+
+## Releases and upgrades
+
+Tagged [GitHub releases](https://github.com/veteranbv/inky-bird-frame/releases)
+are the supported installation points. Patch releases are intended to remain
+compatible within their minor line. Before version 1.0, a minor release may
+include a documented configuration or operational migration. Release notes are
+the source of truth for each upgrade.
+
+Before changing versions:
+
+1. read every release note between the installed and target versions;
+2. make a quiesced, private backup using the [backup guide](backup.md);
+3. confirm the current `doctor controller` and `status` results so a pre-existing
+   failure is not mistaken for an upgrade regression; and
+4. keep the prior binary, release bundle, or container tag available until the
+   upgraded controller and display have passed their checks.
+
+Upgrade the display node before the controller when release notes announce a
+new catalog schema. Otherwise update the controller first, validate its private
+configuration, run `doctor controller`, `refresh`, and `status`, then update and
+check the display. Do not restore older state over newer state while services
+are running. For recovery, stop writers and start the prior release with a
+backup created by that release; restore data only when the release notes or the
+failure require it.
 
 ## Inspect or override a candidate
 

@@ -25,6 +25,20 @@ automate Merlin.
 Select any combination with a TOML array. Each configured provider runs
 independently.
 
+Use the same setup loop for every source:
+
+1. Meet the provider's prerequisites and add its explicit name to
+   `discovery.sources`.
+2. Run `inky-bird-frame config validate --config /path/to/config.toml`.
+3. Run `discover` to inspect provider results without changing the active
+   catalog, then run `refresh` to save a successful snapshot.
+4. Inspect the named entry in the `providers` array returned by `discover` and
+   `refresh`. Use `status` separately for catalog and generation state.
+
+To disable a provider, remove its name from `discovery.sources`, validate the
+configuration, and refresh. Imported history and authentication state are
+retained unless a provider section below documents an explicit removal step.
+
 ## Configure a discovery location
 
 iNaturalist and eBird need a point and radius. Choose exactly one location
@@ -64,6 +78,18 @@ Zippopotam's US endpoint and need no key. This compatibility path is US-only;
 new worldwide configurations should use coordinates or Geoapify. No discovery
 location is written to a public catalog or rendered on a plate.
 
+Verify a Geoapify-backed location with `config validate` and `discover`. An
+authorization error points to the API key. An exact-match error usually means
+the country code or postal format is wrong; a multiple-match error is
+deliberately not guessed. Use direct coordinates when a postal code cannot be
+resolved uniquely. To stop using Geoapify, replace the postal-code fields with
+direct coordinates, then remove the key.
+
+## Nearby iNaturalist and eBird setup
+
+iNaturalist needs no credentials. The nearby eBird provider requires a personal
+API key and supports only the recent windows shown in the provider table.
+
 Request a personal key from [eBird](https://ebird.org/api/keygen). Store it in
 the private configuration:
 
@@ -85,6 +111,14 @@ the private mode-`0600` configuration file.
 Keep the configuration outside the checkout with mode `0600`. The application
 never writes the key to state, logs, catalog files, or command output.
 
+Verify both sources with `discover`, then inspect the `inaturalist` and `ebird`
+entries in `providers`. Location, network, or upstream API failures stay
+provider-specific when another configured source succeeds. An eBird
+authentication failure usually means the key is missing or invalid; an
+`unresolved_count` means returned taxonomy could not be matched exactly to an
+active iNaturalist bird species. Remove either provider from `sources` to
+disable it; no provider account or remote data is changed.
+
 ## eBird personal archive
 
 eBird Archive is optional and separate from the recent-nearby `ebird` API
@@ -92,6 +126,10 @@ provider. Sign in to eBird's official
 [Download My Data](https://ebird.org/downloadMyData) page and request your
 complete personal export. Cornell sends a ZIP containing `MyEBirdData.csv`;
 Inky also accepts that CSV directly if you extract or rename it.
+
+The CSV must contain the complete official header and may be at most 512 MiB
+after decompression. This bound protects the controller from damaged or
+hostile archives while accommodating very large personal histories.
 
 Preview the complete export before replacing local history:
 
@@ -167,6 +205,17 @@ observations do not claim latest-detection rotation priority. Re-export and
 reimport periodically to include newly published eBird checklists; no eBird
 password, browser cookie, or unsupported live API is stored.
 
+Verify an import with:
+
+```bash
+inky-bird-frame ebird archive status --config /path/to/config.toml
+inky-bird-frame discover --config /path/to/config.toml
+```
+
+Malformed headers, an oversized uncompressed CSV, or an incomplete replacement
+fail before history is committed. Remove `ebird-archive` from `sources` to
+disable discovery without deleting the private import.
+
 ## BirdWeather station setup
 
 BirdWeather is optional. Create a BirdWeather account and station, then connect
@@ -183,8 +232,8 @@ window = "last-30-days"
 birdweather_token = "your-station-token"
 ```
 
-Use `sources = ["inaturalist", "ebird", "birdweather"]` and configure both
-credentials to query every current provider. For manually invoked commands,
+Use `sources = ["inaturalist", "ebird", "birdweather"]` to combine this station
+with nearby iNaturalist and eBird observations. For manually invoked commands,
 `birdweather_token_env = "BIRDWEATHER_TOKEN"` is also supported. Managed
 services require the direct token in the private mode-`0600` file because they
 do not inherit the installation shell environment.
@@ -221,6 +270,13 @@ False positives, overlapping calls, recordings, rebroadcast audio, distant
 sounds, and detector configuration can affect the result. Inky Bird Frame uses
 the station's accepted BirdWeather species summary as supplied. Tune and review
 the detector in its own software before relying on those species for display.
+
+Verify the provider with `discover` and inspect the `birdweather` result,
+including `species_count` and `unresolved_count`. Authentication errors point to
+the station token; an empty healthy result can mean that the configured time
+window contains no accepted station species. Correct detection policy and
+false positives at the detector. Remove `birdweather` from `sources` to disable
+it; Inky does not change the station.
 
 ## Self-hosted BirdNET-Go setup
 
@@ -287,6 +343,12 @@ BirdNET-Go failure degrades only this provider; other configured sources keep
 running. BirdNET-Go runs only when you include `birdnet-go` in the explicit
 `sources` array.
 
+Verify with `discover` and inspect the `birdnet-go` provider. Connection errors
+usually mean the base URL is not reachable from the controller process or
+container; response-contract errors can indicate an incompatible BirdNET-Go
+version. Correct false positives in BirdNET-Go. Remove `birdnet-go` from
+`sources` to disable it; Inky has no detector-side state to remove.
+
 [apple-tn3179]: https://developer.apple.com/documentation/technotes/tn3179-understanding-local-network-privacy
 
 ## BirdNET Analyzer CSV import
@@ -311,6 +373,8 @@ python3 -m birdnet_analyzer.analyze /path/to/recordings \
 This example uses a minimum confidence of `0.70`. Choose a threshold that fits
 your detector policy, then review `BirdNET_CombinedTable.csv` before import.
 Inky accepts one CSV per import and does not apply a second confidence filter.
+The required headers are exactly `Start (s)`, `End (s)`, `Scientific name`,
+`Common name`, `Confidence`, and `File`.
 
 Import an Analyzer CSV into controller-private history, then opt in to the
 provider:
@@ -362,6 +426,12 @@ but does not impose a second, arbitrary threshold. Set the desired minimum
 confidence when running BirdNET Analyzer and review its output before import;
 Inky uses the rows in that export as the operator-approved detection set.
 
+Use `--dry-run` first, then verify the committed import with `discover` and
+inspect the `birdnet-analyzer` provider details. Missing or renamed headers fail
+closed; Analyzer versions or export modes that produce another schema are not
+silently inferred. Remove `birdnet-analyzer` from `sources` to disable it
+without deleting imported history.
+
 ## Bird Buddy setup
 
 Bird Buddy is optional and uses the private, undocumented GraphQL API behind
@@ -412,7 +482,7 @@ password and email are never retained. `birdbuddy logout --config
 /path/to/config.toml --yes` removes local authentication while preserving
 detection history; it does not claim to revoke the remote token.
 
-Bird Buddy rotates its refresh token during every authenticated request, so
+Bird Buddy rotates its refresh token once before each authenticated sync, so
 even `discover` and seed previews must atomically update authentication state.
 Preview commands do not commit detection history or taxonomy cache changes.
 
@@ -474,6 +544,18 @@ drops those unlinked, short-lived postcard rows instead of risking a stale
 classification. Current confirmed metadata can still restore conservative
 species presence.
 
+Inspect the saved authentication state and selected feeder with `birdbuddy
+status`, then run `discover` to verify live access and inspect the `birdbuddy`
+provider. The status command is local-only; `discover` performs the authenticated
+refresh and rotates the saved token. Multiple accessible feeders require a new
+login with `--feeder-id`. An invalid or revoked session requires an explicit
+login; schema or pagination errors may mean the private API changed.
+Inky redacts credentials, tokens, email addresses, postcard identifiers, and
+raw server payloads from errors. Feeder names and IDs are intentionally shown
+when needed to choose or verify a feeder. Remove `birdbuddy` from `sources` to
+disable synchronization while retaining auth and history, or run `birdbuddy
+logout --yes` to remove local authentication while preserving history.
+
 ## How eBird enrichment works
 
 eBird returns recent public sightings and an eBird species code. The controller
@@ -509,28 +591,33 @@ sources = ["inaturalist", "ebird", "birdweather"]
 Configuration loading now fails with this migration when `source = "all"` is
 present. New configurations should always use the explicit array.
 
-iNaturalist supplies observation counts, BirdWeather supplies station detection
-counts, Bird Buddy supplies distinct postcard counts, and eBird's nearby
-endpoint supplies presence rather than a comparable aggregate count. eBird-only
-species receive weight one. These counts describe different collection methods
-and should not be compared as equivalent evidence. `shuffle_bag` is the
-recommended source-neutral rotation policy.
+iNaturalist supplies observation counts. eBird Archive counts checklists that
+contain each species. BirdWeather and BirdNET-Go supply station detection
+counts, BirdNET Analyzer counts imported detection records, and Bird Buddy
+supplies distinct postcard counts. eBird's nearby endpoint supplies presence
+rather than a comparable aggregate count, so eBird-only species receive weight
+one. When several providers resolve to the same species, Inky keeps the largest
+provider count instead of adding unlike measurements together. These counts
+describe different collection methods and should not be compared as equivalent
+evidence. `shuffle_bag` is the recommended source-neutral rotation policy.
 
-BirdWeather and Bird Buddy also supply each species' latest detection timestamp.
-By default, a display node shows the newest detection once before returning to
-its configured rotation. This is display priority, not a confidence claim or a
-live event stream: the timestamp advances only when the controller refreshes a
-provider. Configure `display_node.prioritize_latest_detection = false` to
-disable it. The `discover` command includes `latest_detection_at` on species
-entries when a configured provider supplies that timestamp and omits the field
-otherwise.
+BirdWeather, BirdNET-Go, and Bird Buddy also supply each species' latest
+detection timestamp. By default, a display node shows the newest detection once
+before returning to its configured rotation. This is display priority, not a
+confidence claim or a live event stream: the timestamp advances only when the
+controller refreshes a provider. Configure
+`display_node.prioritize_latest_detection = false` to disable it. The `discover`
+command includes `latest_detection_at` on species entries when a configured
+provider supplies that timestamp and omits the field otherwise.
 
 ## Limits and data use
 
-The eBird nearby API supports at most 30 days and 50 km. BirdWeather returns at
-most 100 species per station-species request. Bird Buddy can return no more
-history than remains in its current feed on first setup, then uses private local
-history. Use an explicit iNaturalist seed for longer pre-existing periods:
+The eBird nearby API supports at most 30 days and 50 km. An eBird personal
+archive is bounded to 512 MiB of uncompressed CSV data per import. BirdWeather
+returns at most 100 species per station-species request. Bird Buddy can return
+no more history than remains in its current feed on first setup, then uses
+private local history. Use an explicit iNaturalist seed for longer pre-existing
+periods:
 
 ```bash
 inky-bird-frame seed --config /path/to/config.toml \
@@ -548,13 +635,15 @@ inky-bird-frame seed --config /path/to/config.toml \
   --species-limit 500 --dry-run
 ```
 
-Exact date ranges require iNaturalist because the other configured providers
-cannot guarantee the same coordinate-radius historical query semantics. Run
-without `--dry-run` only after reviewing the structured result. The seed stores
-every distinct taxon as private collection membership and queues only missing,
-non-terminal plates. It stores no raw observation records or command-scoped
-coordinates. Approved seeded taxa become active immediately; unapproved taxa
-become active after a plate passes review and approval.
+Coordinate-radius historical ranges require iNaturalist because the other
+configured providers cannot guarantee the same place-and-time query semantics.
+An imported eBird Archive supports personal-checklist date ranges without a
+location filter. Run without `--dry-run` only after reviewing the structured
+result. The seed stores every distinct taxon as private collection membership
+and queues only missing, non-terminal plates. It stores no raw observation
+records or command-scoped coordinates. Approved seeded taxa become active
+immediately; unapproved taxa become active after a plate passes review and
+approval.
 
 Collection membership is independent from catalog synchronization. A plate
 added to the public catalog later is not added to the private collection merely
