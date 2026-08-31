@@ -1,0 +1,37 @@
+{
+  "anatomy_accuracy": 4,
+  "composition_quality": 5,
+  "correction_findings": [],
+  "findings": [
+    "The primary specimen is identifiable as an adult male Blue-winged Warbler: bright yellow head and underparts, olive-green back, thin black eyeline, pointed black bill, blue-gray wing, two white wing bars, white undertail area, and white outer-tail markings agree with the references and live sources.",
+    "The specimen has one head, one bill, one visible eye, one tail, two convincingly attached legs with complete gripping feet, and a coherent folded near-side wing; the far-side wing is naturally occluded by the strict side-profile pose.",
+    "The detached expanded-wing and head studies are clearly supplementary, remain separate from the primary specimen, and show consistent species anatomy and markings without malformed or contradictory structures.",
+    "The bird is somewhat rounded in artistic treatment, but its head, body, bill, wing, tail, leg, and foot proportions remain plausible for the species and do not create a material anatomical or identity error.",
+    "Every visible identification, habitat, behavior, taxonomy, palette, and measurement statement matches the proposed profile. The 11\u201312 cm length, 9 g weight, and 15 cm wingspan set is directly supported by All About Birds for both sexes.",
+    "The vertical schematic now labels 11 cm at the bottom and 12 cm at the top, increases bottom-to-top, and is explicitly marked \u201cSCHEMATIC \u2014 NOT TO SCALE.\u201d The repeated body-length caption agrees with it.",
+    "The plate is legible, balanced, and scientifically organized; the primary specimen, supplementary studies, field notes, measurement schematic, and palette remain visually distinct.",
+    "No place name, ZIP code, coordinates, map, or local-observation detail appears."
+  ],
+  "location_free": true,
+  "passed": true,
+  "species_accuracy": 5,
+  "text_accuracy": 5,
+  "verification_sources": [
+    {
+      "title": "Blue-winged Warbler Identification \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Blue-winged_Warbler/id"
+    },
+    {
+      "title": "Blue-winged Warbler Life History \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Blue-winged_Warbler/lifehistory"
+    },
+    {
+      "title": "Blue-winged Warbler \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/blue-winged-warbler"
+    },
+    {
+      "title": "Blue-winged warbler \u2014 Wikipedia",
+      "url": "https://en.wikipedia.org/wiki/Blue-winged_warbler"
+    }
+  ]
+}
