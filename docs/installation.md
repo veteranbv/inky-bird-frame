@@ -159,7 +159,35 @@ retention applies.
 [Homepage](https://gethomepage.dev/) can show Inky with its stock service
 widgets; no Homepage fork, custom JavaScript, or Inky-specific plugin is
 required. Its `customapi` widget fetches through the Homepage server, while its
-`iframe` widget loads in the browser. A compact card can use both:
+`iframe` widget loads in the browser.
+
+For a compact status card, add one `customapi` widget:
+
+```yaml
+- Birds:
+    - Inky Bird Frame:
+        icon: mdi-bird
+        href: https://github.com/veteranbv/inky-bird-frame
+        description: Observation-driven field-journal plates
+        siteMonitor: http://inky-controller:8793/v1/catalog
+        widget:
+          type: customapi
+          url: http://inky-controller:8793/health
+          refreshInterval: 300000
+          mappings:
+            - field: active_species
+              label: Active
+              format: number
+            - field: approved_species
+              label: Plates
+              format: number
+            - field: version
+              label: Version
+              format: text
+```
+
+For the featured-plate card, use Homepage's multiple-widget form and add the
+`iframe` after the same status widget:
 
 ```yaml
 - Birds:

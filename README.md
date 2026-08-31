@@ -259,6 +259,32 @@ Slack, email, Home Assistant, and other Apprise-supported services. See
 [Notifications](docs/notifications.md) for setup, event controls, retries, and
 secret handling.
 
+## Homepage dashboard
+
+For my fellow homelabbers, I wanted Inky to feel at home beside the rest of
+your services. The compact card gives you a quick read on catalog readiness,
+active birds, approved plates, and the controller version. If you have a little
+more room, the featured-plate card adds an upright bird plate that refreshes
+every 15 minutes.
+
+<p align="center">
+  <img src="docs/images/homepage-dashboard-compact.png" alt="Compact Homepage service card for Inky Bird Frame showing catalog readiness, active birds, approved plates, and controller version" width="720">
+  <br><strong>Compact status</strong>
+</p>
+
+<p align="center">
+  <img src="docs/images/homepage-dashboard-featured-plate.png" alt="Homepage service card for Inky Bird Frame showing catalog stats above an upright featured Eastern Bluebird plate" width="720">
+  <br><strong>Status and featured plate</strong>
+</p>
+
+Both versions use Homepage's stock service widgets. There is no custom plugin
+or JavaScript to install. The screenshots use a deterministic v0.7.0 demo: the
+162 public plates published in that release and a fixed Eastern Bluebird. They
+include no provider, location, observation time, or personal observation data.
+
+Follow the [Homepage dashboard recipe](docs/installation.md#homepage-dashboard)
+for the copy-and-paste configuration and private-network requirements.
+
 ## Contributing
 
 Code, documentation, hardware compatibility, and new catalog plates are welcome.
@@ -292,6 +318,7 @@ shares an issue, plate, fix, or idea.
 | Operate, seed, recover, update, or roll back | [Operations](docs/operations.md) |
 | Back up or restore private controller state | [Backup and restore](docs/backup.md) |
 | Configure alerts | [Notifications](docs/notifications.md) |
+| Add Inky to a Homepage dashboard | [Homepage dashboard](docs/installation.md#homepage-dashboard) |
 | Diagnose a failure | [Troubleshooting](docs/troubleshooting.md) |
 | Understand trust, privacy, and data flow | [Architecture](docs/architecture.md) |
 | Submit a change or plate | [Contributing](CONTRIBUTING.md) |
