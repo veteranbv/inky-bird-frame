@@ -254,8 +254,15 @@ class CatalogRequestHandler(BaseHTTPRequestHandler):
             return
         self.send_header("Vary", "Origin")
         origins = self.headers.get_all("Origin", failobj=[])
-        if len(origins) == 1 and origins[0] in self.cors_allowed_origins:
-            self.send_header("Access-Control-Allow-Origin", origins[0])
+        if len(origins) != 1:
+            return
+        # Emit the canonical configured value, never the request header value.
+        allowed_origin = next(
+            (candidate for candidate in self.cors_allowed_origins if candidate == origins[0]),
+            None,
+        )
+        if allowed_origin is not None:
+            self.send_header("Access-Control-Allow-Origin", allowed_origin)
 
     def _send_json(
         self,
