@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import json
 from dataclasses import dataclass, replace
-from datetime import datetime, timedelta
+from datetime import UTC, datetime, timedelta
 from pathlib import Path, PurePosixPath
 from typing import cast
 from urllib.parse import urlsplit
@@ -117,6 +117,7 @@ class RetryStore:
         initial_minutes: int,
         maximum_minutes: int,
         fixed_minutes: int | None = None,
+        retry_at: datetime | None = None,
         species: BirdSpecies | None = None,
     ) -> RetryRecord:
         previous = self.get(taxon_id)
@@ -133,11 +134,21 @@ class RetryStore:
             common_name = previous.common_name if previous is not None else None
             scientific_name = previous.scientific_name if previous is not None else None
         attempts = (previous.attempts if previous is not None else 0) + 1
-        delay = (
-            fixed_minutes
-            if fixed_minutes is not None
-            else min(initial_minutes * (2 ** (attempts - 1)), maximum_minutes)
-        )
+        if retry_at is not None:
+            if fixed_minutes is not None:
+                raise ValueError("retry_at and fixed_minutes are mutually exclusive")
+            if retry_at.tzinfo is None or retry_at.utcoffset() is None:
+                raise ValueError("retry_at must be timezone-aware")
+            if retry_at < now:
+                raise ValueError("retry_at cannot be earlier than now")
+            next_attempt_at = retry_at.astimezone(UTC)
+        else:
+            delay = (
+                fixed_minutes
+                if fixed_minutes is not None
+                else min(initial_minutes * (2 ** (attempts - 1)), maximum_minutes)
+            )
+            next_attempt_at = now + timedelta(minutes=delay)
         record = RetryRecord(
             taxon_id=taxon_id,
             attempts=attempts,
@@ -145,7 +156,7 @@ class RetryStore:
             error=str(error),
             first_failed_at=previous.first_failed_at if previous is not None else now,
             last_failed_at=now,
-            next_attempt_at=now + timedelta(minutes=delay),
+            next_attempt_at=next_attempt_at,
             common_name=common_name,
             scientific_name=scientific_name,
         )

@@ -26,6 +26,11 @@ often, review and raise `max_searches_per_day` to match. Cached profiles do not
 consume the budget again. Use `seed` for a broad historical catalog instead of
 making the active observation window permanently broad.
 
+Research counters reset at midnight UTC. When a daily or per-species limit is
+reached, the controller records the next attempt at that reset instead of
+running backoff retries that cannot succeed. An explicit `retry` never bypasses
+the configured research budget.
+
 The controller's `workspace_dir` must be writable because the Codex image tool
 copies its final image there. Keep it separate from configuration, catalog, and
 state; the example uses a dedicated `workspace` directory. `catalog_dir` and

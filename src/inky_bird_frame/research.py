@@ -3,10 +3,10 @@
 from __future__ import annotations
 
 import json
-from datetime import UTC, date, datetime
+from datetime import UTC, date, datetime, time, timedelta
 from pathlib import Path
 
-from .errors import CatalogError, GenerationError
+from .errors import CatalogError, ResearchLimitError
 from .http import write_json_atomic
 
 
@@ -23,13 +23,16 @@ class ResearchBudget:
             total = 0
             species = {}
         species_count = species.get(taxon_id, 0)
+        retry_at = datetime.combine(current.date() + timedelta(days=1), time.min, tzinfo=UTC)
         if total >= self.daily_limit:
-            raise GenerationError(
-                f"Daily research limit of {self.daily_limit} searches has been reached"
+            raise ResearchLimitError(
+                f"Daily research limit of {self.daily_limit} searches has been reached",
+                retry_at=retry_at,
             )
         if species_count >= self.species_limit:
-            raise GenerationError(
-                f"Taxon {taxon_id} reached its research limit of {self.species_limit} searches"
+            raise ResearchLimitError(
+                f"Taxon {taxon_id} reached its research limit of {self.species_limit} searches",
+                retry_at=retry_at,
             )
         species[taxon_id] = species_count + 1
         write_json_atomic(
