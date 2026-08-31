@@ -217,14 +217,17 @@ controller.
 
 Normal installations schedule observation refresh, generation, catalog serving,
 notifications, and display rotation. These commands are the useful first checks
-on a native installation:
+on a native installation. They use the default managed runtime; if you chose a
+different application directory, point `IBF` at its `.venv/bin/inky-bird-frame`
+instead.
 
 ```bash
-inky-bird-frame --version
-inky-bird-frame doctor controller --config /path/to/config.toml
-inky-bird-frame status --config /path/to/config.toml
-inky-bird-frame refresh --config /path/to/config.toml
-inky-bird-frame generate --config /path/to/config.toml
+IBF="$HOME/Services/inky-bird-frame/.venv/bin/inky-bird-frame"
+"$IBF" --version
+"$IBF" doctor controller --config /path/to/config.toml
+"$IBF" status --config /path/to/config.toml
+"$IBF" refresh --config /path/to/config.toml
+"$IBF" generate --config /path/to/config.toml
 ```
 
 `shuffle_bag` is the default rotation: it shows every active bird once before a

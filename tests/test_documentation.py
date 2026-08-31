@@ -82,3 +82,39 @@ def test_internal_documentation_links_and_anchors_resolve() -> None:
                     )
 
     assert not problems, "\n" + "\n".join(problems)
+
+
+def test_readme_native_checks_use_the_managed_runtime() -> None:
+    readme = (ROOT / "README.md").read_text(encoding="utf-8")
+    section = readme.split("## Living with the frame", 1)[1].split("\n## ", 1)[0]
+
+    assert 'IBF="$HOME/Services/inky-bird-frame/.venv/bin/inky-bird-frame"' in section
+    assert re.search(r"^inky-bird-frame(?:\s|$)", section, re.MULTILINE) is None
+
+
+def test_plate_problem_form_requires_supporting_sources() -> None:
+    form = (ROOT / ".github/ISSUE_TEMPLATE/plate_problem.yml").read_text(encoding="utf-8")
+    evidence = form.split("    id: evidence", 1)[1].split("\n  - type:", 1)[0]
+
+    assert "    validations:\n      required: true" in evidence
+
+
+def test_private_history_removal_documents_retained_state_and_refresh() -> None:
+    guide = (ROOT / "docs/backup.md").read_text(encoding="utf-8")
+    section = guide.split("## Private-data lifecycle and removal", 1)[1]
+
+    for retained_path in (
+        "generation-queue.json",
+        "collection.json",
+        "generation-retries.json",
+        "runs/",
+        "workspace_dir",
+    ):
+        assert retained_path in section
+    assert '"$IBF" refresh --config /path/to/config.toml' in section
+    assert (
+        "docker compose run --rm --no-deps scheduler refresh --config /data/config.toml" in section
+    )
+    assert "clearing all controller observation and generation state" in section
+    for retained_store in ("config.toml", "GitHub authentication", "service logs", "backups"):
+        assert retained_store in section

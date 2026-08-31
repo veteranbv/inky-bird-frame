@@ -57,6 +57,8 @@ body:
     attributes:
       label: Supporting sources
       description: Link authoritative species accounts or appropriately licensed references. Do not upload copyrighted field-guide or reference images.
+    validations:
+      required: true
   - type: input
     id: version
     attributes:

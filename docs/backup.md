@@ -534,17 +534,52 @@ from erasing data.
   mode-`0600` state files until the operator deliberately removes that private
   state.
 
-There is no bulk provider-history purge command. If complete erasure is
-required, disable the provider, quiesce the controller, and make a separately
-protected recovery backup if policy permits. The provider-owned history files
-are `ebird-archive-observations.json`, `birdnet-analyzer-detections.json`, and
-`birdbuddy-detections.json`. Use `birdbuddy logout --yes` for Bird Buddy auth
-rather than editing or selectively deleting fields from `birdbuddy-auth.json`.
-The corresponding `*-taxonomy-crosswalk.json` files may also be removed when
-cached species-resolution history is in scope. Remove only the intended files
-with normal filesystem administration, then start the controller and verify the
-expected missing-history or logged-out state before disposing of the recovery
-copy. Do not edit JSON records in place.
+There is no safe selective command for completely purging one provider. Removing
+only its named history file is **provider-owned history removal**, not complete
+erasure: derived state such as `discovery.json`, `active-catalog.json`,
+`generation-queue.json`, `collection.json`, `generation-retries.json`,
+`profiles/`, `runs/`, `pending/`, `failed/`, `rejected/`, and `workspace_dir`
+may still reveal species, counts, timestamps, research, or generated artifacts.
+Once observations have been merged, shared derived state cannot be attributed
+safely to one provider. Do not hand-edit those derived JSON files.
+
+For provider-owned history removal, first disable the provider, quiesce every
+writer, and make a separately protected recovery backup if policy permits. The
+history files are `ebird-archive-observations.json`,
+`birdnet-analyzer-detections.json`, and `birdbuddy-detections.json`. Use
+`birdbuddy logout --yes` for Bird Buddy authentication rather than editing or
+selectively deleting fields from `birdbuddy-auth.json`. Remove the corresponding
+`*-taxonomy-crosswalk.json` file too when cached species-resolution history is in
+scope. Remove only the intended files with normal filesystem administration,
+then run one successful foreground refresh while scheduled writers remain
+stopped. This rebuilds `discovery.json` and `active-catalog.json` through the
+controller's normal locks; it does not erase the other retained state listed
+above.
+
+```bash
+# Native managed runtime
+IBF="$HOME/Services/inky-bird-frame/.venv/bin/inky-bird-frame"
+"$IBF" refresh --config /path/to/config.toml
+
+# Docker Compose, from the release bundle
+docker compose run --rm --no-deps scheduler refresh --config /data/config.toml
+```
+
+Inspect the refresh result and verify the expected missing-history or logged-out
+state before restarting scheduled work or disposing of the recovery copy.
+
+If policy requires clearing all controller observation and generation state,
+keep writers stopped and replace both the private `state_dir` and `workspace_dir`
+with fresh empty directories. This removes collection membership, queues,
+retries, provider imports, Bird Buddy authentication, notification history,
+research, and retained run or failure evidence. It does **not** remove private
+`config.toml` values, Codex or GitHub authentication stores, service logs,
+backups, or snapshots. Remove unwanted providers and credentials from the
+private configuration before refresh; any enabled live source can repopulate
+the fresh state. Reauthorize or reimport only the sources you intend to keep,
+then perform a controlled refresh and verify the new state before discarding the
+protected recovery copy. Do not copy selected derived files back into the fresh
+directories.
 
 Deleting live state does not remove copies from backups, snapshots, or remote
 storage. Apply the same retention decision to every copy. Public catalog plates
