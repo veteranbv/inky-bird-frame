@@ -10,7 +10,8 @@ permissions:
   contents: read
 
 jobs:
-  quality:
+  core-quality:
+    name: Core quality
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -180,3 +181,49 @@ jobs:
             --volume "$config_volume:/data" \
             --entrypoint python inky-bird-frame:ci -c \
             "from pathlib import Path; from inky_bird_frame.config import load_config; config = load_config(Path('/data/config.toml')); assert config.controller.workspace_dir == Path('/data/workspace'); assert config.controller.workspace_dir.is_dir()"
+
+  python-compatibility:
+    name: Python ${{ matrix.python-version }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version:
+          - "3.12"
+          - "3.13"
+          - "3.14"
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Set up Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Set up uv
+        uses: astral-sh/setup-uv@20cfd1bf945f4377ade1205e4dbc17946fc9a30d # v10.0.1
+        with:
+          enable-cache: "false"
+
+      - name: Install dependencies
+        run: uv sync --extra dev --locked
+
+      - name: Run tests
+        run: uv run pytest
+
+  quality:
+    name: quality
+    if: always()
+    needs:
+      - core-quality
+      - python-compatibility
+    runs-on: ubuntu-latest
+    steps:
+      - name: Require every quality job
+        env:
+          CORE_RESULT: ${{ needs.core-quality.result }}
+          COMPATIBILITY_RESULT: ${{ needs.python-compatibility.result }}
+        run: |
+          test "$CORE_RESULT" = "success"
+          test "$COMPATIBILITY_RESULT" = "success"
