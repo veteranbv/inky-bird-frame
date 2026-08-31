@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-28T00:27:04+00:00",
+  "generated_at": "2026-08-31T18:43:31+00:00",
   "schema_version": 1,
   "species": [
     {
@@ -232,6 +232,17 @@
       "scientific_name": "Quiscalus major",
       "slug": "boat-tailed-grackle",
       "taxon_id": 9601
+    },
+    {
+      "approved_at": "2026-08-31T18:43:31+00:00",
+      "common_name": "Bobolink",
+      "display_path": "species/10487-bobolink/display.png",
+      "display_sha256": "ec5d15f0efcd60527087f7987f7490a22a6d5b4680c388eee162e30085db5734",
+      "portrait_path": "species/10487-bobolink/portrait.png",
+      "portrait_sha256": "643ddc8e401e07288999344a0872540fcd58bb99f3b55388918f203f865236c4",
+      "scientific_name": "Dolichonyx oryzivorus",
+      "slug": "bobolink",
+      "taxon_id": 10487
     },
     {
       "approved_at": "2026-08-06T11:53:08+00:00",

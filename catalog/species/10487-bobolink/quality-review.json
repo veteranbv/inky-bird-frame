@@ -1,0 +1,35 @@
+{
+  "anatomy_accuracy": 4,
+  "composition_quality": 5,
+  "correction_findings": [],
+  "findings": [
+    "The primary specimen is identifiable as an adult breeding male Bobolink: black face and underparts, extensive white back/shoulder/rump area, and a straw-colored nape agree with the attached male references and direct source descriptions.",
+    "The compact, large-headed, short-necked proportions and short, sharply pointed dark bill are species-appropriate. Both depicted heads have complete, consistent bills and visible dark eyes.",
+    "The primary specimen has one head, one beak, one tail, two attached legs, and two feet. The far-side wing is naturally hidden by the side-profile pose; the visible folded wing attaches convincingly. The crossed feet are visually crowded but remain traceable as two separate feet rather than duplicated or broken anatomy.",
+    "The detached spread-wing and head illustrations read as intentional supplementary studies, are not attached to the primary specimen, and show plausible Bobolink feather structure and head anatomy.",
+    "The tail is rounded and multi-pointed, the wings are pointed, and the slender pinkish legs agree with the proposed field marks and references.",
+    "All visible identification, measurement, habitat, behavior, and field-mark text is legible, correctly spelled, and matches the proposed wording and numbers. The repeated BODY LENGTH line agrees with the main length statement.",
+    "The printed sex-specific measurements exactly match Audubon's direct Bobolink account. Cornell currently publishes broader combined-sex values, while Animal Diversity Web gives averages that fall within the plate's ranges; this source variation does not establish a two-domain conflict with the proposed profile.",
+    "The vertical length diagram is internally consistent: 6.3 in (16 cm) is at the bottom, 7.1 in (18 cm) is at the top, values increase upward, and the nearby SCHEMATIC\u2014NOT TO SCALE label prevents it from implying that the printed bird is life-size.",
+    "The habitat and behavior claims agree with Cornell and Audubon descriptions of tall grasslands, fields, marshes during migration, ground and grass-stem foraging, fluttering display flights, and flocking outside nesting.",
+    "No place name, ZIP code, coordinates, map, or local-observation detail appears."
+  ],
+  "location_free": true,
+  "passed": true,
+  "species_accuracy": 5,
+  "text_accuracy": 5,
+  "verification_sources": [
+    {
+      "title": "Bobolink Identification \u2014 All About Birds, Cornell Lab of Ornithology",
+      "url": "https://www.allaboutbirds.org/guide/Bobolink/id"
+    },
+    {
+      "title": "Bobolink \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/bobolink"
+    },
+    {
+      "title": "Dolichonyx oryzivorus (bobolink) \u2014 Animal Diversity Web",
+      "url": "https://animaldiversity.org/accounts/Dolichonyx_oryzivorus/"
+    }
+  ]
+}
