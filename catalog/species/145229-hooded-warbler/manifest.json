@@ -1,0 +1,160 @@
+{
+  "approved_at": "2026-09-04T18:52:06+00:00",
+  "assets": {
+    "display": {
+      "filename": "display.png",
+      "sha256": "1791a5f351eab0978a4e3480a0254864ce8b817cc4479597b78ef741ca75ceb5"
+    },
+    "portrait": {
+      "filename": "portrait.png",
+      "sha256": "edad33b8c1edc4df3abbfb8c05bf6e1e1a22199dd79121cc002f34e429f45731"
+    }
+  },
+  "common_name": "Hooded Warbler",
+  "generation": {
+    "attempt": 2,
+    "correction_source_sha256": "995adbb2d86cb41a7246ebd743da49237156a4731b827c62a1be114be506d7ed",
+    "generated_at": "2026-09-04T18:52:05+00:00",
+    "generator": "Codex subscription / built-in gpt-image-2",
+    "max_attempts": 3,
+    "prompt_version": "field-journal-v6"
+  },
+  "profile": {
+    "behavior": "An active understory foliage gleaner that hops along the ground and through low branches, picking insects and spiders from foliage and making short aerial sallies. Frequently flicks or fans its tail to flash the white outer feathers; generally solitary and territorial.",
+    "common_name": "Hooded Warbler",
+    "family": "Parulidae",
+    "field_marks": [
+      "Bright yellow face and underparts",
+      "Adult male has a black hood and throat framing the face",
+      "Olive-green upperparts with dusky, rounded wings",
+      "Large dark eye",
+      "Straight, sharp, dark bill",
+      "Longish tail with contrasting white outer feathers"
+    ],
+    "habitat": "Mature deciduous or mixed forest with a dense, shrubby understory; also forest edges, clearings, lowland tropical forest, secondary scrub, and brushy fields outside the breeding season.",
+    "measurements": {
+      "length": "13 cm (5.1 in), both sexes",
+      "weight": "9\u201312 g (0.3\u20130.4 oz), both sexes",
+      "wingspan": "17.5 cm (6.9 in), both sexes"
+    },
+    "palette": [
+      "bright yellow",
+      "jet black",
+      "olive green",
+      "dusky brown-gray",
+      "white"
+    ],
+    "scientific_name": "Setophaga citrina",
+    "sources": [
+      {
+        "title": "Hooded Warbler Identification \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Hooded_Warbler/id"
+      },
+      {
+        "title": "Hooded Warbler Life History \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Hooded_Warbler/lifehistory"
+      },
+      {
+        "title": "Hooded Warbler \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/hooded-warbler"
+      }
+    ],
+    "taxon_id": 145229
+  },
+  "quality_review": {
+    "anatomy_accuracy": 5,
+    "composition_quality": 5,
+    "correction_findings": [],
+    "findings": [
+      "Species identity is accurate: the scientific name, family, adult-male black hood and throat, yellow face and underparts, olive upperparts, dark eye, pointed bill, and white outer tail feathers agree with the references and direct sources.",
+      "The primary specimen has one head, one bill, one tail, a convincing pair of legs and gripping feet, and anatomically coherent wing geometry; the far-side wing is naturally occluded. The detached wing and head are clearly supplementary studies and are independently well formed.",
+      "The primary and supplementary bills have consistent, plausible mandible proportions and sharp, intact tips.",
+      "All visible text was read in full. Names, measurements, habitat, behavior, and field-mark wording match the proposed profile without omissions, substitutions, or numerical inconsistencies.",
+      "The measurement set is directly supported by All About Birds for both sexes: length 13 cm, weight 9\u201312 g, and wingspan 17.5 cm.",
+      "The ruler now has the correct 0 cm bottom endpoint and 13 cm top endpoint, increases upward, agrees with the separate body-length label, and is explicitly marked \u201cSCHEMATIC \u2014 NOT TO SCALE.\u201d",
+      "The plate is balanced and legible, with a clear hierarchy among the primary specimen, descriptive text, measurement diagram, supplementary studies, and palette.",
+      "No place name, ZIP code, coordinates, map, or local-observation detail appears."
+    ],
+    "location_free": true,
+    "passed": true,
+    "species_accuracy": 5,
+    "text_accuracy": 5,
+    "verification_sources": [
+      {
+        "title": "Hooded Warbler Identification \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Hooded_Warbler/id"
+      },
+      {
+        "title": "Hooded Warbler Life History \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Hooded_Warbler/lifehistory"
+      },
+      {
+        "title": "Hooded Warbler \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/hooded-warbler"
+      },
+      {
+        "title": "Hooded Warbler \u2014 eBird",
+        "url": "https://ebird.org/species/hoowar"
+      }
+    ]
+  },
+  "references": [
+    {
+      "attribution": "no rights reserved",
+      "filename": "01-339621550.jpg",
+      "height": 1366,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/339621550/large.jpg",
+      "license_code": "cc0",
+      "observation_id": 193338646,
+      "observer": "rawcomposition",
+      "photo_id": 339621550,
+      "sha256": "683075e5847768dd813f2c6a61d34b74fa8b57bbcf9d29f6720cd67096c0aad1",
+      "source_url": "https://www.inaturalist.org/observations/193338646",
+      "width": 2048
+    },
+    {
+      "attribution": "no rights reserved",
+      "filename": "02-24581598.jpeg",
+      "height": 1365,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/24581598/large.jpeg",
+      "license_code": "cc0",
+      "observation_id": 16352467,
+      "observer": "andywilson",
+      "photo_id": 24581598,
+      "sha256": "807062b16762b180b918ad6bc84f1b6f25636fc52f04b64e1a9b41e8e07eec73",
+      "source_url": "https://www.inaturalist.org/observations/16352467",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) Tristan Jobin, some rights reserved (CC BY)",
+      "filename": "03-514248692.jpg",
+      "height": 1365,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/514248692/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 286078231,
+      "observer": "ziggypop74",
+      "photo_id": 514248692,
+      "sha256": "cb0ad0722227b20f49d70e2223e2c085cab360aaaccd52899ef115e638006d20",
+      "source_url": "https://www.inaturalist.org/observations/286078231",
+      "width": 2048
+    },
+    {
+      "attribution": "no rights reserved",
+      "filename": "04-480736458.jpg",
+      "height": 1078,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/480736458/large.jpg",
+      "license_code": "cc0",
+      "observation_id": 267503910,
+      "observer": "kuykenwil",
+      "photo_id": 480736458,
+      "sha256": "adae84dbe38a8ff3ce44d6962fe34496eb346e978044b70f4bc87066fa165aed",
+      "source_url": "https://www.inaturalist.org/observations/267503910",
+      "width": 1370
+    }
+  ],
+  "schema_version": 1,
+  "scientific_name": "Setophaga citrina",
+  "slug": "hooded-warbler",
+  "status": "approved",
+  "taxon_id": 145229
+}

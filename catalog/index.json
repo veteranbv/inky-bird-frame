@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-04T18:40:23+00:00",
+  "generated_at": "2026-09-04T18:52:06+00:00",
   "schema_version": 1,
   "species": [
     {
@@ -892,6 +892,17 @@
       "scientific_name": "Corvus cornix",
       "slug": "hooded-crow",
       "taxon_id": 144757
+    },
+    {
+      "approved_at": "2026-09-04T18:52:06+00:00",
+      "common_name": "Hooded Warbler",
+      "display_path": "species/145229-hooded-warbler/display.png",
+      "display_sha256": "1791a5f351eab0978a4e3480a0254864ce8b817cc4479597b78ef741ca75ceb5",
+      "portrait_path": "species/145229-hooded-warbler/portrait.png",
+      "portrait_sha256": "edad33b8c1edc4df3abbfb8c05bf6e1e1a22199dd79121cc002f34e429f45731",
+      "scientific_name": "Setophaga citrina",
+      "slug": "hooded-warbler",
+      "taxon_id": 145229
     },
     {
       "approved_at": "2026-07-10T18:43:08+00:00",
