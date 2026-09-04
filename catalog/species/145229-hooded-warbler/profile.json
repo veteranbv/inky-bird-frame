@@ -1,0 +1,42 @@
+{
+  "behavior": "An active understory foliage gleaner that hops along the ground and through low branches, picking insects and spiders from foliage and making short aerial sallies. Frequently flicks or fans its tail to flash the white outer feathers; generally solitary and territorial.",
+  "common_name": "Hooded Warbler",
+  "family": "Parulidae",
+  "field_marks": [
+    "Bright yellow face and underparts",
+    "Adult male has a black hood and throat framing the face",
+    "Olive-green upperparts with dusky, rounded wings",
+    "Large dark eye",
+    "Straight, sharp, dark bill",
+    "Longish tail with contrasting white outer feathers"
+  ],
+  "habitat": "Mature deciduous or mixed forest with a dense, shrubby understory; also forest edges, clearings, lowland tropical forest, secondary scrub, and brushy fields outside the breeding season.",
+  "measurements": {
+    "length": "13 cm (5.1 in), both sexes",
+    "weight": "9\u201312 g (0.3\u20130.4 oz), both sexes",
+    "wingspan": "17.5 cm (6.9 in), both sexes"
+  },
+  "palette": [
+    "bright yellow",
+    "jet black",
+    "olive green",
+    "dusky brown-gray",
+    "white"
+  ],
+  "scientific_name": "Setophaga citrina",
+  "sources": [
+    {
+      "title": "Hooded Warbler Identification \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Hooded_Warbler/id"
+    },
+    {
+      "title": "Hooded Warbler Life History \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Hooded_Warbler/lifehistory"
+    },
+    {
+      "title": "Hooded Warbler \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/hooded-warbler"
+    }
+  ],
+  "taxon_id": 145229
+}

@@ -1,0 +1,37 @@
+{
+  "anatomy_accuracy": 5,
+  "composition_quality": 5,
+  "correction_findings": [],
+  "findings": [
+    "Species identity is accurate: the scientific name, family, adult-male black hood and throat, yellow face and underparts, olive upperparts, dark eye, pointed bill, and white outer tail feathers agree with the references and direct sources.",
+    "The primary specimen has one head, one bill, one tail, a convincing pair of legs and gripping feet, and anatomically coherent wing geometry; the far-side wing is naturally occluded. The detached wing and head are clearly supplementary studies and are independently well formed.",
+    "The primary and supplementary bills have consistent, plausible mandible proportions and sharp, intact tips.",
+    "All visible text was read in full. Names, measurements, habitat, behavior, and field-mark wording match the proposed profile without omissions, substitutions, or numerical inconsistencies.",
+    "The measurement set is directly supported by All About Birds for both sexes: length 13 cm, weight 9\u201312 g, and wingspan 17.5 cm.",
+    "The ruler now has the correct 0 cm bottom endpoint and 13 cm top endpoint, increases upward, agrees with the separate body-length label, and is explicitly marked \u201cSCHEMATIC \u2014 NOT TO SCALE.\u201d",
+    "The plate is balanced and legible, with a clear hierarchy among the primary specimen, descriptive text, measurement diagram, supplementary studies, and palette.",
+    "No place name, ZIP code, coordinates, map, or local-observation detail appears."
+  ],
+  "location_free": true,
+  "passed": true,
+  "species_accuracy": 5,
+  "text_accuracy": 5,
+  "verification_sources": [
+    {
+      "title": "Hooded Warbler Identification \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Hooded_Warbler/id"
+    },
+    {
+      "title": "Hooded Warbler Life History \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Hooded_Warbler/lifehistory"
+    },
+    {
+      "title": "Hooded Warbler \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/hooded-warbler"
+    },
+    {
+      "title": "Hooded Warbler \u2014 eBird",
+      "url": "https://ebird.org/species/hoowar"
+    }
+  ]
+}
