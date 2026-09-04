@@ -1,0 +1,38 @@
+{
+  "behavior": "Migratory and primarily arboreal. It forages deliberately among outer foliage, hopping along twigs and gleaning insects from leaves, sometimes hovering briefly; breeding birds are territorial and persistent singers.",
+  "common_name": "Eastern Warbling Vireo",
+  "family": "Vireonidae",
+  "field_marks": [
+    "Compact, sparrow-sized body with a rounded head and medium-length tail",
+    "Olive-gray upperparts with a subtly grayer crown",
+    "Whitish throat and belly with a pale-yellow wash along the sides",
+    "Pale eyebrow, faint gray eye-line, and conspicuous dark eye",
+    "Fairly stout gray bill and dark gray legs",
+    "Plain, rounded wings without wing bars; square to shallow-notched tail tip"
+  ],
+  "habitat": "Open deciduous and mixed woodland, leafy groves, woodland edges, orchards, shade trees, and isolated stands near water; it uses open woods and other wooded or shrubby habitats outside the breeding season.",
+  "measurements": {
+    "length": "average 14.0 cm (5.51 in)",
+    "weight": "average 12.0 g (0.42 oz)",
+    "wingspan": "average 21.6 cm (8.50 in)"
+  },
+  "palette": [
+    "olive gray",
+    "soft gray",
+    "off-white",
+    "pale yellow",
+    "dark charcoal"
+  ],
+  "scientific_name": "Vireo gilvus",
+  "sources": [
+    {
+      "title": "Eastern Warbling Vireo | Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/eastern-warbling-vireo"
+    },
+    {
+      "title": "Vireo gilvus (eastern warbling-vireo) | Animal Diversity Web",
+      "url": "https://animaldiversity.org/accounts/Vireo_gilvus/"
+    }
+  ],
+  "taxon_id": 17394
+}

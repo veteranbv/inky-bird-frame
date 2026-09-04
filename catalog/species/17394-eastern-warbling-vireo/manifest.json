@@ -1,0 +1,152 @@
+{
+  "approved_at": "2026-09-04T00:39:23+00:00",
+  "assets": {
+    "display": {
+      "filename": "display.png",
+      "sha256": "e014b18e430b5cd608b6a0d87155e969283af7382c29bbeb6870ad6d0ae7ab5f"
+    },
+    "portrait": {
+      "filename": "portrait.png",
+      "sha256": "ccfedab59489e0609a07fd5e3a7bd6daa6b79f31c9e7eb3fd42991f914bce32c"
+    }
+  },
+  "common_name": "Eastern Warbling Vireo",
+  "generation": {
+    "attempt": 2,
+    "correction_source_sha256": "97af5b130ad4b7e17aca0b8c149cfed7955291c3f2df6f8d37802184f3f75710",
+    "generated_at": "2026-09-04T00:39:20+00:00",
+    "generator": "Codex subscription / built-in gpt-image-2",
+    "max_attempts": 3,
+    "prompt_version": "field-journal-v6"
+  },
+  "profile": {
+    "behavior": "Migratory and primarily arboreal. It forages deliberately among outer foliage, hopping along twigs and gleaning insects from leaves, sometimes hovering briefly; breeding birds are territorial and persistent singers.",
+    "common_name": "Eastern Warbling Vireo",
+    "family": "Vireonidae",
+    "field_marks": [
+      "Compact, sparrow-sized body with a rounded head and medium-length tail",
+      "Olive-gray upperparts with a subtly grayer crown",
+      "Whitish throat and belly with a pale-yellow wash along the sides",
+      "Pale eyebrow, faint gray eye-line, and conspicuous dark eye",
+      "Fairly stout gray bill and dark gray legs",
+      "Plain, rounded wings without wing bars; square to shallow-notched tail tip"
+    ],
+    "habitat": "Open deciduous and mixed woodland, leafy groves, woodland edges, orchards, shade trees, and isolated stands near water; it uses open woods and other wooded or shrubby habitats outside the breeding season.",
+    "measurements": {
+      "length": "average 14.0 cm (5.51 in)",
+      "weight": "average 12.0 g (0.42 oz)",
+      "wingspan": "average 21.6 cm (8.50 in)"
+    },
+    "palette": [
+      "olive gray",
+      "soft gray",
+      "off-white",
+      "pale yellow",
+      "dark charcoal"
+    ],
+    "scientific_name": "Vireo gilvus",
+    "sources": [
+      {
+        "title": "Eastern Warbling Vireo | Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/eastern-warbling-vireo"
+      },
+      {
+        "title": "Vireo gilvus (eastern warbling-vireo) | Animal Diversity Web",
+        "url": "https://animaldiversity.org/accounts/Vireo_gilvus/"
+      }
+    ],
+    "taxon_id": 17394
+  },
+  "quality_review": {
+    "anatomy_accuracy": 5,
+    "composition_quality": 5,
+    "correction_findings": [],
+    "findings": [
+      "The primary specimen is anatomically coherent: exactly one head, one beak, one tail, two plausibly attached legs with grasping feet, and one visible near-side wing with the far-side wing naturally occluded by the lateral pose.",
+      "The detached wing and head are clearly supplementary studies and do not appear attached to the primary specimen. Both studies are well formed.",
+      "Both depicted bills are stout and consistent with the reference photographs; tracing the mandibles independently shows a slight, consistent upper-mandible tip projection rather than a reversed or exaggerated bill.",
+      "The compact body, rounded head, medium-length tail, plain rounded wing without wing bars, gray-olive upperparts, pale underparts with yellow wash, weak facial pattern, conspicuous dark eye, and dark legs agree with the supplied photographs and direct identification sources.",
+      "Every visible title, taxonomic label, measurement, habitat sentence, behavior sentence, field-mark entry, and palette label matches the proposed profile without omissions, substitutions, duplication, or spelling errors.",
+      "The proposed averages\u201414.0 cm length, 21.6 cm wingspan, and 12.0 g weight\u2014are directly supported as one published measurement set by Animal Diversity Web. Different ranges published by Audubon and Cornell do not invalidate that supported set.",
+      "The vertical ruler increases from 0 cm (0 in) at the bottom to 14.0 cm (5.51 in) at the top, agrees with the adjacent body-length label, and is explicitly marked \u201cSCHEMATIC \u2014 NOT TO SCALE.\u201d",
+      "No place name, ZIP code, coordinates, map, or local-observation detail appears."
+    ],
+    "location_free": true,
+    "passed": true,
+    "species_accuracy": 5,
+    "text_accuracy": 5,
+    "verification_sources": [
+      {
+        "title": "Eastern Warbling Vireo Identification | All About Birds, Cornell Lab of Ornithology",
+        "url": "https://www.allaboutbirds.org/guide/Eastern_Warbling_Vireo/id"
+      },
+      {
+        "title": "Eastern Warbling Vireo | Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/eastern-warbling-vireo"
+      },
+      {
+        "title": "Vireo gilvus (eastern warbling-vireo) | Animal Diversity Web",
+        "url": "https://animaldiversity.org/accounts/Vireo_gilvus/"
+      }
+    ]
+  },
+  "references": [
+    {
+      "attribution": "(c) Michael, Antoni and Nihat Hinczewski, some rights reserved (CC BY)",
+      "filename": "01-383303869.jpeg",
+      "height": 2048,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/383303869/large.jpeg",
+      "license_code": "cc-by",
+      "observation_id": 216714958,
+      "observer": "mhincz",
+      "photo_id": 383303869,
+      "sha256": "1e12d414b587848576c6f0163bf09635578297f38a5f137a5b3429e9e5c58ae0",
+      "source_url": "https://www.inaturalist.org/observations/216714958",
+      "width": 1818
+    },
+    {
+      "attribution": "(c) Michael K. Oliver, Ph.D., some rights reserved (CC BY)",
+      "filename": "02-9142012.jpg",
+      "height": 2048,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/9142012/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 7109626,
+      "observer": "cichlidmike",
+      "photo_id": 9142012,
+      "sha256": "61e620f935badbcc953b84d43e6e458dacb42aac62ee5dd3c5ceb266351e67a0",
+      "source_url": "https://www.inaturalist.org/observations/7109626",
+      "width": 1536
+    },
+    {
+      "attribution": "(c) Donald Davesne, some rights reserved (CC BY)",
+      "filename": "03-414005980.jpg",
+      "height": 1362,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/414005980/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 232990908,
+      "observer": "donalddavesne",
+      "photo_id": 414005980,
+      "sha256": "889c81dc3d063f5ad25cd74a465062b9372dc9864e1d4b001bfee0062cee4046",
+      "source_url": "https://www.inaturalist.org/observations/232990908",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) Brian White, some rights reserved (CC BY)",
+      "filename": "04-74562691.jpg",
+      "height": 885,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/74562691/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 47016947,
+      "observer": "brianwhite",
+      "photo_id": 74562691,
+      "sha256": "b9610e2d92393b4d7935b4f50239992ee2ef9c8911070240cd5b499f5ccf3933",
+      "source_url": "https://www.inaturalist.org/observations/47016947",
+      "width": 993
+    }
+  ],
+  "schema_version": 1,
+  "scientific_name": "Vireo gilvus",
+  "slug": "eastern-warbling-vireo",
+  "status": "approved",
+  "taxon_id": 17394
+}

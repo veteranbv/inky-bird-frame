@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-31T21:11:55+00:00",
+  "generated_at": "2026-09-04T00:39:23+00:00",
   "schema_version": 1,
   "species": [
     {
@@ -606,6 +606,17 @@
       "scientific_name": "Pipilo erythrophthalmus",
       "slug": "eastern-towhee",
       "taxon_id": 9424
+    },
+    {
+      "approved_at": "2026-09-04T00:39:23+00:00",
+      "common_name": "Eastern Warbling Vireo",
+      "display_path": "species/17394-eastern-warbling-vireo/display.png",
+      "display_sha256": "e014b18e430b5cd608b6a0d87155e969283af7382c29bbeb6870ad6d0ae7ab5f",
+      "portrait_path": "species/17394-eastern-warbling-vireo/portrait.png",
+      "portrait_sha256": "ccfedab59489e0609a07fd5e3a7bd6daa6b79f31c9e7eb3fd42991f914bce32c",
+      "scientific_name": "Vireo gilvus",
+      "slug": "eastern-warbling-vireo",
+      "taxon_id": 17394
     },
     {
       "approved_at": "2026-07-13T04:21:25+00:00",
