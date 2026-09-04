@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-04T00:39:23+00:00",
+  "generated_at": "2026-09-04T18:40:23+00:00",
   "schema_version": 1,
   "species": [
     {
@@ -375,6 +375,17 @@
       "scientific_name": "Bombycilla cedrorum",
       "slug": "cedar-waxwing",
       "taxon_id": 7428
+    },
+    {
+      "approved_at": "2026-09-04T18:40:23+00:00",
+      "common_name": "Chestnut-sided Warbler",
+      "display_path": "species/145239-chestnut-sided-warbler/display.png",
+      "display_sha256": "5cbc92c8e704270e2519c3edbe3f1a751d8520a6c620550db0a20134450b9419",
+      "portrait_path": "species/145239-chestnut-sided-warbler/portrait.png",
+      "portrait_sha256": "2c68047d0e5949ed996ddf0bfd5e953b299f50bc7c546f6690977175dc8d4b38",
+      "scientific_name": "Setophaga pensylvanica",
+      "slug": "chestnut-sided-warbler",
+      "taxon_id": 145239
     },
     {
       "approved_at": "2026-08-13T17:01:35+00:00",
