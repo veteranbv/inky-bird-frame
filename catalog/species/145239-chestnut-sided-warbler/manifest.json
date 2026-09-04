@@ -1,0 +1,159 @@
+{
+  "approved_at": "2026-09-04T18:40:23+00:00",
+  "assets": {
+    "display": {
+      "filename": "display.png",
+      "sha256": "5cbc92c8e704270e2519c3edbe3f1a751d8520a6c620550db0a20134450b9419"
+    },
+    "portrait": {
+      "filename": "portrait.png",
+      "sha256": "2c68047d0e5949ed996ddf0bfd5e953b299f50bc7c546f6690977175dc8d4b38"
+    }
+  },
+  "common_name": "Chestnut-sided Warbler",
+  "generation": {
+    "attempt": 2,
+    "correction_source_sha256": "df6335952626ff2a1e41f563c18f73f410a2050158ebe18ac4eb59e4a57aa7ca",
+    "generated_at": "2026-09-04T18:40:21+00:00",
+    "generator": "Codex subscription / built-in gpt-image-2",
+    "max_attempts": 3,
+    "prompt_version": "field-journal-v6"
+  },
+  "profile": {
+    "behavior": "Flits and hops through shrubs and saplings, gleaning insects\u2014especially from leaf undersides\u2014and sometimes sallying after flying prey. Often raises its tail and droops its wings while foraging.",
+    "common_name": "Chestnut-sided Warbler",
+    "family": "Parulidae",
+    "field_marks": [
+      "Small, slim-bodied warbler with a relatively long tail, often held cocked.",
+      "Short, dark, pointed bill; dark round eye; slender gray legs.",
+      "Breeding adults have a yellow crown and black eye stripe framing a white cheek.",
+      "Breeding adults show a rich chestnut flank stripe against clean white underparts.",
+      "Dark wings bear two pale yellow wingbars; the dark tail has white outer feathers.",
+      "Nonbreeding adults and immatures are lime-olive above, with a pale gray face, crisp white eye-ring, and little or no chestnut."
+    ],
+    "habitat": "Young deciduous regrowth, dense thickets, brushy forest edges, and overgrown fields; migrants and wintering birds also use a wider range of shrubby and forested habitats.",
+    "measurements": {
+      "length": "Both sexes: 4.7\u20135.5 in (12\u201314 cm)",
+      "weight": "Both sexes: 0.4\u20130.5 oz (10.7\u201314.3 g)",
+      "wingspan": "Both sexes: 7.5\u20138.3 in (19\u201321 cm)"
+    },
+    "palette": [
+      "lemon yellow",
+      "chestnut brown",
+      "olive green",
+      "clean white",
+      "charcoal black"
+    ],
+    "scientific_name": "Setophaga pensylvanica",
+    "sources": [
+      {
+        "title": "Chestnut-sided Warbler Identification \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Chestnut-sided_Warbler/id"
+      },
+      {
+        "title": "Chestnut-sided Warbler Life History \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Chestnut-sided_Warbler/lifehistory"
+      },
+      {
+        "title": "Chestnut-sided Warbler \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/chestnut-sided-warbler"
+      }
+    ],
+    "taxon_id": 145239
+  },
+  "quality_review": {
+    "anatomy_accuracy": 4,
+    "composition_quality": 5,
+    "correction_findings": [],
+    "findings": [
+      "The primary specimen is identifiable as a breeding Chestnut-sided Warbler: yellow crown, black eye stripe surrounding a white cheek, rich chestnut flanks, white underparts, dark streaked upperparts, two pale wingbars, and white outer tail feathers agree with the references and direct sources.",
+      "The slim body, relatively long tail, short pointed bill, round eye, gray legs, and perching posture are credible. The primary specimen has one head, one beak, one tail, two convincingly attached legs with gripping feet, and a complete near-side wing; the far-side wing is naturally occluded.",
+      "The detached wing and head are clearly intentional supplementary studies. Their feather organization, markings, eye, and bill are internally consistent with the primary specimen and reference photographs.",
+      "Every visible heading, name, measurement, habitat statement, behavior statement, and field-mark line matches the proposed profile without a material spelling, number, omission, duplication, or word-order error.",
+      "The proposed measurement set is directly supported by All About Birds. Audubon's different published measurement set is an acceptable alternative source set and does not create a profile conflict.",
+      "The ruler increases correctly from 4.7 in (12 cm) at the bottom to 5.5 in (14 cm) at the top, agrees with the adjacent body-length range, and is explicitly labeled \u201cSCHEMATIC \u2014 NOT TO SCALE.\u201d",
+      "No place name, ZIP code, coordinates, map, or local-observation detail appears."
+    ],
+    "location_free": true,
+    "passed": true,
+    "species_accuracy": 5,
+    "text_accuracy": 5,
+    "verification_sources": [
+      {
+        "title": "Chestnut-sided Warbler Identification \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Chestnut-sided_Warbler/id"
+      },
+      {
+        "title": "Chestnut-sided Warbler Life History \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Chestnut-sided_Warbler/lifehistory"
+      },
+      {
+        "title": "Chestnut-sided Warbler \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/chestnut-sided-warbler"
+      },
+      {
+        "title": "Chestnut-sided warbler \u2014 Wikipedia",
+        "url": "https://en.wikipedia.org/wiki/Chestnut-sided_warbler"
+      }
+    ]
+  },
+  "references": [
+    {
+      "attribution": "no rights reserved",
+      "filename": "01-145204398.jpg",
+      "height": 1213,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/145204398/large.jpg",
+      "license_code": "cc0",
+      "observation_id": 88036143,
+      "observer": "wildreturn",
+      "photo_id": 145204398,
+      "sha256": "709431b972fbb1d4a7daf06711e47213e580f0aef93fc1b919e2270e6cfe6bd4",
+      "source_url": "https://www.inaturalist.org/observations/88036143",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) carbenoid, some rights reserved (CC BY)",
+      "filename": "02-277338611.jpg",
+      "height": 1365,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/277338611/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 160495531,
+      "observer": "carbenoid",
+      "photo_id": 277338611,
+      "sha256": "4ae5e91935d77fc8d5550420a7526a59156b59b64034be78e15299fa6d0d5d9e",
+      "source_url": "https://www.inaturalist.org/observations/160495531",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) zr217, some rights reserved (CC BY)",
+      "filename": "03-463790672.jpg",
+      "height": 1365,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/463790672/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 258491467,
+      "observer": "zr217",
+      "photo_id": 463790672,
+      "sha256": "ec118c8e27480e033301abdd175281e069eb1f9c37449cdf8fee8f73c25ec45c",
+      "source_url": "https://www.inaturalist.org/observations/258491467",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) Kevin Floyd, some rights reserved (CC BY)",
+      "filename": "04-597111772.jpg",
+      "height": 1366,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/597111772/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 329411135,
+      "observer": "kevinfloyd",
+      "photo_id": 597111772,
+      "sha256": "b0baccb1195e62f3526db0496785d7ddca251c15a5238855a157915ef5f0256d",
+      "source_url": "https://www.inaturalist.org/observations/329411135",
+      "width": 2048
+    }
+  ],
+  "schema_version": 1,
+  "scientific_name": "Setophaga pensylvanica",
+  "slug": "chestnut-sided-warbler",
+  "status": "approved",
+  "taxon_id": 145239
+}

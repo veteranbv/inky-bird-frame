@@ -1,0 +1,42 @@
+{
+  "behavior": "Flits and hops through shrubs and saplings, gleaning insects\u2014especially from leaf undersides\u2014and sometimes sallying after flying prey. Often raises its tail and droops its wings while foraging.",
+  "common_name": "Chestnut-sided Warbler",
+  "family": "Parulidae",
+  "field_marks": [
+    "Small, slim-bodied warbler with a relatively long tail, often held cocked.",
+    "Short, dark, pointed bill; dark round eye; slender gray legs.",
+    "Breeding adults have a yellow crown and black eye stripe framing a white cheek.",
+    "Breeding adults show a rich chestnut flank stripe against clean white underparts.",
+    "Dark wings bear two pale yellow wingbars; the dark tail has white outer feathers.",
+    "Nonbreeding adults and immatures are lime-olive above, with a pale gray face, crisp white eye-ring, and little or no chestnut."
+  ],
+  "habitat": "Young deciduous regrowth, dense thickets, brushy forest edges, and overgrown fields; migrants and wintering birds also use a wider range of shrubby and forested habitats.",
+  "measurements": {
+    "length": "Both sexes: 4.7\u20135.5 in (12\u201314 cm)",
+    "weight": "Both sexes: 0.4\u20130.5 oz (10.7\u201314.3 g)",
+    "wingspan": "Both sexes: 7.5\u20138.3 in (19\u201321 cm)"
+  },
+  "palette": [
+    "lemon yellow",
+    "chestnut brown",
+    "olive green",
+    "clean white",
+    "charcoal black"
+  ],
+  "scientific_name": "Setophaga pensylvanica",
+  "sources": [
+    {
+      "title": "Chestnut-sided Warbler Identification \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Chestnut-sided_Warbler/id"
+    },
+    {
+      "title": "Chestnut-sided Warbler Life History \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Chestnut-sided_Warbler/lifehistory"
+    },
+    {
+      "title": "Chestnut-sided Warbler \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/chestnut-sided-warbler"
+    }
+  ],
+  "taxon_id": 145239
+}

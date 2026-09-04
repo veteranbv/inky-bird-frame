@@ -1,0 +1,36 @@
+{
+  "anatomy_accuracy": 4,
+  "composition_quality": 5,
+  "correction_findings": [],
+  "findings": [
+    "The primary specimen is identifiable as a breeding Chestnut-sided Warbler: yellow crown, black eye stripe surrounding a white cheek, rich chestnut flanks, white underparts, dark streaked upperparts, two pale wingbars, and white outer tail feathers agree with the references and direct sources.",
+    "The slim body, relatively long tail, short pointed bill, round eye, gray legs, and perching posture are credible. The primary specimen has one head, one beak, one tail, two convincingly attached legs with gripping feet, and a complete near-side wing; the far-side wing is naturally occluded.",
+    "The detached wing and head are clearly intentional supplementary studies. Their feather organization, markings, eye, and bill are internally consistent with the primary specimen and reference photographs.",
+    "Every visible heading, name, measurement, habitat statement, behavior statement, and field-mark line matches the proposed profile without a material spelling, number, omission, duplication, or word-order error.",
+    "The proposed measurement set is directly supported by All About Birds. Audubon's different published measurement set is an acceptable alternative source set and does not create a profile conflict.",
+    "The ruler increases correctly from 4.7 in (12 cm) at the bottom to 5.5 in (14 cm) at the top, agrees with the adjacent body-length range, and is explicitly labeled \u201cSCHEMATIC \u2014 NOT TO SCALE.\u201d",
+    "No place name, ZIP code, coordinates, map, or local-observation detail appears."
+  ],
+  "location_free": true,
+  "passed": true,
+  "species_accuracy": 5,
+  "text_accuracy": 5,
+  "verification_sources": [
+    {
+      "title": "Chestnut-sided Warbler Identification \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Chestnut-sided_Warbler/id"
+    },
+    {
+      "title": "Chestnut-sided Warbler Life History \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Chestnut-sided_Warbler/lifehistory"
+    },
+    {
+      "title": "Chestnut-sided Warbler \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/chestnut-sided-warbler"
+    },
+    {
+      "title": "Chestnut-sided warbler \u2014 Wikipedia",
+      "url": "https://en.wikipedia.org/wiki/Chestnut-sided_warbler"
+    }
+  ]
+}
