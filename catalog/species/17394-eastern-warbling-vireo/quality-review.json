@@ -1,0 +1,33 @@
+{
+  "anatomy_accuracy": 5,
+  "composition_quality": 5,
+  "correction_findings": [],
+  "findings": [
+    "The primary specimen is anatomically coherent: exactly one head, one beak, one tail, two plausibly attached legs with grasping feet, and one visible near-side wing with the far-side wing naturally occluded by the lateral pose.",
+    "The detached wing and head are clearly supplementary studies and do not appear attached to the primary specimen. Both studies are well formed.",
+    "Both depicted bills are stout and consistent with the reference photographs; tracing the mandibles independently shows a slight, consistent upper-mandible tip projection rather than a reversed or exaggerated bill.",
+    "The compact body, rounded head, medium-length tail, plain rounded wing without wing bars, gray-olive upperparts, pale underparts with yellow wash, weak facial pattern, conspicuous dark eye, and dark legs agree with the supplied photographs and direct identification sources.",
+    "Every visible title, taxonomic label, measurement, habitat sentence, behavior sentence, field-mark entry, and palette label matches the proposed profile without omissions, substitutions, duplication, or spelling errors.",
+    "The proposed averages\u201414.0 cm length, 21.6 cm wingspan, and 12.0 g weight\u2014are directly supported as one published measurement set by Animal Diversity Web. Different ranges published by Audubon and Cornell do not invalidate that supported set.",
+    "The vertical ruler increases from 0 cm (0 in) at the bottom to 14.0 cm (5.51 in) at the top, agrees with the adjacent body-length label, and is explicitly marked \u201cSCHEMATIC \u2014 NOT TO SCALE.\u201d",
+    "No place name, ZIP code, coordinates, map, or local-observation detail appears."
+  ],
+  "location_free": true,
+  "passed": true,
+  "species_accuracy": 5,
+  "text_accuracy": 5,
+  "verification_sources": [
+    {
+      "title": "Eastern Warbling Vireo Identification | All About Birds, Cornell Lab of Ornithology",
+      "url": "https://www.allaboutbirds.org/guide/Eastern_Warbling_Vireo/id"
+    },
+    {
+      "title": "Eastern Warbling Vireo | Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/eastern-warbling-vireo"
+    },
+    {
+      "title": "Vireo gilvus (eastern warbling-vireo) | Animal Diversity Web",
+      "url": "https://animaldiversity.org/accounts/Vireo_gilvus/"
+    }
+  ]
+}
