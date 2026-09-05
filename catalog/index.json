@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-04T18:52:06+00:00",
+  "generated_at": "2026-09-05T18:40:33+00:00",
   "schema_version": 1,
   "species": [
     {
@@ -188,6 +188,17 @@
       "scientific_name": "Nycticorax nycticorax",
       "slug": "black-crowned-night-heron",
       "taxon_id": 4981
+    },
+    {
+      "approved_at": "2026-09-05T18:40:33+00:00",
+      "common_name": "Black-throated Green Warbler",
+      "display_path": "species/145258-black-throated-green-warbler/display.png",
+      "display_sha256": "edfce92a9ab21b83507ddfc28fae454d3be37ddfebbd09b811c399f05451538f",
+      "portrait_path": "species/145258-black-throated-green-warbler/portrait.png",
+      "portrait_sha256": "ab3e674ee264d54040f2c1acc24fc7fb048ecc46a08e9e7e49719db3db9afb37",
+      "scientific_name": "Setophaga virens",
+      "slug": "black-throated-green-warbler",
+      "taxon_id": 145258
     },
     {
       "approved_at": "2026-07-13T03:10:43+00:00",

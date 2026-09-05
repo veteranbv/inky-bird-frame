@@ -1,0 +1,42 @@
+{
+  "behavior": "Active, agile foliage gleaner that searches leaves, twigs, and branch tips for insects, frequently hovering beneath leaves and occasionally catching prey in flight. It often forages high in trees and may join mixed-species flocks outside the breeding season.",
+  "common_name": "Black-throated Green Warbler",
+  "family": "Parulidae",
+  "field_marks": [
+    "Bright yellow face with a dusky eye-and-ear patch and olive-green crown.",
+    "Adult male has a black throat and upper breast; females and immatures have a pale throat with reduced black markings.",
+    "Olive-green back, pale underparts, and bold black streaking along the sides.",
+    "Two crisp white wing bars contrast with otherwise dark wings.",
+    "Compact, large-headed proportions with a short, straight, pointed bill and dark eye.",
+    "Slender dark legs and a short dark tail with conspicuous white outer feathers."
+  ],
+  "habitat": "Primarily coniferous and mixed forests, with some populations using deciduous forest or coastal cypress swamps. During migration it occupies varied woodland and edges; winter habitat is chiefly the canopy of mature forest, with occasional use of secondary growth.",
+  "measurements": {
+    "length": "4.3\u20134.7 in (11\u201312 cm), both sexes",
+    "weight": "0.3\u20130.4 oz (7\u201311 g), both sexes",
+    "wingspan": "6.7\u20137.9 in (17\u201320 cm), both sexes"
+  },
+  "palette": [
+    "lemon yellow",
+    "olive green",
+    "black",
+    "white",
+    "charcoal gray"
+  ],
+  "scientific_name": "Setophaga virens",
+  "sources": [
+    {
+      "title": "Black-throated Green Warbler Identification \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Black-throated_Green_Warbler/id"
+    },
+    {
+      "title": "Black-throated Green Warbler Life History \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Black-throated_Green_Warbler/lifehistory"
+    },
+    {
+      "title": "Black-throated Green Warbler \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/black-throated-green-warbler"
+    }
+  ],
+  "taxon_id": 145258
+}
