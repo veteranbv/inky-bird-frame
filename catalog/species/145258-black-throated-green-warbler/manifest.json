@@ -1,0 +1,169 @@
+{
+  "approved_at": "2026-09-05T18:40:33+00:00",
+  "assets": {
+    "display": {
+      "filename": "display.png",
+      "sha256": "edfce92a9ab21b83507ddfc28fae454d3be37ddfebbd09b811c399f05451538f"
+    },
+    "portrait": {
+      "filename": "portrait.png",
+      "sha256": "ab3e674ee264d54040f2c1acc24fc7fb048ecc46a08e9e7e49719db3db9afb37"
+    }
+  },
+  "common_name": "Black-throated Green Warbler",
+  "generation": {
+    "attempt": 2,
+    "correction_source_sha256": "42a0b321c0673aa177cec56fe296ff45beb89ede60e253e646bb620a29a63b04",
+    "generated_at": "2026-09-05T18:40:31+00:00",
+    "generator": "Codex subscription / built-in gpt-image-2",
+    "max_attempts": 3,
+    "prompt_version": "field-journal-v6"
+  },
+  "profile": {
+    "behavior": "Active, agile foliage gleaner that searches leaves, twigs, and branch tips for insects, frequently hovering beneath leaves and occasionally catching prey in flight. It often forages high in trees and may join mixed-species flocks outside the breeding season.",
+    "common_name": "Black-throated Green Warbler",
+    "family": "Parulidae",
+    "field_marks": [
+      "Bright yellow face with a dusky eye-and-ear patch and olive-green crown.",
+      "Adult male has a black throat and upper breast; females and immatures have a pale throat with reduced black markings.",
+      "Olive-green back, pale underparts, and bold black streaking along the sides.",
+      "Two crisp white wing bars contrast with otherwise dark wings.",
+      "Compact, large-headed proportions with a short, straight, pointed bill and dark eye.",
+      "Slender dark legs and a short dark tail with conspicuous white outer feathers."
+    ],
+    "habitat": "Primarily coniferous and mixed forests, with some populations using deciduous forest or coastal cypress swamps. During migration it occupies varied woodland and edges; winter habitat is chiefly the canopy of mature forest, with occasional use of secondary growth.",
+    "measurements": {
+      "length": "4.3\u20134.7 in (11\u201312 cm), both sexes",
+      "weight": "0.3\u20130.4 oz (7\u201311 g), both sexes",
+      "wingspan": "6.7\u20137.9 in (17\u201320 cm), both sexes"
+    },
+    "palette": [
+      "lemon yellow",
+      "olive green",
+      "black",
+      "white",
+      "charcoal gray"
+    ],
+    "scientific_name": "Setophaga virens",
+    "sources": [
+      {
+        "title": "Black-throated Green Warbler Identification \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Black-throated_Green_Warbler/id"
+      },
+      {
+        "title": "Black-throated Green Warbler Life History \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Black-throated_Green_Warbler/lifehistory"
+      },
+      {
+        "title": "Black-throated Green Warbler \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/black-throated-green-warbler"
+      }
+    ],
+    "taxon_id": 145258
+  },
+  "quality_review": {
+    "anatomy_accuracy": 4,
+    "composition_quality": 5,
+    "correction_findings": [],
+    "findings": [
+      "The plate correctly identifies Black-throated Green Warbler, Setophaga virens, in family Parulidae; these identity fields are independently supported by All About Birds, eBird, and Birds of the World.",
+      "The primary specimen convincingly represents an adult male: bright yellow face, dusky eye-and-ear patch, olive crown and back, black throat and upper breast, pale underparts with bold dark flank streaking, two white wing bars, dark wings, and white outer tail feathers. These marks agree with the direct sources and attached field-reference photos.",
+      "The compact, large-headed silhouette, short pointed bill, dark eye, slender legs, and tail proportions are consistent with the species. Minor illustrative stylization does not create a material anatomical or identification error.",
+      "There is exactly one complete primary specimen with one head, one beak, one visible eye, one tail, two legs ending in plausible gripping feet, and an anatomically credible pair of wings; the far-side wing is naturally concealed by the side-on pose. No structure appears duplicated, severed, or implausibly attached.",
+      "Both primary and supplementary heads have coherent upper and lower mandibles extending from a shared base to a consistent pointed tip. Neither bill looks truncated, reversed, or materially inconsistent with the clearest side-profile references.",
+      "The detached wing and bill/head studies are clearly supplementary. The wing study has a coherent feather array and two white bars, while the head study reproduces the adult-male facial pattern without appearing attached to the primary specimen.",
+      "All visible prose matches the proposed profile in spelling, numbers, qualifiers, and word order: the three identification lines, measurement entries, habitat paragraph, behavior paragraph, and all six field-mark statements are complete and intelligible.",
+      "The published All About Birds measurement set directly supports length 4.3\u20134.7 in (11\u201312 cm), weight 0.3\u20130.4 oz (7\u201311 g), and wingspan 6.7\u20137.9 in (17\u201320 cm), all for both sexes. The plate reproduces that compatible set without synthesizing it with Audubon's different supported set.",
+      "The body-length diagram is internally consistent: 4.3 in (11 cm) is the lower endpoint, 4.7 in (12 cm) is the upper endpoint, values increase from bottom to top, and the diagram is explicitly labeled \u201cSCHEMATIC \u2014 NOT TO SCALE.\u201d Its unlabeled interior ticks do not contradict the range.",
+      "The palette now reads \u201cLemon Yellow,\u201d \u201cOlive Green,\u201d \u201cBlack,\u201d \u201cWhite,\u201d and \u201cCharcoal Gray,\u201d matching the proposed palette and visibly satisfying the earlier correction.",
+      "The layout is clear and balanced, with readable text, an unobstructed primary specimen, distinct supplementary studies, and no contradictory labels or markers.",
+      "No place name, ZIP code, coordinates, map, or local-observation detail appears.",
+      "No material species, anatomy, composition, or text defect remains."
+    ],
+    "location_free": true,
+    "passed": true,
+    "species_accuracy": 5,
+    "text_accuracy": 5,
+    "verification_sources": [
+      {
+        "title": "Black-throated Green Warbler Identification \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Black-throated_Green_Warbler/id"
+      },
+      {
+        "title": "Black-throated Green Warbler Life History \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Black-throated_Green_Warbler/lifehistory"
+      },
+      {
+        "title": "Black-throated Green Warbler \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/black-throated-green-warbler"
+      },
+      {
+        "title": "Black-throated Green Warbler \u2014 eBird",
+        "url": "https://ebird.org/species/btnwar"
+      },
+      {
+        "title": "Black-throated Green Warbler \u2014 Birds of the World",
+        "url": "https://birdsoftheworld.org/bow/species/btnwar/cur/introduction"
+      }
+    ]
+  },
+  "references": [
+    {
+      "attribution": "(c) Luke, some rights reserved (CC BY)",
+      "filename": "01-235087160.jpeg",
+      "height": 1536,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/235087160/large.jpeg",
+      "license_code": "cc-by",
+      "observation_id": 137625367,
+      "observer": "wildlife13",
+      "photo_id": 235087160,
+      "sha256": "365d52a6640930d6fc6e156bea367a9ac540119762e324b0934db54b22e3c564",
+      "source_url": "https://www.inaturalist.org/observations/137625367",
+      "width": 2048
+    },
+    {
+      "attribution": "no rights reserved",
+      "filename": "02-191288138.jpg",
+      "height": 1852,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/191288138/large.jpg",
+      "license_code": "cc0",
+      "observation_id": 113210944,
+      "observer": "w_mark_c",
+      "photo_id": 191288138,
+      "sha256": "8b2d940c7e6f8975e2a11f8d9d9e65a4d3f6f81ca6ecc0fd2baefa6842e9f896",
+      "source_url": "https://www.inaturalist.org/observations/113210944",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) er-birds, some rights reserved (CC BY)",
+      "filename": "03-437576388.jpeg",
+      "height": 1365,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/437576388/large.jpeg",
+      "license_code": "cc-by",
+      "observation_id": 245236597,
+      "observer": "er-birds",
+      "photo_id": 437576388,
+      "sha256": "2fead9edc1eda18227d23049c7a40b4837a037c4d6d43c66b12d77aa8047e9a1",
+      "source_url": "https://www.inaturalist.org/observations/245236597",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) Sebasti\u00e1n de Jes\u00fas Herrera Buenfil, some rights reserved (CC BY)",
+      "filename": "04-175905801.jpeg",
+      "height": 1080,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/175905801/large.jpeg",
+      "license_code": "cc-by",
+      "observation_id": 104913701,
+      "observer": "sebastian_hb",
+      "photo_id": 175905801,
+      "sha256": "dc1381287dcfedbbe94ff99a67d331e1b156219abac852c5cb487d6c16e63e78",
+      "source_url": "https://www.inaturalist.org/observations/104913701",
+      "width": 1440
+    }
+  ],
+  "schema_version": 1,
+  "scientific_name": "Setophaga virens",
+  "slug": "black-throated-green-warbler",
+  "status": "approved",
+  "taxon_id": 145258
+}
