@@ -1,0 +1,37 @@
+{
+  "anatomy_accuracy": 5,
+  "composition_quality": 5,
+  "correction_findings": [],
+  "findings": [
+    "The candidate depicts Tennessee Warbler accurately as a small, compact, short-tailed warbler with a thin, sharply pointed bill.",
+    "The primary specimen's gray-olive head, pale supercilium, dark eye, olive to yellow-green upperparts, weak or absent wingbars, plain pale underparts, and white undertail coverts agree with the licensed reference photographs and direct identification sources.",
+    "Plumage falls within documented variation for the species; the evidence does not require adding a seasonal, age, or sex qualifier.",
+    "The primary specimen has one head, one beak, one tail, a convincing pair of legs and functional gripping feet, and a plausible wing pair with the far-side wing naturally occluded by the lateral pose.",
+    "Both bill renderings have coherent shared bases, tapered mandibles, and pointed, non-truncated tips consistent with the clearest side-profile references; neither rendering shows a material projection reversal or inconsistency.",
+    "The detached wing and head are clearly supplementary studies rather than extra birds or parts attached to the primary specimen, and both are anatomically plausible.",
+    "The common name, scientific name, and family are correctly written and independently supported.",
+    "All visible measurement text matches the directly supported All About Birds measurement set: length 10\u201313 cm (3.9\u20135.1 in), weight 8\u201310 g (0.3 oz), and wingspan 19\u201320 cm (7.5\u20137.9 in), with the stated both-sexes qualifier.",
+    "The length diagram is internally consistent: 10 cm (3.9 in) is at the bottom, 13 cm (5.1 in) is at the top, the vertical range label agrees, and the diagram is explicitly marked SCHEMATIC \u2014 NOT TO SCALE.",
+    "The habitat, behavior, and all six field-mark lines are complete, legible, sensical, and match the proposed wording without a material omission, substitution, duplication, or numerical error.",
+    "The layout reads clearly as a scientific field-journal plate, with a dominant specimen, separated supplementary studies, coherent annotations, and no harmful overlap.",
+    "No map, coordinates, ZIP code, observation locality, or other local-observation detail appears; Tennessee occurs only as part of the species' established common name."
+  ],
+  "location_free": true,
+  "passed": true,
+  "species_accuracy": 5,
+  "text_accuracy": 5,
+  "verification_sources": [
+    {
+      "title": "Tennessee Warbler Identification \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Tennessee_Warbler/id"
+    },
+    {
+      "title": "Tennessee Warbler \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/tennessee-warbler"
+    },
+    {
+      "title": "Tennessee warbler \u2014 Smithsonian's National Zoo and Conservation Biology Institute",
+      "url": "https://nationalzoo.si.edu/animals/tennessee-warbler"
+    }
+  ]
+}

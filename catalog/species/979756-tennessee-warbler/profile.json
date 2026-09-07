@@ -1,0 +1,42 @@
+{
+  "behavior": "Active foliage gleaner that hops and flits through outer leaves and slender branches, usually high in the canopy, taking caterpillars and other invertebrates. It often joins mixed-species foraging flocks outside the breeding season and may also eat fruit and nectar.",
+  "common_name": "Tennessee Warbler",
+  "family": "Parulidae",
+  "field_marks": [
+    "Small, compact body with a short tail",
+    "Thin, sharply pointed dark bill",
+    "Gray-olive head with a pale eyebrow and dark eye",
+    "Olive to yellow-green back and wings with weak or absent wingbars",
+    "Plain whitish to yellow-washed underparts",
+    "White undertail coverts contrasting with dusky legs and tail"
+  ],
+  "habitat": "Breeds in young or middle-aged boreal coniferous and mixed forests, especially areas with openings, dense shrubs, or boggy ground. During migration it uses many wooded habitats, groves, and brush; in winter it occupies open or semiopen tropical broadleaf and second-growth forests, including shade-grown plantations.",
+  "measurements": {
+    "length": "Both sexes: 10\u201313 cm (3.9\u20135.1 in)",
+    "weight": "Both sexes: 8\u201310 g (0.3 oz)",
+    "wingspan": "Both sexes: 19\u201320 cm (7.5\u20137.9 in)"
+  },
+  "palette": [
+    "olive green",
+    "yellow-green",
+    "soft gray",
+    "creamy white",
+    "charcoal black"
+  ],
+  "scientific_name": "Leiothlypis peregrina",
+  "sources": [
+    {
+      "title": "Tennessee Warbler Identification \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Tennessee_Warbler/id"
+    },
+    {
+      "title": "Tennessee Warbler Life History \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Tennessee_Warbler/lifehistory"
+    },
+    {
+      "title": "Tennessee Warbler \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/tennessee-warbler"
+    }
+  ],
+  "taxon_id": 979756
+}

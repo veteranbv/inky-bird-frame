@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-05T18:40:33+00:00",
+  "generated_at": "2026-09-07T18:24:07+00:00",
   "schema_version": 1,
   "species": [
     {
@@ -1640,6 +1640,17 @@
       "scientific_name": "Melospiza georgiana",
       "slug": "swamp-sparrow",
       "taxon_id": 9096
+    },
+    {
+      "approved_at": "2026-09-07T18:24:07+00:00",
+      "common_name": "Tennessee Warbler",
+      "display_path": "species/979756-tennessee-warbler/display.png",
+      "display_sha256": "ed578b77792919c1f44cfd5d80559d7e6382d06aea905178700333e8a86bc680",
+      "portrait_path": "species/979756-tennessee-warbler/portrait.png",
+      "portrait_sha256": "c6c427a8a1502fafeb26ce68fa92d8e5cad7885f7e5da587850e34346487cfed",
+      "scientific_name": "Leiothlypis peregrina",
+      "slug": "tennessee-warbler",
+      "taxon_id": 979756
     },
     {
       "approved_at": "2026-07-09T22:29:46+00:00",
