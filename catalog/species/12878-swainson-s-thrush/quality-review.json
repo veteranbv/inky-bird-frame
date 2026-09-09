@@ -1,0 +1,42 @@
+{
+  "anatomy_accuracy": 5,
+  "composition_quality": 5,
+  "correction_findings": [],
+  "findings": [
+    "The primary specimen is convincingly identifiable as Swainson's Thrush: round head, short straight dark bill, prominent buff spectacle extending through the lores, olive-to-warm-brown upperparts, whitish underparts with concentrated brown throat and breast spotting, long pointed wings, medium-length tail, and pinkish legs agree with the direct sources and reference photographs.",
+    "The primary specimen contains one head, one beak, one visible eye, one tail, two convincingly attached legs with intact grasping feet, and a complete pair of wings; the far-side wing is naturally occluded by the body and near wing.",
+    "The detached spread-wing and head studies are clearly supplementary illustrations, remain separate from the primary specimen, and show coherent feather and bill anatomy.",
+    "The main bird's proportions, closed-wing layering, tail alignment, leg placement, toe grip, and bill geometry are anatomically coherent. No duplicated, detached, truncated, or implausibly attached structure is visible.",
+    "The common name, scientific name, and family are correctly rendered as \u201cSwainson\u2019s Thrush,\u201d \u201cCatharus ustulatus,\u201d and \u201cTurdidae.\u201d",
+    "All three printed measurement lines exactly reproduce the compatible Cornell Lab measurement set, including the \u201cBoth sexes\u201d qualifier: length 16\u201319 cm (6.3\u20137.5 in), wingspan 29\u201331 cm (11.4\u201312.2 in), and weight 23\u201345 g (0.8\u20131.6 oz). Audubon publishes a narrower supported length and weight set, which does not conflict with the correctly attributed Cornell-compatible set.",
+    "The body-length diagram is internally consistent: 16 cm is the lower endpoint, 19 cm is the upper endpoint, values increase from bottom to top, the units and range match the printed measurement, and \u201cSCHEMATIC \u2014 NOT TO SCALE\u201d clearly prevents interpretation as the printed specimen\u2019s scale. The unlabeled interior ticks are harmless visual subdivisions.",
+    "The habitat paragraph is factually consistent with direct Cornell, Audubon, and Animal Diversity Web accounts of closed-canopy coniferous or mixed forest, dense understory and streamside woodland, varied wooded migration habitat, and tropical forest or forest-edge nonbreeding habitat.",
+    "The behavior paragraph is consistent with direct sources describing shy behavior, vocal activity, foliage and ground foraging, short or springy hops, arthropod gleaning, lunging, hovering, flycatching, fruit consumption, and mainly nocturnal migration.",
+    "Every field-mark line is supported and visually represented: buff spectacles, olive-to-russet upperparts, pale spotted underparts, round head, short straight bill, fairly long pointed wings, medium tail, and pinkish legs.",
+    "The palette labels\u2014olive brown, russet brown, warm buff, creamy white, and dusky brown\u2014are spelled correctly and appropriately describe the illustrated plumage.",
+    "All visible prose is complete and intelligible, with no duplicated, omitted, substituted, or nonsensical wording detected relative to the proposed facts.",
+    "No place name, ZIP code, coordinates, map, or local-observation detail appears anywhere on the plate."
+  ],
+  "location_free": true,
+  "passed": true,
+  "species_accuracy": 5,
+  "text_accuracy": 5,
+  "verification_sources": [
+    {
+      "title": "Swainson's Thrush Identification \u2014 All About Birds, Cornell Lab of Ornithology",
+      "url": "https://www.allaboutbirds.org/guide/swainsons_thrush/id"
+    },
+    {
+      "title": "Swainson's Thrush Life History \u2014 All About Birds, Cornell Lab of Ornithology",
+      "url": "https://www.allaboutbirds.org/guide/Swainsons_Thrush/lifehistory"
+    },
+    {
+      "title": "Swainson's Thrush \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/swainsons-thrush"
+    },
+    {
+      "title": "Catharus ustulatus (Swainson's thrush) \u2014 Animal Diversity Web",
+      "url": "https://animaldiversity.org/accounts/Catharus_ustulatus/"
+    }
+  ]
+}

@@ -1,0 +1,164 @@
+{
+  "approved_at": "2026-09-09T00:40:50+00:00",
+  "assets": {
+    "display": {
+      "filename": "display.png",
+      "sha256": "facadbcd82176b492b7c4dfd9fb7b2cbeaeb910d06dd7ee5176d6dd0f71989b4"
+    },
+    "portrait": {
+      "filename": "portrait.png",
+      "sha256": "af919c18888b4836bd652467d57042c8e26b938e0ff422375513d6b1e7b4d659"
+    }
+  },
+  "common_name": "Swainson's Thrush",
+  "generation": {
+    "attempt": 1,
+    "generated_at": "2026-09-09T00:40:49+00:00",
+    "generator": "Codex subscription / built-in gpt-image-2",
+    "max_attempts": 3,
+    "prompt_version": "field-journal-v6"
+  },
+  "profile": {
+    "behavior": "Shy but vocal; forages in foliage and on the forest floor with short or springy hops, gleaning arthropods and sometimes lunging, hovering, or flycatching. Also eats fruit, especially during migration and the nonbreeding season, and migrates mainly at night.",
+    "common_name": "Swainson's Thrush",
+    "family": "Turdidae",
+    "field_marks": [
+      "Prominent buff eye-ring extending toward the bill to form a spectacled face pattern",
+      "Olive-brown to warm russet-brown upperparts",
+      "Whitish underparts with brown spotting concentrated on the throat and breast",
+      "Round head with a short, straight, dark bill",
+      "Fairly long, pointed wings and a medium-length tail",
+      "Pinkish legs"
+    ],
+    "habitat": "Primarily closed-canopy coniferous, mixed, or deciduous forest with a shaded, dense understory; also uses streamside thickets and young woodland. During migration it occupies varied wooded habitats with dense cover, while nonbreeding habitat includes tropical forest and forest edges.",
+    "measurements": {
+      "length": "Both sexes: 16\u201319 cm (6.3\u20137.5 in)",
+      "weight": "Both sexes: 23\u201345 g (0.8\u20131.6 oz)",
+      "wingspan": "Both sexes: 29\u201331 cm (11.4\u201312.2 in)"
+    },
+    "palette": [
+      "olive brown",
+      "russet brown",
+      "warm buff",
+      "creamy white",
+      "dusky brown"
+    ],
+    "scientific_name": "Catharus ustulatus",
+    "sources": [
+      {
+        "title": "Swainson's Thrush Identification \u2014 All About Birds, Cornell Lab of Ornithology",
+        "url": "https://www.allaboutbirds.org/guide/Swainsons_Thrush/id"
+      },
+      {
+        "title": "Swainson's Thrush Life History \u2014 All About Birds, Cornell Lab of Ornithology",
+        "url": "https://www.allaboutbirds.org/guide/Swainsons_Thrush/lifehistory"
+      },
+      {
+        "title": "Swainson's Thrush \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/swainsons-thrush"
+      }
+    ],
+    "taxon_id": 12878
+  },
+  "quality_review": {
+    "anatomy_accuracy": 5,
+    "composition_quality": 5,
+    "correction_findings": [],
+    "findings": [
+      "The primary specimen is convincingly identifiable as Swainson's Thrush: round head, short straight dark bill, prominent buff spectacle extending through the lores, olive-to-warm-brown upperparts, whitish underparts with concentrated brown throat and breast spotting, long pointed wings, medium-length tail, and pinkish legs agree with the direct sources and reference photographs.",
+      "The primary specimen contains one head, one beak, one visible eye, one tail, two convincingly attached legs with intact grasping feet, and a complete pair of wings; the far-side wing is naturally occluded by the body and near wing.",
+      "The detached spread-wing and head studies are clearly supplementary illustrations, remain separate from the primary specimen, and show coherent feather and bill anatomy.",
+      "The main bird's proportions, closed-wing layering, tail alignment, leg placement, toe grip, and bill geometry are anatomically coherent. No duplicated, detached, truncated, or implausibly attached structure is visible.",
+      "The common name, scientific name, and family are correctly rendered as \u201cSwainson\u2019s Thrush,\u201d \u201cCatharus ustulatus,\u201d and \u201cTurdidae.\u201d",
+      "All three printed measurement lines exactly reproduce the compatible Cornell Lab measurement set, including the \u201cBoth sexes\u201d qualifier: length 16\u201319 cm (6.3\u20137.5 in), wingspan 29\u201331 cm (11.4\u201312.2 in), and weight 23\u201345 g (0.8\u20131.6 oz). Audubon publishes a narrower supported length and weight set, which does not conflict with the correctly attributed Cornell-compatible set.",
+      "The body-length diagram is internally consistent: 16 cm is the lower endpoint, 19 cm is the upper endpoint, values increase from bottom to top, the units and range match the printed measurement, and \u201cSCHEMATIC \u2014 NOT TO SCALE\u201d clearly prevents interpretation as the printed specimen\u2019s scale. The unlabeled interior ticks are harmless visual subdivisions.",
+      "The habitat paragraph is factually consistent with direct Cornell, Audubon, and Animal Diversity Web accounts of closed-canopy coniferous or mixed forest, dense understory and streamside woodland, varied wooded migration habitat, and tropical forest or forest-edge nonbreeding habitat.",
+      "The behavior paragraph is consistent with direct sources describing shy behavior, vocal activity, foliage and ground foraging, short or springy hops, arthropod gleaning, lunging, hovering, flycatching, fruit consumption, and mainly nocturnal migration.",
+      "Every field-mark line is supported and visually represented: buff spectacles, olive-to-russet upperparts, pale spotted underparts, round head, short straight bill, fairly long pointed wings, medium tail, and pinkish legs.",
+      "The palette labels\u2014olive brown, russet brown, warm buff, creamy white, and dusky brown\u2014are spelled correctly and appropriately describe the illustrated plumage.",
+      "All visible prose is complete and intelligible, with no duplicated, omitted, substituted, or nonsensical wording detected relative to the proposed facts.",
+      "No place name, ZIP code, coordinates, map, or local-observation detail appears anywhere on the plate."
+    ],
+    "location_free": true,
+    "passed": true,
+    "species_accuracy": 5,
+    "text_accuracy": 5,
+    "verification_sources": [
+      {
+        "title": "Swainson's Thrush Identification \u2014 All About Birds, Cornell Lab of Ornithology",
+        "url": "https://www.allaboutbirds.org/guide/swainsons_thrush/id"
+      },
+      {
+        "title": "Swainson's Thrush Life History \u2014 All About Birds, Cornell Lab of Ornithology",
+        "url": "https://www.allaboutbirds.org/guide/Swainsons_Thrush/lifehistory"
+      },
+      {
+        "title": "Swainson's Thrush \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/swainsons-thrush"
+      },
+      {
+        "title": "Catharus ustulatus (Swainson's thrush) \u2014 Animal Diversity Web",
+        "url": "https://animaldiversity.org/accounts/Catharus_ustulatus/"
+      }
+    ]
+  },
+  "references": [
+    {
+      "attribution": "no rights reserved",
+      "filename": "01-137845507.jpeg",
+      "height": 1365,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/137845507/large.jpeg",
+      "license_code": "cc0",
+      "observation_id": 83904998,
+      "observer": "funvill",
+      "photo_id": 137845507,
+      "sha256": "02e7bff9488b192f0ee9fd06a8f3471566f5fc67cd263b3129b8b57d11db90b4",
+      "source_url": "https://www.inaturalist.org/observations/83904998",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) Julio Cesar Ruiz Garc\u00eda, some rights reserved (CC BY)",
+      "filename": "02-504415333.jpeg",
+      "height": 1600,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/504415333/large.jpeg",
+      "license_code": "cc-by",
+      "observation_id": 280829630,
+      "observer": "julioruiz",
+      "photo_id": 504415333,
+      "sha256": "858145f4c000aa67f07ea5f7792591bd64c8c6f7b3a00a60dbd02789d5514a63",
+      "source_url": "https://www.inaturalist.org/observations/280829630",
+      "width": 1200
+    },
+    {
+      "attribution": "no rights reserved",
+      "filename": "03-259541210.jpeg",
+      "height": 1308,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/259541210/large.jpeg",
+      "license_code": "cc0",
+      "observation_id": 150512943,
+      "observer": "wildreturn",
+      "photo_id": 259541210,
+      "sha256": "c80252bc5d549602fa1b5c9cc5110464b32d8e4b11f35996586de4965b287673",
+      "source_url": "https://www.inaturalist.org/observations/150512943",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) Lauren Markewicz, some rights reserved (CC BY)",
+      "filename": "04-39478529.jpeg",
+      "height": 2048,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/39478529/large.jpeg",
+      "license_code": "cc-by",
+      "observation_id": 25484866,
+      "observer": "historyboots",
+      "photo_id": 39478529,
+      "sha256": "1534699bd7cd8c20b5270e69921b30c56fcc5e888d47bf68d69f7c931c61a6bb",
+      "source_url": "https://www.inaturalist.org/observations/25484866",
+      "width": 1536
+    }
+  ],
+  "schema_version": 1,
+  "scientific_name": "Catharus ustulatus",
+  "slug": "swainson-s-thrush",
+  "status": "approved",
+  "taxon_id": 12878
+}
