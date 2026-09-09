@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-07T18:24:07+00:00",
+  "generated_at": "2026-09-09T00:40:50+00:00",
   "schema_version": 1,
   "species": [
     {
@@ -1629,6 +1629,17 @@
       "scientific_name": "Piranga rubra",
       "slug": "summer-tanager",
       "taxon_id": 9915
+    },
+    {
+      "approved_at": "2026-09-09T00:40:50+00:00",
+      "common_name": "Swainson's Thrush",
+      "display_path": "species/12878-swainson-s-thrush/display.png",
+      "display_sha256": "facadbcd82176b492b7c4dfd9fb7b2cbeaeb910d06dd7ee5176d6dd0f71989b4",
+      "portrait_path": "species/12878-swainson-s-thrush/portrait.png",
+      "portrait_sha256": "af919c18888b4836bd652467d57042c8e26b938e0ff422375513d6b1e7b4d659",
+      "scientific_name": "Catharus ustulatus",
+      "slug": "swainson-s-thrush",
+      "taxon_id": 12878
     },
     {
       "approved_at": "2026-08-09T18:16:46+00:00",

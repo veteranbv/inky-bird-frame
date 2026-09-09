@@ -1,0 +1,42 @@
+{
+  "behavior": "Shy but vocal; forages in foliage and on the forest floor with short or springy hops, gleaning arthropods and sometimes lunging, hovering, or flycatching. Also eats fruit, especially during migration and the nonbreeding season, and migrates mainly at night.",
+  "common_name": "Swainson's Thrush",
+  "family": "Turdidae",
+  "field_marks": [
+    "Prominent buff eye-ring extending toward the bill to form a spectacled face pattern",
+    "Olive-brown to warm russet-brown upperparts",
+    "Whitish underparts with brown spotting concentrated on the throat and breast",
+    "Round head with a short, straight, dark bill",
+    "Fairly long, pointed wings and a medium-length tail",
+    "Pinkish legs"
+  ],
+  "habitat": "Primarily closed-canopy coniferous, mixed, or deciduous forest with a shaded, dense understory; also uses streamside thickets and young woodland. During migration it occupies varied wooded habitats with dense cover, while nonbreeding habitat includes tropical forest and forest edges.",
+  "measurements": {
+    "length": "Both sexes: 16\u201319 cm (6.3\u20137.5 in)",
+    "weight": "Both sexes: 23\u201345 g (0.8\u20131.6 oz)",
+    "wingspan": "Both sexes: 29\u201331 cm (11.4\u201312.2 in)"
+  },
+  "palette": [
+    "olive brown",
+    "russet brown",
+    "warm buff",
+    "creamy white",
+    "dusky brown"
+  ],
+  "scientific_name": "Catharus ustulatus",
+  "sources": [
+    {
+      "title": "Swainson's Thrush Identification \u2014 All About Birds, Cornell Lab of Ornithology",
+      "url": "https://www.allaboutbirds.org/guide/Swainsons_Thrush/id"
+    },
+    {
+      "title": "Swainson's Thrush Life History \u2014 All About Birds, Cornell Lab of Ornithology",
+      "url": "https://www.allaboutbirds.org/guide/Swainsons_Thrush/lifehistory"
+    },
+    {
+      "title": "Swainson's Thrush \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/swainsons-thrush"
+    }
+  ],
+  "taxon_id": 12878
+}
