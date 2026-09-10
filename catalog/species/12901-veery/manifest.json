@@ -1,0 +1,153 @@
+{
+  "approved_at": "2026-09-10T18:33:51+00:00",
+  "assets": {
+    "display": {
+      "filename": "display.png",
+      "sha256": "4596819c8ce7cbd6869245b533dd8e8a6cba3ae669caf8c5094fad9959993ddd"
+    },
+    "portrait": {
+      "filename": "portrait.png",
+      "sha256": "b8272b6a2f52bea1f63e391daabcd90bebd4d48225b7a1c7a8ee7b79aff8c0a1"
+    }
+  },
+  "common_name": "Veery",
+  "generation": {
+    "attempt": 1,
+    "generated_at": "2026-09-10T18:33:50+00:00",
+    "generator": "Codex subscription / built-in gpt-image-2",
+    "max_attempts": 3,
+    "prompt_version": "field-journal-v6"
+  },
+  "profile": {
+    "behavior": "An inconspicuous ground forager that advances in rapid, long hops, pauses to inspect leaf litter, and sometimes flips leaves with its bill. It also searches low foliage, drops from perches, and occasionally catches insects in flight. Its diet shifts from mainly insects and other invertebrates during breeding to more fruit in late summer and fall. The song is a rich, downward spiral, often delivered around dawn and dusk; migration occurs mostly at night.",
+    "common_name": "Veery",
+    "family": "Turdidae",
+    "field_marks": [
+      "Uniform warm cinnamon-brown head, back, wings, and tail",
+      "Pale whitish underparts with faint, sparse spotting on the throat and upper breast",
+      "Plain, softly marked face with a large dark eye and little obvious eye-ring",
+      "Straight, slender bill with a dark upper ridge and paler pinkish base",
+      "Plump body and rounded head with fairly long wings and pinkish legs",
+      "Relatively long, plain rufous-brown tail without contrasting patches"
+    ],
+    "habitat": "Dense, damp deciduous or mixed woodland with a well-developed understory, often near streams, wetlands, or other openings. It also uses forest edges and second-growth woodland during migration and dense lowland tropical-forest undergrowth in the nonbreeding season.",
+    "measurements": {
+      "length": "Both sexes: 6.7\u20137.1 in (17\u201318 cm)",
+      "weight": "Both sexes: 1.0\u20131.9 oz (28\u201354 g)",
+      "wingspan": "Both sexes: 11.0\u201311.4 in (28\u201329 cm)"
+    },
+    "palette": [
+      "cinnamon brown",
+      "tawny buff",
+      "creamy white",
+      "dusky brown",
+      "pale pink"
+    ],
+    "scientific_name": "Catharus fuscescens",
+    "sources": [
+      {
+        "title": "Veery Identification \u2014 All About Birds, Cornell Lab of Ornithology",
+        "url": "https://www.allaboutbirds.org/guide/veery/id"
+      },
+      {
+        "title": "Veery Life History \u2014 All About Birds, Cornell Lab of Ornithology",
+        "url": "https://www.allaboutbirds.org/guide/Veery/lifehistory"
+      },
+      {
+        "title": "Veery \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/veery"
+      }
+    ],
+    "taxon_id": 12901
+  },
+  "quality_review": {
+    "anatomy_accuracy": 5,
+    "composition_quality": 5,
+    "correction_findings": [],
+    "findings": [
+      "The primary specimen is an accurate Veery: plump thrush proportions, rounded head, straight narrow bill, large dark eye with an inconspicuous eye-ring, cinnamon-brown upperparts, pale underparts, restrained upper-breast spotting, long folded wings, pinkish legs, and a plain rufous-brown tail agree with the references and direct sources.",
+      "The primary specimen has one head, one bill, one visible eye, one tail, two convincingly attached legs with intact gripping feet, and an anatomically plausible wing pair with the far wing naturally occluded by the side-on pose.",
+      "The detached wing and head are clearly supplementary studies rather than additional birds or parts attached to the primary specimen. Their feather structure, eye, bill, and mandible proportions are coherent and agree with the clearest side-profile reference.",
+      "Every visible identification, habitat, behavior, field-mark, taxonomic, and measurement line is correctly spelled and matches the proposed profile. Cornell directly supports the complete proposed measurement set for both sexes: length 6.7\u20137.1 in (17\u201318 cm), weight 1.0\u20131.9 oz (28\u201354 g), and wingspan 11.0\u201311.4 in (28\u201329 cm).",
+      "The vertical length diagram is internally consistent: 6.7 in (17 cm) is at the bottom, 7.1 in (18 cm) is at the top, values increase upward, and the diagram is explicitly labeled \u201cSCHEMATIC \u2014 NOT TO SCALE.\u201d The separate body-length caption repeats the same supported range.",
+      "No place name, ZIP code, coordinates, map, or local-observation detail appears."
+    ],
+    "location_free": true,
+    "passed": true,
+    "species_accuracy": 5,
+    "text_accuracy": 5,
+    "verification_sources": [
+      {
+        "title": "Veery Identification \u2014 All About Birds, Cornell Lab of Ornithology",
+        "url": "https://www.allaboutbirds.org/guide/veery/id"
+      },
+      {
+        "title": "Veery Life History \u2014 All About Birds, Cornell Lab of Ornithology",
+        "url": "https://www.allaboutbirds.org/guide/Veery/lifehistory"
+      },
+      {
+        "title": "Veery \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/veery"
+      }
+    ]
+  },
+  "references": [
+    {
+      "attribution": "(c) Blake Ross, some rights reserved (CC BY)",
+      "filename": "01-200638226.jpg",
+      "height": 1536,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/200638226/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 118738462,
+      "observer": "blakemross",
+      "photo_id": 200638226,
+      "sha256": "da576a6aa8a79b9ccd50b16c18bde38654bbf1e1c59ed764bbf0b7fbe1646fd2",
+      "source_url": "https://www.inaturalist.org/observations/118738462",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) Jonathan Layman, some rights reserved (CC BY)",
+      "filename": "02-155907769.jpg",
+      "height": 2048,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/155907769/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 94019393,
+      "observer": "jlayman",
+      "photo_id": 155907769,
+      "sha256": "33af8d452841115344ec9694ab6e795ada9801c5bb2974e83cfe3a3a671fd780",
+      "source_url": "https://www.inaturalist.org/observations/94019393",
+      "width": 1536
+    },
+    {
+      "attribution": "(c) Tristan Jobin, some rights reserved (CC BY)",
+      "filename": "03-31395467.jpg",
+      "height": 1493,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/31395467/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 20334036,
+      "observer": "ziggypop74",
+      "photo_id": 31395467,
+      "sha256": "a764a9ff64842c81d402446d44ba341ffb0a964ac2e6778b3d7500bce4add5b0",
+      "source_url": "https://www.inaturalist.org/observations/20334036",
+      "width": 1991
+    },
+    {
+      "attribution": "(c) Juan Carlos Caicedo Hern\u00e1ndez, some rights reserved (CC BY)",
+      "filename": "04-55805705.jpeg",
+      "height": 1536,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/55805705/large.jpeg",
+      "license_code": "cc-by",
+      "observation_id": 35395285,
+      "observer": "juan_carlos_caicedo_hdz",
+      "photo_id": 55805705,
+      "sha256": "0a58088888012902a74e4d1c2f3725a952b4a9af325d7d7cdcd76217d6914395",
+      "source_url": "https://www.inaturalist.org/observations/35395285",
+      "width": 2048
+    }
+  ],
+  "schema_version": 1,
+  "scientific_name": "Catharus fuscescens",
+  "slug": "veery",
+  "status": "approved",
+  "taxon_id": 12901
+}

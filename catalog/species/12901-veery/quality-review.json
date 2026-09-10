@@ -1,0 +1,31 @@
+{
+  "anatomy_accuracy": 5,
+  "composition_quality": 5,
+  "correction_findings": [],
+  "findings": [
+    "The primary specimen is an accurate Veery: plump thrush proportions, rounded head, straight narrow bill, large dark eye with an inconspicuous eye-ring, cinnamon-brown upperparts, pale underparts, restrained upper-breast spotting, long folded wings, pinkish legs, and a plain rufous-brown tail agree with the references and direct sources.",
+    "The primary specimen has one head, one bill, one visible eye, one tail, two convincingly attached legs with intact gripping feet, and an anatomically plausible wing pair with the far wing naturally occluded by the side-on pose.",
+    "The detached wing and head are clearly supplementary studies rather than additional birds or parts attached to the primary specimen. Their feather structure, eye, bill, and mandible proportions are coherent and agree with the clearest side-profile reference.",
+    "Every visible identification, habitat, behavior, field-mark, taxonomic, and measurement line is correctly spelled and matches the proposed profile. Cornell directly supports the complete proposed measurement set for both sexes: length 6.7\u20137.1 in (17\u201318 cm), weight 1.0\u20131.9 oz (28\u201354 g), and wingspan 11.0\u201311.4 in (28\u201329 cm).",
+    "The vertical length diagram is internally consistent: 6.7 in (17 cm) is at the bottom, 7.1 in (18 cm) is at the top, values increase upward, and the diagram is explicitly labeled \u201cSCHEMATIC \u2014 NOT TO SCALE.\u201d The separate body-length caption repeats the same supported range.",
+    "No place name, ZIP code, coordinates, map, or local-observation detail appears."
+  ],
+  "location_free": true,
+  "passed": true,
+  "species_accuracy": 5,
+  "text_accuracy": 5,
+  "verification_sources": [
+    {
+      "title": "Veery Identification \u2014 All About Birds, Cornell Lab of Ornithology",
+      "url": "https://www.allaboutbirds.org/guide/veery/id"
+    },
+    {
+      "title": "Veery Life History \u2014 All About Birds, Cornell Lab of Ornithology",
+      "url": "https://www.allaboutbirds.org/guide/Veery/lifehistory"
+    },
+    {
+      "title": "Veery \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/veery"
+    }
+  ]
+}
