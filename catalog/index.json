@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-09T00:40:50+00:00",
+  "generated_at": "2026-09-10T18:33:51+00:00",
   "schema_version": 1,
   "species": [
     {
@@ -1695,6 +1695,17 @@
       "scientific_name": "Cathartes aura",
       "slug": "turkey-vulture",
       "taxon_id": 4756
+    },
+    {
+      "approved_at": "2026-09-10T18:33:51+00:00",
+      "common_name": "Veery",
+      "display_path": "species/12901-veery/display.png",
+      "display_sha256": "4596819c8ce7cbd6869245b533dd8e8a6cba3ae669caf8c5094fad9959993ddd",
+      "portrait_path": "species/12901-veery/portrait.png",
+      "portrait_sha256": "b8272b6a2f52bea1f63e391daabcd90bebd4d48225b7a1c7a8ee7b79aff8c0a1",
+      "scientific_name": "Catharus fuscescens",
+      "slug": "veery",
+      "taxon_id": 12901
     },
     {
       "approved_at": "2026-08-09T17:35:31+00:00",

@@ -1,0 +1,42 @@
+{
+  "behavior": "An inconspicuous ground forager that advances in rapid, long hops, pauses to inspect leaf litter, and sometimes flips leaves with its bill. It also searches low foliage, drops from perches, and occasionally catches insects in flight. Its diet shifts from mainly insects and other invertebrates during breeding to more fruit in late summer and fall. The song is a rich, downward spiral, often delivered around dawn and dusk; migration occurs mostly at night.",
+  "common_name": "Veery",
+  "family": "Turdidae",
+  "field_marks": [
+    "Uniform warm cinnamon-brown head, back, wings, and tail",
+    "Pale whitish underparts with faint, sparse spotting on the throat and upper breast",
+    "Plain, softly marked face with a large dark eye and little obvious eye-ring",
+    "Straight, slender bill with a dark upper ridge and paler pinkish base",
+    "Plump body and rounded head with fairly long wings and pinkish legs",
+    "Relatively long, plain rufous-brown tail without contrasting patches"
+  ],
+  "habitat": "Dense, damp deciduous or mixed woodland with a well-developed understory, often near streams, wetlands, or other openings. It also uses forest edges and second-growth woodland during migration and dense lowland tropical-forest undergrowth in the nonbreeding season.",
+  "measurements": {
+    "length": "Both sexes: 6.7\u20137.1 in (17\u201318 cm)",
+    "weight": "Both sexes: 1.0\u20131.9 oz (28\u201354 g)",
+    "wingspan": "Both sexes: 11.0\u201311.4 in (28\u201329 cm)"
+  },
+  "palette": [
+    "cinnamon brown",
+    "tawny buff",
+    "creamy white",
+    "dusky brown",
+    "pale pink"
+  ],
+  "scientific_name": "Catharus fuscescens",
+  "sources": [
+    {
+      "title": "Veery Identification \u2014 All About Birds, Cornell Lab of Ornithology",
+      "url": "https://www.allaboutbirds.org/guide/veery/id"
+    },
+    {
+      "title": "Veery Life History \u2014 All About Birds, Cornell Lab of Ornithology",
+      "url": "https://www.allaboutbirds.org/guide/Veery/lifehistory"
+    },
+    {
+      "title": "Veery \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/veery"
+    }
+  ],
+  "taxon_id": 12901
+}
