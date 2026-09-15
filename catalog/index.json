@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-10T18:33:51+00:00",
+  "generated_at": "2026-09-15T18:24:21+00:00",
   "schema_version": 1,
   "species": [
     {
@@ -1552,6 +1552,17 @@
       "scientific_name": "Calidris pusilla",
       "slug": "semipalmated-sandpiper",
       "taxon_id": 3862
+    },
+    {
+      "approved_at": "2026-09-15T18:24:21+00:00",
+      "common_name": "Sharp-shinned Hawk",
+      "display_path": "species/5097-sharp-shinned-hawk/display.png",
+      "display_sha256": "868f4a8718911459255610af78fc269ac3cea4e440d1be8be19332f088a52e1a",
+      "portrait_path": "species/5097-sharp-shinned-hawk/portrait.png",
+      "portrait_sha256": "72cf74c17f6399ab6f27f8498a65e7914413bc8e41758e26b938f436373dab27",
+      "scientific_name": "Accipiter striatus",
+      "slug": "sharp-shinned-hawk",
+      "taxon_id": 5097
     },
     {
       "approved_at": "2026-08-21T11:08:33+00:00",

@@ -1,0 +1,42 @@
+{
+  "behavior": "A stealthy pursuit hunter that waits within foliage or moves through dense cover, then bursts after small birds with swift, agile flight. It also pounces from low perches and typically crosses open areas with a flap-flap-glide pattern.",
+  "common_name": "Sharp-shinned Hawk",
+  "family": "Accipitridae",
+  "field_marks": [
+    "Small head and compact, sharply hooked bill with a yellow cere",
+    "Short, rounded wings and a long, dark-banded tail that is usually square-tipped",
+    "Very thin yellow legs with slender toes",
+    "Adults slaty blue-gray above with narrow rusty red-orange barring below",
+    "Immatures brown above with coarse vertical brown streaks on white underparts",
+    "Bright yellow eyes in immatures, becoming redder with age"
+  ],
+  "habitat": "Breeds in dense forest, often where conifers are present, and also uses mixed or deciduous woodland. Outside the breeding season it frequents forest edges, thickets, brushy areas, and other wooded habitats; migrants may cross open country and follow ridges.",
+  "measurements": {
+    "length": "Both sexes: 9.4\u201313.4 in (24\u201334 cm)",
+    "weight": "Both sexes: 3.1\u20137.7 oz (87\u2013218 g)",
+    "wingspan": "Both sexes: 16.9\u201322.1 in (43\u201356 cm)"
+  },
+  "palette": [
+    "slaty blue-gray",
+    "warm brown",
+    "rusty red-orange",
+    "white",
+    "golden yellow"
+  ],
+  "scientific_name": "Accipiter striatus",
+  "sources": [
+    {
+      "title": "Sharp-shinned Hawk Identification \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Sharp-shinned_Hawk/id"
+    },
+    {
+      "title": "Sharp-shinned Hawk Life History \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Sharp-shinned_Hawk/lifehistory"
+    },
+    {
+      "title": "Sharp-shinned Hawk \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/sharp-shinned-hawk"
+    }
+  ],
+  "taxon_id": 5097
+}
