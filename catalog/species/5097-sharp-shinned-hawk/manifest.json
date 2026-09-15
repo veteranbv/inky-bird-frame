@@ -1,0 +1,162 @@
+{
+  "approved_at": "2026-09-15T18:24:21+00:00",
+  "assets": {
+    "display": {
+      "filename": "display.png",
+      "sha256": "868f4a8718911459255610af78fc269ac3cea4e440d1be8be19332f088a52e1a"
+    },
+    "portrait": {
+      "filename": "portrait.png",
+      "sha256": "72cf74c17f6399ab6f27f8498a65e7914413bc8e41758e26b938f436373dab27"
+    }
+  },
+  "common_name": "Sharp-shinned Hawk",
+  "generation": {
+    "attempt": 2,
+    "correction_source_sha256": "e4b8d8f6fed2c7ab6d658e68bf463312208a4622f834f258942c7eeec7489f49",
+    "generated_at": "2026-09-15T18:24:19+00:00",
+    "generator": "Codex subscription / built-in gpt-image-2",
+    "max_attempts": 3,
+    "prompt_version": "field-journal-v6"
+  },
+  "profile": {
+    "behavior": "A stealthy pursuit hunter that waits within foliage or moves through dense cover, then bursts after small birds with swift, agile flight. It also pounces from low perches and typically crosses open areas with a flap-flap-glide pattern.",
+    "common_name": "Sharp-shinned Hawk",
+    "family": "Accipitridae",
+    "field_marks": [
+      "Small head and compact, sharply hooked bill with a yellow cere",
+      "Short, rounded wings and a long, dark-banded tail that is usually square-tipped",
+      "Very thin yellow legs with slender toes",
+      "Adults slaty blue-gray above with narrow rusty red-orange barring below",
+      "Immatures brown above with coarse vertical brown streaks on white underparts",
+      "Bright yellow eyes in immatures, becoming redder with age"
+    ],
+    "habitat": "Breeds in dense forest, often where conifers are present, and also uses mixed or deciduous woodland. Outside the breeding season it frequents forest edges, thickets, brushy areas, and other wooded habitats; migrants may cross open country and follow ridges.",
+    "measurements": {
+      "length": "Both sexes: 9.4\u201313.4 in (24\u201334 cm)",
+      "weight": "Both sexes: 3.1\u20137.7 oz (87\u2013218 g)",
+      "wingspan": "Both sexes: 16.9\u201322.1 in (43\u201356 cm)"
+    },
+    "palette": [
+      "slaty blue-gray",
+      "warm brown",
+      "rusty red-orange",
+      "white",
+      "golden yellow"
+    ],
+    "scientific_name": "Accipiter striatus",
+    "sources": [
+      {
+        "title": "Sharp-shinned Hawk Identification \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Sharp-shinned_Hawk/id"
+      },
+      {
+        "title": "Sharp-shinned Hawk Life History \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Sharp-shinned_Hawk/lifehistory"
+      },
+      {
+        "title": "Sharp-shinned Hawk \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/sharp-shinned-hawk"
+      }
+    ],
+    "taxon_id": 5097
+  },
+  "quality_review": {
+    "anatomy_accuracy": 5,
+    "composition_quality": 5,
+    "correction_findings": [],
+    "findings": [
+      "The primary specimen is a convincing adult Sharp-shinned Hawk: small rounded head, compact hooked bill with yellow cere, red-orange iris, slaty blue-gray upperparts, narrow rusty barring below, thin yellow legs, slender toes, short rounded folded wings, and a long dark-banded approximately square-tipped tail.",
+      "The primary specimen has one head, one beak, two anatomically plausible legs and feet, one tail, and a complete pair of wings; the far-side wing is naturally occluded by the lateral pose. No malformed, duplicated, or implausibly attached structures are visible.",
+      "Both depicted bills have a continuous upper mandible that projects beyond the lower mandible and terminates in a proportionate hook. The primary and supplementary head renderings are mutually consistent.",
+      "The detached upper-wing and head-detail studies are clearly supplementary and anatomically consistent with the primary specimen and field-reference photographs.",
+      "The identification, scientific name, family, measurements, habitat, behavior, field marks, and palette text are legible and match the proposed profile without visible spelling, numerical, duplication, omission, or word-order errors.",
+      "The published Cornell measurement set directly supports all three displayed ranges and the \u201cBoth sexes\u201d qualifier: length 9.4\u201313.4 in (24\u201334 cm), weight 3.1\u20137.7 oz (87\u2013218 g), and wingspan 16.9\u201322.1 in (43\u201356 cm).",
+      "The measurement diagram increases correctly from 9.4 in (24 cm) at the bottom to 13.4 in (34 cm) at the top, agrees with the separate body-length label, and is explicitly marked \u201cSCHEMATIC \u2014 NOT TO SCALE.\u201d",
+      "The adult and immature plumage statements, small head, rounded wings, long banded square-tipped tail, thin yellow legs, forest association, stealth-pursuit behavior, low-perch pouncing, and flap-flap-glide flight are consistent with the direct sources and attached references.",
+      "The composition reads clearly as a scientific field-journal plate, with a dominant primary specimen and clearly separated supporting studies, measurement annotation, and palette.",
+      "No place name, ZIP code, coordinates, map, or local-observation detail appears."
+    ],
+    "location_free": true,
+    "passed": true,
+    "species_accuracy": 5,
+    "text_accuracy": 5,
+    "verification_sources": [
+      {
+        "title": "Sharp-shinned Hawk Identification \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Sharp-shinned_Hawk/id"
+      },
+      {
+        "title": "Sharp-shinned Hawk Life History \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Sharp-shinned_Hawk/lifehistory"
+      },
+      {
+        "title": "Sharp-shinned Hawk \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/sharp-shinned-hawk"
+      },
+      {
+        "title": "Accipiter striatus \u2014 Animal Diversity Web",
+        "url": "https://animaldiversity.org/accounts/Accipiter_striatus/"
+      }
+    ]
+  },
+  "references": [
+    {
+      "attribution": "(c) RJ Baltierra, some rights reserved (CC BY)",
+      "filename": "01-59411241.jpeg",
+      "height": 2048,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/59411241/large.jpeg",
+      "license_code": "cc-by",
+      "observation_id": 37472832,
+      "observer": "rjbaltierra",
+      "photo_id": 59411241,
+      "sha256": "1f02c28a8a62e1155d1be4cc48113aaa4b408bcd94be1a040d7ec6e8e882c392",
+      "source_url": "https://www.inaturalist.org/observations/37472832",
+      "width": 1536
+    },
+    {
+      "attribution": "(c) Sebasti\u00e1n de Jes\u00fas Herrera Buenfil, some rights reserved (CC BY)",
+      "filename": "02-104823211.jpeg",
+      "height": 945,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/104823211/large.jpeg",
+      "license_code": "cc-by",
+      "observation_id": 65153135,
+      "observer": "sebastian_hb",
+      "photo_id": 104823211,
+      "sha256": "8f0915800c380d63bb0e252a2e21a77dd781509ee041715cff388b6ed884d715",
+      "source_url": "https://www.inaturalist.org/observations/65153135",
+      "width": 1213
+    },
+    {
+      "attribution": "no rights reserved",
+      "filename": "03-31285020.jpg",
+      "height": 1365,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/31285020/large.jpg",
+      "license_code": "cc0",
+      "observation_id": 20267837,
+      "observer": "kpmcfarland",
+      "photo_id": 31285020,
+      "sha256": "4c2a470c2f38246c12eaac140e9e921ff721c4ecc9bd8e6432c9b78c0e2cf516",
+      "source_url": "https://www.inaturalist.org/observations/20267837",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) Corey Farwell, some rights reserved (CC BY)",
+      "filename": "04-101265866.jpeg",
+      "height": 2048,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/101265866/large.jpeg",
+      "license_code": "cc-by",
+      "observation_id": 63129844,
+      "observer": "cofa",
+      "photo_id": 101265866,
+      "sha256": "532615da2fe09c481545da0e0a99f2d69a525bc45d87a9c5779acd57420fad39",
+      "source_url": "https://www.inaturalist.org/observations/63129844",
+      "width": 1536
+    }
+  ],
+  "schema_version": 1,
+  "scientific_name": "Accipiter striatus",
+  "slug": "sharp-shinned-hawk",
+  "status": "approved",
+  "taxon_id": 5097
+}
