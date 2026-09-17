@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-15T18:24:21+00:00",
+  "generated_at": "2026-09-17T16:25:06+00:00",
   "schema_version": 1,
   "species": [
     {
@@ -122,6 +122,17 @@
       "scientific_name": "Hirundo rustica",
       "slug": "barn-swallow",
       "taxon_id": 11901
+    },
+    {
+      "approved_at": "2026-09-17T16:25:06+00:00",
+      "common_name": "Bay-breasted Warbler",
+      "display_path": "species/145236-bay-breasted-warbler/display.png",
+      "display_sha256": "bff898e23e7916b0e107fe332bdab9d964a5f8f5aeccac3bb659a0a708690893",
+      "portrait_path": "species/145236-bay-breasted-warbler/portrait.png",
+      "portrait_sha256": "ac22518a3907947dfa06d7f9a59aa8622454f851f1f0f11e4884a225f3e569d8",
+      "scientific_name": "Setophaga castanea",
+      "slug": "bay-breasted-warbler",
+      "taxon_id": 145236
     },
     {
       "approved_at": "2026-08-03T16:14:53+00:00",
