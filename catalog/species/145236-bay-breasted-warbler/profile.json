@@ -1,0 +1,42 @@
+{
+  "behavior": "A deliberate foliage gleaner that hops and makes short flights through inner and middle tree branches, taking insects from foliage and occasionally hovering. It often joins mixed-species flocks outside the breeding season, when fruit becomes a larger part of its diet.",
+  "common_name": "Bay-breasted Warbler",
+  "family": "Parulidae",
+  "field_marks": [
+    "Breeding male has a dark chestnut crown, throat, breast, and flanks, a black face, a creamy buff neck patch, and grayish, dark-streaked upperparts",
+    "Breeding female lacks the male\u2019s black mask and shows a paler pattern with variable bay or chestnut on the crown, face, upper chest, and flanks",
+    "Nonbreeding females and immatures have a yellow-green head and back, a plain low-contrast face, pale unstreaked underparts, and buff-olive flanks and undertail coverts",
+    "Two bold white wingbars contrast with the dark wings in every plumage",
+    "Compact pointed bill is dark with variable pale or pinkish areas; the eye, legs, and feet are dark",
+    "Long folded wings and a relatively compact tail, with the tail tip square or slightly notched"
+  ],
+  "habitat": "Mature boreal forests dominated by spruce and fir during breeding; varied forests and edges during migration; wet lowland tropical forest, second growth, and open woodland in the nonbreeding season.",
+  "measurements": {
+    "length": "5.5 in (14 cm), both sexes",
+    "weight": "0.3\u20130.6 oz (10\u201317 g), both sexes",
+    "wingspan": "7.9\u20138.7 in (20\u201322 cm), both sexes"
+  },
+  "palette": [
+    "olive yellow-green",
+    "creamy buff",
+    "dark charcoal gray",
+    "white",
+    "deep bay chestnut"
+  ],
+  "scientific_name": "Setophaga castanea",
+  "sources": [
+    {
+      "title": "Bay-breasted Warbler Identification \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Bay-breasted_Warbler/id"
+    },
+    {
+      "title": "Bay-breasted Warbler Life History \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Bay-breasted_Warbler/lifehistory"
+    },
+    {
+      "title": "Bay-breasted Warbler \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/bay-breasted-warbler"
+    }
+  ],
+  "taxon_id": 145236
+}

@@ -1,0 +1,40 @@
+{
+  "anatomy_accuracy": 4,
+  "composition_quality": 5,
+  "correction_findings": [],
+  "findings": [
+    "The plate accurately identifies Bay-breasted Warbler as Setophaga castanea in family Parulidae.",
+    "The primary illustration credibly depicts a nonbreeding female/immature-type bird: low-contrast olive head and back, pale unstreaked underparts, buff-olive flanks, dark wings with two bold white wingbars, and dark eye, legs, and feet.",
+    "The primary specimen has one head, one bill, a complete and convincing wing pair with the far wing naturally occluded, two attached legs with intact feet, and one coherent tail. The detached wing and head-and-bill studies are clearly supplementary.",
+    "Both depicted bills are now short, slender, straight, sharply tapered, and co-terminal; neither dark upper mandible visibly overhangs the pale lower mandible.",
+    "The folded wings, compact square-to-slightly-notched tail, dark legs, perching feet, eye placement, and overall body proportions are anatomically credible and consistent with the attached references.",
+    "The wing study independently shows the species\u2019 dark flight feathers and two bold white wingbars without appearing attached to the primary specimen.",
+    "Every visible taxonomy, measurement, habitat, behavior, field-mark, and palette line matches the proposed profile, including the corrected palette wording \u201cdark charcoal gray.\u201d",
+    "The Cornell measurement set directly supports 5.5 in (14 cm) length, 0.3\u20130.6 oz (10\u201317 g) weight, and 7.9\u20138.7 in (20\u201322 cm) wingspan for both sexes. Audubon publishes a compatible but broader set, which does not create a profile conflict.",
+    "The ruler runs from 0 at the bottom to 5.5 in (14 cm) at the top, agrees with the stated length, and is explicitly labeled \u201cSCHEMATIC \u2014 NOT TO SCALE.\u201d",
+    "The habitat and behavior prose is consistent with the independently verified Cornell and Audubon accounts.",
+    "No place name, ZIP code, coordinates, map, or local-observation detail appears."
+  ],
+  "location_free": true,
+  "passed": true,
+  "species_accuracy": 5,
+  "text_accuracy": 5,
+  "verification_sources": [
+    {
+      "title": "Bay-breasted Warbler Identification \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Bay-breasted_Warbler/id"
+    },
+    {
+      "title": "Bay-breasted Warbler Life History \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Bay-breasted_Warbler/lifehistory"
+    },
+    {
+      "title": "Bay-breasted Warbler \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/bay-breasted-warbler"
+    },
+    {
+      "title": "Bay-breasted Warbler \u2014 eBird",
+      "url": "https://ebird.org/species/babwar"
+    }
+  ]
+}

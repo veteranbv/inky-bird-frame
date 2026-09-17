@@ -1,0 +1,163 @@
+{
+  "approved_at": "2026-09-17T16:25:06+00:00",
+  "assets": {
+    "display": {
+      "filename": "display.png",
+      "sha256": "bff898e23e7916b0e107fe332bdab9d964a5f8f5aeccac3bb659a0a708690893"
+    },
+    "portrait": {
+      "filename": "portrait.png",
+      "sha256": "ac22518a3907947dfa06d7f9a59aa8622454f851f1f0f11e4884a225f3e569d8"
+    }
+  },
+  "common_name": "Bay-breasted Warbler",
+  "generation": {
+    "attempt": 3,
+    "correction_source_sha256": "dbd68a4d6377fc72b158a1116e0d1c5b5dd4088da7328b228501bf81900be799",
+    "generated_at": "2026-09-17T16:25:05+00:00",
+    "generator": "Codex subscription / built-in gpt-image-2",
+    "max_attempts": 3,
+    "prompt_version": "field-journal-v6"
+  },
+  "profile": {
+    "behavior": "A deliberate foliage gleaner that hops and makes short flights through inner and middle tree branches, taking insects from foliage and occasionally hovering. It often joins mixed-species flocks outside the breeding season, when fruit becomes a larger part of its diet.",
+    "common_name": "Bay-breasted Warbler",
+    "family": "Parulidae",
+    "field_marks": [
+      "Breeding male has a dark chestnut crown, throat, breast, and flanks, a black face, a creamy buff neck patch, and grayish, dark-streaked upperparts",
+      "Breeding female lacks the male\u2019s black mask and shows a paler pattern with variable bay or chestnut on the crown, face, upper chest, and flanks",
+      "Nonbreeding females and immatures have a yellow-green head and back, a plain low-contrast face, pale unstreaked underparts, and buff-olive flanks and undertail coverts",
+      "Two bold white wingbars contrast with the dark wings in every plumage",
+      "Compact pointed bill is dark with variable pale or pinkish areas; the eye, legs, and feet are dark",
+      "Long folded wings and a relatively compact tail, with the tail tip square or slightly notched"
+    ],
+    "habitat": "Mature boreal forests dominated by spruce and fir during breeding; varied forests and edges during migration; wet lowland tropical forest, second growth, and open woodland in the nonbreeding season.",
+    "measurements": {
+      "length": "5.5 in (14 cm), both sexes",
+      "weight": "0.3\u20130.6 oz (10\u201317 g), both sexes",
+      "wingspan": "7.9\u20138.7 in (20\u201322 cm), both sexes"
+    },
+    "palette": [
+      "olive yellow-green",
+      "creamy buff",
+      "dark charcoal gray",
+      "white",
+      "deep bay chestnut"
+    ],
+    "scientific_name": "Setophaga castanea",
+    "sources": [
+      {
+        "title": "Bay-breasted Warbler Identification \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Bay-breasted_Warbler/id"
+      },
+      {
+        "title": "Bay-breasted Warbler Life History \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Bay-breasted_Warbler/lifehistory"
+      },
+      {
+        "title": "Bay-breasted Warbler \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/bay-breasted-warbler"
+      }
+    ],
+    "taxon_id": 145236
+  },
+  "quality_review": {
+    "anatomy_accuracy": 4,
+    "composition_quality": 5,
+    "correction_findings": [],
+    "findings": [
+      "The plate accurately identifies Bay-breasted Warbler as Setophaga castanea in family Parulidae.",
+      "The primary illustration credibly depicts a nonbreeding female/immature-type bird: low-contrast olive head and back, pale unstreaked underparts, buff-olive flanks, dark wings with two bold white wingbars, and dark eye, legs, and feet.",
+      "The primary specimen has one head, one bill, a complete and convincing wing pair with the far wing naturally occluded, two attached legs with intact feet, and one coherent tail. The detached wing and head-and-bill studies are clearly supplementary.",
+      "Both depicted bills are now short, slender, straight, sharply tapered, and co-terminal; neither dark upper mandible visibly overhangs the pale lower mandible.",
+      "The folded wings, compact square-to-slightly-notched tail, dark legs, perching feet, eye placement, and overall body proportions are anatomically credible and consistent with the attached references.",
+      "The wing study independently shows the species\u2019 dark flight feathers and two bold white wingbars without appearing attached to the primary specimen.",
+      "Every visible taxonomy, measurement, habitat, behavior, field-mark, and palette line matches the proposed profile, including the corrected palette wording \u201cdark charcoal gray.\u201d",
+      "The Cornell measurement set directly supports 5.5 in (14 cm) length, 0.3\u20130.6 oz (10\u201317 g) weight, and 7.9\u20138.7 in (20\u201322 cm) wingspan for both sexes. Audubon publishes a compatible but broader set, which does not create a profile conflict.",
+      "The ruler runs from 0 at the bottom to 5.5 in (14 cm) at the top, agrees with the stated length, and is explicitly labeled \u201cSCHEMATIC \u2014 NOT TO SCALE.\u201d",
+      "The habitat and behavior prose is consistent with the independently verified Cornell and Audubon accounts.",
+      "No place name, ZIP code, coordinates, map, or local-observation detail appears."
+    ],
+    "location_free": true,
+    "passed": true,
+    "species_accuracy": 5,
+    "text_accuracy": 5,
+    "verification_sources": [
+      {
+        "title": "Bay-breasted Warbler Identification \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Bay-breasted_Warbler/id"
+      },
+      {
+        "title": "Bay-breasted Warbler Life History \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Bay-breasted_Warbler/lifehistory"
+      },
+      {
+        "title": "Bay-breasted Warbler \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/bay-breasted-warbler"
+      },
+      {
+        "title": "Bay-breasted Warbler \u2014 eBird",
+        "url": "https://ebird.org/species/babwar"
+      }
+    ]
+  },
+  "references": [
+    {
+      "attribution": "(c) Julien Renoult, some rights reserved (CC BY)",
+      "filename": "01-439547800.jpg",
+      "height": 1010,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/439547800/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 246239450,
+      "observer": "jujurenoult",
+      "photo_id": 439547800,
+      "sha256": "fb342151eb001db6b646e1e61331d76a6b14d1232e1e15475cdeb617bc44bcfc",
+      "source_url": "https://www.inaturalist.org/observations/246239450",
+      "width": 1514
+    },
+    {
+      "attribution": "no rights reserved",
+      "filename": "02-240955104.jpeg",
+      "height": 1365,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/240955104/large.jpeg",
+      "license_code": "cc0",
+      "observation_id": 140742942,
+      "observer": "radrat",
+      "photo_id": 240955104,
+      "sha256": "07ed34255b0648378c5ddeacd8d5159fbcc7091569c88a1c56f3172b81ed4f0a",
+      "source_url": "https://www.inaturalist.org/observations/140742942",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) Timothy Lindsey, some rights reserved (CC BY)",
+      "filename": "03-488419949.jpeg",
+      "height": 1365,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/488419949/large.jpeg",
+      "license_code": "cc-by",
+      "observation_id": 271528142,
+      "observer": "macrotim",
+      "photo_id": 488419949,
+      "sha256": "bd7ad800fb6b35972b1f637ae30e754a5e1508663e7101d13d32fcbaaccb0fb6",
+      "source_url": "https://www.inaturalist.org/observations/271528142",
+      "width": 2048
+    },
+    {
+      "attribution": "no rights reserved",
+      "filename": "04-459832055.jpg",
+      "height": 1364,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/459832055/large.jpg",
+      "license_code": "cc0",
+      "observation_id": 256462975,
+      "observer": "rawcomposition",
+      "photo_id": 459832055,
+      "sha256": "0aa5ce40bcfda0054343b9d92cdd52e04dc10429777f38b6c37c40730b7a6383",
+      "source_url": "https://www.inaturalist.org/observations/256462975",
+      "width": 2048
+    }
+  ],
+  "schema_version": 1,
+  "scientific_name": "Setophaga castanea",
+  "slug": "bay-breasted-warbler",
+  "status": "approved",
+  "taxon_id": 145236
+}
