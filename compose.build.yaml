@@ -5,6 +5,8 @@ x-controller-build: &controller-build
   pull_policy: build
 
 services:
+  config-sync:
+    <<: *controller-build
   bootstrap:
     <<: *controller-build
   controller:

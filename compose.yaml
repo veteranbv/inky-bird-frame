@@ -5,8 +5,6 @@ x-controller-common: &controller-common
   read_only: true
   cap_drop:
     - ALL
-  security_opt:
-    - no-new-privileges:true
   pids_limit: 256
   tmpfs:
     - /tmp:size=256m,mode=1777
@@ -14,8 +12,45 @@ x-controller-common: &controller-common
     - controller-data:/data
 
 services:
+  config-sync:
+    <<: *controller-common
+    # A root init process can read a mode-0600 host file and hand the validated
+    # copy to UID 10001. Its network, filesystem, and capabilities stay narrow.
+    user: "0:0"
+    cap_add:
+      - CHOWN
+      - DAC_OVERRIDE
+    security_opt:
+      - no-new-privileges:true
+    network_mode: none
+    env_file:
+      - path: ${INKY_BIRD_ENV:-./controller.env}
+        required: false
+    volumes:
+      - controller-data:/data
+      - type: bind
+        source: ${INKY_BIRD_CONFIG:-./config.toml}
+        target: /run/inky/config.toml
+        read_only: true
+        bind:
+          create_host_path: false
+          selinux: Z
+    entrypoint: [/bin/sh, -c]
+    command:
+      - >-
+        if ! test -r /run/inky/config.toml; then
+        echo 'config-sync cannot read the host config; see docs/docker.md#user-namespace-remapping' >&2;
+        exit 1;
+        fi;
+        inky-bird-frame config install --destination /data/config.toml
+        < /run/inky/config.toml
+        && exec chown 10001:10001 /data/config.toml
+    restart: "no"
+
   bootstrap:
     <<: *controller-common
+    security_opt:
+      - no-new-privileges:true
     environment:
       INKY_CATALOG_SYNC_APPLY_REVIEWED_MIGRATIONS: "1"
       INKY_CATALOG_SYNC_RETAIN_INDEPENDENT_APPROVALS: "1"
@@ -28,10 +63,15 @@ services:
       - /data/catalog
       - --state-dir
       - /data/var/controller
+    depends_on:
+      config-sync:
+        condition: service_completed_successfully
     restart: "no"
 
   controller:
     <<: *controller-common
+    security_opt:
+      - no-new-privileges:true
     command: [serve, --config, /data/config.toml]
     depends_on:
       bootstrap:

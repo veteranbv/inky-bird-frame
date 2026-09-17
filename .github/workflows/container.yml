@@ -151,8 +151,9 @@ jobs:
           install -m 0644 controller.env.example "${bundle}/controller.env.example"
           install -m 0644 deploy/apparmor/inky-bird-frame-codex \
             "${bundle}/deploy/apparmor/inky-bird-frame-codex"
-          printf 'INKY_BIRD_IMAGE=ghcr.io/%s:%s\n' "$REPOSITORY" "$VERSION" \
-            > "${bundle}/.env.example"
+          sed \
+            "s|^INKY_BIRD_IMAGE=.*$|INKY_BIRD_IMAGE=ghcr.io/${REPOSITORY}:${VERSION}|" \
+            .env.example > "${bundle}/.env.example"
           printf '%s\n' \
             "Docker installation: https://github.com/${REPOSITORY}/blob/v${VERSION}/docs/docker.md" \
             > "${bundle}/README.txt"
