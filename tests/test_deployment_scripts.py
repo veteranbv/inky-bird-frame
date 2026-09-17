@@ -3,6 +3,33 @@ from __future__ import annotations
 from pathlib import Path
 
 
+def test_docker_config_sync_keeps_the_host_file_authoritative_and_private() -> None:
+    compose = (Path(__file__).resolve().parents[1] / "compose.yaml").read_text()
+
+    config_sync = compose.split("  config-sync:", maxsplit=1)[1].split("  bootstrap:", maxsplit=1)[
+        0
+    ]
+    bootstrap = compose.split("  bootstrap:", maxsplit=1)[1].split("  controller:", maxsplit=1)[0]
+    assert "${INKY_BIRD_CONFIG:-./config.toml}" in config_sync
+    assert "target: /run/inky/config.toml" in config_sync
+    assert "read_only: true" in config_sync
+    assert "create_host_path: false" in config_sync
+    assert "selinux: Z" in config_sync
+    assert "network_mode: none" in config_sync
+    assert 'user: "0:0"' in config_sync
+    assert "DAC_OVERRIDE" in config_sync
+    assert "CHOWN" in config_sync
+    assert "no-new-privileges:true" in config_sync
+    assert "INKY_BIRD_ENV" in config_sync
+    assert "required: false" in config_sync
+    assert "config-sync cannot read the host config" in config_sync
+    assert "config install --destination /data/config.toml" in config_sync
+    assert "< /run/inky/config.toml" in config_sync
+    assert "chown 10001:10001 /data/config.toml" in config_sync
+    assert "config-sync:" in bootstrap
+    assert "condition: service_completed_successfully" in bootstrap
+
+
 def _controller_installers() -> list[str]:
     root = Path(__file__).resolve().parents[1] / "deploy"
     return [

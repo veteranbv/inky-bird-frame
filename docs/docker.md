@@ -13,10 +13,11 @@ license material under `/usr/share/licenses/inky-bird-frame/`. See
 
 ## What runs
 
-Compose starts three services from the same image:
+Compose starts four services from the same image:
 
 | Service | Job | Credentials |
 | --- | --- | --- |
+| `config-sync` | Validates the host `config.toml`, installs a private runtime copy, then exits | Configuration file and referenced environment values |
 | `bootstrap` | Copies the included public bird catalog into persistent storage, then exits | None |
 | `controller` | Serves health, catalog metadata, and approved images on port 8793 | None |
 | `scheduler` | Refreshes observations and runs generation, notifications, and optional catalog publication | Codex and any configured service credentials |
@@ -24,6 +25,53 @@ Compose starts three services from the same image:
 The controller and scheduler use the same commands as a native installation.
 One failed scheduled job is logged and retried later without stopping the HTTP
 service or unrelated jobs.
+
+The host `config.toml` is authoritative. Compose bind-mounts it read-only into
+the one-shot `config-sync` service, not the long-running services. Local Docker
+Compose cannot remap the owner or mode of a file-backed config, so mounting a
+mode-0600 host file directly into the unprivileged controller is not portable.
+`config-sync` is therefore a short-lived container-root init process. It runs
+offline with a read-only root filesystem, `no-new-privileges`, every capability
+dropped except `DAC_OVERRIDE` and `CHOWN`, one read-only host bind, and the
+controller data volume. It receives the same optional `controller.env` as the
+scheduler so references such as `ebird_api_key_env` can be validated without
+putting their values in `config.toml`. With networking disabled, those values
+cannot be sent anywhere by this service. It validates and atomically installs
+a mode-0600 copy, then transfers ownership to Inky's UID/GID 10001 before any
+long-running service can start. A failure at any step blocks startup. The
+private bind relabels the source for enforcing SELinux hosts and refuses to
+create a directory when the configured file is missing. The controller and
+scheduler remain unprivileged with no added capabilities. Set
+`INKY_BIRD_CONFIG` in `.env` when the host file is not `./config.toml`.
+
+### User namespace remapping
+
+Standard Docker Engine and rootless Docker can read a mode-0600 host config:
+standard Engine uses the init service's two scoped capabilities, while
+rootless Docker maps container root to the host account that owns the file.
+[Daemon-wide `userns-remap`](https://docs.docker.com/engine/security/userns-remap/)
+instead maps container root to a subordinate host UID. Docker requires bind
+mount permissions to be arranged for that UID.
+
+If `userns-remap` is enabled, find the configured remap account and its first
+subordinate UID in `/etc/subuid`, then grant only that mapped-root UID read
+access to the private host file. For example, when the remap account is
+`dockremap`:
+
+```bash
+remap_root_uid="$(awk -F: '$1 == "dockremap" { print $2; exit }' /etc/subuid)"
+test -n "$remap_root_uid"
+sudo setfacl --modify "u:${remap_root_uid}:r" config.toml
+getfacl config.toml
+```
+
+Use the account actually configured by your daemon; `default` means
+`dockremap`. Do not make the file group- or world-readable, and do not disable
+user-namespace isolation for this container. Without the narrow ACL,
+`config-sync` fails closed with an actionable error before reading or replacing
+the runtime copy. Docker's
+[UID/GID mapping guide](https://docs.docker.com/engine/security/rootless/uid-gid-mapping/)
+explains the difference between rootless and `userns-remap` ownership.
 
 `bootstrap` runs `catalog sync --source-catalog /app/catalog --catalog
 /data/catalog --state-dir /data/var/controller`. Compose opts into reviewed
@@ -106,7 +154,7 @@ Edit `config.toml`. At minimum:
 5. enable only the notifications you want.
 
 The relative controller paths in the example are intentional. After the file
-is imported into `/data`, they resolve to `/data/workspace`, `/data/catalog`,
+is synchronized into `/data`, they resolve to `/data/workspace`, `/data/catalog`,
 and `/data/var/controller` inside the persistent volume. Codex receives write
 access to the workspace directory, not the private configuration, approved
 catalog, or controller state directories.
@@ -236,15 +284,14 @@ and Codex applies its own filesystem and network sandbox to generated commands.
 ```bash
 docker compose pull
 docker compose config --quiet
-docker compose run --rm --no-deps -T scheduler \
-  config install --destination /data/config.toml < config.toml
+docker compose run --rm --no-deps config-sync
 docker compose run --rm --no-deps scheduler \
   config validate --config /data/config.toml
 ```
 
-`config install` validates the full TOML file before replacing the private
-container copy. The imported file is stored with mode `0600`. Repeat the import
-after changing the host copy.
+`config-sync` validates the full host file before replacing the private runtime
+copy. An invalid edit leaves the last valid runtime copy untouched and prevents
+dependent services from starting through `docker compose up`.
 
 ## 5. Authenticate Codex
 
@@ -293,8 +340,8 @@ docker compose run --rm --no-deps --entrypoint git scheduler clone \
 ```
 
 Set `public_catalog.repository = "OWNER/REPOSITORY"` and
-`public_catalog.checkout_dir = "/data/public-catalog"` in `config.toml`, import
-the updated file, and recreate the scheduler.
+`public_catalog.checkout_dir = "/data/public-catalog"` in `config.toml`, run
+`config-sync`, and recreate the scheduler.
 
 ## Storage and recovery
 
@@ -326,17 +373,34 @@ bootstrap, refresh, generation status, and display verification.
 Read the release notes and take a verified backup, then change
 `INKY_BIRD_IMAGE` in `.env` to the desired version:
 
+When moving from v0.8.1 or earlier, confirm that the host `config.toml` contains
+the settings currently installed in `controller-data` before replacing the old
+Compose file. If the runtime copy may be newer, export it without printing its
+secrets to the terminal:
+
+```bash
+umask 077
+docker compose run --rm --no-deps -T --entrypoint cat controller \
+  /data/config.toml > config.from-controller.toml
+cmp -s config.toml config.from-controller.toml || \
+  echo "Review the two private files before updating"
+```
+
+Keep the intended version as `config.toml` with mode `0600`. The new
+`config-sync` service treats that host file as authoritative.
+
 ```bash
 docker compose pull
-docker compose run --rm --no-deps -T scheduler \
-  config install --destination /data/config.toml < config.toml
+docker compose run --rm --no-deps config-sync
 docker compose up --detach --remove-orphans --force-recreate
 docker compose run --rm --no-deps controller --version
 curl --fail --silent http://127.0.0.1:8793/health
 ```
 
-Recreating the services is required after changing `controller.env`; a restart
-does not reload a container's environment.
+After editing `config.toml`, rerun `config-sync` and recreate the controller and
+scheduler so both processes load the same validated copy. Recreating the
+services is also required after changing `controller.env`; a restart does not
+reload a container's environment.
 
 Changing the image tag rolls back application code only; it does not roll back
 persistent state. Reviewed catalog sync is forward-only. A newer, validated
@@ -358,8 +422,7 @@ From a repository checkout:
 
 ```bash
 docker compose -f compose.yaml -f compose.build.yaml build --pull
-docker compose -f compose.yaml -f compose.build.yaml run --rm --no-deps -T scheduler \
-  config install --destination /data/config.toml < config.toml
+docker compose -f compose.yaml -f compose.build.yaml run --rm --no-deps config-sync
 docker compose -f compose.yaml -f compose.build.yaml up --detach
 ```
 
@@ -370,7 +433,7 @@ runtime. The default `compose.yaml` remains registry-only.
 
 ```bash
 docker compose ps --all
-docker compose logs controller scheduler bootstrap
+docker compose logs config-sync bootstrap controller scheduler
 docker compose run --rm --no-deps scheduler \
   config validate --config /data/config.toml
 ```
