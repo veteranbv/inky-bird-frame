@@ -508,6 +508,7 @@ class CliTests(unittest.TestCase):
         self.assertEqual(str(args.catalog), "managed-catalog")
         self.assertEqual(str(args.state_dir), "controller-state")
         self.assertFalse(args.apply_reviewed_migrations)
+        self.assertFalse(args.retain_independent_approvals)
 
     def test_catalog_sync_parses_reviewed_migration_opt_in(self) -> None:
         args = build_parser().parse_args(
@@ -523,6 +524,21 @@ class CliTests(unittest.TestCase):
         )
 
         self.assertTrue(args.apply_reviewed_migrations)
+
+    def test_catalog_sync_parses_independent_approval_opt_in(self) -> None:
+        args = build_parser().parse_args(
+            [
+                "catalog",
+                "sync",
+                "--source-catalog",
+                "bundled-catalog",
+                "--catalog",
+                "managed-catalog",
+                "--retain-independent-approvals",
+            ]
+        )
+
+        self.assertTrue(args.retain_independent_approvals)
 
     def test_catalog_sync_uses_controller_catalog_lock(self) -> None:
         args = Namespace(
@@ -546,6 +562,7 @@ class CliTests(unittest.TestCase):
             Path("bundled-catalog"),
             Path("managed-catalog"),
             allow_replacements=True,
+            retain_independent_approvals=False,
         )
 
     def test_catalog_sync_remains_add_only_without_reviewed_migration_opt_in(self) -> None:
@@ -573,6 +590,7 @@ class CliTests(unittest.TestCase):
             Path("bundled-catalog"),
             Path("managed-catalog"),
             allow_replacements=False,
+            retain_independent_approvals=False,
         )
 
     def test_catalog_sync_accepts_compose_environment_opt_in(self) -> None:
@@ -604,6 +622,39 @@ class CliTests(unittest.TestCase):
             Path("bundled-catalog"),
             Path("managed-catalog"),
             allow_replacements=True,
+            retain_independent_approvals=False,
+        )
+
+    def test_catalog_sync_accepts_compose_independent_approval_opt_in(self) -> None:
+        args = build_parser().parse_args(
+            [
+                "catalog",
+                "sync",
+                "--source-catalog",
+                "bundled-catalog",
+                "--catalog",
+                "managed-catalog",
+            ]
+        )
+        with (
+            patch.dict(
+                "os.environ",
+                {"INKY_CATALOG_SYNC_RETAIN_INDEPENDENT_APPROVALS": "1"},
+                clear=True,
+            ),
+            patch(
+                "inky_bird_frame.cli.sync_public_catalog",
+                return_value={"published": [], "already_present": []},
+            ) as sync,
+            redirect_stdout(io.StringIO()),
+        ):
+            catalog_sync_command(args)
+
+        sync.assert_called_once_with(
+            Path("bundled-catalog"),
+            Path("managed-catalog"),
+            allow_replacements=False,
+            retain_independent_approvals=True,
         )
 
     def test_scheduler_requires_explicit_config(self) -> None:

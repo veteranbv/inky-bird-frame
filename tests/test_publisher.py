@@ -609,6 +609,55 @@ class PublisherTests(unittest.TestCase):
                 original_portrait,
             )
 
+    def test_bootstrap_retains_an_independent_local_approval_and_adds_new_taxa(self) -> None:
+        with TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            source = root / "source"
+            destination = root / "destination"
+            _create_species(source, 1, "Example Bird")
+            _create_species(source, 2, "Second Bird")
+            local = _create_portrait_replacement(
+                destination,
+                1,
+                "Example Bird",
+                approved_at="2026-07-10T00:00:00+00:00",
+                color="black",
+            )
+            local_portrait = (local / "portrait.png").read_bytes()
+
+            with self.assertRaisesRegex(CatalogPublishError, "changed immutable taxon 1"):
+                sync_public_catalog(source, destination, allow_replacements=True)
+
+            result = sync_public_catalog(
+                source,
+                destination,
+                retain_independent_approvals=True,
+            )
+
+            self.assertEqual(
+                result["retained_independent"],
+                [
+                    {
+                        "taxon_id": 1,
+                        "common_name": "Example Bird",
+                        "scientific_name": "Avis exemplaris",
+                        "slug": "example-bird",
+                    }
+                ],
+            )
+            published = result["published"]
+            self.assertIsInstance(published, list)
+            assert isinstance(published, list)
+            self.assertEqual([item["taxon_id"] for item in published], [2])
+            self.assertEqual(
+                (destination / "species/1-example-bird/portrait.png").read_bytes(),
+                local_portrait,
+            )
+            self.assertEqual(
+                [entry.taxon_id for entry in validate_public_catalog(destination)],
+                [1, 2],
+            )
+
     def test_repeated_replacements_preserve_ancestry_for_a_skipped_upgrade(self) -> None:
         with TemporaryDirectory() as temporary:
             root = Path(temporary)

@@ -27,15 +27,19 @@ service or unrelated jobs.
 
 `bootstrap` runs `catalog sync --source-catalog /app/catalog --catalog
 /data/catalog --state-dir /data/var/controller`. Compose opts into reviewed
-migrations through `INKY_CATALOG_SYNC_APPLY_REVIEWED_MIGRATIONS=1` instead of a
-version-specific command-line argument, so the current Compose definition can
-still start an older image after the matching persistent snapshot is restored.
-Bootstrap validates the bundled and persistent catalogs, copies missing species, and
-applies only replacements whose recorded approval hashes and complete migration
-ancestry match the persistent plate. A validated persistent descendant is
-retained and reported as `retained_newer`; bootstrap never downgrades it.
-Unrelated or tampered conflicts fail closed. The sync rebuilds the index and
-holds the controller state lock so it cannot race a running cycle. The
+migrations and independent local approval retention through environment
+variables instead of version-specific command-line arguments, so the current
+Compose definition can still start an older image after the matching persistent
+snapshot is restored. Bootstrap validates the bundled and persistent catalogs,
+copies missing species, and applies only replacements whose recorded approval
+hashes and complete migration ancestry match the persistent plate. A validated
+persistent descendant is reported as `retained_newer`. A valid local plate made
+before the same exact species entered the public catalog has no shared approval
+ancestry, so bootstrap preserves it and reports it as `retained_independent`.
+It never changes taxon identity or downgrades a local plate. Shared-history
+forks, malformed catalogs, and incomplete or tampered migration records still
+fail closed. The sync rebuilds the index and holds the controller state lock so
+it cannot race a running cycle. The
 [operations guide](operations.md#copy-species-between-catalogs) describes the
 command in general.
 
@@ -337,7 +341,9 @@ does not reload a container's environment.
 Changing the image tag rolls back application code only; it does not roll back
 persistent state. Reviewed catalog sync is forward-only. A newer, validated
 persistent descendant is retained rather than replaced with an older bundled
-plate. To roll back catalog or state migrations, stop the stack, restore the
+plate. A validated independent local approval is also retained when the bundled
+catalog later adds that exact species. To roll back catalog or state migrations,
+stop the stack, restore the
 matching pre-update `controller-data` snapshot and configuration, select the
 prior image tag, and repeat the `pull` and `up` commands. Do not combine an old
 image with newer persistent state unless that release's notes explicitly state
