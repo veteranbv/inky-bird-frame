@@ -91,6 +91,7 @@ from .scheduler import ScheduledJob, SubprocessCommandRunner, run_scheduler
 from .server import serve_catalog
 
 CATALOG_SYNC_REVIEWED_MIGRATIONS_ENV = "INKY_CATALOG_SYNC_APPLY_REVIEWED_MIGRATIONS"
+CATALOG_SYNC_RETAIN_INDEPENDENT_ENV = "INKY_CATALOG_SYNC_RETAIN_INDEPENDENT_APPROVALS"
 
 
 def print_result(data: object) -> None:
@@ -1158,11 +1159,15 @@ def catalog_sync_command(args: argparse.Namespace) -> int:
     apply_reviewed_migrations = args.apply_reviewed_migrations or (
         os.environ.get(CATALOG_SYNC_REVIEWED_MIGRATIONS_ENV) == "1"
     )
+    retain_independent_approvals = bool(getattr(args, "retain_independent_approvals", False)) or (
+        os.environ.get(CATALOG_SYNC_RETAIN_INDEPENDENT_ENV) == "1"
+    )
     with lock:
         result = sync_public_catalog(
             args.source_catalog,
             args.catalog,
             allow_replacements=apply_reviewed_migrations,
+            retain_independent_approvals=retain_independent_approvals,
         )
     print_result(
         {
@@ -1759,6 +1764,14 @@ def build_parser() -> argparse.ArgumentParser:
         help=(
             "Apply only hash-bound reviewed replacements from the source and retain a "
             "validated newer destination"
+        ),
+    )
+    catalog_sync_parser.add_argument(
+        "--retain-independent-approvals",
+        action="store_true",
+        help=(
+            "Retain a validated destination approval when its exact taxon identity has "
+            "no shared approval ancestry with the source"
         ),
     )
     catalog_sync_parser.set_defaults(func=catalog_sync_command)

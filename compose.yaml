@@ -18,6 +18,7 @@ services:
     <<: *controller-common
     environment:
       INKY_CATALOG_SYNC_APPLY_REVIEWED_MIGRATIONS: "1"
+      INKY_CATALOG_SYNC_RETAIN_INDEPENDENT_APPROVALS: "1"
     command:
       - catalog
       - sync

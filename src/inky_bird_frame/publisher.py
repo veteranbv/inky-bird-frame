@@ -542,6 +542,42 @@ def _catalog_sync_should_replace(destination: Path, source: Path) -> bool:
     return True
 
 
+def _catalog_approvals_are_independent(destination: Path, source: Path) -> bool:
+    """Return whether two validated, same-taxon approvals have no shared ancestry."""
+    destination_manifest = read_json(destination / "manifest.json")
+    source_manifest = read_json(source / "manifest.json")
+    if not isinstance(destination_manifest, dict) or not isinstance(source_manifest, dict):
+        raise CatalogPublishError("Catalog approval manifests must be JSON objects")
+    identity_fields = ("taxon_id", "common_name", "scientific_name", "slug")
+    if any(
+        destination_manifest.get(field) != source_manifest.get(field) for field in identity_fields
+    ):
+        raise CatalogPublishError("Catalog approval changed the approved taxon identity")
+
+    def approvals(manifest: dict[str, object], path: Path) -> set[tuple[str, str, str]]:
+        history = {
+            (approved_at, display_sha256, portrait_sha256)
+            for _, approved_at, display_sha256, portrait_sha256 in _catalog_migration_records(
+                manifest, path
+            )
+        }
+        approved_at = manifest.get("approved_at")
+        if not isinstance(approved_at, str):
+            raise CatalogPublishError(f"Manifest has invalid approval timestamp: {path}")
+        history.add(
+            (
+                approved_at,
+                _manifest_asset_sha256(manifest, "display"),
+                _manifest_asset_sha256(manifest, "portrait"),
+            )
+        )
+        return history
+
+    return approvals(destination_manifest, destination / "manifest.json").isdisjoint(
+        approvals(source_manifest, source / "manifest.json")
+    )
+
+
 def validate_catalog_additions(
     base_catalog: Path,
     candidate_catalog: Path,
@@ -748,6 +784,7 @@ def sync_public_catalog(
     *,
     taxon_ids: set[int] | None = None,
     allow_replacements: bool = False,
+    retain_independent_approvals: bool = False,
 ) -> dict[str, object]:
     source_entries = validate_public_catalog(source_catalog)
     all_source_taxa = {entry.taxon_id for entry in source_entries}
@@ -782,6 +819,7 @@ def sync_public_catalog(
     published: list[dict[str, object]] = []
     replaced: list[dict[str, object]] = []
     retained_newer: list[dict[str, object]] = []
+    retained_independent: list[dict[str, object]] = []
     existing: list[int] = []
 
     transaction = _new_catalog_transaction(destination_catalog)
@@ -800,11 +838,31 @@ def sync_public_catalog(
                         f"Catalog taxon {taxon_id} conflicts with immutable local approval"
                     )
                 if not _trees_match(source, destination):
+                    retained_entry = {
+                        "taxon_id": entry.taxon_id,
+                        "common_name": entry.common_name,
+                        "scientific_name": entry.scientific_name,
+                        "slug": entry.slug,
+                    }
                     if not allow_replacements:
+                        if retain_independent_approvals and (
+                            _catalog_approvals_are_independent(destination, source)
+                        ):
+                            retained_independent.append(retained_entry)
+                            continue
                         raise CatalogPublishError(
                             f"Catalog taxon {taxon_id} conflicts with immutable local approval"
                         )
-                    if not _catalog_sync_should_replace(destination, source):
+                    try:
+                        should_replace = _catalog_sync_should_replace(destination, source)
+                    except CatalogPublishError:
+                        if not retain_independent_approvals or not (
+                            _catalog_approvals_are_independent(destination, source)
+                        ):
+                            raise
+                        retained_independent.append(retained_entry)
+                        continue
+                    if not should_replace:
                         retained_newer.append(
                             {
                                 "taxon_id": entry.taxon_id,
@@ -857,6 +915,7 @@ def sync_public_catalog(
         "published": published,
         "replaced": replaced,
         "retained_newer": retained_newer,
+        "retained_independent": retained_independent,
         "already_present": existing,
     }
 

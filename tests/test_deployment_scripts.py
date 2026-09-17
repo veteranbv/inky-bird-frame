@@ -16,7 +16,9 @@ def test_docker_bootstrap_applies_only_reviewed_catalog_migrations() -> None:
 
     bootstrap = compose.split("  controller:", maxsplit=1)[0]
     assert 'INKY_CATALOG_SYNC_APPLY_REVIEWED_MIGRATIONS: "1"' in bootstrap
+    assert 'INKY_CATALOG_SYNC_RETAIN_INDEPENDENT_APPROVALS: "1"' in bootstrap
     assert "--apply-reviewed-migrations" not in bootstrap
+    assert "--retain-independent-approvals" not in bootstrap
 
 
 def test_controller_installers_use_provider_lists_for_managed_credentials() -> None:
@@ -46,7 +48,7 @@ def test_controller_installer_restores_schedule_without_run_at_load_on_failure()
     assert "/usr/bin/plutil -replace RunAtLoad -bool false" in script
     assert 'if [ "${root}" != "${app_dir}" ]; then' in script
     assert 'rsync -a "${root}/catalog/" "${app_dir}/catalog/"' not in script
-    assert "sync_public_catalog(source_catalog, managed_catalog, allow_replacements=True)" in script
+    assert "retain_independent_approvals=True" in script
     assert "allow_replacements=True" in script
     assert "managed_catalog.resolve() != config.controller.catalog_dir.resolve()" in script
     assert "cannot use {names}" in script
@@ -84,7 +86,7 @@ def test_systemd_controller_installer_restarts_boot_persistent_services() -> Non
     assert "systemctl is-active --quiet inky-bird-frame-notifications.timer" in script
     assert 'if [ "${root}" != "${app_dir}" ]; then' in script
     assert 'rsync -a "${root}/catalog/" "${app_dir}/catalog/"' not in script
-    assert "sync_public_catalog(source_catalog, managed_catalog, allow_replacements=True)" in script
+    assert "retain_independent_approvals=True" in script
     assert "allow_replacements=True" in script
     assert "managed_catalog.resolve() != config.controller.catalog_dir.resolve()" in script
     assert "cannot use {names}" in script
