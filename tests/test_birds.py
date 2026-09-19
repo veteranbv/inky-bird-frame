@@ -275,6 +275,7 @@ class EbirdTests(unittest.TestCase):
         self.assertEqual(params["back"], ["30"])
         self.assertEqual(params["cat"], ["species"])
         self.assertEqual(get_json.call_args.kwargs["headers"], {"X-eBirdApiToken": "secret-token"})
+        self.assertEqual(get_json.call_args.args[1], 45.0)
         self.assertNotIn("secret-token", url)
 
     def test_taxon_match_requires_one_exact_active_bird_species(self) -> None:

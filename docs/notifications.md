@@ -50,7 +50,7 @@ Each destination has its own `events` list:
 
 | Event | Sent when |
 | --- | --- |
-| `discovery` | A refresh finds species not present in the previous snapshot; names are aggregated |
+| `discovery` | A refresh finds species absent from the last reliable comparison; names are aggregated |
 | `generation_approved` | A new plate passes factual and visual review |
 | `terminal_error` | A taxon exhausts automated quality review and needs an explicit retry |
 | `degraded` | A transient operation crosses the configured count or duration threshold |
@@ -85,6 +85,13 @@ Routine successes do not notify. Transient failures notify only after
 `degradation_window_minutes` has elapsed. `cooldown_minutes` suppresses repeat
 notices while the same service remains unhealthy. Recovery sends once, and
 only after a degradation notice was sent.
+
+A partial refresh still updates the active catalog from healthy providers. For
+discovery notices, it remembers taxa seen before and during the outage until
+all configured providers succeed again. Their return is not a new discovery;
+genuinely new taxa from healthy providers can still notify. If upgrading while
+the previous refresh was degraded, the first complete refresh establishes a
+reliable comparison without a discovery notice.
 
 ## Delivery reliability
 

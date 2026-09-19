@@ -83,7 +83,9 @@ from inky_bird_frame.prompts import PROMPT_VERSION
 from inky_bird_frame.retry import RetryRecord, RetryStore
 
 
-def discovery_result(location: DiscoveryLocation, species: list[BirdSpecies]) -> DiscoveryResult:
+def discovery_result(
+    location: DiscoveryLocation | None, species: list[BirdSpecies]
+) -> DiscoveryResult:
     return DiscoveryResult(
         location=location,
         species=species,
@@ -2204,6 +2206,200 @@ class ControllerTests(unittest.TestCase):
         self.assertEqual(len(snapshot["species"]), 2)
         self.assertEqual(snapshot["species"][0]["source"], "BirdWeather")
         self.assertEqual(snapshot["species"][0]["latest_detection_at"], "2026-07-13T08:10:00-04:00")
+
+    def test_partial_refresh_does_not_rediscover_species_when_provider_recovers(self) -> None:
+        healthy = BirdSpecies(1, "Healthy Bird", "Avis sana", 1, "iNaturalist")
+        returning = BirdSpecies(2, "Returning Bird", "Avis redit", 1, "eBird")
+        new_healthy = BirdSpecies(3, "New Healthy Bird", "Avis nova", 1, "iNaturalist")
+        new_recovered = BirdSpecies(4, "New eBird Bird", "Avis ebird", 1, "eBird")
+
+        def discovery(species: list[BirdSpecies], *, ebird_ok: bool) -> DiscoveryResult:
+            return DiscoveryResult(
+                location=None,
+                species=species,
+                providers=[
+                    ProviderStatus("inaturalist", "ok", len(species)),
+                    ProviderStatus("ebird", "ok" if ebird_ok else "error", 0),
+                ],
+                unresolved=[],
+            )
+
+        results = [
+            discovery([healthy, returning], ebird_ok=True),
+            discovery([healthy, new_healthy], ebird_ok=False),
+            discovery([healthy, new_healthy], ebird_ok=False),
+            discovery([healthy, returning, new_healthy, new_recovered], ebird_ok=True),
+            discovery([healthy, new_healthy, new_recovered], ebird_ok=True),
+            discovery([healthy, returning, new_healthy, new_recovered], ebird_ok=True),
+        ]
+        with TemporaryDirectory() as temporary:
+            config_path = Path(temporary) / "config.toml"
+            config_path.write_text(CONFIG)
+            config = load_config(config_path)
+            with (
+                patch("inky_bird_frame.controller.discover_species", side_effect=results),
+                patch(
+                    "inky_bird_frame.controller._write_active_catalog",
+                    side_effect=lambda _config, species: len(species),
+                ),
+            ):
+                refreshes = [run_refresh_cycle(config) for _ in results]
+            snapshot = json.loads((config.controller.state_dir / "discovery.json").read_text())
+
+        self.assertEqual(
+            [
+                [item["taxon_id"] for item in cast(list[dict[str, object]], refresh["new_species"])]
+                for refresh in refreshes
+            ],
+            [[1, 2], [3], [], [4], [], [2]],
+        )
+        self.assertEqual(refreshes[1]["species_count"], 2)
+        self.assertEqual(refreshes[1]["active_approved_count"], 2)
+        self.assertEqual(snapshot["notification_baseline_taxon_ids"], [1, 2, 3, 4])
+
+    def test_upgrade_from_degraded_snapshot_waits_for_reliable_baseline(self) -> None:
+        healthy = BirdSpecies(1, "Healthy Bird", "Avis sana", 1, "iNaturalist")
+        returning = BirdSpecies(2, "Returning Bird", "Avis redit", 1, "eBird")
+        later = BirdSpecies(3, "Later Bird", "Avis nova", 1, "eBird")
+        with TemporaryDirectory() as temporary:
+            config_path = Path(temporary) / "config.toml"
+            config_path.write_text(CONFIG)
+            config = load_config(config_path)
+            state_dir = config.controller.state_dir
+            state_dir.mkdir(parents=True)
+            snapshot_path = state_dir / "discovery.json"
+            snapshot_path.write_text(
+                json.dumps(
+                    {
+                        "schema_version": 2,
+                        "refreshed_at": "2026-09-19T12:00:00+00:00",
+                        "place_name": "",
+                        "state": "",
+                        "providers": [
+                            ProviderStatus("inaturalist", "ok", 1).as_dict(),
+                            ProviderStatus("ebird", "error", 0).as_dict(),
+                        ],
+                        "species": [
+                            {
+                                "taxon_id": 1,
+                                "common_name": healthy.common_name,
+                                "scientific_name": healthy.scientific_name,
+                                "observation_count": 1,
+                                "source": healthy.source,
+                            }
+                        ],
+                    }
+                )
+            )
+            results = [
+                DiscoveryResult(
+                    None,
+                    [healthy],
+                    [ProviderStatus("inaturalist", "ok", 1), ProviderStatus("ebird", "error", 0)],
+                    [],
+                ),
+                DiscoveryResult(
+                    None,
+                    [healthy, returning],
+                    [ProviderStatus("inaturalist", "ok", 1), ProviderStatus("ebird", "ok", 1)],
+                    [],
+                ),
+                DiscoveryResult(
+                    None,
+                    [healthy, returning, later],
+                    [ProviderStatus("inaturalist", "ok", 1), ProviderStatus("ebird", "ok", 2)],
+                    [],
+                ),
+            ]
+            with (
+                patch("inky_bird_frame.controller.discover_species", side_effect=results),
+                patch("inky_bird_frame.controller._write_active_catalog", return_value=0),
+            ):
+                first = run_refresh_cycle(config)
+                self.assertIsNone(
+                    json.loads(snapshot_path.read_text())["notification_baseline_taxon_ids"]
+                )
+                second = run_refresh_cycle(config)
+                third = run_refresh_cycle(config)
+
+        self.assertEqual(first["new_species"], [])
+        self.assertEqual(second["new_species"], [])
+        self.assertEqual(
+            [item["taxon_id"] for item in cast(list[dict[str, object]], third["new_species"])],
+            [3],
+        )
+
+    def test_invalid_discovery_notification_baseline_does_not_replace_state(self) -> None:
+        with TemporaryDirectory() as temporary:
+            config_path = Path(temporary) / "config.toml"
+            config_path.write_text(CONFIG)
+            config = load_config(config_path)
+            state_dir = config.controller.state_dir
+            state_dir.mkdir(parents=True)
+            snapshot_path = state_dir / "discovery.json"
+            snapshot_path.write_text(
+                json.dumps(
+                    {
+                        "schema_version": 2,
+                        "refreshed_at": "2026-09-19T12:00:00+00:00",
+                        "place_name": "",
+                        "state": "",
+                        "providers": [ProviderStatus("inaturalist", "ok", 0).as_dict()],
+                        "species": [],
+                        "notification_baseline_taxon_ids": [True],
+                    }
+                )
+            )
+            original = snapshot_path.read_bytes()
+            with (
+                patch("inky_bird_frame.controller.discover_species") as discover,
+                self.assertRaisesRegex(CatalogError, "Invalid discovery notification baseline"),
+            ):
+                run_refresh_cycle(config)
+            self.assertEqual(snapshot_path.read_bytes(), original)
+            discover.assert_not_called()
+
+    def test_legacy_complete_snapshot_keeps_discovery_comparison(self) -> None:
+        observed = BirdSpecies(1, "Observed Bird", "Avis observata", 1, "iNaturalist")
+        new = BirdSpecies(2, "New Bird", "Avis nova", 1, "iNaturalist")
+        with TemporaryDirectory() as temporary:
+            config_path = Path(temporary) / "config.toml"
+            config_path.write_text(CONFIG)
+            config = load_config(config_path)
+            state_dir = config.controller.state_dir
+            state_dir.mkdir(parents=True)
+            (state_dir / "discovery.json").write_text(
+                json.dumps(
+                    {
+                        "schema_version": 1,
+                        "refreshed_at": "2026-09-19T12:00:00+00:00",
+                        "place_name": "",
+                        "state": "",
+                        "species": [
+                            {
+                                "taxon_id": 1,
+                                "common_name": observed.common_name,
+                                "scientific_name": observed.scientific_name,
+                                "observation_count": 1,
+                                "source": observed.source,
+                            }
+                        ],
+                    }
+                )
+            )
+            with (
+                patch(
+                    "inky_bird_frame.controller.discover_species",
+                    return_value=discovery_result(None, [observed, new]),
+                ),
+                patch("inky_bird_frame.controller._write_active_catalog", return_value=0),
+            ):
+                result = run_refresh_cycle(config)
+
+        self.assertEqual(
+            [item["taxon_id"] for item in cast(list[dict[str, object]], result["new_species"])],
+            [2],
+        )
 
     def test_refresh_unions_observations_with_private_collection_without_trusting_catalog(
         self,
@@ -4361,11 +4557,13 @@ class DiscoveryProviderTests(unittest.TestCase):
                     "inky_bird_frame.controller.fetch_ebird_observations",
                     side_effect=DataSourceError("eBird unavailable"),
                 ),
+                patch("inky_bird_frame.controller.monotonic", side_effect=[100.0, 100.05]),
             ):
                 result = discover_species(config)
 
         self.assertEqual(result.species, [inaturalist])
         self.assertEqual(result.providers[1].status, "error")
+        self.assertEqual(result.providers[1].details, {"http_duration_ms": 50})
 
 
 if __name__ == "__main__":

@@ -88,6 +88,14 @@ A multi-provider refresh reports each provider independently and continues when
 at least one configured provider is healthy. A refresh failure does not remove
 the existing active catalog.
 
+An eBird response can take longer than other providers, so its recent-observation
+request has a separate 45-second limit. The eBird provider's private `details`
+reports `http_duration_ms` for both successes and request failures. If eBird
+still times out, check that duration before changing the configured radius or
+window. The notification comparison does not hold failed-provider observations
+in the active catalog; their return after recovery no longer produces a
+duplicate discovery notice.
+
 ### A source shows a bird, but the frame does not change
 
 Start at the controller. `discover` queries the configured providers
