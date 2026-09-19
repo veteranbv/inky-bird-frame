@@ -112,9 +112,10 @@ EBIRD_BACK_DAYS: Final = {
     ObservationWindow.LAST_30_DAYS: 30,
 }
 EBIRD_MAX_RADIUS_KM: Final = 50
-# The recent-observations endpoint can return valid responses after 20 seconds;
-# keep its budget separate from faster providers and below the refresh cadence.
-EBIRD_HTTP_TIMEOUT_SECONDS: Final = 45.0
+# The recent-observations endpoint can return valid responses near 45 seconds.
+# Keep its 90-second ceiling separate from faster providers and well below the
+# default 15-minute refresh cadence.
+EBIRD_HTTP_TIMEOUT_SECONDS: Final = 90.0
 EBIRD_UNRESOLVED_RETRY_DAYS: Final = 7
 TAXONOMY_MATCH_STRATEGY: Final = "scientific-name-or-exact-synonym-v1"
 BIRDWEATHER_MAX_SPECIES: Final = 100
