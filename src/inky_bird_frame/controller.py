@@ -107,6 +107,7 @@ class DiscoverySnapshot:
     place_name: str
     state: str
     species: list[BirdSpecies]
+    notification_baseline_taxa: frozenset[int] | None = None
 
 
 @dataclass(frozen=True)
@@ -309,6 +310,7 @@ def discover_species(
             providers.append(ProviderStatus("inaturalist", "ok", len(inaturalist)))
 
     if location is not None and DiscoveryProvider.EBIRD in selected_sources:
+        request_duration_ms: int | None = None
         try:
             api_key = config.discovery.ebird_api_key
             if api_key is None and config.discovery.ebird_api_key_env is not None:
@@ -316,21 +318,30 @@ def discover_species(
                 api_key = environment_value.strip() if environment_value else None
             if api_key is None:
                 raise DataSourceError("eBird API key is not configured")
-            observations = fetch_ebird_observations(
-                latitude=location.latitude,
-                longitude=location.longitude,
-                radius_km=selected_radius,
-                limit=selected_limit,
-                window=selected_window,
-                api_key=api_key,
-            )
+            request_started = monotonic()
+            try:
+                observations = fetch_ebird_observations(
+                    latitude=location.latitude,
+                    longitude=location.longitude,
+                    radius_km=selected_radius,
+                    limit=selected_limit,
+                    window=selected_window,
+                    api_key=api_key,
+                )
+            finally:
+                request_duration_ms = round((monotonic() - request_started) * 1000)
             resolution = resolve_ebird_species(
                 observations,
                 config.controller.state_dir / "ebird-taxonomy-crosswalk.json",
                 persist_cache=persist_taxonomy_cache,
             )
         except (DataSourceError, ValueError) as exc:
-            providers.append(ProviderStatus("ebird", "error", 0, error=str(exc)))
+            details: dict[str, object] | None = (
+                {"http_duration_ms": request_duration_ms}
+                if request_duration_ms is not None
+                else None
+            )
+            providers.append(ProviderStatus("ebird", "error", 0, error=str(exc), details=details))
         else:
             unresolved.extend(resolution.unresolved)
             if observations and not resolution.species:
@@ -341,6 +352,7 @@ def discover_species(
                         0,
                         unresolved_count=len(resolution.unresolved),
                         error="No eBird observations had an exact iNaturalist species match",
+                        details={"http_duration_ms": request_duration_ms},
                     )
                 )
             else:
@@ -351,6 +363,7 @@ def discover_species(
                         "ok",
                         len(resolution.species),
                         unresolved_count=len(resolution.unresolved),
+                        details={"http_duration_ms": request_duration_ms},
                     )
                 )
 
@@ -1025,19 +1038,34 @@ def _write_active_catalog(
 
 def run_refresh_cycle(config: AppConfig) -> dict[str, object]:
     with exclusive_refresh_lock(config.controller.state_dir):
-        previous_taxa: set[int] = set()
+        notification_baseline: frozenset[int] | None = frozenset()
         place_name = ""
         state = ""
         if _snapshot_path(config).exists():
             previous = _read_discovery_snapshot(config)
-            previous_taxa = {species.taxon_id for species in previous.species}
+            notification_baseline = previous.notification_baseline_taxa
         discovery = discover_species(config)
         location = discovery.location
         if location is not None:
             place_name = location.place_name
             state = location.state
         species_list = discovery.species
-        new_species = [species for species in species_list if species.taxon_id not in previous_taxa]
+        new_species = (
+            [species for species in species_list if species.taxon_id not in notification_baseline]
+            if notification_baseline is not None
+            else []
+        )
+        current_taxa = {species.taxon_id for species in species_list}
+        # A failed provider cannot establish absence. Keep its prior taxa only
+        # for notification comparison; the active catalog uses current results.
+        if any(provider.status != "ok" for provider in discovery.providers):
+            next_baseline = (
+                sorted(notification_baseline | current_taxa)
+                if notification_baseline is not None
+                else None
+            )
+        else:
+            next_baseline = sorted(current_taxa)
         with catalog_state_lock(config.controller.state_dir):
             refreshed_at = datetime.now(UTC).replace(microsecond=0)
             write_json_atomic(
@@ -1049,6 +1077,7 @@ def run_refresh_cycle(config: AppConfig) -> dict[str, object]:
                     "state": state,
                     "providers": [provider.as_dict() for provider in discovery.providers],
                     "species": [_species_payload(species) for species in species_list],
+                    "notification_baseline_taxon_ids": next_baseline,
                 },
             )
             active_count = _write_active_catalog(config, species_list)
@@ -1096,7 +1125,34 @@ def _read_discovery_snapshot(config: AppConfig) -> DiscoverySnapshot:
         raise CatalogError(f"Invalid discovery timestamp: {path}")
 
     species = _parse_species_list(species_raw, path)
-    return DiscoverySnapshot(refreshed, place_name, state, species)
+    if "notification_baseline_taxon_ids" in raw:
+        baseline_raw = raw["notification_baseline_taxon_ids"]
+        if baseline_raw is None:
+            notification_baseline = None
+        elif (
+            isinstance(baseline_raw, list)
+            and all(
+                isinstance(taxon_id, int) and not isinstance(taxon_id, bool) and taxon_id > 0
+                for taxon_id in baseline_raw
+            )
+            and len(baseline_raw) == len(set(baseline_raw))
+            and {item.taxon_id for item in species}.issubset(baseline_raw)
+        ):
+            notification_baseline = frozenset(baseline_raw)
+        else:
+            raise CatalogError(f"Invalid discovery notification baseline: {path}")
+    else:
+        providers = raw.get("providers")
+        incomplete = raw["schema_version"] == 2 and (
+            not isinstance(providers, list)
+            or not providers
+            or any(
+                not isinstance(provider, dict) or provider.get("status") != "ok"
+                for provider in providers
+            )
+        )
+        notification_baseline = None if incomplete else frozenset(item.taxon_id for item in species)
+    return DiscoverySnapshot(refreshed, place_name, state, species, notification_baseline)
 
 
 def current_discovery_species(config: AppConfig) -> list[BirdSpecies]:

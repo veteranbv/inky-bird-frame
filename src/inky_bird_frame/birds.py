@@ -112,6 +112,9 @@ EBIRD_BACK_DAYS: Final = {
     ObservationWindow.LAST_30_DAYS: 30,
 }
 EBIRD_MAX_RADIUS_KM: Final = 50
+# The recent-observations endpoint can return valid responses after 20 seconds;
+# keep its budget separate from faster providers and below the refresh cadence.
+EBIRD_HTTP_TIMEOUT_SECONDS: Final = 45.0
 EBIRD_UNRESOLVED_RETRY_DAYS: Final = 7
 TAXONOMY_MATCH_STRATEGY: Final = "scientific-name-or-exact-synonym-v1"
 BIRDWEATHER_MAX_SPECIES: Final = 100
@@ -285,7 +288,7 @@ def fetch_ebird_observations(
     limit: int,
     window: ObservationWindow,
     api_key: str,
-    timeout_seconds: float = 10.0,
+    timeout_seconds: float = EBIRD_HTTP_TIMEOUT_SECONDS,
 ) -> list[EbirdSpecies]:
     if window not in EBIRD_BACK_DAYS:
         raise ValueError("eBird supports observation windows of 30 days or less")
