@@ -89,7 +89,7 @@ at least one configured provider is healthy. A refresh failure does not remove
 the existing active catalog.
 
 An eBird response can take longer than other providers, so its recent-observation
-request has a separate 45-second limit. The eBird provider's private `details`
+request has a separate 90-second limit. The eBird provider's private `details`
 reports `http_duration_ms` for both successes and request failures. If eBird
 still times out, check that duration before changing the configured radius or
 window. The notification comparison does not hold failed-provider observations
