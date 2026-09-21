@@ -1,0 +1,42 @@
+{
+  "behavior": "Walks and wades along wet ground and shallow water, repeatedly bobbing the rear of its body while picking invertebrates from water, mud, wet leaves, logs, rocks, and low vegetation. Often solitary and territorial; migration occurs mainly at night.",
+  "common_name": "Northern Waterthrush",
+  "family": "Parulidae",
+  "field_marks": [
+    "Large, trim warbler with a long body and relatively short tail",
+    "Olive-brown upperparts with plain, unbarred wings",
+    "Narrow buff-to-whitish eyebrow emphasizing the dark eye",
+    "Whitish or pale buff underparts with dense dark streaking, including on the throat",
+    "Short, fine, pointed dark bill",
+    "Long, dusky pink legs and a narrow, dark tail"
+  ],
+  "habitat": "Shaded wet habitats with dense ground cover, especially wooded swamps, bogs, brush-edged ponds, lake margins, and sluggish streams. During migration it also uses small wetlands and waterside thickets; nonbreeding habitat includes mangroves and other wet forests.",
+  "measurements": {
+    "length": "Both sexes: 4.7\u20135.5 in (12\u201314 cm)",
+    "weight": "Both sexes: 0.5\u20130.7 oz (14.7\u201319.2 g)",
+    "wingspan": "Both sexes: 8.9\u201310.0 in (22.5\u201325.5 cm)"
+  },
+  "palette": [
+    "olive brown",
+    "buff cream",
+    "soft white",
+    "charcoal black",
+    "dusky pink"
+  ],
+  "scientific_name": "Parkesia noveboracensis",
+  "sources": [
+    {
+      "title": "Northern Waterthrush Identification \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Northern_Waterthrush/id"
+    },
+    {
+      "title": "Northern Waterthrush Life History \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Northern_Waterthrush/lifehistory"
+    },
+    {
+      "title": "Northern Waterthrush \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/northern-waterthrush"
+    }
+  ],
+  "taxon_id": 73149
+}

@@ -1,0 +1,156 @@
+{
+  "approved_at": "2026-09-21T15:00:23+00:00",
+  "assets": {
+    "display": {
+      "filename": "display.png",
+      "sha256": "ab60881a08310294de216aef59f7b25de6f9cbefdf2528225aac85155b0f7840"
+    },
+    "portrait": {
+      "filename": "portrait.png",
+      "sha256": "ccef6f5572dd2c0df4f6eda101a78f3b710d7a28b09e6b9924efdb4742ca8df8"
+    }
+  },
+  "common_name": "Northern Waterthrush",
+  "generation": {
+    "attempt": 2,
+    "correction_source_sha256": "383ea2d1b8e842bc4af4a80acc40f8c6dc1b9c104eb86d7d449a6941e03e0493",
+    "generated_at": "2026-09-21T15:00:21+00:00",
+    "generator": "Codex subscription / built-in gpt-image-2",
+    "max_attempts": 3,
+    "prompt_version": "field-journal-v6"
+  },
+  "profile": {
+    "behavior": "Walks and wades along wet ground and shallow water, repeatedly bobbing the rear of its body while picking invertebrates from water, mud, wet leaves, logs, rocks, and low vegetation. Often solitary and territorial; migration occurs mainly at night.",
+    "common_name": "Northern Waterthrush",
+    "family": "Parulidae",
+    "field_marks": [
+      "Large, trim warbler with a long body and relatively short tail",
+      "Olive-brown upperparts with plain, unbarred wings",
+      "Narrow buff-to-whitish eyebrow emphasizing the dark eye",
+      "Whitish or pale buff underparts with dense dark streaking, including on the throat",
+      "Short, fine, pointed dark bill",
+      "Long, dusky pink legs and a narrow, dark tail"
+    ],
+    "habitat": "Shaded wet habitats with dense ground cover, especially wooded swamps, bogs, brush-edged ponds, lake margins, and sluggish streams. During migration it also uses small wetlands and waterside thickets; nonbreeding habitat includes mangroves and other wet forests.",
+    "measurements": {
+      "length": "Both sexes: 4.7\u20135.5 in (12\u201314 cm)",
+      "weight": "Both sexes: 0.5\u20130.7 oz (14.7\u201319.2 g)",
+      "wingspan": "Both sexes: 8.9\u201310.0 in (22.5\u201325.5 cm)"
+    },
+    "palette": [
+      "olive brown",
+      "buff cream",
+      "soft white",
+      "charcoal black",
+      "dusky pink"
+    ],
+    "scientific_name": "Parkesia noveboracensis",
+    "sources": [
+      {
+        "title": "Northern Waterthrush Identification \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Northern_Waterthrush/id"
+      },
+      {
+        "title": "Northern Waterthrush Life History \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Northern_Waterthrush/lifehistory"
+      },
+      {
+        "title": "Northern Waterthrush \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/northern-waterthrush"
+      }
+    ],
+    "taxon_id": 73149
+  },
+  "quality_review": {
+    "anatomy_accuracy": 5,
+    "composition_quality": 5,
+    "correction_findings": [],
+    "findings": [
+      "The primary specimen is a convincing Northern Waterthrush: long-bodied warbler proportions, relatively short narrow tail, fine pointed bill, long dusky-pink legs, plain brownish upperparts, narrow pale supercilium, and dense dark streaking through the throat and underparts agree with the reference photographs and direct sources.",
+      "The plate contains exactly one primary specimen with one head, one bill, one tail, two convincingly attached legs, and intact feet. The near-side wing is complete; the far-side wing is naturally occluded by the side-on pose with no malformed or duplicated structure visible.",
+      "The detached wing and head are clearly separated supplementary studies rather than extra birds or structures attached to the primary specimen. Both are anatomically coherent, and the bills in the primary and head study have consistent, plausible proportions.",
+      "All visible identification, habitat, behavior, taxonomy, and measurement text is legible and matches the proposed profile without duplicated, omitted, substituted, or nonsensical wording.",
+      "The Cornell measurement set is reproduced faithfully with its Both Sexes qualifier: length 4.7\u20135.5 in (12\u201314 cm), weight 0.5\u20130.7 oz (14.7\u201319.2 g), and wingspan 8.9\u201310.0 in (22.5\u201325.5 cm). Audubon's different supported measurement set does not create a profile conflict.",
+      "The body-length schematic now labels 4.7 in (12 cm) at the bottom and 5.5 in (14 cm) at the top, increases upward, agrees with the printed length range, and retains the SCHEMATIC \u2014 NOT TO SCALE notice. Its unlabeled interior ticks are noncontradictory subdivisions.",
+      "The warm brown rendering remains compatible with the brownish to olive-brown variation visible in the references and sources; the narrow buff-to-whitish eyebrow and heavily streaked pale underparts are species-appropriate.",
+      "No place name, ZIP code, coordinates, map, or local-observation detail appears."
+    ],
+    "location_free": true,
+    "passed": true,
+    "species_accuracy": 5,
+    "text_accuracy": 5,
+    "verification_sources": [
+      {
+        "title": "Northern Waterthrush Identification \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Northern_Waterthrush/id"
+      },
+      {
+        "title": "Northern Waterthrush Life History \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Northern_Waterthrush/lifehistory"
+      },
+      {
+        "title": "Northern Waterthrush \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/northern-waterthrush"
+      }
+    ]
+  },
+  "references": [
+    {
+      "attribution": "no rights reserved",
+      "filename": "01-459373417.jpg",
+      "height": 1364,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/459373417/large.jpg",
+      "license_code": "cc0",
+      "observation_id": 256239010,
+      "observer": "rawcomposition",
+      "photo_id": 459373417,
+      "sha256": "6188426b03e88a406dfc681a0960ea7b0f3197be537409d356dbb2f39a76a76e",
+      "source_url": "https://www.inaturalist.org/observations/256239010",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) MarvalPhotography19, some rights reserved (CC BY)",
+      "filename": "02-356834930.jpg",
+      "height": 1365,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/356834930/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 202081705,
+      "observer": "fernandoarvizu19",
+      "photo_id": 356834930,
+      "sha256": "8998462fed7065c57ba7cbbbd517c41590a2469327ef58e69704ba7db9330f05",
+      "source_url": "https://www.inaturalist.org/observations/202081705",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) Donald Davesne, some rights reserved (CC BY)",
+      "filename": "03-544972199.jpg",
+      "height": 1365,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/544972199/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 302394137,
+      "observer": "donalddavesne",
+      "photo_id": 544972199,
+      "sha256": "3f79a69205565d02bed57b578549d50bc8e59888ec4f3b2a75856fea5d6e6ab8",
+      "source_url": "https://www.inaturalist.org/observations/302394137",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) Sebastian Serna Mu\u00f1oz, some rights reserved (CC BY)",
+      "filename": "04-36503246.jpeg",
+      "height": 1365,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/36503246/large.jpeg",
+      "license_code": "cc-by",
+      "observation_id": 23576321,
+      "observer": "sesernam",
+      "photo_id": 36503246,
+      "sha256": "abcf380e3042cf74c003ef3a6f1219cc1a8647568377a6cc6fd43753ccb1196f",
+      "source_url": "https://www.inaturalist.org/observations/23576321",
+      "width": 2048
+    }
+  ],
+  "schema_version": 1,
+  "scientific_name": "Parkesia noveboracensis",
+  "slug": "northern-waterthrush",
+  "status": "approved",
+  "taxon_id": 73149
+}

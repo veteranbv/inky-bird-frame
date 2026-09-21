@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-17T16:25:06+00:00",
+  "generated_at": "2026-09-21T15:00:23+00:00",
   "schema_version": 1,
   "species": [
     {
@@ -1244,6 +1244,17 @@
       "scientific_name": "Stelgidopteryx serripennis",
       "slug": "northern-rough-winged-swallow",
       "taxon_id": 11970
+    },
+    {
+      "approved_at": "2026-09-21T15:00:23+00:00",
+      "common_name": "Northern Waterthrush",
+      "display_path": "species/73149-northern-waterthrush/display.png",
+      "display_sha256": "ab60881a08310294de216aef59f7b25de6f9cbefdf2528225aac85155b0f7840",
+      "portrait_path": "species/73149-northern-waterthrush/portrait.png",
+      "portrait_sha256": "ccef6f5572dd2c0df4f6eda101a78f3b710d7a28b09e6b9924efdb4742ca8df8",
+      "scientific_name": "Parkesia noveboracensis",
+      "slug": "northern-waterthrush",
+      "taxon_id": 73149
     },
     {
       "approved_at": "2026-08-03T20:46:40+00:00",
