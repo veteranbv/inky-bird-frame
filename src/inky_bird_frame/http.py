@@ -194,24 +194,26 @@ def _fsync_directory(directory: Path) -> None:
 
 def write_bytes_atomic(path: Path, content: bytes, *, mode: int | None = None) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
-    with NamedTemporaryFile(
-        "wb",
-        dir=path.parent,
-        prefix=f".{path.name}.",
-        suffix=".tmp",
-        delete=False,
-    ) as handle:
-        if mode is not None:
-            os.fchmod(handle.fileno(), mode)
-        handle.write(content)
-        handle.flush()
-        os.fsync(handle.fileno())
-        temporary = Path(handle.name)
+    temporary: Path | None = None
     try:
+        with NamedTemporaryFile(
+            "wb",
+            dir=path.parent,
+            prefix=f".{path.name}.",
+            suffix=".tmp",
+            delete=False,
+        ) as handle:
+            temporary = Path(handle.name)
+            if mode is not None:
+                os.fchmod(handle.fileno(), mode)
+            handle.write(content)
+            handle.flush()
+            os.fsync(handle.fileno())
         temporary.replace(path)
         _fsync_directory(path.parent)
     finally:
-        temporary.unlink(missing_ok=True)
+        if temporary is not None:
+            temporary.unlink(missing_ok=True)
 
 
 def write_json_atomic(path: Path, value: object, *, mode: int | None = None) -> None:
