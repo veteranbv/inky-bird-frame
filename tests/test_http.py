@@ -1,18 +1,21 @@
 from __future__ import annotations
 
+import errno
 import unittest
 from collections.abc import Iterator
 from contextlib import contextmanager
 from email.message import Message
 from http.client import IncompleteRead, RemoteDisconnected
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+from pathlib import Path
+from tempfile import TemporaryDirectory
 from threading import Thread
 from unittest.mock import MagicMock, patch
 from urllib.error import HTTPError
 
 import inky_bird_frame.http
 from inky_bird_frame.errors import DataSourceError
-from inky_bird_frame.http import get_bytes, get_json, post_json
+from inky_bird_frame.http import get_bytes, get_json, post_json, write_json_atomic
 
 
 class _RedirectingHandler(BaseHTTPRequestHandler):
@@ -64,6 +67,29 @@ def _serving() -> Iterator[int]:
     finally:
         server.shutdown()
         server.server_close()
+
+
+class AtomicWriteTests(unittest.TestCase):
+    def test_failed_write_preserves_destination_and_removes_temporary_file(self) -> None:
+        for operation, mode in (("fchmod", 0o600), ("fsync", None)):
+            with self.subTest(operation=operation), TemporaryDirectory() as temporary:
+                path = Path(temporary) / "index.json"
+                original = '{"previous": true}\n'
+                path.write_text(original)
+
+                with (
+                    patch(
+                        f"inky_bird_frame.http.os.{operation}",
+                        side_effect=OSError(errno.ENOSPC, "No space left on device"),
+                    ),
+                    self.assertRaises(OSError),
+                ):
+                    write_json_atomic(path, {"current": True}, mode=mode)
+
+                self.assertEqual(path.read_text(), original)
+                self.assertEqual(
+                    [entry.name for entry in Path(temporary).iterdir()], ["index.json"]
+                )
 
 
 class JsonHttpTests(unittest.TestCase):
