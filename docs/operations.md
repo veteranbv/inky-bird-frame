@@ -609,8 +609,13 @@ available for non-destructive diagnosis.
 On systemd hosts the services log JSON to journald and rely on the
 distribution's default journal rotation. Set `SystemMaxUse=` in
 `/etc/systemd/journald.conf` and restart `systemd-journald` to enforce a hard
-size cap. macOS LaunchAgents write to log files under the managed support
-directory instead.
+size cap. macOS managed LaunchAgents write to private files under the support
+directory. Each output and error stream rotates at 16 MiB and keeps three
+numbered backups (`.1` is newest), bounding retained logs to approximately
+640 MiB across the five agents and ten streams. A single oversized write may
+temporarily exceed the limit. The installer restricts the support and log
+directories to the controller user and existing log files to mode `0600`.
+Manual CLI runs still write to the caller's terminal.
 
 See [`notifications.md`](notifications.md) for provider setup, event filtering,
 durable delivery, noise controls, testing, and redacted status commands.

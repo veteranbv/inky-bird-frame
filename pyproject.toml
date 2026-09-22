@@ -1,6 +1,6 @@
 [project]
 name = "inky-bird-frame"
-version = "0.9.3"
+version = "0.9.4"
 description = "Discover birds and display reviewed field-journal plates on color e-paper"
 readme = "README.md"
 requires-python = ">=3.11"
@@ -54,7 +54,7 @@ dev = [
 ]
 
 [project.scripts]
-inky-bird-frame = "inky_bird_frame.cli:main"
+inky-bird-frame = "inky_bird_frame.entrypoint:main"
 
 [build-system]
 requires = ["hatchling"]
