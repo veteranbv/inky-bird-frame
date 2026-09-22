@@ -86,6 +86,16 @@ def test_controller_installer_restores_schedule_without_run_at_load_on_failure()
     assert "rebuild_catalog_index" not in script
 
 
+def test_macos_controller_installer_limits_log_retention_and_permissions() -> None:
+    script = (Path(__file__).resolve().parents[1] / "deploy" / "install-controller.sh").read_text()
+    assert 'chmod 700 "${support_dir}" "${log_dir}"' in script
+    assert "find \"${log_dir}\" -maxdepth 1 -type f -name '*.log*' -exec chmod 600 {} +" in script
+    assert '"Umask": 0o077' in script
+    for name in ("serve", "refresh", "generate", "catalog-publish", "notifications"):
+        assert f'**managed_agent("{name}")' in script
+    assert '"INKY_BIRD_MANAGED_LOG_PATH": str(log_dir / f"{name}.log")' in script
+
+
 def test_systemd_controller_installer_restarts_boot_persistent_services() -> None:
     script = (
         Path(__file__).resolve().parents[1] / "deploy" / "install-controller-systemd.sh"

@@ -76,6 +76,8 @@ if [ -z "${uv_bin}" ] || [ ! -x "${uv_bin}" ]; then
 fi
 
 mkdir -p "${app_dir}/catalog" "${app_dir}/deploy" "${support_dir}" "${log_dir}" "${agents_dir}"
+chmod 700 "${support_dir}" "${log_dir}"
+find "${log_dir}" -maxdepth 1 -type f -name '*.log*' -exec chmod 600 {} +
 if [ "${root}" != "${app_dir}" ]; then
   rsync -a --delete "${root}/src/" "${app_dir}/src/"
   install -m 0755 "${root}/deploy/install-controller.sh" "${app_dir}/deploy/"
@@ -214,10 +216,22 @@ with catalog_state_lock(config.controller.state_dir):
 common = {
     "WorkingDirectory": str(app_dir),
     "ProcessType": "Background",
-    "EnvironmentVariables": {"PYTHONUNBUFFERED": "1"},
+    "Umask": 0o077,
 }
+
+
+def managed_agent(name: str) -> dict[str, object]:
+    return {
+        **common,
+        "EnvironmentVariables": {
+            "PYTHONUNBUFFERED": "1",
+            "INKY_BIRD_MANAGED_LOG_PATH": str(log_dir / f"{name}.log"),
+        },
+    }
+
+
 serve = {
-    **common,
+    **managed_agent("serve"),
     "Label": "com.inky-bird-frame.serve",
     "ProgramArguments": [str(executable), "serve", "--config", str(config_path)],
     "RunAtLoad": True,
@@ -227,7 +241,7 @@ serve = {
     "StandardErrorPath": str(log_dir / "serve.error.log"),
 }
 refresh = {
-    **common,
+    **managed_agent("refresh"),
     "Label": "com.inky-bird-frame.refresh",
     "ProgramArguments": [str(executable), "refresh", "--config", str(config_path)],
     "RunAtLoad": True,
@@ -236,7 +250,7 @@ refresh = {
     "StandardErrorPath": str(log_dir / "refresh.error.log"),
 }
 generation = {
-    **common,
+    **managed_agent("generate"),
     "Label": "com.inky-bird-frame.generate",
     "ProgramArguments": [str(executable), "generate", "--config", str(config_path)],
     "StartInterval": schedule.generation_minutes * 60,
@@ -244,7 +258,7 @@ generation = {
     "StandardErrorPath": str(log_dir / "generate.error.log"),
 }
 catalog_publish = {
-    **common,
+    **managed_agent("catalog-publish"),
     "Label": "com.inky-bird-frame.catalog-publish",
     "ProgramArguments": [
         str(executable),
@@ -258,7 +272,7 @@ catalog_publish = {
     "StandardErrorPath": str(log_dir / "catalog-publish.error.log"),
 }
 notifications = {
-    **common,
+    **managed_agent("notifications"),
     "Label": "com.inky-bird-frame.notifications",
     "ProgramArguments": [
         str(executable),
