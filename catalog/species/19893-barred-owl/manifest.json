@@ -1,0 +1,158 @@
+{
+  "approved_at": "2026-09-24T00:50:42+00:00",
+  "assets": {
+    "display": {
+      "filename": "display.png",
+      "sha256": "12dee1c8d6e9a18595e37153b7c9948cdb21ecd7ee28802814805d136880a4e8"
+    },
+    "portrait": {
+      "filename": "portrait.png",
+      "sha256": "6fc6d8072d4be6e265cb297cd407ac3a1fad1e96ad12b697109cc65a5eb419e7"
+    }
+  },
+  "common_name": "Barred Owl",
+  "generation": {
+    "attempt": 1,
+    "generated_at": "2026-09-24T00:50:40+00:00",
+    "generator": "Codex subscription / built-in gpt-image-2",
+    "max_attempts": 3,
+    "prompt_version": "field-journal-v6"
+  },
+  "profile": {
+    "behavior": "Mostly nocturnal, with activity also around dawn, dusk, and occasionally daytime. Roosts quietly in trees or cavities by day; hunts mainly from a perch, then swoops onto prey, but may also fly low, hover, or take aquatic prey. Territorial pairs communicate with resonant hoots. Diet includes small mammals, birds, amphibians, reptiles, fish, crayfish, and invertebrates.",
+    "common_name": "Barred Owl",
+    "family": "Strigidae",
+    "field_marks": [
+      "Large, stocky owl with a rounded head and no ear tufts",
+      "Gray-white facial disc with dark brown eyes and a short yellow hooked bill",
+      "Upper breast crossed by horizontal brown bars; lower underparts marked with vertical brown streaks",
+      "Brown upperparts mottled and barred with buff-white",
+      "Broad, rounded wings and a medium-length rounded tail, both barred brown and pale",
+      "Densely feathered legs; feet and talons are often largely concealed while perched"
+    ],
+    "habitat": "Large, mature deciduous, mixed, or coniferous forests, especially wooded swamps and forests near water; dense foliage provides daytime roosts, while large trees and cavities provide nest sites.",
+    "measurements": {
+      "length": "16.9\u201319.7 in (43\u201350 cm), both sexes",
+      "weight": "16.6\u201337.0 oz (470\u20131,050 g), both sexes; females are generally larger",
+      "wingspan": "39.0\u201343.3 in (99\u2013110 cm), both sexes"
+    },
+    "palette": [
+      "warm brown",
+      "gray-brown",
+      "buff-white",
+      "dark brown",
+      "bill yellow"
+    ],
+    "scientific_name": "Strix varia",
+    "sources": [
+      {
+        "title": "Barred Owl Identification \u2014 All About Birds, Cornell Lab of Ornithology",
+        "url": "https://www.allaboutbirds.org/guide/Barred_Owl/id"
+      },
+      {
+        "title": "Barred Owl \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/barred-owl"
+      },
+      {
+        "title": "Strix varia \u2014 Animal Diversity Web",
+        "url": "https://animaldiversity.org/accounts/Strix_varia/"
+      }
+    ],
+    "taxon_id": 19893
+  },
+  "quality_review": {
+    "anatomy_accuracy": 4,
+    "composition_quality": 5,
+    "correction_findings": [],
+    "findings": [
+      "Identity is consistent with Barred Owl (Strix varia): a large, stocky, round-headed owl lacking ear tufts, with dark brown eyes, a yellow hooked bill, barred upper breast, vertically streaked lower underparts, mottled brown-and-pale upperparts, broad rounded wings, and a barred rounded tail.",
+      "The primary specimen has one head, one bill, two eyes, one complete tail, two plausibly attached legs and feet, and a complete pair of wings; the far-side wing is naturally obscured by the frontal perched pose. No malformed, duplicated, or implausibly attached anatomy is visible.",
+      "The detached spread-wing and open-bill head illustrations read as intentional supplementary studies. The spread wing has credible rounded proportions and barring. In the head study, the hooked upper mandible projects beyond the lower mandible without appearing truncated or reversed, and its proportions remain consistent with the primary head and reference photographs.",
+      "The illustrated gray-white facial disc, dark eyes, yellow bill, horizontal breast barring, vertical abdominal streaking, warm-brown scapular and wing pattern, feathered legs, and barred tail agree with the attached field-reference photographs and direct-source descriptions.",
+      "Every visible title, taxonomic line, measurement, habitat statement, behavior statement, diet statement, and field-mark line is legible and materially matches the proposed profile without duplicated, omitted, substituted, or nonsensical wording.",
+      "The length, weight, and wingspan values faithfully reproduce the directly published Cornell measurement set for both sexes. The added statement that females are generally larger is supported independently by Audubon and Animal Diversity Web.",
+      "The right-side length diagram places 16.9 in (43 cm) below 19.7 in (50 cm), uses matching inch and centimeter endpoints, and explicitly states \u201cSCHEMATIC \u2014 NOT TO SCALE.\u201d Its unlabeled interior ticks function as visual subdivisions and do not contradict the published range.",
+      "The repeated bottom caption, \u201cBODY LENGTH: 16.9\u201319.7 in (43\u201350 cm), both sexes,\u201d agrees with the measurement block and diagram endpoints.",
+      "The habitat account agrees with direct sources describing mature deciduous, mixed, or coniferous forest, wooded swamps and forests near water, dense daytime cover, and cavity-bearing trees.",
+      "The behavior and diet account is supported by the direct sources: chiefly nocturnal activity with daytime or dawn-and-dusk hunting, perch hunting, low flight, hovering, aquatic prey, pair calling, and a varied diet dominated by small mammals but also including birds, amphibians, reptiles, fish, crayfish, and other invertebrates.",
+      "No place name, ZIP code, coordinates, map, range-locality label, or local-observation detail appears on the plate."
+    ],
+    "location_free": true,
+    "passed": true,
+    "species_accuracy": 5,
+    "text_accuracy": 5,
+    "verification_sources": [
+      {
+        "title": "Barred Owl Identification \u2014 All About Birds, Cornell Lab of Ornithology",
+        "url": "https://www.allaboutbirds.org/guide/Barred_Owl/id"
+      },
+      {
+        "title": "Barred Owl \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/barred-owl"
+      },
+      {
+        "title": "Strix varia (barred owl) \u2014 Animal Diversity Web",
+        "url": "https://animaldiversity.org/accounts/Strix_varia/"
+      }
+    ]
+  },
+  "references": [
+    {
+      "attribution": "(c) Bernie Paquette, some rights reserved (CC BY)",
+      "filename": "01-464374794.jpeg",
+      "height": 1365,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/464374794/large.jpeg",
+      "license_code": "cc-by",
+      "observation_id": 258778023,
+      "observer": "bugeyedbernie",
+      "photo_id": 464374794,
+      "sha256": "c67ef10640aa682a63a83d51a254ab6cba30907ab875bd5b2100f116784c3b6f",
+      "source_url": "https://www.inaturalist.org/observations/258778023",
+      "width": 2048
+    },
+    {
+      "attribution": "no rights reserved",
+      "filename": "02-343509678.jpg",
+      "height": 1227,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/343509678/large.jpg",
+      "license_code": "cc0",
+      "observation_id": 195283561,
+      "observer": "davidfbird",
+      "photo_id": 343509678,
+      "sha256": "87c3cf81eed118a385aa1be95c4d5fbe674ec93e0912df158e87c3aae6c76d88",
+      "source_url": "https://www.inaturalist.org/observations/195283561",
+      "width": 1841
+    },
+    {
+      "attribution": "(c) Jaime McGuigan, some rights reserved (CC BY)",
+      "filename": "03-257388318.jpg",
+      "height": 1296,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/257388318/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 149376725,
+      "observer": "jmcguigan",
+      "photo_id": 257388318,
+      "sha256": "6fb41db356a20b63880ae7dc7620295416c3b2b2c0dfb4076e33acbb91244ae9",
+      "source_url": "https://www.inaturalist.org/observations/149376725",
+      "width": 1728
+    },
+    {
+      "attribution": "(c) Tom Norton, some rights reserved (CC BY)",
+      "filename": "04-119574690.jpeg",
+      "height": 2048,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/119574690/large.jpeg",
+      "license_code": "cc-by",
+      "observation_id": 73252752,
+      "observer": "tsn",
+      "photo_id": 119574690,
+      "sha256": "846703f55bd8e55b9513da2504c6cccc602b5b698c4597e541d0878c22c27cb3",
+      "source_url": "https://www.inaturalist.org/observations/73252752",
+      "width": 1536
+    }
+  ],
+  "schema_version": 1,
+  "scientific_name": "Strix varia",
+  "slug": "barred-owl",
+  "status": "approved",
+  "taxon_id": 19893
+}
