@@ -1,0 +1,42 @@
+{
+  "behavior": "Mostly nocturnal, with activity also around dawn, dusk, and occasionally daytime. Roosts quietly in trees or cavities by day; hunts mainly from a perch, then swoops onto prey, but may also fly low, hover, or take aquatic prey. Territorial pairs communicate with resonant hoots. Diet includes small mammals, birds, amphibians, reptiles, fish, crayfish, and invertebrates.",
+  "common_name": "Barred Owl",
+  "family": "Strigidae",
+  "field_marks": [
+    "Large, stocky owl with a rounded head and no ear tufts",
+    "Gray-white facial disc with dark brown eyes and a short yellow hooked bill",
+    "Upper breast crossed by horizontal brown bars; lower underparts marked with vertical brown streaks",
+    "Brown upperparts mottled and barred with buff-white",
+    "Broad, rounded wings and a medium-length rounded tail, both barred brown and pale",
+    "Densely feathered legs; feet and talons are often largely concealed while perched"
+  ],
+  "habitat": "Large, mature deciduous, mixed, or coniferous forests, especially wooded swamps and forests near water; dense foliage provides daytime roosts, while large trees and cavities provide nest sites.",
+  "measurements": {
+    "length": "16.9\u201319.7 in (43\u201350 cm), both sexes",
+    "weight": "16.6\u201337.0 oz (470\u20131,050 g), both sexes; females are generally larger",
+    "wingspan": "39.0\u201343.3 in (99\u2013110 cm), both sexes"
+  },
+  "palette": [
+    "warm brown",
+    "gray-brown",
+    "buff-white",
+    "dark brown",
+    "bill yellow"
+  ],
+  "scientific_name": "Strix varia",
+  "sources": [
+    {
+      "title": "Barred Owl Identification \u2014 All About Birds, Cornell Lab of Ornithology",
+      "url": "https://www.allaboutbirds.org/guide/Barred_Owl/id"
+    },
+    {
+      "title": "Barred Owl \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/barred-owl"
+    },
+    {
+      "title": "Strix varia \u2014 Animal Diversity Web",
+      "url": "https://animaldiversity.org/accounts/Strix_varia/"
+    }
+  ],
+  "taxon_id": 19893
+}

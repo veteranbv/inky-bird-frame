@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-21T15:00:23+00:00",
+  "generated_at": "2026-09-24T00:50:42+00:00",
   "schema_version": 1,
   "species": [
     {
@@ -122,6 +122,17 @@
       "scientific_name": "Hirundo rustica",
       "slug": "barn-swallow",
       "taxon_id": 11901
+    },
+    {
+      "approved_at": "2026-09-24T00:50:42+00:00",
+      "common_name": "Barred Owl",
+      "display_path": "species/19893-barred-owl/display.png",
+      "display_sha256": "12dee1c8d6e9a18595e37153b7c9948cdb21ecd7ee28802814805d136880a4e8",
+      "portrait_path": "species/19893-barred-owl/portrait.png",
+      "portrait_sha256": "6fc6d8072d4be6e265cb297cd407ac3a1fad1e96ad12b697109cc65a5eb419e7",
+      "scientific_name": "Strix varia",
+      "slug": "barred-owl",
+      "taxon_id": 19893
     },
     {
       "approved_at": "2026-09-17T16:25:06+00:00",

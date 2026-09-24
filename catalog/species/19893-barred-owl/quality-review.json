@@ -1,0 +1,36 @@
+{
+  "anatomy_accuracy": 4,
+  "composition_quality": 5,
+  "correction_findings": [],
+  "findings": [
+    "Identity is consistent with Barred Owl (Strix varia): a large, stocky, round-headed owl lacking ear tufts, with dark brown eyes, a yellow hooked bill, barred upper breast, vertically streaked lower underparts, mottled brown-and-pale upperparts, broad rounded wings, and a barred rounded tail.",
+    "The primary specimen has one head, one bill, two eyes, one complete tail, two plausibly attached legs and feet, and a complete pair of wings; the far-side wing is naturally obscured by the frontal perched pose. No malformed, duplicated, or implausibly attached anatomy is visible.",
+    "The detached spread-wing and open-bill head illustrations read as intentional supplementary studies. The spread wing has credible rounded proportions and barring. In the head study, the hooked upper mandible projects beyond the lower mandible without appearing truncated or reversed, and its proportions remain consistent with the primary head and reference photographs.",
+    "The illustrated gray-white facial disc, dark eyes, yellow bill, horizontal breast barring, vertical abdominal streaking, warm-brown scapular and wing pattern, feathered legs, and barred tail agree with the attached field-reference photographs and direct-source descriptions.",
+    "Every visible title, taxonomic line, measurement, habitat statement, behavior statement, diet statement, and field-mark line is legible and materially matches the proposed profile without duplicated, omitted, substituted, or nonsensical wording.",
+    "The length, weight, and wingspan values faithfully reproduce the directly published Cornell measurement set for both sexes. The added statement that females are generally larger is supported independently by Audubon and Animal Diversity Web.",
+    "The right-side length diagram places 16.9 in (43 cm) below 19.7 in (50 cm), uses matching inch and centimeter endpoints, and explicitly states \u201cSCHEMATIC \u2014 NOT TO SCALE.\u201d Its unlabeled interior ticks function as visual subdivisions and do not contradict the published range.",
+    "The repeated bottom caption, \u201cBODY LENGTH: 16.9\u201319.7 in (43\u201350 cm), both sexes,\u201d agrees with the measurement block and diagram endpoints.",
+    "The habitat account agrees with direct sources describing mature deciduous, mixed, or coniferous forest, wooded swamps and forests near water, dense daytime cover, and cavity-bearing trees.",
+    "The behavior and diet account is supported by the direct sources: chiefly nocturnal activity with daytime or dawn-and-dusk hunting, perch hunting, low flight, hovering, aquatic prey, pair calling, and a varied diet dominated by small mammals but also including birds, amphibians, reptiles, fish, crayfish, and other invertebrates.",
+    "No place name, ZIP code, coordinates, map, range-locality label, or local-observation detail appears on the plate."
+  ],
+  "location_free": true,
+  "passed": true,
+  "species_accuracy": 5,
+  "text_accuracy": 5,
+  "verification_sources": [
+    {
+      "title": "Barred Owl Identification \u2014 All About Birds, Cornell Lab of Ornithology",
+      "url": "https://www.allaboutbirds.org/guide/Barred_Owl/id"
+    },
+    {
+      "title": "Barred Owl \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/barred-owl"
+    },
+    {
+      "title": "Strix varia (barred owl) \u2014 Animal Diversity Web",
+      "url": "https://animaldiversity.org/accounts/Strix_varia/"
+    }
+  ]
+}
