@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-24T00:50:42+00:00",
+  "generated_at": "2026-09-26T00:23:34+00:00",
   "schema_version": 1,
   "species": [
     {
@@ -804,6 +804,17 @@
       "scientific_name": "Dumetella carolinensis",
       "slug": "gray-catbird",
       "taxon_id": 14995
+    },
+    {
+      "approved_at": "2026-09-26T00:23:34+00:00",
+      "common_name": "Gray-cheeked Thrush",
+      "display_path": "species/12883-gray-cheeked-thrush/display.png",
+      "display_sha256": "3d47d29a31756b1ae9fae207fccb980f8d61da5a5d9725ee6394b685e9bf4754",
+      "portrait_path": "species/12883-gray-cheeked-thrush/portrait.png",
+      "portrait_sha256": "a67452935c4d952a0451327ea0ad886090c9a79dd2916cd7cd2884199555423e",
+      "scientific_name": "Catharus minimus",
+      "slug": "gray-cheeked-thrush",
+      "taxon_id": 12883
     },
     {
       "approved_at": "2026-07-10T04:04:04+00:00",
