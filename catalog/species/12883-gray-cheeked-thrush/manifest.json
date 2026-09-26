@@ -1,0 +1,152 @@
+{
+  "approved_at": "2026-09-26T00:23:34+00:00",
+  "assets": {
+    "display": {
+      "filename": "display.png",
+      "sha256": "3d47d29a31756b1ae9fae207fccb980f8d61da5a5d9725ee6394b685e9bf4754"
+    },
+    "portrait": {
+      "filename": "portrait.png",
+      "sha256": "a67452935c4d952a0451327ea0ad886090c9a79dd2916cd7cd2884199555423e"
+    }
+  },
+  "common_name": "Gray-cheeked Thrush",
+  "generation": {
+    "attempt": 1,
+    "generated_at": "2026-09-26T00:23:32+00:00",
+    "generator": "Codex subscription / built-in gpt-image-2",
+    "max_attempts": 3,
+    "prompt_version": "field-journal-v6"
+  },
+  "profile": {
+    "behavior": "Shy and often concealed; forages quietly on the ground or low in vegetation, taking invertebrates with quick pecks and eating fruit both on the ground and in trees. Males sing from low trees or shrubs, especially around dawn and dusk.",
+    "common_name": "Gray-cheeked Thrush",
+    "family": "Turdidae",
+    "field_marks": [
+      "Compact, medium-sized thrush with a round head, short straight bill, and relatively long wings",
+      "Plain cool-gray face with gray lores and only a faint, incomplete eye ring",
+      "Olive-gray to gray-brown upperparts, wings, and tail, without a contrasting rufous tail",
+      "Whitish underparts with gray-washed flanks",
+      "Dark spots or stippling across the throat sides and upper breast",
+      "Pinkish legs and a slender dark bill with yellowish color at the lower-bill base"
+    ],
+    "habitat": "Breeds in dense willow or alder thickets and well-developed understory within boreal coniferous or mixed woodland, especially near the forest\u2013tundra transition. During migration and winter it uses varied forests, second growth, thickets, plantations, and other sites with dense understory or fruiting shrubs.",
+    "measurements": {
+      "length": "Both sexes: 6.3\u20136.7 in (16\u201317 cm)",
+      "weight": "Both sexes: 0.9\u20131.1 oz (26\u201330 g)",
+      "wingspan": "Both sexes: 12.6\u201313.4 in (32\u201334 cm)"
+    },
+    "palette": [
+      "olive brown",
+      "cool gray",
+      "creamy white",
+      "dark brown",
+      "flesh pink"
+    ],
+    "scientific_name": "Catharus minimus",
+    "sources": [
+      {
+        "title": "Gray-cheeked Thrush Identification \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/gray-cheeked_thrush/id"
+      },
+      {
+        "title": "Catharus minimus (grey-cheeked thrush) \u2014 Animal Diversity Web",
+        "url": "https://animaldiversity.org/accounts/Catharus_minimus/"
+      }
+    ],
+    "taxon_id": 12883
+  },
+  "quality_review": {
+    "anatomy_accuracy": 4,
+    "composition_quality": 5,
+    "correction_findings": [],
+    "findings": [
+      "The primary specimen is a convincing Gray-cheeked Thrush: compact rounded head, short straight bill, long folded wings, plain grayish face, gray lores, subdued eye-ring, gray-brown upperparts, whitish underparts with gray flanks, dark throat and breast spotting, pinkish legs, and no contrasting rufous tail.",
+      "The main bird has one head, one beak, one tail, two plausibly attached legs with intact grasping feet, and an anatomically credible pair of wings with the far wing naturally occluded by the side-on pose.",
+      "The detached wing and bill/head illustrations are clearly intentional supplementary studies. Both are anatomically coherent and do not appear attached to the primary specimen.",
+      "The eye-ring is slightly more visible in the artwork than in some reference photographs, but remains subdued enough to fit documented individual variation and is not rendered as the bold buff spectacle characteristic of Swainson's Thrush.",
+      "All visible identification, habitat, behavior, and field-mark text is coherent, correctly spelled, and consistent with the proposed profile and direct-source descriptions.",
+      "The stated measurements\u2014length 6.3\u20136.7 in (16\u201317 cm), weight 0.9\u20131.1 oz (26\u201330 g), and wingspan 12.6\u201313.4 in (32\u201334 cm)\u2014faithfully reproduce the directly supported All About Birds measurement set. Audubon's different supported measurement set does not invalidate this compatible single-source set.",
+      "The vertical measurement diagram correctly places 6.3 in / 16 cm at the bottom and 6.7 in / 17 cm at the top. Its values increase upward, match the printed length range, and the plate explicitly labels the presentation \u201cSCHEMATIC \u2014 NOT TO SCALE.\u201d",
+      "The repeated BODY LENGTH line agrees with the main measurement block and ruler endpoints.",
+      "No place name, ZIP code, coordinates, map, or local-observation detail appears."
+    ],
+    "location_free": true,
+    "passed": true,
+    "species_accuracy": 5,
+    "text_accuracy": 5,
+    "verification_sources": [
+      {
+        "title": "Gray-cheeked Thrush Identification \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/gray-cheeked_thrush/id"
+      },
+      {
+        "title": "Gray-cheeked Thrush \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/gray-cheeked-thrush"
+      },
+      {
+        "title": "Catharus minimus (grey-cheeked thrush) \u2014 Animal Diversity Web",
+        "url": "https://animaldiversity.org/accounts/Catharus_minimus/"
+      }
+    ]
+  },
+  "references": [
+    {
+      "attribution": "(c) Syd Cannings, some rights reserved (CC BY)",
+      "filename": "01-42729721.jpeg",
+      "height": 1355,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/42729721/large.jpeg",
+      "license_code": "cc-by",
+      "observation_id": 27461482,
+      "observer": "sydcannings",
+      "photo_id": 42729721,
+      "sha256": "4ef2d1efb095b9795f7233ce3a502a7445afe7ec89d74f2ed65971106ed13a19",
+      "source_url": "https://www.inaturalist.org/observations/27461482",
+      "width": 2033
+    },
+    {
+      "attribution": "(c) Laurel Meredyk, some rights reserved (CC BY)",
+      "filename": "02-133448073.jpeg",
+      "height": 1365,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/133448073/large.jpeg",
+      "license_code": "cc-by",
+      "observation_id": 81364724,
+      "observer": "kalmia_meredykiana",
+      "photo_id": 133448073,
+      "sha256": "1ec4c6e93d5997252daa4f17ebcfcd92962815fba9a16d0e60c4b06566293fb7",
+      "source_url": "https://www.inaturalist.org/observations/81364724",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) ldup, some rights reserved (CC BY)",
+      "filename": "03-442011021.jpeg",
+      "height": 1080,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/442011021/large.jpeg",
+      "license_code": "cc-by",
+      "observation_id": 247479671,
+      "observer": "ldup",
+      "photo_id": 442011021,
+      "sha256": "d4b800c8e68b10b14bdb6d68b1bc224030d9d366de7fd3d1f06f8220a87b35d6",
+      "source_url": "https://www.inaturalist.org/observations/247479671",
+      "width": 1620
+    },
+    {
+      "attribution": "(c) Amanda Janusz, some rights reserved (CC BY)",
+      "filename": "04-28888945.jpg",
+      "height": 1365,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/28888945/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 18856437,
+      "observer": "featherenthusiast",
+      "photo_id": 28888945,
+      "sha256": "9775dcf66d37387d027773ddb6156a89e803a14b9c3c8002f2ef60932d4c4607",
+      "source_url": "https://www.inaturalist.org/observations/18856437",
+      "width": 2048
+    }
+  ],
+  "schema_version": 1,
+  "scientific_name": "Catharus minimus",
+  "slug": "gray-cheeked-thrush",
+  "status": "approved",
+  "taxon_id": 12883
+}

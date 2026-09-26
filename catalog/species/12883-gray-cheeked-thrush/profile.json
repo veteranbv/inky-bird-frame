@@ -1,0 +1,38 @@
+{
+  "behavior": "Shy and often concealed; forages quietly on the ground or low in vegetation, taking invertebrates with quick pecks and eating fruit both on the ground and in trees. Males sing from low trees or shrubs, especially around dawn and dusk.",
+  "common_name": "Gray-cheeked Thrush",
+  "family": "Turdidae",
+  "field_marks": [
+    "Compact, medium-sized thrush with a round head, short straight bill, and relatively long wings",
+    "Plain cool-gray face with gray lores and only a faint, incomplete eye ring",
+    "Olive-gray to gray-brown upperparts, wings, and tail, without a contrasting rufous tail",
+    "Whitish underparts with gray-washed flanks",
+    "Dark spots or stippling across the throat sides and upper breast",
+    "Pinkish legs and a slender dark bill with yellowish color at the lower-bill base"
+  ],
+  "habitat": "Breeds in dense willow or alder thickets and well-developed understory within boreal coniferous or mixed woodland, especially near the forest\u2013tundra transition. During migration and winter it uses varied forests, second growth, thickets, plantations, and other sites with dense understory or fruiting shrubs.",
+  "measurements": {
+    "length": "Both sexes: 6.3\u20136.7 in (16\u201317 cm)",
+    "weight": "Both sexes: 0.9\u20131.1 oz (26\u201330 g)",
+    "wingspan": "Both sexes: 12.6\u201313.4 in (32\u201334 cm)"
+  },
+  "palette": [
+    "olive brown",
+    "cool gray",
+    "creamy white",
+    "dark brown",
+    "flesh pink"
+  ],
+  "scientific_name": "Catharus minimus",
+  "sources": [
+    {
+      "title": "Gray-cheeked Thrush Identification \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/gray-cheeked_thrush/id"
+    },
+    {
+      "title": "Catharus minimus (grey-cheeked thrush) \u2014 Animal Diversity Web",
+      "url": "https://animaldiversity.org/accounts/Catharus_minimus/"
+    }
+  ],
+  "taxon_id": 12883
+}
