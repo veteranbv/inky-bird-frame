@@ -1,0 +1,38 @@
+{
+  "behavior": "A powerful, foot-propelled diver that pursues fish by sight and usually swallows small prey underwater. It swims low on the surface, is awkward on land because its legs sit far back, defends breeding territories with calls and displays, and migrates by day.",
+  "common_name": "Common Loon",
+  "family": "Gaviidae",
+  "field_marks": [
+    "Broad black head and neck with a subtle greenish sheen in breeding plumage",
+    "Bright red eye",
+    "Heavy, straight, dagger-shaped black bill",
+    "Bold black-and-white striped neck collar",
+    "Black upperparts and folded wings patterned with white checks and spots",
+    "Long body riding low in the water, with the short tail usually inconspicuous"
+  ],
+  "habitat": "Breeds on clear freshwater lakes and large ponds, especially waters with abundant small fish, sheltered shorelines, and enough open surface for takeoff. During migration and the nonbreeding season it uses large lakes, slow rivers, reservoirs, bays, estuaries, and shallow coastal waters.",
+  "measurements": {
+    "length": "70\u201390 cm (27.56\u201335.43 in)",
+    "weight": "1.6\u20138.0 kg (56.39\u2013281.94 oz)",
+    "wingspan": "Average 152 cm (59.84 in)"
+  },
+  "palette": [
+    "jet black",
+    "clean white",
+    "slate gray",
+    "iridescent green",
+    "ruby red"
+  ],
+  "scientific_name": "Gavia immer",
+  "sources": [
+    {
+      "title": "Common Loon Life History \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Common_Loon/lifehistory"
+    },
+    {
+      "title": "Gavia immer \u2014 Animal Diversity Web",
+      "url": "https://animaldiversity.org/accounts/Gavia_immer/"
+    }
+  ],
+  "taxon_id": 4626
+}

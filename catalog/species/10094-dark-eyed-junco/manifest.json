@@ -1,0 +1,165 @@
+{
+  "approved_at": "2026-10-12T03:32:51+00:00",
+  "assets": {
+    "display": {
+      "filename": "display.png",
+      "sha256": "d7389b3c2d410f688111f343a12459c39d4999f83b406699b631e75bfc82f7de"
+    },
+    "portrait": {
+      "filename": "portrait.png",
+      "sha256": "c37db1e0c2ecf036e4f8a54185d979d50ade98826421ff92b70233221b87cda5"
+    }
+  },
+  "common_name": "Dark-eyed Junco",
+  "generation": {
+    "attempt": 1,
+    "generated_at": "2026-10-12T03:32:49+00:00",
+    "generator": "Codex subscription / built-in gpt-image-2",
+    "max_attempts": 3,
+    "prompt_version": "field-journal-v6"
+  },
+  "profile": {
+    "behavior": "Usually forages on or near the ground, hopping and scratching through leaf litter or snow for seeds and insects. Often forms flocks outside the breeding season; its agile, low flight exposes flashing white outer tail feathers.",
+    "common_name": "Dark-eyed Junco",
+    "family": "Passerellidae",
+    "field_marks": [
+      "Small sparrow with a rounded head and fairly long tail",
+      "Short, stout, pale pink bill",
+      "Dark eye and slender pinkish-to-dark legs",
+      "Highly variable gray, blackish, or brown upperparts contrasting with a pale belly",
+      "White outer tail feathers flash conspicuously in flight",
+      "Wings are dark and compact, usually without bold wing bars"
+    ],
+    "habitat": "Breeds mainly in open coniferous, mixed, and deciduous woodland, especially around edges and clearings. In migration and winter it also uses open woods, brush, fields, roadsides, parks, gardens, and other semi-open habitats.",
+    "measurements": {
+      "length": "5.5\u20136.3 in (14\u201316 cm), both sexes",
+      "weight": "0.6\u20131.1 oz (18\u201330 g), both sexes",
+      "wingspan": "7.1\u20139.8 in (18\u201325 cm), both sexes"
+    },
+    "palette": [
+      "slate gray",
+      "charcoal black",
+      "warm brown",
+      "soft white",
+      "pale pink"
+    ],
+    "scientific_name": "Junco hyemalis",
+    "sources": [
+      {
+        "title": "Dark-eyed Junco Identification \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Dark-eyed_Junco/id"
+      },
+      {
+        "title": "Dark-eyed Junco Life History \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Dark-eyed_Junco/lifehistory"
+      },
+      {
+        "title": "Dark-eyed Junco \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/dark-eyed-junco"
+      }
+    ],
+    "taxon_id": 10094
+  },
+  "quality_review": {
+    "anatomy_accuracy": 4,
+    "composition_quality": 5,
+    "correction_findings": [],
+    "findings": [
+      "Species identity is consistent with Dark-eyed Junco (Junco hyemalis): the primary specimen has the rounded head, compact sparrow proportions, dark eye, short stout pale-pink bill, dark upperparts, pale belly, and conspicuous white outer tail feathers shown in the references and direct sources.",
+      "The primary specimen is a single complete bird with one head, one beak, one visible eye, one anatomically coherent pair of wings, two attached legs with complete grasping feet, and one tail. The far-side wing is naturally occluded by the side-on pose rather than missing or detached.",
+      "The primary bird's variable slate-gray, blackish, and warm-brown upperparts are plausible within this highly variable species and broadly resemble the supplied dark male and paler female reference birds. No seasonal qualifier or color-pattern rewrite is supported by the required two-source agreement.",
+      "The bill is short, stout, and pale pink in both the primary specimen and detached head study. Neither depiction has a truncated, reversed, or materially inconsistent mandible profile.",
+      "The detached spread-wing and head studies are clearly supplementary anatomy rather than extra birds or structures attached to the primary specimen. Both are coherent and species-compatible.",
+      "The long, dark, compact wing and fairly long tail are proportionally plausible. The white outer rectrices are correctly emphasized, including in the spread tail of the primary specimen.",
+      "Every visible identification, measurement, habitat, behavior, and field-mark line is legible and matches the proposed profile without duplicated, omitted, substituted, or nonsensical wording.",
+      "The printed measurements\u2014length 5.5\u20136.3 in (14\u201316 cm), weight 0.6\u20131.1 oz (18\u201330 g), and wingspan 7.1\u20139.8 in (18\u201325 cm), all labeled for both sexes\u2014faithfully reproduce the directly published All About Birds measurement set and its qualifier.",
+      "Audubon publishes a different compatible measurement set, but this does not conflict with the plate because the plate consistently uses the directly supported All About Birds set rather than synthesizing endpoints.",
+      "The vertical body-length diagram repeats the supported 5.5\u20136.3 in (14\u201316 cm) range, has clear top and bottom endpoints, contains no contradictory numeric marker, and is expressly labeled \u201cSCHEMATIC \u2014 NOT TO SCALE.\u201d Its unlabeled interior ticks are harmless visual subdivisions.",
+      "The behavior text is supported: the species forages chiefly on the ground by hopping and scratching in litter or snow, eats seeds and insects, forms winter/nonbreeding flocks, and displays white outer tail feathers in flight.",
+      "The habitat text is supportable across the allowed sources: Cornell and Audubon emphasize open coniferous or mixed breeding woodland, while Animal Diversity Web directly includes deciduous forest among the woodland habitats used; the listed winter and migration habitats are also supported.",
+      "The family Passerellidae is confirmed by All About Birds and eBird. The scientific and common names are correct.",
+      "No place name, ZIP code, coordinates, map, or local-observation detail appears in the candidate plate."
+    ],
+    "location_free": true,
+    "passed": true,
+    "species_accuracy": 5,
+    "text_accuracy": 5,
+    "verification_sources": [
+      {
+        "title": "Dark-eyed Junco Identification \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Dark-eyed_Junco/id"
+      },
+      {
+        "title": "Dark-eyed Junco \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/dark-eyed-junco"
+      },
+      {
+        "title": "Dark-eyed Junco \u2014 eBird",
+        "url": "https://ebird.org/species/daejun/US-PA-077"
+      },
+      {
+        "title": "Junco hyemalis \u2014 Animal Diversity Web",
+        "url": "https://animaldiversity.org/accounts/Junco_hyemalis/"
+      }
+    ]
+  },
+  "references": [
+    {
+      "attribution": "(c) sarah caitlin williams, some rights reserved (CC BY)",
+      "filename": "01-171202646.jpg",
+      "height": 1244,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/171202646/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 102420611,
+      "observer": "sarahwill412",
+      "photo_id": 171202646,
+      "sha256": "8a967b85a9489d66c66dda1b8ddc2be4fcdb23d7194262db4909be6d3af1a18f",
+      "source_url": "https://www.inaturalist.org/observations/102420611",
+      "width": 1242
+    },
+    {
+      "attribution": "(c) Michael, some rights reserved (CC BY)",
+      "filename": "02-613289246.jpg",
+      "height": 2048,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/613289246/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 337375794,
+      "observer": "mikeymacro",
+      "photo_id": 613289246,
+      "sha256": "5e5635fb302713687c338f0b76bb5453d8a37f4da8a7eae812999274cd00d8f1",
+      "source_url": "https://www.inaturalist.org/observations/337375794",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) Corvi Zeman, some rights reserved (CC BY)",
+      "filename": "03-136887033.jpg",
+      "height": 2048,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/136887033/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 83351754,
+      "observer": "corvi",
+      "photo_id": 136887033,
+      "sha256": "415ddb32cd1c9fdfb7de9770bed400ced36ecd22f46052e873d32d8b9ef036be",
+      "source_url": "https://www.inaturalist.org/observations/83351754",
+      "width": 1536
+    },
+    {
+      "attribution": "(c) Joe Brewer, some rights reserved (CC BY)",
+      "filename": "04-57107825.jpg",
+      "height": 1570,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/57107825/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 36149727,
+      "observer": "joecoolbrew",
+      "photo_id": 57107825,
+      "sha256": "fc5bb0f392f4c1b3efea87fba91a43e9b9c3a7731c25d3e8bc6d5b958c838bc1",
+      "source_url": "https://www.inaturalist.org/observations/36149727",
+      "width": 1570
+    }
+  ],
+  "schema_version": 1,
+  "scientific_name": "Junco hyemalis",
+  "slug": "dark-eyed-junco",
+  "status": "approved",
+  "taxon_id": 10094
+}

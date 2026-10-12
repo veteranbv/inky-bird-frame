@@ -1,0 +1,43 @@
+{
+  "anatomy_accuracy": 4,
+  "composition_quality": 5,
+  "correction_findings": [],
+  "findings": [
+    "Species identity is consistent with Dark-eyed Junco (Junco hyemalis): the primary specimen has the rounded head, compact sparrow proportions, dark eye, short stout pale-pink bill, dark upperparts, pale belly, and conspicuous white outer tail feathers shown in the references and direct sources.",
+    "The primary specimen is a single complete bird with one head, one beak, one visible eye, one anatomically coherent pair of wings, two attached legs with complete grasping feet, and one tail. The far-side wing is naturally occluded by the side-on pose rather than missing or detached.",
+    "The primary bird's variable slate-gray, blackish, and warm-brown upperparts are plausible within this highly variable species and broadly resemble the supplied dark male and paler female reference birds. No seasonal qualifier or color-pattern rewrite is supported by the required two-source agreement.",
+    "The bill is short, stout, and pale pink in both the primary specimen and detached head study. Neither depiction has a truncated, reversed, or materially inconsistent mandible profile.",
+    "The detached spread-wing and head studies are clearly supplementary anatomy rather than extra birds or structures attached to the primary specimen. Both are coherent and species-compatible.",
+    "The long, dark, compact wing and fairly long tail are proportionally plausible. The white outer rectrices are correctly emphasized, including in the spread tail of the primary specimen.",
+    "Every visible identification, measurement, habitat, behavior, and field-mark line is legible and matches the proposed profile without duplicated, omitted, substituted, or nonsensical wording.",
+    "The printed measurements\u2014length 5.5\u20136.3 in (14\u201316 cm), weight 0.6\u20131.1 oz (18\u201330 g), and wingspan 7.1\u20139.8 in (18\u201325 cm), all labeled for both sexes\u2014faithfully reproduce the directly published All About Birds measurement set and its qualifier.",
+    "Audubon publishes a different compatible measurement set, but this does not conflict with the plate because the plate consistently uses the directly supported All About Birds set rather than synthesizing endpoints.",
+    "The vertical body-length diagram repeats the supported 5.5\u20136.3 in (14\u201316 cm) range, has clear top and bottom endpoints, contains no contradictory numeric marker, and is expressly labeled \u201cSCHEMATIC \u2014 NOT TO SCALE.\u201d Its unlabeled interior ticks are harmless visual subdivisions.",
+    "The behavior text is supported: the species forages chiefly on the ground by hopping and scratching in litter or snow, eats seeds and insects, forms winter/nonbreeding flocks, and displays white outer tail feathers in flight.",
+    "The habitat text is supportable across the allowed sources: Cornell and Audubon emphasize open coniferous or mixed breeding woodland, while Animal Diversity Web directly includes deciduous forest among the woodland habitats used; the listed winter and migration habitats are also supported.",
+    "The family Passerellidae is confirmed by All About Birds and eBird. The scientific and common names are correct.",
+    "No place name, ZIP code, coordinates, map, or local-observation detail appears in the candidate plate."
+  ],
+  "location_free": true,
+  "passed": true,
+  "species_accuracy": 5,
+  "text_accuracy": 5,
+  "verification_sources": [
+    {
+      "title": "Dark-eyed Junco Identification \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Dark-eyed_Junco/id"
+    },
+    {
+      "title": "Dark-eyed Junco \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/dark-eyed-junco"
+    },
+    {
+      "title": "Dark-eyed Junco \u2014 eBird",
+      "url": "https://ebird.org/species/daejun/US-PA-077"
+    },
+    {
+      "title": "Junco hyemalis \u2014 Animal Diversity Web",
+      "url": "https://animaldiversity.org/accounts/Junco_hyemalis/"
+    }
+  ]
+}

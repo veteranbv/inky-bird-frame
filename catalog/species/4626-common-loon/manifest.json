@@ -1,0 +1,154 @@
+{
+  "approved_at": "2026-10-12T03:29:18+00:00",
+  "assets": {
+    "display": {
+      "filename": "display.png",
+      "sha256": "e07011b8afcaf6947e748c9b5e27d664165509140ecb48f5248e731c1f4ee098"
+    },
+    "portrait": {
+      "filename": "portrait.png",
+      "sha256": "b2be9c2ccfd8324300a282ea5d2652119ae7dd11f7e371c7391db907e63ba4e6"
+    }
+  },
+  "common_name": "Common Loon",
+  "generation": {
+    "attempt": 2,
+    "correction_source_sha256": "9c29d4299ca686cce30ddc534e4502038889ab2d8225cd2b01093f65f5c4508a",
+    "generated_at": "2026-10-12T03:29:16+00:00",
+    "generator": "Codex subscription / built-in gpt-image-2",
+    "max_attempts": 3,
+    "prompt_version": "field-journal-v6"
+  },
+  "profile": {
+    "behavior": "A powerful, foot-propelled diver that pursues fish by sight and usually swallows small prey underwater. It swims low on the surface, is awkward on land because its legs sit far back, defends breeding territories with calls and displays, and migrates by day.",
+    "common_name": "Common Loon",
+    "family": "Gaviidae",
+    "field_marks": [
+      "Broad black head and neck with a subtle greenish sheen in breeding plumage",
+      "Bright red eye",
+      "Heavy, straight, dagger-shaped black bill",
+      "Bold black-and-white striped neck collar",
+      "Black upperparts and folded wings patterned with white checks and spots",
+      "Long body riding low in the water, with the short tail usually inconspicuous"
+    ],
+    "habitat": "Breeds on clear freshwater lakes and large ponds, especially waters with abundant small fish, sheltered shorelines, and enough open surface for takeoff. During migration and the nonbreeding season it uses large lakes, slow rivers, reservoirs, bays, estuaries, and shallow coastal waters.",
+    "measurements": {
+      "length": "70\u201390 cm (27.56\u201335.43 in)",
+      "weight": "1.6\u20138.0 kg (56.39\u2013281.94 oz)",
+      "wingspan": "Average 152 cm (59.84 in)"
+    },
+    "palette": [
+      "jet black",
+      "clean white",
+      "slate gray",
+      "iridescent green",
+      "ruby red"
+    ],
+    "scientific_name": "Gavia immer",
+    "sources": [
+      {
+        "title": "Common Loon Life History \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Common_Loon/lifehistory"
+      },
+      {
+        "title": "Gavia immer \u2014 Animal Diversity Web",
+        "url": "https://animaldiversity.org/accounts/Gavia_immer/"
+      }
+    ],
+    "taxon_id": 4626
+  },
+  "quality_review": {
+    "anatomy_accuracy": 4,
+    "composition_quality": 5,
+    "correction_findings": [],
+    "findings": [
+      "The primary specimen is identifiable as an adult Common Loon in breeding plumage: black head and neck with a subtle green sheen, red eye, heavy straight dark bill, barred neck collar, checkered black upperparts, white underparts, long low-slung body, and short inconspicuous tail.",
+      "The primary specimen has one head and bill, a convincing folded near-side wing with the far-side wing naturally occluded, rear-set legs, webbed feet, and one tail. The supplementary wing and head/bill studies are clearly detached reference details rather than extra attached anatomy.",
+      "The breast and foreflank are now substantially clean white, without the previously reported dense black vertical streaking. Fine gray feather contours remain but do not contradict breeding-adult plumage.",
+      "The visible foot is now recognizably webbed, with membranes joining the forward toes rather than separate clawlike digits.",
+      "The supplied photographs corroborate the red eye, robust dark dagger-shaped bill, barred collar, dark green-black head and neck, checkered upperparts, white breast, rear-set feet, and low swimming posture.",
+      "All visible prose, headings, labels, scientific nomenclature, measurements, habitat text, behavior text, and field-mark bullets match the proposed profile without material omissions, substitutions, duplicated words, or numerical errors.",
+      "The measurement set is directly supported as a single compatible set by Animal Diversity Web: length 70\u201390 cm, mass 1.6\u20138.0 kg, and average wingspan 152 cm. Different measurement ranges published by Cornell and Audubon do not invalidate this directly supported set.",
+      "The vertical body-length diagram is internally consistent: 70 cm is at the bottom, 90 cm is at the top, values increase upward, the units and endpoints match the printed range, and it is explicitly labeled \u201cSCHEMATIC NOT TO SCALE.\u201d",
+      "The illustration contains no place name, ZIP code, coordinates, map, or local-observation detail.",
+      "The plate is visually coherent and legible, with a single dominant specimen, clearly separated anatomical studies, an appropriate field-journal hierarchy, and an accurate species palette."
+    ],
+    "location_free": true,
+    "passed": true,
+    "species_accuracy": 5,
+    "text_accuracy": 5,
+    "verification_sources": [
+      {
+        "title": "Common Loon Identification \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/common_loon/id"
+      },
+      {
+        "title": "Gavia immer \u2014 Animal Diversity Web",
+        "url": "https://animaldiversity.org/accounts/Gavia_immer/"
+      },
+      {
+        "title": "Common Loon \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/common-loon"
+      }
+    ]
+  },
+  "references": [
+    {
+      "attribution": "(c) Andrew Hrycyna, some rights reserved (CC BY)",
+      "filename": "01-209710844.jpg",
+      "height": 1365,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/209710844/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 123770073,
+      "observer": "hryc111",
+      "photo_id": 209710844,
+      "sha256": "de87f54061b4bdf1326c2925c65dcce9869027cb06eeb348d7d010b6bb7d3d81",
+      "source_url": "https://www.inaturalist.org/observations/123770073",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) Alexis Tinker-Tsavalas, some rights reserved (CC BY)",
+      "filename": "02-418281664.jpg",
+      "height": 1152,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/418281664/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 235220977,
+      "observer": "alexis_orion",
+      "photo_id": 418281664,
+      "sha256": "9d65ba70a802d060a5256c77633b38d665e128c4dd9b807bc13703791f3830ac",
+      "source_url": "https://www.inaturalist.org/observations/235220977",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) Dustin Snider, some rights reserved (CC BY)",
+      "filename": "03-250790226.jpeg",
+      "height": 1363,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/250790226/large.jpeg",
+      "license_code": "cc-by",
+      "observation_id": 145939070,
+      "observer": "dustin777",
+      "photo_id": 250790226,
+      "sha256": "aac8c9fc3c37c13bebd24d906ceb39076720bfaac0a4d6d87b3bf4e67744d079",
+      "source_url": "https://www.inaturalist.org/observations/145939070",
+      "width": 1695
+    },
+    {
+      "attribution": "(c) Hungry-Sarracenia Photo, some rights reserved (CC BY)",
+      "filename": "04-427504235.png",
+      "height": 1537,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/427504235/large.png",
+      "license_code": "cc-by",
+      "observation_id": 239989765,
+      "observer": "hungry-sarracenia",
+      "photo_id": 427504235,
+      "sha256": "a1509b9980000e087fa78d77cf151efd298a2b8599afee351f102648392f7158",
+      "source_url": "https://www.inaturalist.org/observations/239989765",
+      "width": 2048
+    }
+  ],
+  "schema_version": 1,
+  "scientific_name": "Gavia immer",
+  "slug": "common-loon",
+  "status": "approved",
+  "taxon_id": 4626
+}

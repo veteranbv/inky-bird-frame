@@ -1,0 +1,42 @@
+{
+  "behavior": "Usually forages on or near the ground, hopping and scratching through leaf litter or snow for seeds and insects. Often forms flocks outside the breeding season; its agile, low flight exposes flashing white outer tail feathers.",
+  "common_name": "Dark-eyed Junco",
+  "family": "Passerellidae",
+  "field_marks": [
+    "Small sparrow with a rounded head and fairly long tail",
+    "Short, stout, pale pink bill",
+    "Dark eye and slender pinkish-to-dark legs",
+    "Highly variable gray, blackish, or brown upperparts contrasting with a pale belly",
+    "White outer tail feathers flash conspicuously in flight",
+    "Wings are dark and compact, usually without bold wing bars"
+  ],
+  "habitat": "Breeds mainly in open coniferous, mixed, and deciduous woodland, especially around edges and clearings. In migration and winter it also uses open woods, brush, fields, roadsides, parks, gardens, and other semi-open habitats.",
+  "measurements": {
+    "length": "5.5\u20136.3 in (14\u201316 cm), both sexes",
+    "weight": "0.6\u20131.1 oz (18\u201330 g), both sexes",
+    "wingspan": "7.1\u20139.8 in (18\u201325 cm), both sexes"
+  },
+  "palette": [
+    "slate gray",
+    "charcoal black",
+    "warm brown",
+    "soft white",
+    "pale pink"
+  ],
+  "scientific_name": "Junco hyemalis",
+  "sources": [
+    {
+      "title": "Dark-eyed Junco Identification \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Dark-eyed_Junco/id"
+    },
+    {
+      "title": "Dark-eyed Junco Life History \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Dark-eyed_Junco/lifehistory"
+    },
+    {
+      "title": "Dark-eyed Junco \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/dark-eyed-junco"
+    }
+  ],
+  "taxon_id": 10094
+}
