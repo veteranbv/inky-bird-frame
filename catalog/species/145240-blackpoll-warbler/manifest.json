@@ -1,0 +1,155 @@
+{
+  "approved_at": "2026-10-12T03:23:40+00:00",
+  "assets": {
+    "display": {
+      "filename": "display.png",
+      "sha256": "281823fde45a2a0fa4ccb74c876d994a7e5a20bef16a8a18cc8ac7b754becdcf"
+    },
+    "portrait": {
+      "filename": "portrait.png",
+      "sha256": "9ec897f3d9e1a392abcbe9d8f5e9c022f81b3be6a8f7974cb8c6e17086b5f955"
+    }
+  },
+  "common_name": "Blackpoll Warbler",
+  "generation": {
+    "attempt": 2,
+    "correction_source_sha256": "887b2420e7329266d4d622ef8d96d7abdfd1619288269a9cb76f449566808f50",
+    "generated_at": "2026-10-12T03:23:38+00:00",
+    "generator": "Codex subscription / built-in gpt-image-2",
+    "max_attempts": 3,
+    "prompt_version": "field-journal-v6"
+  },
+  "profile": {
+    "behavior": "Moves deliberately along branches, gleaning insects and spiders from foliage, bark, and twigs; also makes short flights to catch airborne insects. Usually forages from eye level into the canopy and may join mixed-species flocks outside the breeding season.",
+    "common_name": "Blackpoll Warbler",
+    "family": "Parulidae",
+    "field_marks": [
+      "Black cap on breeding males",
+      "White cheeks bordered by a black mustache stripe",
+      "Black streaking across the back and flanks",
+      "Two bold white wing bars on long, pointed wings",
+      "Small, thin, pointed bill and dark eye",
+      "Orange-yellow legs and a short tail"
+    ],
+    "habitat": "Breeds chiefly in boreal spruce and tamarack forest, young evergreen stands, and alder or willow thickets. During migration it uses scrub, evergreen forest, and deciduous woodland; in winter it occupies forest edges, second-growth woodland, and wooded canopy.",
+    "measurements": {
+      "length": "14 cm (5.5 in), both sexes",
+      "weight": "12\u201313 g (0.4\u20130.5 oz), both sexes",
+      "wingspan": "21\u201323 cm (8.3\u20139.1 in), both sexes"
+    },
+    "palette": [
+      "black",
+      "white",
+      "slate gray",
+      "orange-yellow"
+    ],
+    "scientific_name": "Setophaga striata",
+    "sources": [
+      {
+        "title": "Blackpoll Warbler Identification \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Blackpoll_Warbler/id"
+      },
+      {
+        "title": "Blackpoll Warbler Life History \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Blackpoll_Warbler/lifehistory"
+      },
+      {
+        "title": "Blackpoll Warbler \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/blackpoll-warbler"
+      }
+    ],
+    "taxon_id": 145240
+  },
+  "quality_review": {
+    "anatomy_accuracy": 4,
+    "composition_quality": 5,
+    "correction_findings": [],
+    "findings": [
+      "The primary specimen is a convincing breeding male Blackpoll Warbler matching the attached references: black cap, white cheeks bordered by a dark mustache stripe, streaked back and flanks, two white wing bars, dark eye, thin pointed bill, orange-yellow legs, long pointed wings, and a relatively short tail.",
+      "The plate contains exactly one complete primary specimen with one head, one beak, one tail, two anatomically coherent legs and grasping feet, and a convincing wing pair with the far-side wing naturally occluded.",
+      "The detached wing and head are clearly intentional supplementary studies rather than duplicate parts attached to the primary bird. Both studies are anatomically coherent; the head study has a complete eye and consistent bill proportions.",
+      "The common name, scientific name, family, measurements, habitat, behavior, and all six field-mark lines are legible and match the proposed text without visible omissions, substitutions, duplications, or nonsensical wording.",
+      "Cornell directly supports the displayed compatible measurement set for both sexes: 14 cm (5.5 in) length, 12\u201313 g (0.4\u20130.5 oz) weight, and 21\u201323 cm (8.3\u20139.1 in) wingspan.",
+      "Cornell and Audubon independently support the depicted breeding-male identity and major field marks, including the black cap, white cheeks, streaked sides or flanks, white wing bars, pointed wings, and yellowish or orange-yellow legs.",
+      "The body-length schematic has the required 0 cm (0 in) bottom endpoint and 14 cm (5.5 in) top endpoint, increases from bottom to top, agrees with the published length, and retains \u201cSCHEMATIC \u2014 NOT TO SCALE.\u201d",
+      "No place name, ZIP code, coordinates, map, or local-observation detail appears."
+    ],
+    "location_free": true,
+    "passed": true,
+    "species_accuracy": 5,
+    "text_accuracy": 5,
+    "verification_sources": [
+      {
+        "title": "Blackpoll Warbler Identification \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Blackpoll_Warbler/id"
+      },
+      {
+        "title": "Blackpoll Warbler Life History \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Blackpoll_Warbler/lifehistory"
+      },
+      {
+        "title": "Blackpoll Warbler \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/blackpoll-warbler"
+      }
+    ]
+  },
+  "references": [
+    {
+      "attribution": "no rights reserved",
+      "filename": "01-196401534.jpeg",
+      "height": 1499,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/196401534/large.jpeg",
+      "license_code": "cc0",
+      "observation_id": 116355263,
+      "observer": "wildreturn",
+      "photo_id": 196401534,
+      "sha256": "e6fdbfc678c7f9cdbfa648e8e0c7fb07164fc227c4f6df1c58e4b587c775e8e0",
+      "source_url": "https://www.inaturalist.org/observations/116355263",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) Syd Cannings, some rights reserved (CC BY)",
+      "filename": "02-132748115.jpeg",
+      "height": 1366,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/132748115/large.jpeg",
+      "license_code": "cc-by",
+      "observation_id": 80966849,
+      "observer": "sydcannings",
+      "photo_id": 132748115,
+      "sha256": "dba957aac2603f27900ca38b44c314eed823592d79898bad43ff669a29f04d92",
+      "source_url": "https://www.inaturalist.org/observations/80966849",
+      "width": 2048
+    },
+    {
+      "attribution": "no rights reserved",
+      "filename": "03-618581503.jpg",
+      "height": 1365,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/618581503/large.jpg",
+      "license_code": "cc0",
+      "observation_id": 339975874,
+      "observer": "rawcomposition",
+      "photo_id": 618581503,
+      "sha256": "f4315d8b9843861b14f8a11d2b567a803cdcd3c944c7954878502d5c8360e783",
+      "source_url": "https://www.inaturalist.org/observations/339975874",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) Sean Frey, some rights reserved (CC BY)",
+      "filename": "04-509005437.jpg",
+      "height": 1388,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/509005437/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 283284212,
+      "observer": "georectified",
+      "photo_id": 509005437,
+      "sha256": "ce6ce8c7878640b5d52d8474abef169bdcbfef02a33b14375ef14722e4b93e4e",
+      "source_url": "https://www.inaturalist.org/observations/283284212",
+      "width": 2048
+    }
+  ],
+  "schema_version": 1,
+  "scientific_name": "Setophaga striata",
+  "slug": "blackpoll-warbler",
+  "status": "approved",
+  "taxon_id": 145240
+}

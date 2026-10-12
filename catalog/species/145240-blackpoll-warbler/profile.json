@@ -1,0 +1,41 @@
+{
+  "behavior": "Moves deliberately along branches, gleaning insects and spiders from foliage, bark, and twigs; also makes short flights to catch airborne insects. Usually forages from eye level into the canopy and may join mixed-species flocks outside the breeding season.",
+  "common_name": "Blackpoll Warbler",
+  "family": "Parulidae",
+  "field_marks": [
+    "Black cap on breeding males",
+    "White cheeks bordered by a black mustache stripe",
+    "Black streaking across the back and flanks",
+    "Two bold white wing bars on long, pointed wings",
+    "Small, thin, pointed bill and dark eye",
+    "Orange-yellow legs and a short tail"
+  ],
+  "habitat": "Breeds chiefly in boreal spruce and tamarack forest, young evergreen stands, and alder or willow thickets. During migration it uses scrub, evergreen forest, and deciduous woodland; in winter it occupies forest edges, second-growth woodland, and wooded canopy.",
+  "measurements": {
+    "length": "14 cm (5.5 in), both sexes",
+    "weight": "12\u201313 g (0.4\u20130.5 oz), both sexes",
+    "wingspan": "21\u201323 cm (8.3\u20139.1 in), both sexes"
+  },
+  "palette": [
+    "black",
+    "white",
+    "slate gray",
+    "orange-yellow"
+  ],
+  "scientific_name": "Setophaga striata",
+  "sources": [
+    {
+      "title": "Blackpoll Warbler Identification \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Blackpoll_Warbler/id"
+    },
+    {
+      "title": "Blackpoll Warbler Life History \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Blackpoll_Warbler/lifehistory"
+    },
+    {
+      "title": "Blackpoll Warbler \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/blackpoll-warbler"
+    }
+  ],
+  "taxon_id": 145240
+}

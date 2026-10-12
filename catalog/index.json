@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-26T00:23:34+00:00",
+  "generated_at": "2026-10-12T03:23:40+00:00",
   "schema_version": 1,
   "species": [
     {
@@ -221,6 +221,17 @@
       "scientific_name": "Setophaga virens",
       "slug": "black-throated-green-warbler",
       "taxon_id": 145258
+    },
+    {
+      "approved_at": "2026-10-12T03:23:40+00:00",
+      "common_name": "Blackpoll Warbler",
+      "display_path": "species/145240-blackpoll-warbler/display.png",
+      "display_sha256": "281823fde45a2a0fa4ccb74c876d994a7e5a20bef16a8a18cc8ac7b754becdcf",
+      "portrait_path": "species/145240-blackpoll-warbler/portrait.png",
+      "portrait_sha256": "9ec897f3d9e1a392abcbe9d8f5e9c022f81b3be6a8f7974cb8c6e17086b5f955",
+      "scientific_name": "Setophaga striata",
+      "slug": "blackpoll-warbler",
+      "taxon_id": 145240
     },
     {
       "approved_at": "2026-07-13T03:10:43+00:00",

@@ -1,0 +1,33 @@
+{
+  "anatomy_accuracy": 4,
+  "composition_quality": 5,
+  "correction_findings": [],
+  "findings": [
+    "The primary specimen is a convincing breeding male Blackpoll Warbler matching the attached references: black cap, white cheeks bordered by a dark mustache stripe, streaked back and flanks, two white wing bars, dark eye, thin pointed bill, orange-yellow legs, long pointed wings, and a relatively short tail.",
+    "The plate contains exactly one complete primary specimen with one head, one beak, one tail, two anatomically coherent legs and grasping feet, and a convincing wing pair with the far-side wing naturally occluded.",
+    "The detached wing and head are clearly intentional supplementary studies rather than duplicate parts attached to the primary bird. Both studies are anatomically coherent; the head study has a complete eye and consistent bill proportions.",
+    "The common name, scientific name, family, measurements, habitat, behavior, and all six field-mark lines are legible and match the proposed text without visible omissions, substitutions, duplications, or nonsensical wording.",
+    "Cornell directly supports the displayed compatible measurement set for both sexes: 14 cm (5.5 in) length, 12\u201313 g (0.4\u20130.5 oz) weight, and 21\u201323 cm (8.3\u20139.1 in) wingspan.",
+    "Cornell and Audubon independently support the depicted breeding-male identity and major field marks, including the black cap, white cheeks, streaked sides or flanks, white wing bars, pointed wings, and yellowish or orange-yellow legs.",
+    "The body-length schematic has the required 0 cm (0 in) bottom endpoint and 14 cm (5.5 in) top endpoint, increases from bottom to top, agrees with the published length, and retains \u201cSCHEMATIC \u2014 NOT TO SCALE.\u201d",
+    "No place name, ZIP code, coordinates, map, or local-observation detail appears."
+  ],
+  "location_free": true,
+  "passed": true,
+  "species_accuracy": 5,
+  "text_accuracy": 5,
+  "verification_sources": [
+    {
+      "title": "Blackpoll Warbler Identification \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Blackpoll_Warbler/id"
+    },
+    {
+      "title": "Blackpoll Warbler Life History \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Blackpoll_Warbler/lifehistory"
+    },
+    {
+      "title": "Blackpoll Warbler \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/blackpoll-warbler"
+    }
+  ]
+}
