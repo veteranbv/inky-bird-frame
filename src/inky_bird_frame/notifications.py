@@ -601,7 +601,7 @@ def _deliver(destination: NotificationDestination, item: NotificationItem) -> No
     if not notifier.add(destination.url) or len(notifier) != 1:
         raise ValueError("invalid Apprise service URL")
     result = notifier.notify(title=item.title, body=item.body)
-    if result is not True:
+    if not result:
         raise RuntimeError("provider did not confirm delivery")
 
 
