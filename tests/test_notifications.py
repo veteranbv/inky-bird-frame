@@ -5,11 +5,19 @@ import unittest
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
 from tempfile import TemporaryDirectory
-from unittest.mock import patch
+from unittest.mock import MagicMock, patch
 
-from inky_bird_frame.config import AppConfig, NotificationEvent, NotificationsConfig, load_config
+from inky_bird_frame.config import (
+    AppConfig,
+    NotificationDestination,
+    NotificationEvent,
+    NotificationsConfig,
+    load_config,
+)
 from inky_bird_frame.errors import ConfigurationError
 from inky_bird_frame.notifications import (
+    NotificationItem,
+    _deliver,
     check_display_heartbeat,
     dispatch_notifications,
     enqueue_notification,
@@ -154,6 +162,40 @@ class NotificationTests(unittest.TestCase):
         self.assertTrue(result["queued"])
         self.assertEqual(result["attempted"], 0)
         self.assertEqual(status["pending"], 1)
+
+    def test_delivery_uses_provider_result_truthiness(self) -> None:
+        class ProviderResult:
+            def __init__(self, confirmed: bool) -> None:
+                self.confirmed = confirmed
+
+            def __bool__(self) -> bool:
+                return self.confirmed
+
+        notifier = MagicMock()
+        notifier.add.return_value = True
+        notifier.__len__.return_value = 1
+        destination = NotificationDestination(
+            name="test",
+            url="json://localhost",
+            events=(NotificationEvent.TERMINAL_ERROR,),
+        )
+        item = NotificationItem(
+            item_id="test",
+            event=NotificationEvent.TERMINAL_ERROR,
+            title="Failure",
+            body="Something failed",
+            created_at=datetime(2026, 7, 10, tzinfo=UTC),
+            attempts=0,
+            next_attempt_at=datetime(2026, 7, 10, tzinfo=UTC),
+            delivered_to=(),
+        )
+
+        with patch("inky_bird_frame.notifications._new_notifier", return_value=notifier):
+            notifier.notify.return_value = ProviderResult(confirmed=True)
+            _deliver(destination, item)
+            notifier.notify.return_value = ProviderResult(confirmed=False)
+            with self.assertRaisesRegex(RuntimeError, "did not confirm delivery"):
+                _deliver(destination, item)
 
     def test_enqueue_ignores_events_without_a_subscribed_destination(self) -> None:
         with TemporaryDirectory() as temporary:

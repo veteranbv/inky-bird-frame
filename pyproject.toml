@@ -41,13 +41,13 @@ Repository = "https://github.com/veteranbv/inky-bird-frame"
 
 [project.optional-dependencies]
 controller = [
-    "apprise>=1.12.0,<2",
+    "apprise>=1.12.0,<3",
 ]
 inky = [
     "inky>=2.4",
 ]
 dev = [
-    "apprise>=1.12.0,<2",
+    "apprise>=1.12.0,<3",
     "mypy>=1.8.0",
     "pytest>=8.0.0",
     "ruff>=0.4.0",
