@@ -319,14 +319,42 @@ def generate_command(args: argparse.Namespace) -> int:
                 )
             else:
                 transient_failures.append(item)
-    if transient_failures:
+    raw_manual_retry_count = result.get("manual_retry_required_count", 0)
+    manual_retry_count = (
+        raw_manual_retry_count
+        if isinstance(raw_manual_retry_count, int) and not isinstance(raw_manual_retry_count, bool)
+        else 0
+    )
+    if transient_failures or manual_retry_count:
+        descriptions = []
+        if transient_failures:
+            descriptions.append(
+                f"{len(transient_failures)} species failed and were deferred without "
+                "blocking the queue"
+            )
+        if manual_retry_count:
+            descriptions.append(
+                f"{manual_retry_count} retained species are no longer in the current "
+                "observation or durable queue and require an explicit retry"
+            )
         safe_record_degradation(
             config,
             key="generation-items",
-            title="Some bird generations are retrying",
+            title=(
+                "Some bird generations need attention"
+                if transient_failures and manual_retry_count
+                else "Some bird generations are retrying"
+                if transient_failures
+                else "Some bird generations need manual retry"
+            ),
             body=(
-                f"{len(transient_failures)} species failed and were deferred without "
-                "blocking the queue."
+                "; ".join(descriptions)
+                + "."
+                + (
+                    " Run status, then retry each retained taxon you still want processed."
+                    if manual_retry_count
+                    else ""
+                )
             ),
         )
     elif result.get("outstanding_retry_count") == 0:

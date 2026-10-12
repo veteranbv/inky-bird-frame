@@ -1333,6 +1333,36 @@ rotation_mode = "shuffle_bag"
         recovered_keys = [call.kwargs["key"] for call in recover.call_args_list]
         self.assertEqual(recovered_keys, ["generation-cycle"])
 
+    def test_generate_reports_retained_species_requiring_manual_retry(self) -> None:
+        result = {
+            "published_pending": [],
+            "generated": [],
+            "failures": [],
+            "deferred_count": 0,
+            "outstanding_retry_count": 1,
+            "manual_retry_required_count": 1,
+        }
+        with (
+            patch("inky_bird_frame.cli._config"),
+            patch("inky_bird_frame.cli.run_generation_cycle", return_value=result),
+            patch("inky_bird_frame.cli.safe_record_degradation") as degrade,
+            patch("inky_bird_frame.cli.safe_record_recovery") as recover,
+            redirect_stdout(io.StringIO()),
+        ):
+            generate_command(Namespace())
+
+        generation_item = next(
+            call for call in degrade.call_args_list if call.kwargs["key"] == "generation-items"
+        )
+        self.assertEqual(
+            generation_item.kwargs["title"],
+            "Some bird generations need manual retry",
+        )
+        self.assertIn("1 retained species", generation_item.kwargs["body"])
+        self.assertIn("Run status", generation_item.kwargs["body"])
+        recovered_keys = [call.kwargs["key"] for call in recover.call_args_list]
+        self.assertEqual(recovered_keys, ["generation-cycle"])
+
     def test_retry_preserves_cached_research_by_default(self) -> None:
         with TemporaryDirectory() as temporary:
             state_dir = Path(temporary)

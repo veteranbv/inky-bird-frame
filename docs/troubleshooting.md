@@ -139,6 +139,16 @@ nonempty, let the scheduled generator run or invoke
 `inky-bird-frame generate --config /path/to/config.toml` for an immediate
 attempt.
 
+If `generation.manual_retry_required` is nonempty, an earlier transient failure
+is no longer in the current observation or durable queue. The controller keeps
+the validated species identity and cached research but does not silently
+generate a plate for an expired observation. This can appear after an upgrade
+corrects the original runtime problem. Review the retained error, then run
+`retry TAXON_ID` for each species you still want processed. Scheduled generation
+also records this state as a degraded generation item so configured
+notifications point back to the actionable status entry instead of incorrectly
+reporting recovery.
+
 For BirdNET-Go, use the same commands and inspect the `birdnet-go` provider.
 Connection failures usually mean the configured base URL is not reachable from
 the controller process or container. A response-contract error can indicate an

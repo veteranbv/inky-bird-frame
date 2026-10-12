@@ -286,15 +286,20 @@ The compatibility `deferred` list and nested generation view use the same
 captured retry records, while `failed` comes from the same locked local-state
 snapshot. The top-level list intentionally includes every retained retry record;
 the nested `generation.deferred` list remains the authoritative set currently
-waiting for its retry time.
+waiting for its retry time. `generation.manual_retry_required` identifies
+unapproved retry records whose taxon is no longer in the current observation
+or durable queue and is therefore not eligible for automatic generation.
 
 Use the nested `generation` object as the authoritative work view. It combines
 the current discovery snapshot with durable queue-only retries using the same
 calculation as generation. `eligible` contains every unapproved, nonterminal
 candidate; `actionable` is the retry-due subset generation can attempt now;
 `deferred` is waiting for `next_attempt_at`; and `terminal_blocked` includes live
-or queued taxa with incomplete pending, rejected, or failed state. Each list has
-a matching count.
+or queued taxa with incomplete pending, rejected, or failed state. A retained
+taxon in `manual_retry_required` can be restored to the durable queue with
+`retry TAXON_ID`; this commonly matters after an upgrade fixes the runtime
+problem that caused its earlier attempts to fail. Each list has a matching
+count.
 
 `generation.complete` is true only when the discovery snapshot exists and is no
 older than twice `schedule.refresh_minutes`. Missing or stale discovery remains
