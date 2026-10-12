@@ -176,6 +176,7 @@ class GenerationWork:
     eligible: list[BirdSpecies]
     actionable: list[BirdSpecies]
     deferred: list[RetryRecord]
+    manual_retry_required: list[RetryRecord]
     terminal_blocked: list[TerminalQueueEntry]
 
     def as_dict(self) -> dict[str, object]:
@@ -191,6 +192,8 @@ class GenerationWork:
             "actionable": [_species_payload(species) for species in self.actionable],
             "deferred_count": len(self.deferred),
             "deferred": [record.as_dict() for record in self.deferred],
+            "manual_retry_required_count": len(self.manual_retry_required),
+            "manual_retry_required": [record.as_dict() for record in self.manual_retry_required],
             "terminal_blocked_count": len(self.terminal_blocked),
             "terminal_blocked": [entry.as_dict() for entry in self.terminal_blocked],
         }
@@ -2233,6 +2236,19 @@ def calculate_generation_work(
         key=lambda record: record.next_attempt_at,
     )
     deferred_taxa = {record.taxon_id for record in deferred}
+    generation_taxa = {species.taxon_id for species in generation_species}
+    manual_retry_required = (
+        sorted(
+            (
+                record
+                for record in retry_records
+                if record.taxon_id not in approved and record.taxon_id not in generation_taxa
+            ),
+            key=lambda record: record.next_attempt_at,
+        )
+        if complete
+        else []
+    )
     actionable = (
         [species for species in eligible if species.taxon_id not in deferred_taxa]
         if complete
@@ -2245,6 +2261,7 @@ def calculate_generation_work(
         eligible,
         actionable,
         deferred,
+        manual_retry_required,
         terminal_blocked,
     )
 
@@ -2623,6 +2640,7 @@ def run_generation_cycle(config: AppConfig) -> dict[str, object]:
         eligible_taxa = {species.taxon_id for species in eligible}
         deferred = retry_store.deferred(eligible_taxa, datetime.now(UTC))
         outstanding_retries = retry_store.outstanding(eligible_taxa)
+        manual_retry_required = work.manual_retry_required
         return {
             "discovery": {
                 "refreshed_at": snapshot.refreshed_at.isoformat(),
@@ -2639,7 +2657,9 @@ def run_generation_cycle(config: AppConfig) -> dict[str, object]:
             "attempted_count": attempted_count,
             "deferred_count": len(deferred),
             "deferred": [record.as_dict() for record in deferred],
-            "outstanding_retry_count": len(outstanding_retries),
+            "outstanding_retry_count": len(outstanding_retries) + len(manual_retry_required),
+            "manual_retry_required_count": len(manual_retry_required),
+            "manual_retry_required": [record.as_dict() for record in manual_retry_required],
             "migrated_legacy_queue_count": len(migrated_legacy_queue),
             "migrated_legacy_queue_taxon_ids": [entry.taxon_id for entry in migrated_legacy_queue],
             "queued_count": len(queue_partition.actionable),

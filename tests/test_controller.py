@@ -1552,6 +1552,17 @@ class ControllerTests(unittest.TestCase):
         now = datetime(2026, 8, 30, 12, 0, tzinfo=UTC)
         observed = BirdSpecies(1, "Observed Bird", "Avis observed", 2, "birdnet-go")
         queued = BirdSpecies(2, "Queued Bird", "Avis queued", 0, "human-review")
+        retained = RetryRecord(
+            taxon_id=3,
+            attempts=1,
+            error_type="GenerationError",
+            error="temporary",
+            first_failed_at=now - timedelta(hours=1),
+            last_failed_at=now - timedelta(hours=1),
+            next_attempt_at=now,
+            common_name="Retained Bird",
+            scientific_name="Avis retained",
+        )
 
         stale = calculate_generation_work(
             snapshot=DiscoverySnapshot(
@@ -1563,7 +1574,7 @@ class ControllerTests(unittest.TestCase):
             queued_species=[queued],
             approved=set(),
             terminal_states={},
-            retry_records=[],
+            retry_records=[retained],
             now=now,
             maximum_age=timedelta(minutes=30),
         )
@@ -1572,7 +1583,7 @@ class ControllerTests(unittest.TestCase):
             queued_species=[queued],
             approved=set(),
             terminal_states={},
-            retry_records=[],
+            retry_records=[retained],
             now=now,
             maximum_age=timedelta(minutes=30),
         )
@@ -1581,10 +1592,57 @@ class ControllerTests(unittest.TestCase):
         self.assertEqual(stale.discovery_status, "stale")
         self.assertEqual([species.taxon_id for species in stale.eligible], [1, 2])
         self.assertEqual(stale.actionable, [])
+        self.assertEqual(stale.manual_retry_required, [])
         self.assertFalse(missing.complete)
         self.assertEqual(missing.discovery_status, "missing")
         self.assertEqual([species.taxon_id for species in missing.eligible], [2])
         self.assertEqual(missing.actionable, [])
+        self.assertEqual(missing.manual_retry_required, [])
+
+    def test_generation_work_surfaces_manual_retry_after_observation_expires(self) -> None:
+        now = datetime(2026, 10, 12, 12, 0, tzinfo=UTC)
+        retained = RetryRecord(
+            taxon_id=3,
+            attempts=2,
+            error_type="GenerationError",
+            error="runtime unavailable",
+            first_failed_at=now - timedelta(days=2),
+            last_failed_at=now - timedelta(days=1),
+            next_attempt_at=now - timedelta(hours=1),
+            common_name="Expired Bird",
+            scientific_name="Avis expirata",
+        )
+        approved_retry = RetryRecord(
+            taxon_id=42,
+            attempts=1,
+            error_type="GenerationError",
+            error="stale approved retry",
+            first_failed_at=now - timedelta(days=1),
+            last_failed_at=now - timedelta(days=1),
+            next_attempt_at=now,
+            common_name="Approved Bird",
+            scientific_name="Avis approved",
+        )
+
+        work = calculate_generation_work(
+            snapshot=DiscoverySnapshot(now, "Exampleville", "XY", []),
+            queued_species=[],
+            approved={approved_retry.taxon_id},
+            terminal_states={},
+            retry_records=[retained, approved_retry],
+            now=now,
+            maximum_age=timedelta(minutes=30),
+        )
+
+        self.assertEqual(work.eligible, [])
+        self.assertEqual(work.actionable, [])
+        self.assertEqual(work.deferred, [])
+        self.assertEqual(work.manual_retry_required, [retained])
+        self.assertEqual(work.as_dict()["manual_retry_required_count"], 1)
+        self.assertEqual(
+            work.as_dict()["manual_retry_required"],
+            [retained.as_dict()],
+        )
 
     def test_generation_work_surfaces_corrupt_discovery_state(self) -> None:
         with TemporaryDirectory() as temporary:
@@ -1767,6 +1825,44 @@ class ControllerTests(unittest.TestCase):
         self.assertEqual(result["attempted_count"], 1)
         self.assertEqual(result["deferred_count"], 2)
         self.assertEqual(result["outstanding_retry_count"], 2)
+
+    def test_generation_cycle_keeps_expired_retry_visible_as_outstanding(self) -> None:
+        retained = BirdSpecies(3, "Expired Bird", "Avis expirata", 1, "test")
+        with TemporaryDirectory() as temporary:
+            config_path = Path(temporary) / "config.toml"
+            config_path.write_text(CONFIG)
+            config = load_config(config_path)
+            config.controller.state_dir.mkdir(parents=True)
+            (config.controller.state_dir / "discovery.json").write_text(
+                json.dumps(
+                    {
+                        "schema_version": 1,
+                        "refreshed_at": datetime.now(UTC).isoformat(),
+                        "place_name": "Exampleville",
+                        "state": "XY",
+                        "species": [],
+                    }
+                )
+            )
+            retry = RetryStore(
+                config.controller.state_dir / "generation-retries.json"
+            ).record_failure(
+                retained.taxon_id,
+                DataSourceError("temporary runtime failure"),
+                now=datetime.now(UTC) - timedelta(hours=2),
+                initial_minutes=30,
+                maximum_minutes=60,
+                species=retained,
+            )
+
+            with patch("inky_bird_frame.controller.approved_taxon_ids", return_value=set()):
+                result = run_generation_cycle(config)
+
+        self.assertEqual(result["attempted_count"], 0)
+        self.assertEqual(result["deferred_count"], 0)
+        self.assertEqual(result["outstanding_retry_count"], 1)
+        self.assertEqual(result["manual_retry_required_count"], 1)
+        self.assertEqual(result["manual_retry_required"], [retry.as_dict()])
 
     def test_generation_rechecks_retry_due_status_for_each_species(self) -> None:
         first = BirdSpecies(1, "First Bird", "Avis first", 4, "iNaturalist")
