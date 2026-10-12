@@ -1,0 +1,38 @@
+{
+  "anatomy_accuracy": 4,
+  "composition_quality": 5,
+  "correction_findings": [],
+  "findings": [
+    "The primary specimen is a single, coherent adult male Yellow-bellied Sapsucker with one head, one bill, one tail, a convincing trunk-clinging posture, two gripping feet, and an anatomically plausible naturally occluded far-side wing and leg.",
+    "The primary and supplementary heads consistently show a stout, straight, dark bill; intact dark eye; bold black-and-white facial striping; red forehead/crown; and red male throat. Bill proportions and mandible termination are credible against the clearest side-profile references, with no reversed, truncated, or materially inconsistent mandible rendering.",
+    "The folded wing shows the diagnostic long white patch on an otherwise black patterned wing. The detached wing study is clearly supplementary, anatomically plausible, and not attached to the primary specimen.",
+    "The stiff, pointed dark tail is correctly aligned as a trunk brace. Legs and gray feet attach plausibly, and the toes curl around the bark without visible duplication or breakage.",
+    "Whitish underparts, pale yellow belly wash, dark upper-chest marking, black-and-white back and wings, and scarlet head and throat markings agree with the adult-male field marks documented by Cornell and Audubon and visible in the supplied references.",
+    "The common name, scientific name, and family are correctly written and identify Yellow-bellied Sapsucker, Sphyrapicus varius, family Picidae.",
+    "Every displayed measurement matches the directly published Cornell and Audubon set: length 18\u201322 cm (7.1\u20138.7 in), weight 43\u201355 g (1.5\u20131.9 oz), and wingspan 34\u201340 cm (13.4\u201315.8 in), all under the sources' both-sexes measurement heading.",
+    "The vertical length diagram increases correctly from 18 at the bottom through 19, 20, and 21 to 22 at the top. Its endpoints match the stated 18\u201322 cm range, and the adjacent label repeats that range and explicitly says \u201cSCHEMATIC \u2014 NOT TO SCALE.\u201d No contradictory marker or unit appears.",
+    "The habitat statement is compatible with direct sources describing hardwood/deciduous and conifer or mixed forests, young-tree groves and forest edges, with open woodland, orchards, and other wooded or semi-open habitats outside the breeding season.",
+    "The behavior statement is supported by direct sources: upright trunk-clinging with tail support, orderly sap-well drilling and revisiting, feeding on sap and trapped insects, bark gleaning, aerial insect capture, and distinctive irregular or stuttering drumming.",
+    "All six field-mark lines are legible and factually compatible with the direct sources and supplied photographs. No duplicated, omitted, substituted, or nonsensical visible wording was found.",
+    "The palette swatches correspond to the stated black, white, scarlet red, pale yellow, and slate-gray palette.",
+    "No place name, ZIP code, coordinates, map, or local-observation detail appears."
+  ],
+  "location_free": true,
+  "passed": true,
+  "species_accuracy": 5,
+  "text_accuracy": 5,
+  "verification_sources": [
+    {
+      "title": "Yellow-bellied Sapsucker Identification \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/yellow-bellied_sapsucker/id"
+    },
+    {
+      "title": "Yellow-bellied Sapsucker \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/yellow-bellied-sapsucker"
+    },
+    {
+      "title": "Sphyrapicus varius \u2014 Animal Diversity Web",
+      "url": "https://animaldiversity.org/accounts/Sphyrapicus_varius/"
+    }
+  ]
+}

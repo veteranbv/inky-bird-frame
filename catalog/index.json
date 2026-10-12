@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-12T03:32:51+00:00",
+  "generated_at": "2026-10-12T03:36:23+00:00",
   "schema_version": 1,
   "species": [
     {
@@ -1893,6 +1893,17 @@
       "scientific_name": "Hylocichla mustelina",
       "slug": "wood-thrush",
       "taxon_id": 13270
+    },
+    {
+      "approved_at": "2026-10-12T03:36:23+00:00",
+      "common_name": "Yellow-bellied Sapsucker",
+      "display_path": "species/18463-yellow-bellied-sapsucker/display.png",
+      "display_sha256": "1368fea4b2efb6803276cc3211f837de236fa78455a93ee20aad21bc19dba693",
+      "portrait_path": "species/18463-yellow-bellied-sapsucker/portrait.png",
+      "portrait_sha256": "d12b0602957c000bc807860441f567028d58d932476d86aef417927185cc4fa3",
+      "scientific_name": "Sphyrapicus varius",
+      "slug": "yellow-bellied-sapsucker",
+      "taxon_id": 18463
     },
     {
       "approved_at": "2026-07-23T13:02:45+00:00",
