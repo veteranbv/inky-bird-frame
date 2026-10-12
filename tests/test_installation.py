@@ -18,6 +18,7 @@ from inky_bird_frame.installation import (
     _birdbuddy_auth_check,
     _display_hardware_check,
     _health_url,
+    controller_executable_path,
     controller_systemd_units,
     display_systemd_units,
     doctor,
@@ -57,6 +58,49 @@ rotation_mode = "shuffle_bag"
 
 
 class InstallationTests(unittest.TestCase):
+    def test_controller_executable_path_prepends_and_deduplicates_codex_directory(
+        self,
+    ) -> None:
+        executable_path = controller_executable_path(Path("/opt/homebrew/bin/codex"))
+
+        paths = executable_path.split(":")
+        self.assertEqual(paths[0], "/opt/homebrew/bin")
+        self.assertEqual(paths.count("/opt/homebrew/bin"), 1)
+        self.assertIn("/usr/bin", paths)
+        self.assertIn("/bin", paths)
+        self.assertEqual(
+            controller_executable_path(Path("/usr/local/bin/codex"))
+            .split(":")
+            .count("/usr/local/bin"),
+            1,
+        )
+
+    def test_controller_executable_path_rejects_relative_codex_path(self) -> None:
+        with self.assertRaisesRegex(InstallationError, "absolute path"):
+            controller_executable_path(Path("bin/codex"))
+
+    def test_controller_executable_path_runs_env_wrapper_with_sibling_runtime(self) -> None:
+        with TemporaryDirectory() as temporary:
+            binary_dir = Path(temporary) / "bin"
+            binary_dir.mkdir()
+            node = binary_dir / "node"
+            node.write_text("#!/bin/sh\nprintf 'node-runtime-ok\\n'\n")
+            node.chmod(0o700)
+            codex = binary_dir / "codex"
+            codex.write_text("#!/usr/bin/env node\n")
+            codex.chmod(0o700)
+
+            completed = subprocess.run(
+                [codex],
+                check=False,
+                capture_output=True,
+                env={"PATH": controller_executable_path(codex)},
+                text=True,
+            )
+
+        self.assertEqual(completed.returncode, 0, completed.stderr)
+        self.assertEqual(completed.stdout, "node-runtime-ok\n")
+
     def test_birdbuddy_doctor_check_warns_when_login_is_missing(self) -> None:
         with TemporaryDirectory() as temporary:
             root = Path(temporary)

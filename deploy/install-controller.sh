@@ -150,6 +150,7 @@ from pathlib import Path
 from inky_bird_frame.catalog import catalog_state_lock
 from inky_bird_frame.config import DiscoveryProvider, load_config
 from inky_bird_frame.errors import ConfigurationError
+from inky_bird_frame.installation import controller_executable_path
 from inky_bird_frame.publisher import sync_public_catalog
 
 (
@@ -224,6 +225,7 @@ def managed_agent(name: str) -> dict[str, object]:
     return {
         **common,
         "EnvironmentVariables": {
+            "PATH": controller_executable_path(config.controller.codex_path),
             "PYTHONUNBUFFERED": "1",
             "INKY_BIRD_MANAGED_LOG_PATH": str(log_dir / f"{name}.log"),
         },
