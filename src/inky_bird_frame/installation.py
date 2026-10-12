@@ -8,7 +8,7 @@ import shutil
 import stat
 import subprocess
 import sys
-from collections.abc import Iterable, Sequence
+from collections.abc import Iterable, Mapping, Sequence
 from dataclasses import dataclass
 from enum import StrEnum
 from pathlib import Path
@@ -101,12 +101,18 @@ class CommandResult:
     stderr: str
 
 
-def _run(command: Sequence[str], *, timeout_seconds: int = 15) -> CommandResult:
+def _run(
+    command: Sequence[str],
+    *,
+    timeout_seconds: int = 15,
+    environment: Mapping[str, str] | None = None,
+) -> CommandResult:
     try:
         completed = subprocess.run(
             command,
             check=False,
             capture_output=True,
+            env=environment,
             text=True,
             timeout=timeout_seconds,
         )
@@ -395,7 +401,9 @@ def _executable_check(path: Path) -> DiagnosticCheck:
 
 
 def _codex_auth_check(path: Path) -> DiagnosticCheck:
-    result = _run([str(path), "login", "status"])
+    environment = os.environ.copy()
+    environment["PATH"] = controller_executable_path(path)
+    result = _run([str(path), "login", "status"], environment=environment)
     output = "\n".join(part for part in (result.stdout, result.stderr) if part)
     if result.returncode != 0:
         return _fail(

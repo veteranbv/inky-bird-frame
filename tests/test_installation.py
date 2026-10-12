@@ -16,6 +16,7 @@ from inky_bird_frame.installation import (
     DiagnosticCheck,
     InstallationRole,
     _birdbuddy_auth_check,
+    _codex_auth_check,
     _display_hardware_check,
     _health_url,
     controller_executable_path,
@@ -100,6 +101,23 @@ class InstallationTests(unittest.TestCase):
 
         self.assertEqual(completed.returncode, 0, completed.stderr)
         self.assertEqual(completed.stdout, "node-runtime-ok\n")
+
+    def test_codex_auth_check_uses_configured_runtime_path(self) -> None:
+        with TemporaryDirectory() as temporary:
+            binary_dir = Path(temporary) / "bin"
+            binary_dir.mkdir()
+            node = binary_dir / "node"
+            node.write_text("#!/bin/sh\nprintf 'Logged in using ChatGPT\n'\n")
+            node.chmod(0o700)
+            codex = binary_dir / "codex"
+            codex.write_text("#!/usr/bin/env node\n")
+            codex.chmod(0o700)
+
+            with patch.dict(os.environ, {"PATH": "/usr/bin:/bin"}):
+                check = _codex_auth_check(codex)
+
+        self.assertEqual(check.status, CheckStatus.PASS)
+        self.assertEqual(check.summary, "Codex CLI is authenticated with ChatGPT")
 
     def test_birdbuddy_doctor_check_warns_when_login_is_missing(self) -> None:
         with TemporaryDirectory() as temporary:
