@@ -1,0 +1,38 @@
+{
+  "behavior": "Forages mainly on the ground, walking or running through low vegetation for seeds and invertebrates; flight is typically quick and low. Males sing from exposed low perches and perform fluttering territorial and courtship displays.",
+  "common_name": "Savannah Sparrow",
+  "family": "Passerellidae",
+  "field_marks": [
+    "Small conical bill and dark eye",
+    "Yellow patch in front of the eye",
+    "Bold brown-and-cream facial pattern",
+    "White underparts with crisp dark streaks",
+    "Brown, black-streaked upperparts",
+    "Short, slightly notched tail and pinkish legs"
+  ],
+  "habitat": "Open habitats with low vegetation, including grasslands, meadows, pastures, cultivated fields, grassy roadsides, sedge wetlands, salt marshes, estuaries, dunes, shores, and tundra.",
+  "measurements": {
+    "length": "4.7\u20135.9 in (12\u201315 cm), sexes similar",
+    "weight": "0.5\u20131.0 oz (15\u201328 g), sexes similar",
+    "wingspan": "7.9\u20139.4 in (20\u201324 cm), sexes similar"
+  },
+  "palette": [
+    "warm brown",
+    "cream white",
+    "black-brown",
+    "pale yellow",
+    "pinkish tan"
+  ],
+  "scientific_name": "Passerculus sandwichensis",
+  "sources": [
+    {
+      "title": "Savannah Sparrow | Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/savannah-sparrow"
+    },
+    {
+      "title": "Savannah Sparrow Life History | All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Savannah_Sparrow/lifehistory"
+    }
+  ],
+  "taxon_id": 9981
+}
