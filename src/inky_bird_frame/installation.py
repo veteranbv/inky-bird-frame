@@ -22,7 +22,7 @@ from .images import SUPPORTED_HARDWARE_SIZES
 
 SUDO_AUTHORIZATION_TIMEOUT_SECONDS = 300
 INSTALLER_TIMEOUT_SECONDS = 3600
-SYSTEMD_DEFAULT_EXECUTABLE_PATH = (
+MANAGED_CONTROLLER_DEFAULT_EXECUTABLE_PATH = (
     "/usr/local/sbin",
     "/usr/local/bin",
     "/usr/sbin",
@@ -126,6 +126,18 @@ def _systemd_quote(value: str) -> str:
     return f'"{escaped}"'
 
 
+def controller_executable_path(codex_path: Path) -> str:
+    """Return a deterministic PATH for managed controller services."""
+    if not codex_path.is_absolute():
+        raise InstallationError(
+            "Codex CLI must resolve to an absolute path for managed controller services"
+        )
+    executable_paths = dict.fromkeys(
+        (str(codex_path.parent), *MANAGED_CONTROLLER_DEFAULT_EXECUTABLE_PATH)
+    )
+    return ":".join(executable_paths)
+
+
 def controller_systemd_units(
     config: AppConfig,
     *,
@@ -136,12 +148,7 @@ def controller_systemd_units(
     user: str,
 ) -> dict[str, str]:
     """Render the complete systemd controller unit set for one installation."""
-    if not config.controller.codex_path.is_absolute():
-        raise InstallationError("Codex CLI must resolve to an absolute path for systemd")
-    executable_paths = dict.fromkeys(
-        (str(config.controller.codex_path.parent), *SYSTEMD_DEFAULT_EXECUTABLE_PATH)
-    )
-    service_path = ":".join(executable_paths)
+    service_path = controller_executable_path(config.controller.codex_path)
     common = (
         f"User={user}\n"
         f"WorkingDirectory={_systemd_literal(str(app_dir))}\n"

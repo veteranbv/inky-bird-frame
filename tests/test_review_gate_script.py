@@ -870,6 +870,31 @@ def test_codex_request_fallback_ignores_other_head_comments(
     assert review_gate.engaged_bots(state, "owner/repo", "abc123", head_time) == set()
 
 
+def test_codex_request_fallback_ignores_codex_summary_quoting_request() -> None:
+    review_gate = _load_review_gate()
+    state = _state_with_commit(pushed=None, committed="2026-06-01T12:00:00Z")
+    state["comments"] = {
+        "nodes": [
+            {
+                "body": "@codex review\n\nhead: abc123",
+                "createdAt": "2026-06-15T11:59:00Z",
+                "author": {"login": "owner"},
+            },
+            {
+                "body": "Summary includes @codex review for abc123",
+                "createdAt": "2026-06-15T12:00:00Z",
+                "updatedAt": "2026-06-15T12:05:00Z",
+                "author": {"login": "chatgpt-codex-connector"},
+            },
+        ]
+    }
+
+    head_time = review_gate._head_time(state, "abc123")
+
+    assert head_time is not None
+    assert head_time.isoformat() == "2026-06-15T11:59:00+00:00"
+
+
 def test_owner_request_uses_edit_time_for_current_body() -> None:
     review_gate = _load_review_gate()
     state = _state_with_commit(pushed=None, committed="2026-06-01T12:00:00Z")

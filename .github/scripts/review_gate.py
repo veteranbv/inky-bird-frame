@@ -354,6 +354,12 @@ def _latest_codex_request_time(state: dict[str, object], head_sha: str) -> datet
     for c in comments_obj.get("nodes") or []:
         if not isinstance(c, dict):
             continue
+        # Codex's mutable summary quotes the owner's exact-head request. When
+        # GitHub omits pushedDate, treating that bot-authored text as a fresh
+        # request can move the head cutoff past Codex's own clean response and
+        # strand the gate indefinitely.
+        if _author_login(c) == CODEX_LOGIN:
+            continue
         body = c.get("body")
         if not isinstance(body, str) or "@codex review" not in body.lower():
             continue

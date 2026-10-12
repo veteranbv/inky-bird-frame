@@ -94,6 +94,8 @@ def test_macos_controller_installer_limits_log_retention_and_permissions() -> No
     for name in ("serve", "refresh", "generate", "catalog-publish", "notifications"):
         assert f'**managed_agent("{name}")' in script
     assert '"INKY_BIRD_MANAGED_LOG_PATH": str(log_dir / f"{name}.log")' in script
+    assert "from inky_bird_frame.installation import controller_executable_path" in script
+    assert '"PATH": controller_executable_path(config.controller.codex_path)' in script
 
 
 def test_systemd_controller_installer_restarts_boot_persistent_services() -> None:
