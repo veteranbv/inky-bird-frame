@@ -1,0 +1,160 @@
+{
+  "approved_at": "2026-10-12T11:08:35+00:00",
+  "assets": {
+    "display": {
+      "filename": "display.png",
+      "sha256": "1f6840c8b996592ca88c04d1bcbbbfd6b803fc3ea222c1e6033cf11fbcd8c027"
+    },
+    "portrait": {
+      "filename": "portrait.png",
+      "sha256": "a37e8eebccd21c6a2c1f707916d1d7ccee82e869f26bdb1c49cb5c63d88497c5"
+    }
+  },
+  "common_name": "Savannah Sparrow",
+  "generation": {
+    "attempt": 1,
+    "generated_at": "2026-10-12T11:08:33+00:00",
+    "generator": "Codex subscription / built-in gpt-image-2",
+    "max_attempts": 3,
+    "prompt_version": "field-journal-v6"
+  },
+  "profile": {
+    "behavior": "Forages mainly on the ground, walking or running through low vegetation for seeds and invertebrates; flight is typically quick and low. Males sing from exposed low perches and perform fluttering territorial and courtship displays.",
+    "common_name": "Savannah Sparrow",
+    "family": "Passerellidae",
+    "field_marks": [
+      "Small conical bill and dark eye",
+      "Yellow patch in front of the eye",
+      "Bold brown-and-cream facial pattern",
+      "White underparts with crisp dark streaks",
+      "Brown, black-streaked upperparts",
+      "Short, slightly notched tail and pinkish legs"
+    ],
+    "habitat": "Open habitats with low vegetation, including grasslands, meadows, pastures, cultivated fields, grassy roadsides, sedge wetlands, salt marshes, estuaries, dunes, shores, and tundra.",
+    "measurements": {
+      "length": "4.7\u20135.9 in (12\u201315 cm), sexes similar",
+      "weight": "0.5\u20131.0 oz (15\u201328 g), sexes similar",
+      "wingspan": "7.9\u20139.4 in (20\u201324 cm), sexes similar"
+    },
+    "palette": [
+      "warm brown",
+      "cream white",
+      "black-brown",
+      "pale yellow",
+      "pinkish tan"
+    ],
+    "scientific_name": "Passerculus sandwichensis",
+    "sources": [
+      {
+        "title": "Savannah Sparrow | Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/savannah-sparrow"
+      },
+      {
+        "title": "Savannah Sparrow Life History | All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Savannah_Sparrow/lifehistory"
+      }
+    ],
+    "taxon_id": 9981
+  },
+  "quality_review": {
+    "anatomy_accuracy": 4,
+    "composition_quality": 5,
+    "correction_findings": [],
+    "findings": [
+      "The primary specimen is a convincing Savannah Sparrow: compact streaked body, small conical seed-eating bill, dark visible eye, strong facial pattern, yellow lore/supraloral patch, brown-and-black streaked upperparts, crisp streaking on white underparts, short slightly notched tail, and pinkish legs.",
+      "The primary specimen has one head, one beak, one visible eye, one tail, two convincingly attached legs with intact grasping feet, and a complete folded near-side wing; the far-side wing is naturally hidden by the side-on pose.",
+      "The detached wing, head, underpart-plumage, and tail studies read as intentional supplementary illustrations and do not appear attached to or duplicated on the primary bird.",
+      "The supplementary wing has coherent feather layering, the head study has a complete conical bill and visible eye, and the tail study appropriately depicts a short shallow notch.",
+      "The illustrated plumage agrees with the attached references in its overall brown-and-cream coloration, facial striping, yellow marking before the eye, streaked breast and flanks, compact build, and pinkish legs.",
+      "The yellow facial patch is more saturated and conspicuous than in several references, but remains within the directly documented species pattern and is not a material identification error.",
+      "Every visible title, taxonomic line, measurement, habitat sentence, behavior sentence, and field-mark caption is legible and faithfully reproduces the proposed profile without duplicated, omitted, substituted, or nonsensical wording.",
+      "Audubon's direct species page supports the complete proposed measurement set: length 4.7\u20135.9 in (12\u201315 cm), wingspan 7.9\u20139.4 in (20\u201324 cm), and weight 0.5\u20131.0 oz (15\u201328 g), with sexes similar.",
+      "The body-length diagram has 4.7 in (12 cm) at the bottom and 5.9 in (15 cm) at the top, so its values increase upward and match the published range and units.",
+      "The diagram is explicitly labeled \u201cSCHEMATIC \u2014 NOT TO SCALE\u201d; its unlabeled interior ticks function as visual subdivisions and introduce no contradictory measurement.",
+      "Cornell's direct identification and overview pages independently confirm Passerculus sandwichensis, family Passerellidae, the small bill, short notched tail, brown upperparts, white crisply streaked underparts, strong facial pattern, and usual yellow patch before the eye.",
+      "Direct Cornell and Audubon accounts support the depicted habitat and the visible behavioral text concerning ground foraging, quick low flight, exposed singing perches, and flutter-flight territorial display.",
+      "No place name, ZIP code, coordinates, map, or local-observation detail appears."
+    ],
+    "location_free": true,
+    "passed": true,
+    "species_accuracy": 5,
+    "text_accuracy": 5,
+    "verification_sources": [
+      {
+        "title": "Savannah Sparrow | Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/savannah-sparrow"
+      },
+      {
+        "title": "Savannah Sparrow Identification | All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Savannah_Sparrow/id"
+      },
+      {
+        "title": "Savannah Sparrow Life History | All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Savannah_Sparrow/lifehistory"
+      },
+      {
+        "title": "Passerculus sandwichensis (savannah sparrow) | Animal Diversity Web",
+        "url": "https://animaldiversity.org/accounts/Passerculus_sandwichensis/"
+      }
+    ]
+  },
+  "references": [
+    {
+      "attribution": "no rights reserved",
+      "filename": "01-287296692.jpeg",
+      "height": 1365,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/287296692/large.jpeg",
+      "license_code": "cc0",
+      "observation_id": 165939268,
+      "observer": "stevestevens",
+      "photo_id": 287296692,
+      "sha256": "444657ea33e5e9790e3cd054348e775263c9ebe60f2c60eace01d2b3568f837a",
+      "source_url": "https://www.inaturalist.org/observations/165939268",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) Sandy Wolkenberg, some rights reserved (CC BY)",
+      "filename": "02-177964540.jpg",
+      "height": 2048,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/177964540/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 105991699,
+      "observer": "sadawolk",
+      "photo_id": 177964540,
+      "sha256": "55b0bcbc68177d8f0e51612b0a01540d65f4b415d59e679845e8584f07a5ea60",
+      "source_url": "https://www.inaturalist.org/observations/105991699",
+      "width": 1604
+    },
+    {
+      "attribution": "(c) Bill Levine, some rights reserved (CC BY)",
+      "filename": "03-325306037.jpeg",
+      "height": 2048,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/325306037/large.jpeg",
+      "license_code": "cc-by",
+      "observation_id": 186177419,
+      "observer": "blevine",
+      "photo_id": 325306037,
+      "sha256": "e8ebab800e34c6a85887309d32240eee3c8718eff602745fe1670f5b9713917d",
+      "source_url": "https://www.inaturalist.org/observations/186177419",
+      "width": 2048
+    },
+    {
+      "attribution": "no rights reserved",
+      "filename": "04-104221980.jpg",
+      "height": 906,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/104221980/large.jpg",
+      "license_code": "cc0",
+      "observation_id": 64789924,
+      "observer": "meganralph",
+      "photo_id": 104221980,
+      "sha256": "234f33a7349ac8f6ede646aad2dddcab0230f73814ca10431881d1555ec68571",
+      "source_url": "https://www.inaturalist.org/observations/64789924",
+      "width": 906
+    }
+  ],
+  "schema_version": 1,
+  "scientific_name": "Passerculus sandwichensis",
+  "slug": "savannah-sparrow",
+  "status": "approved",
+  "taxon_id": 9981
+}

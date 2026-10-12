@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-12T03:36:23+00:00",
+  "generated_at": "2026-10-12T11:08:35+00:00",
   "schema_version": 1,
   "species": [
     {
@@ -1607,6 +1607,17 @@
       "scientific_name": "Calidris alba",
       "slug": "sanderling",
       "taxon_id": 3849
+    },
+    {
+      "approved_at": "2026-10-12T11:08:35+00:00",
+      "common_name": "Savannah Sparrow",
+      "display_path": "species/9981-savannah-sparrow/display.png",
+      "display_sha256": "1f6840c8b996592ca88c04d1bcbbbfd6b803fc3ea222c1e6033cf11fbcd8c027",
+      "portrait_path": "species/9981-savannah-sparrow/portrait.png",
+      "portrait_sha256": "a37e8eebccd21c6a2c1f707916d1d7ccee82e869f26bdb1c49cb5c63d88497c5",
+      "scientific_name": "Passerculus sandwichensis",
+      "slug": "savannah-sparrow",
+      "taxon_id": 9981
     },
     {
       "approved_at": "2026-08-06T11:56:19+00:00",
