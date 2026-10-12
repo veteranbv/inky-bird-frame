@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-12T03:23:40+00:00",
+  "generated_at": "2026-10-12T03:32:51+00:00",
   "schema_version": 1,
   "species": [
     {
@@ -498,6 +498,17 @@
       "taxon_id": 20969
     },
     {
+      "approved_at": "2026-10-12T03:29:18+00:00",
+      "common_name": "Common Loon",
+      "display_path": "species/4626-common-loon/display.png",
+      "display_sha256": "e07011b8afcaf6947e748c9b5e27d664165509140ecb48f5248e731c1f4ee098",
+      "portrait_path": "species/4626-common-loon/portrait.png",
+      "portrait_sha256": "b2be9c2ccfd8324300a282ea5d2652119ae7dd11f7e371c7391db907e63ba4e6",
+      "scientific_name": "Gavia immer",
+      "slug": "common-loon",
+      "taxon_id": 4626
+    },
+    {
       "approved_at": "2026-08-10T00:43:44+00:00",
       "common_name": "Common Nighthawk",
       "display_path": "species/19577-common-nighthawk/display.png",
@@ -562,6 +573,17 @@
       "scientific_name": "Astur cooperii",
       "slug": "cooper-s-hawk",
       "taxon_id": 1579017
+    },
+    {
+      "approved_at": "2026-10-12T03:32:51+00:00",
+      "common_name": "Dark-eyed Junco",
+      "display_path": "species/10094-dark-eyed-junco/display.png",
+      "display_sha256": "d7389b3c2d410f688111f343a12459c39d4999f83b406699b631e75bfc82f7de",
+      "portrait_path": "species/10094-dark-eyed-junco/portrait.png",
+      "portrait_sha256": "c37db1e0c2ecf036e4f8a54185d979d50ade98826421ff92b70233221b87cda5",
+      "scientific_name": "Junco hyemalis",
+      "slug": "dark-eyed-junco",
+      "taxon_id": 10094
     },
     {
       "approved_at": "2026-08-01T19:27:44+00:00",

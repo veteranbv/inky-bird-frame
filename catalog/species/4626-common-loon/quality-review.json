@@ -1,0 +1,35 @@
+{
+  "anatomy_accuracy": 4,
+  "composition_quality": 5,
+  "correction_findings": [],
+  "findings": [
+    "The primary specimen is identifiable as an adult Common Loon in breeding plumage: black head and neck with a subtle green sheen, red eye, heavy straight dark bill, barred neck collar, checkered black upperparts, white underparts, long low-slung body, and short inconspicuous tail.",
+    "The primary specimen has one head and bill, a convincing folded near-side wing with the far-side wing naturally occluded, rear-set legs, webbed feet, and one tail. The supplementary wing and head/bill studies are clearly detached reference details rather than extra attached anatomy.",
+    "The breast and foreflank are now substantially clean white, without the previously reported dense black vertical streaking. Fine gray feather contours remain but do not contradict breeding-adult plumage.",
+    "The visible foot is now recognizably webbed, with membranes joining the forward toes rather than separate clawlike digits.",
+    "The supplied photographs corroborate the red eye, robust dark dagger-shaped bill, barred collar, dark green-black head and neck, checkered upperparts, white breast, rear-set feet, and low swimming posture.",
+    "All visible prose, headings, labels, scientific nomenclature, measurements, habitat text, behavior text, and field-mark bullets match the proposed profile without material omissions, substitutions, duplicated words, or numerical errors.",
+    "The measurement set is directly supported as a single compatible set by Animal Diversity Web: length 70\u201390 cm, mass 1.6\u20138.0 kg, and average wingspan 152 cm. Different measurement ranges published by Cornell and Audubon do not invalidate this directly supported set.",
+    "The vertical body-length diagram is internally consistent: 70 cm is at the bottom, 90 cm is at the top, values increase upward, the units and endpoints match the printed range, and it is explicitly labeled \u201cSCHEMATIC NOT TO SCALE.\u201d",
+    "The illustration contains no place name, ZIP code, coordinates, map, or local-observation detail.",
+    "The plate is visually coherent and legible, with a single dominant specimen, clearly separated anatomical studies, an appropriate field-journal hierarchy, and an accurate species palette."
+  ],
+  "location_free": true,
+  "passed": true,
+  "species_accuracy": 5,
+  "text_accuracy": 5,
+  "verification_sources": [
+    {
+      "title": "Common Loon Identification \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/common_loon/id"
+    },
+    {
+      "title": "Gavia immer \u2014 Animal Diversity Web",
+      "url": "https://animaldiversity.org/accounts/Gavia_immer/"
+    },
+    {
+      "title": "Common Loon \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/common-loon"
+    }
+  ]
+}
