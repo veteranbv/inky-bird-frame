@@ -1,0 +1,164 @@
+{
+  "approved_at": "2026-10-12T03:36:23+00:00",
+  "assets": {
+    "display": {
+      "filename": "display.png",
+      "sha256": "1368fea4b2efb6803276cc3211f837de236fa78455a93ee20aad21bc19dba693"
+    },
+    "portrait": {
+      "filename": "portrait.png",
+      "sha256": "d12b0602957c000bc807860441f567028d58d932476d86aef417927185cc4fa3"
+    }
+  },
+  "common_name": "Yellow-bellied Sapsucker",
+  "generation": {
+    "attempt": 1,
+    "generated_at": "2026-10-12T03:36:21+00:00",
+    "generator": "Codex subscription / built-in gpt-image-2",
+    "max_attempts": 3,
+    "prompt_version": "field-journal-v6"
+  },
+  "profile": {
+    "behavior": "Clings upright to trunks, bracing with its stiff tail. Drills orderly rows of sap wells and returns to lap sap and trapped insects; also gleans insects from bark, catches some in flight, and drums in a stuttering rhythm.",
+    "common_name": "Yellow-bellied Sapsucker",
+    "family": "Picidae",
+    "field_marks": [
+      "Bold black-and-white facial stripes with a red forehead",
+      "Male has a red throat; female has a white throat",
+      "Long white patch along each folded black wing",
+      "Whitish underparts with a pale yellow belly wash and dark chest crescent",
+      "Stout, straight, dark bill and dark eye",
+      "Gray feet and a stiff, pointed black tail adapted for trunk-clinging"
+    ],
+    "habitat": "Hardwood and mixed coniferous forests, especially young woods, forest edges, and groves of small deciduous trees; outside the breeding season also uses open woodland, orchards, and other semi-open wooded habitats.",
+    "measurements": {
+      "length": "18\u201322 cm (7.1\u20138.7 in), both sexes",
+      "weight": "43\u201355 g (1.5\u20131.9 oz), both sexes",
+      "wingspan": "34\u201340 cm (13.4\u201315.8 in), both sexes"
+    },
+    "palette": [
+      "black",
+      "white",
+      "scarlet red",
+      "pale yellow",
+      "slate gray"
+    ],
+    "scientific_name": "Sphyrapicus varius",
+    "sources": [
+      {
+        "title": "Yellow-bellied Sapsucker Identification \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/yellow-bellied_sapsucker/id"
+      },
+      {
+        "title": "Yellow-bellied Sapsucker Life History \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Yellow-bellied_Sapsucker/lifehistory"
+      },
+      {
+        "title": "Yellow-bellied Sapsucker \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/yellow-bellied-sapsucker"
+      },
+      {
+        "title": "Sphyrapicus varius \u2014 Animal Diversity Web",
+        "url": "https://animaldiversity.org/accounts/Sphyrapicus_varius/"
+      }
+    ],
+    "taxon_id": 18463
+  },
+  "quality_review": {
+    "anatomy_accuracy": 4,
+    "composition_quality": 5,
+    "correction_findings": [],
+    "findings": [
+      "The primary specimen is a single, coherent adult male Yellow-bellied Sapsucker with one head, one bill, one tail, a convincing trunk-clinging posture, two gripping feet, and an anatomically plausible naturally occluded far-side wing and leg.",
+      "The primary and supplementary heads consistently show a stout, straight, dark bill; intact dark eye; bold black-and-white facial striping; red forehead/crown; and red male throat. Bill proportions and mandible termination are credible against the clearest side-profile references, with no reversed, truncated, or materially inconsistent mandible rendering.",
+      "The folded wing shows the diagnostic long white patch on an otherwise black patterned wing. The detached wing study is clearly supplementary, anatomically plausible, and not attached to the primary specimen.",
+      "The stiff, pointed dark tail is correctly aligned as a trunk brace. Legs and gray feet attach plausibly, and the toes curl around the bark without visible duplication or breakage.",
+      "Whitish underparts, pale yellow belly wash, dark upper-chest marking, black-and-white back and wings, and scarlet head and throat markings agree with the adult-male field marks documented by Cornell and Audubon and visible in the supplied references.",
+      "The common name, scientific name, and family are correctly written and identify Yellow-bellied Sapsucker, Sphyrapicus varius, family Picidae.",
+      "Every displayed measurement matches the directly published Cornell and Audubon set: length 18\u201322 cm (7.1\u20138.7 in), weight 43\u201355 g (1.5\u20131.9 oz), and wingspan 34\u201340 cm (13.4\u201315.8 in), all under the sources' both-sexes measurement heading.",
+      "The vertical length diagram increases correctly from 18 at the bottom through 19, 20, and 21 to 22 at the top. Its endpoints match the stated 18\u201322 cm range, and the adjacent label repeats that range and explicitly says \u201cSCHEMATIC \u2014 NOT TO SCALE.\u201d No contradictory marker or unit appears.",
+      "The habitat statement is compatible with direct sources describing hardwood/deciduous and conifer or mixed forests, young-tree groves and forest edges, with open woodland, orchards, and other wooded or semi-open habitats outside the breeding season.",
+      "The behavior statement is supported by direct sources: upright trunk-clinging with tail support, orderly sap-well drilling and revisiting, feeding on sap and trapped insects, bark gleaning, aerial insect capture, and distinctive irregular or stuttering drumming.",
+      "All six field-mark lines are legible and factually compatible with the direct sources and supplied photographs. No duplicated, omitted, substituted, or nonsensical visible wording was found.",
+      "The palette swatches correspond to the stated black, white, scarlet red, pale yellow, and slate-gray palette.",
+      "No place name, ZIP code, coordinates, map, or local-observation detail appears."
+    ],
+    "location_free": true,
+    "passed": true,
+    "species_accuracy": 5,
+    "text_accuracy": 5,
+    "verification_sources": [
+      {
+        "title": "Yellow-bellied Sapsucker Identification \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/yellow-bellied_sapsucker/id"
+      },
+      {
+        "title": "Yellow-bellied Sapsucker \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/yellow-bellied-sapsucker"
+      },
+      {
+        "title": "Sphyrapicus varius \u2014 Animal Diversity Web",
+        "url": "https://animaldiversity.org/accounts/Sphyrapicus_varius/"
+      }
+    ]
+  },
+  "references": [
+    {
+      "attribution": "no rights reserved",
+      "filename": "01-173209821.jpeg",
+      "height": 2048,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/173209821/large.jpeg",
+      "license_code": "cc0",
+      "observation_id": 103485505,
+      "observer": "anthony296",
+      "photo_id": 173209821,
+      "sha256": "b720bf2bf389122239a412bdb3ed587c76dbadd68bed3f214fc4cfa6f9c8e9cc",
+      "source_url": "https://www.inaturalist.org/observations/103485505",
+      "width": 1536
+    },
+    {
+      "attribution": "(c) Martin Tremblay, some rights reserved (CC BY)",
+      "filename": "02-516639160.jpg",
+      "height": 1638,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/516639160/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 287336229,
+      "observer": "martint66",
+      "photo_id": 516639160,
+      "sha256": "96c7948ba66c3ce14905373326bf4d4c19516e8480218770145ce4090e8a5027",
+      "source_url": "https://www.inaturalist.org/observations/287336229",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) sudomir, some rights reserved (CC BY)",
+      "filename": "03-29422962.jpeg",
+      "height": 1536,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/29422962/large.jpeg",
+      "license_code": "cc-by",
+      "observation_id": 19161439,
+      "observer": "sudomir",
+      "photo_id": 29422962,
+      "sha256": "654edad23aace49980a6a6a9671c9d21bc2ea5c5e6d404b46ce1b487a676e173",
+      "source_url": "https://www.inaturalist.org/observations/19161439",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) Carol Ann Vermeer, some rights reserved (CC BY)",
+      "filename": "04-489057774.jpg",
+      "height": 1365,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/489057774/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 271862583,
+      "observer": "carolannvermeer",
+      "photo_id": 489057774,
+      "sha256": "5a6c3dbe9554ab6ea34c9878a2c6c594b29c7bf39350ae01ed25fd1ac6e8b061",
+      "source_url": "https://www.inaturalist.org/observations/271862583",
+      "width": 2048
+    }
+  ],
+  "schema_version": 1,
+  "scientific_name": "Sphyrapicus varius",
+  "slug": "yellow-bellied-sapsucker",
+  "status": "approved",
+  "taxon_id": 18463
+}

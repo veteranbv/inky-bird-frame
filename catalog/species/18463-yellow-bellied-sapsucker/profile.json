@@ -1,0 +1,46 @@
+{
+  "behavior": "Clings upright to trunks, bracing with its stiff tail. Drills orderly rows of sap wells and returns to lap sap and trapped insects; also gleans insects from bark, catches some in flight, and drums in a stuttering rhythm.",
+  "common_name": "Yellow-bellied Sapsucker",
+  "family": "Picidae",
+  "field_marks": [
+    "Bold black-and-white facial stripes with a red forehead",
+    "Male has a red throat; female has a white throat",
+    "Long white patch along each folded black wing",
+    "Whitish underparts with a pale yellow belly wash and dark chest crescent",
+    "Stout, straight, dark bill and dark eye",
+    "Gray feet and a stiff, pointed black tail adapted for trunk-clinging"
+  ],
+  "habitat": "Hardwood and mixed coniferous forests, especially young woods, forest edges, and groves of small deciduous trees; outside the breeding season also uses open woodland, orchards, and other semi-open wooded habitats.",
+  "measurements": {
+    "length": "18\u201322 cm (7.1\u20138.7 in), both sexes",
+    "weight": "43\u201355 g (1.5\u20131.9 oz), both sexes",
+    "wingspan": "34\u201340 cm (13.4\u201315.8 in), both sexes"
+  },
+  "palette": [
+    "black",
+    "white",
+    "scarlet red",
+    "pale yellow",
+    "slate gray"
+  ],
+  "scientific_name": "Sphyrapicus varius",
+  "sources": [
+    {
+      "title": "Yellow-bellied Sapsucker Identification \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/yellow-bellied_sapsucker/id"
+    },
+    {
+      "title": "Yellow-bellied Sapsucker Life History \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Yellow-bellied_Sapsucker/lifehistory"
+    },
+    {
+      "title": "Yellow-bellied Sapsucker \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/yellow-bellied-sapsucker"
+    },
+    {
+      "title": "Sphyrapicus varius \u2014 Animal Diversity Web",
+      "url": "https://animaldiversity.org/accounts/Sphyrapicus_varius/"
+    }
+  ],
+  "taxon_id": 18463
+}
