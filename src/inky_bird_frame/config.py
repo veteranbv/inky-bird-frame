@@ -119,6 +119,8 @@ class ControllerConfig:
     insufficient_references_retry_minutes: int = 10080
     cors_allowed_origins: tuple[str, ...] = ()
     embed_allowed_origins: tuple[str, ...] = ()
+    owner_allowed_origins: tuple[str, ...] = ()
+    trusted_proxy_addresses: tuple[str, ...] = ()
 
 
 @dataclass(frozen=True)
@@ -378,6 +380,28 @@ def _csp_frame_origins(section: dict[str, object], name: str) -> tuple[str, ...]
                 "reliably match IP addresses"
             )
     return origins
+
+
+def _owner_origins(section: dict[str, object]) -> tuple[str, ...]:
+    origins = _http_origins(section, "owner_allowed_origins")
+    if any(urlsplit(origin).scheme != "https" for origin in origins):
+        raise ConfigurationError(
+            "owner_allowed_origins must use HTTPS; loopback access is automatic"
+        )
+    return origins
+
+
+def _proxy_addresses(section: dict[str, object]) -> tuple[str, ...]:
+    values = _string_tuple(section, "trusted_proxy_addresses")
+    try:
+        addresses = tuple(str(ip_address(value)) for value in values)
+    except ValueError as exc:
+        raise ConfigurationError(
+            "trusted_proxy_addresses must contain explicit IP addresses"
+        ) from exc
+    if len(set(addresses)) != len(addresses):
+        raise ConfigurationError("trusted_proxy_addresses must not contain duplicate addresses")
+    return addresses
 
 
 def _notification_destinations(
@@ -751,6 +775,8 @@ def load_config(path: Path, *, load_secrets: bool = True) -> AppConfig:
             ),
             cors_allowed_origins=_http_origins(controller, "cors_allowed_origins"),
             embed_allowed_origins=_csp_frame_origins(controller, "embed_allowed_origins"),
+            owner_allowed_origins=_owner_origins(controller),
+            trusted_proxy_addresses=_proxy_addresses(controller),
         ),
         display_node=DisplayNodeConfig(
             controller_url=controller_url,

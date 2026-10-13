@@ -1,0 +1,17 @@
+:root { color-scheme: light; font: 17px/1.55 system-ui, sans-serif; color: #253b2c; background: #f4f3ed; }
+* { box-sizing: border-box; }
+body { margin: 0; }
+header { padding: 14px 20px; border-bottom: 1px solid #d3dcce; background: #fffef8; }
+header a { font: 700 27px Georgia, serif; color: inherit; text-decoration: none; }
+main { max-width: 600px; padding: 28px 20px; margin: auto; }
+h1, h2 { font-family: Georgia, serif; line-height: 1.2; }
+form { background: #fffef8; padding: 20px; border: 1px solid #d3dcce; border-radius: 10px; }
+label, input, button { display: block; width: 100%; }
+label { margin-top: 16px; }
+input, button { min-height: 44px; margin-top: 8px; padding: 10px; font: inherit; border: 1px solid #91a58d; border-radius: 6px; }
+button { margin-top: 20px; color: #fff; background: #325a3d; cursor: pointer; }
+button:disabled { opacity: .6; cursor: wait; }
+:focus-visible { outline: 3px solid #7552a1; outline-offset: 3px; }
+.notice { padding: 16px; border: 1px solid #d7bd77; background: #fff1cf; border-radius: 8px; }
+code { overflow-wrap: anywhere; }
+@media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto !important; } }

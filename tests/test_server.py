@@ -3,23 +3,27 @@ from __future__ import annotations
 import hashlib
 import io
 import json
+import socket
 import threading
+import time
 import unittest
 from collections.abc import Iterator
 from contextlib import contextmanager, redirect_stdout
 from http.client import HTTPConnection
-from http.server import ThreadingHTTPServer
 from pathlib import Path
 from tempfile import TemporaryDirectory
 from unittest.mock import patch
 
+import uvicorn
+
 from inky_bird_frame import __version__
+from inky_bird_frame.config import ControllerConfig
 from inky_bird_frame.http import USER_AGENT
 from inky_bird_frame.server import (
     MAX_TELEMETRY_REQUEST_BYTES,
-    CatalogRequestHandler,
     rebuild_index_logging_failures,
 )
+from inky_bird_frame.web import create_app
 
 PNG_BYTES = b"\x89PNG\r\n\x1a\n" + b"\x00" * 16
 GENERATED_AT = "2026-08-30T12:00:00+00:00"
@@ -70,26 +74,47 @@ def _serving(
     cors_allowed_origins: tuple[str, ...] = (),
     embed_allowed_origins: tuple[str, ...] = (),
 ) -> Iterator[int]:
-    handler = type(
-        "TestCatalogRequestHandler",
-        (CatalogRequestHandler,),
-        {
-            "catalog_dir": catalog_dir,
-            "active_catalog_path": active_catalog_path,
-            "state_dir": state_dir,
-            "cors_allowed_origins": cors_allowed_origins,
-            "embed_allowed_origins": embed_allowed_origins,
-        },
-    )
-    server = ThreadingHTTPServer(("127.0.0.1", 0), handler)
-    thread = threading.Thread(target=server.serve_forever)
-    thread.start()
-    try:
-        yield server.server_port
-    finally:
-        server.shutdown()
-        server.server_close()
-        thread.join()
+    assert active_catalog_path == state_dir / "active-catalog.json"
+    with socket.socket() as listener:
+        listener.bind(("127.0.0.1", 0))
+        port = listener.getsockname()[1]
+        config = ControllerConfig(
+            workspace_dir=state_dir,
+            catalog_dir=catalog_dir,
+            state_dir=state_dir,
+            codex_path=Path("codex"),
+            codex_model=None,
+            bind_host="127.0.0.1",
+            port=port,
+            references_per_species=3,
+            generations_per_cycle=1,
+            max_generation_attempts=3,
+            cors_allowed_origins=cors_allowed_origins,
+            embed_allowed_origins=embed_allowed_origins,
+        )
+        server = uvicorn.Server(
+            uvicorn.Config(
+                create_app(config),
+                log_config=None,
+                log_level="critical",
+                access_log=False,
+                proxy_headers=False,
+                server_header=False,
+            )
+        )
+        thread = threading.Thread(target=server.run, kwargs={"sockets": [listener]}, daemon=True)
+        thread.start()
+        try:
+            deadline = time.monotonic() + 5
+            while not server.started:
+                if not thread.is_alive() or time.monotonic() >= deadline:
+                    raise AssertionError("Catalog service did not start")
+                time.sleep(0.01)
+            yield port
+        finally:
+            server.should_exit = True
+            thread.join(timeout=5)
+            assert not thread.is_alive(), "Catalog service did not stop"
 
 
 def _get(
@@ -99,7 +124,11 @@ def _get(
     try:
         connection.request("GET", path, headers=headers or {})
         response = connection.getresponse()
-        return response.status, dict(response.getheaders()), response.read()
+        return (
+            response.status,
+            {key.title(): value for key, value in response.getheaders()},
+            response.read(),
+        )
     finally:
         connection.close()
 
@@ -111,7 +140,11 @@ def _head(
     try:
         connection.request("HEAD", path, headers=headers or {})
         response = connection.getresponse()
-        return response.status, dict(response.getheaders()), response.read()
+        return (
+            response.status,
+            {key.title(): value for key, value in response.getheaders()},
+            response.read(),
+        )
     finally:
         connection.close()
 
@@ -128,7 +161,11 @@ def _post(
     try:
         connection.request("POST", path, body=body, headers=request_headers)
         response = connection.getresponse()
-        return response.status, dict(response.getheaders()), response.read()
+        return (
+            response.status,
+            {key.title(): value for key, value in response.getheaders()},
+            response.read(),
+        )
     finally:
         connection.close()
 
@@ -146,7 +183,11 @@ def _post_with_content_length(
             connection.putheader("Content-Length", content_length)
         connection.endheaders()
         response = connection.getresponse()
-        return response.status, dict(response.getheaders()), response.read()
+        return (
+            response.status,
+            {key.title(): value for key, value in response.getheaders()},
+            response.read(),
+        )
     finally:
         connection.close()
 
@@ -1083,8 +1124,10 @@ class ServerTests(unittest.TestCase):
 
         log = json.loads(output.getvalue().strip())
         self.assertEqual(log["event"], "http_request")
-        self.assertEqual(log["client"], "127.0.0.1")
-        self.assertIn("GET /health?probe=1", log["message"])
+        self.assertEqual(log["method"], "GET")
+        self.assertEqual(log["route"], "/health")
+        self.assertNotIn("probe=1", output.getvalue())
+        self.assertNotIn("127.0.0.1", output.getvalue())
         self.assertNotIn("display.example.test", output.getvalue())
         self.assertNotIn("private-browser-detail", output.getvalue())
 

@@ -42,15 +42,22 @@ Repository = "https://github.com/veteranbv/inky-bird-frame"
 [project.optional-dependencies]
 controller = [
     "apprise>=1.12.0,<3",
+    "argon2-cffi>=25.1.0",
+    "starlette>=1.8.0",
+    "uvicorn>=0.54.0",
 ]
 inky = [
     "inky>=2.4",
 ]
 dev = [
     "apprise>=1.12.0,<3",
+    "argon2-cffi>=25.1.0",
+    "httpx2>=2.13.1",
     "mypy>=1.8.0",
     "pytest>=8.0.0",
     "ruff>=0.4.0",
+    "starlette>=1.8.0",
+    "uvicorn>=0.54.0",
 ]
 
 [project.scripts]

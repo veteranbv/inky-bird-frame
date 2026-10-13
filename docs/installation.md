@@ -81,11 +81,12 @@ controller. Give the controller a stable DNS name or DHCP reservation because
 the display stores its URL. The display itself may use ordinary DHCP because it
 initiates every application connection.
 
-Do not expose the configured controller port to the public internet. The
-built-in server is an unauthenticated LAN service. It serves the active catalog
-and accepts only narrow display-health reports; it does not provide user
-authentication. Use a VPN or an authenticated TLS reverse proxy if traffic must
-cross an untrusted network.
+Do not expose the configured controller port to the public internet. Catalog,
+asset, embed, and narrow display-health routes remain unauthenticated LAN
+services. Owner access at `/app` has a separate secure boundary; see
+[owner setup and recovery](browser-access.md). Use a VPN or a reviewed TLS
+reverse proxy when traffic crosses an untrusted network. Do not assume that
+adding owner sign-in protects the legacy routes.
 
 The example configuration sets `controller.bind_host = "0.0.0.0"`, which
 listens on every interface of the controller host. On a multi-homed
@@ -94,9 +95,9 @@ the service is not offered on other networks.
 
 ### Browser applications
 
-Inky does not include a standalone browser application. This section is for an
-operator-supplied application that consumes Inky's read-only catalog API or
-frames its narrow featured-plate embed.
+The [owner access page](browser-access.md) is separate from the read-only
+integration routes below. This section is for an operator-supplied application
+that consumes the catalog API or frames its narrow featured-plate embed.
 Both permissions are disabled by default. To let a trusted web application
 fetch the active catalog and its images directly, list its exact origin under
 `[controller]`:

@@ -62,6 +62,11 @@ port = 8793
 # Policy does not reliably match IP address sources, so these origins must use DNS hostnames.
 # Underscores and trailing dots are also rejected.
 # embed_allowed_origins = ["https://home.example.test"]
+# Owner access is separate from catalog CORS and framing. List the exact HTTPS
+# origin used by your private proxy. Genuine loopback access is automatic.
+# owner_allowed_origins = ["https://inky.example.test"]
+# Trust forwarding headers only from your proxy's explicit IP address, never "*".
+# trusted_proxy_addresses = ["192.0.2.10"]
 references_per_species = 4
 generations_per_cycle = 1
 # Failed visual reviews are regenerated with their findings as corrective input.

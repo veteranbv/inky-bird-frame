@@ -1112,6 +1112,32 @@ def status_command(args: argparse.Namespace) -> int:
     return 0
 
 
+def access_bootstrap_command(args: argparse.Namespace) -> int:
+    from .access import BOOTSTRAP_SECONDS, AccessStore
+
+    if args.reset and not args.yes:
+        raise ValueError("access reset requires --yes; it revokes owner access and sessions")
+    store = AccessStore(_config(args, load_secrets=False).controller.state_dir)
+    path = store.bootstrap(reset=args.reset)
+    print_result(
+        {
+            "setup_secret_file": str(path),
+            "expires_in_seconds": BOOTSTRAP_SECONDS,
+            "owner_access_reset": args.reset,
+            "credentials_in_output": False,
+        }
+    )
+    return 0
+
+
+def access_status_command(args: argparse.Namespace) -> int:
+    from .access import AccessStore
+
+    store = AccessStore(_config(args, load_secrets=False).controller.state_dir)
+    print_result({"owner_configured": store.owner_exists()})
+    return 0
+
+
 def serve_command(args: argparse.Namespace) -> int:
     serve_catalog(_config(args, load_secrets=False).controller)
     return 0
@@ -1723,6 +1749,17 @@ def build_parser() -> argparse.ArgumentParser:
     serve_parser = subparsers.add_parser("serve", help="Serve the approved catalog over HTTP")
     add_config_argument(serve_parser)
     serve_parser.set_defaults(func=serve_command)
+
+    access_parser = subparsers.add_parser("access", help="Set up or recover private owner access")
+    access_subparsers = access_parser.add_subparsers(dest="access_operation", required=True)
+    for operation in ("bootstrap", "reset"):
+        access_operation = access_subparsers.add_parser(operation)
+        add_config_argument(access_operation)
+        access_operation.add_argument("--yes", action="store_true")
+        access_operation.set_defaults(func=access_bootstrap_command, reset=operation == "reset")
+    access_status = access_subparsers.add_parser("status")
+    add_config_argument(access_status)
+    access_status.set_defaults(func=access_status_command)
 
     scheduler_parser = subparsers.add_parser(
         "scheduler", help="Run controller maintenance jobs on their configured schedules"

@@ -59,6 +59,44 @@ catalog_publish_minutes = 4
 
 
 class ConfigTests(unittest.TestCase):
+    def test_owner_access_defaults_do_not_trust_proxy_headers(self) -> None:
+        with TemporaryDirectory() as temporary:
+            path = Path(temporary) / "config.toml"
+            path.write_text(CONFIG)
+            config = load_config(path)
+        self.assertEqual(config.controller.owner_allowed_origins, ())
+        self.assertEqual(config.controller.trusted_proxy_addresses, ())
+
+    def test_owner_proxy_configuration_is_explicit_and_normalized(self) -> None:
+        with TemporaryDirectory() as temporary:
+            path = Path(temporary) / "config.toml"
+            path.write_text(
+                CONFIG.replace(
+                    'bind_host = "0.0.0.0"',
+                    'bind_host = "0.0.0.0"\n'
+                    'owner_allowed_origins = ["https://Inky.example.test:443"]\n'
+                    'trusted_proxy_addresses = ["192.0.2.10", "::1"]',
+                )
+            )
+            config = load_config(path)
+        self.assertEqual(config.controller.owner_allowed_origins, ("https://inky.example.test",))
+        self.assertEqual(config.controller.trusted_proxy_addresses, ("192.0.2.10", "::1"))
+
+    def test_owner_proxy_config_rejects_insecure_origins_and_broad_trust(self) -> None:
+        for extra in (
+            'owner_allowed_origins = ["http://inky.example.test"]',
+            'trusted_proxy_addresses = ["*"]',
+            'trusted_proxy_addresses = ["192.0.2.0/24"]',
+            'trusted_proxy_addresses = ["127.0.0.1", "127.0.0.1"]',
+        ):
+            with self.subTest(extra=extra), TemporaryDirectory() as temporary:
+                path = Path(temporary) / "config.toml"
+                path.write_text(
+                    CONFIG.replace('bind_host = "0.0.0.0"', f'bind_host = "0.0.0.0"\n{extra}')
+                )
+                with self.assertRaises(ConfigurationError):
+                    load_config(path)
+
     def test_loads_typed_config_and_resolves_relative_paths(self) -> None:
         with TemporaryDirectory() as temporary:
             path = Path(temporary) / "config.toml"

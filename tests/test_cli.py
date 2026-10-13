@@ -23,6 +23,8 @@ from inky_bird_frame.birds import BirdSpecies, DateRange
 from inky_bird_frame.catalog import rebuild_catalog_index, sha256_file
 from inky_bird_frame.cli import (
     _confirm_birdbuddy_authorization,
+    access_bootstrap_command,
+    access_status_command,
     approve_command,
     birdbuddy_login_command,
     birdbuddy_logout_command,
@@ -677,6 +679,42 @@ class CliTests(unittest.TestCase):
         self.assertEqual(result, 0)
         load.assert_called_once_with(Path("instance.toml"), load_secrets=False)
         serve.assert_called_once_with(controller)
+
+    def test_access_bootstrap_never_prints_the_setup_secret(self) -> None:
+        with TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            output = io.StringIO()
+            args = build_parser().parse_args(["access", "bootstrap", "--config", "instance.toml"])
+            with (
+                patch("inky_bird_frame.cli._config", return_value=controller_config(root)),
+                redirect_stdout(output),
+            ):
+                self.assertEqual(access_bootstrap_command(args), 0)
+            secret = (root / "web-access" / "bootstrap-secret").read_text().strip()
+            self.assertNotIn(secret, output.getvalue())
+            payload = json.loads(output.getvalue())
+            self.assertFalse(payload["data"]["credentials_in_output"])
+            self.assertEqual(payload["data"]["expires_in_seconds"], 600)
+
+    def test_access_reset_requires_confirmation_before_reading_config(self) -> None:
+        args = build_parser().parse_args(["access", "reset", "--config", "instance.toml"])
+        with patch("inky_bird_frame.cli._config") as config:
+            with self.assertRaisesRegex(ValueError, "requires --yes"):
+                access_bootstrap_command(args)
+            config.assert_not_called()
+
+    def test_access_status_does_not_resolve_provider_secrets(self) -> None:
+        with TemporaryDirectory() as temporary:
+            args = build_parser().parse_args(["access", "status", "--config", "instance.toml"])
+            with (
+                patch(
+                    "inky_bird_frame.cli._config", return_value=controller_config(Path(temporary))
+                ) as config,
+                redirect_stdout(io.StringIO()) as output,
+            ):
+                self.assertEqual(access_status_command(args), 0)
+            config.assert_called_once_with(args, load_secrets=False)
+            self.assertFalse(json.loads(output.getvalue())["data"]["owner_configured"])
 
     def test_seed_supports_year_window_and_overrides(self) -> None:
         args = build_parser().parse_args(
