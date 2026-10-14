@@ -1,4 +1,75 @@
-# Owner access
+# Set up and sign in to Inky
+
+Inky has one password for the person who manages the installation. You do not
+need an email address or an Inky cloud account. Your bird-service passwords
+and API keys are separate.
+
+You use two things, at different times:
+
+| What | What it does | When you need it |
+| --- | --- | --- |
+| Setup code | Proves you can access the computer running Inky. | Once, during first setup or a local password reset. |
+| Inky password | Protects settings and private bird history. | Each time you sign in after setup. |
+
+The setup page guides you through the code and password in two steps. It
+reports whether a code is ready, missing, or expired. Password entry stays
+off until the connection passes Inky's checks.
+
+## Open Inky on your phone or computer
+
+Use the private address provided during installation. On phones and tablets,
+that address must start with `https://` and the browser must trust its
+certificate. HTTPS encrypts the connection. Do not ignore a certificate warning.
+
+Stay on the installation's private network. When away, connect your private
+VPN first. A VPN connects your device to your home network. The private Inky
+address is not a public website.
+
+If someone installed Inky for you, ask them for a fresh setup code. Copy it
+from the private note or password manager they gave you. Paste the complete
+code into **Setup code**, select **Continue**, and choose an Inky password of
+at least 15 characters. Save that password in your password manager. After
+setup, you use only your Inky password.
+
+If a code expires, request or create a fresh one. Select **Check for a new
+code** on the page, then paste the new code. Reloading the page does not
+extend a code's life. An expired or incorrect code does not remove bird data.
+
+## Create a setup code yourself
+
+Run this on the computer where you installed the controller. Replace
+`<config.toml>` with your existing private configuration file:
+
+```bash
+inky-bird-frame access bootstrap --config <config.toml> --show-code
+```
+
+In a source checkout, use the managed environment:
+
+```bash
+uv run inky-bird-frame access bootstrap --config <config.toml> --show-code
+```
+
+For the repository's Docker Compose deployment, run from its Compose directory:
+
+```bash
+docker compose exec controller inky-bird-frame access bootstrap \
+  --config /data/config.toml --show-code
+```
+
+`--show-code` shows the code only in an interactive terminal. It refuses pipes
+or redirected output before changing setup state. Use a private terminal and
+do not record it. Keep the code out of URLs, screenshots, public messages, and
+routine logs. The JSON output never includes it.
+
+Without `--show-code`, the command returns only the private file path. This
+is the automation path. Read that file through your trusted local access.
+It uses mode `0600`, which permits only its owner to read and write it. The
+code lasts ten minutes, works once, and disappears after successful setup.
+Creating a new code replaces an unused code. It does not reset an existing
+password; that requires the separate reset command.
+
+## Installation details
 
 Owner access uses the same controller service as the catalog, with a separate
 security boundary. The display and existing Homepage routes keep their current
@@ -8,7 +79,7 @@ This worktree first proves setup, sign-in, sign-out, and local recovery. The
 complete field-journal interface is tracked in issue #310. This checkpoint
 does not claim the remaining user journeys are complete.
 
-## Choose a safe connection
+### Choose a safe connection
 
 For access on the controller itself, bind to genuine loopback:
 
@@ -58,25 +129,10 @@ on each client. Transfer its root through an authenticated channel, verify
 its fingerprint, protect the signing key, and document trust removal. That
 optional recipe remains a release qualification gate.
 
-## Establish the owner
+### Password storage
 
-Install the controller extra. Keep configuration and state private. Then run:
-
-```bash
-inky-bird-frame access bootstrap --config <config.toml>
-```
-
-The JSON result gives a private file path, not the secret. Read that file on
-the trusted controller. It uses mode `0600`. The secret expires after ten
-minutes and can establish the owner only once. Successful setup removes the
-file. A new bootstrap command replaces an unused secret.
-
-Open `/app` through the safe connection. Enter the secret and choose a
-passphrase of at least 15 characters. Password managers can fill the sign-in
-form. Never put either secret in a URL, command-line argument, routine log,
-screenshot, or issue.
-
-The controller stores an Argon2id passphrase hash using RFC 9106's low-memory
+Install the controller extra and keep configuration and state private.
+The controller stores an Argon2id password hash using RFC 9106's low-memory
 profile. Session secrets are stored only as hashes. Access files use mode
 `0600` in a mode-`0700` directory. Insecure permissions and symlinks fail closed.
 
@@ -98,15 +154,18 @@ Check setup without showing credentials:
 inky-bird-frame access status --config <config.toml>
 ```
 
-If you lose the passphrase, regain local operator access and run:
+If you forget your Inky password, use **Forgot your password?** on the sign-in
+page. Inky cannot email a reset link. Regain local access to the computer
+running Inky and run:
 
 ```bash
-inky-bird-frame access reset --config <config.toml> --yes
+inky-bird-frame access reset --config <config.toml> --yes --show-code
 ```
 
-Reset removes owner access, revokes owner sessions, and writes a new setup
-secret. It preserves source authentication, history, collections, artwork,
-and generation state. It does not repair corrupt state or weaken permissions.
+Reset signs out all browsers and writes a new setup code. Use that code to
+choose a new password. It preserves source authentication, history,
+collections, artwork, and generation state. It does not repair corrupt state
+or weaken permissions.
 Restore the matching private backup if state is corrupt.
 
 Backups containing `web-access/` are credential-sensitive. Keep them private.

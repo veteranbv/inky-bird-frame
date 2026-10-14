@@ -46,7 +46,14 @@ def test_genuine_loopback_owner_journey_and_session_reload(tmp_path: Path) -> No
     with TestClient(
         create_app(config), base_url="http://127.0.0.1:8000", client=("127.0.0.1", 41000)
     ) as client:
-        assert client.get("/v1/access").json()["data"] == {"secure": True, "setup_required": True}
+        access = client.get("/v1/access").json()["data"]
+        assert access == {
+            "secure": True,
+            "setup_required": True,
+            "setup_code": {"state": "missing", "expires_in_seconds": None},
+            "password_min_length": 15,
+            "password_max_length": 1024,
+        }
         csrf = _setup(client, config, "http://127.0.0.1:8000")
         cookie = client.cookies[LOCAL_OWNER_COOKIE]
         session = client.get("/v1/owner/session")
@@ -94,6 +101,25 @@ def test_https_owner_cookie_has_required_security_attributes(tmp_path: Path) -> 
         for attribute in ("HttpOnly", "Secure", "SameSite=strict", "Path=/"):
             assert attribute.lower() in cookie.lower()
         assert "domain=" not in cookie.lower()
+
+
+def test_secure_setup_guidance_never_includes_credentials_or_paths(tmp_path: Path) -> None:
+    config = _config(tmp_path)
+    store = AccessStore(config.state_dir)
+    secret = store.bootstrap().read_text().strip()
+    with TestClient(create_app(config), base_url="https://inky.example.test") as client:
+        response = client.get("/v1/access")
+        setup = response.json()["data"]["setup_code"]
+        assert setup["state"] == "ready"
+        assert 0 < setup["expires_in_seconds"] <= 600
+        assert secret not in response.text
+        assert str(tmp_path) not in response.text
+        assert "hash" not in response.text
+        assert response.headers["cache-control"] == "no-store"
+        _setup(client, config, "https://inky.example.test")
+        access = client.get("/v1/access").json()["data"]
+        assert access["setup_required"] is False
+        assert access["setup_code"] is None
 
 
 @pytest.mark.parametrize(

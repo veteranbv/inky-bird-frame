@@ -17,8 +17,9 @@ from collections.abc import Iterator
 from contextlib import contextmanager
 from dataclasses import asdict, dataclass, field
 from datetime import UTC, datetime, timedelta
+from math import ceil
 from pathlib import Path
-from typing import TYPE_CHECKING, cast
+from typing import TYPE_CHECKING, Literal, cast
 
 from .errors import InkyBirdFrameError, MissingDependencyError
 from .http import write_bytes_atomic, write_json_atomic
@@ -39,6 +40,10 @@ MAX_OWNER_SESSIONS = 16
 # A private access file is small. This hard ceiling rejects corrupt or
 # malicious input before decoding it; it is not a general history-file limit.
 MAX_ACCESS_STATE_BYTES = 256 * 1024
+# Password-only owner access uses a minimum of 15 characters. Keep the browser
+# guidance and server validation on this same policy.
+MIN_PASSWORD_CHARACTERS = 15
+MAX_PASSWORD_CHARACTERS = 1024
 
 
 class AccessError(InkyBirdFrameError):
@@ -65,6 +70,12 @@ class OwnerSession:
 class SessionCredentials:
     secret: str = field(repr=False)
     csrf: str = field(repr=False)
+
+
+@dataclass(frozen=True)
+class SetupCodeStatus:
+    state: Literal["missing", "ready", "expired"]
+    expires_in_seconds: int | None = None
 
 
 @dataclass
@@ -98,8 +109,11 @@ def _password_hasher() -> PasswordHasher:
 
 
 def _hash_passphrase(passphrase: str) -> str:
-    if not 15 <= len(passphrase) <= 1024:
-        raise AccessError("Use a passphrase between 15 and 1024 characters")
+    if not MIN_PASSWORD_CHARACTERS <= len(passphrase) <= MAX_PASSWORD_CHARACTERS:
+        raise AccessError(
+            f"Use a password between {MIN_PASSWORD_CHARACTERS} and "
+            f"{MAX_PASSWORD_CHARACTERS} characters"
+        )
     return _password_hasher().hash(passphrase)
 
 
@@ -107,7 +121,7 @@ def _verify_passphrase(encoded: str, passphrase: str) -> bool:
     hasher = _password_hasher()
     from argon2.exceptions import InvalidHashError, VerificationError
 
-    if len(passphrase) > 1024:
+    if len(passphrase) > MAX_PASSWORD_CHARACTERS:
         return False
     try:
         return hasher.verify(encoded, passphrase)
@@ -231,6 +245,19 @@ class AccessStore:
         with self._locked() as state:
             return state.owner_hash is not None
 
+    def setup_status(self, *, now: datetime | None = None) -> SetupCodeStatus | None:
+        """Report setup progress, never the code, its hash, or private file paths."""
+        timestamp = (now or datetime.now(UTC)).timestamp()
+        with self._locked() as state:
+            if state.owner_hash is not None:
+                return None
+            if state.bootstrap_expires_at is None:
+                return SetupCodeStatus("missing")
+            remaining = ceil(state.bootstrap_expires_at - timestamp)
+            if remaining <= 0:
+                return SetupCodeStatus("expired", 0)
+            return SetupCodeStatus("ready", remaining)
+
     def bootstrap(self, *, reset: bool = False, now: datetime | None = None) -> Path:
         """Write a one-use secret to a private file; never return it in CLI JSON."""
         now = now or datetime.now(UTC)
@@ -286,7 +313,7 @@ class AccessStore:
                 or not secrets.compare_digest(state.bootstrap_hash, _digest(secret))
             ):
                 raise AccessDeniedError(
-                    "Setup secret is invalid or expired; create a new one locally"
+                    "Setup code is invalid or expired; create a new code on the Inky computer"
                 )
             state.owner_hash = _hash_passphrase(passphrase)
             state.bootstrap_hash = None
@@ -308,7 +335,7 @@ class AccessStore:
             if state.owner_hash is None or not _verify_passphrase(state.owner_hash, passphrase):
                 state.login_failures.append(timestamp)
                 self._save(state)
-                raise AccessDeniedError("Sign-in failed; check your passphrase")
+                raise AccessDeniedError("Sign-in failed; check your Inky password")
             state.login_failures.clear()
             credentials = self._credentials(state, timestamp)
             self._save(state)

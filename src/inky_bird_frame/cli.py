@@ -1117,14 +1117,24 @@ def access_bootstrap_command(args: argparse.Namespace) -> int:
 
     if args.reset and not args.yes:
         raise ValueError("access reset requires --yes; it revokes owner access and sessions")
+    if args.show_code and not (sys.stdout.isatty() and sys.stderr.isatty()):
+        raise ValueError("--show-code requires a private interactive terminal, not a pipe or log")
     store = AccessStore(_config(args, load_secrets=False).controller.state_dir)
     path = store.bootstrap(reset=args.reset)
+    if args.show_code:
+        print("Copy this setup code into Inky's setup page:", file=sys.stderr)
+        print(path.read_text().strip(), file=sys.stderr)
+        print(
+            f"It expires in {BOOTSTRAP_SECONDS // 60} minutes. "
+            "Use it once, then sign in with the password you choose.",
+            file=sys.stderr,
+        )
     print_result(
         {
             "setup_secret_file": str(path),
             "expires_in_seconds": BOOTSTRAP_SECONDS,
             "owner_access_reset": args.reset,
-            "credentials_in_output": False,
+            "credentials_in_output": args.show_code,
         }
     )
     return 0
@@ -1756,6 +1766,11 @@ def build_parser() -> argparse.ArgumentParser:
         access_operation = access_subparsers.add_parser(operation)
         add_config_argument(access_operation)
         access_operation.add_argument("--yes", action="store_true")
+        access_operation.add_argument(
+            "--show-code",
+            action="store_true",
+            help="Show the setup code only in a private interactive terminal; never in JSON",
+        )
         access_operation.set_defaults(func=access_bootstrap_command, reset=operation == "reset")
     access_status = access_subparsers.add_parser("status")
     add_config_argument(access_status)

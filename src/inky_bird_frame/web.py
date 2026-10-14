@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+from dataclasses import asdict
 from ipaddress import ip_address
 from pathlib import Path
 from typing import TYPE_CHECKING, cast
@@ -16,6 +17,8 @@ from starlette.types import ASGIApp, Message, Receive, Scope, Send
 from uvicorn.middleware.proxy_headers import ProxyHeadersMiddleware
 
 from .access import (
+    MAX_PASSWORD_CHARACTERS,
+    MIN_PASSWORD_CHARACTERS,
     OWNER_ABSOLUTE_SECONDS,
     AccessDeniedError,
     AccessError,
@@ -172,8 +175,15 @@ def create_app(config: ControllerConfig) -> ASGIApp:
         secure = _secure_access(request, config)
         if not secure:
             return _result({"secure": False, "setup_required": None})
+        setup = await run_in_threadpool(store.setup_status)
         return _result(
-            {"secure": True, "setup_required": not await run_in_threadpool(store.owner_exists)}
+            {
+                "secure": True,
+                "setup_required": setup is not None,
+                "setup_code": asdict(setup) if setup is not None else None,
+                "password_min_length": MIN_PASSWORD_CHARACTERS,
+                "password_max_length": MAX_PASSWORD_CHARACTERS,
+            }
         )
 
     async def establish(request: Request) -> JSONResponse:

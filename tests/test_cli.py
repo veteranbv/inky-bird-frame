@@ -703,6 +703,36 @@ class CliTests(unittest.TestCase):
                 access_bootstrap_command(args)
             config.assert_not_called()
 
+    def test_access_show_code_rejects_pipes_before_config_or_state_changes(self) -> None:
+        args = build_parser().parse_args(
+            ["access", "bootstrap", "--config", "instance.toml", "--show-code"]
+        )
+        with (
+            patch("inky_bird_frame.cli._config") as config,
+            patch("inky_bird_frame.cli.sys.stdout.isatty", return_value=False),
+            patch("inky_bird_frame.cli.sys.stderr.isatty", return_value=True),
+        ):
+            with self.assertRaisesRegex(ValueError, "private interactive terminal"):
+                access_bootstrap_command(args)
+            config.assert_not_called()
+
+    def test_access_show_code_is_explicit_terminal_only_and_not_in_json(self) -> None:
+        with TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            args = build_parser().parse_args(
+                ["access", "bootstrap", "--config", "instance.toml", "--show-code"]
+            )
+            with (
+                patch("inky_bird_frame.cli._config", return_value=controller_config(root)),
+                patch("inky_bird_frame.cli.sys.stdout") as output,
+                patch("inky_bird_frame.cli.sys.stderr") as terminal,
+            ):
+                output.isatty.return_value = terminal.isatty.return_value = True
+                self.assertEqual(access_bootstrap_command(args), 0)
+                secret = (root / "web-access" / "bootstrap-secret").read_text().strip()
+                self.assertNotIn(secret, str(output.write.call_args_list))
+                self.assertIn(secret, str(terminal.write.call_args_list))
+
     def test_access_status_does_not_resolve_provider_secrets(self) -> None:
         with TemporaryDirectory() as temporary:
             args = build_parser().parse_args(["access", "status", "--config", "instance.toml"])

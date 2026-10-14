@@ -66,6 +66,23 @@ def test_expired_bootstrap_never_hashes_a_password(tmp_path: Path) -> None:
     assert not store.owner_exists()
 
 
+def test_setup_status_tracks_missing_ready_expired_and_established(tmp_path: Path) -> None:
+    store = AccessStore(tmp_path)
+    missing = store.setup_status(now=NOW)
+    assert missing is not None and missing.state == "missing"
+    assert missing.expires_in_seconds is None
+    secret = store.bootstrap(now=NOW).read_text().strip()
+    ready = store.setup_status(now=NOW + timedelta(seconds=1.25))
+    assert ready is not None and ready.state == "ready"
+    assert ready.expires_in_seconds == BOOTSTRAP_SECONDS - 1
+    expired = store.setup_status(now=NOW + timedelta(seconds=BOOTSTRAP_SECONDS))
+    assert expired is not None and expired.state == "expired"
+    assert expired.expires_in_seconds == 0
+    assert secret not in repr(ready)
+    store.establish_owner(secret, PASSPHRASE, now=NOW)
+    assert store.setup_status(now=NOW) is None
+
+
 @pytest.mark.parametrize("password", ["short", "x" * 1025])
 def test_invalid_passphrase_keeps_bootstrap_usable(tmp_path: Path, password: str) -> None:
     store = AccessStore(tmp_path)
