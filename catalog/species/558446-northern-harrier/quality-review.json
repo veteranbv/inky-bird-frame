@@ -1,0 +1,41 @@
+{
+  "anatomy_accuracy": 4,
+  "composition_quality": 5,
+  "correction_findings": [],
+  "findings": [
+    "Species identity is consistent with Northern Harrier (Circus hudsonius): the plate shows the characteristic slender harrier form, long broad wings, long rounded banded tail, white rump, owl-like facial disc, small hooked bill, and yellow adult eye.",
+    "The primary specimen is complete and singular, with one head, one bill, one tail, two folded wings with the far wing naturally occluded, and a convincing pair of legs and overlapping feet. No malformed, detached, or duplicated visible structures were found.",
+    "Both depicted heads have coherent bills with continuous upper and lower mandibles, sharp raptorial hooks, plausible gape geometry, and mutually consistent proportions.",
+    "The detached spread-wing, head, and tail/rump illustrations read clearly as intentional supplementary studies and are not improperly attached to the primary specimen. Their anatomy and identifying patterns agree with the supplied field-reference photographs.",
+    "The gray upperparts, pale streaked underparts, barred tail, yellow eye, and white-rump study fall within the species' documented sex and age variation. The plate also correctly communicates that adult males are gray above while females and immatures are brown or rusty, with streaked or buff underparts.",
+    "All listed field marks are supported by the direct sources and are visibly represented: long broad wings held in a shallow V, long rounded dark-banded tail, conspicuous white rump, flat owl-like facial disc, and small sharply hooked bill.",
+    "The printed measurements exactly reproduce the directly supported All About Birds set for both sexes: length 46\u201350 cm (18.1\u201319.7 in), weight 300\u2013750 g (10.6\u201326.5 oz), and wingspan 102\u2013118 cm (40.2\u201346.5 in).",
+    "The ruler is internally consistent: 46 cm is the lower endpoint, 50 cm is the upper endpoint, values increase upward, units are present, and the adjacent label explicitly states \u201cSCHEMATIC \u2014 NOT TO SCALE.\u201d Its unlabeled interior ticks are acceptable visual subdivisions.",
+    "The habitat and behavior text is consistent with the verified sources: Northern Harriers occupy open, low-vegetation wet and dry habitats, hunt in low coursing flight with wings in a dihedral, use hearing and vision, may hover before dropping on prey, and nest on or close to the ground.",
+    "Every visible heading, taxonomic label, measurement, habitat line, behavior line, study caption, ruler label, and repeated body-length statement is legible and internally consistent with the proposed profile. No duplicated, omitted, substituted, or nonsensical wording was found.",
+    "The family Accipitridae and scientific name Circus hudsonius are directly supported by All About Birds; Audubon independently confirms the species' size class, characteristic flight posture, white rump, sex-related coloration, habitat, and hunting behavior.",
+    "No place name, ZIP code, coordinates, map, range graphic, or local-observation detail appears anywhere on the plate."
+  ],
+  "location_free": true,
+  "passed": true,
+  "species_accuracy": 5,
+  "text_accuracy": 5,
+  "verification_sources": [
+    {
+      "title": "Northern Harrier Identification \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Northern_Harrier/id"
+    },
+    {
+      "title": "Northern Harrier \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/northern-harrier"
+    },
+    {
+      "title": "Northern Harrier Overview \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/northern_harrier"
+    },
+    {
+      "title": "Circus cyaneus (northern harrier) \u2014 Animal Diversity Web",
+      "url": "https://animaldiversity.org/accounts/Circus_cyaneus/"
+    }
+  ]
+}

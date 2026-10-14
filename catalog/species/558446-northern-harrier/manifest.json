@@ -1,0 +1,159 @@
+{
+  "approved_at": "2026-10-14T18:37:38+00:00",
+  "assets": {
+    "display": {
+      "filename": "display.png",
+      "sha256": "d5a5ca90c65dcdfb7a7ebbda6c1ab6674d29bf7afbd341990434f9af9ef820b9"
+    },
+    "portrait": {
+      "filename": "portrait.png",
+      "sha256": "57ff31458b1303034e56d43e9f9171c895350ce91b37803cdfba0dda0cccb00e"
+    }
+  },
+  "common_name": "Northern Harrier",
+  "generation": {
+    "attempt": 1,
+    "generated_at": "2026-10-14T18:37:36+00:00",
+    "generator": "Codex subscription / built-in gpt-image-2",
+    "max_attempts": 3,
+    "prompt_version": "field-journal-v6"
+  },
+  "profile": {
+    "behavior": "Hunts by coursing slowly and low over open ground, often rocking side to side with the wings held in a shallow V; uses both hearing and vision to locate prey, then hovers or drops onto it. Typically perches and nests close to the ground.",
+    "common_name": "Northern Harrier",
+    "family": "Accipitridae",
+    "field_marks": [
+      "Long, broad wings held in a shallow V",
+      "Long, rounded, dark-banded tail",
+      "Conspicuous white rump patch",
+      "Flat, owl-like facial disc",
+      "Small, sharply hooked bill",
+      "Adult male gray above; female and immature brown or rusty with streaked or buff underparts"
+    ],
+    "habitat": "Open habitats with low, dense vegetation, including freshwater and brackish marshes, grasslands, prairies, meadows, fields, tundra, shrubsteppe, croplands, estuaries, and open floodplains.",
+    "measurements": {
+      "length": "46\u201350 cm (18.1\u201319.7 in), both sexes",
+      "weight": "300\u2013750 g (10.6\u201326.5 oz), both sexes",
+      "wingspan": "102\u2013118 cm (40.2\u201346.5 in), both sexes"
+    },
+    "palette": [
+      "slate gray",
+      "earth brown",
+      "rusty orange",
+      "creamy white",
+      "black"
+    ],
+    "scientific_name": "Circus hudsonius",
+    "sources": [
+      {
+        "title": "Northern Harrier Identification \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Northern_Harrier/id"
+      },
+      {
+        "title": "Northern Harrier \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/northern-harrier"
+      }
+    ],
+    "taxon_id": 558446
+  },
+  "quality_review": {
+    "anatomy_accuracy": 4,
+    "composition_quality": 5,
+    "correction_findings": [],
+    "findings": [
+      "Species identity is consistent with Northern Harrier (Circus hudsonius): the plate shows the characteristic slender harrier form, long broad wings, long rounded banded tail, white rump, owl-like facial disc, small hooked bill, and yellow adult eye.",
+      "The primary specimen is complete and singular, with one head, one bill, one tail, two folded wings with the far wing naturally occluded, and a convincing pair of legs and overlapping feet. No malformed, detached, or duplicated visible structures were found.",
+      "Both depicted heads have coherent bills with continuous upper and lower mandibles, sharp raptorial hooks, plausible gape geometry, and mutually consistent proportions.",
+      "The detached spread-wing, head, and tail/rump illustrations read clearly as intentional supplementary studies and are not improperly attached to the primary specimen. Their anatomy and identifying patterns agree with the supplied field-reference photographs.",
+      "The gray upperparts, pale streaked underparts, barred tail, yellow eye, and white-rump study fall within the species' documented sex and age variation. The plate also correctly communicates that adult males are gray above while females and immatures are brown or rusty, with streaked or buff underparts.",
+      "All listed field marks are supported by the direct sources and are visibly represented: long broad wings held in a shallow V, long rounded dark-banded tail, conspicuous white rump, flat owl-like facial disc, and small sharply hooked bill.",
+      "The printed measurements exactly reproduce the directly supported All About Birds set for both sexes: length 46\u201350 cm (18.1\u201319.7 in), weight 300\u2013750 g (10.6\u201326.5 oz), and wingspan 102\u2013118 cm (40.2\u201346.5 in).",
+      "The ruler is internally consistent: 46 cm is the lower endpoint, 50 cm is the upper endpoint, values increase upward, units are present, and the adjacent label explicitly states \u201cSCHEMATIC \u2014 NOT TO SCALE.\u201d Its unlabeled interior ticks are acceptable visual subdivisions.",
+      "The habitat and behavior text is consistent with the verified sources: Northern Harriers occupy open, low-vegetation wet and dry habitats, hunt in low coursing flight with wings in a dihedral, use hearing and vision, may hover before dropping on prey, and nest on or close to the ground.",
+      "Every visible heading, taxonomic label, measurement, habitat line, behavior line, study caption, ruler label, and repeated body-length statement is legible and internally consistent with the proposed profile. No duplicated, omitted, substituted, or nonsensical wording was found.",
+      "The family Accipitridae and scientific name Circus hudsonius are directly supported by All About Birds; Audubon independently confirms the species' size class, characteristic flight posture, white rump, sex-related coloration, habitat, and hunting behavior.",
+      "No place name, ZIP code, coordinates, map, range graphic, or local-observation detail appears anywhere on the plate."
+    ],
+    "location_free": true,
+    "passed": true,
+    "species_accuracy": 5,
+    "text_accuracy": 5,
+    "verification_sources": [
+      {
+        "title": "Northern Harrier Identification \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Northern_Harrier/id"
+      },
+      {
+        "title": "Northern Harrier \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/northern-harrier"
+      },
+      {
+        "title": "Northern Harrier Overview \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/northern_harrier"
+      },
+      {
+        "title": "Circus cyaneus (northern harrier) \u2014 Animal Diversity Web",
+        "url": "https://animaldiversity.org/accounts/Circus_cyaneus/"
+      }
+    ]
+  },
+  "references": [
+    {
+      "attribution": "(c) Bill Keim, some rights reserved (CC BY)",
+      "filename": "01-464466268.jpg",
+      "height": 1348,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/464466268/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 9524490,
+      "observer": "keimwj",
+      "photo_id": 464466268,
+      "sha256": "f0da4b0cc6d9bf0841cafad37b3e2af1199aaa2bf2c6e2722052b5bcc477d21e",
+      "source_url": "https://www.inaturalist.org/observations/9524490",
+      "width": 2022
+    },
+    {
+      "attribution": "(c) Jonathan Eisen, some rights reserved (CC BY)",
+      "filename": "02-134615032.jpg",
+      "height": 1365,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/134615032/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 82040978,
+      "observer": "phylogenomics",
+      "photo_id": 134615032,
+      "sha256": "8e63f1a00a0e4795e9696e5635dba6cf1bcf0a6f499becb8f37817f3c8a36b1c",
+      "source_url": "https://www.inaturalist.org/observations/82040978",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) Julien Renoult, some rights reserved (CC BY)",
+      "filename": "03-242309124.jpg",
+      "height": 979,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/242309124/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 141438356,
+      "observer": "jujurenoult",
+      "photo_id": 242309124,
+      "sha256": "1732a409b1f2242796f8c39a08fe64c07dad81a39418a34e5fc8198fbe9aaf21",
+      "source_url": "https://www.inaturalist.org/observations/141438356",
+      "width": 1468
+    },
+    {
+      "attribution": "(c) Syd Cannings, some rights reserved (CC BY)",
+      "filename": "04-190430478.jpeg",
+      "height": 1366,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/190430478/large.jpeg",
+      "license_code": "cc-by",
+      "observation_id": 112731380,
+      "observer": "sydcannings",
+      "photo_id": 190430478,
+      "sha256": "f78b2713a3af0c5659956de5c068a565792860d91c256de7d74603e135992c9a",
+      "source_url": "https://www.inaturalist.org/observations/112731380",
+      "width": 2048
+    }
+  ],
+  "schema_version": 1,
+  "scientific_name": "Circus hudsonius",
+  "slug": "northern-harrier",
+  "status": "approved",
+  "taxon_id": 558446
+}

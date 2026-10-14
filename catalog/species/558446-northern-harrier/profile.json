@@ -1,0 +1,38 @@
+{
+  "behavior": "Hunts by coursing slowly and low over open ground, often rocking side to side with the wings held in a shallow V; uses both hearing and vision to locate prey, then hovers or drops onto it. Typically perches and nests close to the ground.",
+  "common_name": "Northern Harrier",
+  "family": "Accipitridae",
+  "field_marks": [
+    "Long, broad wings held in a shallow V",
+    "Long, rounded, dark-banded tail",
+    "Conspicuous white rump patch",
+    "Flat, owl-like facial disc",
+    "Small, sharply hooked bill",
+    "Adult male gray above; female and immature brown or rusty with streaked or buff underparts"
+  ],
+  "habitat": "Open habitats with low, dense vegetation, including freshwater and brackish marshes, grasslands, prairies, meadows, fields, tundra, shrubsteppe, croplands, estuaries, and open floodplains.",
+  "measurements": {
+    "length": "46\u201350 cm (18.1\u201319.7 in), both sexes",
+    "weight": "300\u2013750 g (10.6\u201326.5 oz), both sexes",
+    "wingspan": "102\u2013118 cm (40.2\u201346.5 in), both sexes"
+  },
+  "palette": [
+    "slate gray",
+    "earth brown",
+    "rusty orange",
+    "creamy white",
+    "black"
+  ],
+  "scientific_name": "Circus hudsonius",
+  "sources": [
+    {
+      "title": "Northern Harrier Identification \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Northern_Harrier/id"
+    },
+    {
+      "title": "Northern Harrier \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/northern-harrier"
+    }
+  ],
+  "taxon_id": 558446
+}
