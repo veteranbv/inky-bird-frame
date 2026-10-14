@@ -147,13 +147,15 @@ function setup(access, secret = '', deadline = performance.now() + (access.setup
   const expiry = element('p', '', 'code-status');
   expiry.setAttribute('role', 'status');
   const submit = element('button', secondStep ? 'Finish setup' : 'Continue'); submit.type = 'submit';
-  const check = button('Check for a new code', () => load());
+  let busy = false;
+  let checking = false;
+  const check = button('Check for a new code', refreshCodeStatus);
   check.hidden = true;
   function showExpiry() {
     const remaining = Math.max(0, Math.ceil((deadline - performance.now()) / 1000));
     const ready = access.setup_code.state === 'ready' && remaining > 0;
-    submit.disabled = !ready;
-    input.disabled = !ready;
+    submit.disabled = !ready || busy || checking;
+    check.disabled = busy || checking;
     check.hidden = ready;
     // Announce meaningful changes, not a new live-region message every second.
     const minutes = Math.ceil(remaining / 60);
@@ -162,6 +164,28 @@ function setup(access, secret = '', deadline = performance.now() + (access.setup
       : 'The setup code has expired. Get a fresh code, then check again. Your birds are unchanged.';
     if (expiry.textContent !== text) expiry.textContent = text;
     if (!ready) { guidance.open = true; clearInterval(timer); }
+  }
+  async function refreshCodeStatus() {
+    checking = true; showExpiry(); status.hidden = true;
+    try {
+      const latest = await api('/v1/access');
+      if (!main.contains(form)) return;
+      if (!latest.secure) { await load(); return; }
+      if (!latest.setup_required) {
+        signIn(latest, 'This Inky is already set up. Sign in with your password.');
+        return;
+      }
+      access = latest;
+      deadline = performance.now() + (latest.setup_code.expires_in_seconds || 0) * 1000;
+    } catch (error) {
+      if (main.contains(form)) errorMessage(status, error.message);
+    } finally {
+      checking = false;
+      if (main.contains(form)) {
+        clearInterval(timer); showExpiry();
+        if (access.setup_code.state === 'ready' && deadline > performance.now()) timer = setInterval(showExpiry, 1000);
+      }
+    }
   }
   form.append(expiry, submit, check, status);
   const back = secondStep ? button('Change setup code', () => load()) : null;
@@ -177,6 +201,7 @@ function setup(access, secret = '', deadline = performance.now() + (access.setup
       setup(access, input.value.trim(), deadline);
       return;
     }
+    busy = true;
     submit.disabled = true; submit.textContent = 'Setting up…';
     form.setAttribute('aria-busy', 'true');
     if (back) back.disabled = true;
@@ -199,6 +224,7 @@ function setup(access, secret = '', deadline = performance.now() + (access.setup
         }
       }
       errorMessage(status, error.message);
+      busy = false;
       form.setAttribute('aria-busy', 'false');
       submit.textContent = 'Finish setup'; showExpiry();
       if (back) back.disabled = false;

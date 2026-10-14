@@ -34,6 +34,9 @@ setup, you use only your Inky password.
 If a code expires, request or create a fresh one. Select **Check for a new
 code** on the page, then paste the new code. Reloading the page does not
 extend a code's life. An expired or incorrect code does not remove bird data.
+You can still type when a code expires. Checking for a fresh code keeps your
+entered code, password, and current step. Only the continue/setup action waits
+for a valid code window; the server always checks the submitted code itself.
 
 ## Create a setup code yourself
 
@@ -178,6 +181,13 @@ request-size limits, private files, atomic writes, concurrent login limits,
 session expiry, and catalog compatibility. They do not prove certificate trust
 on a real phone or tablet. That check must pass before the remaining interface
 depends on remote secure access.
+
+For browser qualification, let a setup code expire on each setup step. Tap
+the field and type with the device's keyboard. The field must stay editable.
+Create a fresh code locally and select **Check for a new code**. The page
+must keep entered values and the current step. Complete setup with the fresh
+code and verify sign-out/sign-in. Never reuse this test to reset an owner
+who has already completed setup.
 
 Security basis: [OWASP password storage](https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html)
 and [session management](https://cheatsheetseries.owasp.org/cheatsheets/Session_Management_Cheat_Sheet.html).
