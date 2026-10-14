@@ -235,6 +235,37 @@ def test_sso_return_preserves_provider_authentication_age(tmp_path: Path) -> Non
             store.unlink_oidc(credentials.secret)
 
 
+@pytest.mark.parametrize("sso", [False, True])
+@pytest.mark.parametrize("change_password", [False, True])
+def test_account_rotation_does_not_refresh_authentication(
+    tmp_path: Path, sso: bool, change_password: bool
+) -> None:
+    store = AccessStore(tmp_path, oidc_provider_id="synthetic-provider")
+    credentials = store.register_owner("birder", PASSPHRASE, now=NOW)
+    if sso:
+        tx, browser = store.begin_oidc(link_secret=credentials.secret, now=NOW)
+        tx = store.consume_oidc(tx.state, browser, now=NOW)
+        credentials = store.complete_oidc(
+            tx,
+            "https://identity.example.test/",
+            "owner-subject",
+            authenticated_at=NOW.timestamp(),
+            now=NOW,
+        )
+    with patch("inky_bird_frame.access.datetime") as clock:
+        clock.now.return_value = NOW + timedelta(seconds=RECENT_AUTH_SECONDS - 10)
+        replacement = store.update_account(
+            credentials.secret,
+            "new-birder",
+            "a different synthetic passphrase" if change_password else None,
+        )
+        session = store.authenticate(replacement.secret)
+        assert session.authenticated_at == NOW.timestamp()
+        clock.now.return_value = NOW + timedelta(seconds=RECENT_AUTH_SECONDS)
+        with pytest.raises(AccessDeniedError, match="Confirm"):
+            store.update_account(replacement.secret, "new-birder")
+
+
 @pytest.mark.parametrize("age", [RECENT_AUTH_SECONDS, -1, float("nan")])
 def test_sso_return_rejects_old_or_invalid_authentication_before_mutating(
     tmp_path: Path, age: float

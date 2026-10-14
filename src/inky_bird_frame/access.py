@@ -688,7 +688,11 @@ class AccessStore:
             # Rotate this device's secret too: copied pre-change cookies must not survive.
             state.sessions.clear()
             credentials = self._credentials(
-                state, timestamp, remembered=session.remembered, provider_id=session.provider_id
+                state,
+                timestamp,
+                remembered=session.remembered,
+                provider_id=session.provider_id,
+                authenticated_at=session.authenticated_at,
             )
             state.oidc_transactions.clear()
             state.access_revision += 1
