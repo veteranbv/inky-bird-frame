@@ -422,21 +422,33 @@ def _codex_auth_check(path: Path) -> DiagnosticCheck:
     )
 
 
-def _health_url(config: AppConfig, role: InstallationRole) -> str:
+def health_url(config: AppConfig, role: InstallationRole) -> str:
+    """Select the configured service endpoint for doctor and container probes."""
     if role is InstallationRole.CONTROLLER:
+        if config.controller.tls_certificate:
+            for origin in config.controller.owner_allowed_origins:
+                parsed_origin = urlsplit(origin)
+                if (
+                    parsed_origin.scheme == "https"
+                    and (parsed_origin.port or 443) == config.controller.port
+                ):
+                    return f"{origin}/health"
         host = config.controller.bind_host
-        if host in {"0.0.0.0", "::", "[::]"}:
+        if host == "0.0.0.0":
             host = "127.0.0.1"
+        elif host in {"::", "[::]"}:
+            host = "::1"
         if ":" in host and not host.startswith("["):
             host = f"[{host}]"
-        return f"http://{host}:{config.controller.port}/health"
+        scheme = "https" if config.controller.tls_certificate else "http"
+        return f"{scheme}://{host}:{config.controller.port}/health"
     parsed = urlsplit(config.display_node.controller_url)
     health_path = f"{parsed.path.rstrip('/')}/health"
     return urlunsplit((parsed.scheme, parsed.netloc, health_path, "", ""))
 
 
 def _controller_health_check(config: AppConfig, role: InstallationRole) -> DiagnosticCheck:
-    url = _health_url(config, role)
+    url = health_url(config, role)
     try:
         payload = get_json(url, timeout_seconds=5)
     except (InkyBirdFrameError, OSError, ValueError) as exc:

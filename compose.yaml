@@ -73,6 +73,10 @@ services:
     security_opt:
       - no-new-privileges:true
     command: [serve, --config, /data/config.toml]
+    # Optional identity-service secret, separate from discovery/generation credentials.
+    env_file:
+      - path: ${INKY_ACCESS_ENV:-./access.env}
+        required: false
     depends_on:
       bootstrap:
         condition: service_completed_successfully
@@ -83,7 +87,14 @@ services:
         - CMD
         - python
         - -c
-        - "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8793/health', timeout=5).read()"
+        - >-
+          from pathlib import Path;
+          from inky_bird_frame.config import load_config;
+          from inky_bird_frame.installation import InstallationRole, health_url;
+          from inky_bird_frame.http import get_json;
+          c = load_config(Path('/data/config.toml'), load_secrets=False);
+          p = get_json(health_url(c, InstallationRole.CONTROLLER), timeout_seconds=5);
+          assert isinstance(p, dict) and p.get('ok') is True
       interval: 30s
       timeout: 10s
       retries: 3

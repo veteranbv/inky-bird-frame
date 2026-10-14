@@ -24,6 +24,7 @@ from inky_bird_frame.catalog import rebuild_catalog_index, sha256_file
 from inky_bird_frame.cli import (
     _confirm_birdbuddy_authorization,
     access_bootstrap_command,
+    access_recover_command,
     access_status_command,
     approve_command,
     birdbuddy_login_command,
@@ -695,6 +696,43 @@ class CliTests(unittest.TestCase):
             payload = json.loads(output.getvalue())
             self.assertFalse(payload["data"]["credentials_in_output"])
             self.assertEqual(payload["data"]["expires_in_seconds"], 600)
+
+    def test_access_recover_requires_confirmation_and_a_terminal(self) -> None:
+        args = build_parser().parse_args(["access", "recover", "--config", "instance.toml"])
+        with patch("inky_bird_frame.cli._config") as config:
+            with (
+                patch("sys.stdin.isatty", return_value=True),
+                patch("builtins.input", return_value="no"),
+                self.assertRaisesRegex(ValueError, "cancelled"),
+            ):
+                access_recover_command(args)
+            args.yes = True
+            with (
+                patch("sys.stdin.isatty", return_value=False),
+                self.assertRaisesRegex(ValueError, "interactive terminal"),
+            ):
+                access_recover_command(args)
+            config.assert_not_called()
+
+    def test_access_recover_uses_hidden_prompt_without_secret_output(self) -> None:
+        args = build_parser().parse_args(
+            ["access", "recover", "--config", "instance.toml", "--yes"]
+        )
+        with TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            output = io.StringIO()
+            password = "private synthetic recovery password"
+            with (
+                patch("sys.stdin.isatty", return_value=True),
+                patch("builtins.input", return_value="birder"),
+                patch("getpass.getpass", side_effect=[password, password]),
+                patch("inky_bird_frame.cli._config", return_value=controller_config(root)),
+                redirect_stdout(output),
+            ):
+                self.assertEqual(access_recover_command(args), 0)
+            self.assertNotIn(password, output.getvalue())
+            self.assertNotIn(password, (root / "web-access/access.json").read_text())
+            self.assertTrue(json.loads(output.getvalue())["data"]["sessions_revoked"])
 
     def test_access_reset_requires_confirmation_before_reading_config(self) -> None:
         args = build_parser().parse_args(["access", "reset", "--config", "instance.toml"])

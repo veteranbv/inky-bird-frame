@@ -11,6 +11,7 @@ COPY --from=uv /uv /usr/local/bin/uv
 WORKDIR /app
 COPY pyproject.toml uv.lock README.md LICENSE ./
 COPY src ./src
+COPY docs/browser-access.md ./docs/browser-access.md
 RUN uv sync --locked --no-dev --extra controller --no-editable
 
 FROM ${PYTHON_IMAGE} AS tool-downloads

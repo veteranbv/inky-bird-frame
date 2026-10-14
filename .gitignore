@@ -13,4 +13,6 @@ var/
 .pytest_cache/
 config.toml
 controller.env
+access.env
+private/
 .env

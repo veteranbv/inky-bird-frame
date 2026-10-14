@@ -14,13 +14,181 @@ from inky_bird_frame.access import (
     LOGIN_WINDOW_SECONDS,
     MAX_LOGIN_FAILURES,
     MAX_OWNER_SESSIONS,
+    OIDC_TRANSACTION_SECONDS,
     OWNER_ABSOLUTE_SECONDS,
     OWNER_IDLE_SECONDS,
+    REMEMBERED_ABSOLUTE_SECONDS,
+    REMEMBERED_IDLE_SECONDS,
     AccessDeniedError,
     AccessError,
     AccessRateLimitError,
     AccessStore,
 )
+
+
+def test_first_account_is_atomic_and_username_is_required(tmp_path: Path) -> None:
+    def claim(_: int) -> str:
+        try:
+            AccessStore(tmp_path).register_owner("Birder", PASSPHRASE)
+            return "created"
+        except AccessDeniedError:
+            return "denied"
+
+    with ThreadPoolExecutor(max_workers=4) as pool:
+        results = list(pool.map(claim, range(4)))
+    assert results.count("created") == 1
+    store = AccessStore(tmp_path)
+    for name in (None, "someone-else", "évil"):
+        with pytest.raises(AccessDeniedError):
+            store.login(PASSPHRASE, username=name)
+    store.login(PASSPHRASE, username="BIRDER")
+    assert PASSPHRASE not in store.path.read_text()
+
+
+def test_remembered_session_survives_restart_but_polling_does_not_extend_it(tmp_path: Path) -> None:
+    store = AccessStore(tmp_path)
+    credential = store.register_owner("birder", PASSPHRASE, remembered=True, now=NOW)
+    restarted = AccessStore(tmp_path)
+    session = restarted.authenticate(credential.secret, now=NOW + timedelta(days=6))
+    assert session.expires_at == NOW.timestamp() + REMEMBERED_ABSOLUTE_SECONDS
+    with pytest.raises(AccessDeniedError):
+        restarted.authenticate(
+            credential.secret, now=NOW + timedelta(seconds=REMEMBERED_IDLE_SECONDS)
+        )
+
+
+def test_remembered_actions_cannot_extend_absolute_expiry(tmp_path: Path) -> None:
+    store = AccessStore(tmp_path)
+    credential = store.register_owner("birder", PASSPHRASE, remembered=True, now=NOW)
+    for days in range(1, 30):
+        store.authenticate(credential.secret, active=True, now=NOW + timedelta(days=days))
+    with pytest.raises(AccessDeniedError):
+        store.authenticate(
+            credential.secret, now=NOW + timedelta(seconds=REMEMBERED_ABSOLUTE_SECONDS)
+        )
+
+
+def test_legacy_session_keeps_its_original_expiry(tmp_path: Path) -> None:
+    store = AccessStore(tmp_path)
+    credential = store.register_owner("birder", PASSPHRASE, now=NOW)
+    raw = json.loads(store.path.read_text())
+    raw["schema_version"] = 1
+    for field in (
+        "idle_seconds",
+        "absolute_seconds",
+        "authenticated_at",
+        "remembered",
+        "provider_id",
+    ):
+        raw["sessions"][0].pop(field)
+    store.path.write_text(json.dumps(raw))
+    with pytest.raises(AccessDeniedError):
+        store.authenticate(credential.secret, now=NOW + timedelta(minutes=30))
+
+
+def test_recovery_preserves_birds_and_replaces_access_without_open_registration(
+    tmp_path: Path,
+) -> None:
+    store = AccessStore(tmp_path)
+    first = store.register_owner("birder", PASSPHRASE)
+    retained = tmp_path / "private-history.json"
+    retained.write_text("bird history")
+    store.recover_owner("new-owner", "new long synthetic passphrase")
+    assert store.owner_exists()
+    assert retained.read_text() == "bird history"
+    with pytest.raises(AccessDeniedError):
+        store.authenticate(first.secret)
+    with pytest.raises(AccessDeniedError):
+        store.register_owner("intruder", PASSPHRASE)
+    store.login("new long synthetic passphrase", username="new-owner")
+
+
+def test_session_revocation_and_account_change_need_recent_confirmation(tmp_path: Path) -> None:
+    store = AccessStore(tmp_path)
+    first = store.register_owner("birder", PASSPHRASE)
+    other = store.login(PASSPHRASE, username="birder")
+    raw = json.loads(store.path.read_text())
+    raw["sessions"][0]["authenticated_at"] -= 601
+    store.path.write_text(json.dumps(raw))
+    session_id = next(row["id"] for row in store.sessions(first.secret) if not row["current"])
+    with pytest.raises(AccessDeniedError, match="Confirm"):
+        store.revoke_session(first.secret, str(session_id))
+    store.confirm_password(first.secret, PASSPHRASE)
+    replacement = store.update_account(
+        first.secret, "new-birder", "a different long synthetic passphrase"
+    )
+    store.authenticate(replacement.secret)
+    with pytest.raises(AccessDeniedError):
+        store.authenticate(first.secret)
+    with pytest.raises(AccessDeniedError):
+        store.authenticate(other.secret)
+
+
+def test_username_only_change_preserves_password_and_revokes_old_cookies(tmp_path: Path) -> None:
+    store = AccessStore(tmp_path)
+    first = store.register_owner("birder", PASSPHRASE)
+    with patch("inky_bird_frame.access._hash_passphrase") as hasher:
+        replacement = store.update_account(first.secret, "new-birder")
+        hasher.assert_not_called()
+    store.authenticate(replacement.secret)
+    with pytest.raises(AccessDeniedError):
+        store.authenticate(first.secret)
+    store.login(PASSPHRASE, username="new-birder")
+
+
+def test_oidc_transactions_are_private_single_use_and_bound_to_the_browser(tmp_path: Path) -> None:
+    store = AccessStore(tmp_path, oidc_provider_id="synthetic-provider")
+    local = store.register_owner("birder", PASSPHRASE, now=NOW)
+    tx, browser = store.begin_oidc(link_secret=local.secret, now=NOW)
+    assert browser not in store.path.read_text()
+    for value in (browser, tx.state, tx.nonce, tx.verifier):
+        assert value not in repr(tx)
+    with pytest.raises(AccessDeniedError):
+        store.consume_oidc(tx.state, "wrong-browser", now=NOW)
+    consumed = AccessStore(tmp_path, oidc_provider_id="synthetic-provider").consume_oidc(
+        tx.state, browser, now=NOW
+    )
+    assert consumed == tx
+    with pytest.raises(AccessDeniedError):
+        store.consume_oidc(tx.state, browser, now=NOW)
+
+
+def test_oidc_expiry_owner_binding_revocation_and_provider_change(tmp_path: Path) -> None:
+    store = AccessStore(tmp_path, oidc_provider_id="synthetic-provider")
+    local = store.register_owner("birder", PASSPHRASE, now=NOW)
+    expired, browser = store.begin_oidc(now=NOW)
+    with pytest.raises(AccessDeniedError):
+        store.consume_oidc(
+            expired.state, browser, now=NOW + timedelta(seconds=OIDC_TRANSACTION_SECONDS)
+        )
+    link, browser = store.begin_oidc(link_secret=local.secret, now=NOW)
+    link = store.consume_oidc(link.state, browser, now=NOW)
+    sso = store.complete_oidc(link, "https://identity.example.test/", "owner-subject", now=NOW)
+    assert store.oidc_linked("https://identity.example.test/")
+    for subject in ("someone-else", "owner-subject"):
+        tx, browser = store.begin_oidc(now=NOW)
+        tx = store.consume_oidc(tx.state, browser, now=NOW)
+        if subject != "owner-subject":
+            with pytest.raises(AccessDeniedError):
+                store.complete_oidc(tx, "https://identity.example.test/", subject, now=NOW)
+        else:
+            store.complete_oidc(tx, "https://identity.example.test/", subject, now=NOW)
+    with pytest.raises(AccessDeniedError):
+        AccessStore(tmp_path, oidc_provider_id="replacement-provider").authenticate(
+            sso.secret, now=NOW
+        )
+    store.authenticate(local.secret, now=NOW)
+
+
+def test_unlink_prevents_an_inflight_callback_from_relinking(tmp_path: Path) -> None:
+    store = AccessStore(tmp_path, oidc_provider_id="synthetic-provider")
+    local = store.register_owner("birder", PASSPHRASE)
+    tx, browser = store.begin_oidc(link_secret=local.secret)
+    consumed = store.consume_oidc(tx.state, browser)
+    store.unlink_oidc(local.secret)
+    with pytest.raises(AccessDeniedError, match="changed"):
+        store.complete_oidc(consumed, "https://identity.example.test/", "owner-subject")
+
 
 NOW = datetime(2026, 1, 1, tzinfo=UTC)
 PASSPHRASE = "a long synthetic owner passphrase"

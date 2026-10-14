@@ -1,193 +1,306 @@
 # Set up and sign in to Inky
 
-Inky has one password for the person who manages the installation. You do not
-need an email address or an Inky cloud account. Your bird-service passwords
-and API keys are separate.
+Open Inky on your home network and create a username and password. No email,
+setup code, online account or password-manager subscription is required.
+The first account owns this installation. Inky closes account creation once
+that account exists. Finish setup before sharing access.
 
-You use two things, at different times:
+This worktree currently provides account setup and access controls, not the
+complete bird journal. The remaining interface is tracked in [issue #310](https://github.com/veteranbv/inky-bird-frame/issues/310).
+Do not treat this access checkpoint as a release-ready full application.
 
-| What | What it does | When you need it |
-| --- | --- | --- |
-| Setup code | Proves you can access the computer running Inky. | Once, during first setup or a local password reset. |
-| Inky password | Protects settings and private bird history. | Each time you sign in after setup. |
+## Ordinary home-network setup
 
-The setup page guides you through the code and password in two steps. It
-reports whether a code is ready, missing, or expired. Password entry stays
-off until the connection passes Inky's checks.
+1. Install the controller extra, or use the controller container.
+2. Keep the controller on your trusted home network.
+3. Open the controller's local address followed by /app.
+4. Choose a username and an Inky password of at least 15 characters.
+5. Save the password and complete account creation.
 
-## Open Inky on your phone or computer
+A username uses 3–64 ASCII letters, numbers, dots, hyphens or underscores.
+Letter case does not matter. A password can contain Unicode and unrelated
+words. Your bird-service passwords and API keys are separate.
 
-Use the private address provided during installation. On phones and tablets,
-that address must start with `https://` and the browser must trust its
-certificate. HTTPS encrypts the connection. Do not ignore a certificate warning.
+For a new installation, local mode is the default:
 
-Stay on the installation's private network. When away, connect your private
-VPN first. A VPN connects your device to your home network. The private Inky
-address is not a public website.
-
-If someone installed Inky for you, ask them for a fresh setup code. Copy it
-from the private note or password manager they gave you. Paste the complete
-code into **Setup code**, select **Continue**, and choose an Inky password of
-at least 15 characters. Save that password in your password manager. After
-setup, you use only your Inky password.
-
-If a code expires, request or create a fresh one. Select **Check for a new
-code** on the page, then paste the new code. Reloading the page does not
-extend a code's life. An expired or incorrect code does not remove bird data.
-You can still type when a code expires. Checking for a fresh code keeps your
-entered code, password, and current step. Only the continue/setup action waits
-for a valid code window; the server always checks the submitted code itself.
-
-## Create a setup code yourself
-
-Run this on the computer where you installed the controller. Replace
-`<config.toml>` with your existing private configuration file:
-
-```bash
-inky-bird-frame access bootstrap --config <config.toml> --show-code
-```
-
-In a source checkout, use the managed environment:
-
-```bash
-uv run inky-bird-frame access bootstrap --config <config.toml> --show-code
-```
-
-For the repository's Docker Compose deployment, run from its Compose directory:
-
-```bash
-docker compose exec controller inky-bird-frame access bootstrap \
-  --config /data/config.toml --show-code
-```
-
-`--show-code` shows the code only in an interactive terminal. It refuses pipes
-or redirected output before changing setup state. Use a private terminal and
-do not record it. Keep the code out of URLs, screenshots, public messages, and
-routine logs. The JSON output never includes it.
-
-Without `--show-code`, the command returns only the private file path. This
-is the automation path. Read that file through your trusted local access.
-It uses mode `0600`, which permits only its owner to read and write it. The
-code lasts ten minutes, works once, and disappears after successful setup.
-Creating a new code replaces an unused code. It does not reset an existing
-password; that requires the separate reset command.
-
-## Installation details
-
-Owner access uses the same controller service as the catalog, with a separate
-security boundary. The display and existing Homepage routes keep their current
-read-only contract. Do not expose those routes to the internet.
-
-This worktree first proves setup, sign-in, sign-out, and local recovery. The
-complete field-journal interface is tracked in issue #310. This checkpoint
-does not claim the remaining user journeys are complete.
-
-### Choose a safe connection
-
-For access on the controller itself, bind to genuine loopback:
-
-```toml
+~~~toml
 [controller]
-bind_host = "127.0.0.1"
+bind_host = "0.0.0.0"
 port = 8793
-```
+owner_access_mode = "local"
+~~~
 
-Open `http://127.0.0.1:8793/app` on that computer. The request must come from
-loopback, use a loopback hostname, and match the configured port. An arbitrary
-hostname that resolves to loopback is not enough. This binding also prevents
-remote display nodes from reaching the catalog. Do not apply it to an existing
-wall deployment without a separate network plan.
+Open the actual local IP shown by your installation, not a guessed hostname.
+For example, http://192.168.1.50:8793/app works only if that is your controller's
+address. Direct IP requests must match the address and port of the accepted
+server socket. Local peers must use loopback, RFC 1918 IPv4 or IPv6 unique-local
+addresses. Reserved ranges and link-local addresses are not treated as trusted.
+A private client address does not prove that a router cannot expose the server.
 
-For a headless controller bound to loopback, forward the port with SSH:
+A friendly hostname is optional. Add its exact origin explicitly:
 
-```bash
-ssh -N -L 8793:127.0.0.1:8793 <user>@<controller>
-```
+~~~toml
+owner_allowed_origins = ["http://inky.home:8793"]
+~~~
 
-Open the loopback URL on the client computer. Keep the forwarding process
-running. A phone needs an SSH client with local forwarding, or private HTTPS.
+An origin is the scheme, host and port, without a path. Arbitrary hostnames are
+rejected even when they resolve to the controller. This protects against a
+website that changes its DNS to point at your local server.
 
-For phones and tablets, use an existing trusted private HTTPS reverse proxy:
+**HTTP does not encrypt passwords, browser-session credentials, provider
+credentials or private history in transit.** Use a unique Inky password.
+Only use HTTP on a trusted home network. Do not open a router port, publish
+a public tunnel or expose the legacy catalog routes. Inky does none of these
+automatically. HTTPS is available when you need encryption.
 
-```toml
+## Sessions and private files
+
+Normal sign-in uses a browser-session cookie. It expires after 12 hours without
+an owner action, or 24 hours after sign-in. Closing the browser usually removes
+the cookie; browser session-restore settings can preserve it.
+
+**Stay signed in on this device** is off by default. It permits seven days
+without an owner action, with a hard limit of 30 days. Use it only on a private
+device. Background polling never extends either policy. These limits provide
+a working-day login and bounded return visits, not a permanent owner token.
+
+Account and access lists each login without collecting browser fingerprints.
+You can revoke an individual login. Password/account changes revoke every
+other login. Sensitive access changes require authentication within the last
+ten minutes. Older password sessions use a password confirmation. Older SSO
+sessions require another provider sign-in.
+
+Five failed password checks within 15 minutes pause further checks until the
+window clears. The allowance survives restarts. Checks run one at a time to
+bound password-hashing memory. At most 16 owner logins coexist.
+
+The controller stores an Argon2id password hash using RFC 9106's low-memory
+profile. It stores browser secrets only as hashes. Private access files use
+mode 0600 in a mode-0700 directory. Unsafe permissions, symlinks and corrupt
+state fail closed. HTTPS cookies use Secure, HttpOnly, SameSite=Strict and the
+__Host- prefix. Local HTTP uses a separate host-only cookie.
+
+## Recover a forgotten password
+
+Use a private interactive terminal on the computer running Inky:
+
+~~~bash
+inky-bird-frame access recover --config <config.toml>
+~~~
+
+In a source checkout, prefix the command with uv run. For Docker:
+
+~~~bash
+docker compose exec controller inky-bird-frame access recover \
+  --config /data/config.toml
+~~~
+
+Recovery first asks you to confirm. The optional --yes flag skips only that
+confirmation, not the private-terminal requirement. It then asks for a username
+and a new password in a hidden prompt. It never
+accepts a password argument. Recovery replaces credentials, revokes all logins
+and unlinks single sign-on. It never leaves network account creation open.
+Your bird-service accounts, history, plates, collections and work remain.
+
+For SSO-only mode, set sso_only = false in the managed configuration and restart
+before using the recovered password. Recovery deliberately invalidates the
+previous SSO test and identity. Relink and test before restoring SSO-only mode.
+
+Recovery does not repair corrupt state or bypass private-file checks. Restore
+a matching private backup for corruption. Backups containing web-access are
+credential-sensitive. Never publish them or include them in collection exports.
+
+Existing pilot accounts without a username can still sign in with their
+original password. Use Account and access to choose a username and password.
+Existing pilot sessions retain their original 30-minute/eight-hour limits.
+The earlier access bootstrap/reset commands remain available for pilot
+compatibility; they are not the ordinary setup or recovery path.
+
+## Advanced: HTTPS through a reverse proxy
+
+A reverse proxy receives browser requests and forwards them to Inky. You can
+use your existing proxy; Inky does not require Traefik.
+
+~~~toml
 [controller]
+owner_access_mode = "https-only"
 owner_allowed_origins = ["https://inky.example.test"]
 trusted_proxy_addresses = ["192.0.2.10"]
-```
+~~~
 
-Replace the example values. The proxy must preserve the original `Host`, set
-`X-Forwarded-Proto` from its actual connection, and replace client-supplied
-forwarding headers with verified values. Inky ignores forwarding headers from
-every other address. Wildcards and address ranges are not accepted.
+Replace the example host and proxy address. Trust only each proxy's exact IP.
+Wildcards and networks are rejected. The proxy must preserve Host, set
+X-Forwarded-Proto from the real connection and replace client-supplied
+forwarding headers. Inky ignores headers from all other peers.
 
-Route `/app`, `/app/*`, `/v1/access`, and `/v1/owner/*` through the private
-endpoint. Keep catalog, asset, health, embed, and telemetry routes within their
-existing trusted network boundary. Forwarding every path does not make those
-legacy routes authenticated. Keep the proxy-to-controller hop private too.
+Route /app, /app/*, /v1/access and /v1/owner/* through the private endpoint.
+Keep catalog, assets, health, embed and telemetry within their separate
+trusted-network boundary. Owner sign-in does not authenticate those legacy
+routes. Keep the proxy-to-controller hop private too.
 
-Use a VPN when away. A LAN address does not become reachable everywhere because
-the phone uses a Home Assistant companion app. Never ignore a certificate
-warning. A private certificate authority needs deliberate trust installation
-on each client. Transfer its root through an authenticated channel, verify
-its fingerprint, protect the signing key, and document trust removal. That
-optional recipe remains a release qualification gate.
+HTTPS-only mode rejects insecure owner access, including direct loopback or
+backend access. It never falls back to HTTP after a TLS or provider error.
+Existing configurations with owner_allowed_origins and no access mode retain
+HTTPS-only mode on upgrade. Choosing local mode is a deliberate change.
 
-### Password storage
+## Advanced: supply a certificate
 
-Install the controller extra and keep configuration and state private.
-The controller stores an Argon2id password hash using RFC 9106's low-memory
-profile. Session secrets are stored only as hashes. Access files use mode
-`0600` in a mode-`0700` directory. Insecure permissions and symlinks fail closed.
+TLS is the encryption used by HTTPS. To let Inky serve HTTPS directly:
 
-## Sessions and recovery
+~~~toml
+[controller]
+owner_access_mode = "https-only"
+owner_allowed_origins = ["https://inky.example.test:8793"]
+tls_certificate = "private/fullchain.pem"
+tls_private_key = "private/key.pem"
+~~~
 
-An owner session expires after 30 minutes without an owner action, or eight
-hours after sign-in. Polling does not extend it. Expiry and sign-out revoke
-the session. HTTPS cookies use `Secure`, `HttpOnly`, `SameSite=Strict`, and
-the `__Host-` prefix. Local HTTP uses a separate host-only cookie.
+Supply a certificate for that hostname and its matching private key.
+Protect the key with mode 0600 and let only the service user read it.
+Startup checks both files and their match. Invalid or unreadable files stop
+startup; Inky does not start an HTTP replacement. Update the files and restart
+Inky after certificate renewal. Inky does not issue or renew certificates.
 
-After five failed sign-ins within 15 minutes, sign-in pauses until that window
-clears. The allowance survives restarts. Password checks run one at a time to
-bound memory use. At most 16 owner sessions coexist; sign out on an old device
-before opening more.
+For Docker, mount the files read-only through a private Compose override.
+The service runs as UID 10001. Arrange file ownership so that user can read the
+key without making it public. Override the default HTTP health check with an
+HTTPS check that validates the hostname and chain. Never use an unverified
+SSL context. Doctor uses a configured HTTPS origin on the controller port
+when available, and validates normal certificate trust.
 
-Check setup without showing credentials:
+A private certificate authority requires deliberate trust on each client and
+on the controller used by doctor. Transfer its root through an authenticated
+channel and verify the fingerprint. Do not install trust automatically, share
+the signing key or teach users to ignore browser warnings.
 
-```bash
-inky-bird-frame access status --config <config.toml>
-```
+## Advanced: optional Caddy private certificates
 
-If you forget your Inky password, use **Forgot your password?** on the sign-in
-page. Inky cannot email a reset link. Regain local access to the computer
-running Inky and run:
+[Caddy's local HTTPS guide](https://caddyserver.com/docs/automatic-https#local-https)
+explains its private certificate authority. Use this only if you choose to
+manage certificate trust. Ordinary home-network setup does not require it.
 
-```bash
-inky-bird-frame access reset --config <config.toml> --yes --show-code
-```
+A Caddy instance on the controller can use this Caddyfile:
 
-Reset signs out all browsers and writes a new setup code. Use that code to
-choose a new password. It preserves source authentication, history,
-collections, artwork, and generation state. It does not repair corrupt state
-or weaken permissions.
-Restore the matching private backup if state is corrupt.
+~~~caddyfile
+https://inky.home {
+    tls internal
+    @owner path /app /app/* /v1/access /v1/owner/*
+    handle @owner {
+        reverse_proxy 127.0.0.1:8793
+    }
+    handle {
+        respond "Not found" 404
+    }
+}
+~~~
 
-Backups containing `web-access/` are credential-sensitive. Keep them private.
-Do not publish this state or include it in collection exports.
+Configure Inky's exact HTTPS origin and trust 127.0.0.1 as the proxy. Keep the
+proxy listener restricted to your private network. For a Docker Caddy container,
+use the controller service name as the upstream and trust the container's
+explicit private address instead. Do not trust an entire container network.
 
-## Verification boundary
+Caddy stores its CA in its persistent data directory. Preserve that directory,
+protect its signing key and back it up privately. Install only the root
+certificate, not the private key, on clients after checking its fingerprint.
+Phone trust may need a separate full-trust setting. Removing the root from
+each device reverses client trust; stop the proxy and remove its DNS/routing
+entry separately. Do not delete your only CA backup before recovering clients.
 
-Tests cover loopback and HTTPS-origin rules, proxy handling, forged origins,
-request-size limits, private files, atomic writes, concurrent login limits,
-session expiry, and catalog compatibility. They do not prove certificate trust
-on a real phone or tablet. That check must pass before the remaining interface
-depends on remote secure access.
+The recipe still needs its isolated runtime qualification before release.
+No certificate-trust changes have been made on your devices by this worktree.
 
-For browser qualification, let a setup code expire on each setup step. Tap
-the field and type with the device's keyboard. The field must stay editable.
-Create a fresh code locally and select **Check for a new code**. The page
-must keep entered values and the current step. Complete setup with the fresh
-code and verify sign-out/sign-in. Never reuse this test to reset an owner
-who has already completed setup.
+## Advanced: Authentik and other OpenID Connect providers
 
-Security basis: [OWASP password storage](https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html)
-and [session management](https://cheatsheetseries.owasp.org/cheatsheets/Session_Management_Cheat_Sheet.html).
+OpenID Connect (OIDC) lets your identity service sign you in. It is optional.
+Authentik is the reference provider. Inky never asks for your Authentik password
+and does not need a second Inky password after successful SSO sign-in.
+
+Create a confidential OAuth2/OpenID provider and application. Allow only the
+intended owner at the identity service. Use Authorization Code, PKCE S256,
+an asymmetric RS256 or ES256 signing key and the openid scope. Do not request
+offline_access. Set authorization_code explicitly when using the Authentik API.
+Use a strict, exact HTTPS callback; never leave the allowed callback empty.
+
+~~~toml
+[controller.oidc]
+issuer = "https://auth.example.test/application/o/inky/"
+client_id = "your-client-id"
+client_secret_env = "INKY_OIDC_CLIENT_SECRET"
+callback_url = "https://inky.example.test/v1/owner/oidc/callback"
+label = "Authentik"
+sso_only = false
+~~~
+
+The callback's origin must appear in owner_allowed_origins. Preserve the exact
+issuer, including its trailing slash. Supply the client secret to the controller
+process through the named environment variable. For Docker, put it in a private
+mode-0600 access.env file, or set INKY_ACCESS_ENV to your private file. The serving
+container receives that file separately from scheduler/provider credentials.
+Native services need that variable in their service environment. 1Password
+and other secret managers are optional ways to inject it, not user requirements.
+
+Sign in locally. Open Account and access > Advanced access and select Link my
+Authentik account. Authenticate at Authentik. Inky links the verified issuer
+and subject to the existing owner. It never promotes another user based on
+email, display name, groups or being the first person to use SSO.
+
+A managed headless installation can set owner_subject to the owner's exact
+verified subject. This is private configuration, not an email address or group.
+It does not create an owner or remove the need for the local recovery password.
+
+Test sign-out and provider sign-in before setting sso_only = true. Inky refuses
+that mode until a successful verified exchange is recorded for the exact
+provider/owner configuration. Enabling it revokes local-password sessions.
+Operator recovery remains available.
+
+The library verifies signature, issuer, audience, nonce and token lifetime.
+The controller bounds responses/timeouts, requires HTTPS endpoints and fetches
+fresh signing keys for each exchange. Pending requests expire in ten minutes,
+work once and are tied to that browser. The redirect cookie permits only the
+provider's return journey; normal owner cookies remain SameSite=Strict.
+Provider tokens stay in memory and are not retained as login refresh tokens.
+Proxy logs sit outside Inky's controls. Do not log passwords, request bodies,
+Authorization, Cookie or Set-Cookie headers. The `/v1/owner/oidc/callback` query
+contains a short-lived sign-in code. Drop its query parameters from proxy logs,
+or use a separate callback route with access logging and tracing off. Keep
+ordinary status and error logs without these values. Do not enable OAuth debug
+payload logging on a live installation.
+
+A provider outage disables the SSO button with an explanation. Local login
+works unless you deliberately chose SSO-only mode. Signing out of Inky revokes
+only that Inky login. It does not sign out other identity-service applications.
+Disabling an identity-service account does not instantly revoke an existing
+Inky login; use Inky's device revocation or local recovery when needed.
+
+Changing the client, issuer, callback or managed owner identity invalidates
+old SSO sessions. Relinking requires recent owner authentication, verifies the
+replacement and revokes old SSO sessions. Unlinking also invalidates pending
+requests, including an exchange already in progress.
+
+## Advanced: private remote access
+
+Connect your phone or computer through your own VPN before opening the private
+Inky address. Do not assume a private hostname works away from home. Confirm
+your VPN routes and DNS. HTTPS remains recommended across networks you do not
+control. Inky never adds a VPN, opens a router port or publishes a tunnel.
+
+An HTTPS dashboard may block an HTTP Inky image or iframe. Some browser
+features also need a secure connection. Use the existing private HTTPS image
+route or optional HTTPS setup. These browser rules do not prevent ordinary
+local account setup.
+
+## Verify before trusting an installation
+
+Complete setup, reload, sign out and sign back in. Confirm the fields work on
+your real phone and with your password manager. Verify the displayed address
+and transport. Do not reset a real owner to repeat a setup test.
+
+For HTTPS, verify the browser trusts the certificate without bypassing warnings.
+For SSO, verify the linked account succeeds, an unlinked provider user is denied,
+provider errors are understandable and local recovery still works. Test process
+restart and signing-key rotation in an isolated installation.
+
+Automated tests use synthetic credentials and signed tokens. Those tests do
+not prove your phone's certificate trust, real Authentik policy or a physical
+display update. Live reference-provider and multi-browser checks remain
+release gates, not claims made by unit-test counts.

@@ -24,6 +24,11 @@ class RotationMode(StrEnum):
     WEIGHTED = "weighted"
 
 
+class OwnerAccessMode(StrEnum):
+    LOCAL = "local"
+    HTTPS_ONLY = "https-only"
+
+
 class DiscoveryProvider(StrEnum):
     INATURALIST = "inaturalist"
     EBIRD = "ebird"
@@ -102,6 +107,17 @@ class DiscoveryConfig:
 
 
 @dataclass(frozen=True)
+class OIDCConfig:
+    issuer: str
+    client_id: str
+    callback_url: str
+    client_secret_env: str = field(repr=False)
+    label: str = "Authentik"
+    owner_subject: str | None = field(default=None, repr=False)
+    sso_only: bool = False
+
+
+@dataclass(frozen=True)
 class ControllerConfig:
     workspace_dir: Path
     catalog_dir: Path
@@ -121,6 +137,10 @@ class ControllerConfig:
     embed_allowed_origins: tuple[str, ...] = ()
     owner_allowed_origins: tuple[str, ...] = ()
     trusted_proxy_addresses: tuple[str, ...] = ()
+    owner_access_mode: OwnerAccessMode = OwnerAccessMode.LOCAL
+    tls_certificate: Path | None = None
+    tls_private_key: Path | None = field(default=None, repr=False)
+    oidc: OIDCConfig | None = None
 
 
 @dataclass(frozen=True)
@@ -384,11 +404,20 @@ def _csp_frame_origins(section: dict[str, object], name: str) -> tuple[str, ...]
 
 def _owner_origins(section: dict[str, object]) -> tuple[str, ...]:
     origins = _http_origins(section, "owner_allowed_origins")
-    if any(urlsplit(origin).scheme != "https" for origin in origins):
-        raise ConfigurationError(
-            "owner_allowed_origins must use HTTPS; loopback access is automatic"
-        )
+    if _owner_mode(section) == OwnerAccessMode.HTTPS_ONLY and any(
+        urlsplit(origin).scheme != "https" for origin in origins
+    ):
+        raise ConfigurationError("owner_allowed_origins must use HTTPS in https-only mode")
     return origins
+
+
+def _owner_mode(section: dict[str, object]) -> OwnerAccessMode:
+    # Preserve the stricter boundary of installations that already chose HTTPS.
+    default = "https-only" if section.get("owner_allowed_origins") else "local"
+    try:
+        return OwnerAccessMode(_optional_string(section, "owner_access_mode", default=default))
+    except ValueError as exc:
+        raise ConfigurationError("owner_access_mode must be local or https-only") from exc
 
 
 def _proxy_addresses(section: dict[str, object]) -> tuple[str, ...]:
@@ -402,6 +431,63 @@ def _proxy_addresses(section: dict[str, object]) -> tuple[str, ...]:
     if len(set(addresses)) != len(addresses):
         raise ConfigurationError("trusted_proxy_addresses must not contain duplicate addresses")
     return addresses
+
+
+def _oidc_config(section: dict[str, object]) -> OIDCConfig | None:
+    raw = section.get("oidc")
+    if raw is None:
+        return None
+    if not isinstance(raw, dict):
+        raise ConfigurationError("controller.oidc must be a table")
+    issuer = _string(raw, "issuer")
+    callback = _string(raw, "callback_url")
+    for name, url in (("issuer", issuer), ("callback_url", callback)):
+        try:
+            parts = urlsplit(url)
+            port = parts.port
+        except ValueError as exc:
+            raise ConfigurationError(f"OIDC {name} must be a valid HTTPS URL") from exc
+        if (
+            parts.scheme != "https"
+            or not parts.hostname
+            or parts.username is not None
+            or parts.password is not None
+            or parts.query
+            or parts.fragment
+            or port == 0
+        ):
+            raise ConfigurationError(
+                f"OIDC {name} must be an HTTPS URL without credentials or query"
+            )
+    callback_parts = urlsplit(callback)
+    if callback_parts.path != "/v1/owner/oidc/callback":
+        raise ConfigurationError("OIDC callback_url must end with /v1/owner/oidc/callback")
+    if f"https://{callback_parts.netloc}" not in _owner_origins(section):
+        raise ConfigurationError("OIDC callback origin must be in owner_allowed_origins")
+    secret_env = _string(raw, "client_secret_env")
+    if (
+        not secret_env.isascii()
+        or not secret_env.replace("_", "").isalnum()
+        or secret_env[0].isdigit()
+    ):
+        raise ConfigurationError("OIDC client_secret_env must name an environment variable")
+    label = _optional_string(raw, "label", default="Authentik")
+    if not 1 <= len(label) <= 64 or any(ord(c) < 32 for c in label):
+        raise ConfigurationError("OIDC label must contain 1 to 64 printable characters")
+    subject = _optional_string(raw, "owner_subject", default="") or None
+    if subject is not None and (not subject.isascii() or len(subject) > 255):
+        raise ConfigurationError(
+            "OIDC owner_subject must be an exact ASCII subject of at most 255 characters"
+        )
+    return OIDCConfig(
+        issuer,
+        _string(raw, "client_id"),
+        callback,
+        secret_env,
+        label,
+        subject,
+        _optional_boolean(raw, "sso_only", default=False),
+    )
 
 
 def _notification_destinations(
@@ -727,6 +813,8 @@ def load_config(path: Path, *, load_secrets: bool = True) -> AppConfig:
         raise ConfigurationError(
             "retry_max_minutes must be greater than or equal to retry_initial_minutes"
         )
+    if ("tls_certificate" in controller) != ("tls_private_key" in controller):
+        raise ConfigurationError("tls_certificate and tls_private_key must be supplied together")
 
     return AppConfig(
         discovery=DiscoveryConfig(
@@ -777,6 +865,18 @@ def load_config(path: Path, *, load_secrets: bool = True) -> AppConfig:
             embed_allowed_origins=_csp_frame_origins(controller, "embed_allowed_origins"),
             owner_allowed_origins=_owner_origins(controller),
             trusted_proxy_addresses=_proxy_addresses(controller),
+            owner_access_mode=_owner_mode(controller),
+            tls_certificate=(
+                _path(_string(controller, "tls_certificate"), base_dir)
+                if "tls_certificate" in controller
+                else None
+            ),
+            tls_private_key=(
+                _path(_string(controller, "tls_private_key"), base_dir)
+                if "tls_private_key" in controller
+                else None
+            ),
+            oidc=_oidc_config(controller),
         ),
         display_node=DisplayNodeConfig(
             controller_url=controller_url,

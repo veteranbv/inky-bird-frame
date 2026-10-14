@@ -19,12 +19,47 @@ Compose starts four services from the same image:
 | --- | --- | --- |
 | `config-sync` | Validates the host `config.toml`, installs a private runtime copy, then exits | Configuration file and referenced environment values |
 | `bootstrap` | Copies the included public bird catalog into persistent storage, then exits | None |
-| `controller` | Serves health, catalog metadata, and approved images on port 8793 | None |
+| `controller` | Serves health, catalog, images and the owner access preview on port 8793 | Private owner hashes; optional identity-service client secret |
 | `scheduler` | Refreshes observations and runs generation, notifications, and optional catalog publication | Codex and any configured service credentials |
 
 The controller and scheduler use the same commands as a native installation.
 One failed scheduled job is logged and retried later without stopping the HTTP
 service or unrelated jobs.
+
+The development [owner access preview](browser-access.md) opens at `/app`.
+Create a local username and password; no setup code is required. The optional
+`access.env` file supplies only controller access credentials such as an OIDC
+client secret. Protect it with mode `0600`. It is separate from `controller.env`,
+which supplies discovery and generation credentials to the scheduler.
+The complete field-journal app is not yet part of this checkpoint.
+
+Docker port forwarding changes the address seen by the application. List the
+exact browser address in your host `config.toml`, including any non-default
+port. For access from the same computer:
+
+```toml
+[controller]
+owner_access_mode = "local"
+owner_allowed_origins = ["http://localhost:8793"]
+```
+
+For a phone on your home network, replace that example with the controller's
+actual LAN address. Add each address you use, rather than a wildcard. With a
+TLS reverse proxy, use its exact HTTPS address and `owner_access_mode = "https-only"`
+as described in the access guide. This explicit address check prevents an
+unrelated hostname from reaching owner forms through DNS rebinding.
+
+The controller health check reads the same configuration as `doctor`. It uses
+HTTP for a plain listener and HTTPS for direct TLS. It validates certificate
+trust and the response, not just a successful TCP connection. For direct TLS,
+put the matching certificate and mode-0600 private key in the private data
+volume, readable by UID 10001. Configure their paths as described in the
+[access guide](browser-access.md#advanced-supply-a-certificate). If using a
+private CA, mount only its public trust certificate and set `SSL_CERT_FILE` for
+the controller. Include its actual listener hostname and port in
+`owner_allowed_origins`; that address must resolve inside the container too.
+Do not disable certificate validation to pass a health check. A reverse proxy
+that terminates HTTPS leaves the backend listener and health check on HTTP.
 
 The host `config.toml` is authoritative. Compose bind-mounts it read-only into
 the one-shot `config-sync` service, not the long-running services. Local Docker

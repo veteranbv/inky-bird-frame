@@ -1,6 +1,17 @@
 const main = document.querySelector('#main');
 let csrf = '';
-let timer;
+let lastActivity = -Infinity;
+let signingOut = false;
+let accountBackAvailable = false;
+
+// Only real interaction renews idle time. Polls and synthetic events do not.
+for (const name of ['pointerdown', 'keydown']) document.addEventListener(name, event => {
+  if (!csrf || !event.isTrusted || performance.now() - lastActivity < 60000) return;
+  lastActivity = performance.now(); const sent = csrf;
+  api('/v1/owner/activity', {}).catch(error => {
+    if (error.code === 'sign_in_required' && csrf === sent && !signingOut) showProblem(error);
+  });
+});
 
 class RequestError extends Error {
   constructor(message, code) { super(message); this.code = code; }
@@ -10,16 +21,17 @@ async function api(path, body) {
   let response;
   try {
     response = await fetch(path, {
-      method: body === undefined ? 'GET' : 'POST',
-      credentials: 'same-origin', cache: 'no-store',
+      method: body === undefined ? 'GET' : 'POST', credentials: 'same-origin', cache: 'no-store',
       headers: body === undefined ? {} : {'Content-Type': 'application/json', 'X-Inky-CSRF': csrf},
       body: body === undefined ? undefined : JSON.stringify(body)
     });
   } catch { throw new RequestError('Inky cannot be reached. Check your connection and try again.', 'offline'); }
   let result;
   try { result = await response.json(); }
-  catch { throw new RequestError('This address did not return an Inky response. Check the address, then try again.', 'invalid_response'); }
-  if (!response.ok || !result.ok) throw new RequestError(result.error?.message || 'Inky could not complete this request. Try again.', result.error?.code);
+  catch { throw new RequestError(response.ok
+    ? 'This address did not return an Inky response. Check the address and try again.'
+    : 'Inky is not responding right now (HTTP ' + response.status + '). Check that it is running.', 'invalid_response'); }
+  if (!response.ok || !result.ok) throw new RequestError(result.error?.message || 'Inky could not complete this request.', result.error?.code);
   return result.data;
 }
 
@@ -31,292 +43,360 @@ function element(tag, text, className) {
 }
 
 function button(text, action, className = 'secondary') {
-  const node = element('button', text, className);
-  node.type = 'button';
-  node.addEventListener('click', action);
-  return node;
+  const node = element('button', text, className); node.type = 'button';
+  node.addEventListener('click', action); return node;
 }
 
 function screen(title, description) {
-  clearInterval(timer);
-  document.title = `${title} | Inky`;
-  const heading = element('h1', title);
-  heading.tabIndex = -1;
+  document.title = title + ' | Inky';
+  const heading = element('h1', title); heading.tabIndex = -1;
   main.replaceChildren(heading, element('p', description, 'intro'));
-  main.setAttribute('aria-busy', 'false');
-  heading.focus();
+  main.setAttribute('aria-busy', 'false'); heading.focus();
 }
 
-function errorMessage(node, text) {
-  node.textContent = text;
-  node.hidden = false;
-  node.focus();
+function statusBox() {
+  const node = element('p', '', 'error');
+  node.setAttribute('role', 'alert'); return node;
+}
+
+function announce(node, text) {
+  node.textContent = '';
+  requestAnimationFrame(() => { if (node.isConnected) node.textContent = text; });
+}
+
+function errorMessage(node, text) { announce(node, text); }
+
+function noticeMessage(text) {
+  const node = element('p', text, 'notice'); node.setAttribute('role', 'status'); return node;
 }
 
 function help(title, paragraphs, command) {
-  const details = element('details');
-  details.append(element('summary', title));
+  const details = element('details'); details.append(element('summary', title));
   for (const text of paragraphs) details.append(element('p', text));
   if (command) {
-    details.append(element('p', 'On the computer running Inky, use your own configuration file:'));
-    const pre = element('pre');
-    pre.append(element('code', command));
-    details.append(pre, element('p', 'Use a private terminal. Do not paste the code into a link, screenshot, or public message.'));
+    const pre = element('pre'); pre.append(element('code', command)); details.append(pre);
   }
   return details;
 }
 
-function codeHelp() {
-  return help('Where do I get the setup code?', [
-    'The code comes from the computer running Inky. It confirms that you can control this installation.',
-    'If someone installed Inky for you, ask them for a fresh code. It may be in the secure note they gave you. It is not a password or a bird-service API key.',
-    'If you installed Inky yourself, create a code with the command below. In a source checkout, start the command with uv run. For Docker, run it with docker compose exec controller and use /data/config.toml.'
-  ], 'inky-bird-frame access bootstrap --config <config.toml> --show-code');
+function usernameField(form, value = '') {
+  const label = element('label', 'Username'); label.htmlFor = 'username';
+  const input = element('input'); input.id = label.htmlFor; input.name = 'username';
+  input.autocomplete = 'username'; input.autocapitalize = 'none'; input.spellcheck = false;
+  input.required = true; input.minLength = 3; input.maxLength = 64; input.value = value;
+  input.pattern = '[a-zA-Z0-9][a-zA-Z0-9_.\\-]{2,63}';
+  const hint = element('p', 'Use 3–64 letters, numbers, dots, hyphens or underscores. Start with a letter or number. Letter case does not matter.', 'hint');
+  hint.id = 'username-hint'; input.setAttribute('aria-describedby', hint.id);
+  input.addEventListener('input', () => {
+    input.setCustomValidity('');
+    if (input.validity.patternMismatch) input.setCustomValidity(hint.textContent);
+  });
+  form.append(label, input, hint); return input;
 }
 
-function passwordField(form, setup, access) {
-  const label = element('label', setup ? 'Choose your Inky password' : 'Inky password');
-  const input = element('input');
-  input.id = 'password'; input.name = 'password'; input.type = 'password'; input.required = true;
-  input.autocomplete = setup ? 'new-password' : 'current-password';
+function passwordField(form, setup, access, id = 'password', title, optional = false) {
+  const label = element('label', title || (setup ? 'Choose your Inky password' : 'Inky password'));
+  const input = element('input'); input.id = id; input.name = id; input.type = 'password'; input.required = !optional;
+  input.autocomplete = setup ? 'new-password' : 'current-password'; label.htmlFor = id;
   const row = element('div', '', 'input-row');
   const reveal = button('Show', () => {
-    const shown = input.type === 'text';
-    input.type = shown ? 'password' : 'text';
+    const shown = input.type === 'text'; input.type = shown ? 'password' : 'text';
     reveal.textContent = shown ? 'Show' : 'Hide';
     reveal.setAttribute('aria-label', shown ? 'Show password' : 'Hide password');
-    reveal.setAttribute('aria-pressed', String(!shown));
   }, 'reveal');
   reveal.setAttribute('aria-label', 'Show password');
-  reveal.setAttribute('aria-pressed', 'false');
-  reveal.setAttribute('aria-controls', input.id);
-  label.htmlFor = input.id;
-  const hint = element('p', setup
-    ? `Use at least ${access.password_min_length} characters. A few unrelated words work well. Save it in your password manager.`
-    : 'Use the password you chose for this Inky. You do not need the setup code again.', 'hint');
-  hint.id = 'password-hint';
-  input.setAttribute('aria-describedby', hint.id);
-  if (setup) input.addEventListener('input', () => {
-    // Python counts Unicode code points, unlike HTML minlength's UTF-16 units.
-    const length = Array.from(input.value).length;
-    input.setCustomValidity(length < access.password_min_length || length > access.password_max_length
-      ? `Use between ${access.password_min_length} and ${access.password_max_length} characters.` : '');
-  });
-  row.append(input, reveal);
-  form.append(label, row, hint);
+  reveal.setAttribute('aria-controls', id); row.append(input, reveal); form.append(label, row);
+  if (setup) {
+    if (id !== 'confirm-password') {
+      const hint = element('p', 'Use at least ' + access.password_min_length + ' characters. A few unrelated words work well.', 'hint');
+      hint.id = id + '-hint'; input.setAttribute('aria-describedby', hint.id); form.append(hint);
+    }
+    input.addEventListener('input', () => {
+      const length = Array.from(input.value).length;
+      input.setCustomValidity((length || !optional) && (length < access.password_min_length || length > access.password_max_length)
+        ? 'Use between ' + access.password_min_length + ' and ' + access.password_max_length + ' characters.' : '');
+    });
+  }
   return input;
 }
 
-function progress(step) {
-  const steps = element('ol', '', 'steps');
-  steps.setAttribute('aria-label', 'Setup progress');
-  for (const [index, text] of ['Setup code', 'Your password'].entries()) {
-    const item = element('li', `${index + 1}. ${text}`, index + 1 === step ? 'current' : '');
-    if (index + 1 === step) item.setAttribute('aria-current', 'step');
-    steps.append(item);
-  }
-  main.append(steps);
+function rememberField(form, access) {
+  const label = element('label', '', 'check-label');
+  const input = element('input'); input.type = 'checkbox'; input.name = 'remember';
+  label.append(input, document.createTextNode('Stay signed in on this device'));
+  const hint = element('p', 'Only use this on a private device. Sign-in lasts at most ' + access.session_policy.remembered_days + ' days. Otherwise, it lasts up to ' + access.session_policy.regular_hours + ' hours. Your browser may end it sooner.', 'hint');
+  hint.id = 'remember-hint'; input.setAttribute('aria-describedby', hint.id);
+  form.append(label, hint);
+  return input;
 }
 
-function setup(access, secret = '', deadline = performance.now() + (access.setup_code.expires_in_seconds || 0) * 1000) {
-  const secondStep = Boolean(secret);
-  screen(secondStep ? 'Make Inky yours' : 'Welcome to Inky', secondStep
-    ? 'Choose a password to protect the controls for your bird journal. No email or online account is needed.'
-    : 'Connect this browser to your Inky installation. You only need a setup code the first time.');
-  main.append(element('p', '✓ Connection checked', 'connection'));
-  progress(secondStep ? 2 : 1);
-  const form = element('form');
-  const status = element('p', '', 'error');
-  status.hidden = true; status.tabIndex = -1; status.setAttribute('role', 'alert');
-  const guidance = codeHelp();
-  let input;
-  if (secondStep) {
-    form.append(element('p', 'Setup code entered', 'hint'));
-    input = passwordField(form, true, access);
-  } else {
-    const label = element('label', 'Setup code'); label.htmlFor = 'setup-code';
-    input = element('input'); input.id = label.htmlFor; input.name = 'setup-code';
-    input.type = 'password'; input.autocomplete = 'off'; input.required = true; input.maxLength = 128;
-    input.spellcheck = false; input.autocapitalize = 'none';
-    input.addEventListener('input', () => input.setCustomValidity(''));
-    input.setAttribute('aria-describedby', 'code-hint');
-    const hint = element('p', 'Paste the code from your installer or the computer running Inky.', 'hint');
-    hint.id = 'code-hint';
-    form.append(label, input, hint);
+function connectionNotice(access) {
+  if (access.encrypted) {
+    const notice = element('p', '', 'connection'); const check = element('span', '✓ ');
+    check.setAttribute('aria-hidden', 'true'); notice.append(check, document.createTextNode('Encrypted connection'));
+    main.append(notice); return;
   }
-  const expiry = element('p', '', 'code-status');
-  expiry.setAttribute('role', 'status');
-  const submit = element('button', secondStep ? 'Finish setup' : 'Continue'); submit.type = 'submit';
-  let busy = false;
-  let checking = false;
-  const check = button('Check for a new code', refreshCodeStatus);
-  check.hidden = true;
-  function showExpiry() {
-    const remaining = Math.max(0, Math.ceil((deadline - performance.now()) / 1000));
-    const ready = access.setup_code.state === 'ready' && remaining > 0;
-    submit.disabled = !ready || busy || checking;
-    check.disabled = busy || checking;
-    check.hidden = ready;
-    // Announce meaningful changes, not a new live-region message every second.
-    const minutes = Math.ceil(remaining / 60);
-    const text = ready ? `A code is ready. It expires in ${minutes} minute${minutes === 1 ? '' : 's'}.`
-      : access.setup_code.state === 'missing' ? 'Create a setup code to continue. Open the help below for the steps.'
-      : 'The setup code has expired. Get a fresh code, then check again. Your birds are unchanged.';
-    if (expiry.textContent !== text) expiry.textContent = text;
-    if (!ready) { guidance.open = true; clearInterval(timer); }
-  }
-  async function refreshCodeStatus() {
-    checking = true; showExpiry(); status.hidden = true;
-    try {
-      const latest = await api('/v1/access');
-      if (!main.contains(form)) return;
-      if (!latest.secure) { await load(); return; }
-      if (!latest.setup_required) {
-        signIn(latest, 'This Inky is already set up. Sign in with your password.');
-        return;
-      }
-      access = latest;
-      deadline = performance.now() + (latest.setup_code.expires_in_seconds || 0) * 1000;
-    } catch (error) {
-      if (main.contains(form)) errorMessage(status, error.message);
-    } finally {
-      checking = false;
-      if (main.contains(form)) {
-        clearInterval(timer); showExpiry();
-        if (access.setup_code.state === 'ready' && deadline > performance.now()) timer = setInterval(showExpiry, 1000);
-      }
-    }
-  }
-  form.append(expiry, submit, check, status);
-  const back = secondStep ? button('Change setup code', () => load()) : null;
-  if (back) form.append(back);
-  form.addEventListener('submit', async event => {
-    event.preventDefault();
-    if (!secondStep) {
-      if (!input.value.trim()) {
-        input.setCustomValidity('Paste the full setup code to continue.');
-        input.reportValidity();
-        return;
-      }
-      setup(access, input.value.trim(), deadline);
-      return;
-    }
-    busy = true;
-    submit.disabled = true; submit.textContent = 'Setting up…';
-    form.setAttribute('aria-busy', 'true');
-    if (back) back.disabled = true;
-    clearInterval(timer); status.hidden = true;
-    try {
-      const session = await api('/v1/owner/setup', {secret, passphrase: input.value});
-      csrf = session.csrf; secret = ''; input.value = '';
-      await signedIn();
-    } catch (error) {
-      if (error.code === 'sign_in_required') {
-        secret = ''; input.value = '';
-        const latest = await api('/v1/access').catch(() => null);
-        if (latest?.secure) {
-          if (!latest.setup_required) { signIn(latest, 'This Inky is already set up. Sign in with your password.'); return; }
-          setup(latest);
-          errorMessage(main.querySelector('.error'), latest.setup_code.state === 'ready'
-            ? 'That code did not work. Copy the full, newest setup code and try again.'
-            : 'Get a fresh setup code before you continue.');
-          return;
-        }
-      }
-      errorMessage(status, error.message);
-      busy = false;
-      form.setAttribute('aria-busy', 'false');
-      submit.textContent = 'Finish setup'; showExpiry();
-      if (back) back.disabled = false;
-      if (!submit.disabled) timer = setInterval(showExpiry, 1000);
-    }
-  });
-  main.append(form, guidance, help('Why do I need a code and a password?', [
-    'The one-use code proves you can access the computer running Inky. It prevents someone else on your network from claiming your installation.',
-    'Your password is what you use after setup. It protects settings and private bird history. Inky stores a protected hash, not the password itself.'
-  ]));
-  showExpiry();
-  if (!submit.disabled) timer = setInterval(showExpiry, 1000);
+  const section = element('section', '', 'notice');
+  section.append(element('p', 'This connection is not encrypted. Use a unique password on a trusted home network. Do not expose Inky to the internet.'));
+  section.append(help('About this home-network connection', ['People who can inspect your network traffic could read passwords, session credentials and private data. HTTPS encrypts that traffic. You can add it later, but Inky does not require it for trusted home-network use.']));
+  main.append(section);
 }
 
 function signIn(access, notice = '') {
-  screen('Welcome back', 'Sign in to your Inky bird journal.');
-  const form = element('form');
-  if (notice) form.append(element('p', notice, 'hint'));
-  const input = passwordField(form, false, access);
-  const submit = element('button', 'Sign in'); submit.type = 'submit';
-  const status = element('p', '', 'error');
-  status.hidden = true; status.tabIndex = -1; status.setAttribute('role', 'alert');
+  const setup = access.setup_required;
+  screen(setup ? 'Make Inky yours' : 'Welcome back', setup
+    ? 'Create the owner account for your bird journal. No email or online account is needed.'
+    : 'Sign in to your Inky bird journal.');
+  if (notice) main.append(noticeMessage(notice));
+  connectionNotice(access);
+  if (setup) main.append(element('p', 'This account is the owner of this Inky. Finish setup before you share its address.', 'hint'));
+  const form = element('form'); const status = statusBox();
+  const username = !setup && access.legacy_account ? null : usernameField(form);
+  const password = passwordField(form, setup, access);
+  const confirmation = setup ? passwordField(form, true, access, 'confirm-password', 'Confirm your password') : null;
+  if (confirmation) confirmation.addEventListener('input', () => confirmation.removeAttribute('aria-invalid'));
+  const remember = rememberField(form, access);
+  const submit = element('button', setup ? 'Create account' : 'Sign in'); submit.type = 'submit';
   form.append(submit, status);
   form.addEventListener('submit', async event => {
-    event.preventDefault(); submit.disabled = true; submit.textContent = 'Signing in…'; status.hidden = true;
-    form.setAttribute('aria-busy', 'true');
+    event.preventDefault(); status.textContent = '';
+    if (confirmation && password.value !== confirmation.value) {
+      errorMessage(status, 'The passwords do not match. Check both entries.'); confirmation.setAttribute('aria-invalid', 'true'); confirmation.focus(); return;
+    }
+    submit.disabled = true; form.setAttribute('aria-busy', 'true');
     try {
-      const session = await api('/v1/owner/login', {passphrase: input.value});
-      csrf = session.csrf; input.value = ''; await signedIn();
+      const body = {passphrase: password.value, remember: remember.checked};
+      if (username) body.username = username.value;
+      const result = await api(setup ? '/v1/owner/register' : '/v1/owner/login', body);
+      csrf = result.csrf; password.value = ''; if (confirmation) confirmation.value = '';
+      await signedIn(access, setup ? 'Your owner account is ready.' : '');
     } catch (error) {
-      errorMessage(status, error.code === 'sign_in_required'
-        ? 'That password did not work. Check it and try again.' : error.message);
-    } finally { submit.disabled = false; submit.textContent = 'Sign in'; form.setAttribute('aria-busy', 'false'); }
+      if (setup && error.code === 'sign_in_required') { await load('This Inky already has an owner. Sign in instead.'); return; }
+      errorMessage(status, error.message);
+    } finally { submit.disabled = false; form.setAttribute('aria-busy', 'false'); }
   });
-  main.append(form, help('Forgot your password?', [
-    'Inky has no email account, so it cannot send a reset link. You can reset access from the computer running Inky.',
-    'Reset signs out every browser. Your saved bird data, plates, and bird-service accounts stay in place. If someone installed Inky for you, ask them to reset access.'
-  ], 'inky-bird-frame access reset --config <config.toml> --yes --show-code'));
+  if (setup || access.local_login) main.append(form);
+  else if (access.provider?.linked && access.provider?.ready) {
+    const preferences = element('div'); rememberField(preferences, access);
+    preferences.querySelector('input').replaceWith(remember);
+    main.append(preferences, element('p', 'Use your linked single sign-on account.', 'hint'));
+  } else main.append(element('p', 'Browser sign-in is unavailable. Ask the installer to restore the provider or enable local sign-in. Your data stays in place.', 'notice'));
+  if (!setup && access.provider?.linked && access.provider?.ready) {
+    const sso = button('Sign in with ' + access.provider.label, async () => {
+      sso.disabled = true;
+      try { await beginSSO('/v1/owner/oidc/start', remember.checked); }
+      catch (error) { sso.disabled = false; if (!main.contains(status)) main.append(status); errorMessage(status, error.message); }
+    });
+    main.append(sso);
+  }
+  if (access.provider?.error) main.append(element('p', access.provider.error, 'error'));
+  if (!setup) main.append(help('Can’t sign in?', [
+    'Recovery uses a private terminal on the computer running Inky. It replaces your username and password, signs out every device and unlinks single sign-on. It does not change bird data or bird-service accounts.',
+    'The access guide below gives native and Docker commands. Use your installation’s configuration file. You will confirm the change and enter the new password in a hidden prompt. If someone installed Inky for you, ask them to recover access.'
+  ]));
+  const docs = element('a', 'Download the access and recovery guide (.md)');
+  docs.href = '/app/access-guide'; docs.download = 'Inky-access-guide.md'; main.append(docs);
 }
 
-async function signedIn() {
-  const session = await api('/v1/owner/session');
-  csrf = session.csrf;
-  screen('You’re connected to Inky', 'Setup is complete. This browser can now sign in to your installation.');
-  main.append(element('p', '✓ Sign-in checked', 'connection'));
+async function beginSSO(path, remember = false, returnToAccess = false) {
+  const result = await api(path, {remember, return_to_access: returnToAccess});
+  location.assign(result.authorization_url);
+}
+
+async function signOut() {
+  if (signingOut) return;
+  signingOut = true;
+  try {
+    await api('/v1/owner/logout', {}); csrf = '';
+    accountBackAvailable = false;
+    history.replaceState(null, '', '/app'); await load('You signed out.');
+  } catch (error) { showProblem(error); }
+  finally { signingOut = false; }
+}
+
+async function signedIn(access, message = '') {
+  const session = await api('/v1/owner/session'); csrf = session.csrf;
+  if (location.hash === '#account') { await accountAccess(access, session, message); return; }
+  screen('You’re connected to Inky', 'You control access to this installation.');
+  if (message) main.append(noticeMessage(message));
   const notice = element('section', '', 'notice');
-  notice.append(element('h2', 'What this preview does'), element('p', 'You can test setup, reload, sign-out, and sign-in here. The full bird journal is still being built. This preview does not manage your birds yet.'));
-  const out = button('Sign out', async () => {
-    out.disabled = true;
-    try { await api('/v1/owner/logout', {}); csrf = ''; await load('You signed out.'); }
-    catch (error) {
-      if (error.code === 'sign_in_required') { csrf = ''; await load('Your session ended. Sign in again.'); }
-      else { out.disabled = false; showProblem(error); }
-    }
+  notice.append(element('h2', 'Access preview'), element('p', 'Account setup and access controls work here. The full bird journal is still being built. This isolated preview does not manage your real birds.'));
+  const account = button('Account and access', async () => {
+    account.disabled = true; await accountAccess(access, session);
   });
-  main.append(notice, out);
+  main.append(notice, account, button('Sign out', signOut));
+}
+
+async function accountAccess(access, session, message = '') {
+  try {
+    const [settings, devices] = await Promise.all([api('/v1/owner/access'), api('/v1/owner/sessions')]);
+    if (location.hash !== '#account') {
+      history.pushState(null, '', '/app#account'); accountBackAvailable = true;
+    }
+    screen('Account and access', 'Keep sign-in simple. Add advanced options only when you need them.');
+    if (message) main.append(noticeMessage(message));
+    let confirmationBox = null, busy = false;
+    const actionErrors = new WeakMap();
+    async function refresh(message) {
+      session = await api('/v1/owner/session'); csrf = session.csrf;
+      await accountAccess(await api('/v1/access'), session, message);
+    }
+    function actionError(anchor, message) {
+      let status = actionErrors.get(anchor);
+      if (!status) { status = statusBox(); actionErrors.set(anchor, status); anchor.after(status); }
+      errorMessage(status, message);
+    }
+    function clearConfirmation() { confirmationBox?.remove(); confirmationBox = null; }
+    async function sensitive(action, anchor, usePassword = false, confirmationRequired = false) {
+      if (busy) return;
+      if (confirmationBox) { confirmationBox.querySelector('input,button')?.focus(); return; }
+      // The server decides freshness. Browser clock skew must not trap a user.
+      if (!confirmationRequired) {
+        busy = true;
+        try { await action(); } catch (error) {
+          if (error.code === 'confirmation_required') {
+            busy = false; await sensitive(action, anchor, false, true);
+          } else if (error.code === 'sign_in_required') showProblem(error);
+          else actionError(anchor, error.message);
+        } finally { busy = false; }
+        return;
+      }
+      confirmationBox = element('section', '', 'notice'); anchor.after(confirmationBox);
+      const status = statusBox();
+      const cancel = button('Cancel confirmation', () => {
+        clearConfirmation(); (anchor.matches('button') ? anchor : anchor.querySelector('button[type=submit]'))?.focus();
+      });
+      if (session.single_sign_on && !usePassword && settings.provider?.ready) {
+        const confirm = button('Confirm with single sign-on', async () => {
+          confirm.disabled = true;
+          try { await beginSSO('/v1/owner/oidc/start', session.remembered, true); }
+          catch (error) { confirm.disabled = false; if (error.code === 'sign_in_required') showProblem(error); else errorMessage(status, error.message); }
+        });
+        confirmationBox.append(element('p', 'Sign in again to confirm this change. You will come back to Account and access. Unsaved entries will clear; then repeat the change.'), confirm, status);
+        if (access.local_login) confirmationBox.append(button('Use my Inky password instead', () => {
+          clearConfirmation(); sensitive(action, anchor, true, true);
+        }));
+        confirmationBox.append(cancel);
+        confirmationBox.querySelector('button').focus();
+        return;
+      }
+      if (!access.local_login) {
+        confirmationBox.append(element('p', 'Your sign-in provider is unavailable. This change needs a fresh sign-in. Ask the installer to restore the provider, or enable local login through operator recovery.'), cancel);
+        cancel.focus(); return;
+      }
+      const confirmation = element('form'); confirmation.append(element('h2', 'Confirm it’s you'));
+      const current = passwordField(confirmation, false, access, 'current-password');
+      const submit = element('button', 'Confirm and continue'); submit.type = 'submit'; confirmation.append(submit);
+      confirmation.append(status, cancel); confirmationBox.append(confirmation);
+      confirmation.addEventListener('submit', async event => {
+        event.preventDefault(); submit.disabled = true;
+        try {
+          await api('/v1/owner/confirm-password', {passphrase: current.value}); current.value = '';
+          session = await api('/v1/owner/session'); csrf = session.csrf;
+          clearConfirmation(); await sensitive(action, anchor);
+        } catch (error) {
+          if (error.code === 'sign_in_required') showProblem(error); else errorMessage(status, error.message);
+        }
+        finally { submit.disabled = false; }
+      });
+      current.focus();
+    }
+    const account = help('Change your username or password', ['Leave the password fields empty to change only your username. This signs out every other device. Bird data stays unchanged.']);
+    const form = element('form'); const username = usernameField(form, settings.username || '');
+    const password = passwordField(form, true, access, 'password', 'New Inky password (optional)', true);
+    const confirmation = passwordField(form, true, access, 'confirm-password', 'Confirm new password (optional)', true);
+    confirmation.addEventListener('input', () => confirmation.removeAttribute('aria-invalid'));
+    const save = element('button', 'Save account'); save.type = 'submit'; const formStatus = statusBox();
+    const savedNotice = element('p', '', 'connection'); savedNotice.setAttribute('role', 'status');
+    form.append(save, formStatus, savedNotice);
+    form.addEventListener('submit', async event => {
+      event.preventDefault();
+      formStatus.textContent = ''; savedNotice.textContent = '';
+      if (!password.value && !confirmation.value && username.value.trim().toLowerCase() === settings.username) {
+        announce(savedNotice, 'No account changes to save.'); return;
+      }
+      if (password.value !== confirmation.value) { errorMessage(formStatus, 'The passwords do not match.'); confirmation.setAttribute('aria-invalid', 'true'); confirmation.focus(); return; }
+      await sensitive(async () => {
+        const body = {username: username.value}; if (password.value) body.passphrase = password.value;
+        const result = await api('/v1/owner/account', body);
+        csrf = result.csrf;
+        password.value = ''; confirmation.value = ''; await refresh('Account saved. Other devices were signed out.');
+      }, form);
+    });
+    account.append(form); main.append(account);
+    const sessions = element('section'); sessions.append(element('h2', 'Signed-in devices'));
+    sessions.append(element('p', 'Revoke a login you no longer use. Inky stores no browser fingerprint.', 'hint'));
+    for (const device of devices.sessions) {
+      const row = element('div', '', 'device');
+      const date = element('p', (device.current ? 'This device · signed in ' : 'Signed in ') + new Date(device.created_at * 1000).toLocaleString());
+      date.id = 'device-' + device.id;
+      const revoke = button(device.current ? 'Sign out this device' : 'Revoke this sign-in', async () => {
+        if (device.current) {
+          await signOut();
+        } else await sensitive(async () => {
+          await api('/v1/owner/sessions/revoke', {id: device.id}); await refresh('Sign-in revoked.');
+        }, row);
+      });
+      revoke.setAttribute('aria-describedby', date.id);
+      row.append(date, element('p', (device.remembered ? 'Remembered device' : 'Regular sign-in') + ' · ends by ' + new Date(device.expires_at * 1000).toLocaleString(), 'hint'), revoke);
+      sessions.append(row);
+    }
+    main.append(sessions);
+    const advanced = help('Advanced access', [
+      settings.encrypted ? 'This connection uses HTTPS encryption.' : 'This home-network connection uses HTTP. It does not encrypt passwords or private data.',
+      'Access mode: ' + (settings.mode === 'https-only' ? 'HTTPS only. Insecure owner access is blocked.' : 'Home network. HTTPS is optional.'),
+      'These network settings are managed by your installation configuration. Restart Inky after changing them. They do not change your birds.',
+      'You can use an existing HTTPS reverse proxy, your own certificate and key, or a private VPN. A reverse proxy forwards browser requests to Inky. A VPN connects your device to your home network. If you use a private certificate authority (CA), install its trust certificate on each device first. Stop if the browser shows a certificate warning.'
+    ]);
+    if (settings.provider) {
+      const p = settings.provider;
+      advanced.append(element('h2', 'Single sign-on with ' + p.label), element('p', 'Single sign-on lets your identity service sign you in. Inky never asks for that service’s password.'),
+        element('p', 'Issuer: ' + p.issuer, 'hint'), element('p', 'Client ID: ' + p.client_id, 'hint'),
+        element('p', 'Callback: ' + p.callback_url, 'hint'), element('p', 'Secret environment variable: ' + p.client_secret_env + '. Its value stays on the server.', 'hint'),
+        element('p', p.linked ? 'An owner identity is linked.' : 'Sign in to your provider to link your exact owner identity.', 'connection'));
+      if (p.ready) {
+        const link = button(p.linked ? 'Verify or replace linked account' : 'Link my ' + p.label + ' account', () => sensitive(() => beginSSO('/v1/owner/oidc/link', session.remembered, true), link));
+        advanced.append(link);
+      } else advanced.append(element('p', p.error || 'The provider is unavailable. Ask the installer to check its settings.', 'error'));
+      if (p.linked && !p.identity_managed && !p.sso_only) {
+        const unlink = button('Unlink single sign-on', () => sensitive(async () => {
+          await api('/v1/owner/oidc/unlink', {}); await refresh('Single sign-on unlinked.');
+        }, unlink)); advanced.append(unlink);
+      }
+      advanced.append(element('p', 'Signing out of Inky does not sign you out of your identity service. Its account changes do not instantly end existing Inky sessions.', 'hint'));
+    } else advanced.append(element('p', 'Authentik and other OpenID Connect providers are optional. Configure a provider and a fixed HTTPS callback before linking your account. Nothing is exposed to the internet automatically.'));
+    const docs = element('a', 'Download the HTTPS, Authentik and recovery guide (.md)');
+    docs.href = '/app/access-guide'; docs.download = 'Inky-access-guide.md';
+    advanced.append(docs); main.append(advanced, button('Back', () => {
+      if (accountBackAvailable) { accountBackAvailable = false; history.back(); }
+      else { history.replaceState(null, '', '/app'); signedIn(access).catch(showProblem); }
+    }));
+  } catch (error) { history.replaceState(null, '', '/app'); showProblem(error); }
 }
 
 function showProblem(error) {
-  if (error.code === 'access_error') {
-    screen('Inky needs a local repair', 'Inky cannot open its private sign-in settings. Ask the person who installed Inky to check its storage and file permissions.');
-    main.append(help('Details for the installer', [error.message, 'Do not delete private state to clear this error. Check the installation guide and use a matching private backup if needed.']), button('Try again', () => load()));
-    return;
-  }
-  screen('Inky needs a connection', error.message);
-  main.append(button('Try again', () => load()), element('p', 'Keep your home network or private VPN connected. If the problem continues, check that the Inky service is running.', 'hint'));
+  if (error.code === 'sign_in_required') { csrf = ''; load('Your session ended. Sign in again.'); return; }
+  screen('Inky needs attention', error.message);
+  main.append(button('Try again', () => load()), help('If the problem continues', ['Check that Inky is running and your home network or private VPN is connected. For a private-state error, check storage and permissions. Do not delete state to hide an error.']));
 }
 
 async function load(notice = '') {
-  clearInterval(timer);
   main.setAttribute('aria-busy', 'true');
   try {
     const access = await api('/v1/access');
     if (!access.secure) {
-      screen('Use a private connection', 'This address is not approved for sign-in. Inky has turned password entry off to protect you.');
-      main.append(element('p', 'Password entry is off', 'notice'), help('How do I open Inky safely?', [
-        'On a phone or tablet, open the private HTTPS address provided when Inky was installed. HTTPS means the connection encrypts your password.',
-        'On the computer running Inky, you can use its local address instead. Ask your installer for that address if you do not know it.',
-        'When away from home, connect through your private VPN first. A VPN connects your device to your home network. Do not ignore a browser certificate warning.'
-      ]), button('Check connection again', () => load()));
-      main.querySelector('details').open = true;
+      screen('Open your Inky address', 'This address is not approved for sign-in. Password entry is off.');
+      main.append(help('How to connect', ['Use the local address shown by your installer on your trusted home network. Use your configured HTTPS address if HTTPS-only mode is enabled.', 'When away from home, connect through your private VPN. Do not open a router port or ignore a certificate warning.']), button('Check again', () => load()));
       return;
     }
-    try { await signedIn(); }
-    catch (error) {
-      if (error.code !== 'sign_in_required') throw error;
-      csrf = '';
-      if (access.setup_required) setup(access);
-      else signIn(access, notice);
-    }
+    try { await signedIn(access, notice); }
+    catch (error) { if (error.code !== 'sign_in_required') throw error; csrf = ''; signIn(access, notice); }
   } catch (error) { showProblem(error); }
   finally { main.setAttribute('aria-busy', 'false'); }
 }
 
-await load();
+const ssoResult = new URL(location.href).searchParams.get('sign_in');
+if (ssoResult) history.replaceState(null, '', '/app' + location.hash);
+window.addEventListener('popstate', () => { if (location.hash !== '#account') accountBackAvailable = false; load(); });
+await load(ssoResult === 'failed' ? 'Single sign-on could not finish. Your existing access stays in place. Try again, or use local sign-in if available. If this continues, ask the installer to check the provider.'
+  : ssoResult === 'linked' ? 'Single sign-on linked and verified.' : ssoResult === 'confirmed' ? 'Sign-in confirmed. Repeat the change you wanted to make.' : '');

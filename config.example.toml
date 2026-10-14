@@ -62,11 +62,22 @@ port = 8793
 # Policy does not reliably match IP address sources, so these origins must use DNS hostnames.
 # Underscores and trailing dots are also rejected.
 # embed_allowed_origins = ["https://home.example.test"]
-# Owner access is separate from catalog CORS and framing. List the exact HTTPS
-# origin used by your private proxy. Genuine loopback access is automatic.
+# Owner access: home-network HTTP is the default for new installations.
+# Create a username/password in /app. No setup code is needed. HTTP does not
+# encrypt credentials or private data; use only on a trusted home network.
+# owner_access_mode = "local"
+# A local IP reached directly is checked against the server's actual socket.
+# Add a named local origin explicitly, for example http://inky.home:8793.
+# Existing configurations with owner_allowed_origins default to https-only,
+# preserving their old boundary. Set owner_access_mode deliberately to change it.
+# HTTPS-only also denies direct insecure backend access, including loopback.
+# owner_access_mode = "https-only"
 # owner_allowed_origins = ["https://inky.example.test"]
 # Trust forwarding headers only from your proxy's explicit IP address, never "*".
 # trusted_proxy_addresses = ["192.0.2.10"]
+# Direct HTTPS is optional. Supply both files; the private key must use mode 0600.
+# tls_certificate = "private/fullchain.pem"
+# tls_private_key = "private/key.pem"
 references_per_species = 4
 generations_per_cycle = 1
 # Failed visual reviews are regenerated with their findings as corrective input.
@@ -78,6 +89,15 @@ retry_initial_minutes = 30
 retry_max_minutes = 1440
 # Licensed photos can appear later, so an insufficient set is deferred, not failed forever.
 insufficient_references_retry_minutes = 10080
+# Optional SSO: add this table only after configuring an identity-service client.
+# [controller.oidc]
+# issuer = "https://auth.example.test/application/o/inky/"
+# client_id = "your-client-id"
+# client_secret_env = "INKY_OIDC_CLIENT_SECRET"
+# callback_url = "https://inky.example.test/v1/owner/oidc/callback"
+# label = "Authentik"
+# sso_only = false
+# owner_subject = "exact-verified-owner-subject" # optional managed headless binding
 
 [research]
 # Successful profiles are cached by taxon, so retries of the artwork do not research the

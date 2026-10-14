@@ -1,6 +1,35 @@
 from __future__ import annotations
 
 from pathlib import Path
+from unittest.mock import patch
+
+import pytest
+
+
+@pytest.mark.parametrize("ready", [True, False])
+def test_docker_health_probe_uses_configured_transport_and_validates_readiness(ready: bool) -> None:
+    root = Path(__file__).resolve().parents[1]
+    health = (root / "compose.yaml").read_text().split("    healthcheck:\n", 1)[1]
+    health = health.split("      interval:", 1)[0]
+    assert "- CMD\n" in health and "- python\n" in health and "- -c\n" in health
+    script = " ".join(line.strip() for line in health.split("- >-\n", 1)[1].splitlines())
+    compile(script, "compose-health", "exec")
+    with (
+        patch("inky_bird_frame.config.load_config") as load,
+        patch(
+            "inky_bird_frame.installation.health_url",
+            return_value="https://controller.test:8793/health",
+        ) as url,
+        patch("inky_bird_frame.http.get_json", return_value={"ok": ready}) as request,
+    ):
+        if ready:
+            exec(script, {})
+        else:
+            with pytest.raises(AssertionError):
+                exec(script, {})
+        load.assert_called_once_with(Path("/data/config.toml"), load_secrets=False)
+        url.assert_called_once()
+        request.assert_called_once_with("https://controller.test:8793/health", timeout_seconds=5)
 
 
 def test_docker_config_sync_keeps_the_host_file_authoritative_and_private() -> None:

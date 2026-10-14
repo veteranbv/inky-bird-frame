@@ -1148,6 +1148,32 @@ def access_status_command(args: argparse.Namespace) -> int:
     return 0
 
 
+def access_recover_command(args: argparse.Namespace) -> int:
+    from .access import AccessStore, normalize_username
+
+    if not sys.stdin.isatty():
+        raise ValueError("access recover requires a private interactive terminal")
+    if (
+        not args.yes
+        and input(
+            "Recovery signs out every device and unlinks single sign-on. "
+            "Bird data stays unchanged. Type yes to continue: "
+        )
+        .strip()
+        .casefold()
+        != "yes"
+    ):
+        raise ValueError("Recovery cancelled; owner access is unchanged")
+    username = normalize_username(input("Inky username: "))
+    password = getpass.getpass("New Inky password: ")
+    if password != getpass.getpass("Confirm new password: "):
+        raise ValueError("Passwords do not match; owner access is unchanged")
+    store = AccessStore(_config(args, load_secrets=False).controller.state_dir)
+    store.recover_owner(username, password)
+    print_result({"owner_configured": True, "sessions_revoked": True})
+    return 0
+
+
 def serve_command(args: argparse.Namespace) -> int:
     serve_catalog(_config(args, load_secrets=False).controller)
     return 0
@@ -1775,6 +1801,12 @@ def build_parser() -> argparse.ArgumentParser:
     access_status = access_subparsers.add_parser("status")
     add_config_argument(access_status)
     access_status.set_defaults(func=access_status_command)
+    access_recover = access_subparsers.add_parser(
+        "recover", help="Replace owner credentials locally without opening network setup"
+    )
+    add_config_argument(access_recover)
+    access_recover.add_argument("--yes", action="store_true")
+    access_recover.set_defaults(func=access_recover_command)
 
     scheduler_parser = subparsers.add_parser(
         "scheduler", help="Run controller maintenance jobs on their configured schedules"

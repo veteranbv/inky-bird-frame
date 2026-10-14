@@ -6,9 +6,12 @@
 .venv
 build
 controller.env
+access.env
+private
 config.toml
 dist
-docs
+docs/**
+!docs/browser-access.md
 output
 var
 *.egg-info

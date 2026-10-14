@@ -92,9 +92,14 @@ The project has two installed roles:
 
 A trusted browser application may also read the catalog through a same-origin
 proxy or an explicitly allowed origin. Inky supplies the data interface and a
-narrow, script-free plate embed, not a standalone application. The controller
-has no built-in authentication or TLS and must not be exposed directly to the
-internet.
+narrow, script-free plate embed. The legacy catalog and embed routes remain
+trusted-network services; owner sign-in does not protect them. Do not expose
+the controller directly to the internet.
+
+This development branch adds an [account and access preview](docs/browser-access.md)
+at `/app`: local username/password setup, optional HTTPS and optional Authentik
+single sign-on. No setup code is needed for normal use. The complete bird
+journal is still being built in [#310](https://github.com/veteranbv/inky-bird-frame/issues/310).
 
 The controller and display may run on one capable Raspberry Pi, but the
 recommended wall build keeps a lightweight Pi behind the frame and runs the

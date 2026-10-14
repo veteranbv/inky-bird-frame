@@ -540,6 +540,26 @@ def serve_catalog(config: ControllerConfig) -> None:
 
         raise MissingDependencyError("Install inky-bird-frame[controller] to serve Inky") from exc
 
+    if config.tls_certificate is not None or config.tls_private_key is not None:
+        import ssl
+        import stat
+
+        from .errors import ConfigurationError
+
+        if config.tls_certificate is None or config.tls_private_key is None:
+            raise ConfigurationError("Supply both the TLS certificate and private key")
+        try:
+            key_stat = config.tls_private_key.lstat()
+            if not stat.S_ISREG(key_stat.st_mode) or stat.S_IMODE(key_stat.st_mode) & 0o077:
+                raise ConfigurationError("TLS private key must be a regular file with mode 0600")
+            context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
+            # Never let OpenSSL prompt on a supervised/headless service start.
+            context.load_cert_chain(config.tls_certificate, config.tls_private_key, password="")
+        except (OSError, ssl.SSLError) as exc:
+            raise ConfigurationError(
+                "Cannot load the TLS certificate/key; check files and their match"
+            ) from exc
+
     config.catalog_dir.mkdir(parents=True, exist_ok=True)
     rebuild_index_logging_failures(config.catalog_dir)
     uvicorn.run(
@@ -549,4 +569,7 @@ def serve_catalog(config: ControllerConfig) -> None:
         access_log=False,
         server_header=False,
         proxy_headers=False,
+        ssl_certfile=str(config.tls_certificate) if config.tls_certificate else None,
+        ssl_keyfile=str(config.tls_private_key) if config.tls_private_key else None,
+        ssl_keyfile_password="" if config.tls_private_key else None,
     )

@@ -12,9 +12,6 @@ h2 { font-size: 23px; }
 h1:focus { outline: none; }
 .intro { margin-top: 0; }
 .connection { width: fit-content; padding: 6px 12px; background: #e5eddf; border-radius: 20px; font-size: 14px; }
-.steps { display: flex; gap: 12px; padding: 0; margin: 24px 0 16px; list-style: none; font-size: 14px; }
-.steps li { flex: 1; padding: 8px 0; border-bottom: 3px solid #d3dcce; color: #53644f; }
-.steps .current { color: #253b2c; border-color: #325a3d; font-weight: 650; }
 form { background: #fffef8; padding: 20px; border: 1px solid #d3dcce; border-radius: 12px; }
 label { display: block; font-weight: 650; }
 input, button { display: block; width: 100%; min-height: 48px; padding: 12px; font: inherit; border: 1px solid #91a58d; border-radius: 7px; }
@@ -25,17 +22,20 @@ button:disabled, input:disabled { opacity: .65; cursor: not-allowed; }
 .input-row { display: flex; align-items: stretch; gap: 8px; }
 .input-row input { flex: 1; }
 .reveal { width: auto; margin-top: 8px; padding: 10px; min-width: 64px; }
-.hint, .code-status { font-size: 14px; color: #53644f; }
+.hint { font-size: 14px; color: #53644f; }
 .hint { margin: 10px 0; }
-.code-status { padding-top: 12px; border-top: 1px solid #d3dcce; }
 .error { padding: 12px; color: #782c26; border: 1px solid #c99085; background: #fff0ed; border-radius: 7px; }
+.error:empty, .connection:empty { padding: 0; margin: 0; border: 0; height: 0; }
 :focus-visible { outline: 3px solid #7552a1; outline-offset: 3px; }
-.notice { padding: 18px; border: 1px solid #d7bd77; background: #fff6df; border-radius: 10px; }
+.notice { padding: 18px; margin-bottom: 20px; border: 1px solid #d7bd77; background: #fff6df; border-radius: 10px; }
 .notice h2 { margin-top: 0; }
 .notice p { margin-bottom: 0; }
 details { margin-top: 14px; border-bottom: 1px solid #d3dcce; }
 summary { padding: 12px 0; min-height: 48px; cursor: pointer; font-weight: 600; }
-details p { font-size: 15px; }
+details p { font-size: 15px; overflow-wrap: anywhere; }
 pre { padding: 14px; background: #e9ece4; border-radius: 7px; white-space: pre-wrap; }
 code { font-size: 13px; overflow-wrap: anywhere; }
-@media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto !important; } }
+.check-label { display: flex; align-items: center; gap: 12px; margin-top: 20px; font-size: 16px; }
+.check-label input { width: 24px; min-height: 24px; margin: 0; flex-shrink: 0; accent-color: #325a3d; }
+.device { padding: 16px; margin: 12px 0; background: #fffef8; border: 1px solid #d3dcce; border-radius: 10px; }
+a { color: #325a3d; overflow-wrap: anywhere; }

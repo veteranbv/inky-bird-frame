@@ -9,6 +9,7 @@ from inky_bird_frame.birds import ObservationWindow
 from inky_bird_frame.config import (
     DiscoveryProvider,
     NotificationEvent,
+    OwnerAccessMode,
     RotationMode,
     discovery_source_label,
     load_config,
@@ -66,6 +67,7 @@ class ConfigTests(unittest.TestCase):
             config = load_config(path)
         self.assertEqual(config.controller.owner_allowed_origins, ())
         self.assertEqual(config.controller.trusted_proxy_addresses, ())
+        self.assertEqual(config.controller.owner_access_mode, OwnerAccessMode.LOCAL)
 
     def test_owner_proxy_configuration_is_explicit_and_normalized(self) -> None:
         with TemporaryDirectory() as temporary:
@@ -81,6 +83,69 @@ class ConfigTests(unittest.TestCase):
             config = load_config(path)
         self.assertEqual(config.controller.owner_allowed_origins, ("https://inky.example.test",))
         self.assertEqual(config.controller.trusted_proxy_addresses, ("192.0.2.10", "::1"))
+        self.assertEqual(config.controller.owner_access_mode, OwnerAccessMode.HTTPS_ONLY)
+
+    def test_local_mode_is_an_explicit_downgrade_with_named_host_support(self) -> None:
+        with TemporaryDirectory() as temporary:
+            path = Path(temporary) / "config.toml"
+            path.write_text(
+                CONFIG.replace(
+                    'bind_host = "0.0.0.0"',
+                    'bind_host = "0.0.0.0"\nowner_access_mode = "local"\nowner_allowed_origins = ["http://inky.home:8793"]',
+                )
+            )
+            config = load_config(path)
+        self.assertEqual(config.controller.owner_access_mode, OwnerAccessMode.LOCAL)
+
+    def test_tls_requires_both_files_and_resolves_paths(self) -> None:
+        with TemporaryDirectory() as temporary:
+            path = Path(temporary) / "config.toml"
+            path.write_text(
+                CONFIG.replace(
+                    'bind_host = "0.0.0.0"', 'bind_host = "0.0.0.0"\ntls_certificate = "cert.pem"'
+                )
+            )
+            with self.assertRaisesRegex(ConfigurationError, "supplied together"):
+                load_config(path)
+            path.write_text(
+                path.read_text().replace(
+                    'tls_certificate = "cert.pem"',
+                    'tls_certificate = "cert.pem"\ntls_private_key = "key.pem"',
+                )
+            )
+            config = load_config(path)
+            self.assertEqual(
+                config.controller.tls_certificate, (Path(temporary) / "cert.pem").resolve()
+            )
+
+    def test_oidc_configuration_requires_exact_https_callback_and_safe_environment_reference(
+        self,
+    ) -> None:
+        suffix = (
+            '\n[controller.oidc]\nissuer = "https://id.example.test/application/o/inky/"\n'
+            'client_id = "client"\n'
+            'callback_url = "https://inky.example.test/v1/owner/oidc/callback"\n'
+            'client_secret_env = "INKY_OIDC_SECRET"\n'
+        )
+        base = CONFIG.replace(
+            'bind_host = "0.0.0.0"',
+            'bind_host = "0.0.0.0"\nowner_allowed_origins = ["https://inky.example.test"]',
+        )
+        with TemporaryDirectory() as temporary:
+            path = Path(temporary) / "config.toml"
+            path.write_text(base + suffix)
+            config = load_config(path, load_secrets=False)
+            self.assertIsNotNone(config.controller.oidc)
+            for old, new in (
+                ("https://id.example.test", "http://id.example.test"),
+                ("/v1/owner/oidc/callback", "/wrong/callback"),
+                ("INKY_OIDC_SECRET", "not a variable"),
+                ("https://inky.example.test/v1", "https://wrong.example.test/v1"),
+            ):
+                with self.subTest(new=new):
+                    path.write_text(base + suffix.replace(old, new))
+                    with self.assertRaises(ConfigurationError):
+                        load_config(path, load_secrets=False)
 
     def test_owner_proxy_config_rejects_insecure_origins_and_broad_trust(self) -> None:
         for extra in (

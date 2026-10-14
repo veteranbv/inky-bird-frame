@@ -18,11 +18,11 @@ from inky_bird_frame.installation import (
     _birdbuddy_auth_check,
     _codex_auth_check,
     _display_hardware_check,
-    _health_url,
     controller_executable_path,
     controller_systemd_units,
     display_systemd_units,
     doctor,
+    health_url,
     setup,
 )
 
@@ -303,9 +303,41 @@ display_startup_delay_seconds = 30
             config = load_config(path)
 
         self.assertEqual(
-            _health_url(config, InstallationRole.DISPLAY),
+            health_url(config, InstallationRole.DISPLAY),
             "https://frame.example/inky/health",
         )
+
+    def test_controller_health_uses_direct_tls_origin_and_ipv6_loopback(self) -> None:
+        with TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            codex = root / "codex"
+            codex.touch(mode=0o700)
+            path = write_config(root, codex)
+            tls_settings = (
+                '\ntls_certificate = "cert.pem"\ntls_private_key = "key.pem"\n'
+                'owner_allowed_origins = ["https://inky.example.test:8793"]'
+            )
+            path.write_text(
+                path.read_text().replace(
+                    'bind_host = "0.0.0.0"',
+                    'bind_host = "::"' + tls_settings,
+                )
+            )
+            config = load_config(path)
+            self.assertEqual(
+                health_url(config, InstallationRole.CONTROLLER),
+                "https://inky.example.test:8793/health",
+            )
+            path.write_text(
+                path.read_text().replace(
+                    tls_settings,
+                    "",
+                )
+            )
+            self.assertEqual(
+                health_url(load_config(path), InstallationRole.CONTROLLER),
+                "http://[::1]:8793/health",
+            )
 
     def test_setup_preview_does_not_run_installer(self) -> None:
         with TemporaryDirectory() as temporary:
