@@ -514,6 +514,7 @@ class AccessStore:
         *,
         remembered: bool = False,
         provider_id: str | None = None,
+        authenticated_at: float | None = None,
     ) -> SessionCredentials:
         if len(state.sessions) >= MAX_OWNER_SESSIONS:
             raise AccessError(
@@ -528,7 +529,7 @@ class AccessStore:
                 now,
                 now,
                 remembered,
-                now,
+                now if authenticated_at is None else authenticated_at,
                 provider_id,
                 REMEMBERED_IDLE_SECONDS if remembered else OWNER_IDLE_SECONDS,
                 REMEMBERED_ABSOLUTE_SECONDS if remembered else OWNER_ABSOLUTE_SECONDS,
@@ -812,10 +813,13 @@ class AccessStore:
         issuer: str,
         subject: str,
         *,
+        authenticated_at: float,
         configured_subject: str | None = None,
         now: datetime | None = None,
     ) -> SessionCredentials:
         timestamp = (now or datetime.now(UTC)).timestamp()
+        if not 0 <= timestamp - authenticated_at < RECENT_AUTH_SECONDS:
+            raise AccessDeniedError("Single sign-on needs recent provider authentication")
         with self._locked() as state:
             self._prune(state, timestamp)
             if (
@@ -847,7 +851,11 @@ class AccessStore:
                 if allowed is None or not secrets.compare_digest(allowed, subject):
                     raise AccessDeniedError("This provider account is not linked to the Inky owner")
             credentials = self._credentials(
-                state, timestamp, remembered=tx.remembered, provider_id=tx.provider_id
+                state,
+                timestamp,
+                remembered=tx.remembered,
+                provider_id=tx.provider_id,
+                authenticated_at=authenticated_at,
             )
             state.oidc_verified_provider_id = tx.provider_id
             self._save(state)

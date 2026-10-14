@@ -12,7 +12,7 @@ import pytest
 from joserfc import jwt
 from joserfc.jwk import ECKey, RSAKey
 
-from inky_bird_frame.access import OIDCTransaction
+from inky_bird_frame.access import RECENT_AUTH_SECONDS, OIDCTransaction
 from inky_bird_frame.config import OIDCConfig
 from inky_bird_frame.oidc import (
     MAX_OIDC_RESPONSE_BYTES,
@@ -21,7 +21,7 @@ from inky_bird_frame.oidc import (
     authorization_url,
     metadata,
     provider_id,
-    verified_subject,
+    verified_identity,
 )
 
 CONFIG = OIDCConfig(
@@ -52,7 +52,8 @@ def _document() -> dict[str, object]:
     }
 
 
-def test_authorization_uses_code_pkce_minimal_scope_and_exact_callback() -> None:
+@pytest.mark.parametrize("confirm", [False, True])
+def test_authorization_uses_code_pkce_minimal_scope_and_exact_callback(confirm: bool) -> None:
     with (
         patch.dict("os.environ", {CONFIG.client_secret_env: "synthetic-secret"}),
         patch(
@@ -62,7 +63,7 @@ def test_authorization_uses_code_pkce_minimal_scope_and_exact_callback() -> None
             ),
         ),
     ):
-        url = asyncio.run(authorization_url(CONFIG, TX))
+        url = asyncio.run(authorization_url(CONFIG, replace(TX, return_to_access=confirm)))
     query = parse_qs(urlsplit(url).query)
     assert query["response_type"] == ["code"]
     assert query["scope"] == ["openid"]
@@ -71,11 +72,28 @@ def test_authorization_uses_code_pkce_minimal_scope_and_exact_callback() -> None
     assert query["nonce"] == [TX.nonce]
     assert query["code_challenge_method"] == ["S256"]
     assert "code_challenge" in query
+    assert query["max_age"] == [str(RECENT_AUTH_SECONDS)]
+    assert query.get("prompt") == (["login"] if confirm else None)
     assert "synthetic-secret" not in url and TX.verifier not in url
 
 
 @pytest.mark.parametrize(
-    "bad_claim", [None, "iss", "aud", "nonce", "exp", "iat", "sub", "azp", "signature"]
+    "bad_claim",
+    [
+        None,
+        "iss",
+        "aud",
+        "nonce",
+        "exp",
+        "iat",
+        "sub",
+        "azp",
+        "signature",
+        "missing_auth_time",
+        "stale_auth_time",
+        "future_auth_time",
+        "boolean_auth_time",
+    ],
 )
 @pytest.mark.parametrize("algorithm", ["RS256", "ES256"])
 def test_real_signed_identity_tokens_are_validated_and_secrets_are_redacted(
@@ -94,6 +112,7 @@ def test_real_signed_identity_tokens_are_validated_and_secrets_are_redacted(
         "nonce": TX.nonce,
         "iat": int(time.time()),
         "exp": int(time.time()) + 300,
+        "auth_time": int(time.time()) - 30,
     }
     if bad_claim in {"iss", "aud", "nonce", "azp"}:
         claims[str(bad_claim)] = "private-bad-claim"
@@ -103,6 +122,14 @@ def test_real_signed_identity_tokens_are_validated_and_secrets_are_redacted(
         claims["iat"] = int(time.time()) + 300
     elif bad_claim == "sub":
         claims.pop("sub")
+    elif bad_claim == "missing_auth_time":
+        claims.pop("auth_time")
+    elif bad_claim == "stale_auth_time":
+        claims["auth_time"] = int(time.time()) - RECENT_AUTH_SECONDS
+    elif bad_claim == "future_auth_time":
+        claims["auth_time"] = int(time.time()) + 300
+    elif bad_claim == "boolean_auth_time":
+        claims["auth_time"] = True
     token = jwt.encode({"alg": algorithm, "kid": "synthetic-signing-key"}, claims, key)
     if bad_claim == "signature":
         different = (
@@ -143,13 +170,12 @@ def test_real_signed_identity_tokens_are_validated_and_secrets_are_redacted(
         ),
     ):
         if bad_claim is None:
-            assert (
-                asyncio.run(verified_subject(CONFIG, TX, "private-authorization-code"))
-                == "owner-subject"
-            )
+            identity = asyncio.run(verified_identity(CONFIG, TX, "private-authorization-code"))
+            assert identity.subject == "owner-subject"
+            assert identity.authenticated_at == claims["auth_time"]
         else:
             with pytest.raises(OIDCError) as raised:
-                asyncio.run(verified_subject(CONFIG, TX, "private-authorization-code"))
+                asyncio.run(verified_identity(CONFIG, TX, "private-authorization-code"))
             for secret in (
                 token,
                 "private-access-token",

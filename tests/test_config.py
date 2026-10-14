@@ -118,6 +118,24 @@ class ConfigTests(unittest.TestCase):
                 config.controller.tls_certificate, (Path(temporary) / "cert.pem").resolve()
             )
 
+    def test_relative_and_absolute_tls_keys_preserve_the_final_symlink(self) -> None:
+        with TemporaryDirectory() as temporary:
+            root = Path(temporary).resolve()
+            target = root / "actual.pem"
+            target.write_text("synthetic key")
+            link = root / "key.pem"
+            link.symlink_to(target)
+            path = root / "config.toml"
+            for key in ("key.pem", str(link)):
+                path.write_text(
+                    CONFIG.replace(
+                        'bind_host = "0.0.0.0"',
+                        'bind_host = "0.0.0.0"\ntls_certificate = "cert.pem"\n'
+                        f'tls_private_key = "{key}"',
+                    )
+                )
+                self.assertEqual(load_config(path).controller.tls_private_key, link)
+
     def test_oidc_configuration_requires_exact_https_callback_and_safe_environment_reference(
         self,
     ) -> None:

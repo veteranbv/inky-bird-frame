@@ -143,6 +143,11 @@ def test_tls_startup_refuses_an_insecure_key_before_starting_any_listener(tmp_pa
         serve_catalog(config)
     run.assert_not_called()
     key.chmod(0o600)
+    link = tmp_path / "key-link.pem"
+    link.symlink_to(key)
+    with patch("uvicorn.run") as run, pytest.raises(ConfigurationError, match="regular file"):
+        serve_catalog(replace(config, tls_private_key=link))
+    run.assert_not_called()
     with patch("uvicorn.run") as run, pytest.raises(ConfigurationError, match="Cannot load"):
         serve_catalog(config)
     run.assert_not_called()

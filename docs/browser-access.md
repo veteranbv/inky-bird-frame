@@ -376,6 +376,13 @@ old SSO sessions. Relinking requires recent owner authentication, verifies the
 replacement and revokes old SSO sessions. Unlinking also invalidates pending
 requests, including an exchange already in progress.
 
+Inky asks the provider for the time it last checked your identity. That check
+must be less than ten minutes old. Account linking and confirmation also ask
+the provider to show its sign-in step again. Inky preserves the signed check
+time; a new provider token does not restart the ten-minute window. Keep both
+servers' clocks synchronized. A provider that omits this check time cannot
+complete sign-in.
+
 ## Advanced: private remote access
 
 Connect your phone or computer through your own VPN before opening the private

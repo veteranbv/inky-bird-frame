@@ -872,7 +872,9 @@ def load_config(path: Path, *, load_secrets: bool = True) -> AppConfig:
                 else None
             ),
             tls_private_key=(
-                _path(_string(controller, "tls_private_key"), base_dir)
+                # Keep the final component lexical so startup can reject a
+                # symlink equally for relative and absolute key paths.
+                base_dir / Path(_string(controller, "tls_private_key")).expanduser()
                 if "tls_private_key" in controller
                 else None
             ),

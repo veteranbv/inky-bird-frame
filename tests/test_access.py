@@ -17,6 +17,7 @@ from inky_bird_frame.access import (
     OIDC_TRANSACTION_SECONDS,
     OWNER_ABSOLUTE_SECONDS,
     OWNER_IDLE_SECONDS,
+    RECENT_AUTH_SECONDS,
     REMEMBERED_ABSOLUTE_SECONDS,
     REMEMBERED_IDLE_SECONDS,
     AccessDeniedError,
@@ -163,16 +164,34 @@ def test_oidc_expiry_owner_binding_revocation_and_provider_change(tmp_path: Path
         )
     link, browser = store.begin_oidc(link_secret=local.secret, now=NOW)
     link = store.consume_oidc(link.state, browser, now=NOW)
-    sso = store.complete_oidc(link, "https://identity.example.test/", "owner-subject", now=NOW)
+    sso = store.complete_oidc(
+        link,
+        "https://identity.example.test/",
+        "owner-subject",
+        authenticated_at=NOW.timestamp(),
+        now=NOW,
+    )
     assert store.oidc_linked("https://identity.example.test/")
     for subject in ("someone-else", "owner-subject"):
         tx, browser = store.begin_oidc(now=NOW)
         tx = store.consume_oidc(tx.state, browser, now=NOW)
         if subject != "owner-subject":
             with pytest.raises(AccessDeniedError):
-                store.complete_oidc(tx, "https://identity.example.test/", subject, now=NOW)
+                store.complete_oidc(
+                    tx,
+                    "https://identity.example.test/",
+                    subject,
+                    authenticated_at=NOW.timestamp(),
+                    now=NOW,
+                )
         else:
-            store.complete_oidc(tx, "https://identity.example.test/", subject, now=NOW)
+            store.complete_oidc(
+                tx,
+                "https://identity.example.test/",
+                subject,
+                authenticated_at=NOW.timestamp(),
+                now=NOW,
+            )
     with pytest.raises(AccessDeniedError):
         AccessStore(tmp_path, oidc_provider_id="replacement-provider").authenticate(
             sso.secret, now=NOW
@@ -187,7 +206,53 @@ def test_unlink_prevents_an_inflight_callback_from_relinking(tmp_path: Path) -> 
     consumed = store.consume_oidc(tx.state, browser)
     store.unlink_oidc(local.secret)
     with pytest.raises(AccessDeniedError, match="changed"):
-        store.complete_oidc(consumed, "https://identity.example.test/", "owner-subject")
+        store.complete_oidc(
+            consumed,
+            "https://identity.example.test/",
+            "owner-subject",
+            authenticated_at=datetime.now(UTC).timestamp(),
+        )
+
+
+def test_sso_return_preserves_provider_authentication_age(tmp_path: Path) -> None:
+    store = AccessStore(tmp_path, oidc_provider_id="synthetic-provider")
+    local = store.register_owner("birder", PASSPHRASE, now=NOW)
+    tx, browser = store.begin_oidc(link_secret=local.secret, now=NOW)
+    tx = store.consume_oidc(tx.state, browser, now=NOW)
+    authenticated_at = NOW.timestamp() - RECENT_AUTH_SECONDS + 10
+    credentials = store.complete_oidc(
+        tx,
+        "https://identity.example.test/",
+        "owner-subject",
+        authenticated_at=authenticated_at,
+        now=NOW,
+    )
+    session = store.authenticate(credentials.secret, now=NOW)
+    assert session.authenticated_at == authenticated_at
+    with patch("inky_bird_frame.access.datetime") as clock:
+        clock.now.return_value = NOW + timedelta(seconds=10)
+        with pytest.raises(AccessDeniedError, match="Confirm"):
+            store.unlink_oidc(credentials.secret)
+
+
+@pytest.mark.parametrize("age", [RECENT_AUTH_SECONDS, -1, float("nan")])
+def test_sso_return_rejects_old_or_invalid_authentication_before_mutating(
+    tmp_path: Path, age: float
+) -> None:
+    store = AccessStore(tmp_path, oidc_provider_id="synthetic-provider")
+    local = store.register_owner("birder", PASSPHRASE, now=NOW)
+    tx, browser = store.begin_oidc(link_secret=local.secret, now=NOW)
+    tx = store.consume_oidc(tx.state, browser, now=NOW)
+    before = store.path.read_bytes()
+    with pytest.raises(AccessDeniedError, match="recent"):
+        store.complete_oidc(
+            tx,
+            "https://identity.example.test/",
+            "owner-subject",
+            authenticated_at=NOW.timestamp() - age,
+            now=NOW,
+        )
+    assert store.path.read_bytes() == before
 
 
 NOW = datetime(2026, 1, 1, tzinfo=UTC)

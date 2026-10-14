@@ -31,7 +31,7 @@ from .access import (
     session_csrf_token,
 )
 from .config import ControllerConfig, OwnerAccessMode
-from .oidc import OIDCError, authorization_url, metadata, provider_id, verified_subject
+from .oidc import OIDCError, authorization_url, metadata, provider_id, verified_identity
 from .server import CatalogService
 
 if TYPE_CHECKING:
@@ -451,12 +451,13 @@ def create_app(config: ControllerConfig) -> ASGIApp:
                 )
             if values.get("iss") not in {None, config.oidc.issuer}:
                 raise AccessDeniedError("Provider issuer changed; start sign-in again")
-            subject = await verified_subject(config.oidc, tx, values["code"])
+            identity = await verified_identity(config.oidc, tx, values["code"])
             credentials = await run_in_threadpool(
                 store.complete_oidc,
                 tx,
                 config.oidc.issuer,
-                subject,
+                identity.subject,
+                authenticated_at=identity.authenticated_at,
                 configured_subject=config.oidc.owner_subject,
             )
             destination = (

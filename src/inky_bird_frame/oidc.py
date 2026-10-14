@@ -11,8 +11,9 @@ import asyncio
 import hashlib
 import json
 import os
+import time
 from collections.abc import Callable
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Protocol, cast
 from urllib.parse import urlsplit
 
@@ -22,7 +23,7 @@ from authlib.oidc.core import CodeIDToken
 from joserfc import jwt
 from joserfc.jwk import KeySet, KeySetSerialization
 
-from .access import AccessError, OIDCTransaction
+from .access import RECENT_AUTH_SECONDS, AccessError, OIDCTransaction
 from .config import OIDCConfig
 
 # Metadata, key sets and tokens are small documents, not media or history.
@@ -41,6 +42,12 @@ class ProviderMetadata:
     token_endpoint: str
     jwks_uri: str
     algorithms: tuple[str, ...]
+
+
+@dataclass(frozen=True)
+class VerifiedIdentity:
+    subject: str = field(repr=False)
+    authenticated_at: float
 
 
 class OAuthClient(Protocol):
@@ -199,13 +206,17 @@ async def authorization_url(config: OIDCConfig, tx: OIDCTransaction) -> str:
             nonce=tx.nonce,
             code_verifier=tx.verifier,
             response_mode="query",
+            # Request signed authentication time on ordinary sign-in too. A
+            # new ID token does not prove a new password/MFA check.
+            max_age=RECENT_AUTH_SECONDS,
+            **({"prompt": "login"} if tx.return_to_access or tx.owner_session_hash else {}),
         )
         return url
     finally:
         await client.aclose()
 
 
-async def verified_subject(config: OIDCConfig, tx: OIDCTransaction, code: str) -> str:
+async def verified_identity(config: OIDCConfig, tx: OIDCTransaction, code: str) -> VerifiedIdentity:
     try:
         async with asyncio.timeout(3 * OIDC_TIMEOUT_SECONDS):
             endpoints = await metadata(config)
@@ -243,9 +254,19 @@ async def verified_subject(config: OIDCConfig, tx: OIDCTransaction, code: str) -
                     "nonce": tx.nonce,
                     "client_id": config.client_id,
                     "access_token": tokens.get("access_token"),
+                    "max_age": RECENT_AUTH_SECONDS,
                 },
             )
             claims.validate(leeway=0)
+            authenticated_at = decoded.claims.get("auth_time")
+            if (
+                isinstance(authenticated_at, bool)
+                or not isinstance(authenticated_at, (int, float))
+                or not 0 <= time.time() - authenticated_at < RECENT_AUTH_SECONDS
+            ):
+                raise OIDCError(
+                    "Sign-in provider did not confirm recent authentication; sign in again"
+                )
             subject = decoded.claims.get("sub")
             if (
                 not isinstance(subject, str)
@@ -253,7 +274,7 @@ async def verified_subject(config: OIDCConfig, tx: OIDCTransaction, code: str) -
                 or not 1 <= len(subject) <= 255
             ):
                 raise OIDCError("Sign-in provider returned an invalid account identity")
-            return subject
+            return VerifiedIdentity(subject, float(authenticated_at))
     except OIDCError:
         raise
     except Exception:

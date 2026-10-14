@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import replace
+from datetime import UTC, datetime
 from pathlib import Path
 from unittest.mock import patch
 
@@ -9,7 +10,7 @@ from starlette.testclient import TestClient
 
 from inky_bird_frame.access import AccessStore
 from inky_bird_frame.config import ControllerConfig, OIDCConfig, OwnerAccessMode
-from inky_bird_frame.oidc import provider_id
+from inky_bird_frame.oidc import VerifiedIdentity, provider_id
 from inky_bird_frame.web import LOCAL_OWNER_COOKIE, OWNER_COOKIE, create_app
 
 PASSPHRASE = "a long synthetic browser passphrase"
@@ -171,7 +172,10 @@ def test_oidc_link_requires_owner_csrf_and_callback_is_one_use(tmp_path: Path) -
         callback = "/v1/owner/oidc/callback?state=" + tx["state"] + "&code=synthetic-code"
         assert client.head(callback).status_code == 405
         assert len(json.loads(store.path.read_text())["oidc_transactions"]) == 1
-        with patch("inky_bird_frame.web.verified_subject", return_value="owner-subject"):
+        with patch(
+            "inky_bird_frame.web.verified_identity",
+            return_value=VerifiedIdentity("owner-subject", datetime.now(UTC).timestamp()),
+        ):
             completed = client.get(callback, follow_redirects=False)
         assert completed.status_code == 303
         assert completed.headers["location"] == "/app?sign_in=linked#account"
@@ -214,7 +218,9 @@ def test_sso_only_cannot_use_password_to_confirm_browser_changes(tmp_path: Path)
     local = store.register_owner("birder", PASSPHRASE)
     tx, browser = store.begin_oidc(link_secret=local.secret)
     consumed = store.consume_oidc(tx.state, browser)
-    sso = store.complete_oidc(consumed, oidc.issuer, "owner-subject")
+    sso = store.complete_oidc(
+        consumed, oidc.issuer, "owner-subject", authenticated_at=datetime.now(UTC).timestamp()
+    )
     origin = "https://inky.example.test"
     with TestClient(create_app(config), base_url=origin) as client:
         client.cookies.set(OWNER_COOKIE, sso.secret)
