@@ -734,11 +734,15 @@ class CliTests(unittest.TestCase):
             self.assertNotIn(password, (root / "web-access/access.json").read_text())
             self.assertTrue(json.loads(output.getvalue())["data"]["sessions_revoked"])
 
-    def test_access_reset_requires_confirmation_before_reading_config(self) -> None:
+    def test_access_reset_uses_private_interactive_recovery(self) -> None:
         args = build_parser().parse_args(["access", "reset", "--config", "instance.toml"])
-        with patch("inky_bird_frame.cli._config") as config:
-            with self.assertRaisesRegex(ValueError, "requires --yes"):
-                access_bootstrap_command(args)
+        self.assertIs(args.func, access_recover_command)
+        with (
+            patch("inky_bird_frame.cli._config") as config,
+            patch("sys.stdin.isatty", return_value=False),
+        ):
+            with self.assertRaisesRegex(ValueError, "interactive terminal"):
+                args.func(args)
             config.assert_not_called()
 
     def test_access_show_code_rejects_pipes_before_config_or_state_changes(self) -> None:

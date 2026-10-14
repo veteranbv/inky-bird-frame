@@ -351,16 +351,18 @@ def test_concurrent_login_attempts_do_not_exceed_budget(tmp_path: Path) -> None:
     assert results.count("AccessRateLimitError") == 10 - MAX_LOGIN_FAILURES
 
 
-def test_reset_invalidates_all_sessions_but_keeps_other_state(tmp_path: Path) -> None:
+def test_legacy_reset_cannot_reopen_owner_registration(tmp_path: Path) -> None:
     unrelated = tmp_path / "retained-history.json"
     unrelated.write_text("history")
     store = AccessStore(tmp_path)
     secret, _ = _establish(store)
-    store.bootstrap(reset=True, now=NOW)
-    assert not store.owner_exists()
+    with pytest.raises(AccessError, match="access recover"):
+        store.bootstrap(reset=True, now=NOW)
+    assert store.owner_exists()
     assert unrelated.read_text() == "history"
+    store.authenticate(secret, now=NOW)
     with pytest.raises(AccessDeniedError):
-        store.authenticate(secret, now=NOW)
+        store.register_owner("intruder", PASSPHRASE, now=NOW)
 
 
 @pytest.mark.parametrize("kind", ["directory", "file", "lock", "symlink-file", "symlink-directory"])

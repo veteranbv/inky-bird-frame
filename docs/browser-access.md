@@ -11,7 +11,7 @@ Do not treat this access checkpoint as a release-ready full application.
 
 ## Ordinary home-network setup
 
-1. Install the controller extra, or use the controller container.
+1. Install the controller extra, or follow the [Docker address setup](docker.md#what-runs) for the container.
 2. Keep the controller on your trusted home network.
 3. Open the controller's local address followed by /app.
 4. Choose a username and an Inky password of at least 15 characters.
@@ -40,6 +40,7 @@ A private client address does not prove that a router cannot expose the server.
 A friendly hostname is optional. Add its exact origin explicitly:
 
 ~~~toml
+owner_access_mode = "local"
 owner_allowed_origins = ["http://inky.home:8793"]
 ~~~
 
@@ -72,13 +73,18 @@ sessions require another provider sign-in.
 
 Five failed password checks within 15 minutes pause further checks until the
 window clears. The allowance survives restarts. Checks run one at a time to
-bound password-hashing memory. At most 16 owner logins coexist.
+bound password-hashing memory. At most 16 owner logins coexist. The pause applies
+across clients, including the owner's password confirmation. Restrict who can
+reach the service.
 
 The controller stores an Argon2id password hash using RFC 9106's low-memory
 profile. It stores browser secrets only as hashes. Private access files use
 mode 0600 in a mode-0700 directory. Unsafe permissions, symlinks and corrupt
 state fail closed. HTTPS cookies use Secure, HttpOnly, SameSite=Strict and the
 __Host- prefix. Local HTTP uses a separate host-only cookie.
+Browser cookies are not scoped by port. Another service on the same hostname
+can receive the cookie. Use a dedicated hostname when other services share
+the computer and are outside your trust boundary.
 
 ## Recover a forgotten password
 
@@ -101,6 +107,9 @@ and a new password in a hidden prompt. It never
 accepts a password argument. Recovery replaces credentials, revokes all logins
 and unlinks single sign-on. It never leaves network account creation open.
 Your bird-service accounts, history, plates, collections and work remain.
+If you configured `owner_subject`, that managed identity still permits SSO.
+Remove it from the managed configuration and restart if you need to cut off a
+compromised identity. Local recovery clears Inky's stored link, not that setting.
 
 For SSO-only mode, set sso_only = false in the managed configuration and restart
 before using the recovered password. Recovery deliberately invalidates the
@@ -113,8 +122,10 @@ credential-sensitive. Never publish them or include them in collection exports.
 Existing pilot accounts without a username can still sign in with their
 original password. Use Account and access to choose a username and password.
 Existing pilot sessions retain their original 30-minute/eight-hour limits.
-The earlier access bootstrap/reset commands remain available for pilot
-compatibility; they are not the ordinary setup or recovery path.
+The earlier `access bootstrap` command remains for pilot compatibility.
+`access reset` now aliases interactive recovery. It does not generate a code or
+leave account creation open. Headless reset scripts must change to a deliberate
+private-terminal recovery. Neither command is needed for ordinary setup.
 
 ## Advanced: HTTPS through a reverse proxy
 
@@ -214,7 +225,14 @@ tls_private_key = "private/key.pem"
 ~~~
 
 Supply a certificate for that hostname and its matching private key.
+Direct TLS changes the entire controller listener, including the catalog,
+images, health and display telemetry. Update each display node's `controller_url`
+to the HTTPS address. For a private CA, configure the display service's
+`SSL_CERT_FILE` with the authenticated public root too. Existing HTTP clients
+will not work on that port. Use a reverse proxy if you want owner HTTPS while
+keeping the private display listener on HTTP.
 Protect the key with mode 0600 and let only the service user read it.
+Use a regular key file, not a symlink to a certificate manager's live directory.
 Startup checks both files and their match. Invalid or unreadable files stop
 startup; Inky does not start an HTTP replacement. Update the files and restart
 Inky after certificate renewal. Inky does not issue or renew certificates.

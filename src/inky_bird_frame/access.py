@@ -464,20 +464,19 @@ class AccessStore:
 
     def bootstrap(self, *, reset: bool = False, now: datetime | None = None) -> Path:
         """Write a one-use secret to a private file; never return it in CLI JSON."""
+        if reset:
+            raise AccessError(
+                "Use access recover in a private terminal; reset must not reopen setup"
+            )
         now = now or datetime.now(UTC)
         with self._locked() as state:
-            if state.owner_hash is not None and not reset:
-                raise AccessError("An owner already exists; use the explicit local reset operation")
+            if state.owner_hash is not None:
+                raise AccessError(
+                    "An owner already exists; use access recover in a private terminal"
+                )
             secret = secrets.token_urlsafe(32)
             state.bootstrap_hash = _digest(secret)
             state.bootstrap_expires_at = (now + timedelta(seconds=BOOTSTRAP_SECONDS)).timestamp()
-            if reset:
-                state.owner_hash = None
-                state.username = None
-                state.sessions.clear()
-                state.login_failures.clear()
-                state.oidc_identity = None
-                state.oidc_transactions.clear()
             secret_path = self.directory / "bootstrap-secret"
             write_bytes_atomic(secret_path, (secret + "\n").encode(), mode=0o600)
             self._save(state)
@@ -518,7 +517,7 @@ class AccessStore:
     ) -> SessionCredentials:
         if len(state.sessions) >= MAX_OWNER_SESSIONS:
             raise AccessError(
-                "Too many owner sessions; sign out on another device or reset access locally"
+                "Too many owner sessions; sign out on another device or use access recover locally"
             )
         secret = secrets.token_urlsafe(32)
         credentials = SessionCredentials(secret, session_csrf_token(secret), remembered)
