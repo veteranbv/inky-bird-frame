@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-12T11:08:35+00:00",
+  "generated_at": "2026-10-14T18:30:21+00:00",
   "schema_version": 1,
   "species": [
     {
@@ -815,6 +815,17 @@
       "scientific_name": "Corvus ossifragus",
       "slug": "fish-crow",
       "taxon_id": 8001
+    },
+    {
+      "approved_at": "2026-10-14T18:30:21+00:00",
+      "common_name": "Golden-crowned Kinglet",
+      "display_path": "species/117100-golden-crowned-kinglet/display.png",
+      "display_sha256": "e895c0a34adc6ce533ef72ecef71a51f0bdce6ccbc1eadfa0c1cb30a661d8e37",
+      "portrait_path": "species/117100-golden-crowned-kinglet/portrait.png",
+      "portrait_sha256": "d024552917f8474bd26d6fad5bfe8d4ab9846a61ff117cd2d5363e11d5e1ee6f",
+      "scientific_name": "Regulus satrapa",
+      "slug": "golden-crowned-kinglet",
+      "taxon_id": 117100
     },
     {
       "approved_at": "2026-07-10T13:55:53+00:00",

@@ -1,0 +1,46 @@
+{
+  "behavior": "Active foliage gleaner that plucks small insects and eggs from conifer needles and bark, sometimes hovering briefly; often joins mixed-species flocks outside the breeding season.",
+  "common_name": "Golden-crowned Kinglet",
+  "family": "Regulidae",
+  "field_marks": [
+    "Bright yellow crown bordered by black, with orange in adult males",
+    "Bold black-and-white facial stripes around dark eyes",
+    "Pale olive-gray upperparts and grayish-white underparts",
+    "Short, thin, pointed bill",
+    "Dark wings with a thin white wingbar and yellow-edged flight feathers",
+    "Rounded body, short wings, skinny tail, and slender dark legs with yellowish feet"
+  ],
+  "habitat": "Primarily coniferous forest, especially spruce and fir in boreal and montane settings; during migration and winter also uses mixed or deciduous woods, wetlands, shrublands, parks, and other wooded habitats.",
+  "measurements": {
+    "length": "Both sexes: 3.1\u20134.3 in (8\u201311 cm)",
+    "weight": "Both sexes: 0.1\u20130.3 oz (4\u20138 g)",
+    "wingspan": "Both sexes: 5.5\u20137.1 in (14\u201318 cm)"
+  },
+  "palette": [
+    "lemon yellow",
+    "golden orange",
+    "black",
+    "grayish white",
+    "olive gray"
+  ],
+  "scientific_name": "Regulus satrapa",
+  "sources": [
+    {
+      "title": "Golden-crowned Kinglet Identification \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Golden-crowned_Kinglet/id"
+    },
+    {
+      "title": "Golden-crowned Kinglet Life History \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Golden-crowned_Kinglet/lifehistory"
+    },
+    {
+      "title": "Golden-crowned Kinglet \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/golden-crowned-kinglet"
+    },
+    {
+      "title": "Golden-crowned kinglet \u2014 Wikipedia",
+      "url": "https://en.wikipedia.org/wiki/Golden-crowned_kinglet"
+    }
+  ],
+  "taxon_id": 117100
+}
