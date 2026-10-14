@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-14T18:30:21+00:00",
+  "generated_at": "2026-10-14T18:37:38+00:00",
   "schema_version": 1,
   "species": [
     {
@@ -1266,6 +1266,17 @@
       "scientific_name": "Colaptes auratus",
       "slug": "northern-flicker",
       "taxon_id": 18236
+    },
+    {
+      "approved_at": "2026-10-14T18:37:38+00:00",
+      "common_name": "Northern Harrier",
+      "display_path": "species/558446-northern-harrier/display.png",
+      "display_sha256": "d5a5ca90c65dcdfb7a7ebbda6c1ab6674d29bf7afbd341990434f9af9ef820b9",
+      "portrait_path": "species/558446-northern-harrier/portrait.png",
+      "portrait_sha256": "57ff31458b1303034e56d43e9f9171c895350ce91b37803cdfba0dda0cccb00e",
+      "scientific_name": "Circus hudsonius",
+      "slug": "northern-harrier",
+      "taxon_id": 558446
     },
     {
       "approved_at": "2026-07-09T22:19:32+00:00",
