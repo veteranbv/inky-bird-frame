@@ -2,6 +2,7 @@
 
 Turn the birds around you, the birds your station hears, and the birds you have
 seen into reviewed field-journal plates on a color e-paper frame.
+Bring the same approved artwork to your private browser or Homepage dashboard.
 
 [![CI](https://github.com/veteranbv/inky-bird-frame/actions/workflows/ci.yml/badge.svg)](https://github.com/veteranbv/inky-bird-frame/actions/workflows/ci.yml)
 [![Latest release](https://img.shields.io/github/v/release/veteranbv/inky-bird-frame)](https://github.com/veteranbv/inky-bird-frame/releases/latest)
@@ -52,6 +53,10 @@ appear. Your discovery location and observation history stay private.
 
 ## Start here
 
+Choose the part you want first. You can browse the shared artwork before
+buying hardware or connecting a bird service.
+
+- **Just see the birds:** [browse the plate gallery](https://henrysowell.com/birds).
 - **Build the complete wall frame:** choose parts in the
   [hardware guide](docs/hardware.md), then follow the
   [native installation](docs/installation.md).
@@ -68,6 +73,8 @@ appear. Your discovery location and observation history stay private.
 - **Add Inky to a Homepage dashboard:** use the
   [stock Homepage recipe](docs/installation.md#homepage-dashboard) for compact
   catalog stats and an optional upright plate.
+- **Already running Inky:** read the [update steps](docs/installation.md#update)
+  and [backup guide](docs/backup.md) before changing versions.
 - **Request or contribute a bird:** start with
   [Contributing](CONTRIBUTING.md).
 
@@ -100,6 +107,8 @@ This development branch adds an [account and access preview](docs/browser-access
 at `/app`: local username/password setup, optional HTTPS and optional Authentik
 single sign-on. No setup code is needed for normal use. The complete bird
 journal is still being built in [#310](https://github.com/veteranbv/inky-bird-frame/issues/310).
+See [first setup](docs/browser-access.md#ordinary-home-network-setup) and
+[what changes on upgrade](docs/browser-access.md#what-changes-on-an-existing-installation).
 
 The controller and display may run on one capable Raspberry Pi, but the
 recommended wall build keeps a lightweight Pi behind the frame and runs the

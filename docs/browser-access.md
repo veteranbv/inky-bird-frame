@@ -54,6 +54,36 @@ Only use HTTP on a trusted home network. Do not open a router port, publish
 a public tunnel or expose the legacy catalog routes. Inky does none of these
 automatically. HTTPS is available when you need encryption.
 
+## What changes on an existing installation
+
+The access preview adds a private owner account. It does not replace your
+configuration, provider credentials, detection history, plates, saved birds,
+generation limits or display settings. Your existing schedules keep running.
+The older catalog and dashboard routes retain their trusted-network contract;
+the new owner account does not put them behind a login.
+
+Before updating from v0.9.7, follow the [backup guide](backup.md) and keep the
+matching release with that backup. Use the [native update](installation.md#update)
+or [Docker update](docker.md#update) procedure for the exact reviewed candidate.
+There is no published 1.0 release yet. Do not use this development branch as
+an unattended production upgrade.
+
+After updating, check controller and display health before opening `/app`.
+Your first visit offers account creation if no owner exists. Create the owner
+on the trusted network before sharing the address. Later visits show sign-in,
+not another setup wizard. Restart the controller and confirm the same account
+still works. No source reconnection or detection import is needed for this
+access-only change.
+
+An upgrade does not opt you into HTTPS or Authentik. Keep ordinary local login,
+or follow the advanced steps below. An existing named HTTPS origin keeps
+HTTPS-only access unless you deliberately configure a local-mode downgrade.
+
+For a failed trial, stop the candidate and restore the matching old runtime
+and private backup. Do not mix a newer state directory with an older release.
+The access preview is one part of the planned browser journal. Its account
+screen is not proof that bird browsing, trips or source setup are finished.
+
 ## Sessions and private files
 
 Normal sign-in uses a browser-session cookie. It expires after 12 hours without
