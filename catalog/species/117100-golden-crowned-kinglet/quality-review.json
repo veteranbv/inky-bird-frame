@@ -1,0 +1,39 @@
+{
+  "anatomy_accuracy": 5,
+  "composition_quality": 5,
+  "correction_findings": [],
+  "findings": [
+    "The primary specimen is a single complete Golden-crowned Kinglet with one head, one bill, one tail, two convincingly attached legs and feet, and a complete wing pair with the far-side wing naturally occluded by the profile pose.",
+    "The detached wing and head are clearly separated supplementary studies rather than duplicate parts attached to the primary specimen; both are anatomically coherent.",
+    "The primary and supplementary heads have proportionate, pointed bills with consistently rendered, essentially co-terminal mandibles matching the side-profile field references.",
+    "The eye placement and size, rounded body, relatively large head, short wings, skinny tail, slender dark legs, and yellowish feet agree with the references and direct identification guidance.",
+    "The plate correctly depicts an adult male pattern: a yellow crown with an orange center bordered by black, a black-and-white striped face, olive-gray upperparts, pale grayish-white underparts, dark flight feathers with yellow edging, and a white wingbar.",
+    "The illustrated crown is raised and conspicuous but remains compatible with an adult male; the attached references also show variable crown exposure.",
+    "The common name, scientific name, and family are correctly printed as Golden-crowned Kinglet, Regulus satrapa, and Regulidae.",
+    "The printed length, weight, and wingspan values exactly match the compatible published All About Birds measurement set for both sexes: 3.1\u20134.3 in (8\u201311 cm), 0.1\u20130.3 oz (4\u20138 g), and 5.5\u20137.1 in (14\u201318 cm).",
+    "The habitat and behavior paragraphs are coherent, correctly spelled, and consistent with the direct sources.",
+    "Every field-mark bullet is legible, grammatically complete, and supported by the direct sources and attached photographs.",
+    "The vertical ruler increases correctly from 3.1 in (8 cm) at the bottom to 4.3 in (11 cm) at the top, agrees with the printed body-length range, contains no contradictory marker, and is explicitly labeled \u201cSCHEMATIC \u2014 NOT TO SCALE.\u201d",
+    "The repeated bottom caption, \u201cBODY LENGTH: Both sexes: 3.1\u20134.3 in (8\u201311 cm),\u201d agrees with both the measurement block and ruler endpoints.",
+    "No place name, ZIP code, coordinates, map, range map, or local-observation detail appears.",
+    "The layout is balanced and readable, with the primary specimen clearly dominant and the supplementary studies, palette, ruler, and text visually distinct."
+  ],
+  "location_free": true,
+  "passed": true,
+  "species_accuracy": 5,
+  "text_accuracy": 5,
+  "verification_sources": [
+    {
+      "title": "Golden-crowned Kinglet Identification \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Golden-crowned_Kinglet/id"
+    },
+    {
+      "title": "Golden-crowned Kinglet \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/golden-crowned-kinglet"
+    },
+    {
+      "title": "Golden-crowned kinglet \u2014 Wikipedia",
+      "url": "https://en.wikipedia.org/wiki/Golden-crowned_kinglet"
+    }
+  ]
+}
