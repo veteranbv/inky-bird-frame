@@ -119,7 +119,17 @@ compatibility; they are not the ordinary setup or recovery path.
 ## Advanced: HTTPS through a reverse proxy
 
 A reverse proxy receives browser requests and forwards them to Inky. You can
-use your existing proxy; Inky does not require Traefik.
+use your existing proxy; Inky does not require one for ordinary local setup.
+
+| Your setup | Recommended path | Verification so far |
+| --- | --- | --- |
+| Existing Traefik homelab | Keep Traefik and its certificate setup. Use the private route below. | Live private reference route, headers, blocked paths and callback-log privacy checked. Real owner SSO remains a separate gate. |
+| New optional HTTPS setup | Caddy can issue a private certificate. You must choose how each device trusts it. | Isolated Caddy 2.11.7 HTTPS, restart, blocked paths, spoof rejection and error-log privacy checked. No device trust was installed. |
+| Existing Nginx, Nginx Proxy Manager or another HTTP proxy | Keep your proxy if it can meet the route, header and logging rules below. | Same Inky transport contract; these products have not had a separate live qualification in this worktree. |
+
+These are proxy setups, not separate Inky providers or login systems. Your
+proxy supplies HTTPS. Inky still owns account setup, sign-in and optional OIDC.
+Do not add proxy forward-auth when using Inky's native Authentik sign-in.
 
 ~~~toml
 [controller]
@@ -142,6 +152,54 @@ HTTPS-only mode rejects insecure owner access, including direct loopback or
 backend access. It never falls back to HTTP after a TLS or provider error.
 Existing configurations with owner_allowed_origins and no access mode retain
 HTTPS-only mode on upgrade. Choosing local mode is a deliberate change.
+
+### Traefik file-provider route
+
+Use your existing private HTTPS entry point and certificate configuration.
+This dynamic example assumes the entry point is named `websecure`. Change the
+example addresses to your controller and intended private client networks:
+
+~~~yaml
+http:
+  routers:
+    inky-owner:
+      entryPoints: [websecure]
+      rule: "Host(`inky.example.test`) && (Path(`/app`) || PathPrefix(`/app/`) || Path(`/v1/access`) || (PathPrefix(`/v1/owner/`) && !Path(`/v1/owner/oidc/callback`)))"
+      middlewares: [inky-private]
+      service: inky-owner
+      tls: {}
+    inky-owner-callback:
+      entryPoints: [websecure]
+      rule: "Host(`inky.example.test`) && Method(`GET`) && Path(`/v1/owner/oidc/callback`)"
+      middlewares: [inky-private]
+      service: inky-owner
+      tls: {}
+      observability:
+        accessLogs: false
+        tracing: false
+  services:
+    inky-owner:
+      loadBalancer:
+        passHostHeader: true
+        servers:
+          - url: http://192.0.2.20:8793
+  middlewares:
+    inky-private:
+      ipAllowList:
+        sourceRange: [192.168.1.0/24]
+~~~
+
+Set `trusted_proxy_addresses` to the exact address Inky sees for Traefik.
+Do not enable `forwardedHeaders.insecure` on the entry point. If Traefik itself
+sits behind another proxy, configure only that proxy's trusted addresses.
+See [Traefik's forwarding-header settings](https://doc.traefik.io/traefik/reference/install-configuration/entrypoints/#forwarded-headers).
+
+The callback's separate router prevents its sign-in query from entering access
+logs or traces. Check your installed Traefik version supports
+[per-router logging controls](https://doc.traefik.io/traefik/reference/routing-configuration/http/routing/observability/).
+Keep routine error logs. Verify a synthetic callback marker is absent from logs
+before using a real identity. Never publish backend ports, expose the entire
+controller through a host-only rule, or bypass a certificate warning.
 
 ## Advanced: supply a certificate
 
@@ -182,6 +240,20 @@ manage certificate trust. Ordinary home-network setup does not require it.
 A Caddy instance on the controller can use this Caddyfile:
 
 ~~~caddyfile
+{
+    skip_install_trust
+    log default {
+        format filter {
+            wrap json
+            fields {
+                request>uri delete
+                request>headers delete
+                resp_headers delete
+            }
+        }
+    }
+}
+
 https://inky.home {
     tls internal
     @owner path /app /app/* /v1/access /v1/owner/*
@@ -199,6 +271,13 @@ proxy listener restricted to your private network. For a Docker Caddy container,
 use the controller service name as the upstream and trust the container's
 explicit private address instead. Do not trust an entire container network.
 
+The global log filter also protects gateway-error logs, which can otherwise
+include a callback query. It removes request URLs and headers but retains error
+messages and status. The example does not enable access logs. If you add another
+logger, apply the same filter there. Merge this block into an existing global
+block; Caddy permits only one. See [Caddy's log filters](https://caddyserver.com/docs/caddyfile/directives/log#filter).
+`skip_install_trust` prevents automatic trust installation on the proxy host.
+
 Caddy stores its CA in its persistent data directory. Preserve that directory,
 protect its signing key and back it up privately. Install only the root
 certificate, not the private key, on clients after checking its fingerprint.
@@ -206,8 +285,10 @@ Phone trust may need a separate full-trust setting. Removing the root from
 each device reverses client trust; stop the proxy and remove its DNS/routing
 entry separately. Do not delete your only CA backup before recovering clients.
 
-The recipe still needs its isolated runtime qualification before release.
-No certificate-trust changes have been made on your devices by this worktree.
+An isolated test checked HTTPS, exact proxy trust, blocked legacy paths,
+certificate rejection, persistent CA across restart and callback error-log
+privacy. It used synthetic data and request-scoped certificate trust. It did
+not change OS/browser trust, test your phone or complete a real SSO exchange.
 
 ## Advanced: Authentik and other OpenID Connect providers
 
