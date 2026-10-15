@@ -45,8 +45,10 @@ If the service stops before saving a confirmed outcome, the receipt becomes
 Inspect the source, work or notification state before an explicit retry.
 Generation-off mode, review holds and existing retry rules remain in force.
 
-If settings changed after you confirmed an action, Inky refuses that old
-request. Reload and review it again. Environment-backed credentials must also
+Each action validates and uses one captured configuration. If that file has
+already changed when the worker loads it, Inky refuses the old request. A later
+save cannot redirect an in-flight action to a different source or destination.
+Reload and review a refused action again. Environment-backed credentials must also
 be available to the browser service for manual source refresh or delivery. A
 managed deployment that injects those credentials only into the scheduler can
 continue its scheduled work, but cannot claim browser tests have access to them.

@@ -23,10 +23,10 @@ from typing import IO, Literal, cast
 from uuid import uuid4
 
 from .catalog import catalog_state_lock
-from .config import AppConfig, load_config
+from .config import AppConfig
 from .errors import InkyBirdFrameError
 from .http import write_bytes_atomic
-from .settings import current_config, settings_status
+from .settings import SettingsError, confirmed_config
 from .timeutil import parse_utc_timestamp
 
 # A week covers interrupted work discovered after a weekend. Receipts are small,
@@ -365,19 +365,10 @@ def execute_owner_operation(
     from .notifications import dispatch_notifications, requeue_dead_letters, send_notification_test
     from .recovery import retry_species
 
-    if settings_status(initial).get("revision") != revision:
-        raise OwnerOperationError("Settings changed. Reload and review this action again.")
-    current_config(initial)
-    path = initial.configuration_path
-    if path is None:
-        raise OwnerOperationError("Start the controller with its authoritative configuration file")
     try:
-        config = load_config(path, load_secrets=kind != "retry")
-    except (InkyBirdFrameError, OSError) as exc:
-        raise OwnerOperationError(
-            "This service cannot load the configured credentials. "
-            "Check the installer environment before retrying."
-        ) from exc
+        config = confirmed_config(initial, revision, load_secrets=kind != "retry")
+    except SettingsError as exc:
+        raise OwnerOperationError(str(exc)) from exc
     if kind == "refresh":
         refreshed = refresh_observations(config)
         providers = cast(list[dict[str, object]], refreshed["providers"])

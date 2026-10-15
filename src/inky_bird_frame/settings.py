@@ -84,6 +84,11 @@ def current_config(initial: AppConfig) -> AppConfig:
         raise SettingsError(
             "Configuration is invalid. Ask the installer operator to validate it."
         ) from exc
+    _installation_boundary(initial, config)
+    return config
+
+
+def _installation_boundary(initial: AppConfig, config: AppConfig) -> None:
     # Host-owned changes need a service restart. Never move an existing owner's
     # authority into a different state directory or alter its transport policy.
     from dataclasses import replace
@@ -97,7 +102,23 @@ def current_config(initial: AppConfig) -> AppConfig:
         != initial.controller
     ):
         raise SettingsError("Installation settings changed. Restart Inky before continuing.")
-    return config
+
+
+def confirmed_config(initial: AppConfig, revision: str, *, load_secrets: bool) -> AppConfig:
+    """Bind validation and execution to the same confirmed configuration bytes."""
+    path = initial.configuration_path
+    if path is None:
+        raise SettingsError("Start Inky with its authoritative configuration file")
+    content, raw, config = _read(path)
+    if _revision(content) != revision:
+        raise SettingsConflictError("Settings changed. Reload and review this action again.")
+    _installation_boundary(initial, config)
+    try:
+        return parse_config(raw, path=path, load_secrets=load_secrets)
+    except ConfigurationError as exc:
+        raise SettingsError(
+            "This service cannot load the configured credentials. Check the installer environment."
+        ) from exc
 
 
 def settings_status(initial: AppConfig) -> dict[str, object]:
@@ -105,7 +126,7 @@ def settings_status(initial: AppConfig) -> dict[str, object]:
     if path is None:
         return {"ownership": "managed", "editable": False, "revision": None}
     content, raw, config = _read(path)
-    current_config(initial)
+    _installation_boundary(initial, config)
     discovery = cast(dict[str, object], raw["discovery"])
     fields = {
         key: value
@@ -202,7 +223,7 @@ def save_settings(
         raise SettingsError("This installation has no editable configuration file")
     with catalog_state_lock(initial.controller.state_dir):
         content, raw, config = _read(path)
-        current_config(initial)
+        _installation_boundary(initial, config)
         if _revision(content) != revision:
             raise SettingsConflictError("Settings changed in another tab. Reload before saving.")
         if adopt:

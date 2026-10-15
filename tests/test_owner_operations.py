@@ -11,6 +11,7 @@ from unittest.mock import patch
 import pytest
 from starlette.testclient import TestClient
 
+from inky_bird_frame import settings as settings_module
 from inky_bird_frame.config import load_config
 from inky_bird_frame.owner_operations import (
     MAX_RESULT_BYTES,
@@ -225,6 +226,37 @@ def test_adapter_test_delivery_never_claims_failed_destinations_received_it(tmp_
         )
     assert result["failed_count"] == result["delivered_count"] == 1
     assert "failed" in str(result["message"])
+
+
+def test_concurrent_save_cannot_change_confirmed_notification_destinations(tmp_path: Path) -> None:
+    path = tmp_path / "config.toml"
+    initialize_config(path)
+    path.write_text(
+        path.read_text() + "\n[notifications]\nenabled=true\n"
+        '[[notifications.destinations]]\nname="Confirmed"\nurl="json://confirmed.test"\n'
+    )
+    config = load_config(path, load_secrets=False)
+    revision = str(settings_status(config)["revision"])
+    original_read = settings_module._read
+
+    def replace_after_read(candidate: Path) -> tuple[bytes, dict[str, object], object]:
+        captured = original_read(candidate)
+        candidate.write_text(candidate.read_text().replace("confirmed.test", "changed.test"))
+        return captured
+
+    with (
+        patch("inky_bird_frame.settings._read", side_effect=replace_after_read),
+        patch(
+            "inky_bird_frame.notifications.send_notification_test",
+            return_value={
+                "delivered": ["Confirmed"],
+                "failures": [],
+            },
+        ) as deliver,
+    ):
+        execute_owner_operation(config, "notification-test", revision=revision)
+    assert deliver.call_args.args[0].notifications.destinations[0].url == "json://confirmed.test"
+    assert "changed.test" in path.read_text()
 
 
 def test_http_operation_boundary_and_no_secret_or_model_operation(tmp_path: Path) -> None:
