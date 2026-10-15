@@ -218,8 +218,12 @@ def test_readonly_http_boundaries_selected_wall_and_minimal_embed(tmp_path: Path
         )
         embed = screen.get("/v1/dashboard/art")
         assert embed.status_code == 200 and PNG not in embed.content
-        assert "https://dashboard.example.test" in embed.headers["content-security-policy"]
-        assert "frame-ancestors 'none'" not in embed.headers["content-security-policy"]
+        directives = {
+            parts[0]: parts[1:]
+            for directive in embed.headers["content-security-policy"].split(";")
+            if (parts := directive.split())
+        }
+        assert directives["frame-ancestors"] == ["'self'", "https://dashboard.example.test"]
         assert screen.get("/v1/dashboard/assets/species/1-robin/portrait.png").content == PNG
         assert screen.get("/v1/dashboard/assets/../presentation-access.json").status_code == 404
         legacy = owner.get("/v1/catalog").json()

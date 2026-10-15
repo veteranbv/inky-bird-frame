@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import base64
+import errno
 import hashlib
 import json
 import re
@@ -378,7 +379,11 @@ class CatalogService:
             ):
                 return self._json(request, 404, {"ok": False, "error": "not found"}, browser=True)
             body = candidate.read_bytes()
-        except (OSError, RuntimeError, ValueError):
+        except (OSError, RuntimeError, ValueError) as exc:
+            # Python 3.12 reports a symlink loop as RuntimeError; newer
+            # pathlib versions can report ELOOP. Neither is a usable asset.
+            if not isinstance(exc, OSError) or exc.errno == errno.ELOOP:
+                return self._json(request, 404, {"ok": False, "error": "not found"}, browser=True)
             return self._json(
                 request,
                 503,

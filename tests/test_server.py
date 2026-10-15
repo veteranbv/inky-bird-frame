@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import errno
 import hashlib
 import io
 import json
@@ -1000,6 +1001,26 @@ class ServerTests(unittest.TestCase):
 
         self.assertEqual(status, 404)
         self.assertEqual(json.loads(body), {"ok": False, "error": "not found"})
+
+    def test_pathlib_loop_variants_return_the_same_controlled_not_found(self) -> None:
+        for error in (RuntimeError("symlink loop"), OSError(errno.ELOOP, "symlink loop")):
+            with (
+                self.subTest(error=type(error).__name__),
+                self._environment() as (
+                    _,
+                    catalog_dir,
+                    state_dir,
+                ),
+            ):
+                active = state_dir / "active-catalog.json"
+                active.write_text(json.dumps(_active_catalog(_catalog_entry())))
+                with (
+                    _serving(catalog_dir, active, state_dir) as port,
+                    patch("inky_bird_frame.server.Path.resolve", side_effect=error),
+                ):
+                    status, _, body = _get(port, "/v1/assets/species/1-robin/portrait.png")
+                self.assertEqual(status, 404)
+                self.assertEqual(json.loads(body), {"ok": False, "error": "not found"})
 
     def test_asset_path_traversal_is_rejected(self) -> None:
         secret = b"top secret"
