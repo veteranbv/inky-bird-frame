@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 from dataclasses import replace
 from datetime import UTC, datetime
 from pathlib import Path
@@ -8,7 +9,7 @@ from unittest.mock import patch
 import pytest
 from starlette.testclient import TestClient
 
-from inky_bird_frame.access import AccessStore
+from inky_bird_frame.access import AccessDeniedError, AccessStore
 from inky_bird_frame.config import ControllerConfig, OIDCConfig, OwnerAccessMode
 from inky_bird_frame.oidc import VerifiedIdentity, provider_id
 from inky_bird_frame.web import LOCAL_OWNER_COOKIE, OWNER_COOKIE, create_app
@@ -231,6 +232,117 @@ def test_sso_only_cannot_use_password_to_confirm_browser_changes(tmp_path: Path)
         )
         assert result.status_code == 400
         assert "disabled" in result.json()["error"]["message"]
+
+
+def test_incorrect_confirmation_password_keeps_the_session_and_allows_retry(tmp_path: Path) -> None:
+    config = _config(tmp_path)
+    origin = "https://inky.example.test"
+    with TestClient(create_app(config), base_url=origin) as client:
+        _setup(client, config, origin)
+        session = client.get("/v1/owner/session").json()["data"]
+        cookie = client.cookies.get(OWNER_COOKIE)
+        headers = {"Origin": origin, "X-Inky-CSRF": session["csrf"]}
+        failed = client.post(
+            "/v1/owner/confirm-password", json={"passphrase": "incorrect"}, headers=headers
+        )
+        assert failed.status_code == 403
+        assert failed.json()["error"]["code"] == "password_confirmation_failed"
+        assert "incorrect" not in failed.text
+        assert client.cookies.get(OWNER_COOKIE) == cookie
+        assert client.get("/v1/owner/session").status_code == 200
+        assert (
+            client.post(
+                "/v1/owner/confirm-password", json={"passphrase": PASSPHRASE}, headers=headers
+            ).status_code
+            == 200
+        )
+
+
+def test_oidc_confirmation_requires_a_session_and_csrf_before_contacting_provider(
+    tmp_path: Path,
+) -> None:
+    config = replace(
+        _config(tmp_path),
+        oidc=OIDCConfig(
+            "https://id.example.test/",
+            "client",
+            "https://inky.example.test/v1/owner/oidc/callback",
+            "SYNTHETIC_SECRET",
+            owner_subject="owner-subject",
+        ),
+    )
+    origin = "https://inky.example.test"
+    with (
+        TestClient(create_app(config), base_url=origin) as client,
+        patch(
+            "inky_bird_frame.web.authorization_url",
+            return_value="https://id.example.test/authorize",
+        ) as provider,
+    ):
+        assert (
+            client.post(
+                "/v1/owner/oidc/start", json={"return_to_access": True}, headers={"Origin": origin}
+            ).status_code
+            == 401
+        )
+        _setup(client, config, origin)
+        assert (
+            client.post(
+                "/v1/owner/oidc/start", json={"return_to_access": True}, headers={"Origin": origin}
+            ).status_code
+            == 401
+        )
+        provider.assert_not_called()
+
+
+def test_oidc_confirmation_callback_rotates_only_the_current_session(tmp_path: Path) -> None:
+    oidc = OIDCConfig(
+        "https://id.example.test/",
+        "client",
+        "https://inky.example.test/v1/owner/oidc/callback",
+        "SYNTHETIC_SECRET",
+    )
+    config = replace(_config(tmp_path), oidc=oidc)
+    store = AccessStore(config.state_dir, oidc_provider_id=provider_id(oidc))
+    local = store.register_owner("birder", PASSPHRASE)
+    tx, browser = store.begin_oidc(link_secret=local.secret)
+    current = store.complete_oidc(
+        store.consume_oidc(tx.state, browser),
+        oidc.issuer,
+        "owner-subject",
+        authenticated_at=datetime.now(UTC).timestamp(),
+    )
+    original_local = store.authenticate(local.secret)
+    origin = "https://inky.example.test"
+    with TestClient(create_app(config), base_url=origin) as client:
+        client.cookies.set(OWNER_COOKIE, current.secret, domain="inky.example.test", path="/")
+        with patch(
+            "inky_bird_frame.web.authorization_url",
+            return_value="https://id.example.test/authorize",
+        ):
+            started = client.post(
+                "/v1/owner/oidc/start",
+                json={"return_to_access": True, "remember": True},
+                headers={"Origin": origin, "X-Inky-CSRF": current.csrf},
+            )
+        assert started.status_code == 200
+        tx_state = json.loads(store.path.read_text())["oidc_transactions"][0]
+        with patch(
+            "inky_bird_frame.web.verified_identity",
+            return_value=VerifiedIdentity("owner-subject", datetime.now(UTC).timestamp()),
+        ):
+            result = client.get(
+                "/v1/owner/oidc/callback?state=" + tx_state["state"] + "&code=synthetic-code",
+                follow_redirects=False,
+            )
+        assert result.headers["location"] == "/app?sign_in=confirmed#account"
+        assert "Max-Age" not in result.headers["set-cookie"].split(",")[0]
+        assert client.cookies.get(OWNER_COOKIE) != current.secret
+        assert client.get("/v1/owner/session").json()["data"]["remembered"] is False
+        assert len(store.sessions(local.secret)) == 2
+        assert store.authenticate(local.secret).expires_at == original_local.expires_at
+        with pytest.raises(AccessDeniedError):
+            store.authenticate(current.secret)
 
 
 def _config(root: Path) -> ControllerConfig:

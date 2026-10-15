@@ -70,6 +70,10 @@ class AccessConfirmationRequiredError(AccessDeniedError):
     """The account is signed in but a sensitive action needs fresh authentication."""
 
 
+class AccessPasswordConfirmationError(AccessError):
+    """The signed-in owner must retry password confirmation without losing edits."""
+
+
 @dataclass(frozen=True)
 class OwnerSession:
     secret_hash: str = field(repr=False)
@@ -119,6 +123,7 @@ class OIDCTransaction:
     owner_session_hash: str | None = field(default=None, repr=False)
     access_revision: int = 0
     return_to_access: bool = False
+    confirmation_session_hash: str | None = field(default=None, repr=False)
 
 
 @dataclass
@@ -332,6 +337,7 @@ def _transactions(value: object) -> list[OIDCTransaction]:
                 _optional_hash(item.get("owner_session_hash")),
                 _revision(item.get("access_revision", 0)),
                 _boolean(item.get("return_to_access", False)),
+                _optional_hash(item.get("confirmation_session_hash")),
             )
         )
     return result
@@ -647,7 +653,7 @@ class AccessStore:
             if state.owner_hash is None or not _verify_passphrase(state.owner_hash, passphrase):
                 state.login_failures.append(timestamp)
                 self._save(state)
-                raise AccessDeniedError("Password confirmation failed")
+                raise AccessPasswordConfirmationError("Password confirmation failed; try again")
             state.login_failures.clear()
             state.sessions[state.sessions.index(session)] = replace(
                 session, authenticated_at=timestamp
@@ -747,6 +753,7 @@ class AccessStore:
         *,
         remembered: bool = False,
         link_secret: str | None = None,
+        confirm_secret: str | None = None,
         return_to_access: bool = False,
         now: datetime | None = None,
     ) -> tuple[OIDCTransaction, str]:
@@ -758,8 +765,25 @@ class AccessStore:
                     "Create your local owner account before linking single sign-on"
                 )
             owner_hash = _digest(link_secret) if link_secret else None
+            confirmation_hash = _digest(confirm_secret) if confirm_secret else None
+            if owner_hash and confirmation_hash:
+                raise AccessError("Linking and confirming single sign-on are separate actions")
             if owner_hash:
                 self._recent_session(state, owner_hash, timestamp)
+            if confirmation_hash:
+                session = next(
+                    (
+                        s
+                        for s in state.sessions
+                        if secrets.compare_digest(s.secret_hash, confirmation_hash)
+                    ),
+                    None,
+                )
+                if session is None:
+                    raise AccessDeniedError("Sign in again before confirming your identity")
+                remembered = session.remembered
+            elif return_to_access and not owner_hash:
+                raise AccessDeniedError("Sign in again before confirming your identity")
             if len(state.oidc_transactions) >= MAX_OIDC_TRANSACTIONS:
                 raise AccessRateLimitError(
                     "Too many sign-in requests; wait ten minutes before trying again"
@@ -776,6 +800,7 @@ class AccessStore:
                 owner_hash,
                 state.access_revision,
                 return_to_access,
+                confirmation_hash,
             )
             state.oidc_transactions.append(transaction)
             self._save(state)
@@ -854,6 +879,19 @@ class AccessStore:
                     allowed = identity.subject
                 if allowed is None or not secrets.compare_digest(allowed, subject):
                     raise AccessDeniedError("This provider account is not linked to the Inky owner")
+            confirmation_session = None
+            if tx.confirmation_session_hash is not None:
+                confirmation_session = next(
+                    (
+                        s
+                        for s in state.sessions
+                        if secrets.compare_digest(s.secret_hash, tx.confirmation_session_hash)
+                    ),
+                    None,
+                )
+                if confirmation_session is None:
+                    raise AccessDeniedError("This owner session ended; start sign-in again")
+                state.sessions.remove(confirmation_session)
             credentials = self._credentials(
                 state,
                 timestamp,
@@ -861,6 +899,14 @@ class AccessStore:
                 provider_id=tx.provider_id,
                 authenticated_at=authenticated_at,
             )
+            if confirmation_session is not None:
+                # Confirmation rotates the cookie, not the original session's lifetime.
+                state.sessions[-1] = replace(
+                    state.sessions[-1],
+                    created_at=confirmation_session.created_at,
+                    idle_seconds=confirmation_session.idle_seconds,
+                    absolute_seconds=confirmation_session.absolute_seconds,
+                )
             state.oidc_verified_provider_id = tx.provider_id
             self._save(state)
             return credentials

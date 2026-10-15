@@ -25,6 +25,7 @@ from .access import (
     AccessConfirmationRequiredError,
     AccessDeniedError,
     AccessError,
+    AccessPasswordConfirmationError,
     AccessRateLimitError,
     AccessStore,
     SessionCredentials,
@@ -404,7 +405,8 @@ def create_app(config: ControllerConfig) -> ASGIApp:
             raise AccessError("Single sign-on needs a configured HTTPS provider")
         body = await _json_body(request, set(), optional={"remember", "return_to_access"})
         link = request.url.path.endswith("/link")
-        secret = await authorized(request) if link else None
+        confirm = body.get("return_to_access") is True and not link
+        secret = await authorized(request) if link or confirm else None
         if not link and not await run_in_threadpool(
             store.oidc_linked, config.oidc.issuer, config.oidc.owner_subject
         ):
@@ -412,7 +414,8 @@ def create_app(config: ControllerConfig) -> ASGIApp:
         tx, browser_secret = await run_in_threadpool(
             store.begin_oidc,
             remembered=body.get("remember") is True,
-            link_secret=secret,
+            link_secret=secret if link else None,
+            confirm_secret=secret if confirm else None,
             return_to_access=body.get("return_to_access") is True,
         )
         url = await authorization_url(config.oidc, tx)
@@ -569,6 +572,8 @@ def create_app(config: ControllerConfig) -> ASGIApp:
             return _error(429, "sign_in_rate_limited", str(exc))
         if isinstance(exc, AccessConfirmationRequiredError):
             return _error(403, "confirmation_required", str(exc))
+        if isinstance(exc, AccessPasswordConfirmationError):
+            return _error(403, "password_confirmation_failed", str(exc))
         if isinstance(exc, AccessDeniedError):
             return _error(401, "sign_in_required", str(exc))
         return _error(400, "access_error", str(exc))

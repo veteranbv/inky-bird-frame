@@ -100,6 +100,10 @@ You can revoke an individual login. Password/account changes revoke every
 other login. Sensitive access changes require authentication within the last
 ten minutes. Older password sessions use a password confirmation. Older SSO
 sessions require another provider sign-in.
+An incorrect confirmation password keeps your edits on screen so you can retry.
+SSO confirmation replaces the current sign-in without using another device slot
+or extending its original expiry. The provider round trip clears unsaved edits;
+repeat your change after returning to Account and access.
 
 Five failed password checks within 15 minutes pause further checks until the
 window clears. The allowance survives restarts. Checks run one at a time to

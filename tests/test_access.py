@@ -214,6 +214,82 @@ def test_unlink_prevents_an_inflight_callback_from_relinking(tmp_path: Path) -> 
         )
 
 
+@pytest.mark.parametrize("remembered", [False, True])
+def test_oidc_confirmation_rotates_current_session_at_capacity(
+    tmp_path: Path, remembered: bool
+) -> None:
+    store = AccessStore(tmp_path, oidc_provider_id="synthetic-provider")
+    local = store.register_owner("birder", PASSPHRASE, now=NOW)
+    tx, browser = store.begin_oidc(link_secret=local.secret, remembered=remembered, now=NOW)
+    current = store.complete_oidc(
+        store.consume_oidc(tx.state, browser, now=NOW),
+        "https://identity.example.test/",
+        "owner-subject",
+        authenticated_at=NOW.timestamp(),
+        now=NOW,
+    )
+    store.logout(local.secret)
+    for _ in range(MAX_OWNER_SESSIONS - 1):
+        store.login(PASSPHRASE, username="birder", now=NOW)
+    original = store.authenticate(current.secret, now=NOW)
+    later = NOW + timedelta(minutes=11)
+    tx, browser = store.begin_oidc(confirm_secret=current.secret, return_to_access=True, now=later)
+    restarted = AccessStore(tmp_path, oidc_provider_id="synthetic-provider")
+    confirmed = restarted.complete_oidc(
+        restarted.consume_oidc(tx.state, browser, now=later),
+        "https://identity.example.test/",
+        "owner-subject",
+        authenticated_at=later.timestamp(),
+        now=later,
+    )
+    assert confirmed.secret != current.secret and confirmed.csrf != current.csrf
+    session = restarted.authenticate(confirmed.secret, now=later)
+    assert session.authenticated_at == later.timestamp()
+    assert session.created_at == original.created_at
+    assert session.expires_at == original.expires_at
+    assert session.remembered is remembered
+    assert len(json.loads(store.path.read_text())["sessions"]) == MAX_OWNER_SESSIONS
+    with pytest.raises(AccessDeniedError):
+        restarted.authenticate(current.secret, now=later)
+    with patch("inky_bird_frame.access.datetime") as clock:
+        clock.now.return_value = later
+        other_id = next(
+            s["id"] for s in restarted.sessions(confirmed.secret) if s["current"] is False
+        )
+        restarted.revoke_session(confirmed.secret, str(other_id))
+        assert len(restarted.sessions(confirmed.secret)) == MAX_OWNER_SESSIONS - 1
+
+
+@pytest.mark.parametrize("change", ["logout", "wrong_identity"])
+def test_oidc_confirmation_requires_the_original_session_and_identity(
+    tmp_path: Path, change: str
+) -> None:
+    store = AccessStore(tmp_path, oidc_provider_id="synthetic-provider")
+    local = store.register_owner("birder", PASSPHRASE, now=NOW)
+    tx, browser = store.begin_oidc(link_secret=local.secret, now=NOW)
+    current = store.complete_oidc(
+        store.consume_oidc(tx.state, browser, now=NOW),
+        "https://identity.example.test/",
+        "owner-subject",
+        authenticated_at=NOW.timestamp(),
+        now=NOW,
+    )
+    tx, browser = store.begin_oidc(confirm_secret=current.secret, return_to_access=True, now=NOW)
+    tx = store.consume_oidc(tx.state, browser, now=NOW)
+    if change == "logout":
+        store.logout(current.secret)
+    before = store.path.read_bytes()
+    with pytest.raises(AccessDeniedError):
+        store.complete_oidc(
+            tx,
+            "https://identity.example.test/",
+            "someone-else" if change == "wrong_identity" else "owner-subject",
+            authenticated_at=NOW.timestamp(),
+            now=NOW,
+        )
+    assert store.path.read_bytes() == before
+
+
 def test_sso_return_preserves_provider_authentication_age(tmp_path: Path) -> None:
     store = AccessStore(tmp_path, oidc_provider_id="synthetic-provider")
     local = store.register_owner("birder", PASSPHRASE, now=NOW)
