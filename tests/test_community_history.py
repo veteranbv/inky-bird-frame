@@ -20,10 +20,10 @@ from inky_bird_frame.journal import (
 def choices() -> dict[str, object]:
     return {
         "label": "Community trip",
-        "start_date": "2026-04-29",
-        "end_date": "2026-05-02",
-        "latitude": "37.98",
-        "longitude": "23.72",
+        "start_date": "2001-03-01",
+        "end_date": "2001-03-02",
+        "latitude": "0.125",
+        "longitude": "0.25",
         "radius_km": "10",
     }
 
@@ -49,11 +49,11 @@ def test_community_preview_is_complete_private_and_never_personal(tmp_path: Path
     history = CommunityHistory(tmp_path)
     with patch("inky_bird_frame.community.get_json", return_value=result()) as query:
         history.preview(choices())
-    assert "d1=2026-04-29" in query.call_args.args[0]
+    assert "d1=2001-03-01" in query.call_args.args[0]
     assert not (tmp_path / "journal.json").exists()
     preview = history.status()
     encoded = history.path.read_text()
-    assert "37.98" not in encoded and "23.72" not in encoded
+    assert "0.125" not in encoded and "0.25" not in encoded
     assert history.path.stat().st_mode & 0o777 == 0o600
     with pytest.raises(JournalConflictError):
         history.save("0" * 64)

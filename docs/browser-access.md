@@ -82,8 +82,8 @@ HTTPS-only access unless you deliberately configure a local-mode downgrade.
 
 For a failed trial, stop the candidate and restore the matching old runtime
 and private backup. Do not mix a newer state directory with an older release.
-Owner access is one part of the browser journal. Its account
-screen is not proof that bird browsing, trips or source setup are finished.
+Owner access is one part of the browser journal. Check bird browsing, trips
+and source setup as separate tasks, not just a successful account sign-in.
 
 ## Sessions and private files
 

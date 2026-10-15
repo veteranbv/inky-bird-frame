@@ -83,6 +83,31 @@ buying hardware or connecting a bird service.
 - **Request or contribute a bird:** start with
   [Contributing](CONTRIBUTING.md).
 
+## Your journal, on your screen
+
+Keep Favorites, remember a trip, or just enjoy the artwork. The browser uses
+the same controller as the wall frame. It does not create a second bird list
+or turn a saved selection into a sighting.
+
+<table>
+  <tr>
+    <td width="50%" valign="top" align="center">
+      <a href="docs/images/journal-home.png"><img src="docs/images/journal-home.png" alt="Inky journal Home showing an approved American Robin plate and its Saved selection label" width="330"></a>
+      <br><strong>A bird worth keeping close</strong>
+    </td>
+    <td width="50%" valign="top" align="center">
+      <a href="docs/images/journal-collection.png"><img src="docs/images/journal-collection.png" alt="A manual Garden birds collection showing Northern Cardinal and American Robin artwork, with collection tools below the plates" width="330"></a>
+      <br><strong>A collection, ready to play</strong>
+    </td>
+  </tr>
+</table>
+
+These are actual candidate screens with public approved artwork and manual
+demo selections. They contain no personal sightings or deployment information.
+Open either image for the full-size view. Start with the
+[journal guide](docs/journal.md), or add a
+[read-only screen or dashboard](docs/presentation.md).
+
 ## How it works
 
 <p align="center">
@@ -137,8 +162,10 @@ API, embed, privacy, and network limits.
 - **Nearby public sightings: iNaturalist or eBird.** These use the configured
   point, radius, and supported time window.
 - **Your sightings and trips: eBird Archive.** Inky imports the official
-  **Download My Data** ZIP or CSV without storing account credentials, locations,
-  comments, counts, or media references.
+  **Download My Data** ZIP or CSV. Retained history keeps species, dates and
+  hashed checklist links, not account credentials, locations or media. The
+  temporary upload can contain private trip details; see its
+  [deletion and retention rules](docs/history-imports.md#private-files-retention-and-backup).
 - **A live acoustic station: BirdWeather or BirdNET-Go.** Inky reads species
   summaries and never receives recordings or manages microphones.
 - **Offline acoustic results: BirdNET Analyzer.** Only CSV history you

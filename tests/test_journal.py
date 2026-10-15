@@ -502,8 +502,8 @@ def portable_document() -> dict[str, object]:
         "format": "inky-collection",
         "schema_version": 1,
         "label": "A trip",
-        "start_date": "2026-04-29",
-        "end_date": "2026-05-02",
+        "start_date": "2001-03-01",
+        "end_date": "2001-03-02",
         "members": [
             {
                 "taxon_id": 1,
@@ -586,7 +586,7 @@ def test_portable_documents_fail_closed(tmp_path: Path, mutation: str) -> None:
         members = cast(list[dict[str, object]], document["members"])
         members.append(members[0])
     elif mutation == "date":
-        document["end_date"] = "2026-04-28"
+        document["end_date"] = "2001-02-28"
     else:
         document["schema_version"] = True
     with pytest.raises(JournalError):

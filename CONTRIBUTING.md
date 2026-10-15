@@ -92,6 +92,40 @@ CI also validates GitHub Actions and shell deployment scripts.
 Browser interaction regressions use Node.js 20 or newer's built-in test runner;
 there is no Node service or frontend package installation in the user runtime.
 
+### Full browser acceptance
+
+`tests/web/journal.e2e.cjs` starts a temporary loopback installation. It uses
+random test credentials, synthetic history and candidates, and public approved
+art. It blocks external browser requests and substitutes only the community
+query in the synthetic server. It never needs provider credentials or a real
+controller. The evidence identifies those limits.
+
+Install the optional test tools outside the checkout:
+
+```bash
+qa_tools=$(mktemp -d)
+npm install --prefix "$qa_tools" --ignore-scripts --no-audit --no-fund \
+  playwright@1.62.1 @axe-core/playwright@4.14.0
+"$qa_tools/node_modules/.bin/playwright" install chromium
+INKY_QA_PLAYWRIGHT="$qa_tools/node_modules/playwright" \
+INKY_QA_AXE="$qa_tools/node_modules/@axe-core/playwright" \
+  node tests/web/journal.e2e.cjs
+```
+
+Use Node.js 20 or newer and the project's synced `.venv`. For another Python,
+set `INKY_QA_PYTHON`. Set `INKY_QA_BROWSER=firefox` or `webkit` after installing
+that Playwright browser. Firefox uses a narrow responsive viewport, not mobile
+device emulation. An existing browser executable can be selected with
+`INKY_QA_BROWSER_EXECUTABLE`. These are developer test inputs, not application
+configuration. The server child receives no vault or provider environment.
+
+The test prints its temporary evidence directory. Screenshots and cookies may
+contain random synthetic credentials; do not publish the directory wholesale.
+`INKY_QA_UPLOAD_FILE` optionally exercises upload/cancellation with a synthetic
+CSV. Never supply personal history. These journeys complement unit tests;
+they do not prove live provider contracts, physical hardware or real-phone
+certificate trust.
+
 ## Catalog contributions
 
 Catalog entries are immutable, location-neutral artifacts. A contribution adds

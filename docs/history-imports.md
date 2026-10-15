@@ -1,6 +1,6 @@
 # History imports and personal trips
 
-This guide covers the unfinished browser candidate. The release is not yet
+This guide covers the browser development candidate. The release is not yet
 qualified for production. The [CLI import paths](discovery.md) remain available.
 
 ## Your eBird checklists

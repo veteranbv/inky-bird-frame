@@ -140,9 +140,14 @@ You need:
 - Docker Engine with the Compose plugin, or Docker Desktop;
 - a 64-bit AMD64 or ARM64 host;
 - enough storage for generated images and controller state;
-- a ChatGPT plan that includes Codex, or an OpenAI API key with separate API
-  billing; and
-- a controller address that the display Pi can reach on TCP 8793.
+- a ChatGPT plan that includes Codex, or a separately billed OpenAI API key,
+  only if you want to generate missing art; and
+- a reachable controller address if you use a physical display or another device.
+
+The browser-journal release can start with approved artwork, no sources and
+generation off. It needs neither Codex sign-in nor an e-paper frame. Do not run
+the new art-first commands with an older published image; follow that release's
+existing configuration path and the [migration guide](migration-v1.md).
 
 Do not expose port 8793 to the public internet. It serves a read-only catalog
 and accepts narrow, unauthenticated display-health reports on a trusted
@@ -178,6 +183,36 @@ If you prefer a source checkout, clone the repository and use the same
 add the [source-build override](#build-from-source).
 
 ## 2. Create private configuration
+
+For a new browser-journal installation, create the seed with the release image
+you selected in `.env`. No host Python installation is needed:
+
+```bash
+cp .env.example .env
+chmod 600 .env
+inky_image=$(docker compose config --images | sort -u)
+docker run --rm --network none --read-only --cap-drop ALL \
+  --security-opt no-new-privileges --user "$(id -u):$(id -g)" \
+  --mount "type=bind,src=$PWD,dst=/setup" "$inky_image" \
+  config init --container --destination /setup/config.toml
+```
+
+This refuses to replace an existing file. The seed selects app-managed settings,
+no observation sources and generation off. Inside its existing `[controller]`
+section, add your exact browser origin. For access on the Docker host:
+
+```toml
+owner_access_mode = "local"
+owner_allowed_origins = ["http://localhost:8793"]
+```
+
+Use the actual LAN address and port for a phone. Do not duplicate the TOML
+section or use a wildcard. No provider `controller.env` is needed for art-only
+use. Skip Codex authentication until you deliberately enable generation.
+Continue at step 4, then start and verify. [Settings](settings.md) explains
+ownership, source setup and the separate AI-use confirmation.
+
+For an existing managed configuration or operator-led setup, keep the established path:
 
 ```bash
 cp config.example.toml config.toml
@@ -336,6 +371,10 @@ copy. An invalid edit leaves the last valid runtime copy untouched and prevents
 dependent services from starting through `docker compose up`.
 
 ## 5. Authenticate Codex
+
+Skip this step while generation is off. Browsing and importing approved art do
+not need Codex authentication. Before enabling generation on Ubuntu, complete
+the AppArmor step above and the controller doctor checks.
 
 Codex credentials live in a separate persistent Docker volume. Sign in once:
 

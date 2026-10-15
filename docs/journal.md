@@ -4,7 +4,7 @@ The browser uses your controller's approved art and private selections. It does
 not run another discovery service or keep a second copy of your history in
 browser storage. Open `/app` and [set up your owner account](browser-access.md).
 
-This is an unfinished 1.0 candidate, not a published release. Do not replace a
+This is a 1.0 candidate, not a published release. Do not replace a
 working deployment with this branch. The complete acceptance scope remains in
 [issue #310](https://github.com/veteranbv/inky-bird-frame/issues/310).
 
@@ -27,7 +27,8 @@ your configuration with a new seed.
   the same thing. Unknown or ambiguous taxa remain private unmatched names.
 - Collections creates, edits and removes private named selections. Reloading the
   page reads the saved controller state. A stale edit from another tab fails
-  before it overwrites a newer save.
+  before it overwrites a newer save. Artwork comes before collection tools.
+  Missing-plate review appears only when there is missing art or an unresolved member.
 - Favorites are separate bookmarks. Add or remove one on a bird's page. They
   do not join Saved birds or change your wall automatically.
 - Saved birds retains the existing flat membership. Its add/remove and import
@@ -113,9 +114,23 @@ the state folder. An older release ignores this new file, but that does not
 prove every newer state file is backward compatible. Roll back with the old
 runtime and its matching complete backup.
 
-## Qualification before release
+## Verification and release boundary
 
-The feature paths above do not replace release evidence:
+The maintained browser acceptance test is
+[`tests/web/journal.e2e.cjs`](../tests/web/journal.e2e.cjs). It runs a temporary
+controller with random credentials, synthetic history and public approved art.
+It covers normal tasks, stale edits, interrupted responses, explicit work,
+scope withdrawal and revocation. Its community query is deliberately mocked;
+it is not a live iNaturalist contract test. See [Contributing](../CONTRIBUTING.md#full-browser-acceptance).
+
+Chromium, Firefox and WebKit journeys and automated accessibility checks are
+separate from physical-phone, hardware and live-provider qualification. A narrow
+viewport is not proof of a particular phone. The README screenshots use two
+public approved plates and manual selections in a fresh art-only demo, not
+personal history. Refresh those images from the actual interface; never use
+private controller screenshots as convenient documentation fixtures.
+
+The following remain release gates, not automatic claims from a passing test:
 
 - complete live qualification of generation-optional installation and ownership
   migration across native and Docker service restarts;
