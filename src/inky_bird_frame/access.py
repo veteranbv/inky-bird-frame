@@ -360,6 +360,7 @@ class AccessStore:
 
     @contextmanager
     def _locked(self) -> Iterator[AccessState]:
+        """Read state exclusively; sample wall time only after entering this lock."""
         try:
             self.directory.mkdir(mode=0o700, parents=True, exist_ok=True)
             directory_stat = self.directory.lstat()
@@ -422,9 +423,9 @@ class AccessStore:
         now: datetime | None = None,
     ) -> SessionCredentials:
         """Claim the first local account once, under the same durable lock as login."""
-        timestamp = (now or datetime.now(UTC)).timestamp()
         name = normalize_username(username)
         with self._locked() as state:
+            timestamp = (now or datetime.now(UTC)).timestamp()
             if state.owner_hash is not None:
                 raise AccessDeniedError("An owner already exists; sign in instead")
             state.owner_hash = _hash_passphrase(passphrase)
@@ -457,8 +458,8 @@ class AccessStore:
 
     def setup_status(self, *, now: datetime | None = None) -> SetupCodeStatus | None:
         """Report setup progress, never the code, its hash, or private file paths."""
-        timestamp = (now or datetime.now(UTC)).timestamp()
         with self._locked() as state:
+            timestamp = (now or datetime.now(UTC)).timestamp()
             if state.owner_hash is not None:
                 return None
             if state.bootstrap_expires_at is None:
@@ -474,8 +475,8 @@ class AccessStore:
             raise AccessError(
                 "Use access recover in a private terminal; reset must not reopen setup"
             )
-        now = now or datetime.now(UTC)
         with self._locked() as state:
+            now = now or datetime.now(UTC)
             if state.owner_hash is not None:
                 raise AccessError(
                     "An owner already exists; use access recover in a private terminal"
@@ -546,8 +547,8 @@ class AccessStore:
     def establish_owner(
         self, secret: str, passphrase: str, *, now: datetime | None = None
     ) -> SessionCredentials:
-        timestamp = (now or datetime.now(UTC)).timestamp()
         with self._locked() as state:
+            timestamp = (now or datetime.now(UTC)).timestamp()
             if (
                 state.owner_hash is not None
                 or state.bootstrap_hash is None
@@ -575,8 +576,8 @@ class AccessStore:
         remembered: bool = False,
         now: datetime | None = None,
     ) -> SessionCredentials:
-        timestamp = (now or datetime.now(UTC)).timestamp()
         with self._locked() as state:
+            timestamp = (now or datetime.now(UTC)).timestamp()
             self._prune(state, timestamp)
             if len(state.login_failures) >= MAX_LOGIN_FAILURES:
                 raise AccessRateLimitError(
@@ -607,8 +608,8 @@ class AccessStore:
         active: bool = False,
         now: datetime | None = None,
     ) -> OwnerSession:
-        timestamp = (now or datetime.now(UTC)).timestamp()
         with self._locked() as state:
+            timestamp = (now or datetime.now(UTC)).timestamp()
             self._prune(state, timestamp)
             session = next(
                 (
@@ -632,8 +633,8 @@ class AccessStore:
     def confirm_password(
         self, secret: str, passphrase: str, *, now: datetime | None = None
     ) -> None:
-        timestamp = (now or datetime.now(UTC)).timestamp()
         with self._locked() as state:
+            timestamp = (now or datetime.now(UTC)).timestamp()
             self._prune(state, timestamp)
             if len(state.login_failures) >= MAX_LOGIN_FAILURES:
                 raise AccessRateLimitError(
@@ -684,8 +685,8 @@ class AccessStore:
         self, secret: str, username: str, passphrase: str | None = None
     ) -> SessionCredentials:
         name = normalize_username(username)
-        timestamp = datetime.now(UTC).timestamp()
         with self._locked() as state:
+            timestamp = datetime.now(UTC).timestamp()
             self._prune(state, timestamp)
             session = self._recent_session(state, _digest(secret), timestamp)
             if passphrase is not None:
@@ -708,8 +709,8 @@ class AccessStore:
     def revoke_session(self, secret: str, session_id: str) -> None:
         if not re.fullmatch(r"[0-9a-f]{64}", session_id):
             raise AccessError("Choose a sign-in from the device list")
-        timestamp = datetime.now(UTC).timestamp()
         with self._locked() as state:
+            timestamp = datetime.now(UTC).timestamp()
             self._prune(state, timestamp)
             self._recent_session(state, _digest(secret), timestamp)
             state.sessions = [
@@ -757,8 +758,8 @@ class AccessStore:
         return_to_access: bool = False,
         now: datetime | None = None,
     ) -> tuple[OIDCTransaction, str]:
-        timestamp = (now or datetime.now(UTC)).timestamp()
         with self._locked() as state:
+            timestamp = (now or datetime.now(UTC)).timestamp()
             self._prune(state, timestamp)
             if self.oidc_provider_id is None or state.owner_hash is None:
                 raise AccessDeniedError(
@@ -813,10 +814,10 @@ class AccessStore:
         *,
         now: datetime | None = None,
     ) -> OIDCTransaction:
-        timestamp = (now or datetime.now(UTC)).timestamp()
         if not state_value.isascii() or len(state_value) > 128:
             raise AccessDeniedError("Invalid sign-in response; start sign-in again")
         with self._locked() as state:
+            timestamp = (now or datetime.now(UTC)).timestamp()
             self._prune(state, timestamp)
             tx = next(
                 (
@@ -846,10 +847,10 @@ class AccessStore:
         configured_subject: str | None = None,
         now: datetime | None = None,
     ) -> SessionCredentials:
-        timestamp = (now or datetime.now(UTC)).timestamp()
-        if not 0 <= timestamp - authenticated_at < RECENT_AUTH_SECONDS:
-            raise AccessDeniedError("Single sign-on needs recent provider authentication")
         with self._locked() as state:
+            timestamp = (now or datetime.now(UTC)).timestamp()
+            if not 0 <= timestamp - authenticated_at < RECENT_AUTH_SECONDS:
+                raise AccessDeniedError("Single sign-on needs recent provider authentication")
             self._prune(state, timestamp)
             if (
                 tx.provider_id != self.oidc_provider_id
@@ -912,8 +913,8 @@ class AccessStore:
             return credentials
 
     def unlink_oidc(self, secret: str) -> None:
-        timestamp = datetime.now(UTC).timestamp()
         with self._locked() as state:
+            timestamp = datetime.now(UTC).timestamp()
             self._prune(state, timestamp)
             self._recent_session(state, _digest(secret), timestamp)
             state.oidc_identity = None

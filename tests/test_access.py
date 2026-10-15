@@ -2,9 +2,13 @@ from __future__ import annotations
 
 import json
 import os
+from collections.abc import Iterator
 from concurrent.futures import ThreadPoolExecutor
+from contextlib import contextmanager
+from dataclasses import replace
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
+from threading import Event
 from unittest.mock import patch
 
 import pytest
@@ -23,8 +27,52 @@ from inky_bird_frame.access import (
     AccessDeniedError,
     AccessError,
     AccessRateLimitError,
+    AccessState,
     AccessStore,
 )
+
+
+@pytest.mark.parametrize("operation", ["read", "activity", "confirm", "login", "link"])
+def test_waiting_request_samples_time_after_the_state_lock(tmp_path: Path, operation: str) -> None:
+    store = AccessStore(tmp_path, oidc_provider_id="synthetic-provider")
+    credential = store.register_owner("birder", PASSPHRASE, now=NOW)
+    original_lock = store._locked
+    waiting = Event()
+
+    @contextmanager
+    def marked_lock() -> Iterator[AccessState]:
+        waiting.set()
+        with original_lock() as state:
+            yield state
+
+    def request() -> None:
+        if operation == "confirm":
+            store.confirm_password(credential.secret, PASSPHRASE)
+        elif operation == "login":
+            store.login(PASSPHRASE, username="birder")
+        elif operation == "link":
+            store.begin_oidc(link_secret=credential.secret)
+        else:
+            store.authenticate(credential.secret, active=operation == "activity")
+
+    with (
+        ThreadPoolExecutor(max_workers=1) as pool,
+        patch("inky_bird_frame.access.datetime") as clock,
+        patch.object(store, "_locked", marked_lock),
+    ):
+        clock.now.return_value = NOW + timedelta(seconds=10)
+        with original_lock() as state:
+            future = pool.submit(request)
+            assert waiting.wait(timeout=5)
+            # An earlier lock holder commits activity while this request waits.
+            later = NOW + timedelta(seconds=20)
+            state.sessions[0] = replace(state.sessions[0], last_active_at=later.timestamp())
+            store._save(state)
+            clock.now.return_value = later
+        future.result(timeout=5)
+        assert store.authenticate(credential.secret).expires_at == (
+            NOW.timestamp() + OWNER_ABSOLUTE_SECONDS
+        )
 
 
 def test_first_account_is_atomic_and_username_is_required(tmp_path: Path) -> None:
