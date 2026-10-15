@@ -285,10 +285,11 @@ Inky after certificate renewal. Inky does not issue or renew certificates.
 
 For Docker, mount the files read-only through a private Compose override.
 The service runs as UID 10001. Arrange file ownership so that user can read the
-key without making it public. Override the default HTTP health check with an
-HTTPS check that validates the hostname and chain. Never use an unverified
-SSL context. Doctor uses a configured HTTPS origin on the controller port
-when available, and validates normal certificate trust.
+key without making it public. The bundled health check reads the configuration
+and selects HTTPS itself. Configure normal certificate trust, resolve the
+listener hostname inside the container, and include its exact origin in
+owner_allowed_origins. Never use an unverified SSL context. Doctor validates
+the same hostname and certificate chain.
 
 A private certificate authority requires deliberate trust on each client and
 on the controller used by doctor. Transfer its root through an authenticated
@@ -439,8 +440,33 @@ issuer, including its trailing slash. Supply the client secret to the controller
 process through the named environment variable. For Docker, put it in a private
 mode-0600 access.env file, or set INKY_ACCESS_ENV to your private file. The serving
 container receives that file separately from scheduler/provider credentials.
-Native services need that variable in their service environment. 1Password
-and other secret managers are optional ways to inject it, not user requirements.
+For native setup, supply that variable in the setup process environment once.
+The installer keeps only this named secret in a mode-0600 native-access.env
+beside config.toml. It reuses that private cache on later setup runs unless you
+supply a replacement value. Linux loads it only for the controller service;
+macOS copies it only into the private serving LaunchAgent. Scheduled jobs do
+not receive it. The secret survives service restarts and reboots. Back up the
+cache and protect the serving plist as credential-sensitive files. Never
+commit either file. 1Password and other secret managers are optional ways to
+inject the initial value, not user requirements.
+
+For an interactive Bash or Zsh shell, enter it without putting the value in
+shell history or process arguments, then run the normal native setup:
+
+~~~bash
+printf 'OIDC client secret: '
+read -r -s INKY_OIDC_CLIENT_SECRET
+printf '\n'
+export INKY_OIDC_CLIENT_SECRET
+inky-bird-frame setup controller --config /path/to/config.toml --yes
+unset INKY_OIDC_CLIENT_SECRET
+~~~
+
+Use the variable named by client_secret_env if you chose a different name.
+To rotate the secret, supply its replacement and rerun setup. Keep the generated
+cache private; do not source or manually edit it. Removing OIDC from the
+configuration removes the service injection, not the retained private cache.
+You can remove that one cache file after checking your rollback and backup needs.
 
 Sign in locally. Open Account and access > Advanced access and select Link my
 Authentik account. Authenticate at Authentik. Inky links the verified issuer

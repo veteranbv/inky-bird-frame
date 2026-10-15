@@ -97,7 +97,7 @@ from pathlib import Path
 from inky_bird_frame.catalog import catalog_state_lock
 from inky_bird_frame.config import DiscoveryProvider, load_config
 from inky_bird_frame.errors import ConfigurationError
-from inky_bird_frame.installation import controller_systemd_units
+from inky_bird_frame.installation import controller_systemd_units, native_oidc_environment
 from inky_bird_frame.publisher import sync_public_catalog
 
 
@@ -131,6 +131,7 @@ if environment_destinations:
         "The systemd installer requires direct notification URLs in the private "
         f"config file; replace url_env for: {names}"
     )
+native_oidc_environment(config, config_path)
 config.controller.workspace_dir.mkdir(parents=True, exist_ok=True)
 config.controller.catalog_dir.parent.mkdir(parents=True, exist_ok=True)
 with catalog_state_lock(config.controller.state_dir):

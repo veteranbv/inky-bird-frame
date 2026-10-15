@@ -1,14 +1,19 @@
 from __future__ import annotations
 
+import json
 import os
+import plistlib
 import subprocess
 import sys
 import unittest
+from dataclasses import replace
 from pathlib import Path
 from tempfile import TemporaryDirectory
 from unittest.mock import patch
 
-from inky_bird_frame.config import load_config
+import pytest
+
+from inky_bird_frame.config import AppConfig, OIDCConfig, load_config
 from inky_bird_frame.errors import InstallationError
 from inky_bird_frame.installation import (
     CheckStatus,
@@ -23,6 +28,7 @@ from inky_bird_frame.installation import (
     display_systemd_units,
     doctor,
     health_url,
+    native_oidc_environment,
     setup,
 )
 
@@ -56,6 +62,134 @@ rotation_mode = "shuffle_bag"
     )
     path.chmod(0o600)
     return path
+
+
+def native_oidc_config(directory: Path) -> tuple[AppConfig, Path]:
+    path = write_config(directory, Path("/usr/local/bin/codex"))
+    config = load_config(path)
+    return replace(
+        config,
+        controller=replace(
+            config.controller,
+            generation_enabled=False,
+            configuration_ownership="app",
+            oidc=OIDCConfig(
+                "https://id.example.test/",
+                "client",
+                "https://inky.example.test/v1/owner/oidc/callback",
+                "NATIVE_TEST_SECRET",
+            ),
+        ),
+    ), path
+
+
+def test_native_oidc_secret_persists_privately_and_rotates_without_other_environment(
+    tmp_path: Path,
+) -> None:
+    config, path = native_oidc_config(tmp_path)
+    secret = "synthetic with spaces, \\ \" and $ % ` apostrophe' ☃"
+    with patch.dict(os.environ, {"NATIVE_TEST_SECRET": secret, "UNRELATED": "do-not-copy"}):
+        assert native_oidc_environment(config, path) == {"NATIVE_TEST_SECRET": secret}
+    cache = tmp_path / "native-access.env"
+    assert cache.stat().st_mode & 0o777 == 0o600
+    assert json.loads(cache.read_text().partition("=")[2]) == secret
+    assert "UNRELATED" not in cache.read_text()
+    with patch.dict(os.environ, {}, clear=True):
+        assert native_oidc_environment(config, path) == {"NATIVE_TEST_SECRET": secret}
+    with patch.dict(os.environ, {"NATIVE_TEST_SECRET": "replacement-synthetic"}):
+        assert native_oidc_environment(config, path) == {
+            "NATIVE_TEST_SECRET": "replacement-synthetic"
+        }
+
+
+@pytest.mark.parametrize("kind", ["public", "symlink", "invalid", "oversize"])
+def test_native_oidc_cache_rejects_unsafe_or_invalid_state(tmp_path: Path, kind: str) -> None:
+    config, path = native_oidc_config(tmp_path)
+    cache = tmp_path / "native-access.env"
+    cache.write_text('NATIVE_TEST_SECRET="private-synthetic"\n')
+    cache.chmod(0o600)
+    if kind == "public":
+        cache.chmod(0o644)
+    elif kind == "symlink":
+        target = tmp_path / "private-original"
+        cache.rename(target)
+        cache.symlink_to(target)
+    elif kind == "invalid":
+        cache.write_text("NATIVE_TEST_SECRET=not-json-private-detail")
+    else:
+        cache.write_bytes(b"x" * (64 * 1024 + 1))
+    with patch.dict(os.environ, {}, clear=True), pytest.raises(InstallationError) as error:
+        native_oidc_environment(config, path)
+    assert "private-synthetic" not in str(error.value)
+    assert "not-json-private-detail" not in str(error.value)
+
+
+def test_native_oidc_missing_secret_and_failed_replacement_are_safe(tmp_path: Path) -> None:
+    config, path = native_oidc_config(tmp_path)
+    with patch.dict(os.environ, {}, clear=True), pytest.raises(InstallationError):
+        native_oidc_environment(config, path)
+    with patch.dict(os.environ, {"NATIVE_TEST_SECRET": "original-synthetic"}):
+        native_oidc_environment(config, path)
+    cache = tmp_path / "native-access.env"
+    original = cache.read_bytes()
+    with (
+        patch.dict(os.environ, {"NATIVE_TEST_SECRET": "replacement-synthetic"}),
+        patch(
+            "inky_bird_frame.http.Path.replace", side_effect=OSError("private replacement detail")
+        ),
+        pytest.raises(InstallationError) as error,
+    ):
+        native_oidc_environment(config, path)
+    assert "private replacement detail" not in str(error.value)
+    assert cache.read_bytes() == original
+    assert not list(tmp_path.glob(".native-access.env.*.tmp"))
+
+
+def test_native_oidc_secret_is_serving_only_in_systemd_and_private_launchd(tmp_path: Path) -> None:
+    config, config_path = native_oidc_config(tmp_path)
+    units = controller_systemd_units(
+        config,
+        executable=tmp_path / "inky",
+        app_dir=tmp_path,
+        config_path=config_path,
+        home=tmp_path,
+        user="synthetic",
+    )
+    assert "EnvironmentFile=" in units["inky-bird-frame-controller.service"]
+    assert "native-access.env" not in units["inky-bird-frame-scheduler.service"]
+    script = (Path(__file__).resolve().parents[1] / "deploy/install-controller.sh").read_text()
+    code = script.split("<<'PY'\n", 1)[1].split("\nPY\n", 1)[0]
+    paths = [
+        tmp_path / (name + ".plist")
+        for name in (
+            "serve",
+            "refresh",
+            "generate",
+            "catalog-publish",
+            "notifications",
+            "scheduler",
+        )
+    ]
+    arguments = [
+        "installer",
+        *map(str, paths),
+        str(tmp_path),
+        str(tmp_path),
+        str(config_path),
+        str(tmp_path),
+    ]
+    with (
+        patch("sys.argv", arguments),
+        patch("inky_bird_frame.config.load_config", return_value=config),
+        patch("inky_bird_frame.publisher.sync_public_catalog"),
+        patch.dict(os.environ, {"NATIVE_TEST_SECRET": "synthetic-serving-only"}),
+    ):
+        exec(compile(code, "native-installer-fixture", "exec"), {})
+    serving = plistlib.loads(paths[0].read_bytes())
+    assert serving["EnvironmentVariables"]["NATIVE_TEST_SECRET"] == "synthetic-serving-only"
+    assert paths[0].stat().st_mode & 0o777 == 0o600
+    scheduler = plistlib.loads(paths[-1].read_bytes())
+    assert "NATIVE_TEST_SECRET" not in scheduler["EnvironmentVariables"]
 
 
 class InstallationTests(unittest.TestCase):

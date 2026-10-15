@@ -14,5 +14,6 @@ var/
 config.toml
 controller.env
 access.env
+native-access.env
 private/
 .env

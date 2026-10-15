@@ -187,7 +187,7 @@ def test_macos_controller_installer_restores_previously_loaded_agents_on_failure
     script = (Path(__file__).resolve().parents[1] / "deploy" / "install-controller.sh").read_text()
 
     backup = script.index('cp "${plist}" "${plist_backup_dir}/"')
-    plist_write = script.index("plistlib.dump(payload, handle, sort_keys=True)")
+    plist_write = script.index("write_bytes_atomic(path, plistlib.dumps(payload, sort_keys=True)")
     unconditional_bootout = script.index('launchctl bootout "gui/${uid}/com.inky-bird-frame.serve"')
     bootstrap = script.index('launchctl bootstrap "gui/${uid}" "${serve_plist}"')
     completion = script.index("installation_complete=true")

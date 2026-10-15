@@ -151,7 +151,8 @@ from pathlib import Path
 from inky_bird_frame.catalog import catalog_state_lock
 from inky_bird_frame.config import DiscoveryProvider, load_config
 from inky_bird_frame.errors import ConfigurationError
-from inky_bird_frame.installation import controller_executable_path
+from inky_bird_frame.http import write_bytes_atomic
+from inky_bird_frame.installation import controller_executable_path, native_oidc_environment
 from inky_bird_frame.publisher import sync_public_catalog
 
 (
@@ -195,6 +196,7 @@ if environment_destinations:
         "The macOS LaunchAgent installer requires direct notification URLs in the "
         f"private config file; replace url_env for: {names}"
     )
+owner_environment = native_oidc_environment(config, config_path)
 schedule = config.schedule
 config.controller.workspace_dir.mkdir(parents=True, exist_ok=True)
 config.controller.catalog_dir.parent.mkdir(parents=True, exist_ok=True)
@@ -233,6 +235,7 @@ def managed_agent(name: str) -> dict[str, object]:
             ),
             "PYTHONUNBUFFERED": "1",
             "INKY_BIRD_MANAGED_LOG_PATH": str(log_dir / f"{name}.log"),
+            **(owner_environment if name == "serve" else {}),
         },
     }
 
@@ -297,21 +300,17 @@ for path, payload in (
     (serve_path, serve),
     (refresh_path, refresh),
 ):
-    with path.open("wb") as handle:
-        plistlib.dump(payload, handle, sort_keys=True)
+    write_bytes_atomic(path, plistlib.dumps(payload, sort_keys=True), mode=0o600)
 if config.controller.generation_enabled:
-    with generation_path.open("wb") as handle:
-        plistlib.dump(generation, handle, sort_keys=True)
+    write_bytes_atomic(generation_path, plistlib.dumps(generation, sort_keys=True), mode=0o600)
 else:
     generation_path.unlink(missing_ok=True)
 if config.public_catalog.enabled:
-    with catalog_publish_path.open("wb") as handle:
-        plistlib.dump(catalog_publish, handle, sort_keys=True)
+    write_bytes_atomic(catalog_publish_path, plistlib.dumps(catalog_publish, sort_keys=True), mode=0o600)
 else:
     catalog_publish_path.unlink(missing_ok=True)
 if config.notifications.enabled:
-    with notifications_path.open("wb") as handle:
-        plistlib.dump(notifications, handle, sort_keys=True)
+    write_bytes_atomic(notifications_path, plistlib.dumps(notifications, sort_keys=True), mode=0o600)
 else:
     notifications_path.unlink(missing_ok=True)
 if config.controller.configuration_ownership == "app":
@@ -325,8 +324,7 @@ if config.controller.configuration_ownership == "app":
         "StandardOutPath": str(log_dir / "scheduler.log"),
         "StandardErrorPath": str(log_dir / "scheduler.error.log"),
     }
-    with scheduler_path.open("wb") as handle:
-        plistlib.dump(scheduler, handle, sort_keys=True)
+    write_bytes_atomic(scheduler_path, plistlib.dumps(scheduler, sort_keys=True), mode=0o600)
     for path in (refresh_path, generation_path, catalog_publish_path, notifications_path):
         path.unlink(missing_ok=True)
 else:
