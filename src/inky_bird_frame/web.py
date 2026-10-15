@@ -51,7 +51,7 @@ OWNER_COOKIE = "__Host-inky-owner"
 LOCAL_OWNER_COOKIE = "inky-local-owner"
 PENDING_OIDC_COOKIE = "__Host-inky-sign-in"
 OWNER_CSP = (
-    "default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self'; "
+    "default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' blob:; "
     "connect-src 'self'; base-uri 'none'; object-src 'none'; form-action 'self'; "
     "frame-ancestors 'none'"
 )

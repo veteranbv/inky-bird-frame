@@ -1,9 +1,15 @@
 // The controller owns birds and collections. No private journal enters browser storage.
 let run = 0;
 let stopPresentation = () => {};
+let frameSignOut = null;
+export function retainSignedOutFrame() {
+  if (!frameSignOut) return false;
+  frameSignOut(); return true;
+}
 export function closeJournal() {
   run += 1;
   stopPresentation(); stopPresentation = () => {};
+  frameSignOut = null;
   document.querySelector('#journal-navigation')?.remove();
   document.body.classList.remove('journal', 'presenting');
 }
@@ -192,11 +198,49 @@ export async function openJournal(ui, message = '') {
     if (!birds.length) { main.append(empty('No approved plates in this view', 'Inky will not switch to another collection.'), link('Exit Frame', 'collections')); return; }
     document.body.classList.add('presenting'); document.querySelector('#journal-navigation')?.remove();
     let position = 0, paused = true, timer = null, expired = false;
-    const image = art(birds[0], 'frame-art'); image.loading = 'eager';
+    let image = el('img', '', 'frame-art'), objectURL = null, renderedKey = '', loading = null;
+    image.hidden = true;
     const caption = el('p'), status = el('p', '', 'hint'); status.setAttribute('role', 'status');
     const controls = el('div', '', 'frame-controls');
-    function show() { image.src = birds[position].portrait_url; image.alt = 'Approved plate: ' + birds[position].common_name; caption.textContent = birds[position].common_name; details.href = href('bird', {bird: birds[position].taxon_id}); }
-    function step(change) { position = (position + change + birds.length) % birds.length; show(); }
+    function signedOut() {
+      if (expired) return;
+      ui.sessionExpired();
+      expired = true; pause(); closeJournal();
+      image.alt = 'Last visible approved bird plate'; document.title = 'Inky';
+      status.textContent = 'Signed out. The last approved image stays visible. Sign in to continue.';
+      main.replaceChildren(image, status, link('Sign in', 'home'));
+      byId.clear(); for (const key of Object.keys(data)) delete data[key]; birds = [];
+    }
+    async function show(index = position) {
+      const bird = birds[index];
+      if (!bird || expired) return;
+      const key = bird.taxon_id + ':' + bird.portrait_sha256;
+      loading?.abort();
+      if (key === renderedKey) { position = index; status.textContent = ''; return; }
+      const request = new AbortController(); loading = request;
+      let nextURL;
+      try {
+        const response = await fetch(bird.portrait_url, {credentials: 'same-origin', cache: 'no-store', signal: request.signal});
+        if (request.signal.aborted || !image.isConnected) return;
+        if ([401, 403].includes(response.status)) { signedOut(); return; }
+        if (!response.ok || response.headers.get('content-type')?.split(';')[0] !== 'image/png') throw new Error('Plate unavailable');
+        nextURL = URL.createObjectURL(await response.blob());
+        const nextImage = el('img', '', 'frame-art'); nextImage.src = nextURL;
+        nextImage.alt = 'Approved plate: ' + bird.common_name;
+        await nextImage.decode();
+        if (request.signal.aborted || expired || !image.isConnected) return;
+        image.replaceWith(nextImage); image = nextImage;
+        if (objectURL) URL.revokeObjectURL(objectURL);
+        objectURL = nextURL; nextURL = null; renderedKey = key; position = index;
+        caption.textContent = bird.common_name; details.href = href('bird', {bird: bird.taxon_id});
+        status.textContent = '';
+      } catch (error) {
+        if (!request.signal.aborted && !expired && image.isConnected) {
+          pause(); status.textContent = 'Plate unavailable. Keeping the last approved plate. Try Next when the connection returns.';
+        }
+      } finally { if (nextURL) URL.revokeObjectURL(nextURL); }
+    }
+    function step(change) { show((position + change + birds.length) % birds.length); }
     function pause() { paused = true; clearInterval(timer); play.textContent = 'Play'; }
     const play = button('Play', () => {
       if (!paused) { pause(); return; }
@@ -222,27 +266,23 @@ export async function openJournal(ui, message = '') {
           ? current.active_taxon_ids : view === 'saved' ? current.saved_taxon_ids
           : current.collections.find(group => group.collection_id === view)?.taxon_ids;
         if (!ids || !ids.some(id => current.birds.some(bird => bird.taxon_id === id && bird.plate_ready))) {
-          pause(); image.removeAttribute('src'); image.hidden = true; caption.textContent = '';
+          pause(); loading?.abort(); image.removeAttribute('src'); image.hidden = true; caption.textContent = '';
           controls.replaceChildren(link('Choose a collection', 'collections'));
           status.textContent = 'This view has no approved plates or was removed. Inky will not switch views.';
           clearInterval(check); return;
         }
         const previous = birds[position]?.taxon_id;
         birds = current.birds.filter(bird => ids.includes(bird.taxon_id) && bird.plate_ready);
-        position = Math.max(0, birds.findIndex(bird => bird.taxon_id === previous));
-        show(); status.textContent = '';
+        await show(Math.max(0, birds.findIndex(bird => bird.taxon_id === previous)));
       }
       catch (error) {
-        if (error.code === 'sign_in_required') {
-          expired = true; pause(); closeJournal();
-          image.alt = 'Last visible approved bird plate'; document.title = 'Inky';
-          status.textContent = 'Signed out. The last approved image stays visible. Sign in to continue.';
-          main.replaceChildren(image, status, link('Sign in', 'home'));
-          byId.clear(); for (const key of Object.keys(data)) delete data[key]; birds = [];
-        } else status.textContent = 'Offline. Keeping the last approved plate.';
+        if (['sign_in_required', 'secure_access_required'].includes(error.code)) {
+          signedOut();
+        } else { pause(); loading?.abort(); status.textContent = 'Offline. Keeping the last approved plate.'; }
       }
     }, 60000);
-    stopPresentation = () => { clearInterval(timer); clearInterval(check); document.removeEventListener('keydown', key); };
+    stopPresentation = () => { clearInterval(timer); clearInterval(check); loading?.abort(); if (objectURL) URL.revokeObjectURL(objectURL); document.removeEventListener('keydown', key); };
+    frameSignOut = signedOut;
     main.append(image, caption, controls, status, note('Plates change once a minute while playing. This does not refresh the wall panel.')); show();
   } else if (area === 'manage') {
     base('Manage', 'One controller. The same sources, reviewed plates and work rules.');

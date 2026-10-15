@@ -23,6 +23,7 @@ from inky_bird_frame.journal import (
     JournalConflictError,
     JournalError,
     JournalService,
+    JournalState,
     read_journal,
     remove_collection,
     save_collection,
@@ -136,6 +137,27 @@ def test_stale_edits_and_concurrent_creates_do_not_overwrite(tmp_path: Path) -> 
         remove_collection(tmp_path, revision=0, collection_id="a" * 32)
     with pytest.raises(JournalConflictError):
         save_collection(tmp_path, revision=1, label="Missing", taxon_ids=[], collection_id="a" * 32)
+
+
+def test_storage_limit_checks_exact_persisted_bytes_and_preserves_previous_state(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    first = save_collection(tmp_path, revision=0, label="First", taxon_ids=list(range(1, 30)))
+    before = (tmp_path / "journal.json").read_bytes()
+    next_group = type(first.collections[0])("a" * 32, "Second", tuple(range(1, 30)))
+    proposed = JournalState(2, (*first.collections, next_group))
+    compact_bytes = len(json.dumps(proposed.as_dict()).encode())
+    persisted_bytes = len(
+        (json.dumps(proposed.as_dict(), indent=2, sort_keys=True) + "\n").encode()
+    )
+    limit = max(compact_bytes, len(before)) + 1
+    assert compact_bytes < limit < persisted_bytes
+    monkeypatch.setattr("inky_bird_frame.journal.MAX_JOURNAL_BYTES", limit)
+    with pytest.raises(JournalError, match="storage is full"):
+        save_collection(tmp_path, revision=1, label="Second", taxon_ids=list(range(1, 30)))
+    assert (tmp_path / "journal.json").read_bytes() == before
+    assert read_journal(tmp_path) == first
 
 
 @pytest.mark.parametrize("taxa", [[True], [0], [-1], [1, 1], ["1"], "1"])

@@ -21,7 +21,7 @@ from .codex_runner import parse_species_profile
 from .config import AppConfig, ControllerConfig, DiscoveryProvider
 from .controller import current_discovery_species, read_generation_queue, read_generation_work
 from .errors import CatalogError, GenerationError, InkyBirdFrameError
-from .http import write_json_atomic
+from .http import write_bytes_atomic
 from .notifications import notification_status
 from .server import featured_plate_entry, project_catalog
 from .timeutil import parse_utc_timestamp
@@ -180,10 +180,12 @@ def remove_collection(state_dir: Path, *, revision: object, collection_id: objec
 
 
 def _write_journal(state_dir: Path, state: JournalState) -> None:
-    payload = state.as_dict()
-    if len(json.dumps(payload).encode()) > MAX_JOURNAL_BYTES:
-        raise JournalError("Journal storage is full. Export and remove unused collections first.")
-    write_json_atomic(state_dir / "journal.json", payload, mode=0o600)
+    encoded = (json.dumps(state.as_dict(), indent=2, sort_keys=True) + "\n").encode("utf-8")
+    if len(encoded) > MAX_JOURNAL_BYTES:
+        raise JournalError(
+            "Journal storage is full. Back it up and remove unused collections first."
+        )
+    write_bytes_atomic(state_dir / "journal.json", encoded, mode=0o600)
 
 
 class JournalService:
@@ -235,6 +237,7 @@ class JournalService:
                         if taxon_id in identities
                         else [],
                         "portrait_url": f"/v1/owner/journal/birds/{taxon_id}/portrait",
+                        "portrait_sha256": entry["portrait_sha256"],
                     }
                 )
             approved_ids = {cast(int, bird["taxon_id"]) for bird in birds}

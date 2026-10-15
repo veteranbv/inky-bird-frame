@@ -1,4 +1,4 @@
-import {openJournal, closeJournal} from '/app/journal.js';
+import {openJournal, closeJournal, retainSignedOutFrame} from '/app/journal.js';
 
 const main = document.querySelector('#main');
 let csrf = '';
@@ -221,6 +221,7 @@ async function signedIn(access, message = '') {
   const session = await api('/v1/owner/session'); csrf = session.csrf;
   if (location.hash === '#account') { await accountAccess(access, session, message); return; }
   await openJournal({api, element, button, screen, signOut, showProblem,
+    sessionExpired: () => { csrf = ''; },
     account: () => accountAccess(access, session)}, message);
 }
 
@@ -372,7 +373,10 @@ async function accountAccess(access, session, message = '') {
 }
 
 function showProblem(error) {
-  if (error.code === 'sign_in_required') { csrf = ''; load('Your session ended. Sign in again.'); return; }
+  if (error.code === 'sign_in_required') {
+    csrf = ''; if (retainSignedOutFrame()) return;
+    load('Your session ended. Sign in again.'); return;
+  }
   screen('Inky needs attention', error.message);
   main.append(button('Try again', () => load()), help('If the problem continues', ['Check that Inky is running and your home network or private VPN is connected. For a private-state error, check storage and permissions. Do not delete state to hide an error.']));
 }
