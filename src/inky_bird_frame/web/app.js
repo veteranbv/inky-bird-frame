@@ -20,12 +20,22 @@ class RequestError extends Error {
 }
 
 async function api(path, body) {
+  return request(path, {
+    method: body === undefined ? 'GET' : 'POST',
+    headers: body === undefined ? {} : {'Content-Type': 'application/json', 'X-Inky-CSRF': csrf},
+    body: body === undefined ? undefined : JSON.stringify(body)
+  });
+}
+
+async function upload(path, file, signal) {
+  return request(path, {method: 'POST', headers: {'Content-Type': 'application/octet-stream', 'X-Inky-CSRF': csrf}, body: file, signal});
+}
+
+async function request(path, options) {
   let response;
   try {
     response = await fetch(path, {
-      method: body === undefined ? 'GET' : 'POST', credentials: 'same-origin', cache: 'no-store',
-      headers: body === undefined ? {} : {'Content-Type': 'application/json', 'X-Inky-CSRF': csrf},
-      body: body === undefined ? undefined : JSON.stringify(body)
+      ...options, credentials: 'same-origin', cache: 'no-store'
     });
   } catch { throw new RequestError('Inky cannot be reached. Check your connection and try again.', 'offline'); }
   let result;
@@ -220,7 +230,7 @@ async function signOut() {
 async function signedIn(access, message = '') {
   const session = await api('/v1/owner/session'); csrf = session.csrf;
   if (location.hash === '#account') { await accountAccess(access, session, message); return; }
-  await openJournal({api, element, button, screen, signOut, showProblem,
+  await openJournal({api, upload, element, button, screen, signOut, showProblem,
     sessionExpired: () => { csrf = ''; },
     account: () => accountAccess(access, session)}, message);
 }

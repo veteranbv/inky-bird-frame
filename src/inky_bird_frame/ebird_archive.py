@@ -6,10 +6,11 @@ import csv
 import fcntl
 import hashlib
 import json
+import re
 import stat
 import zipfile
 from collections.abc import Iterator
-from contextlib import contextmanager
+from contextlib import contextmanager, nullcontext
 from dataclasses import dataclass
 from datetime import UTC, date, datetime
 from io import TextIOWrapper
@@ -17,8 +18,9 @@ from pathlib import Path
 from typing import TextIO
 
 from .birds import DateRange, EbirdArchiveSpecies, ObservationWindow, date_range_for_window
+from .catalog import catalog_state_lock
 from .errors import DataSourceError
-from .http import write_json_atomic
+from .http import write_bytes_atomic, write_json_atomic
 
 STATE_FILENAME = "ebird-archive-observations.json"
 CSV_FILENAME = "MyEBirdData.csv"
@@ -133,6 +135,58 @@ class _StoredChecklist:
         }
 
 
+@dataclass(frozen=True)
+class EbirdChecklist:
+    """A private record; location is available only while parsing the source file."""
+
+    checklist_hash: str
+    observed_on: date
+    species: tuple[EbirdArchiveSpecies, ...]
+    location: str | None = None
+
+
+def _revision(state_dir: Path) -> str:
+    path = _state_path(state_dir)
+    return hashlib.sha256(path.read_bytes() if path.exists() else b"").hexdigest()
+
+
+def _records(
+    checklists: dict[str, _StoredChecklist], locations: dict[str, str] | None = None
+) -> tuple[EbirdChecklist, ...]:
+    return tuple(
+        EbirdChecklist(
+            key,
+            checklist.observed_on,
+            tuple(
+                EbirdArchiveSpecies(item.common_name, item.scientific_name, 1)
+                for item in checklist.species
+            ),
+            (locations or {}).get(key),
+        )
+        for key, checklist in sorted(checklists.items())
+    )
+
+
+def read_ebird_checklists(state_dir: Path) -> tuple[str, tuple[EbirdChecklist, ...]]:
+    """Read complete private history without a discovery species limit."""
+    with ebird_checklists(state_dir) as snapshot:
+        return snapshot
+
+
+@contextmanager
+def ebird_checklists(state_dir: Path) -> Iterator[tuple[str, tuple[EbirdChecklist, ...]]]:
+    """Hold history stable while saving a collection linked to that revision."""
+    with _history_lock(state_dir):
+        checklists, _, _, _, _ = _read_state(_state_path(state_dir), required=False)
+        yield _revision(state_dir), _records(checklists)
+
+
+def preview_ebird_checklists(archive_path: Path) -> tuple[EbirdChecklist, ...]:
+    locations: dict[str, str] = {}
+    checklists, _, _, _, _ = _parse_archive(archive_path, locations=locations)
+    return _records(checklists, locations)
+
+
 @contextmanager
 def _history_lock(state_dir: Path) -> Iterator[None]:
     state_dir.mkdir(parents=True, exist_ok=True)
@@ -149,10 +203,9 @@ def _state_path(state_dir: Path) -> Path:
 
 
 def _require_private_file(path: Path) -> None:
-    if path.is_symlink():
-        raise DataSourceError("Refusing symlinked eBird archive state")
-    if stat.S_IMODE(path.stat().st_mode) & 0o077:
-        raise DataSourceError("eBird archive state must use mode 0600")
+    info = path.lstat()
+    if not stat.S_ISREG(info.st_mode) or stat.S_IMODE(info.st_mode) & 0o077:
+        raise DataSourceError("eBird archive state must be a regular file with mode 0600")
 
 
 def _timestamp(value: object, label: str) -> str:
@@ -303,6 +356,8 @@ def _required_text(row: dict[str, str | None], name: str, line: int) -> str:
 
 def _parse_archive(
     archive_path: Path,
+    *,
+    locations: dict[str, str] | None = None,
 ) -> tuple[dict[str, _StoredChecklist], int, int, date, date]:
     builders: dict[str, tuple[date, dict[str, _StoredSpecies]]] = {}
     rows = duplicate_rows = 0
@@ -327,6 +382,13 @@ def _parse_archive(
                 observed_on_text = _required_text(row, "Date", line)
                 observed_on = _parse_date(observed_on_text, f"date on row {line}")
                 fingerprint = hashlib.sha256(submission_id.encode()).hexdigest()
+                if locations is not None:
+                    location = (row.get("Location") or "").strip()
+                    if len(location) > 1024 or any(ord(char) < 32 for char in location):
+                        raise DataSourceError("Invalid eBird checklist location label")
+                    if fingerprint in locations and locations[fingerprint] != location:
+                        raise DataSourceError("Conflicting locations for one eBird checklist")
+                    locations[fingerprint] = location
                 checklist = builders.get(fingerprint)
                 if checklist is None:
                     species_by_name: dict[str, _StoredSpecies] = {}
@@ -366,11 +428,28 @@ def import_ebird_archive(
     now: datetime | None = None,
     allow_history_reduction: bool = False,
     dry_run: bool = False,
+    expected_revision: str | None = None,
+    operation_id: str | None = None,
+    expected_journal_revision: int | None = None,
 ) -> EbirdArchiveImportStats:
     current = (now or datetime.now(UTC)).astimezone(UTC).replace(microsecond=0).isoformat()
-    with _history_lock(state_dir):
+    # Parse completely before acquiring state locks; a large source file must
+    # not hold the journal's write lock while CSV/ZIP validation runs.
+    incoming, rows, duplicate_rows, earliest, latest = _parse_archive(archive_path)
+    with (
+        _history_lock(state_dir),
+        catalog_state_lock(state_dir) if expected_journal_revision is not None else nullcontext(),
+    ):
+        if expected_journal_revision is not None:
+            from .journal import read_journal
+
+            if read_journal(state_dir).revision != expected_journal_revision:
+                raise DataSourceError("Collections changed. Preview affected trip evidence again.")
         existing, history_started_at, _, _, _ = _read_state(_state_path(state_dir), required=False)
-        incoming, rows, duplicate_rows, earliest, latest = _parse_archive(archive_path)
+        if expected_revision is not None and _revision(state_dir) != expected_revision:
+            raise DataSourceError("eBird history changed. Preview the complete archive again.")
+        if operation_id is not None and not re.fullmatch(r"[0-9a-f]{64}", operation_id):
+            raise ValueError("Invalid import operation identity")
         removed = existing.keys() - incoming.keys()
         if removed and not allow_history_reduction:
             raise DataSourceError(
@@ -386,23 +465,7 @@ def import_ebird_archive(
             for checklist in incoming.values()
             for species in checklist.species
         }
-        if not dry_run:
-            write_json_atomic(
-                _state_path(state_dir),
-                {
-                    "schema_version": 1,
-                    "history_started_at": history_started_at or current,
-                    "last_imported_at": current,
-                    "earliest_observed_on": earliest.isoformat(),
-                    "latest_observed_on": latest.isoformat(),
-                    "checklists": {
-                        fingerprint: checklist.as_dict()
-                        for fingerprint, checklist in sorted(incoming.items())
-                    },
-                },
-                mode=0o600,
-            )
-        return EbirdArchiveImportStats(
+        stats = EbirdArchiveImportStats(
             rows=rows,
             checklists=len(incoming),
             species=len(unique_species),
@@ -415,6 +478,33 @@ def import_ebird_archive(
             latest_observed_on=latest.isoformat(),
             dry_run=dry_run,
         )
+        if not dry_run:
+            path = _state_path(state_dir)
+            previous = path.read_bytes() if path.exists() else None
+            marker = (
+                {"operation_id": operation_id, "result": stats.as_dict()}
+                if operation_id
+                else json.loads(previous or b"{}").get("owner_operation")
+            )
+            if expected_revision is not None and previous is not None:
+                write_bytes_atomic(path.with_suffix(".json.previous"), previous, mode=0o600)
+            write_json_atomic(
+                _state_path(state_dir),
+                {
+                    "schema_version": 1,
+                    "history_started_at": history_started_at or current,
+                    "last_imported_at": current,
+                    "earliest_observed_on": earliest.isoformat(),
+                    "latest_observed_on": latest.isoformat(),
+                    "checklists": {
+                        fingerprint: checklist.as_dict()
+                        for fingerprint, checklist in sorted(incoming.items())
+                    },
+                    **({"owner_operation": marker} if marker is not None else {}),
+                },
+                mode=0o600,
+            )
+        return stats
 
 
 def read_ebird_archive_history(

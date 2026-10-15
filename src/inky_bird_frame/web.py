@@ -2,9 +2,13 @@
 
 from __future__ import annotations
 
+import asyncio
+import hashlib
 import json
+import logging
+import os
 from collections.abc import AsyncIterator
-from contextlib import asynccontextmanager
+from contextlib import asynccontextmanager, suppress
 from dataclasses import asdict
 from ipaddress import ip_address
 from pathlib import Path
@@ -33,9 +37,17 @@ from .access import (
     SessionCredentials,
     session_csrf_token,
 )
+from .birdbuddy import (
+    BirdBuddyFeederSelectionRequiredError,
+    birdbuddy_status,
+    login_birdbuddy,
+    logout_birdbuddy,
+)
 from .config import AppConfig, ControllerConfig, OwnerAccessMode
-from .errors import CatalogError
+from .errors import CatalogError, DataSourceError
+from .imports import MAX_UPLOAD_BYTES, HistoryImports
 from .journal import (
+    MAX_JOURNAL_BYTES,
     JournalConflictError,
     JournalError,
     JournalService,
@@ -44,7 +56,6 @@ from .journal import (
 )
 from .oidc import OIDCError, authorization_url, metadata, provider_id, verified_identity
 from .owner_operations import (
-    KINDS,
     OperationKind,
     OwnerOperationBusyError,
     OwnerOperationError,
@@ -52,7 +63,13 @@ from .owner_operations import (
     execute_owner_operation,
 )
 from .server import CatalogService
-from .settings import SettingsConflictError, SettingsError, save_settings, settings_status
+from .settings import (
+    SettingsConflictError,
+    SettingsError,
+    current_config,
+    save_settings,
+    settings_status,
+)
 
 if TYPE_CHECKING:
     from uvicorn._types import ASGI3Application
@@ -137,13 +154,14 @@ async def _json_body(
     *,
     optional: set[str] | None = None,
     structured: set[str] | None = None,
+    maximum: int = MAX_OWNER_JSON_BYTES,
 ) -> dict[str, object]:
     if request.headers.get("content-type", "").partition(";")[0] != "application/json":
         raise AccessError("Send this operation as application/json")
     body = bytearray()
     async for chunk in request.stream():
         body.extend(chunk)
-        if len(body) > MAX_OWNER_JSON_BYTES:
+        if len(body) > maximum:
             raise AccessError("Owner request exceeds the supported size")
     try:
         value: object = json.loads(body)
@@ -234,6 +252,17 @@ def create_app(config: ControllerConfig, *, app_config: AppConfig | None = None)
     journal = JournalService(config, app_config=app_config)
     operations = OwnerOperations(config.state_dir)
     assets = Path(__file__).parent / "web"
+
+    @asynccontextmanager
+    async def foreground() -> AsyncIterator[None]:
+        reservation = operations.foreground()
+        # State locks can wait for scheduled CLI activity. Never acquire them
+        # on the ASGI event loop and stall unrelated reads or sign-in requests.
+        await run_in_threadpool(reservation.__enter__)
+        try:
+            yield
+        finally:
+            await run_in_threadpool(reservation.__exit__, None, None, None)
 
     def set_session_cookie(
         request: Request, credentials: SessionCredentials, response: Response
@@ -354,6 +383,16 @@ def create_app(config: ControllerConfig, *, app_config: AppConfig | None = None)
             raise AccessDeniedError("Refresh the page before making this change")
         await run_in_threadpool(store.authenticate, secret, csrf=token)
         await run_in_threadpool(store.logout, secret)
+        if app_config is not None:
+            try:
+                async with foreground():
+                    await run_in_threadpool(
+                        HistoryImports(app_config).cancel, uncommitted_only=True
+                    )
+            except OwnerOperationBusyError:
+                # An already confirmed commit may finish. Uploads and previews
+                # check authority again before leaving their reservation.
+                pass
         response = _result({"signed_out": True})
         response.delete_cookie(
             _cookie_name(request),
@@ -580,7 +619,10 @@ def create_app(config: ControllerConfig, *, app_config: AppConfig | None = None)
             structured={"confirm", "taxon_id"},
         )
         kind = body["kind"]
-        if kind not in KINDS or body["confirm"] is not True:
+        if (
+            kind not in {"refresh", "retry", "notification-test", "notification-retry"}
+            or body["confirm"] is not True
+        ):
             raise OwnerOperationError("Review and confirm a supported owner action")
         taxon_id = body.get("taxon_id")
         if kind == "retry":
@@ -592,15 +634,244 @@ def create_app(config: ControllerConfig, *, app_config: AppConfig | None = None)
         return _result(
             await run_in_threadpool(
                 operations.submit,
-                cast(OperationKind, kind),
+                kind,
                 key=cast(str, body["key"]),
                 inputs=inputs,
                 execute=lambda: execute_owner_operation(
                     app_config,
-                    cast(OperationKind, kind),
+                    kind,
                     revision=cast(str, body["revision"]),
                     taxon_id=taxon_id,
                 ),
+            )
+        )
+
+    def history_imports() -> HistoryImports:
+        if app_config is None:
+            raise OwnerOperationError("Start Inky with its configuration file")
+        return HistoryImports(app_config)
+
+    async def upload_history(request: Request) -> JSONResponse:
+        await authorized(request)
+        if request.headers.get("content-type") != "application/octet-stream":
+            raise OwnerOperationError("Upload the file as application/octet-stream")
+        declared = request.headers.get("content-length")
+        if declared is not None and (
+            not declared.isascii()
+            or not declared.isdigit()
+            or len(declared) > 10
+            or not 0 < int(declared) <= MAX_UPLOAD_BYTES
+        ):
+            raise OwnerOperationError("Upload must be between 1 byte and 512 MiB")
+        async with foreground():
+            imports = history_imports()
+            identifier, handle = await run_in_threadpool(
+                imports.begin,
+                request.path_params["kind"],
+                observed_on=request.query_params.get("observed_on"),
+            )
+            try:
+                digest, size = hashlib.sha256(), 0
+                # 30 minutes allows a full 512 MiB transfer at roughly 300 KiB/s.
+                # A stalled request must not reserve the single worker forever.
+                async with asyncio.timeout(30 * 60):
+                    with handle:
+                        async for chunk in request.stream():
+                            size += len(chunk)
+                            if size > MAX_UPLOAD_BYTES:
+                                raise OwnerOperationError("Upload exceeds the 512 MiB wire limit")
+                            digest.update(chunk)
+                            await run_in_threadpool(handle.write, chunk)
+                        await run_in_threadpool(handle.flush)
+                        await run_in_threadpool(os.fsync, handle.fileno())
+                if declared is not None and size != int(declared):
+                    raise OwnerOperationError("Upload ended before the declared file length")
+                await authorized(request)
+                await run_in_threadpool(imports.finish_upload, identifier, digest.hexdigest(), size)
+            except BaseException as exc:
+                handle.close()
+                await run_in_threadpool(imports.cancel, identifier)
+                if isinstance(exc, TimeoutError):
+                    raise OwnerOperationError(
+                        "Upload timed out. No history changed; upload the file again."
+                    ) from exc
+                raise
+        return _result(
+            {"upload_id": identifier, "message": "File received. It has not changed history."}
+        )
+
+    async def import_status(request: Request) -> JSONResponse:
+        await authorized(request)
+        return _result(await run_in_threadpool(history_imports().status))
+
+    async def birdbuddy_account(request: Request) -> JSONResponse:
+        await authorized(request)
+        secure = (
+            request.url.scheme == "https"
+            or _loopback(request.url.hostname)
+            and request.client is not None
+            and _loopback(request.client.host)
+        )
+        try:
+            if request.method == "GET":
+                initial = current_config(app_config) if app_config is not None else None
+                state = await run_in_threadpool(
+                    birdbuddy_status,
+                    config.state_dir,
+                    include_manual_sightings=initial.discovery.birdbuddy_include_manual_sightings
+                    if initial
+                    else False,
+                )
+                return _result({"state": state, "secure_bootstrap": secure})
+            body = await _json_body(
+                request,
+                {"confirm"},
+                optional={"email", "password", "feeder_id"},
+                structured={"confirm"},
+            )
+            action = request.path_params["action"]
+            if body["confirm"] is not True:
+                raise AccessError(
+                    "Confirm the Bird Buddy access statement before sending credentials"
+                )
+            async with foreground():
+                if action == "logout":
+                    if set(body) != {"confirm"}:
+                        raise AccessError("Logout accepts no credentials")
+                    return _result(await run_in_threadpool(logout_birdbuddy, config.state_dir))
+                if action != "login":
+                    return _error(404, "not_found", "Choose a supported Bird Buddy account action")
+                if not secure:
+                    raise AccessError(
+                        "Use HTTPS or the controller's genuine loopback address for Bird Buddy "
+                        "sign-in. Local-network HTTP cannot protect that password."
+                    )
+                email, password = body.get("email"), body.get("password")
+                if (
+                    not isinstance(email, str)
+                    or not email.strip()
+                    or len(email) > 320
+                    or not isinstance(password, str)
+                    or not password
+                    or len(password) > MAX_PASSWORD_CHARACTERS
+                ):
+                    raise AccessError("Enter the dedicated guest account email and password")
+                result = await run_in_threadpool(
+                    login_birdbuddy,
+                    config.state_dir,
+                    email=email,
+                    password=password,
+                    authorization_confirmed=True,
+                    feeder_id=cast(str | None, body.get("feeder_id")),
+                )
+                return _result(result)
+        except BirdBuddyFeederSelectionRequiredError as exc:
+            return _result(
+                {"choose_feeder": True, "feeders": [asdict(feeder) for feeder in exc.feeders]}
+            )
+        except DataSourceError:
+            return _error(
+                400,
+                "birdbuddy_account",
+                "Bird Buddy could not complete this account action. Check the dedicated "
+                "guest login, continued permission and connection. Existing history is preserved.",
+            )
+
+    async def import_action(request: Request) -> JSONResponse:
+        secret = await authorized(request)
+        imports = history_imports()
+        action = request.path_params["action"]
+        if action == "retained":
+            await _json_body(request, set())
+            async with foreground():
+                return _result(await run_in_threadpool(imports.use_retained_history))
+        if action == "trip-edit":
+            body = await _json_body(request, {"upload_id"})
+            async with foreground():
+                await run_in_threadpool(imports.edit_trip, cast(str, body["upload_id"]))
+            return _result({"editing": True})
+        if action == "cancel":
+            body = await _json_body(request, {"upload_id"})
+            async with foreground():
+                await run_in_threadpool(imports.cancel, cast(str, body["upload_id"]))
+            return _result(
+                {
+                    "cancelled": True,
+                    "message": "Staged file removed. "
+                    "Confirmed history and saved collections remain.",
+                }
+            )
+        if action == "checklists":
+            body = await _json_body(request, {"upload_id", "start_date", "end_date"})
+            async with foreground():
+                return _result(
+                    await run_in_threadpool(
+                        imports.checklist_choices,
+                        cast(str, body["upload_id"]),
+                        start_date=body["start_date"],
+                        end_date=body["end_date"],
+                    )
+                )
+        if action not in {"import-preview", "import-commit", "trip-preview", "trip-save"}:
+            return _error(404, "not_found", "Choose a supported import step")
+        extra = (
+            {"preview_hash", "allow_reduction"}
+            if action == "import-commit"
+            else {"choices"}
+            if action == "trip-preview"
+            else {"preview_hash"}
+            if action == "trip-save"
+            else set()
+        )
+        body = await _json_body(
+            request,
+            {"upload_id", "key", "revision", "confirm"} | extra,
+            structured={"confirm", "allow_reduction", "choices"},
+            maximum=MAX_JOURNAL_BYTES + MAX_OWNER_JSON_BYTES,
+        )
+        if (
+            body["confirm"] is not True
+            or "allow_reduction" in body
+            and type(body["allow_reduction"]) is not bool
+        ):
+            raise OwnerOperationError("Review and confirm this import step")
+        if action == "trip-preview" and not isinstance(body["choices"], dict):
+            raise OwnerOperationError("Choose valid checklists for this trip")
+
+        def execute() -> dict[str, object]:
+            try:
+                if action == "import-preview":
+                    return imports.preview(
+                        cast(str, body["upload_id"]), revision=cast(str, body["revision"])
+                    )
+                if action == "import-commit":
+                    return imports.commit(
+                        cast(str, body["upload_id"]),
+                        revision=cast(str, body["revision"]),
+                        preview_hash=cast(str, body["preview_hash"]),
+                        key=cast(str, body["key"]),
+                        allow_reduction=cast(bool, body["allow_reduction"]),
+                    )
+                if action == "trip-preview":
+                    return imports.preview_trip(
+                        cast(str, body["upload_id"]), **cast(dict[str, object], body["choices"])
+                    )
+                return imports.save_trip(
+                    cast(str, body["upload_id"]), preview_hash=cast(str, body["preview_hash"])
+                )
+            finally:
+                try:
+                    store.authenticate(secret)
+                except AccessError:
+                    imports.cancel(uncommitted_only=True)
+
+        return _result(
+            await run_in_threadpool(
+                operations.submit,
+                cast(OperationKind, action),
+                key=cast(str, body["key"]),
+                inputs={key: value for key, value in body.items() if key not in {"key", "confirm"}},
+                execute=execute,
             )
         )
 
@@ -617,7 +888,40 @@ def create_app(config: ControllerConfig, *, app_config: AppConfig | None = None)
 
     async def journal_collection(request: Request) -> JSONResponse:
         await authorized(request)
-        if request.path_params["action"] == "save":
+        action = request.path_params["action"]
+        if action == "export" and request.method == "GET":
+            return _result(
+                await run_in_threadpool(
+                    journal.export_collection, request.query_params.get("collection", "")
+                )
+            )
+        if request.method != "POST":
+            return _error(405, "method_not_allowed", "Use the documented collection operation")
+        if action == "favorite":
+            body = await _json_body(
+                request,
+                {"revision", "taxon_id", "favorite"},
+                structured={"revision", "taxon_id", "favorite"},
+            )
+            result = await run_in_threadpool(journal.favorite, **body)
+        elif action in {"import-preview", "import"}:
+            fields = (
+                {"document"}
+                if action == "import-preview"
+                else {"document", "revision", "preview_hash", "collection_id"}
+            )
+            body = await _json_body(
+                request,
+                fields,
+                structured={"document", "revision"},
+                maximum=MAX_JOURNAL_BYTES + MAX_OWNER_JSON_BYTES,
+            )
+            if action == "import-preview":
+                return _result(
+                    await run_in_threadpool(journal.collection_import_preview, body["document"])
+                )
+            result = await run_in_threadpool(journal.import_collection, **body)
+        elif action == "save":
             body = await _json_body(
                 request,
                 {"revision", "label", "taxon_ids"},
@@ -625,12 +929,12 @@ def create_app(config: ControllerConfig, *, app_config: AppConfig | None = None)
                 structured={"revision", "taxon_ids"},
             )
             result = await run_in_threadpool(save_collection, config.state_dir, **body)
-        elif request.path_params["action"] == "remove":
+        elif action == "remove":
             body = await _json_body(request, {"revision", "collection_id"}, structured={"revision"})
             result = await run_in_threadpool(remove_collection, config.state_dir, **body)
         else:
             return _error(404, "not_found", "This collection action does not exist")
-        return _result(result.as_dict())
+        return _result(result.owner_dict())
 
     async def page(request: Request) -> Response:
         from starlette.responses import FileResponse
@@ -642,6 +946,7 @@ def create_app(config: ControllerConfig, *, app_config: AppConfig | None = None)
             "/app/app.css": "app.css",
             "/app/journal.js": "journal.js",
             "/app/settings.js": "settings.js",
+            "/app/imports.js": "imports.js",
             "/app/access-guide": "access-guide.txt",
         }[request.url.path]
         if filename == "access-guide.txt":
@@ -663,6 +968,7 @@ def create_app(config: ControllerConfig, *, app_config: AppConfig | None = None)
         Route("/app/app.css", page),
         Route("/app/journal.js", page),
         Route("/app/settings.js", page),
+        Route("/app/imports.js", page),
         Route("/app/access-guide", page),
         Route("/v1/access", safe_access_state),
         Route("/v1/owner/setup", establish, methods=["POST"]),
@@ -684,8 +990,15 @@ def create_app(config: ControllerConfig, *, app_config: AppConfig | None = None)
         Route("/v1/owner/settings", application_settings, methods=["GET", "POST"]),
         Route("/v1/owner/operations", owner_operations, methods=["GET", "POST"]),
         Route("/v1/owner/operations/{operation_id}", owner_operations),
+        Route("/v1/owner/imports", import_status),
+        Route("/v1/owner/birdbuddy", birdbuddy_account),
+        Route("/v1/owner/birdbuddy/{action}", birdbuddy_account, methods=["POST"]),
+        Route("/v1/owner/imports/upload/{kind}", upload_history, methods=["POST"]),
+        Route("/v1/owner/imports/{action}", import_action, methods=["POST"]),
         Route("/v1/owner/journal/birds/{taxon_id:int}/{kind}", journal_bird),
-        Route("/v1/owner/journal/collections/{action}", journal_collection, methods=["POST"]),
+        Route(
+            "/v1/owner/journal/collections/{action}", journal_collection, methods=["GET", "POST"]
+        ),
         Route(
             "/{path:path}",
             catalog.dispatch,
@@ -732,9 +1045,42 @@ def create_app(config: ControllerConfig, *, app_config: AppConfig | None = None)
 
     @asynccontextmanager
     async def lifespan(_app: Starlette) -> AsyncIterator[None]:
+        stopped = asyncio.Event()
+
+        async def cleanup_imports() -> None:
+            warned = False
+            while not stopped.is_set():
+                try:
+                    if app_config is not None:
+                        async with foreground():
+                            await run_in_threadpool(history_imports().cleanup_expired)
+                    warned = False
+                except OwnerOperationBusyError:
+                    pass  # Never evict an upload or history operation in progress.
+                except OwnerOperationError:
+                    if not warned:
+                        logging.getLogger(__name__).warning(
+                            "Private import cleanup needs attention; "
+                            "inspect imports in the owner app"
+                        )
+                        warned = True
+                with suppress(TimeoutError):
+                    # Preview retention has hour precision. Sweep once a minute
+                    # while serving, and again on every service start.
+                    await asyncio.wait_for(stopped.wait(), timeout=60)
+
+        if app_config is not None:
+            try:
+                async with foreground():
+                    await run_in_threadpool(history_imports().cleanup_expired)
+            except (OwnerOperationBusyError, OwnerOperationError):
+                pass  # Keep owner recovery reachable; the sweep reports the problem.
+        cleaner = asyncio.create_task(cleanup_imports())
         try:
             yield
         finally:
+            stopped.set()
+            await cleaner
             operations.close()
 
     app: ASGIApp = OwnerBoundary(

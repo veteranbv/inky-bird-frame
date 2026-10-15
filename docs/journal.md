@@ -18,6 +18,16 @@ working deployment with this branch. The complete acceptance scope remains in
 - Collections creates, edits and removes private named selections. Reloading the
   page reads the saved controller state. A stale edit from another tab fails
   before it overwrites a newer save.
+- Favorites are separate bookmarks. Add or remove one on a bird's page. They
+  do not join Saved birds or change your wall automatically.
+- Portable collection export includes labels, inclusive dates, species and
+  declared origins, but no private checklist links or credentials. Import
+  previews matches and keeps unknown names unresolved. It does not turn an
+  imported label into verified personal evidence.
+- [History imports](history-imports.md) checks official eBird archives and
+  Analyzer CSV files before a separate confirmed history update. Trip saving
+  selects complete checklists, retains unresolved names and changes neither
+  generation work nor wall selection.
 - Frame shows complete portrait plates without cropping. Play changes plates
   once a minute. Previous, Next, Pause, Details and Exit remain available. Reading
   details stops playback. Fullscreen depends on browser support.
@@ -29,6 +39,9 @@ working deployment with this branch. The complete acceptance scope remains in
   service definitions, the dynamic scheduler and doctor understand that mode.
 - [Owner actions](owner-operations.md) provide confirmed source refresh, normal
   plate retry, notification tests and dead-letter retry with private outcomes.
+- Bird Buddy's source setup includes owner-only guest login, explicit permission
+  attestation, feeder choice, redacted saved-login status and local logout.
+  Bootstrap needs HTTPS or genuine loopback access. It stores no email or password.
 
 Named selections do not write `collection.json`, request generation or change
 the wall. Existing CLI collection commands still mean Saved birds. Current and
@@ -44,11 +57,15 @@ not yet a continuously paired read-only screen.
 
 ## Private state and recovery
 
-Named selections live in `state_dir/journal.json`, schema version 1. The file
-contains a revision and groups with opaque IDs, names and canonical taxon IDs.
+Named selections live in `state_dir/journal.json`, schema version 2. The file
+contains a revision and groups with opaque IDs, names, kinds, inclusive dates
+and typed members. Personal trip members retain hashed checklist links and
+their original source scientific names. Source corrections can mark evidence
+as changed without silently editing your curated membership.
 Its mode must be `0600`. Inky rejects a symlink, insecure permissions, invalid
 state or a file larger than 1 MiB. Individual edit requests retain the existing
-8 KiB owner JSON bound. Collection names accept 1–128 visible Unicode characters.
+8 KiB owner JSON bound. Portable import and trip selection allow up to 1 MiB
+plus the small request envelope. Collection names accept 1–128 visible Unicode characters.
 These are storage and request bounds, not truncation rules. Oversized changes
 fail without committing a partial selection.
 
@@ -56,6 +73,11 @@ Writes use the existing catalog-state lock and atomic private replacement.
 Two tabs cannot silently replace each other's edits. Removing a group does not
 remove source history, approved plates or Saved birds. Group names can reveal
 travel or personal interests. Keep the file and its backups private.
+
+Version 1 selections remain manual selections, not inferred personal trips.
+Reading them does not migrate or write state. The first edit creates an exact
+private `journal-v1-backup.json`, then atomically writes version 2. Do not feed
+that new schema to an older candidate. Use its matching backup and runtime.
 
 Use a stopped, consistent [controller backup](backup.md), not a live ZIP of
 the state folder. An older release ignores this new file, but that does not
@@ -68,11 +90,9 @@ The paths above do not stand in for these remaining acceptance gates:
 
 - complete live qualification of generation-optional installation and ownership
   migration across native and Docker service restarts;
-- complete eBird and Analyzer upload/preview/commit paths, accurate trip evidence
-  and interrupted-operation recovery;
-- Bird Buddy browser authentication, complete pending-candidate recovery and
-  live qualification of source/work/notification actions;
-- Favorites, portable collection import/export and evidence-correction handling;
+- final large-file, mobile and live qualification of history import paths;
+- complete pending-candidate recovery and live qualification of
+  source/work/notification actions;
 - separately paired read-only screens, selected wall routing and scoped
   Homepage/Home Assistant views and service credentials;
 - complete new-install and upgrade journeys, final mobile/browser qualification,

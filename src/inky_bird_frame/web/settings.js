@@ -10,6 +10,7 @@ export async function renderSettings(ui, {base, link, note, sourceNames, source}
   const problem = el('p', '', 'error'); problem.setAttribute('role', 'alert');
   const privateNotice = note('HTTP does not encrypt settings or credentials in transit. Use a unique Inky password on a trusted home network. Use HTTPS for untrusted networks.');
   if (location.protocol === 'http:') main.append(privateNotice);
+  if (source === 'birdbuddy') await birdBuddyAccount(ui, main, note);
   if (settings.restart_required) {
     main.append(el('h2', 'Finish switching configuration ownership'), note('Your file is now app-managed. Re-run the controller installer with this same file, then restart Inky. This replaces fixed timers with the application scheduler. Until then, browser edits stay locked. No source history or plates were removed.'));
     return;
@@ -157,4 +158,65 @@ export async function renderSettings(ui, {base, link, note, sourceNames, source}
       review.hidden = false; review.querySelector('button').focus();
     } catch (error) { problem.textContent = error.message; }
   });
+}
+
+async function birdBuddyAccount(ui, main, note) {
+  const {api, element: el, button} = ui;
+  const response = await api('/v1/owner/birdbuddy'), state = response.state;
+  const section = el('section', '', 'journal-card');
+  section.append(el('h2', 'Bird Buddy account'), note('Use a dedicated email/password guest account. Bird Buddy’s private API is unsupported and can change without notice. You must obtain and maintain Bird Buddy’s permission. Inky cannot grant or verify it.'));
+  const terms = el('a', 'Read Bird Buddy’s private-API restrictions', 'text-link'); terms.href = 'https://mybirdbuddy.com/app-eula/'; terms.target = '_blank'; terms.rel = 'noopener noreferrer';
+  const guests = el('a', 'Set up a guest feeder member', 'text-link'); guests.href = 'https://support.mybirdbuddy.com/hc/en-us/articles/4404431992337-Adding-guest-Feeder-Members-to-your-Birdbuddy'; guests.target = '_blank'; guests.rel = 'noopener noreferrer';
+  section.append(terms, guests);
+  const problem = el('p', '', 'error'); problem.setAttribute('role', 'alert');
+  if (state.authenticated) {
+    section.append(el('p', 'Saved login for ' + state.feeder.name), note('Role: ' + state.feeder.role + '. Saved credentials are present; this is not a live token check. Use Refresh observations on Sources to check the enabled provider.'));
+    if (!state.least_privilege_guest) section.append(el('p', 'This is an owner account. A dedicated guest account is the supported least-privilege setup. Reauthorize with a guest account.', 'notice'));
+    if (state.history) {
+      section.append(note('Last successful synchronization: ' + new Date(state.history.last_successful_sync_at).toLocaleString()), note('Retained postcards: ' + state.history.retained_postcards + '. Manual sightings: ' + (state.history.manual_sightings_included ? 'included by your explicit setting' : 'excluded') + '.'));
+    }
+    section.append(button('Remove local Bird Buddy login', async event => {
+      if (!confirm('Remove this installation’s Bird Buddy login and permission attestation? Retained detections and plates stay. This does not revoke the token at Bird Buddy.')) return;
+      const control = event.currentTarget; control.disabled = true;
+      try { await api('/v1/owner/birdbuddy/logout', {confirm: true}); location.reload(); }
+      catch (error) { control.disabled = false; if (error.code === 'sign_in_required') ui.showProblem(error); else problem.textContent = error.message; }
+    }));
+  } else section.append(note(state.history_present ? 'No saved login. Earlier private detection history is retained.' : 'Not signed in. No private detection history is available yet.'));
+  if (!response.secure_bootstrap) {
+    section.append(el('p', 'Bird Buddy sign-in needs HTTPS, or a browser on the controller using its loopback address. Ordinary home-network HTTP cannot protect this guest password. The documented CLI login remains available.', 'notice'), problem); main.append(section); return;
+  }
+  const form = el('form'), attestation = el('label', '', 'check-label'), confirmed = el('input'); confirmed.type = 'checkbox';
+  attestation.append(confirmed, document.createTextNode('I confirm that Bird Buddy has authorized automated API access for this account.'));
+  form.append(attestation);
+  function credential(title, type, id) {
+    const label = el('label', title), input = el('input'); input.id = id; input.type = type; input.autocomplete = 'off'; input.required = true; input.disabled = true;
+    input.maxLength = type === 'email' ? 320 : 4096; label.htmlFor = id; form.append(label, input); return input;
+  }
+  const email = credential('Dedicated guest email', 'email', 'birdbuddy-email'), password = credential('Guest password (used only for this sign-in)', 'password', 'birdbuddy-password');
+  const feeders = el('div'), submit = el('button', state.authenticated ? 'Replace saved guest login' : 'Sign in to Bird Buddy'); submit.type = 'submit'; submit.disabled = true;
+  let choice = null;
+  confirmed.addEventListener('change', () => {
+    email.disabled = password.disabled = submit.disabled = !confirmed.checked;
+    if (!confirmed.checked) { email.value = password.value = ''; feeders.replaceChildren(); choice = null; }
+  });
+  for (const input of [email, password]) input.addEventListener('input', () => { feeders.replaceChildren(); choice = null; submit.textContent = state.authenticated ? 'Replace saved guest login' : 'Sign in to Bird Buddy'; });
+  form.append(feeders, note('Inky keeps the rotating refresh token, feeder choice and attestation date. It does not save this email or password. Choose the feeder explicitly if the guest can access more than one.'), submit);
+  form.addEventListener('submit', async event => {
+    event.preventDefault(); if (!confirmed.checked) return;
+    submit.disabled = true; problem.textContent = '';
+    try {
+      const body = {confirm: true, email: email.value, password: password.value};
+      if (choice) { if (!choice.value) throw new Error('Choose the feeder for this installation.'); body.feeder_id = choice.value; }
+      const result = await api('/v1/owner/birdbuddy/login', body);
+      if (!form.isConnected) return;
+      if (result.choose_feeder) {
+        const label = el('label', 'Choose this installation’s feeder'); label.htmlFor = 'birdbuddy-feeder'; choice = el('select'); choice.id = label.htmlFor; choice.required = true;
+        const empty = el('option', 'Choose a feeder'); empty.value = ''; choice.append(empty);
+        for (const feeder of result.feeders) { const option = el('option', feeder.name + ' · ' + feeder.role); option.value = feeder.feeder_id; choice.append(option); }
+        feeders.replaceChildren(label, choice); submit.textContent = 'Use the selected feeder'; choice.focus();
+      } else { email.value = password.value = ''; location.reload(); }
+    } catch (error) { if (error.code === 'sign_in_required') { email.value = password.value = ''; ui.showProblem(error); } else problem.textContent = error.message; }
+    finally { submit.disabled = !confirmed.checked; }
+  });
+  section.append(form, problem); main.append(section);
 }

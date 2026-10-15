@@ -50,6 +50,9 @@ birdbuddy_include_manual_sightings = false
 # Existing configurations keep generation enabled. Turn it off to use only
 # approved artwork. Re-run native setup to remove the generation timer.
 # generation_enabled = false
+# Private upload previews expire after 24 hours; choose 1–168. Cleanup never
+# removes confirmed history or saved trips. Restart after changing this policy.
+# owner_import_retention_hours = 24
 # Keep Codex's writable workspace separate from configuration, catalog, and state.
 workspace_dir = "workspace"
 catalog_dir = "catalog"

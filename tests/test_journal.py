@@ -4,6 +4,7 @@ import hashlib
 import json
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
+from typing import cast
 
 import pytest
 from starlette.testclient import TestClient
@@ -26,10 +27,13 @@ from inky_bird_frame.errors import CatalogError
 from inky_bird_frame.http import write_json_atomic
 from inky_bird_frame.journal import (
     MAX_JOURNAL_BYTES,
+    CollectionKind,
     JournalConflictError,
     JournalError,
+    JournalMember,
     JournalService,
     JournalState,
+    MemberOrigin,
     read_journal,
     remove_collection,
     save_collection,
@@ -173,7 +177,9 @@ def test_storage_limit_checks_exact_persisted_bytes_and_preserves_previous_state
 ) -> None:
     first = save_collection(tmp_path, revision=0, label="First", taxon_ids=list(range(1, 30)))
     before = (tmp_path / "journal.json").read_bytes()
-    next_group = type(first.collections[0])("a" * 32, "Second", tuple(range(1, 30)))
+    next_group = type(first.collections[0])(
+        "a" * 32, "Second", tuple(JournalMember(id) for id in range(1, 30))
+    )
     proposed = JournalState(2, (*first.collections, next_group))
     compact_bytes = len(json.dumps(proposed.as_dict()).encode())
     persisted_bytes = len(
@@ -367,3 +373,234 @@ def test_journal_keeps_missing_birds_and_projects_all_source_types_without_raw_e
     assert management["work"]["can_run"] == []  # Stale discovery must not invent eligible work.
     assert "PRIVATE_" not in json.dumps(payload)
     assert management["last_confirmed_panel_update"] is None
+
+
+def test_v1_migration_happens_only_on_edit_and_keeps_exact_private_backup(tmp_path: Path) -> None:
+    original = {
+        "schema_version": 1,
+        "revision": 4,
+        "collections": [{"collection_id": "a" * 32, "label": "Old collection", "taxon_ids": [1]}],
+    }
+    write_json_atomic(tmp_path / "journal.json", original, mode=0o600)
+    before = (tmp_path / "journal.json").read_bytes()
+    state = read_journal(tmp_path)
+    assert state.collections[0].kind == CollectionKind.SELECTION
+    assert state.collections[0].members[0].origin == MemberOrigin.SAVED
+    assert not (tmp_path / "journal-v1-backup.json").exists()
+    assert (tmp_path / "journal.json").read_bytes() == before
+    save_collection(tmp_path, revision=4, label="Renamed", taxon_ids=[1], collection_id="a" * 32)
+    backup = tmp_path / "journal-v1-backup.json"
+    assert backup.read_bytes() == before
+    assert backup.stat().st_mode & 0o777 == 0o600
+    assert read_journal(tmp_path).revision == 5
+    save_collection(tmp_path, revision=5, label="Another", taxon_ids=[])
+    assert backup.read_bytes() == before
+
+
+def test_favorites_are_separate_idempotent_bookmarks_with_stale_edit_protection(
+    tmp_path: Path,
+) -> None:
+    controller = config(tmp_path)
+    catalog(controller)
+    service = JournalService(controller)
+    first = service.favorite(revision=0, taxon_id=1, favorite=True)
+    assert first.collections[0].kind == CollectionKind.FAVORITES
+    assert first.collections[0].taxon_ids == (1,)
+    assert service.favorite(revision=1, taxon_id=1, favorite=True) == first
+    with pytest.raises(JournalConflictError):
+        service.favorite(revision=0, taxon_id=1, favorite=False)
+    with pytest.raises(JournalError):
+        remove_collection(
+            controller.state_dir, revision=1, collection_id=first.collections[0].collection_id
+        )
+    with pytest.raises(JournalError):
+        service.favorite(revision=1, taxon_id=1, favorite="true")
+    second = service.favorite(revision=1, taxon_id=1, favorite=False)
+    assert second.collections[0].taxon_ids == ()
+    assert not (controller.state_dir / "collection.json").exists()
+    assert not (controller.state_dir / "generation-queue.json").exists()
+
+
+@pytest.mark.parametrize("name", ["x" * 257, "Bird\nName"])
+def test_favorite_rejects_unstorable_source_names_before_writing(tmp_path: Path, name: str) -> None:
+    controller = config(tmp_path)
+    catalog(controller)
+    first = save_collection(controller.state_dir, revision=0, label="Keep me", taxon_ids=[1])
+    before = (controller.state_dir / "journal.json").read_bytes()
+    path = controller.catalog_dir / "index.json"
+    raw = json.loads(path.read_text())
+    raw["species"][0]["common_name"] = name
+    write_json_atomic(path, raw)
+    with pytest.raises(JournalError):
+        JournalService(controller).favorite(revision=1, taxon_id=1, favorite=True)
+    assert (controller.state_dir / "journal.json").read_bytes() == before
+    assert read_journal(controller.state_dir) == first
+
+
+def portable_document() -> dict[str, object]:
+    return {
+        "format": "inky-collection",
+        "schema_version": 1,
+        "label": "A trip",
+        "start_date": "2026-04-29",
+        "end_date": "2026-05-02",
+        "members": [
+            {
+                "taxon_id": 1,
+                "common_name": "Robin",
+                "scientific_name": "Turdus migratorius",
+                "origin": "ebird-checklist",
+            },
+            {
+                "taxon_id": 900,
+                "common_name": "Unknown",
+                "scientific_name": "Unmatched species",
+                "origin": "saved-selection",
+            },
+        ],
+    }
+
+
+def test_portable_import_preview_exact_identity_unresolved_and_reconnect(tmp_path: Path) -> None:
+    controller = config(tmp_path)
+    catalog(controller)
+    service = JournalService(controller)
+    document = portable_document()
+    preview = service.collection_import_preview(document)
+    assert preview["resolved"] == preview["ready"] == 1
+    assert len(cast(list[object], preview["unresolved"])) == 1
+    state = service.import_collection(
+        document=document,
+        revision=0,
+        preview_hash=str(preview["preview_hash"]),
+        collection_id="a" * 32,
+    )
+    group = state.collections[0]
+    assert group.kind == CollectionKind.IMPORTED
+    assert group.members[0].evidence == ()
+    assert group.members[1].taxon_id is None
+    assert (
+        service.import_collection(
+            document=document,
+            revision=0,
+            preview_hash=str(preview["preview_hash"]),
+            collection_id="a" * 32,
+        )
+        == state
+    )
+    exported = service.export_collection("a" * 32)
+    assert set(exported) == {
+        "format",
+        "schema_version",
+        "label",
+        "start_date",
+        "end_date",
+        "members",
+    }
+    assert "checklist_hash" not in json.dumps(exported)
+    assert "ebird-checklist" in json.dumps(exported)  # Origin label, not linked proof.
+    save_collection(
+        controller.state_dir, revision=1, label="Changed", taxon_ids=[1], collection_id="a" * 32
+    )
+    with pytest.raises(JournalConflictError):
+        service.import_collection(
+            document=document,
+            revision=0,
+            preview_hash=str(preview["preview_hash"]),
+            collection_id="a" * 32,
+        )
+    assert not (controller.state_dir / "ebird-archive.json").exists()
+    assert not (controller.state_dir / "generation-queue.json").exists()
+
+
+@pytest.mark.parametrize("mutation", ["secret", "link", "duplicate", "date", "boolean"])
+def test_portable_documents_fail_closed(tmp_path: Path, mutation: str) -> None:
+    controller = config(tmp_path)
+    catalog(controller)
+    document = portable_document()
+    if mutation == "secret":
+        document["password"] = "not accepted"
+    elif mutation == "link":
+        cast(list[dict[str, object]], document["members"])[0]["evidence"] = []
+    elif mutation == "duplicate":
+        members = cast(list[dict[str, object]], document["members"])
+        members.append(members[0])
+    elif mutation == "date":
+        document["end_date"] = "2026-04-28"
+    else:
+        document["schema_version"] = True
+    with pytest.raises(JournalError):
+        JournalService(controller).collection_import_preview(document)
+    assert not (controller.state_dir / "journal.json").exists()
+
+
+def test_portable_taxonomy_conflict_does_not_relabel_or_enqueue(tmp_path: Path) -> None:
+    controller = config(tmp_path)
+    catalog(controller)
+    service = JournalService(controller)
+    document = portable_document()
+    cast(list[dict[str, object]], document["members"])[0]["scientific_name"] = "Different species"
+    preview = service.collection_import_preview(document)
+    assert preview["resolved"] == 0
+    document["label"] = "Changed after preview"
+    with pytest.raises(JournalConflictError):
+        service.import_collection(
+            document=document,
+            revision=0,
+            preview_hash=str(preview["preview_hash"]),
+            collection_id="a" * 32,
+        )
+
+
+def test_collection_portability_routes_have_owner_and_csrf_guards(tmp_path: Path) -> None:
+    controller = config(tmp_path)
+    catalog(controller)
+    with TestClient(create_app(controller), base_url=ORIGIN) as client:
+        assert (
+            client.get("/v1/owner/journal/collections/export?collection=" + "a" * 32).status_code
+            == 401
+        )
+        login = client.post(
+            "/v1/owner/register",
+            headers={"Origin": ORIGIN},
+            json={"username": "qa-owner", "passphrase": "a synthetic long passphrase"},
+        )
+        headers = {"Origin": ORIGIN, "X-Inky-CSRF": login.json()["data"]["csrf"]}
+        assert (
+            client.post(
+                "/v1/owner/journal/collections/favorite",
+                json={"revision": 0, "taxon_id": 1, "favorite": True},
+                headers={"Origin": ORIGIN},
+            ).status_code
+            == 401
+        )
+        assert (
+            client.post(
+                "/v1/owner/journal/collections/favorite",
+                json={"revision": 0, "taxon_id": 1, "favorite": True},
+                headers=headers,
+            ).status_code
+            == 200
+        )
+        preview = client.post(
+            "/v1/owner/journal/collections/import-preview",
+            json={"document": portable_document()},
+            headers=headers,
+        )
+        assert preview.status_code == 200
+        body = {
+            "document": portable_document(),
+            "revision": 1,
+            "preview_hash": preview.json()["data"]["preview_hash"],
+            "collection_id": "a" * 32,
+        }
+        assert (
+            client.post(
+                "/v1/owner/journal/collections/import", json=body, headers=headers
+            ).status_code
+            == 200
+        )
+        exported = client.get("/v1/owner/journal/collections/export?collection=" + "a" * 32)
+        assert exported.status_code == 200
+        assert exported.headers["cache-control"] == "no-store"
+        assert "checklist_hash" not in exported.text

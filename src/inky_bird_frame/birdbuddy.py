@@ -194,6 +194,17 @@ class BirdBuddyFeeder:
     role: str
 
 
+class BirdBuddyFeederSelectionRequiredError(DataSourceError):
+    """Structured feeder choices; browser adapters never parse exception text."""
+
+    def __init__(self, feeders: list[BirdBuddyFeeder]) -> None:
+        self.feeders = tuple(feeders)
+        super().__init__(
+            "Bird Buddy account has multiple feeders; rerun login with --feeder-id using one of: "
+            + ", ".join(f"{feeder.name} ({feeder.feeder_id})" for feeder in feeders)
+        )
+
+
 @dataclass(frozen=True)
 class BirdBuddyAuthState:
     authorization_confirmed_at: str
@@ -465,10 +476,7 @@ def _select_feeder(feeders: list[BirdBuddyFeeder], feeder_id: str | None) -> Bir
     if feeder_id is None:
         if len(feeders) == 1:
             return feeders[0]
-        raise DataSourceError(
-            "Bird Buddy account has multiple feeders; rerun login with --feeder-id using one of: "
-            + ", ".join(f"{feeder.name} ({feeder.feeder_id})" for feeder in feeders)
-        )
+        raise BirdBuddyFeederSelectionRequiredError(feeders)
     selected = next((feeder for feeder in feeders if feeder.feeder_id == feeder_id), None)
     if selected is None:
         raise DataSourceError("Selected Bird Buddy feeder is not accessible to this account")

@@ -7,6 +7,7 @@ import fcntl
 import hashlib
 import json
 import math
+import re
 import stat
 from collections.abc import Iterator
 from contextlib import contextmanager
@@ -16,7 +17,7 @@ from pathlib import Path
 
 from .birds import BirdNetAnalyzerSpecies, ObservationWindow, date_range_for_window
 from .errors import DataSourceError
-from .http import write_json_atomic
+from .http import write_bytes_atomic, write_json_atomic
 
 STATE_FILENAME = "birdnet-analyzer-detections.json"
 REQUIRED_COLUMNS = (
@@ -228,10 +229,16 @@ def import_birdnet_analyzer_csv(
     observed_on: date | None = None,
     now: datetime | None = None,
     dry_run: bool = False,
+    expected_revision: str | None = None,
+    operation_id: str | None = None,
 ) -> BirdNetAnalyzerImportStats:
     current = (now or datetime.now(UTC)).astimezone(UTC).replace(microsecond=0).isoformat()
     with _history_lock(state_dir):
         detections, history_started_at, _ = _read_state(_state_path(state_dir), required=False)
+        if expected_revision is not None and _revision(state_dir) != expected_revision:
+            raise DataSourceError("Analyzer history changed. Preview the CSV again.")
+        if operation_id is not None and not re.fullmatch(r"[0-9a-f]{64}", operation_id):
+            raise ValueError("Invalid import operation identity")
         rows = imported = updated = duplicates = 0
         try:
             handle = csv_path.open("r", encoding="utf-8-sig", newline="")
@@ -280,7 +287,19 @@ def import_birdnet_analyzer_csv(
             raise DataSourceError("BirdNET Analyzer CSV contains no detection rows")
         dated = sum(item.observed_on is not None for item in detections.values())
         undated = len(detections) - dated
+        stats = BirdNetAnalyzerImportStats(
+            rows, imported, updated, duplicates, dated, undated, dry_run
+        )
         if not dry_run:
+            path = _state_path(state_dir)
+            previous = path.read_bytes() if path.exists() else None
+            marker = (
+                {"operation_id": operation_id, "result": stats.as_dict()}
+                if operation_id
+                else json.loads(previous or b"{}").get("owner_operation")
+            )
+            if expected_revision is not None and previous is not None:
+                write_bytes_atomic(path.with_suffix(".json.previous"), previous, mode=0o600)
             write_json_atomic(
                 _state_path(state_dir),
                 {
@@ -291,18 +310,22 @@ def import_birdnet_analyzer_csv(
                         fingerprint: detection.as_dict()
                         for fingerprint, detection in sorted(detections.items())
                     },
+                    **({"owner_operation": marker} if marker is not None else {}),
                 },
                 mode=0o600,
             )
-        return BirdNetAnalyzerImportStats(
-            rows=rows,
-            imported=imported,
-            updated=updated,
-            duplicates=duplicates,
-            dated=dated,
-            undated=undated,
-            dry_run=dry_run,
-        )
+        return stats
+
+
+def _revision(state_dir: Path) -> str:
+    path = _state_path(state_dir)
+    return hashlib.sha256(path.read_bytes() if path.exists() else b"").hexdigest()
+
+
+def analyzer_history_revision(state_dir: Path) -> str:
+    with _history_lock(state_dir):
+        _read_state(_state_path(state_dir), required=False)
+        return _revision(state_dir)
 
 
 def read_birdnet_analyzer_history(

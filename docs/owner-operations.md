@@ -42,6 +42,11 @@ accepts shell text, executable paths or a request to run a model.
 
 If the service stops before saving a confirmed outcome, the receipt becomes
 **interrupted**. Inky does not infer success or automatically replay the action.
+History imports are the narrow exception: a matching commit marker stored in
+the same atomic history write proves that step succeeded. The receipt can then
+report the confirmed history outcome, not a successful trip save. See
+[history imports](history-imports.md) for the separate confirmation steps,
+source-file retention and trip recovery.
 Inspect the source, work or notification state before an explicit retry.
 Generation-off mode, review holds and existing retry rules remain in force.
 

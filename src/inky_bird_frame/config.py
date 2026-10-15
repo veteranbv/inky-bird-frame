@@ -145,6 +145,7 @@ class ControllerConfig:
     oidc: OIDCConfig | None = None
     generation_enabled: bool = True
     configuration_ownership: str = "managed"
+    owner_import_retention_hours: int = 24
 
 
 @dataclass(frozen=True)
@@ -828,6 +829,10 @@ def parse_config(raw: object, *, path: Path, load_secrets: bool = True) -> AppCo
     ownership = _optional_string(controller, "configuration_ownership", default="managed")
     if ownership not in {"managed", "app"}:
         raise ConfigurationError("configuration_ownership must be managed or app")
+    import_retention = _optional_integer(controller, "owner_import_retention_hours", default=24)
+    # A preview must not outlive the seven-day operation receipt recovery window.
+    if import_retention > 7 * 24:
+        raise ConfigurationError("owner_import_retention_hours must be between 1 and 168")
 
     return AppConfig(
         configuration_path=path.absolute(),
@@ -858,6 +863,7 @@ def parse_config(raw: object, *, path: Path, load_secrets: bool = True) -> AppCo
             birdnet_go_url=birdnet_go_url,
         ),
         controller=ControllerConfig(
+            owner_import_retention_hours=import_retention,
             configuration_ownership=ownership,
             generation_enabled=_optional_boolean(
                 controller, "generation_enabled", default=ownership != "app"

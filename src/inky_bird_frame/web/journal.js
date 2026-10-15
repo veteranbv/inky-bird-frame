@@ -1,5 +1,6 @@
 // The controller owns birds and collections. No private journal enters browser storage.
 import {renderSettings} from '/app/settings.js';
+import {renderImports} from '/app/imports.js';
 let run = 0;
 let stopScreen = () => {};
 let frameSignOut = null;
@@ -57,13 +58,14 @@ export async function openJournal(ui, message = '') {
   }
   function members(key) {
     if (key === 'all') return data.birds;
-    const ids = key === 'saved' ? data.saved_taxon_ids : key === 'current' ? data.active_taxon_ids
+    const ids = key === 'favorites' ? data.collections.find(group => group.kind === 'favorites')?.taxon_ids || []
+      : key === 'saved' ? data.saved_taxon_ids : key === 'current' ? data.active_taxon_ids
       : data.collections.find(group => group.collection_id === key)?.taxon_ids;
     if (!ids) throw new Error('This collection is no longer available. Open Collections and choose another.');
     return ids.map(id => byId.get(id)).filter(Boolean);
   }
   function viewLabel(key) {
-    return key === 'all' ? 'All available artwork' : key === 'saved' ? 'Saved birds'
+    return key === 'favorites' ? 'Favorites' : key === 'all' ? 'All available artwork' : key === 'saved' ? 'Saved birds'
       : key === 'current' ? 'Current and saved' : data.collections.find(group => group.collection_id === key)?.label || 'Collection';
   }
   function base(title, description = '') {
@@ -171,11 +173,19 @@ export async function openJournal(ui, message = '') {
     const groups = data.collections.filter(group => group.taxon_ids.includes(bird.taxon_id));
     main.append(el('h2', 'In your collections'));
     for (const group of groups) main.append(link(group.label, 'collection', {view: group.collection_id}));
+    const favorite = groups.some(group => group.kind === 'favorites');
+    main.append(button(favorite ? 'Remove from Favorites' : 'Add to Favorites', async event => {
+      const control = event.currentTarget; control.disabled = true;
+      try {
+        await api('/v1/owner/journal/collections/favorite', {revision: data.revision, taxon_id: bird.taxon_id, favorite: !favorite});
+        location.reload();
+      } catch (error) { control.disabled = false; ui.showProblem(error); }
+    }), note('Favorites are bookmarks. They do not record sightings, request art or change your wall.'));
     main.append(link('Make a collection with this bird', 'edit-collection', {bird: bird.taxon_id}, 'primary-link'), link('Back to birds', 'birds'));
   } else if (area === 'collections') {
     base('Collections', 'Keep a selection together. Saving a group does not change your wall or request new art.');
     const grid = el('div', '', 'bird-grid');
-    for (const key of ['current', 'saved', ...data.collections.map(group => group.collection_id), 'all']) {
+    for (const key of ['current', 'saved', 'favorites', ...data.collections.filter(group => group.kind !== 'favorites').map(group => group.collection_id), 'all']) {
       const birds = members(key); const ready = birds.filter(bird => bird.plate_ready);
       const node = el('section', '', 'journal-card');
       if (ready[0]) { const cover = link('', 'collection', {view: key}); cover.append(art(ready[0])); node.append(cover); }
@@ -183,12 +193,14 @@ export async function openJournal(ui, message = '') {
         note(ready.length + ' plates ready · ' + (birds.length - ready.length) + ' not ready'), playLink(key));
       grid.append(node);
     }
-    main.append(link('New collection', 'edit-collection', {}, 'primary-link'), grid,
+    main.append(link('New collection', 'edit-collection', {}, 'primary-link'), link('Make a trip from your eBird checklists', 'imports', {kind: 'ebird-archive'}), link('Import a collection', 'import-collection'), grid,
       note('Current and saved keeps the existing controller selection. Named collections do not join it automatically. Available artwork is not personal evidence.'));
   } else if (area === 'edit-collection') {
     const group = data.collections.find(item => item.collection_id === query.get('view'));
+    if (group?.kind === 'favorites') throw new Error('Add or remove Favorites on each bird’s page.');
     const selected = new Set(group?.taxon_ids || [Number(query.get('bird'))].filter(Boolean));
     base(group ? 'Edit collection' : 'New collection', 'Choose species for a private saved selection. This does not claim that you saw them.');
+    if (group?.kind === 'personal-trip') main.append(note('Existing checklist links stay with retained members. Any bird you add here is a manual selection, not a new personal sighting. Unresolved source names remain until a reviewed history selection replaces them.'));
     const form = el('form'); const label = el('label', 'Collection name'); label.htmlFor = 'collection-name';
     const name = el('input'); name.id = label.htmlFor; name.required = true; name.maxLength = 128; name.value = group?.label || '';
     const fields = el('fieldset'); fields.append(el('legend', 'Choose birds'));
@@ -212,16 +224,71 @@ export async function openJournal(ui, message = '') {
       finally { save.disabled = false; }
     });
     main.append(form, link('Cancel', 'collections'));
+  } else if (area === 'import-collection') {
+    base('Import a collection', 'Bring a saved selection to this controller. Imported labels are not proof that you saw a bird.');
+    const label = el('label', 'Inky collection file'); label.htmlFor = 'collection-file';
+    const input = el('input'); input.id = label.htmlFor; input.type = 'file'; input.accept = '.json,application/json';
+    const content = el('section', '', 'journal-card'); main.append(label, input, content, link('Cancel', 'collections'));
+    let selection = 0;
+    input.addEventListener('change', async () => {
+      const pending = ++selection; content.replaceChildren();
+      try {
+        const file = input.files[0]; if (!file) return;
+        if (file.size > 1024 * 1024) throw new Error('Choose a collection file no larger than 1 MiB.');
+        const document = JSON.parse(await file.text());
+        const preview = await api('/v1/owner/journal/collections/import-preview', {document});
+        if (selection !== pending || !content.isConnected) return;
+        content.append(el('h2', preview.label), note(preview.resolved + ' matched species · ' + preview.ready + ' approved plates · ' + preview.unresolved.length + ' unresolved'), note(preview.notice));
+        if (preview.start_date) content.append(note(preview.start_date + ' through ' + preview.end_date + ' · inclusive dates'));
+        for (const member of preview.unresolved) content.append(note('Unresolved: ' + (member.scientific_name || member.common_name)));
+        const collection_id = Array.from(crypto.getRandomValues(new Uint8Array(16)), item => item.toString(16).padStart(2, '0')).join('');
+        const problem = el('p', '', 'error'); problem.setAttribute('role', 'alert');
+        content.append(button('Import this selection', async event => {
+          const control = event.currentTarget; control.disabled = true;
+          try {
+            await api('/v1/owner/journal/collections/import', {document, revision: data.revision, preview_hash: preview.preview_hash, collection_id});
+            location.assign(href('collection', {view: collection_id}));
+          } catch (error) {
+            control.disabled = false;
+            if (error.code === 'sign_in_required') ui.showProblem(error);
+            else problem.textContent = error.message + ' You can retry this same save safely, or check Collections for its result.';
+          }
+        }), problem, link('Check Collections', 'collections'));
+      } catch (error) { if (selection === pending) content.replaceChildren(el('p', error instanceof SyntaxError ? 'This file is not valid JSON.' : error.message, 'error')); }
+    });
   } else if (area === 'collection') {
     const birds = members(view); base(viewLabel(view), view === 'all' ? 'Artwork, not a record of personal sightings.' : 'A saved view. Play does not change the physical wall.');
     main.append(playLink(view));
     const group = data.collections.find(item => item.collection_id === view);
-    if (group) main.append(link('Edit collection', 'edit-collection', {view}), button('Remove collection', async () => {
+    if (group) {
+      main.append(note(group.kind === 'personal-trip' ? 'Personal trip · linked eBird checklists' : group.kind === 'community-history' ? 'Community reports · not your personal sightings' : group.kind === 'imported-selection' ? 'Imported selection · personal evidence not verified here' : group.kind === 'favorites' ? 'Bookmarks · not sightings' : 'Saved selection · not a sighting record'));
+      if (group.start_date) main.append(note(group.start_date + ' through ' + group.end_date + ' · inclusive dates'));
+      for (const member of group.unresolved) main.append(note('Unresolved: ' + (member.scientific_name || member.common_name) + ' · no generation requested'));
+      for (const member of group.evidence || []) if (member.status !== 'linked') main.append(el('p', (byId.get(member.taxon_id)?.common_name || member.scientific_name) + ': ' + (member.status === 'source-changed' ? 'Source record changed. Your curated selection stays, but its original personal evidence no longer matches.' : 'Source history is unavailable. Inky cannot confirm this member’s evidence.'), 'notice'));
+      main.append(button('Export collection', async () => {
+        if (!confirm('This file includes this collection’s name, dates and species. It does not include credentials or private source identifiers. Check those details before sharing it.')) return;
+        try {
+          const portable = await api('/v1/owner/journal/collections/export?collection=' + encodeURIComponent(group.collection_id));
+          const url = URL.createObjectURL(new Blob([JSON.stringify(portable, null, 2) + '\n'], {type: 'application/json'}));
+          const anchor = el('a'); anchor.href = url; anchor.download = 'inky-collection.json'; anchor.click(); setTimeout(() => URL.revokeObjectURL(url), 1000);
+        } catch (error) { ui.showProblem(error); }
+      }));
+    }
+    if (group && group.kind !== 'favorites') main.append(link('Edit collection', 'edit-collection', {view}), button('Remove collection', async () => {
       if (!confirm('Remove this collection? Source history, Saved birds and approved plates stay unchanged.')) return;
       try { await api('/v1/owner/journal/collections/remove', {revision: data.revision, collection_id: view}); location.assign(href('collections')); }
       catch (error) { ui.showProblem(error); }
     }));
-    const grid = el('div', '', 'bird-grid'); grid.append(...birds.map(card));
+    const grid = el('div', '', 'bird-grid');
+    for (const bird of birds) {
+      const node = card(bird), origin = group?.member_origins.find(member => member.taxon_id === bird.taxon_id)?.origin;
+      if (group?.kind === 'personal-trip') {
+        const linked = group.evidence?.find(member => member.taxon_id === bird.taxon_id)?.status;
+        node.append(note(origin === 'ebird-checklist' && linked === 'linked' ? 'Your eBird checklist · linked within this trip’s dates' : origin === 'ebird-checklist' ? 'Saved trip member · personal evidence needs attention' : 'Manual selection · not a personal sighting record'));
+      } else if (group?.kind === 'imported-selection') node.append(note('Imported selection · personal evidence not verified here'));
+      else if (group?.kind === 'community-history') node.append(note('Community report · not your personal sighting'));
+      grid.append(node);
+    }
     if (!birds.length) grid.append(empty('An empty collection is fine', 'Add birds when you are ready. Nothing outside this view will play.'));
     main.append(grid);
   } else if (area === 'frame') {
@@ -293,7 +360,8 @@ export async function openJournal(ui, message = '') {
       try {
         const current = await api('/v1/owner/journal');
         if (!image.isConnected || expired) return;
-        const ids = view === 'all' ? current.birds.map(bird => bird.taxon_id) : view === 'current'
+        const ids = view === 'favorites' ? current.collections.find(group => group.kind === 'favorites')?.taxon_ids || []
+          : view === 'all' ? current.birds.map(bird => bird.taxon_id) : view === 'current'
           ? current.active_taxon_ids : view === 'saved' ? current.saved_taxon_ids
           : current.collections.find(group => group.collection_id === view)?.taxon_ids;
         if (!ids || !ids.some(id => current.birds.some(bird => bird.taxon_id === id && bird.plate_ready))) {
@@ -343,6 +411,8 @@ export async function openJournal(ui, message = '') {
       }
     }
     await update();
+  } else if (area === 'imports') {
+    stopScreen = await renderImports(ui, {base, link, note, kind: query.get('kind') || 'ebird-archive', journalRevision: data.revision});
   } else if (area === 'settings') {
     const source = query.get('source');
     if (source && !sourceNames[source]) throw new Error('Choose a supported source.');
@@ -373,6 +443,7 @@ export async function openJournal(ui, message = '') {
           : source.status === 'error' ? 'Last saved check failed' : 'Not checked yet';
         node.append(el('h2', name), el('p', state, source.status === 'error' ? 'error' : 'connection'), note(kind));
         if (imported) node.append(note('Imported history is not a live connection.'));
+        if (imported) node.append(link('Import or review ' + name + ' history', 'imports', {kind: source.name}, 'primary-link'));
         if (source.enabled && !management.work.complete) node.append(note('Discovery is ' + management.work.discovery_status + '. This is saved state, not a current connection test.'));
         if (source.unresolved_count) node.append(note(source.unresolved_count + ' unresolved species do not trigger generation.'));
         node.append(link('Set up ' + name, 'settings', {source: source.name}, 'primary-link'));

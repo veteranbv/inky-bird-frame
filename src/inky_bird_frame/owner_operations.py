@@ -35,9 +35,27 @@ RECEIPT_RETENTION = timedelta(days=7)
 MAX_RECEIPTS = 256
 MAX_RECEIPT_BYTES = 1024 * 1024
 MAX_RESULT_BYTES = 16 * 1024
-OperationKind = Literal["refresh", "retry", "notification-test", "notification-retry"]
+OperationKind = Literal[
+    "refresh",
+    "retry",
+    "notification-test",
+    "notification-retry",
+    "import-preview",
+    "import-commit",
+    "trip-preview",
+    "trip-save",
+]
 OperationStatus = Literal["pending", "running", "succeeded", "failed", "interrupted"]
-KINDS = {"refresh", "retry", "notification-test", "notification-retry"}
+KINDS = {
+    "refresh",
+    "retry",
+    "notification-test",
+    "notification-retry",
+    "import-preview",
+    "import-commit",
+    "trip-preview",
+    "trip-save",
+}
 STATUSES = {"pending", "running", "succeeded", "failed", "interrupted"}
 
 
@@ -205,13 +223,23 @@ class OwnerOperations:
             with _exclusive(self.state_dir), catalog_state_lock(self.state_dir):
                 receipts = self._read()
                 if any(row.status in {"pending", "running"} for row in receipts):
+                    from .imports import recover_import
+
+                    recovered = {
+                        row.operation_id: recover_import(self.state_dir, row.key_hash)
+                        for row in receipts
+                        if row.kind == "import-commit" and row.status in {"pending", "running"}
+                    }
                     self._write(
                         [
                             replace(
                                 row,
-                                status="interrupted",
+                                status="succeeded"
+                                if recovered.get(row.operation_id)
+                                else "interrupted",
                                 updated_at=_stamp(),
-                                result={
+                                result=recovered.get(row.operation_id)
+                                or {
                                     "message": "Interrupted. The outcome is not confirmed. "
                                     "Inspect state before an explicit retry."
                                 },
@@ -224,6 +252,29 @@ class OwnerOperations:
         except OwnerOperationBusyError:
             # Another service process holds the operation lock. It owns recovery.
             return
+
+    @contextmanager
+    def foreground(self) -> Iterator[None]:
+        """Reserve the same bounded slot while receiving an upload or bootstrapping auth.
+
+        No credentials or raw upload bytes enter a receipt. The caller must use
+        a deadline and release the reservation on cancellation.
+        """
+        with self._guard:
+            self._reconcile()
+            if self._active or self._closed:
+                raise OwnerOperationBusyError("Another owner operation is running")
+            lock = _exclusive(self.state_dir)
+            lock.__enter__()
+            self._active = True
+        try:
+            yield
+        finally:
+            with self._guard:
+                try:
+                    lock.__exit__(None, None, None)
+                finally:
+                    self._active = False
 
     def status(self, operation_id: str | None = None) -> dict[str, object]:
         with self._guard:
@@ -310,6 +361,8 @@ class OwnerOperations:
                                     "Operation result exceeds the supported size"
                                 )
                         except Exception as exc:
+                            from .journal import JournalError
+
                             # Never copy raw exception/server payloads into receipts.
                             final = replace(
                                 running,
@@ -318,7 +371,7 @@ class OwnerOperations:
                                 result={
                                     "error_type": type(exc).__name__,
                                     "message": str(exc)
-                                    if isinstance(exc, OwnerOperationError)
+                                    if isinstance(exc, OwnerOperationError | JournalError)
                                     else "The operation did not finish. "
                                     "Check its source or work state before retrying.",
                                 },
