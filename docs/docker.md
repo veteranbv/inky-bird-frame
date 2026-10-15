@@ -19,19 +19,23 @@ Compose starts four services from the same image:
 | --- | --- | --- |
 | `config-sync` | Validates the host `config.toml`, installs a private runtime copy, then exits | Configuration file and referenced environment values |
 | `bootstrap` | Copies the included public bird catalog into persistent storage, then exits | None |
-| `controller` | Serves health, catalog, images and the owner access preview on port 8793 | Private owner hashes; optional identity-service client secret |
+| `controller` | Serves the browser journal, paired screens, health and approved art on port 8793 | Private owner hashes; optional identity-service client secret |
 | `scheduler` | Refreshes observations and runs generation, notifications, and optional catalog publication | Codex and any configured service credentials |
 
 The controller and scheduler use the same commands as a native installation.
 One failed scheduled job is logged and retried later without stopping the HTTP
 service or unrelated jobs.
 
-The development [owner access preview](browser-access.md) opens at `/app`.
+The development [browser journal](journal.md) opens at `/app`.
 Create a local username and password; no setup code is required. The optional
 `access.env` file supplies only controller access credentials such as an OIDC
 client secret. Protect it with mode `0600`. It is separate from `controller.env`,
 which supplies discovery and generation credentials to the scheduler.
-The complete field-journal app is not yet part of this checkpoint.
+Browser source actions also run in the serving process. If you enable those
+actions, supply only their required provider variables to both long-running
+services. Do not give the controller a vault service token or unrelated host
+credentials. Both processes use the same private configuration and history.
+See [migration](migration-v1.md) and [history imports](history-imports.md).
 
 Docker port forwarding changes the address seen by the application. List the
 exact browser address in your host `config.toml`, including any non-default

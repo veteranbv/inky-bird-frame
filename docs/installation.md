@@ -50,6 +50,11 @@ physical panel independently.
 
 ## Before you begin
 
+Want the journal without building a frame? Start with [approved art and no
+generation](settings.md#start-with-approved-art). You do not need panel hardware,
+Codex authentication or a bird-service account for that path. The requirements
+below describe the complete observation-driven wall installation.
+
 You need:
 
 - the framed-display parts in the [hardware guide](hardware.md);
@@ -94,6 +99,11 @@ controller, set `bind_host` to the specific LAN address the display uses so
 the service is not offered on other networks.
 
 ### Browser applications
+
+For Inky's own bundled journal, follow [first setup](browser-access.md) and
+[the journal guide](journal.md). For paired screens, selected wall views and
+scoped dashboard recipes, use [presentation setup](presentation.md). The
+compatible external catalog interface below remains separate from owner access.
 
 The [owner access page](browser-access.md) is separate from the read-only
 integration routes below. This section is for an operator-supplied application
@@ -150,10 +160,10 @@ Direct cross-origin access through cookie, session, client-certificate, or HTTP
 Authorization proxies is not compatible with this interface. Inky does not
 permit credentialed CORS requests and does not implement CORS or Private
 Network Access preflight. Standard catalog `GET` requests use no custom request
-headers. The service logs each request locally with the source IP address,
-request path and query, and HTTP status. It does not log request headers or send
-browser analytics to an external service. Normal systemd journal or macOS log
-retention applies.
+headers. Routine application request logs use a fixed route label, method and
+status, not source addresses, arbitrary paths, queries, cookies or credentials.
+Do not enable proxy request logging for authentication callbacks. Normal systemd
+journal or bounded private macOS log retention applies.
 
 #### Homepage dashboard
 

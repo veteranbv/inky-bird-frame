@@ -6,13 +6,13 @@
     sources, and OpenAI services for Codex generation and review. The controller
     initiates HTTPS to internet services and HTTP or HTTPS to configured BirdNET-Go. On the trusted private network, the Raspberry Pi
     display node initiates HTTP GET requests to the controller's configured port (8793
-    in the example configuration). An optional trusted browser application connects to
-    a same-origin proxy or HTTPS endpoint, which forwards the request to the controller's
-    configured port. The controller returns approved catalog metadata and PNG plate
-    images. Direct cross-origin browser access is disabled by
+    in the example configuration). The bundled owner journal, paired read-only screens,
+    and optional dashboard art use the same controller. Optional HTTPS and Authentik
+    protect browser access. Screens receive only their approved art selection.
+    Direct cross-origin legacy catalog access is disabled by
     default and requires an exact allowed Origin. The display node verifies checksums, applies the
     rotation mode, and drives the Inky Impression panel over GPIO/SPI. A closing note
-    warns that the controller port is unauthenticated and must stay off the public
+    warns that legacy catalog routes remain unauthenticated and must stay off the public
     internet; optional SSH (TCP 22) reaches the display from a setup computer.
   </desc>
   <style>
@@ -72,10 +72,10 @@
   <text x="380.0" y="698" style="font-family:'Inter',-apple-system,'Segoe UI',sans-serif;font-size:20.5px;font-weight:400;" fill="#59636e">species.</text>
   <circle cx="653.0" cy="564" r="4" fill="#1a7f37"/>
   <text x="668.0" y="570" style="font-family:'Inter',-apple-system,'Segoe UI',sans-serif;font-size:21.5px;font-weight:600;" fill="#1f2328">Serve</text>
-  <text x="668.0" y="608" style="font-family:'Inter',-apple-system,'Segoe UI',sans-serif;font-size:20.5px;font-weight:400;" fill="#59636e">Build the active approved</text>
-  <text x="668.0" y="638" style="font-family:'Inter',-apple-system,'Segoe UI',sans-serif;font-size:20.5px;font-weight:400;" fill="#59636e">catalog; serve read-only</text>
-  <text x="668.0" y="668" style="font-family:'Inter',-apple-system,'Segoe UI',sans-serif;font-size:20.5px;font-weight:400;" fill="#59636e">metadata and PNG</text>
-  <text x="668.0" y="698" style="font-family:'Inter',-apple-system,'Segoe UI',sans-serif;font-size:20.5px;font-weight:400;" fill="#59636e">images.</text>
+  <text x="668.0" y="608" style="font-family:'Inter',-apple-system,'Segoe UI',sans-serif;font-size:20.5px;font-weight:400;" fill="#59636e">Keep owner actions private;</text>
+  <text x="668.0" y="638" style="font-family:'Inter',-apple-system,'Segoe UI',sans-serif;font-size:20.5px;font-weight:400;" fill="#59636e">serve approved art to</text>
+  <text x="668.0" y="668" style="font-family:'Inter',-apple-system,'Segoe UI',sans-serif;font-size:20.5px;font-weight:400;" fill="#59636e">panels, paired screens</text>
+  <text x="668.0" y="698" style="font-family:'Inter',-apple-system,'Segoe UI',sans-serif;font-size:20.5px;font-weight:400;" fill="#59636e">and dashboards.</text>
   <line x1="340.0" y1="552" x2="340.0" y2="728" stroke="#d0d7de" stroke-width="1"/>
   <line x1="628.0" y1="552" x2="628.0" y2="728" stroke="#d0d7de" stroke-width="1"/>
   <line x1="40" y1="748" x2="960" y2="748" stroke="#d0d7de" stroke-width="1"/>
@@ -92,14 +92,14 @@
   <rect x="267" y="916" width="190" height="30" fill="#ffffff" stroke="#d0d7de" stroke-width="1" rx="6"/>
   <text x="362" y="937" style="font-family:'Mono',ui-monospace,'SFMono-Regular',monospace;font-size:15.5px;font-weight:600;" fill="#59636e" text-anchor="middle">DISPLAY NODE</text>
   <rect x="469" y="916" width="264" height="30" fill="#ffffff" stroke="#d0d7de" stroke-width="1" rx="6"/>
-  <text x="601" y="937" style="font-family:'Mono',ui-monospace,'SFMono-Regular',monospace;font-size:15.5px;font-weight:600;" fill="#59636e" text-anchor="middle">BROWSER APP (OPTIONAL)</text>
+  <text x="601" y="937" style="font-family:'Mono',ui-monospace,'SFMono-Regular',monospace;font-size:15.5px;font-weight:600;" fill="#59636e" text-anchor="middle">JOURNAL / SCREENS</text>
   <line x1="118" y1="1150" x2="118" y2="826" stroke="#bf2c50" stroke-width="2.5"/>
   <path d="M 118 816 L 112 826 L 124 826 Z" fill="#bf2c50"/>
   <line x1="882" y1="814" x2="882" y2="1138" stroke="#1a7f37" stroke-width="2.5"/>
   <path d="M 882 1148 L 876 1138 L 888 1138 Z" fill="#1a7f37"/>
   <text x="164" y="974" style="font-family:'Mono',ui-monospace,'SFMono-Regular',monospace;font-size:15px;font-weight:600;letter-spacing:1.5px;" fill="#a12342">CLIENT REQUEST</text>
   <text x="164" y="1008" style="font-family:'Inter',-apple-system,'Segoe UI',sans-serif;font-size:20.5px;font-weight:400;" fill="#1f2328">Display / proxy use controller;</text>
-  <text x="164" y="1038" style="font-family:'Inter',-apple-system,'Segoe UI',sans-serif;font-size:20.5px;font-weight:400;" fill="#1f2328">browser uses proxy / HTTPS.</text>
+  <text x="164" y="1038" style="font-family:'Inter',-apple-system,'Segoe UI',sans-serif;font-size:20.5px;font-weight:400;" fill="#1f2328">journal uses local / HTTPS.</text>
   <rect x="164" y="1049" width="235" height="30" fill="#f6f8fa" stroke="#d0d7de" stroke-width="1" rx="6"/>
   <text x="175" y="1070" style="font-family:'Mono',ui-monospace,'SFMono-Regular',monospace;font-size:16.5px;font-weight:600;" fill="#a12342">display / proxy :8793</text>
   <text x="530" y="974" style="font-family:'Mono',ui-monospace,'SFMono-Regular',monospace;font-size:15px;font-weight:600;letter-spacing:1.5px;" fill="#116329">CONTROLLER RESPONSE</text>
@@ -138,8 +138,8 @@
   <path d="M 42 1516 v 162" stroke="#cf222e" stroke-width="4" stroke-linecap="round"/>
   <g fill="none" stroke="#cf222e" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M 81 1525 L 90 1528.5 V 1536 C 90 1542 85.5 1545 81 1546.5 C 76.5 1545 72 1542 72 1536 V 1528.5 Z"/><path d="M 81 1531 v 5"/><circle cx="81" cy="1539.6" r="0.6" fill="#cf222e"/></g>
   <text x="104" y="1542" style="font-family:'Inter',-apple-system,'Segoe UI',sans-serif;font-size:20.5px;font-weight:600;" fill="#cf222e">Keep the controller port private</text>
-  <text x="70" y="1578" style="font-family:'Inter',-apple-system,'Segoe UI',sans-serif;font-size:20.5px;font-weight:400;" fill="#59636e">The service has no built-in authentication or TLS, so never expose its configured port to</text>
-  <text x="70" y="1608" style="font-family:'Inter',-apple-system,'Segoe UI',sans-serif;font-size:20.5px;font-weight:400;" fill="#59636e">the internet. Across untrusted networks, use a VPN; browser apps also need HTTPS</text>
-  <text x="70" y="1638" style="font-family:'Inter',-apple-system,'Segoe UI',sans-serif;font-size:20.5px;font-weight:400;" fill="#59636e">through a same-origin proxy or TLS termination.</text>
+  <text x="70" y="1578" style="font-family:'Inter',-apple-system,'Segoe UI',sans-serif;font-size:20.5px;font-weight:400;" fill="#59636e">Owner sign-in does not protect the legacy catalog or display-health routes.</text>
+  <text x="70" y="1608" style="font-family:'Inter',-apple-system,'Segoe UI',sans-serif;font-size:20.5px;font-weight:400;" fill="#59636e">Keep them private. Use HTTPS across untrusted networks; Authentik is optional.</text>
+  <text x="70" y="1638" style="font-family:'Inter',-apple-system,'Segoe UI',sans-serif;font-size:20.5px;font-weight:400;" fill="#59636e">The journal, paired screens and scoped dashboards share one controller.</text>
   <text x="500.0" y="1718" style="font-family:'Inter',-apple-system,'Segoe UI',sans-serif;font-size:17.5px;font-weight:400;" fill="#59636e" text-anchor="middle">Optional display administration: SSH (TCP 22) from your setup computer</text>
 </svg>

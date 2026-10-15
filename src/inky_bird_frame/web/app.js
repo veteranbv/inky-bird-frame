@@ -231,6 +231,9 @@ async function signedIn(access, message = '') {
   const session = await api('/v1/owner/session'); csrf = session.csrf;
   if (location.hash === '#account') { await accountAccess(access, session, message); return; }
   await openJournal({api, upload, element, button, screen, signOut, showProblem,
+    localPasswordAllowed: access.local_login,
+    singleSignOnReady: session.single_sign_on && access.provider?.ready,
+    confirmWithSSO: () => beginSSO('/v1/owner/oidc/start', session.remembered, true),
     sessionExpired: () => { csrf = ''; },
     account: () => accountAccess(access, session)}, message);
 }

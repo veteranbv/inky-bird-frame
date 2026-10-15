@@ -511,11 +511,11 @@ def read_ebird_archive_history(
     state_dir: Path,
     *,
     window: ObservationWindow,
-    limit: int,
+    limit: int | None,
     date_range: DateRange | None = None,
     today: date | None = None,
 ) -> EbirdArchiveHistory:
-    if limit <= 0:
+    if limit is not None and limit <= 0:
         raise ValueError("eBird archive species_limit must be greater than zero")
     with _history_lock(state_dir):
         checklists, history_started_at, last_imported_at, earliest, latest = _read_state(

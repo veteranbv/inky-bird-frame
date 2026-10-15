@@ -11,7 +11,7 @@ from datetime import UTC, date, datetime, timedelta
 from enum import StrEnum
 from pathlib import Path
 from time import sleep
-from typing import Final
+from typing import Final, cast
 from urllib.parse import quote, urlencode
 
 from .errors import DataSourceError, TaxonomyMatchError
@@ -907,6 +907,28 @@ def _read_taxonomy_crosswalk(path: Path) -> dict[str, dict[str, object]]:
 
 def _write_taxonomy_crosswalk(path: Path, entries: dict[str, dict[str, object]]) -> None:
     write_json_atomic(path, {"schema_version": 1, "entries": entries})
+
+
+def cached_species_identities(path: Path) -> dict[str, tuple[int, str, str]]:
+    """Read an existing exact crosswalk without network requests or cache writes."""
+    matches: dict[str, set[tuple[int, str, str]]] = {}
+    for entry in _read_taxonomy_crosswalk(path).values():
+        source = entry.get("source_scientific_name", entry.get("scientific_name"))
+        if (
+            isinstance(source, str)
+            and type(entry.get("taxon_id")) is int
+            and cast(int, entry["taxon_id"]) > 0
+            and isinstance(entry.get("common_name"), str)
+            and isinstance(entry.get("scientific_name"), str)
+        ):
+            matches.setdefault(source, set()).add(
+                (
+                    cast(int, entry["taxon_id"]),
+                    cast(str, entry["common_name"]),
+                    cast(str, entry["scientific_name"]),
+                )
+            )
+    return {source: next(iter(values)) for source, values in matches.items() if len(values) == 1}
 
 
 def parse_inaturalist_taxon(payload: object) -> TaxonContext:

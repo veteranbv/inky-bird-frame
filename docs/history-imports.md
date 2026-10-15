@@ -72,8 +72,16 @@ reusable public catalog or portable collection export.
 
 The browser wire limit is 512 MiB. eBird ZIP contents have a separate existing
 512 MiB decoded CSV limit. These are rejection bounds, not measured promises
-that every maximum-size archive is practical on every controller. Final
-large-file memory and upload qualification remains a release gate.
+that every maximum-size archive is practical on every controller. An offline
+synthetic test checked 900,000 rows in 90,000 checklists: 509.7 MiB decoded CSV,
+4.1 MiB ZIP, and 108.3 MiB resulting private history. Complete checking and
+commit took about 22 seconds and peaked at 731 MiB of process memory on the
+test Mac. A smaller 100,000-row case peaked at 116 MiB. These are measured
+input shapes, not speed or memory guarantees. Unique records and names can
+use more memory than repeated rows. Keep headroom beyond the import process
+for the serving application and other services; the smallest recommended
+controller still has 4 GB RAM. Proxy upload limits and timeouts must also
+permit the complete source file.
 
 Inky requires 2 GiB free before admitting an upload: four upload ceilings leave
 headroom for the source, replacement history, previous history and parsing.

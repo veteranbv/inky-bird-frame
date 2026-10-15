@@ -85,6 +85,12 @@ jobs:
 
       - name: Ruff lint
         run: uv run ruff check .
+      - name: Check bundled browser modules and interaction regressions
+        run: |
+          for source in src/inky_bird_frame/web/*.js; do
+            node --input-type=module --check < "$source"
+          done
+          node --test tests/web/*.test.mjs
 
       - name: MyPy
         run: uv run mypy

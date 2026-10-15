@@ -1,7 +1,7 @@
 # Owner actions and saved outcomes
 
-This describes the unfinished browser candidate. It does not claim that all
-planned import, trip or display actions are available yet.
+This describes the 1.0 browser candidate. Implementation and local checks are
+not a release or production-deployment claim.
 
 Sources offers **Refresh observations**. Plate work offers the existing normal
 retry for waiting or stopped species. Notifications offers a real delivery test
@@ -33,6 +33,14 @@ Approval can make art eligible for the existing publisher; published copies
 cannot be recalled. Rejection requires a reason and retains the artifact privately.
 It does not start another attempt. Incomplete assets remain visible as recovery
 work with operator guidance, not a false empty queue.
+
+Saved birds has explicit add/remove and import-approved-art previews. The
+confirmation binds both the configuration and the saved-membership/catalog
+revision. Another tab or a newly approved plate invalidates an old preview.
+These actions use the existing collection operation, including its compatible
+legacy seed migration, and can change the active catalog and wall. The preview
+shows that migration separately. It never claims a personal sighting or starts
+a model. Named collections and Favorites remain separate.
 
 A notification test sends an actual external message to each configured
 destination. Its outcome reports failed destinations separately from successful

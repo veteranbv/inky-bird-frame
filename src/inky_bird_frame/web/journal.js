@@ -1,6 +1,8 @@
 // The controller owns birds and collections. No private journal enters browser storage.
 import {renderSettings} from '/app/settings.js';
 import {renderImports} from '/app/imports.js';
+import {renderPresentation} from '/app/presentation.js';
+import {frameTools} from '/app/frame-tools.js';
 let run = 0;
 let stopScreen = () => {};
 let frameSignOut = null;
@@ -46,7 +48,7 @@ export async function openJournal(ui, message = '') {
     image.loading = 'lazy'; image.decoding = 'async'; return image;
   }
   function evidence(bird) {
-    return [...new Set(bird.sources.map(name => sourceNames[name]?.[1]).filter(Boolean))].join(' · ')
+    return [...new Set([...bird.sources, ...(bird.retained_evidence || []).map(item => item.source)].map(name => sourceNames[name]?.[1]).filter(Boolean))].join(' · ')
       || (bird.sources.includes('owner-selection') ? 'Plate request or review · not a sighting'
         : bird.saved ? 'Saved selection' : bird.known ? 'Collection selection' : 'Available artwork · not a sighting');
   }
@@ -86,7 +88,7 @@ export async function openJournal(ui, message = '') {
   const management = data.management;
   const operationNames = {refresh: 'Refresh observations', retry: 'Make a plate eligible for retry',
     'notification-test': 'Test notification delivery', 'notification-retry': 'Retry notification dead letters',
-    'import-preview': 'Check history file', 'import-commit': 'Confirm history update', 'trip-preview': 'Review trip selection', 'trip-save': 'Save trip', 'queue-plates': 'Queue missing plates', 'approve-candidate': 'Approve candidate locally', 'reject-candidate': 'Reject candidate'};
+    'import-preview': 'Check history file', 'import-commit': 'Confirm history update', 'trip-preview': 'Review trip selection', 'trip-save': 'Save trip', 'queue-plates': 'Queue missing plates', 'approve-candidate': 'Approve candidate locally', 'reject-candidate': 'Reject candidate', 'community-preview': 'Check community history', 'community-save': 'Save community collection'};
   function operationAction(label, kind, explanation, taxonId) {
     const section = el('section', '', 'journal-card');
     let preview = null;
@@ -115,6 +117,21 @@ export async function openJournal(ui, message = '') {
       section.append(preview); preview.querySelector('button').focus();
     }); section.append(start); return section;
   }
+  function savedAction(label, action, taxonId) {
+    const section=el('section','','journal-card'), problem=el('p','','error');problem.setAttribute('role','alert');
+    const start=button(label,async()=>{
+      start.disabled=true;
+      try{
+        const settings=await api('/v1/owner/settings'), body={action,configuration_revision:settings.revision};if(taxonId)body.taxon_id=taxonId;
+        const preview=await api('/v1/owner/saved/preview',body), key=Array.from(crypto.getRandomValues(new Uint8Array(24)),value=>value.toString(16).padStart(2,'0')).join('');
+        section.append(el('h2','Change Saved birds?'),note(preview.added_count+' additions · '+preview.removed_count+' removals · '+preview.migrated_legacy_queue_count+' legacy seed members migrated'),note('Saved birds join the compatible current selection and can affect the existing wall immediately at its next refresh. This is curation, not a sighting. Other named collections and source history stay unchanged. No model starts.'),button('Confirm Saved birds change',async event=>{
+          const control=event.currentTarget;control.disabled=true;
+          try{const receipt=await api('/v1/owner/saved/change',{...body,key,confirm:true,collection_revision:preview.collection_revision});location.assign(href('operation',{operation:receipt.operation_id}));}
+          catch(error){problem.textContent=error.message+' Check Saved birds if the connection was lost.';control.disabled=false;}
+        }),button('Cancel',()=>location.reload()));
+      }catch(error){problem.textContent=error.message;start.disabled=false;}
+    });section.append(start,problem);return section;
+  }
   if (area === 'home') {
     base('Your field journal', 'Birds worth keeping close.');
     const featured = byId.get(data.featured_taxon_id);
@@ -134,7 +151,7 @@ export async function openJournal(ui, message = '') {
     const artScope = query.get('scope') === 'art';
     base(artScope ? 'Available artwork' : 'Your birds', artScope
       ? 'Approved local plates. Browsing does not add a sighting or change your wall.'
-      : 'Birds in your current selection or saved collections. A missing plate does not erase a bird.');
+      : 'Birds in retained history, current observations or saved collections. A missing plate does not erase a bird.');
     main.append(link(artScope ? 'Show your birds' : 'Browse available artwork', 'birds', artScope ? {} : {scope: 'art'}));
     const label = el('label', 'Find a bird'); label.htmlFor = 'bird-search';
     const search = el('input'); search.type = 'search'; search.id = label.htmlFor; search.autocomplete = 'off';
@@ -148,11 +165,19 @@ export async function openJournal(ui, message = '') {
       if (!birds.length) grid.append(empty('No birds here yet', term ? 'Try another name.' : 'Connect a source or choose artwork for a collection.'));
     }
     search.addEventListener('input', filter); filter();
+    if (!artScope) {
+      const history = el('details'); history.append(el('summary', 'History coverage and unmatched species'));
+      for (const source of data.history_coverage || []) history.append(note((sourceNames[source.source]?.[0] || source.source) + ': ' + source.coverage));
+      for (const member of data.unresolved_history || []) history.append(note('Unmatched: ' + (member.scientific_name || member.common_name) + ' · ' + (sourceNames[member.source]?.[0] || member.source) + ' · ' + member.count + ' ' + member.unit));
+      history.append(note('Unmatched names stay private. They cannot request artwork until an exact taxon match exists. Viewing history does not contact a source or change generation eligibility. Live sources without retained local history describe only their last discovery window.'));
+      main.append(history);
+    }
   } else if (area === 'bird') {
     const bird = byId.get(Number(query.get('bird')));
     if (!bird) { base('Bird unavailable'); main.append(link('Back to birds', 'birds')); return; }
     base(bird.common_name, bird.scientific_name);
     main.append(note(evidence(bird)));
+    for (const item of bird.retained_evidence || []) main.append(note((sourceNames[item.source]?.[0] || item.source) + ': ' + item.count + ' ' + item.unit + ' in retained history. Counts from different sources are not added together.'));
     if (bird.plate_ready) {
       const image = art(bird, 'detail-art'); main.append(image);
       const result = await api('/v1/owner/journal/birds/' + bird.taxon_id + '/profile');
@@ -184,6 +209,7 @@ export async function openJournal(ui, message = '') {
       } catch (error) { control.disabled = false; ui.showProblem(error); }
     }), note('Favorites are bookmarks. They do not record sightings, request art or change your wall.'));
     main.append(link('Make a collection with this bird', 'edit-collection', {bird: bird.taxon_id}, 'primary-link'), link('Back to birds', 'birds'));
+    if(bird.saved || bird.plate_ready)main.append(savedAction(bird.saved ? 'Review removal from Saved birds' : 'Review adding to Saved birds',bird.saved?'remove':'add',bird.taxon_id));
   } else if (area === 'collections') {
     base('Collections', 'Keep a selection together. Saving a group does not change your wall or request new art.');
     const grid = el('div', '', 'bird-grid');
@@ -195,8 +221,41 @@ export async function openJournal(ui, message = '') {
         note(ready.length + ' plates ready · ' + (birds.length - ready.length) + ' not ready'), playLink(key));
       grid.append(node);
     }
-    main.append(link('New collection', 'edit-collection', {}, 'primary-link'), link('Make a trip from your eBird checklists', 'imports', {kind: 'ebird-archive'}), link('Import a collection', 'import-collection'), grid,
+    main.append(link('New collection', 'edit-collection', {}, 'primary-link'), link('Make a trip from your eBird checklists', 'imports', {kind: 'ebird-archive'}), link('Birds reported near a place', 'community'), link('Import a collection', 'import-collection'), grid,
       note('Current and saved keeps the existing controller selection. Named collections do not join it automatically. Available artwork is not personal evidence.'));
+  } else if (area === 'community') {
+    base('Birds reported near a place', 'Search iNaturalist community reports. These are not your personal sightings. The query sends this point, radius and dates to iNaturalist.');
+    const preview = await api('/v1/owner/community');
+    const key = () => Array.from(crypto.getRandomValues(new Uint8Array(24)), item => item.toString(16).padStart(2, '0')).join('');
+    if (preview.status === 'ready') {
+      const group = preview.collection;
+      main.append(el('h2', group.label), note(group.start_date + ' through ' + group.end_date + ' · inclusive dates'), note(group.members.length + ' species · complete search result'), note(preview.notice));
+      const list = el('ul'); for (const member of group.members) list.append(el('li', member.common_name + ' · ' + member.scientific_name)); main.append(list);
+      const requestKey = key();
+      main.append(button('Save community collection', async () => {
+        try { const receipt = await api('/v1/owner/community/save', {key: requestKey, preview_hash: preview.preview_hash, confirm: true}); location.assign(href('operation', {operation: receipt.operation_id})); }
+        catch (error) { ui.showProblem(error); }
+      }));
+    }
+    main.append(button(preview.status === 'ready' ? 'Discard preview and search again' : 'New community search', () => {
+      const form = el('form'), inputs = {};
+      for (const [name, title, type] of [['label','Collection name','text'],['start_date','Start date','date'],['end_date','End date','date'],['latitude','Latitude','number'],['longitude','Longitude','number'],['radius_km','Radius in km','number']]) {
+        const label = el('label', title), input = el('input'); input.id = 'community-' + name; label.htmlFor = input.id; input.type = type; input.required = true;
+        if (name === 'latitude' || name === 'longitude') { input.step = 'any'; input.min = name === 'latitude' ? '-90' : '-180'; input.max = name === 'latitude' ? '90' : '180'; }
+        if (name === 'radius_km') { input.min = '1'; input.max = '500'; input.step = '1'; }
+        if (name === 'label') input.maxLength = 128;
+        inputs[name] = input; form.append(label, input);
+      }
+      form.append(note('Searches must contain no more than 500 species. Narrow a larger result; Inky never saves a truncated selection.'), note('A successful new search replaces only the temporary preview, not saved collections.'));
+      const submit = el('button', 'Check community reports'); submit.type = 'submit'; const problem = el('p', '', 'error'); problem.setAttribute('role', 'alert'); form.append(submit, problem);
+      let requestKey = key();
+      form.addEventListener('input', () => { requestKey = key(); });
+      form.addEventListener('submit', async event => {
+        event.preventDefault(); submit.disabled = true;
+        try { const receipt = await api('/v1/owner/community/preview', {key: requestKey, choices: Object.fromEntries(Object.entries(inputs).map(([name,input])=>[name,input.value])), confirm: true}); location.assign(href('operation', {operation: receipt.operation_id})); }
+        catch (error) { problem.textContent = error.message; submit.disabled = false; }
+      }); main.append(form); inputs.label.focus();
+    }), link('Back to Collections', 'collections'));
   } else if (area === 'edit-collection') {
     const group = data.collections.find(item => item.collection_id === query.get('view'));
     if (group?.kind === 'favorites') throw new Error('Add or remove Favorites on each bird’s page.');
@@ -261,6 +320,7 @@ export async function openJournal(ui, message = '') {
   } else if (area === 'collection') {
     const birds = members(view); base(viewLabel(view), view === 'all' ? 'Artwork, not a record of personal sightings.' : 'A saved view. Play does not change the physical wall.');
     main.append(playLink(view));
+    if(view==='saved')main.append(savedAction('Review adding all available approved art','import-approved'));
     const group = data.collections.find(item => item.collection_id === view);
     if (group) {
       main.append(note(group.kind === 'personal-trip' ? 'Personal trip · linked eBird checklists' : group.kind === 'community-history' ? 'Community reports · not your personal sightings' : group.kind === 'imported-selection' ? 'Imported selection · personal evidence not verified here' : group.kind === 'favorites' ? 'Bookmarks · not sightings' : 'Saved selection · not a sighting record'));
@@ -323,17 +383,18 @@ export async function openJournal(ui, message = '') {
     let birds = members(view).filter(bird => bird.plate_ready); base(viewLabel(view));
     if (!birds.length) { main.append(empty('No approved plates in this view', 'Inky will not switch to another collection.'), link('Exit Frame', 'collections')); return; }
     document.body.classList.add('presenting'); document.querySelector('#journal-navigation')?.remove();
-    let position = 0, paused = true, timer = null, expired = false;
+    let position = 0, paused = true, timer = null, expired = false, shuffle = false;
     let image = el('img', '', 'frame-art'), objectURL = null, renderedKey = '', loading = null;
     image.hidden = true;
     const caption = el('p'), status = el('p', '', 'hint'); status.setAttribute('role', 'status');
     const controls = el('div', '', 'frame-controls');
+    const viewport = el('div', '', 'frame-viewport'); viewport.append(image);
     function signedOut() {
       if (expired) return;
       ui.sessionExpired();
       expired = true; pause(); closeJournal();
       image.alt = 'Last visible approved bird plate'; document.title = 'Inky';
-      status.textContent = 'Signed out. The last approved image stays visible. Sign in to continue.';
+      status.textContent = 'Signed out. The last approved image stays visible. Sign in, or pair this screen for continuous read-only viewing.';
       main.replaceChildren(image, status, link('Sign in', 'home'));
       byId.clear(); for (const key of Object.keys(data)) delete data[key]; birds = [];
     }
@@ -366,22 +427,16 @@ export async function openJournal(ui, message = '') {
         }
       } finally { if (nextURL) URL.revokeObjectURL(nextURL); }
     }
-    function step(change) { show((position + change + birds.length) % birds.length); }
+    function step(change) { if (!document.hidden) show((position + change + birds.length) % birds.length); }
     function pause() { paused = true; clearInterval(timer); play.textContent = 'Play'; }
     const play = button('Play', () => {
       if (!paused) { pause(); return; }
-      paused = false; play.textContent = 'Pause'; timer = setInterval(() => { if (!document.hidden && !expired) step(1); }, 60000);
+      paused = false; play.textContent = 'Pause'; timer = setInterval(() => { if (!document.hidden && !expired) step(shuffle && birds.length>1 ? 1+Math.floor(Math.random()*(birds.length-1)) : 1); }, 60000);
     });
     const details = link('Details', 'bird', {bird: birds[0].taxon_id}); details.addEventListener('click', pause);
     controls.append(button('Previous', () => step(-1)), play, button('Next', () => step(1)), details, link('Exit Frame', 'collections'));
-    if (document.documentElement.requestFullscreen) controls.append(button('Fullscreen', async () => {
-      try { if (!document.fullscreenElement) await document.documentElement.requestFullscreen(); else await document.exitFullscreen(); }
-      catch { status.textContent = 'This browser does not allow fullscreen here. Frame still works.'; }
-    }));
-    const key = event => { if (['INPUT', 'BUTTON', 'A'].includes(event.target.tagName)) return;
-      if (event.key === 'ArrowRight') step(1); if (event.key === 'ArrowLeft') step(-1);
-      if (event.key === ' ') { event.preventDefault(); play.click(); } };
-    document.addEventListener('keydown', key);
+    const random=button('Shuffle off',()=>{shuffle=!shuffle;random.textContent=shuffle?'Shuffle on':'Shuffle off';});controls.append(random);
+    const stopTools=frameTools({viewport,controls,status,button,previous:()=>step(-1),next:()=>step(1),togglePlay:()=>play.click()});
     // Check authority, not activity. A display view must not renew an owner session.
     const check = setInterval(async () => {
       if (document.hidden) return;
@@ -400,6 +455,9 @@ export async function openJournal(ui, message = '') {
         }
         const previous = birds[position]?.taxon_id;
         birds = current.birds.filter(bird => ids.includes(bird.taxon_id) && bird.plate_ready);
+        if(renderedKey && !birds.some(bird=>bird.taxon_id+':'+bird.portrait_sha256===renderedKey)) {
+          loading?.abort();if(objectURL)URL.revokeObjectURL(objectURL);objectURL=null;renderedKey='';image.removeAttribute('src');image.hidden=true;caption.textContent='';
+        }
         await show(Math.max(0, birds.findIndex(bird => bird.taxon_id === previous)));
       }
       catch (error) {
@@ -408,9 +466,9 @@ export async function openJournal(ui, message = '') {
         } else { pause(); loading?.abort(); status.textContent = 'Offline. Keeping the last approved plate.'; }
       }
     }, 60000);
-    stopScreen = () => { clearInterval(timer); clearInterval(check); loading?.abort(); if (objectURL) URL.revokeObjectURL(objectURL); document.removeEventListener('keydown', key); };
+    stopScreen = () => { clearInterval(timer); clearInterval(check); loading?.abort(); if (objectURL) URL.revokeObjectURL(objectURL); stopTools(); };
     frameSignOut = signedOut;
-    main.append(image, caption, controls, status, note('Plates change once a minute while playing. This does not refresh the wall panel.')); show();
+    main.append(viewport, caption, controls, status, note('Plates change once a minute while playing. This does not refresh the wall panel.')); show();
   } else if (area === 'candidate') {
     base('Review candidate', 'Generated art is not approved artwork. Inspect the complete plate before deciding.');
     main.append(link('Back to plate work', 'work'));
@@ -476,7 +534,11 @@ export async function openJournal(ui, message = '') {
           }
         }
         if (['pending', 'running'].includes(receipt.status)) timer = setTimeout(update, document.hidden ? 5000 : 1000);
-        else content.append(link('Check sources', 'sources'), link('Check plate work', 'work'), link('Check notifications', 'notifications'));
+        else {
+          if (receipt.kind === 'community-preview') content.append(link('Review community selection', 'community', {}, 'primary-link'));
+          if (receipt.result?.collection_id) content.append(link('Open saved collection', 'collection', {view: receipt.result.collection_id}, 'primary-link'));
+          content.append(link('Check sources', 'sources'), link('Check plate work', 'work'), link('Check notifications', 'notifications'));
+        }
       } catch (error) {
         if (error.code === 'sign_in_required') ui.showProblem(error);
         else if (!stopped) { content.replaceChildren(note(error.message), button('Check again', update)); }
@@ -489,13 +551,34 @@ export async function openJournal(ui, message = '') {
     const source = query.get('source');
     if (source && !sourceNames[source]) throw new Error('Choose a supported source.');
     await renderSettings(ui, {base, link, note, sourceNames, source});
+  } else if (['displays','integrations'].includes(area)) {
+    await renderPresentation(ui, {base, link, note, data, area});
+  } else if (['health','backups','advanced'].includes(area)) {
+    base(area==='health'?'Health and help':area==='backups'?'Backups and upgrades':'Advanced tools');main.append(link('Back to Manage','manage'));
+    function guide(title,path,text){const section=el('section','','journal-card'), anchor=el('a','Open '+title,'text-link');anchor.href='https://github.com/veteranbv/inky-bird-frame/blob/main/docs/'+path;anchor.target='_blank';anchor.rel='noopener noreferrer';section.append(el('h2',title),note(text),anchor);main.append(section);}
+    if(area==='health'){
+      const health=await api('/v1/owner/health');main.append(note('Installed version: '+health.version),note(health.notice));
+      for(const check of health.checks)main.append(empty(check.name+' · '+check.status,check.detail));
+      guide('Operations','operations.md','Run the controller and display doctor from their installed hosts. Check actual scheduler/service health and successful panel telemetry. This page does not run privileged commands or download raw logs.');
+      main.append(link('Check Sources','sources'),link('Check plate work','work'),link('Check notification delivery','notifications'));
+    }else if(area==='backups'){
+      guide('Backup and restore','backup.md','Stop browser serving and scheduled writers first. Back up the authoritative configuration, complete private state, approved catalog and working data together. Private state includes credentials. A collection export is not a controller backup.');
+      guide('Upgrade and migration','migration-v1.md','Existing deployments keep their source choices, generation policy, Saved birds and default wall route. Make a matching runtime/state backup before updating. Do not let a newer runtime overwrite your only rollback copy.');
+      main.append(link('Configuration ownership','settings'));
+    }else{
+      guide('Plate repair','operations.md','Approved replacements, research resets and correction-source selection require the existing explicit operator migration and human review. Browser approval cannot replace approved art or bypass required factual/visual checks.');
+      guide('Installation and services','installation.md','Host binding, native services, executable paths, certificates and package updates remain installer-owned. Browser settings cannot safely pretend to reconfigure a host.');
+      guide('HTTPS and Authentik','browser-access.md','Optional single sign-on uses an explicit owner identity link, not automatic promotion by email or group. Never copy the identity-service password into Inky.');
+    }
   } else if (area === 'manage') {
     base('Manage', 'One controller. The same sources, reviewed plates and work rules.');
     const sections = [['sources', 'Sources', 'Check all seven supported inputs and the shared observation window.'],
       ['work', 'Plate work', 'Keep stopped, waiting and runnable work distinct.'],
       ['displays', 'Displays', 'Check the last confirmed physical panel update.'],
+      ['integrations', 'Home Assistant and Homepage', 'Choose scoped artwork and separate read-only status credentials.'],
       ['notifications', 'Notifications', 'Check delivery separately from bird discovery.'],
       ['settings', 'Settings and backups', 'Source choices, generation policy and configuration ownership.']];
+    sections.push(['health','Health and help','Read-only application checks and host doctor guidance.'],['backups','Backups and upgrades','Protect private state and follow a deliberate migration.'],['advanced','Advanced tools','Explicit operator workflows for host setup and approved plate repair.']);
     for (const [key, title, text] of sections) {
       const node = link('', key, {}, 'journal-card'); node.append(el('h2', title), el('p', text)); main.append(node);
     }
@@ -515,6 +598,7 @@ export async function openJournal(ui, message = '') {
           : source.status === 'error' ? 'Last saved check failed' : 'Not checked yet';
         node.append(el('h2', name), el('p', state, source.status === 'error' ? 'error' : 'connection'), note(kind));
         if (imported) node.append(note('Imported history is not a live connection.'));
+        if (source.last_checked_at) node.append(note('Last saved check: '+new Date(source.last_checked_at).toLocaleString()));
         if (imported) node.append(link('Import or review ' + name + ' history', 'imports', {kind: source.name}, 'primary-link'));
         if (source.enabled && !management.work.complete) node.append(note('Discovery is ' + management.work.discovery_status + '. This is saved state, not a current connection test.'));
         if (source.unresolved_count) node.append(note(source.unresolved_count + ' unresolved species do not trigger generation.'));
@@ -534,6 +618,9 @@ export async function openJournal(ui, message = '') {
         const ids = management.work[key], section = el('section', '', 'journal-card'); section.append(el('h2', label + ' · ' + ids.length));
         for (const id of ids) {
           section.append(link(byId.get(id)?.common_name || 'Taxon ' + id, 'bird', {bird: id}));
+          const retry=management.work.retry_details?.find(item=>item.taxon_id===id), terminal=management.work.terminal_details?.find(item=>item.taxon_id===id);
+          if(retry)section.append(note(retry.attempts+' recorded failed cycles. Next retry eligibility: '+new Date(retry.next_attempt_at).toLocaleString()));
+          if(terminal)section.append(note('Retained hold: '+terminal.state.replaceAll('_',' ')+'. Use explicit recovery; this is not runnable work.'));
           if (key !== 'can_run') section.append(operationAction('Review retry for ' + (byId.get(id)?.common_name || 'Taxon ' + id), 'retry', 'Make this species eligible for a new attempt. Inky retains correction guidance, archives the previous attempt, and preserves mandatory review. Generation can use your AI allowance or incur costs when enabled. A retry does not promise a better result or an immediate run.', id));
         } main.append(section);
       }

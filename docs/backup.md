@@ -32,6 +32,10 @@ The browser candidate also keeps private owner/session state in this directory.
 Treat a backup containing it as credential-sensitive even without Bird Buddy.
 Named selections in `journal.json` can reveal travel and personal interests.
 They supplement, and do not replace, the legacy Saved birds `collection.json`.
+`presentation-access.json` holds hashed screen/status credentials, expiry and
+private view choices. Keep it with the matching owner state. Restore can restore
+previously valid access; revoke lost screens and credentials after recovery.
+Temporary history/community previews may contain private source selections.
 Stop browser serving as well as scheduled writers before copying these files.
 
 Codex and optional GitHub authentication are separate from the application

@@ -3,13 +3,14 @@
 from __future__ import annotations
 
 import fcntl
+import hashlib
 import json
 import os
 import shutil
 from collections.abc import Iterator
 from contextlib import contextmanager, nullcontext
 from copy import deepcopy
-from dataclasses import dataclass
+from dataclasses import asdict, dataclass
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
 from tempfile import TemporaryDirectory
@@ -1683,6 +1684,7 @@ def _change_collection(
     origin: CollectionOrigin | None,
     remove: bool,
     dry_run: bool,
+    expected_revision: str | None = None,
 ) -> dict[str, object]:
     if taxon_ids is not None and any(
         not isinstance(taxon_id, int) or isinstance(taxon_id, bool) or taxon_id <= 0
@@ -1694,13 +1696,29 @@ def _change_collection(
         state_lock = nullcontext() if dry_run else catalog_state_lock(config.controller.state_dir)
         with state_lock:
             approved = read_catalog_entries(config.controller.catalog_dir)
+            queued = read_generation_queue(config)
+            state = read_collection_state(config.controller.state_dir)
+            revision = hashlib.sha256(
+                json.dumps(
+                    {
+                        "collection": asdict(state),
+                        "approved": [asdict(entry) for entry in approved],
+                        "legacy_queue": [_species_payload(bird) for bird in queued],
+                    },
+                    sort_keys=True,
+                ).encode()
+            ).hexdigest()
+            if expected_revision is not None and expected_revision != revision:
+                raise CatalogError(
+                    "Saved birds or approved artwork changed. Review this action again."
+                )
             requested_taxa = (
                 {entry.taxon_id for entry in approved} if taxon_ids is None else taxon_ids
             )
             current, migrated_legacy_queue, migrated_at, migration_applied = (
                 _migrate_legacy_seed_queue(
-                    read_collection_state(config.controller.state_dir),
-                    read_generation_queue(config),
+                    state,
+                    queued,
                 )
             )
             if remove:
@@ -1739,7 +1757,38 @@ def _change_collection(
         "migrated_legacy_queue_count": len(migrated_legacy_queue),
         "migrated_legacy_queue_taxon_ids": [entry.taxon_id for entry in migrated_legacy_queue],
         "dry_run": dry_run,
+        "collection_revision": revision,
     }
+
+
+def change_saved_collection(
+    config: AppConfig,
+    *,
+    action: str,
+    taxon_id: int | None,
+    dry_run: bool,
+    expected_revision: str | None = None,
+) -> dict[str, object]:
+    """Browser task over the existing Saved birds operation and its locks."""
+    if action not in {"add", "remove", "import-approved"} or (action == "import-approved") != (
+        taxon_id is None
+    ):
+        raise ValueError("Choose a supported Saved birds action")
+    if action == "add" and not any(
+        entry.taxon_id == taxon_id for entry in read_catalog_entries(config.controller.catalog_dir)
+    ):
+        raise CatalogError("Choose approved artwork before adding it to Saved birds")
+    with catalog_state_lock(config.controller.state_dir) if dry_run else nullcontext():
+        return _change_collection(
+            config,
+            taxon_ids=None if taxon_id is None else {taxon_id},
+            origin=CollectionOrigin.CATALOG_IMPORT
+            if action == "import-approved"
+            else CollectionOrigin.MANUAL,
+            remove=action == "remove",
+            dry_run=dry_run,
+            expected_revision=expected_revision,
+        )
 
 
 def import_approved_collection(config: AppConfig, *, dry_run: bool = False) -> dict[str, object]:

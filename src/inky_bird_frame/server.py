@@ -420,7 +420,7 @@ class CatalogService:
             "/v1/display-fetch": ("display-last-fetch.json", "fetched_at"),
             "/v1/display-success": ("display-last-success.json", "succeeded_at"),
         }
-        event = events.get(request.url.path)
+        event = events.get(request.url.path.removeprefix("/wall"))
         if event is None:
             return self._json(request, 404, {"ok": False, "error": "not found"})
         if request.headers.getlist("origin"):

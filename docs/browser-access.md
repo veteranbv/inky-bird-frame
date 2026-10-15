@@ -5,10 +5,10 @@ setup code, online account or password-manager subscription is required.
 The first account owns this installation. Inky closes account creation once
 that account exists. Finish setup before sharing access.
 
-This development candidate includes account controls, bird browsing, readable
-profiles, private named selections and browser presentation. It is not the
-complete journal promised for 1.0. See the [journal guide](journal.md) for the
-implemented paths and remaining release gates in [issue #310](https://github.com/veteranbv/inky-bird-frame/issues/310).
+This development candidate includes the [browser journal](journal.md), source
+setup, history imports, collections, plate work and [scoped presentation](presentation.md).
+It is not a published 1.0 release. Qualification and exact-head review remain
+required before a production upgrade.
 
 ## Ordinary home-network setup
 
@@ -57,7 +57,7 @@ automatically. HTTPS is available when you need encryption.
 
 ## What changes on an existing installation
 
-The access preview adds a private owner account. It does not replace your
+The browser journal adds a private owner account. It does not replace your
 configuration, provider credentials, detection history, plates, saved birds,
 generation limits or display settings. Your existing schedules keep running.
 The older catalog and dashboard routes retain their trusted-network contract;
@@ -74,7 +74,7 @@ Your first visit offers account creation if no owner exists. Create the owner
 on the trusted network before sharing the address. Later visits show sign-in,
 not another setup wizard. Restart the controller and confirm the same account
 still works. No source reconnection or detection import is needed for this
-access-only change.
+upgrade. Import new records only when you deliberately want to update history.
 
 An upgrade does not opt you into HTTPS or Authentik. Keep ordinary local login,
 or follow the advanced steps below. An existing named HTTPS origin keeps
@@ -82,7 +82,7 @@ HTTPS-only access unless you deliberately configure a local-mode downgrade.
 
 For a failed trial, stop the candidate and restore the matching old runtime
 and private backup. Do not mix a newer state directory with an older release.
-The access preview is one part of the planned browser journal. Its account
+Owner access is one part of the browser journal. Its account
 screen is not proof that bird browsing, trips or source setup are finished.
 
 ## Sessions and private files
@@ -195,7 +195,9 @@ Wildcards and networks are rejected. The proxy must preserve Host, set
 X-Forwarded-Proto from the real connection and replace client-supplied
 forwarding headers. Inky ignores headers from all other peers.
 
-Route /app, /app/*, /v1/access and /v1/owner/* through the private endpoint.
+Route `/app`, `/app/*`, `/screen`, `/v1/access`, `/v1/owner/*`,
+`/v1/screen/*`, `/v1/integrations/*` and `/v1/dashboard/*` through the private
+endpoint. Dashboard art stays off until the owner explicitly enables it.
 Keep catalog, assets, health, embed and telemetry within their separate
 trusted-network boundary. Owner sign-in does not authenticate those legacy
 routes. Keep the proxy-to-controller hop private too.
@@ -216,7 +218,7 @@ http:
   routers:
     inky-owner:
       entryPoints: [websecure]
-      rule: "Host(`inky.example.test`) && (Path(`/app`) || PathPrefix(`/app/`) || Path(`/v1/access`) || (PathPrefix(`/v1/owner/`) && !Path(`/v1/owner/oidc/callback`)))"
+      rule: "Host(`inky.example.test`) && (Path(`/app`) || PathPrefix(`/app/`) || Path(`/screen`) || Path(`/v1/access`) || PathPrefix(`/v1/screen/`) || PathPrefix(`/v1/integrations/`) || PathPrefix(`/v1/dashboard/`) || (PathPrefix(`/v1/owner/`) && !Path(`/v1/owner/oidc/callback`)))"
       middlewares: [inky-private]
       service: inky-owner
       tls: {}
@@ -315,7 +317,7 @@ A Caddy instance on the controller can use this Caddyfile:
 
 https://inky.home {
     tls internal
-    @owner path /app /app/* /v1/access /v1/owner/*
+    @owner path /app /app/* /screen /v1/access /v1/owner/* /v1/screen/* /v1/integrations/* /v1/dashboard/*
     handle @owner {
         reverse_proxy 127.0.0.1:8793
     }
@@ -368,7 +370,7 @@ server {
     access_log /var/log/nginx/inky-status.log inky_status;
     error_log /dev/null;
 
-    location ~ ^/(app(/(app\.js|journal\.js|app\.css|access-guide))?/?|v1/access|v1/owner/.*)$ {
+    location ~ ^/(app(/(app\.js|journal\.js|settings\.js|imports\.js|frame-tools\.js|presentation\.js|viewer\.js|app\.css|access-guide))?/?|screen|v1/access|v1/(owner|screen|integrations|dashboard)/.*)$ {
         proxy_set_header Host $http_host;
         proxy_set_header X-Forwarded-Proto https;
         proxy_set_header X-Forwarded-For $remote_addr;

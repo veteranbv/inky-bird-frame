@@ -84,10 +84,13 @@ uv run ruff check .
 uv run mypy
 uv run pytest
 uv run inky-bird-frame catalog validate --catalog catalog
+node --test tests/web/*.test.mjs
 ```
 
 Run `uv run ruff format .` before the checks when Python files need formatting.
 CI also validates GitHub Actions and shell deployment scripts.
+Browser interaction regressions use Node.js 20 or newer's built-in test runner;
+there is no Node service or frontend package installation in the user runtime.
 
 ## Catalog contributions
 

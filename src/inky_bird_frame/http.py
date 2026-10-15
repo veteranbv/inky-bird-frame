@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 import os
+import stat
 from collections.abc import Mapping
 from http.client import HTTPException, HTTPMessage, HTTPResponse
 from pathlib import Path
@@ -18,6 +19,22 @@ from .errors import DataSourceError
 MAX_JSON_BYTES = 8 * 1024 * 1024
 MAX_ASSET_BYTES = 64 * 1024 * 1024
 USER_AGENT = "inky-bird-frame/0.1"
+
+
+def read_private_json(path: Path, *, maximum: int) -> object:
+    """Bound a private local document and refuse symlinks before opening it."""
+    try:
+        descriptor = os.open(path, os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK)
+        with os.fdopen(descriptor, "rb") as handle:
+            info = os.fstat(handle.fileno())
+            if not stat.S_ISREG(info.st_mode) or stat.S_IMODE(info.st_mode) & 0o077:
+                raise DataSourceError("Private state must be a regular file with mode 0600")
+            body = handle.read(maximum + 1)
+        if len(body) > maximum:
+            raise DataSourceError("Private state exceeds its supported size")
+        return json.loads(body)
+    except (OSError, UnicodeDecodeError, json.JSONDecodeError) as exc:
+        raise DataSourceError("Private state cannot be read; restore its matching backup") from exc
 
 
 def _read_capped(response: HTTPResponse, limit: int, display_url: str) -> bytes:

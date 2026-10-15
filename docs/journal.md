@@ -8,18 +8,31 @@ This is an unfinished 1.0 candidate, not a published release. Do not replace a
 working deployment with this branch. The complete acceptance scope remains in
 [issue #310](https://github.com/veteranbv/inky-bird-frame/issues/310).
 
-## What works in this checkpoint
+## Find your way around
+
+Home, Birds, Collections and Manage use one controller. Start with
+[approved art and generation off](settings.md#start-with-approved-art), create
+your owner account, and browse before connecting a source. On an existing
+installation, follow the [migration guide](migration-v1.md) instead of replacing
+your configuration with a new seed.
 
 - Home opens the current approved selection. If it is empty, it offers available
   artwork without pretending you observed those birds.
-- Birds separates your current/saved selections from all available artwork.
+- Birds separates retained history and current/saved selections from all available artwork.
   Search by common or scientific name. Open a plate for readable reviewed facts
   and source links. Older incomplete profiles show an explicit fallback.
+  Retained eBird, Analyzer and selected-feeder Bird Buddy history is not cut to
+  the live window or provider species limit. Each source keeps its own count
+  and unit; Inky never adds checklists to station detections as if they were
+  the same thing. Unknown or ambiguous taxa remain private unmatched names.
 - Collections creates, edits and removes private named selections. Reloading the
   page reads the saved controller state. A stale edit from another tab fails
   before it overwrites a newer save.
 - Favorites are separate bookmarks. Add or remove one on a bird's page. They
   do not join Saved birds or change your wall automatically.
+- Saved birds retains the existing flat membership. Its add/remove and import
+  approved-art actions have a separate preview. They can change the compatible
+  active selection and wall; ordinary Favorites and named collections cannot.
 - Portable collection export includes labels, inclusive dates, species and
   declared origins, but no private checklist links or credentials. Import
   previews matches and keeps unknown names unresolved. It does not turn an
@@ -28,9 +41,15 @@ working deployment with this branch. The complete acceptance scope remains in
   Analyzer CSV files before a separate confirmed history update. Trip saving
   selects complete checklists, retains unresolved names and changes neither
   generation work nor wall selection.
+- Community history is a separate location/radius/date search, labeled **Birds
+  reported near this place**. The query sends that point and dates to iNaturalist.
+  Review the complete species result before saving. A search over 500 species
+  fails with instructions to narrow it, rather than saving a partial first page.
+  It never becomes a claim about your own sightings.
 - Frame shows complete portrait plates without cropping. Play changes plates
-  once a minute. Previous, Next, Pause, Details and Exit remain available. Reading
-  details stops playback. Fullscreen depends on browser support.
+  once a minute. Previous, Next, Pause, Shuffle, Details, Zoom and Exit remain
+  available. Reading details stops playback. Fullscreen and wake lock depend on
+  browser support. Zoom is an explicit pan view, not a change to the plate.
 - Manage shows all seven source types, current work partitions, notification
   counts and the last confirmed physical panel update. Existing configuration
   stays managed. [App-managed settings](settings.md) add source and policy edits
@@ -46,6 +65,12 @@ working deployment with this branch. The complete acceptance scope remains in
 - Bird Buddy's source setup includes owner-only guest login, explicit permission
   attestation, feeder choice, redacted saved-login status and local logout.
   Bootstrap needs HTTPS or genuine loopback access. It stores no email or password.
+- Displays pairs a read-only screen to one view, revokes it, and chooses the
+  optional selected-wall route. Integrations provides scoped Home Assistant and
+  Homepage artwork and separate status credentials. See [presentation](presentation.md).
+- Health shows redacted application checks. Backups and Advanced tools explain
+  the existing operator boundaries for service checks, consistent backups,
+  package updates and approved-art replacement. They do not run host commands.
 
 Named selections do not write `collection.json`, request generation or change
 the wall. Existing CLI collection commands still mean Saved birds. Current and
@@ -56,8 +81,8 @@ Frame never records a successful physical panel update. It checks its view and
 authority once a minute without renewing owner idle time. A successful empty
 view stays empty. A network failure keeps the last approved image with an
 offline message. When the owner session ends, Frame clears private labels and
-controls, freezes the last visible approved image and asks for sign-in. It is
-not yet a continuously paired read-only screen.
+controls, freezes the last visible approved image and asks for sign-in. Paired
+screens have separate expiry and revocation; they never renew owner authority.
 
 ## Private state and recovery
 
@@ -88,19 +113,17 @@ the state folder. An older release ignores this new file, but that does not
 prove every newer state file is backward compatible. Roll back with the old
 runtime and its matching complete backup.
 
-## Still required before the full 1.0 candidate
+## Qualification before release
 
-The paths above do not stand in for these remaining acceptance gates:
+The feature paths above do not replace release evidence:
 
 - complete live qualification of generation-optional installation and ownership
   migration across native and Docker service restarts;
 - final large-file, mobile and live qualification of history import paths;
-- complete pending-candidate recovery and live qualification of
-  source/work/notification actions;
-- separately paired read-only screens, selected wall routing and scoped
-  Homepage/Home Assistant views and service credentials;
+- live qualification of source/work/notification actions, paired screens,
+  selected wall routing and scoped dashboard permissions;
 - complete new-install and upgrade journeys, final mobile/browser qualification,
   independent security review and repository review on the final exact head.
 
-No button in this checkpoint claims to perform one of those unfinished tasks.
+No release or production deployment is implied by these implementation notes.
 Provider access remains subject to each service's permissions and limits.

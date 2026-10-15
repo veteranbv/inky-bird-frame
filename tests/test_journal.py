@@ -5,11 +5,12 @@ import json
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 from typing import cast
+from unittest.mock import patch
 
 import pytest
 from starlette.testclient import TestClient
 
-from inky_bird_frame.birds import ObservationWindow
+from inky_bird_frame.birds import EbirdArchiveSpecies, ObservationWindow
 from inky_bird_frame.catalog import (
     CollectionEntry,
     CollectionOrigin,
@@ -23,6 +24,7 @@ from inky_bird_frame.config import (
     DiscoveryProvider,
     DisplayNodeConfig,
 )
+from inky_bird_frame.ebird_archive import EbirdArchiveHistory
 from inky_bird_frame.errors import CatalogError
 from inky_bird_frame.http import write_json_atomic
 from inky_bird_frame.journal import (
@@ -131,6 +133,50 @@ def test_manual_selection_retains_names_and_rejects_unknown_ids(tmp_path: Path) 
     with pytest.raises(JournalError, match="Choose birds"):
         service.save_selection(revision=1, label="Unknown", taxon_ids=[999])
     assert read_journal(controller.state_dir) == state
+
+
+def test_retained_library_does_not_truncate_or_publish_partial_source_coverage(
+    tmp_path: Path,
+) -> None:
+    controller = config(tmp_path)
+    catalog(controller)
+    controller.state_dir.mkdir(parents=True)
+    (controller.state_dir / "ebird-archive-observations.json").write_text("{}")
+    history = EbirdArchiveHistory(
+        [
+            EbirdArchiveSpecies("Robin", "Turdus migratorius", 4),
+            EbirdArchiveSpecies("Unmatched", "Fixture unknown", 2),
+            EbirdArchiveSpecies("Another", "Fixture another", 1),
+        ],
+        7,
+        7,
+        3,
+        7,
+        0,
+        STAMP,
+        STAMP,
+        "2020-01-01",
+        "2020-01-07",
+    )
+    service = JournalService(controller)
+    with patch(
+        "inky_bird_frame.ebird_archive.read_ebird_archive_history", return_value=history
+    ) as reader:
+        snapshot = service.snapshot()
+    assert reader.call_args.kwargs["limit"] is None
+    birds = cast(list[dict[str, object]], snapshot["birds"])
+    assert birds[0]["known"] and birds[0]["retained_evidence"] == [
+        {"source": "ebird-archive", "count": 4, "unit": "checklists"}
+    ]
+    assert len(cast(list[object], snapshot["unresolved_history"])) == 2
+    assert not (controller.state_dir / "generation-queue.json").exists()
+    history.species[1] = EbirdArchiveSpecies("Bad\nname", "Fixture unknown", 2)
+    with patch("inky_bird_frame.ebird_archive.read_ebird_archive_history", return_value=history):
+        snapshot = service.snapshot()
+    assert len(cast(list[object], snapshot["history_coverage"])) == 1
+    assert cast(list[dict[str, object]], snapshot["history_coverage"])[0]["status"] == "unavailable"
+    assert cast(list[dict[str, object]], snapshot["birds"])[0]["retained_evidence"] == []
+    assert snapshot["unresolved_history"] == []
 
 
 def test_browsing_art_never_claims_private_evidence_or_writes_state(tmp_path: Path) -> None:

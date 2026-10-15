@@ -332,10 +332,10 @@ def read_birdnet_analyzer_history(
     state_dir: Path,
     *,
     window: ObservationWindow,
-    limit: int,
+    limit: int | None,
     today: date | None = None,
 ) -> BirdNetAnalyzerHistory:
-    if limit <= 0:
+    if limit is not None and limit <= 0:
         raise ValueError("BirdNET Analyzer species_limit must be greater than zero")
     with _history_lock(state_dir):
         detections, history_started_at, last_imported_at = _read_state(

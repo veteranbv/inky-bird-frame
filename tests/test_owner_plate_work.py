@@ -21,11 +21,14 @@ from inky_bird_frame.catalog import (
 from inky_bird_frame.config import AppConfig, load_config
 from inky_bird_frame.controller import (
     OWNER_SELECTION_SOURCE,
+    add_collection_member,
+    change_saved_collection,
     queue_owner_selection_locked,
     read_generation_queue,
     run_generation_cycle,
     run_refresh_cycle,
 )
+from inky_bird_frame.errors import CatalogError
 from inky_bird_frame.http import write_json_atomic
 from inky_bird_frame.journal import (
     JournalCollection,
@@ -76,6 +79,45 @@ def candidate(config: AppConfig) -> Path:
         root, bird, profile, [], review, generator="fixture", prompt_version="fixture"
     )
     return root
+
+
+def test_saved_membership_preview_binds_catalog_and_uses_existing_collection(
+    tmp_path: Path,
+) -> None:
+    application = config(tmp_path)
+    candidate(application)
+    view = pending_candidate(application, 10)
+    decide_pending_candidate(
+        application, 10, revision=str(view["candidate_revision"]), approve=True
+    )
+    preview = change_saved_collection(
+        application, action="import-approved", taxon_id=None, dry_run=True
+    )
+    assert preview["added_count"] == 1
+    assert not (application.controller.state_dir / "collection.json").exists()
+    result = change_saved_collection(
+        application,
+        action="import-approved",
+        taxon_id=None,
+        dry_run=False,
+        expected_revision=str(preview["collection_revision"]),
+    )
+    assert result["added_count"] == 1
+    assert [entry.taxon_id for entry in read_collection(application.controller.state_dir)] == [10]
+    assert not (application.controller.state_dir / "generation-queue.json").exists()
+    preview = change_saved_collection(application, action="remove", taxon_id=10, dry_run=True)
+    add_collection_member(application, 99)
+    with pytest.raises(CatalogError, match="changed"):
+        change_saved_collection(
+            application,
+            action="remove",
+            taxon_id=10,
+            dry_run=False,
+            expected_revision=str(preview["collection_revision"]),
+        )
+    assert 10 in [entry.taxon_id for entry in read_collection(application.controller.state_dir)]
+    with pytest.raises(CatalogError, match="approved"):
+        change_saved_collection(application, action="add", taxon_id=999, dry_run=True)
 
 
 def test_pending_review_uses_publication_gates_and_exact_candidate_binding(tmp_path: Path) -> None:

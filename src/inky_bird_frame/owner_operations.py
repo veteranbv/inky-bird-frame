@@ -47,6 +47,9 @@ OperationKind = Literal[
     "queue-plates",
     "approve-candidate",
     "reject-candidate",
+    "community-preview",
+    "community-save",
+    "saved-collection",
 ]
 OperationStatus = Literal["pending", "running", "succeeded", "failed", "interrupted"]
 KINDS = {
@@ -61,6 +64,9 @@ KINDS = {
     "queue-plates",
     "approve-candidate",
     "reject-candidate",
+    "community-preview",
+    "community-save",
+    "saved-collection",
 }
 STATUSES = {"pending", "running", "succeeded", "failed", "interrupted"}
 

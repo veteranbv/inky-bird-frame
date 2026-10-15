@@ -718,6 +718,12 @@ class AccessStore:
             ]
             self._save(state)
 
+    def require_recent(self, secret: str) -> None:
+        with self._locked() as state:
+            timestamp = datetime.now(UTC).timestamp()
+            self._prune(state, timestamp)
+            self._recent_session(state, _digest(secret), timestamp)
+
     @staticmethod
     def _recent_session(state: AccessState, secret_hash: str, timestamp: float) -> OwnerSession:
         session = next(

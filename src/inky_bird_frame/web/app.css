@@ -34,7 +34,7 @@ button:disabled, input:disabled { opacity: .65; cursor: not-allowed; }
 details { margin-top: 14px; border-bottom: 1px solid #d3dcce; }
 summary { padding: 12px 0; min-height: 48px; cursor: pointer; font-weight: 600; }
 details p { font-size: 15px; overflow-wrap: anywhere; }
-pre { padding: 14px; background: #e9ece4; border-radius: 7px; white-space: pre-wrap; }
+pre { padding: 14px; background: #e9ece4; border-radius: 7px; white-space: pre-wrap; overflow-wrap: anywhere; }
 code { font-size: 13px; overflow-wrap: anywhere; }
 .check-label { display: flex; align-items: center; min-height: 44px; gap: 12px; margin-top: 20px; font-size: 16px; }
 .check-label input { width: 24px; min-height: 24px; margin: 0; flex-shrink: 0; accent-color: #325a3d; }
@@ -60,6 +60,12 @@ a { color: #325a3d; overflow-wrap: anywhere; }
 .detail-art { width: 100%; max-height: 80svh; object-fit: contain; margin-block: 20px; }
 .journal-card .detail-art { height: auto; max-height: 80svh; object-fit: contain; }
 textarea { display: block; width: 100%; min-height: 120px; padding: 12px; font: inherit; color: inherit; background: #fffef8; border: 1px solid #91a58d; border-radius: 7px; }
+.pairing-code { font: 700 36px/1.5 ui-monospace, monospace; letter-spacing: .12em; }
+.frame-viewport { height: 72svh; overflow: auto; }
+.frame-viewport .frame-art { height: 100%; width: 100%; }
+.frame-viewport.zoomed .frame-art { height: auto; width: 200%; max-width: none; }
+.frame-controls.quiet { opacity: 0; }
+.frame-controls:focus-within { opacity: 1; }
 .measurements { display: grid; grid-template-columns: auto 1fr; gap: 10px 20px; }
 .measurements dd { margin: 0; }
 fieldset { border: 1px solid #d3dcce; margin: 24px 0; padding: 16px; min-width: 0; }

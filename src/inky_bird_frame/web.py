@@ -10,9 +10,10 @@ import os
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager, suppress
 from dataclasses import asdict
+from datetime import UTC, datetime
 from ipaddress import ip_address
 from pathlib import Path
-from typing import TYPE_CHECKING, cast
+from typing import TYPE_CHECKING, Literal, cast
 
 from starlette.applications import Starlette
 from starlette.concurrency import run_in_threadpool
@@ -22,6 +23,7 @@ from starlette.routing import Route
 from starlette.types import ASGIApp, Message, Receive, Scope, Send
 from uvicorn.middleware.proxy_headers import ProxyHeadersMiddleware
 
+from . import __version__
 from .access import (
     MAX_PASSWORD_CHARACTERS,
     MIN_PASSWORD_CHARACTERS,
@@ -43,7 +45,10 @@ from .birdbuddy import (
     login_birdbuddy,
     logout_birdbuddy,
 )
+from .catalog import read_json
+from .community import CommunityHistory
 from .config import AppConfig, ControllerConfig, OwnerAccessMode
+from .controller import change_saved_collection, read_generation_work
 from .errors import CatalogError, DataSourceError
 from .imports import MAX_UPLOAD_BYTES, HistoryImports
 from .journal import (
@@ -51,6 +56,7 @@ from .journal import (
     JournalConflictError,
     JournalError,
     JournalService,
+    JournalViewRemovedError,
     remove_collection,
 )
 from .oidc import OIDCError, authorization_url, metadata, provider_id, verified_identity
@@ -61,6 +67,7 @@ from .owner_operations import (
     OwnerOperations,
     execute_owner_operation,
 )
+from .presentation import GRANT_DAYS, PresentationAccess
 from .server import CatalogService
 from .settings import (
     SettingsConflictError,
@@ -70,6 +77,7 @@ from .settings import (
     save_settings,
     settings_status,
 )
+from .timeutil import parse_utc_timestamp
 
 if TYPE_CHECKING:
     from uvicorn._types import ASGI3Application
@@ -198,11 +206,15 @@ class OwnerBoundary:
             await self.app(scope, receive, send)
             return
         request = Request(scope)
-        private = request.url.path.startswith("/v1/owner/")
+        private = request.url.path.startswith(
+            ("/v1/owner/", "/v1/screen/", "/v1/integrations/", "/v1/dashboard/", "/wall/")
+        )
 
         async def protected_send(message: Message) -> None:
             if message["type"] == "http.response.start" and (
-                private or request.url.path.startswith("/app") or request.url.path == "/v1/access"
+                private
+                or request.url.path.startswith("/app")
+                or request.url.path in {"/v1/access", "/screen"}
             ):
                 headers = cast(list[tuple[bytes, bytes]], message.setdefault("headers", []))
                 headers.extend(
@@ -213,6 +225,14 @@ class OwnerBoundary:
                         (b"content-security-policy", OWNER_CSP.encode()),
                     ]
                 )
+                if request.url.path == "/v1/dashboard/art":
+                    # Only this minimal explicitly enabled document can be framed.
+                    # Its own CSP is built from validated installer-owned origins.
+                    headers[:] = [
+                        (key, value)
+                        for key, value in headers
+                        if key != b"content-security-policy" or value != OWNER_CSP.encode()
+                    ]
             await send(message)
 
         # The complete owner gate runs before an endpoint reads credentials.
@@ -223,7 +243,11 @@ class OwnerBoundary:
                 "Open the configured Inky address. Use HTTPS when this installation requires it.",
             )(scope, receive, protected_send)
             return
-        if private and request.method not in {"GET", "HEAD"}:
+        if (
+            private
+            and not request.url.path.startswith("/wall/")
+            and request.method not in {"GET", "HEAD"}
+        ):
             origins = request.headers.getlist("origin")
             if (
                 origins != [_origin(request)]
@@ -250,6 +274,8 @@ def create_app(config: ControllerConfig, *, app_config: AppConfig | None = None)
         )
     catalog = CatalogService(config)
     journal = JournalService(config, app_config=app_config)
+    community = CommunityHistory(config.state_dir)
+    presentation = PresentationAccess(config.state_dir, journal)
     operations = OwnerOperations(config.state_dir)
     assets = Path(__file__).parent / "web"
 
@@ -575,6 +601,10 @@ def create_app(config: ControllerConfig, *, app_config: AppConfig | None = None)
         await authorized(request)
         return _result(await run_in_threadpool(journal.snapshot))
 
+    async def journal_health(request: Request) -> JSONResponse:
+        await authorized(request)
+        return _result(await run_in_threadpool(journal.health))
+
     async def application_settings(request: Request) -> JSONResponse:
         await authorized(request)
         if app_config is None:
@@ -703,6 +733,304 @@ def create_app(config: ControllerConfig, *, app_config: AppConfig | None = None)
     async def import_status(request: Request) -> JSONResponse:
         await authorized(request)
         return _result(await run_in_threadpool(history_imports().status))
+
+    async def presentation_settings(request: Request) -> JSONResponse:
+        secret = await authorized(request)
+        if request.method == "GET":
+            state = await run_in_threadpool(presentation.status)
+            state["embed_allowed_origins"] = list(config.embed_allowed_origins)
+            return _result(state)
+        await run_in_threadpool(store.require_recent, secret)
+        body = await _json_body(
+            request,
+            {"revision", "action", "confirm"},
+            optional={"id", "name", "view", "days"},
+            structured={"revision", "confirm", "days"},
+        )
+        if body["confirm"] is not True:
+            raise JournalError("Review this screen or integration access before confirming")
+        return _result(
+            await run_in_threadpool(
+                presentation.update,
+                revision=body["revision"],
+                action=cast(str, body["action"]),
+                id=cast(str, body.get("id", "")),
+                name=cast(str, body.get("name", "")),
+                view=cast(str, body.get("view", "current")),
+                days=body.get("days", GRANT_DAYS),
+                confirm=True,
+            )
+        )
+
+    async def saved_collection(request: Request) -> JSONResponse:
+        await authorized(request)
+        if app_config is None:
+            raise JournalError("Start Inky with its configuration file")
+        if request.path_params["action"] not in {"preview", "change"}:
+            return _error(404, "not_found", "Choose a supported Saved birds step")
+        preview = request.path_params["action"] == "preview"
+        fields = {"action", "configuration_revision"} | (
+            set() if preview else {"key", "confirm", "collection_revision"}
+        )
+        body = await _json_body(
+            request, fields, optional={"taxon_id"}, structured={"confirm", "taxon_id"}
+        )
+        action, id = body["action"], body.get("taxon_id")
+        if (
+            action not in {"add", "remove", "import-approved"}
+            or (action == "import-approved") != (id is None)
+            or id is not None
+            and (type(id) is not int or id <= 0)
+        ):
+            raise JournalError("Choose approved art or an existing Saved birds member")
+
+        def execute() -> dict[str, object]:
+            selected = confirmed_config(
+                app_config, cast(str, body["configuration_revision"]), load_secrets=False
+            )
+            result = change_saved_collection(
+                selected,
+                action=action,
+                taxon_id=id,
+                dry_run=preview,
+                expected_revision=None if preview else cast(str, body["collection_revision"]),
+            )
+            return {
+                key: result[key]
+                for key in (
+                    "added_count",
+                    "removed_count",
+                    "migrated_legacy_queue_count",
+                    "collection_revision",
+                )
+            }
+
+        if preview:
+            return _result(await run_in_threadpool(execute))
+        if body["confirm"] is not True:
+            raise JournalError("Confirm this Saved birds membership change")
+        return _result(
+            await run_in_threadpool(
+                operations.submit,
+                "saved-collection",
+                key=cast(str, body["key"]),
+                inputs={key: value for key, value in body.items() if key != "key"},
+                execute=execute,
+            )
+        )
+
+    def screen_cookie(request: Request) -> str:
+        return "__Host-inky-screen" if request.url.scheme == "https" else "inky-local-screen"
+
+    async def screen_pair(request: Request) -> JSONResponse:
+        await _json_body(request, set())
+        if await run_in_threadpool(store.setup_status) is not None:
+            raise AccessDeniedError("Set up the Inky owner first, then pair this screen")
+        secret, result = await run_in_threadpool(
+            presentation.request_pair, request.cookies.get(screen_cookie(request), "")
+        )
+        response = _result(result)
+        response.set_cookie(
+            screen_cookie(request),
+            secret,
+            max_age=365 * 86400,
+            path="/",
+            secure=request.url.scheme == "https",
+            httponly=True,
+            samesite="strict",
+        )
+        return response
+
+    async def screen_data(request: Request) -> Response:
+        grant = await run_in_threadpool(
+            presentation.authenticate, request.cookies.get(screen_cookie(request), ""), "viewer"
+        )
+        try:
+            entries = await run_in_threadpool(journal.view_entries, grant.view)
+        except JournalViewRemovedError:
+            entries = []  # Authoritative empty scope; never retain withdrawn art.
+        id = request.path_params.get("taxon_id")
+        if id is not None:
+            entry = next((item for item in entries if item["taxon_id"] == id), None)
+            if entry is None or request.query_params.getlist("revision") != [
+                entry["portrait_sha256"]
+            ]:
+                return _error(404, "not_found", "This approved image is outside the screen's view")
+            return Response(await run_in_threadpool(journal.portrait, id), media_type="image/png")
+        return _result(
+            {
+                "name": grant.name,
+                "expires_at": grant.expires_at,
+                "species": [
+                    {
+                        "taxon_id": item["taxon_id"],
+                        "common_name": item["common_name"],
+                        "portrait_sha256": item["portrait_sha256"],
+                        "portrait_url": f"/v1/screen/plates/{item['taxon_id']}"
+                        f"?revision={item['portrait_sha256']}",
+                    }
+                    for item in entries
+                ],
+            }
+        )
+
+    async def screen_forget(request: Request) -> JSONResponse:
+        await _json_body(request, set())
+        # Forgetting a browser removes its cookie. Revoke the grant in Displays
+        # too if the device was lost; no management authority is accepted here.
+        response = _result({"forgotten": True})
+        response.delete_cookie(
+            screen_cookie(request),
+            path="/",
+            secure=request.url.scheme == "https",
+            httponly=True,
+            samesite="strict",
+        )
+        return response
+
+    def integration_status(secret: str) -> dict[str, object]:
+        grant = presentation.authenticate(secret, "status")
+        entries = journal.view_entries(grant.view)
+        approved = {cast(int, item["taxon_id"]) for item in journal.catalog()}
+        work = (
+            read_generation_work(current_config(app_config), approved=approved)
+            if app_config
+            else None
+        )
+        path = config.state_dir / "display-last-success.json"
+        panel = read_json(path) if path.exists() else {}
+        timestamp = parse_utc_timestamp(
+            panel.get("succeeded_at") if isinstance(panel, dict) else None
+        )
+        health = "unknown"
+        if timestamp and app_config:
+            age = (datetime.now(UTC) - timestamp).total_seconds()
+            # Allow one missed rotation plus its documented startup delay.
+            bound = (
+                app_config.schedule.rotation_minutes * 120
+                + app_config.schedule.display_startup_delay_seconds
+            )
+            health = "recent" if 0 <= age <= bound else "stale"
+        return {
+            "version": __version__,
+            "service_ready": True,
+            "approved_count": len(approved),
+            "view_ready_count": len(entries),
+            "discovery_state": work.discovery_status if work else "unknown",
+            "panel_health": health,
+        }
+
+    async def dashboard_status(request: Request) -> JSONResponse:
+        values = request.headers.getlist("authorization")
+        if len(values) != 1 or not values[0].startswith("Bearer ") or request.url.query:
+            raise AccessDeniedError(
+                "Use a status credential in the Authorization header, never the URL"
+            )
+        return _result(await run_in_threadpool(integration_status, values[0][7:]))
+
+    async def selected_art(request: Request) -> Response:
+        destination: Literal["wall", "dashboard"] = (
+            "wall" if request.url.path.startswith("/wall/") else "dashboard"
+        )
+        entries = await run_in_threadpool(presentation.selected, destination)
+        relative = request.path_params.get("asset")
+        if relative is not None:
+            entry = next(
+                (
+                    item
+                    for item in entries
+                    if relative in {item["portrait_path"], item["display_path"]}
+                ),
+                None,
+            )
+            if entry is None:
+                return _error(404, "not_found", "This asset is outside the selected view")
+            kind = "portrait" if relative == entry["portrait_path"] else "display"
+            return Response(
+                await run_in_threadpool(journal.approved_asset, cast(int, entry["taxon_id"]), kind),
+                media_type="image/png",
+            )
+        if destination == "wall":
+            # Match the display-node catalog schema without altering /v1/catalog.
+            return JSONResponse(
+                {
+                    "schema_version": 1,
+                    "generated_at": datetime.now(UTC).isoformat(),
+                    "species": entries,
+                }
+            )
+        from urllib.parse import quote
+
+        item = entries[int(datetime.now(UTC).timestamp() // 60) % len(entries)] if entries else None
+        # A static, cookie-free art document. It cannot load owner state or scripts.
+        style = (
+            "html,body{margin:0;height:100%;background:transparent}"
+            "main{height:100%;display:grid;place-items:center}"
+            "img{display:block;max-width:100%;max-height:100%;object-fit:contain}"
+            "p{font:16px system-ui}"
+        )
+        image = (
+            '<img alt="Approved bird plate" src="/v1/dashboard/assets/'
+            f'{quote(cast(str, item["portrait_path"]), safe="/")}">'
+            if item
+            else "<p>No approved plates in this view.</p>"
+        )
+        body = (
+            '<!doctype html><html lang="en"><meta charset="utf-8">'
+            '<meta name="viewport" content="width=device-width,initial-scale=1">'
+            '<meta http-equiv="refresh" content="60"><title>Inky art</title>'
+            f"<style>{style}</style><main>{image}</main></html>"
+        )
+        import base64
+
+        digest = base64.b64encode(hashlib.sha256(style.encode()).digest()).decode()
+        origins = " ".join(("'self'", *config.embed_allowed_origins))
+        return Response(
+            body,
+            media_type="text/html",
+            headers={
+                "Content-Security-Policy": "default-src 'none'; img-src 'self'; "
+                f"style-src 'sha256-{digest}'; base-uri 'none'; form-action 'none'; "
+                f"frame-ancestors {origins}"
+            },
+        )
+
+    async def community_history(request: Request) -> JSONResponse:
+        await authorized(request)
+        if request.method == "GET":
+            return _result(await run_in_threadpool(community.status))
+        action = request.path_params.get("action")
+        if action == "cancel":
+            await _json_body(request, set())
+            async with foreground():
+                await run_in_threadpool(community.cancel)
+            return _result({"cancelled": True})
+        if action not in {"preview", "save"}:
+            return _error(404, "not_found", "Choose a supported community-history action")
+        body = await _json_body(
+            request,
+            {"key", "confirm", "choices" if action == "preview" else "preview_hash"},
+            structured={"confirm", "choices"},
+        )
+        if (
+            body["confirm"] is not True
+            or action == "preview"
+            and not isinstance(body["choices"], dict)
+        ):
+            raise JournalError("Confirm this community-history action")
+        return _result(
+            await run_in_threadpool(
+                operations.submit,
+                "community-preview" if action == "preview" else "community-save",
+                key=cast(str, body["key"]),
+                inputs={key: value for key, value in body.items() if key != "key"},
+                execute=lambda: (
+                    community.preview(cast(dict[str, object], body["choices"]))
+                    if action == "preview"
+                    else community.save(cast(str, body["preview_hash"]))
+                ),
+            )
+        )
 
     async def birdbuddy_account(request: Request) -> JSONResponse:
         await authorized(request)
@@ -1043,6 +1371,10 @@ def create_app(config: ControllerConfig, *, app_config: AppConfig | None = None)
             "/app/journal.js": "journal.js",
             "/app/settings.js": "settings.js",
             "/app/imports.js": "imports.js",
+            "/app/viewer.js": "viewer.js",
+            "/app/presentation.js": "presentation.js",
+            "/app/frame-tools.js": "frame-tools.js",
+            "/screen": "screen.html",
             "/app/access-guide": "access-guide.txt",
         }[request.url.path]
         if filename == "access-guide.txt":
@@ -1065,6 +1397,10 @@ def create_app(config: ControllerConfig, *, app_config: AppConfig | None = None)
         Route("/app/journal.js", page),
         Route("/app/settings.js", page),
         Route("/app/imports.js", page),
+        Route("/app/viewer.js", page),
+        Route("/app/presentation.js", page),
+        Route("/app/frame-tools.js", page),
+        Route("/screen", page),
         Route("/app/access-guide", page),
         Route("/v1/access", safe_access_state),
         Route("/v1/owner/setup", establish, methods=["POST"]),
@@ -1083,10 +1419,26 @@ def create_app(config: ControllerConfig, *, app_config: AppConfig | None = None)
         Route("/v1/owner/oidc/unlink", unlink_oidc, methods=["POST"]),
         Route("/v1/owner/oidc/callback", oidc_callback),
         Route("/v1/owner/journal", journal_snapshot),
+        Route("/v1/owner/health", journal_health),
         Route("/v1/owner/settings", application_settings, methods=["GET", "POST"]),
         Route("/v1/owner/operations", owner_operations, methods=["GET", "POST"]),
         Route("/v1/owner/operations/{operation_id}", owner_operations),
         Route("/v1/owner/imports", import_status),
+        Route("/v1/owner/community", community_history),
+        Route("/v1/owner/community/{action}", community_history, methods=["POST"]),
+        Route("/v1/owner/presentation", presentation_settings, methods=["GET", "POST"]),
+        Route("/v1/owner/saved/{action}", saved_collection, methods=["POST"]),
+        Route("/v1/screen/pair", screen_pair, methods=["POST"]),
+        Route("/v1/screen/forget", screen_forget, methods=["POST"]),
+        Route("/v1/screen/view", screen_data),
+        Route("/v1/screen/plates/{taxon_id:int}", screen_data),
+        Route("/v1/integrations/status", dashboard_status),
+        Route("/v1/dashboard/art", selected_art),
+        Route("/v1/dashboard/assets/{asset:path}", selected_art),
+        Route("/wall/v1/catalog", selected_art),
+        Route("/wall/v1/assets/{asset:path}", selected_art),
+        Route("/wall/v1/display-fetch", catalog.telemetry_response, methods=["POST"]),
+        Route("/wall/v1/display-success", catalog.telemetry_response, methods=["POST"]),
         Route("/v1/owner/birdbuddy", birdbuddy_account),
         Route("/v1/owner/birdbuddy/{action}", birdbuddy_account, methods=["POST"]),
         Route("/v1/owner/imports/upload/{kind}", upload_history, methods=["POST"]),
