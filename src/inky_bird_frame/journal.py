@@ -197,7 +197,21 @@ class JournalService:
         path = self.config.catalog_dir / "index.json"
         if not path.exists():
             return []
-        projected, _ = project_catalog(read_json(path))
+        raw = read_json(path)
+        # The canonical approved index has no approval timestamp before its
+        # first plate. Active-catalog timestamp validation remains unchanged.
+        if (
+            isinstance(raw, dict)
+            and type(raw.get("schema_version")) is int
+            and raw
+            == {
+                "schema_version": 1,
+                "generated_at": None,
+                "species": [],
+            }
+        ):
+            return []
+        projected, _ = project_catalog(raw)
         return cast(list[dict[str, object]], projected["species"])
 
     def snapshot(self) -> dict[str, object]:

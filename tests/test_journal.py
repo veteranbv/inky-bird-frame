@@ -9,7 +9,12 @@ import pytest
 from starlette.testclient import TestClient
 
 from inky_bird_frame.birds import ObservationWindow
-from inky_bird_frame.catalog import CollectionEntry, CollectionOrigin, write_collection
+from inky_bird_frame.catalog import (
+    CollectionEntry,
+    CollectionOrigin,
+    rebuild_catalog_index,
+    write_collection,
+)
 from inky_bird_frame.config import (
     AppConfig,
     ControllerConfig,
@@ -17,6 +22,7 @@ from inky_bird_frame.config import (
     DiscoveryProvider,
     DisplayNodeConfig,
 )
+from inky_bird_frame.errors import CatalogError
 from inky_bird_frame.http import write_json_atomic
 from inky_bird_frame.journal import (
     MAX_JOURNAL_BYTES,
@@ -120,6 +126,28 @@ def test_browsing_art_never_claims_private_evidence_or_writes_state(tmp_path: Pa
     assert snapshot["birds"][0]["sources"] == []
     assert not (controller.state_dir / "journal.json").exists()
     assert not (controller.state_dir / "collection.json").exists()
+
+
+def test_first_run_with_canonical_empty_approved_index_is_a_valid_empty_journal(
+    tmp_path: Path,
+) -> None:
+    controller = config(tmp_path)
+    rebuild_catalog_index(controller.catalog_dir)
+    before = (controller.catalog_dir / "index.json").read_bytes()
+    snapshot = JournalService(controller).snapshot()
+    assert snapshot["birds"] == []
+    assert snapshot["featured_taxon_id"] is None
+    assert (controller.catalog_dir / "index.json").read_bytes() == before
+    write_json_atomic(
+        controller.catalog_dir / "index.json",
+        {
+            "schema_version": True,
+            "generated_at": None,
+            "species": [],
+        },
+    )
+    with pytest.raises(CatalogError):
+        JournalService(controller).snapshot()
 
 
 def test_stale_edits_and_concurrent_creates_do_not_overwrite(tmp_path: Path) -> None:
