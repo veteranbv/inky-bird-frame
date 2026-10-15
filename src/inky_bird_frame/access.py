@@ -780,7 +780,7 @@ class AccessStore:
             if owner_hash and confirmation_hash:
                 raise AccessError("Linking and confirming single sign-on are separate actions")
             if owner_hash:
-                self._recent_session(state, owner_hash, timestamp)
+                remembered = self._recent_session(state, owner_hash, timestamp).remembered
             if confirmation_hash:
                 session = next(
                     (
@@ -868,14 +868,20 @@ class AccessStore:
                 or tx.access_revision != state.access_revision
             ):
                 raise AccessDeniedError("Single sign-on configuration changed; start sign-in again")
+            rotated_session = None
             if tx.owner_session_hash is not None:
-                self._recent_session(state, tx.owner_session_hash, timestamp)
+                rotated_session = self._recent_session(state, tx.owner_session_hash, timestamp)
                 if configured_subject is not None and not secrets.compare_digest(
                     configured_subject, subject
                 ):
                     raise AccessDeniedError("This identity is not the configured Inky owner")
                 state.oidc_identity = OIDCIdentity(tx.provider_id, issuer, subject)
-                state.sessions = [s for s in state.sessions if s.provider_id is None]
+                state.sessions = [
+                    s
+                    for s in state.sessions
+                    if s.provider_id is None
+                    and not secrets.compare_digest(s.secret_hash, tx.owner_session_hash)
+                ]
                 state.oidc_transactions.clear()
                 state.access_revision += 1
             else:
@@ -890,9 +896,8 @@ class AccessStore:
                     allowed = identity.subject
                 if allowed is None or not secrets.compare_digest(allowed, subject):
                     raise AccessDeniedError("This provider account is not linked to the Inky owner")
-            confirmation_session = None
             if tx.confirmation_session_hash is not None:
-                confirmation_session = next(
+                rotated_session = next(
                     (
                         s
                         for s in state.sessions
@@ -900,23 +905,23 @@ class AccessStore:
                     ),
                     None,
                 )
-                if confirmation_session is None:
+                if rotated_session is None:
                     raise AccessDeniedError("This owner session ended; start sign-in again")
-                state.sessions.remove(confirmation_session)
+                state.sessions.remove(rotated_session)
             credentials = self._credentials(
                 state,
                 timestamp,
-                remembered=tx.remembered,
+                remembered=rotated_session.remembered if rotated_session else tx.remembered,
                 provider_id=tx.provider_id,
                 authenticated_at=authenticated_at,
             )
-            if confirmation_session is not None:
-                # Confirmation rotates the cookie, not the original session's lifetime.
+            if rotated_session is not None:
+                # Linking and confirmation rotate cookies, not session lifetimes.
                 state.sessions[-1] = replace(
                     state.sessions[-1],
-                    created_at=confirmation_session.created_at,
-                    idle_seconds=confirmation_session.idle_seconds,
-                    absolute_seconds=confirmation_session.absolute_seconds,
+                    created_at=rotated_session.created_at,
+                    idle_seconds=rotated_session.idle_seconds,
+                    absolute_seconds=rotated_session.absolute_seconds,
                 )
             state.oidc_verified_provider_id = tx.provider_id
             self._save(state)

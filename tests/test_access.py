@@ -244,7 +244,8 @@ def test_oidc_expiry_owner_binding_revocation_and_provider_change(tmp_path: Path
         AccessStore(tmp_path, oidc_provider_id="replacement-provider").authenticate(
             sso.secret, now=NOW
         )
-    store.authenticate(local.secret, now=NOW)
+    with pytest.raises(AccessDeniedError):
+        store.authenticate(local.secret, now=NOW)
 
 
 def test_unlink_prevents_an_inflight_callback_from_relinking(tmp_path: Path) -> None:
@@ -263,11 +264,48 @@ def test_unlink_prevents_an_inflight_callback_from_relinking(tmp_path: Path) -> 
 
 
 @pytest.mark.parametrize("remembered", [False, True])
+def test_oidc_link_replaces_current_session_without_leaking_capacity(
+    tmp_path: Path, remembered: bool
+) -> None:
+    store = AccessStore(tmp_path, oidc_provider_id="synthetic-provider")
+    current = store.register_owner("birder", PASSPHRASE, remembered=remembered, now=NOW)
+    others = [
+        store.login(PASSPHRASE, username="birder", now=NOW) for _ in range(MAX_OWNER_SESSIONS - 1)
+    ]
+    original = store.authenticate(current.secret, now=NOW)
+    for attempt in range(3):
+        later = NOW + timedelta(minutes=attempt + 1)
+        tx, browser = store.begin_oidc(
+            link_secret=current.secret, remembered=not remembered, now=later
+        )
+        assert tx.remembered is remembered
+        prior = current
+        current = store.complete_oidc(
+            store.consume_oidc(tx.state, browser, now=later),
+            "https://identity.example.test/",
+            "owner-subject",
+            authenticated_at=later.timestamp(),
+            now=later,
+        )
+        assert current.secret != prior.secret
+        with pytest.raises(AccessDeniedError):
+            store.authenticate(prior.secret, now=later)
+        session = store.authenticate(current.secret, now=later)
+        assert session.provider_id == "synthetic-provider"
+        assert session.remembered is remembered
+        assert session.created_at == original.created_at
+        assert session.expires_at == original.expires_at
+        assert len(json.loads(store.path.read_text())["sessions"]) == MAX_OWNER_SESSIONS
+        for other in others:
+            store.authenticate(other.secret, now=later)
+
+
+@pytest.mark.parametrize("remembered", [False, True])
 def test_oidc_confirmation_rotates_current_session_at_capacity(
     tmp_path: Path, remembered: bool
 ) -> None:
     store = AccessStore(tmp_path, oidc_provider_id="synthetic-provider")
-    local = store.register_owner("birder", PASSPHRASE, now=NOW)
+    local = store.register_owner("birder", PASSPHRASE, remembered=remembered, now=NOW)
     tx, browser = store.begin_oidc(link_secret=local.secret, remembered=remembered, now=NOW)
     current = store.complete_oidc(
         store.consume_oidc(tx.state, browser, now=NOW),

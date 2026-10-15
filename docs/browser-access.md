@@ -447,6 +447,12 @@ Authentik account. Authenticate at Authentik. Inky links the verified issuer
 and subject to the existing owner. It never promotes another user based on
 email, display name, groups or being the first person to use SSO.
 
+Linking replaces this browser's sign-in cookie without extending its original
+expiry or changing its Stay signed in choice. It also signs out earlier
+single-sign-on sessions, including a replaced provider account. Other local
+password sessions stay signed in. Repeated verification does not consume
+another device slot.
+
 A managed headless installation can set owner_subject to the owner's exact
 verified subject. This is private configuration, not an email address or group.
 It does not create an owner or remove the need for the local recovery password.

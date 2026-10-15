@@ -171,6 +171,8 @@ def test_oidc_link_requires_owner_csrf_and_callback_is_one_use(tmp_path: Path) -
             headers={"Origin": origin},
         )
         csrf = created.json()["data"]["csrf"]
+        original_cookie = client.cookies.get(OWNER_COOKIE)
+        assert original_cookie is not None
         with patch(
             "inky_bird_frame.web.authorization_url",
             return_value="https://id.example.test/authorize",
@@ -188,7 +190,7 @@ def test_oidc_link_requires_owner_csrf_and_callback_is_one_use(tmp_path: Path) -
         import json
 
         tx = json.loads(store.path.read_text())["oidc_transactions"][0]
-        assert tx["return_to_access"] is True and tx["remembered"] is True
+        assert tx["return_to_access"] is True and tx["remembered"] is False
         callback = "/v1/owner/oidc/callback?state=" + tx["state"] + "&code=synthetic-code"
         assert client.head(callback).status_code == 405
         assert len(json.loads(store.path.read_text())["oidc_transactions"]) == 1
@@ -202,11 +204,13 @@ def test_oidc_link_requires_owner_csrf_and_callback_is_one_use(tmp_path: Path) -
         assert "__Host-inky-owner=" in completed.headers["set-cookie"]
         assert "synthetic-code" not in completed.text
         assert store.oidc_linked(oidc.issuer)
+        with pytest.raises(AccessDeniedError):
+            store.authenticate(original_cookie)
         repeated = client.get(callback, follow_redirects=False)
         assert repeated.status_code == 303
         assert repeated.headers["location"] == "/app?sign_in=failed"
         assert client.get("/v1/owner/session").json()["data"]["single_sign_on"] is True
-        assert client.get("/v1/owner/session").json()["data"]["remembered"] is True
+        assert client.get("/v1/owner/session").json()["data"]["remembered"] is False
 
 
 def test_sso_only_requires_a_successful_verified_exchange(tmp_path: Path) -> None:
@@ -324,6 +328,8 @@ def test_oidc_confirmation_callback_rotates_only_the_current_session(tmp_path: P
     config = replace(_config(tmp_path), oidc=oidc)
     store = AccessStore(config.state_dir, oidc_provider_id=provider_id(oidc))
     local = store.register_owner("birder", PASSPHRASE)
+    other_local = store.login(PASSPHRASE, username="birder")
+    original_local = store.authenticate(other_local.secret)
     tx, browser = store.begin_oidc(link_secret=local.secret)
     current = store.complete_oidc(
         store.consume_oidc(tx.state, browser),
@@ -331,7 +337,6 @@ def test_oidc_confirmation_callback_rotates_only_the_current_session(tmp_path: P
         "owner-subject",
         authenticated_at=datetime.now(UTC).timestamp(),
     )
-    original_local = store.authenticate(local.secret)
     origin = "https://inky.example.test"
     with TestClient(create_app(config), base_url=origin) as client:
         client.cookies.set(OWNER_COOKIE, current.secret, domain="inky.example.test", path="/")
@@ -358,8 +363,8 @@ def test_oidc_confirmation_callback_rotates_only_the_current_session(tmp_path: P
         assert "Max-Age" not in result.headers["set-cookie"].split(",")[0]
         assert client.cookies.get(OWNER_COOKIE) != current.secret
         assert client.get("/v1/owner/session").json()["data"]["remembered"] is False
-        assert len(store.sessions(local.secret)) == 2
-        assert store.authenticate(local.secret).expires_at == original_local.expires_at
+        assert len(store.sessions(other_local.secret)) == 2
+        assert store.authenticate(other_local.secret).expires_at == original_local.expires_at
         with pytest.raises(AccessDeniedError):
             store.authenticate(current.secret)
 
