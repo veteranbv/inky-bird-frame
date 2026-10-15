@@ -122,6 +122,28 @@ def test_only_current_wall_retains_detection_priority_without_screen_disclosure(
     assert "latest_detection_at" not in journal.view_entries("all")[0]
 
 
+def test_empty_or_removed_wall_selection_is_explicit_and_never_falls_back(tmp_path: Path) -> None:
+    config, journal, access = fixture(tmp_path)
+    group = save_collection(
+        config.state_dir, revision=0, label="Temporary selection", taxon_ids=[1]
+    )
+    selected = group.collections[-1].collection_id
+    with TestClient(create_app(config), base_url=ORIGIN) as client:
+        access.update(
+            revision=access.status()["revision"], action="wall", view="favorites", confirm=True
+        )
+        empty = client.get("/wall/v1/catalog").json()
+        assert empty["species"] == [] and empty["empty_selection"] is True
+        access.update(
+            revision=access.status()["revision"], action="wall", view=selected, confirm=True
+        )
+        assert client.get("/wall/v1/catalog").json()["empty_selection"] is False
+        remove_collection(config.state_dir, revision=group.revision, collection_id=selected)
+        removed = client.get("/wall/v1/catalog").json()
+        assert removed["species"] == [] and removed["empty_selection"] is True
+        assert len(journal.view_entries("all")) == 1
+
+
 def test_grants_expire_without_poll_renewal_and_pairing_is_bounded(tmp_path: Path) -> None:
     _, _, access = fixture(tmp_path)
     first, _ = access.request_pair("")
@@ -287,6 +309,7 @@ def test_readonly_http_boundaries_selected_wall_and_minimal_embed(tmp_path: Path
         )
         wall = owner.get("/wall/v1/catalog").json()
         project_catalog(wall)
+        assert wall["empty_selection"] is False
         assert len(wall["species"]) == 1 and owner.get("/v1/catalog").json() == legacy
         health = owner.get("/wall/health")
         assert health.status_code == 200 and health.json()["ok"] is True

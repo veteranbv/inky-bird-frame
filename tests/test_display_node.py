@@ -230,6 +230,43 @@ class DisplayNodeTests(unittest.TestCase):
 
         self.post_json.assert_not_called()
 
+    def test_empty_selected_wall_pauses_without_success_or_state_change_then_resumes(self) -> None:
+        empty = {"schema_version": 1, "species": [], "empty_selection": True}
+        with TemporaryDirectory() as temporary:
+            config = DisplayNodeConfig("http://controller.test/wall", Path(temporary))
+            with (
+                patch(
+                    "inky_bird_frame.display_node.get_json",
+                    side_effect=[empty, catalog_payload({1: b"one"})],
+                ),
+                patch("inky_bird_frame.display_node.get_bytes", return_value=b"one") as download,
+                patch(
+                    "inky_bird_frame.display_node.show_on_inky", return_value=(1600, 1200)
+                ) as show,
+            ):
+                paused = run_display_cycle(config, force=True)
+                self.assertEqual(paused["display_update"], "paused")
+                self.assertEqual(paused["selection_reason"], "empty_wall_view")
+                self.assertFalse((config.state_dir / "state.json").exists())
+                download.assert_not_called()
+                show.assert_not_called()
+                self.assertEqual(
+                    [call.args[0] for call in self.post_json.call_args_list],
+                    ["http://controller.test/wall/v1/display-fetch"],
+                )
+                self.assertEqual(run_display_cycle(config)["display_update"], "sent")
+                show.assert_called_once()
+
+    def test_empty_catalog_requires_exact_marker_and_selected_wall_opt_in(self) -> None:
+        for marker in (False, 1, "true", None):
+            with self.subTest(marker=marker), self.assertRaises(CatalogError):
+                parse_catalog_entries(
+                    {"schema_version": 1, "species": [], "empty_selection": marker},
+                    allow_empty_selection=True,
+                )
+        with self.assertRaises(CatalogError):
+            parse_catalog_entries({"schema_version": 1, "species": [], "empty_selection": True})
+
     def test_controller_without_post_telemetry_does_not_block_display(self) -> None:
         payload = catalog_payload({1: b"one"})
         self.post_json.side_effect = DataSourceError("HTTP 501 from controller")

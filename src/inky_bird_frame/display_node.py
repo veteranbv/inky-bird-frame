@@ -12,7 +12,7 @@ from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
 from typing import cast
-from urllib.parse import quote
+from urllib.parse import quote, urlsplit
 
 from .catalog import CatalogEntry
 from .config import DisplayNodeConfig, RotationMode
@@ -52,7 +52,9 @@ def exclusive_display_cycle_lock(state_dir: Path) -> Iterator[None]:
             fcntl.flock(handle.fileno(), fcntl.LOCK_UN)
 
 
-def parse_catalog_entries(payload: object) -> list[CatalogEntry]:
+def parse_catalog_entries(
+    payload: object, *, allow_empty_selection: bool = False
+) -> list[CatalogEntry]:
     if not isinstance(payload, dict) or payload.get("schema_version") != 1:
         raise CatalogError("Controller returned an unsupported catalog")
     species = payload.get("species")
@@ -112,7 +114,7 @@ def parse_catalog_entries(payload: object) -> list[CatalogEntry]:
                 latest_detection_at=cast(str | None, latest_detection_at),
             )
         )
-    if not entries:
+    if not entries and not (allow_empty_selection and payload.get("empty_selection") is True):
         raise CatalogError("Controller catalog has no approved species")
     return entries
 
@@ -330,8 +332,15 @@ def run_display_cycle(
         display = detect_inky_display()
         display_size = (display.width, display.height)
         catalog_payload = get_json(f"{config.controller_url}/v1/catalog", 20.0)
-        entries = parse_catalog_entries(catalog_payload)
+        entries = parse_catalog_entries(
+            catalog_payload,
+            allow_empty_selection=urlsplit(config.controller_url).path.rstrip("/") == "/wall",
+        )
         _report_display_event(config.controller_url, "fetch")
+        if not entries:
+            # A deliberately empty wall must not fall back to unrelated birds,
+            # change panel pixels/state, or claim a successful physical refresh.
+            return {"display_update": "paused", "selection_reason": "empty_wall_view"}
         shuffle_remaining = list(state.shuffle_remaining)
         shuffle_bag_remaining = list(state.shuffle_bag_remaining)
         shuffle_bag_seen = list(state.shuffle_bag_seen)

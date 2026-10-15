@@ -101,13 +101,19 @@ The origin permits that address, not arbitrary clients or internet exposure.
 Validate the file, rerun display setup and restart its service
 through the normal [installation procedure](installation.md). The namespace
 serves `/wall/health`, `/wall/v1/catalog`, its selected assets and the existing
-narrow physical telemetry contract. No display firmware or new controller is required.
+narrow physical telemetry contract. Use matching controller and display releases
+for the selected-wall empty-state contract.
 
 Then choose and confirm the view in **Manage → Displays → Physical wall panel**.
 The display applies it at its next scheduled refresh. It still owns shuffle,
 rotation interval and panel rendering. A fixed trip does not admit unrelated
 home detections. No browser action claims an immediate panel update. Home and
 Displays show only the last confirmed physical success.
+
+An empty or removed selected view pauses rotation. The panel keeps its last
+image; Inky does not fall back to other birds or claim a new physical success.
+Choose a populated view to resume at the next scheduled cycle. This also means
+removing a bird from the view cannot erase pixels already on an e-paper panel.
 
 Undo this opt-in by restoring the previous controller URL and rerunning display
 setup. Named collections, source history and approved plates stay intact.

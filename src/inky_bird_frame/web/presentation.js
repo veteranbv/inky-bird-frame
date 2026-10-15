@@ -180,6 +180,9 @@ export async function renderPresentation(ui, { base, link, note, data, area }) {
       note(
         'This applies on its next scheduled refresh only if the display uses the selected-wall address. Existing /v1/catalog clients remain unchanged.',
       ),
+      note(
+        'An empty or removed view pauses rotation and keeps the last image on the panel. Choose a view with approved plates to resume.',
+      ),
     );
     const view = choice(wall, state.wall_view),
       consent = field(wall, 'I want this view on the selected-wall route', 'checkbox');

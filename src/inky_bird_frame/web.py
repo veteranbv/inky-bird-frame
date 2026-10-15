@@ -985,6 +985,7 @@ def create_app(config: ControllerConfig, *, app_config: AppConfig | None = None)
                 {
                     "schema_version": 1,
                     "generated_at": datetime.now(UTC).isoformat(),
+                    "empty_selection": not entries,
                     "species": entries,
                 }
             )
