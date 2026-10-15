@@ -199,7 +199,9 @@ docker run --rm --network none --read-only --cap-drop ALL \
 
 This refuses to replace an existing file. The seed selects app-managed settings,
 no observation sources and generation off. Inside its existing `[controller]`
-section, add your exact browser origin. For access on the Docker host:
+section, add your exact browser origin. The generated file writes this as
+`["controller"]`; both spellings mean the same section. Edit that section rather
+than adding a second one. For access on the Docker host:
 
 ```toml
 owner_access_mode = "local"

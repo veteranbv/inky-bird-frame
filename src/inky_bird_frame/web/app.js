@@ -775,6 +775,23 @@ async function load(notice = '') {
       );
       return;
     }
+    if (access.setup_required && access.setup_code?.state !== 'missing') {
+      screen(
+        'Finish setup on the controller',
+        'The installer reserved owner setup. Browser account creation cannot replace it, even after its setup window ends.',
+      );
+      main.append(
+        help(
+          'For the person who installed Inky',
+          [
+            'Use a private terminal on the controller to choose the owner username and password. This does not change bird history or artwork. Do not delete access files to reopen browser setup.',
+          ],
+          'inky-bird-frame access recover --config <config.toml>',
+        ),
+        button('Check again', () => load()),
+      );
+      return;
+    }
     try {
       await signedIn(access, notice);
     } catch (error) {

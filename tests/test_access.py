@@ -442,6 +442,21 @@ def test_bootstrap_is_private_one_use_and_does_not_retain_secrets(tmp_path: Path
         store.bootstrap(now=NOW)
 
 
+@pytest.mark.parametrize("elapsed", [0, BOOTSTRAP_SECONDS + 1])
+def test_browser_registration_cannot_override_reserved_setup(tmp_path: Path, elapsed: int) -> None:
+    store = AccessStore(tmp_path)
+    secret_path = store.bootstrap(now=NOW)
+    secret_bytes = secret_path.read_bytes()
+    state_bytes = store.path.read_bytes()
+    with patch("inky_bird_frame.access._hash_passphrase") as hash_password:
+        with pytest.raises(AccessDeniedError, match="reserved owner setup"):
+            store.register_owner("intruder", PASSPHRASE, now=NOW + timedelta(seconds=elapsed))
+        hash_password.assert_not_called()
+    assert not store.owner_exists()
+    assert store.path.read_bytes() == state_bytes
+    assert secret_path.read_bytes() == secret_bytes
+
+
 def test_expired_bootstrap_never_hashes_a_password(tmp_path: Path) -> None:
     store = AccessStore(tmp_path)
     secret = store.bootstrap(now=NOW).read_text().strip()

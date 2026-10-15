@@ -158,6 +158,9 @@ Existing pilot accounts without a username can still sign in with their
 original password. Use Account and access to choose a username and password.
 Existing pilot sessions retain their original 30-minute/eight-hour limits.
 The earlier `access bootstrap` command remains for pilot compatibility.
+An existing bootstrap reservation, including an expired one, closes ordinary
+browser account creation. Use local recovery to choose the owner credentials;
+do not delete the reservation or access state to reopen setup.
 `access reset` now aliases interactive recovery. It does not generate a code or
 leave account creation open. Headless reset scripts must change to a deliberate
 private-terminal recovery. Neither command is needed for ordinary setup.

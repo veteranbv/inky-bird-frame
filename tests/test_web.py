@@ -17,6 +17,25 @@ from inky_bird_frame.web import LOCAL_OWNER_COOKIE, OWNER_COOKIE, create_app
 PASSPHRASE = "a long synthetic browser passphrase"
 
 
+def test_reserved_setup_cannot_be_claimed_by_browser_registration(tmp_path: Path) -> None:
+    config = _config(tmp_path)
+    store = AccessStore(config.state_dir)
+    reserved = store.bootstrap()
+    before = store.path.read_bytes()
+    with TestClient(create_app(config), base_url="https://inky.example.test") as client:
+        assert client.get("/v1/access").json()["data"]["setup_code"]["state"] == "ready"
+        response = client.post(
+            "/v1/owner/register",
+            json={"username": "intruder", "passphrase": PASSPHRASE},
+            headers={"Origin": "https://inky.example.test"},
+        )
+        assert response.status_code == 401
+        assert "set-cookie" not in response.headers
+    assert not store.owner_exists()
+    assert store.path.read_bytes() == before
+    assert reserved.exists()
+
+
 def test_local_network_setup_needs_no_code_and_remember_is_explicit(tmp_path: Path) -> None:
     config = replace(_config(tmp_path), bind_host="0.0.0.0", owner_allowed_origins=())
     origin = "http://192.168.1.50:8000"

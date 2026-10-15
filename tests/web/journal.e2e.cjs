@@ -129,8 +129,21 @@ let browser,
   }
   const state = () =>
     JSON.parse(fs.readFileSync(path.join(fixture, 'var/controller/journal.json')));
-  phase = 'registration';
+  phase = 'reserved-setup-rendering';
+  const reservedStatus = async (route) => {
+    const response = await route.fetch();
+    const payload = await response.json();
+    assert.equal(payload.data.setup_required, true);
+    payload.data.setup_code = { state: 'ready', expires_in_seconds: 60 };
+    await route.fulfill({ response, json: payload });
+  };
+  await context.route(origin + '/v1/access', reservedStatus);
   await page.goto(origin + '/app');
+  await heading('Finish setup on the controller');
+  assert.equal(await page.locator('input').count(), 0);
+  await context.unroute(origin + '/v1/access', reservedStatus);
+  phase = 'registration';
+  await page.reload();
   await heading('Make Inky yours');
   await page.getByLabel('Username', { exact: true }).fill(username);
   await page.getByLabel('Choose your Inky password', { exact: true }).fill(password);
@@ -639,6 +652,7 @@ let browser,
         passed: true,
         synthetic: true,
         communityQuery: 'mocked',
+        reservedSetupRendering: 'synthetic access status; rejection tested through real backend',
         engine,
         sourceCommit: execFileSync('git', ['rev-parse', 'HEAD'], {
           cwd: root,

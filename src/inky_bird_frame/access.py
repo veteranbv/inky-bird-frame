@@ -428,6 +428,10 @@ class AccessStore:
             timestamp = (now or datetime.now(UTC)).timestamp()
             if state.owner_hash is not None:
                 raise AccessDeniedError("An owner already exists; sign in instead")
+            if state.bootstrap_hash is not None:
+                raise AccessDeniedError(
+                    "The installer reserved owner setup; finish setup on the controller"
+                )
             state.owner_hash = _hash_passphrase(passphrase)
             state.username = name
             state.bootstrap_hash = None

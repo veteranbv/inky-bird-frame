@@ -96,9 +96,10 @@ there is no Node service or frontend package installation in the user runtime.
 
 `tests/web/journal.e2e.cjs` starts a temporary loopback installation. It uses
 random test credentials, synthetic history and candidates, and public approved
-art. It blocks external browser requests and substitutes only the community
-query in the synthetic server. It never needs provider credentials or a real
-controller. The evidence identifies those limits.
+art. It blocks external browser requests, substitutes the community query in
+the synthetic server, and inserts a reserved-setup status for one rendering
+check. Backend tests check actual reservation rejection. It never needs
+provider credentials or a real controller. The evidence identifies those limits.
 
 Install the optional test tools outside the checkout:
 
