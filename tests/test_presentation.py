@@ -18,6 +18,7 @@ from inky_bird_frame.journal import (
     JournalConflictError,
     JournalError,
     JournalService,
+    remove_collection,
     save_collection,
 )
 from inky_bird_frame.presentation import PresentationAccess
@@ -163,6 +164,50 @@ def test_status_credentials_are_distinct_scoped_private_and_cas_guarded(tmp_path
     assert cast(str, result["secret"]) not in access.path.read_text()
 
 
+@pytest.mark.parametrize("allow_origin", [False, True])
+def test_local_wall_hostname_needs_its_documented_origin(
+    tmp_path: Path, allow_origin: bool
+) -> None:
+    config, _, _ = fixture(tmp_path)
+    origin = "http://inky-controller:8793"
+    config = replace(
+        config,
+        bind_host="0.0.0.0",
+        port=8793,
+        owner_access_mode=OwnerAccessMode.LOCAL,
+        owner_allowed_origins=(origin,) if allow_origin else (),
+    )
+    with TestClient(create_app(config), base_url=origin, client=("192.168.1.20", 42000)) as client:
+        for path in ("/wall/health", "/wall/v1/catalog"):
+            response = client.get(path)
+            assert response.status_code == (200 if allow_origin else 403)
+
+
+def test_deleted_status_view_is_empty_without_falling_back_to_other_art(tmp_path: Path) -> None:
+    config, journal, access = fixture(tmp_path)
+    group = save_collection(config.state_dir, revision=0, label="Selected", taxon_ids=[1])
+    selected = group.collections[0]
+    credential = access.update(
+        revision=0, action="status", name="Status", view=selected.collection_id, confirm=True
+    )
+    headers = {"Authorization": "Bearer " + cast(str, credential["secret"])}
+    with TestClient(create_app(config), base_url=ORIGIN) as client:
+        assert (
+            client.get("/v1/integrations/status", headers=headers).json()["data"][
+                "view_ready_count"
+            ]
+            == 1
+        )
+        remove_collection(
+            config.state_dir, revision=group.revision, collection_id=selected.collection_id
+        )
+        result = client.get("/v1/integrations/status", headers=headers)
+        assert result.status_code == 200
+        assert result.json()["data"]["view_ready_count"] == 0
+        assert result.json()["data"]["approved_count"] == 1
+        assert len(journal.view_entries("all")) == 1
+
+
 def test_readonly_http_boundaries_selected_wall_and_minimal_embed(tmp_path: Path) -> None:
     config, _, access = fixture(tmp_path)
     with (
@@ -243,6 +288,10 @@ def test_readonly_http_boundaries_selected_wall_and_minimal_embed(tmp_path: Path
         wall = owner.get("/wall/v1/catalog").json()
         project_catalog(wall)
         assert len(wall["species"]) == 1 and owner.get("/v1/catalog").json() == legacy
+        health = owner.get("/wall/health")
+        assert health.status_code == 200 and health.json()["ok"] is True
+        assert health.json()["active_species"] == 1
+        assert owner.get("/health").json()["active_species"] == 0
         assert owner.get("/wall/v1/assets/species/1-robin/display.png").content == PNG
         report = owner.post("/wall/v1/display-success", json={"schema_version": 1})
         assert report.status_code == 200

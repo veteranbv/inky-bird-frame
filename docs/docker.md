@@ -254,6 +254,10 @@ events = ["generation_approved", "terminal_error", "degraded", "recovered"]
 
 Then set the matching values in `controller.env`, one `NAME=value` per line.
 Do not quote a value unless the quote characters are part of the secret.
+Both the controller and scheduler read this file: browser-triggered source and
+notification actions need the same credentials as scheduled work. The separate
+`access.env` file carries only optional sign-in-provider secrets and goes only
+to the controller. Never put a vault service-account token in either file.
 
 For self-hosted BirdNET-Go, `birdnet_go_url` must be reachable from inside the
 controller container. A DNS name or LAN address is usually clearer than a

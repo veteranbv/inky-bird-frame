@@ -1018,7 +1018,13 @@ export async function openJournal(ui, message = '') {
       } else if (group?.kind === 'imported-selection')
         node.append(note('Imported selection · personal evidence not verified here'));
       else if (group?.kind === 'community-history')
-        node.append(note('Community report · not your personal sighting'));
+        node.append(
+          note(
+            origin === 'community-report'
+              ? 'Community report · not your personal sighting'
+              : 'Manual selection · no community report linked',
+          ),
+        );
       grid.append(node);
     }
     if (!birds.length)

@@ -555,6 +555,33 @@ let browser,
   const communityGroup = state().collections.find((group) => group.kind === 'community-history');
   assert.equal(communityGroup.members[0].origin, 'community-report');
   assert.deepEqual(communityGroup.members[0].evidence, []);
+  phase = 'manual-community-member-label';
+  const communitySession = (
+    await (await context.request.get(origin + '/v1/owner/session')).json()
+  ).data;
+  const manualAddition = await context.request.post(
+    origin + '/v1/owner/journal/collections/save',
+    {
+      headers: { Origin: origin, 'X-Inky-CSRF': communitySession.csrf },
+      data: {
+        revision: state().revision,
+        collection_id: communityGroup.collection_id,
+        label: communityGroup.label,
+        taxon_ids: [cardinal.taxon_id, replacement.taxon_id],
+      },
+    },
+  );
+  assert.equal(manualAddition.status(), 200);
+  await page.goto(origin + '/app?page=collection&view=' + communityGroup.collection_id);
+  await heading('Synthetic community selection');
+  assert.equal(
+    await page.getByText('Community report · not your personal sighting', { exact: true }).count(),
+    1,
+  );
+  assert.equal(
+    await page.getByText('Manual selection · no community report linked', { exact: true }).count(),
+    1,
+  );
   phase = 'health-and-guides';
   await page.goto(origin + '/app?page=health');
   await heading('Health and help');

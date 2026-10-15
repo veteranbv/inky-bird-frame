@@ -903,7 +903,10 @@ def create_app(config: ControllerConfig, *, app_config: AppConfig | None = None)
 
     def integration_status(secret: str) -> dict[str, object]:
         grant = presentation.authenticate(secret, "status")
-        entries = journal.view_entries(grant.view)
+        try:
+            entries = journal.view_entries(grant.view)
+        except JournalViewRemovedError:
+            entries = []
         approved = {cast(int, item["taxon_id"]) for item in journal.catalog()}
         work = (
             read_generation_work(current_config(app_config), approved=approved)
@@ -940,6 +943,19 @@ def create_app(config: ControllerConfig, *, app_config: AppConfig | None = None)
                 "Use a status credential in the Authorization header, never the URL"
             )
         return _result(await run_in_threadpool(integration_status, values[0][7:]))
+
+    async def wall_health(request: Request) -> JSONResponse:
+        entries = await run_in_threadpool(presentation.selected, "wall")
+        approved = await run_in_threadpool(journal.catalog)
+        return JSONResponse(
+            {
+                "ok": True,
+                "approved_species": len(approved),
+                "active_species": len(entries),
+                "version": __version__,
+                "schema_version": 1,
+            }
+        )
 
     async def selected_art(request: Request) -> Response:
         destination: Literal["wall", "dashboard"] = (
@@ -1448,6 +1464,7 @@ def create_app(config: ControllerConfig, *, app_config: AppConfig | None = None)
         Route("/v1/integrations/status", dashboard_status),
         Route("/v1/dashboard/art", selected_art),
         Route("/v1/dashboard/assets/{asset:path}", selected_art),
+        Route("/wall/health", wall_health),
         Route("/wall/v1/catalog", selected_art),
         Route("/wall/v1/assets/{asset:path}", selected_art),
         Route("/wall/v1/display-fetch", catalog.telemetry_response, methods=["POST"]),

@@ -6,6 +6,16 @@ from unittest.mock import patch
 import pytest
 
 
+def test_serving_container_receives_provider_credentials_but_sso_stays_separate() -> None:
+    compose = (Path(__file__).resolve().parents[1] / "compose.yaml").read_text()
+    serving = compose.split("  controller:\n", 1)[1].split("  scheduler:\n", 1)[0]
+    scheduler = compose.split("  scheduler:\n", 1)[1].split("\nvolumes:", 1)[0]
+    assert "${INKY_BIRD_ENV:-./controller.env}" in serving
+    assert "${INKY_ACCESS_ENV:-./access.env}" in serving
+    assert "${INKY_BIRD_ENV:-./controller.env}" in scheduler
+    assert "INKY_ACCESS_ENV" not in scheduler
+
+
 @pytest.mark.parametrize("ready", [True, False])
 def test_docker_health_probe_uses_configured_transport_and_validates_readiness(ready: bool) -> None:
     root = Path(__file__).resolve().parents[1]

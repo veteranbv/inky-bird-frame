@@ -1,7 +1,8 @@
 # Screens, wall views and dashboards
 
-Inky has three distinct ways to show approved art. They use the same catalog,
-but they do not share management authority. This guide describes the 1.0
+Inky can show approved art in your browser, on a paired screen, in a dashboard
+or on the physical wall. They share a catalog, not management authority.
+Status sensors are separate. This guide describes the 1.0
 candidate; wait for its reviewed release before changing a working deployment.
 
 | Destination | Access | What it can do |
@@ -83,10 +84,24 @@ controller_url = "http://inky-controller:8793/wall"
 ```
 
 Use your actual reachable private address. Retain HTTPS and certificate trust
-when required. Validate the file, rerun display setup and restart its service
+when required. This HTTP hostname also needs its exact origin in the existing
+controller configuration:
+
+```toml
+[controller]
+owner_allowed_origins = ["http://inky-controller:8793"]
+```
+
+Merge it with any existing origins; do not replace an HTTPS or OIDC origin.
+Keep HTTPS-only mode unchanged and use its configured HTTPS address instead
+if that is your installation's policy. Docker also needs the actual published
+origin, even for a literal IP; see [Docker address setup](docker.md#what-runs).
+The origin permits that address, not arbitrary clients or internet exposure.
+
+Validate the file, rerun display setup and restart its service
 through the normal [installation procedure](installation.md). The namespace
-serves `/wall/v1/catalog`, its selected assets and the existing narrow physical
-telemetry contract. No display firmware or new controller is required.
+serves `/wall/health`, `/wall/v1/catalog`, its selected assets and the existing
+narrow physical telemetry contract. No display firmware or new controller is required.
 
 Then choose and confirm the view in **Manage → Displays → Physical wall panel**.
 The display applies it at its next scheduled refresh. It still owns shuffle,
