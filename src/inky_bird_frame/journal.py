@@ -19,10 +19,17 @@ from pathlib import Path
 from typing import cast
 from uuid import uuid4
 
+from .birds import BirdSpecies
 from .catalog import catalog_state_lock, read_collection, read_json
 from .codex_runner import parse_species_profile
 from .config import AppConfig, ControllerConfig, DiscoveryProvider
-from .controller import current_discovery_species, read_generation_queue, read_generation_work
+from .controller import (
+    current_discovery_species,
+    owner_selection_plan,
+    queue_owner_selection_locked,
+    read_generation_queue,
+    read_generation_work,
+)
 from .errors import CatalogError, DataSourceError, GenerationError, InkyBirdFrameError
 from .http import write_bytes_atomic
 from .notifications import notification_status
@@ -361,6 +368,7 @@ def save_collection(
     label: object,
     taxon_ids: object,
     collection_id: object = None,
+    member_names: Mapping[int, tuple[str, str]] | None = None,
 ) -> JournalState:
     expected = _revision(revision)
     name = _label(label)
@@ -374,7 +382,14 @@ def save_collection(
         if state.revision != expected:
             raise JournalConflictError("This journal changed in another tab. Reload before saving.")
         groups = list(state.collections)
-        members = tuple(JournalMember(taxon_id) for taxon_id in taxa)
+        members = tuple(
+            JournalMember(
+                taxon_id,
+                _visible_text((member_names or {}).get(taxon_id, ("", ""))[0]),
+                _visible_text((member_names or {}).get(taxon_id, ("", ""))[1]),
+            )
+            for taxon_id in taxa
+        )
         if collection_id is None:
             groups.append(
                 JournalCollection(
@@ -401,7 +416,9 @@ def save_collection(
                 current,
                 label=name,
                 updated_revision=state.revision + 1,
-                members=tuple(retained.get(taxon_id, JournalMember(taxon_id)) for taxon_id in taxa)
+                members=tuple(
+                    retained.get(cast(int, member.taxon_id), member) for member in members
+                )
                 + tuple(member for member in current.members if member.taxon_id is None),
             )
         result = JournalState(state.revision + 1, tuple(groups))
@@ -563,6 +580,123 @@ class JournalService:
             ),
         )
 
+    def save_selection(
+        self,
+        *,
+        revision: object,
+        label: object,
+        taxon_ids: object,
+        collection_id: object = None,
+    ) -> JournalState:
+        taxa = _taxa(taxon_ids)
+        identities = {
+            cast(int, bird["taxon_id"]): (
+                cast(str, bird["common_name"]),
+                cast(str, bird["scientific_name"]),
+            )
+            for bird in cast(list[dict[str, object]], self.snapshot()["birds"])
+        }
+        if any(taxon not in identities for taxon in taxa):
+            raise JournalError("Choose birds from your journal or available artwork")
+        return save_collection(
+            self.config.state_dir,
+            revision=revision,
+            label=label,
+            taxon_ids=list(taxa),
+            collection_id=collection_id,
+            member_names=identities,
+        )
+
+    def queue_preview(self, *, collection_id: str, revision: object) -> dict[str, object]:
+        with catalog_state_lock(self.config.state_dir):
+            return self._queue_preview_locked(collection_id=collection_id, revision=revision)[0]
+
+    def _queue_preview_locked(
+        self, *, collection_id: str, revision: object
+    ) -> tuple[dict[str, object], list[BirdSpecies]]:
+        expected = _revision(revision)
+        if self.app_config is None:
+            raise JournalError("Start Inky with its configuration file")
+        state = read_journal(self.config.state_dir)
+        if state.revision != expected:
+            raise JournalConflictError("This journal changed. Review the selection again.")
+        group = next(
+            (group for group in state.collections if group.collection_id == collection_id), None
+        )
+        if group is None:
+            raise JournalError("Choose an existing named collection")
+        identities = {
+            member.taxon_id: (member.common_name, member.scientific_name)
+            for member in group.members
+            if member.taxon_id is not None
+        }
+        from .recovery import pending_inventory
+
+        for candidate in cast(
+            list[dict[str, object]], pending_inventory(self.app_config)["candidates"]
+        ):
+            if candidate["inspect_available"]:
+                identities[cast(int, candidate["taxon_id"])] = (
+                    cast(str, candidate["common_name"]),
+                    cast(str, candidate["scientific_name"]),
+                )
+        identities.update(
+            {
+                bird.taxon_id: (bird.common_name, bird.scientific_name)
+                for bird in [
+                    *read_generation_queue(self.app_config),
+                    *current_discovery_species(self.app_config),
+                ]
+            }
+        )
+        identities.update(
+            {
+                cast(int, entry["taxon_id"]): (
+                    cast(str, entry["common_name"]),
+                    cast(str, entry["scientific_name"]),
+                )
+                for entry in self.catalog()
+            }
+        )
+        species = [
+            BirdSpecies(
+                id,
+                _visible_text(identities[id][0]),
+                _visible_text(identities[id][1]),
+                1,
+                "owner-selection",
+            )
+            for id in sorted(group.taxon_ids)
+            if identities[id][1]
+        ]
+        plan = owner_selection_plan(self.app_config, species)
+        digest = hashlib.sha256(
+            json.dumps(
+                {"members": [asdict(item) for item in species], "plan": plan, "revision": expected},
+                sort_keys=True,
+            ).encode()
+        ).hexdigest()
+        return {
+            "collection_id": collection_id,
+            "revision": expected,
+            "plan": plan,
+            "unresolved": len(group.members) - len(species),
+            "preview_hash": digest,
+        }, species
+
+    def queue_collection(
+        self, *, collection_id: str, revision: object, preview_hash: str
+    ) -> dict[str, object]:
+        with catalog_state_lock(self.config.state_dir):
+            preview, species = self._queue_preview_locked(
+                collection_id=collection_id, revision=revision
+            )
+            if preview["preview_hash"] != preview_hash:
+                raise JournalConflictError(
+                    "Plate work changed. Review missing-plate requests again."
+                )
+            return queue_owner_selection_locked(cast(AppConfig, self.app_config), species)
+
     def export_collection(self, collection_id: str) -> dict[str, object]:
         with catalog_state_lock(self.config.state_dir):
             group = next(
@@ -712,6 +846,23 @@ class JournalService:
             observed = current_discovery_species(self.app_config) if self.app_config else []
             queued = read_generation_queue(self.app_config) if self.app_config else []
             identities = {bird.taxon_id: bird for bird in [*queued, *observed]}
+            from .recovery import pending_inventory
+
+            pending: dict[str, object] = (
+                pending_inventory(self.app_config)
+                if self.app_config
+                else {"status": "unavailable", "candidates": []}
+            )
+            for candidate in cast(list[dict[str, object]], pending["candidates"]):
+                id = cast(int, candidate["taxon_id"])
+                if candidate["inspect_available"] and id not in identities:
+                    identities[id] = BirdSpecies(
+                        id,
+                        cast(str, candidate["common_name"]),
+                        cast(str, candidate["scientific_name"]),
+                        1,
+                        "owner-selection",
+                    )
             selected_identities = {
                 member.taxon_id: member
                 for group in state.collections
@@ -722,6 +873,11 @@ class JournalService:
                 set(saved)
                 | set(active_ids)
                 | {bird.taxon_id for bird in observed}
+                | {bird.taxon_id for bird in queued}
+                | {
+                    cast(int, candidate["taxon_id"])
+                    for candidate in cast(list[dict[str, object]], pending["candidates"])
+                }
                 | {taxon for group in state.collections for taxon in group.taxon_ids}
             )
             birds = []
@@ -773,7 +929,7 @@ class JournalService:
                 "active_taxon_ids": active_ids,
                 "featured_taxon_id": featured.get("taxon_id") if featured else None,
                 "birds": birds,
-                "management": self.management(approved=approved_ids),
+                "management": self.management(approved=approved_ids, pending=pending),
             }
         # Do not hold the catalog lock while taking the history lock: trip saves
         # take history first, then catalog. Keep the curated membership unchanged.
@@ -807,7 +963,9 @@ class JournalService:
                 ]
         return result
 
-    def management(self, *, approved: set[int]) -> dict[str, object]:
+    def management(
+        self, *, approved: set[int], pending: dict[str, object] | None = None
+    ) -> dict[str, object]:
         config = self.app_config
         if config is None:
             return {"available": False}
@@ -859,6 +1017,7 @@ class JournalService:
             "window": config.discovery.observation_window.value,
             "refresh_minutes": config.schedule.refresh_minutes,
             "work": {
+                "in_review": pending or {"status": "unavailable", "candidates": []},
                 "complete": work.complete,
                 "discovery_status": work.discovery_status,
                 "can_run": [bird.taxon_id for bird in work.actionable],

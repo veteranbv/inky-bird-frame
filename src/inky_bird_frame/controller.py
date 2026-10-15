@@ -100,6 +100,7 @@ PROFILE_REFRESH_CORRECTION = (
     "measurements, and anatomy."
 )
 HUMAN_REVIEW_SOURCE = "human-review"
+OWNER_SELECTION_SOURCE = "owner-selection"
 
 
 @dataclass(frozen=True)
@@ -758,6 +759,68 @@ def _write_generation_queue(config: AppConfig, species: list[BirdSpecies]) -> No
     )
 
 
+def owner_selection_plan(config: AppConfig, species: list[BirdSpecies]) -> dict[str, object]:
+    """Caller holds the catalog-state lock; this plan changes no work or membership."""
+    approved = approved_taxon_ids(config.controller.catalog_dir)
+    queued = {item.taxon_id for item in read_generation_queue(config)}
+    retries = {
+        item.taxon_id: item
+        for item in RetryStore(config.controller.state_dir / "generation-retries.json").records()
+    }
+    result: dict[str, object] = {
+        "ready": [],
+        "already_queued": [],
+        "held": [],
+        "new_requests": [],
+        "waiting": [],
+    }
+    now = datetime.now(UTC)
+    for item in sorted(species, key=lambda bird: bird.taxon_id):
+        terminal = _terminal_state(config.controller.state_dir, item.taxon_id)
+        category = (
+            "ready"
+            if item.taxon_id in approved
+            else "held"
+            if terminal
+            else "already_queued"
+            if item.taxon_id in queued
+            else "new_requests"
+        )
+        cast(list[int], result[category]).append(item.taxon_id)
+        retry = retries.get(item.taxon_id)
+        if retry is not None and retry.next_attempt_at > now:
+            cast(list[dict[str, object]], result["waiting"]).append(
+                {"taxon_id": item.taxon_id, "next_attempt_at": retry.next_attempt_at.isoformat()}
+            )
+    return result
+
+
+def queue_owner_selection_locked(
+    config: AppConfig, species: list[BirdSpecies]
+) -> dict[str, object]:
+    """Caller holds the catalog-state lock. Preserve holds, retry dates and provenance."""
+    plan = owner_selection_plan(config, species)
+    new_ids = cast(list[int], plan["new_requests"])
+    if new_ids:
+        current = read_generation_queue(config)
+        current.extend(
+            BirdSpecies(
+                item.taxon_id, item.common_name, item.scientific_name, 1, OWNER_SELECTION_SOURCE
+            )
+            for item in species
+            if item.taxon_id in new_ids
+        )
+        _write_generation_queue(config, current)
+    return {
+        "message": "Missing-plate requests saved. Existing holds and retry dates remain. "
+        "No model started, and Saved birds and wall selection did not change.",
+        "queued": len(new_ids),
+        "already_queued": len(cast(list[int], plan["already_queued"])),
+        "held": len(cast(list[int], plan["held"])),
+        "ready": len(cast(list[int], plan["ready"])),
+    }
+
+
 def ensure_generation_retry(
     config: AppConfig,
     taxon_id: int,
@@ -892,7 +955,11 @@ def _migrate_legacy_seed_queue(
         return state.entries, [], state.legacy_seed_queue_migrated_at, False
     updated, added = add_collection_taxa(
         state.entries,
-        {species.taxon_id for species in queued_species},
+        {
+            species.taxon_id
+            for species in queued_species
+            if OWNER_SELECTION_SOURCE not in species.sources
+        },
         CollectionOrigin.HISTORICAL_SEED,
     )
     return updated, added, utc_now(), True
@@ -2751,7 +2818,9 @@ def run_generation_cycle(config: AppConfig) -> dict[str, object]:
             active_count = _write_active_catalog(config, latest_snapshot.species)
             approved_after = approved_taxon_ids(config.controller.catalog_dir)
             remaining_queue = [
-                species for species in queued_species if species.taxon_id not in approved_after
+                species
+                for species in read_generation_queue(config)
+                if species.taxon_id not in approved_after
             ]
             _write_generation_queue(config, remaining_queue)
             queue_partition = _partition_generation_queue(

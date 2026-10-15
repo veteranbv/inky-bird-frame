@@ -44,6 +44,9 @@ OperationKind = Literal[
     "import-commit",
     "trip-preview",
     "trip-save",
+    "queue-plates",
+    "approve-candidate",
+    "reject-candidate",
 ]
 OperationStatus = Literal["pending", "running", "succeeded", "failed", "interrupted"]
 KINDS = {
@@ -55,6 +58,9 @@ KINDS = {
     "import-commit",
     "trip-preview",
     "trip-save",
+    "queue-plates",
+    "approve-candidate",
+    "reject-candidate",
 }
 STATUSES = {"pending", "running", "succeeded", "failed", "interrupted"}
 

@@ -342,18 +342,30 @@ def _string_list(value: object, field: str, minimum: int) -> list[str]:
     return items
 
 
+def _source_hostname(url: str) -> str:
+    try:
+        parsed = urlsplit(url)
+        hostname = parsed.hostname
+        port = parsed.port
+        if parsed.scheme != "https" or not hostname or parsed.username or parsed.password:
+            raise ValueError("invalid source")
+        if port is not None and not 1 <= port <= 65535:
+            raise ValueError("invalid port")
+    except ValueError as exc:
+        raise GenerationError("Codex source URL is invalid") from exc
+    return hostname
+
+
 def _allowed_source(url: str, allowed_domains: tuple[str, ...] | None) -> bool:
+    hostname = _source_hostname(url)
     if allowed_domains is None:
         return True
-    hostname = urlsplit(url).hostname
-    return hostname is not None and any(
-        hostname == domain or hostname.endswith(f".{domain}") for domain in allowed_domains
-    )
+    return any(hostname == domain or hostname.endswith(f".{domain}") for domain in allowed_domains)
 
 
 def _source_identity(url: str, allowed_domains: tuple[str, ...] | None) -> str | None:
-    hostname = urlsplit(url).hostname
-    if hostname is None or allowed_domains is None:
+    hostname = _source_hostname(url)
+    if allowed_domains is None:
         return hostname
     return next(
         (

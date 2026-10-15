@@ -39,6 +39,10 @@ working deployment with this branch. The complete acceptance scope remains in
   service definitions, the dynamic scheduler and doctor understand that mode.
 - [Owner actions](owner-operations.md) provide confirmed source refresh, normal
   plate retry, notification tests and dead-letter retry with private outcomes.
+- Named selections keep their validated species names. Missing-plate requests
+  have a separate preview and confirmation. Pending complete candidates can be
+  inspected, approved through the ordinary publication gates, or rejected with
+  a retained private reason. None of these actions claims a personal sighting.
 - Bird Buddy's source setup includes owner-only guest login, explicit permission
   attestation, feeder choice, redacted saved-login status and local logout.
   Bootstrap needs HTTPS or genuine loopback access. It stores no email or password.

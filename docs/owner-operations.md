@@ -20,6 +20,20 @@ candidates and approved plates do not become ordinary retries. Read the existing
 work state before confirming a retry; enabling generation can use AI allowance
 or incur costs.
 
+Named collections also offer **Review missing-plate requests**. The preview
+separates approved art, existing requests, holds and unresolved identities. Confirming
+adds only new requests to the existing queue. It does not add sightings, join
+Saved birds, clear a hold, start a model or change the wall.
+
+Complete pending candidates open for private inspection. The browser shows the
+uncropped plate, readable facts, saved review scores and cited sources. Local
+approval requires the same mandatory publication validation as the catalog and
+applies only to the exact files inspected. Changed files need a new review.
+Approval can make art eligible for the existing publisher; published copies
+cannot be recalled. Rejection requires a reason and retains the artifact privately.
+It does not start another attempt. Incomplete assets remain visible as recovery
+work with operator guidance, not a false empty queue.
+
 A notification test sends an actual external message to each configured
 destination. Its outcome reports failed destinations separately from successful
 deliveries. A dead-letter retry uses the existing outbox and preserves its

@@ -47,7 +47,8 @@ export async function openJournal(ui, message = '') {
   }
   function evidence(bird) {
     return [...new Set(bird.sources.map(name => sourceNames[name]?.[1]).filter(Boolean))].join(' · ')
-      || (bird.saved ? 'Saved selection' : bird.known ? 'Collection selection' : 'Available artwork · not a sighting');
+      || (bird.sources.includes('owner-selection') ? 'Plate request or review · not a sighting'
+        : bird.saved ? 'Saved selection' : bird.known ? 'Collection selection' : 'Available artwork · not a sighting');
   }
   function card(bird) {
     const node = link('', 'bird', {bird: bird.taxon_id}, 'bird-card');
@@ -84,7 +85,8 @@ export async function openJournal(ui, message = '') {
   function playLink(key) { return link('Play', 'frame', {view: key}, 'primary-link'); }
   const management = data.management;
   const operationNames = {refresh: 'Refresh observations', retry: 'Make a plate eligible for retry',
-    'notification-test': 'Test notification delivery', 'notification-retry': 'Retry notification dead letters'};
+    'notification-test': 'Test notification delivery', 'notification-retry': 'Retry notification dead letters',
+    'import-preview': 'Check history file', 'import-commit': 'Confirm history update', 'trip-preview': 'Review trip selection', 'trip-save': 'Save trip', 'queue-plates': 'Queue missing plates', 'approve-candidate': 'Approve candidate locally', 'reject-candidate': 'Reject candidate'};
   function operationAction(label, kind, explanation, taxonId) {
     const section = el('section', '', 'journal-card');
     let preview = null;
@@ -123,7 +125,7 @@ export async function openJournal(ui, message = '') {
       link('Browse available artwork', 'birds', {scope: 'art'}, 'primary-link'));
     if (management.available) {
       const work = management.work;
-      const attention = work.needs_attention.length + management.notifications.dead_letters;
+      const attention = work.needs_attention.length + work.in_review.candidates.length + management.notifications.dead_letters;
       main.append(link(attention ? attention + ' items need attention' : 'Check sources and plate work', 'manage', {}, 'attention-link'));
       if (!work.complete) main.append(note('Discovery is ' + work.discovery_status + '. The last saved selection may be out of date.'));
       if (management.last_confirmed_panel_update) main.append(note('Last confirmed panel update: ' + new Date(management.last_confirmed_panel_update).toLocaleString()));
@@ -273,6 +275,32 @@ export async function openJournal(ui, message = '') {
           const anchor = el('a'); anchor.href = url; anchor.download = 'inky-collection.json'; anchor.click(); setTimeout(() => URL.revokeObjectURL(url), 1000);
         } catch (error) { ui.showProblem(error); }
       }));
+      const request = el('section', '', 'journal-card'), problem = el('p', '', 'error'); problem.setAttribute('role', 'alert');
+      request.append(button('Review missing-plate requests', async event => {
+        const control = event.currentTarget; control.disabled = true;
+        try {
+          const settings = await api('/v1/owner/settings');
+          const choices = {collection_id: group.collection_id, revision: data.revision, configuration_revision: settings.revision};
+          const preview = await api('/v1/owner/journal/collections/queue-preview', choices), plan = preview.plan;
+          const summary = el('div', '', 'notice');
+          summary.append(el('h2', 'Queue missing plates?'), note(plan.new_requests.length + ' new requests · ' + plan.already_queued.length + ' already queued · ' + plan.held.length + ' held · ' + plan.ready.length + ' ready · ' + preview.unresolved + ' unresolved'));
+          for (const id of plan.held) {
+            const pending = management.work?.in_review.candidates.some(candidate => candidate.taxon_id === id && candidate.inspect_available);
+            summary.append(note((byId.get(id)?.common_name || 'Taxon ' + id) + ': existing review or recovery hold. This action will not clear it.'), pending ? link('Inspect the pending candidate', 'candidate', {bird: id}) : link('Inspect this bird’s recovery', 'work', {bird: id}));
+          }
+          for (const item of plan.waiting) summary.append(note((byId.get(item.taxon_id)?.common_name || 'Taxon ' + item.taxon_id) + ': retry not before ' + new Date(item.next_attempt_at).toLocaleString()));
+          summary.append(note(settings.generation_enabled ? 'Automatic generation is enabled. Eligible requests can use your AI allowance or incur costs at a scheduled cycle.' : 'Generation is off. Requests stay queued until you deliberately enable it.'), note('This does not start a model, add Saved birds, clear a hold, reset retry timing or change the wall. Unresolved identities cannot request a plate.'));
+          if (plan.new_requests.length) {
+            const key = Array.from(crypto.getRandomValues(new Uint8Array(16)), item => item.toString(16).padStart(2, '0')).join('');
+            summary.append(button('Confirm these plate requests', async event => {
+              const confirm = event.currentTarget; confirm.disabled = true;
+              try { const receipt = await api('/v1/owner/journal/collections/queue', {...choices, preview_hash: preview.preview_hash, key, confirm: true}); location.assign(href('operation', {operation: receipt.operation_id})); }
+              catch (error) { confirm.disabled = false; if (error.code === 'sign_in_required') ui.showProblem(error); else problem.textContent = error.message + ' Check recent operations if the response was lost.'; }
+            }));
+          }
+          summary.append(button('Close preview', () => { summary.remove(); control.disabled = false; control.focus(); })); request.append(summary); summary.querySelector('button').focus();
+        } catch (error) { control.disabled = false; if (error.code === 'sign_in_required') ui.showProblem(error); else problem.textContent = error.message; }
+      }), problem); main.append(request);
     }
     if (group && group.kind !== 'favorites') main.append(link('Edit collection', 'edit-collection', {view}), button('Remove collection', async () => {
       if (!confirm('Remove this collection? Source history, Saved birds and approved plates stay unchanged.')) return;
@@ -383,6 +411,50 @@ export async function openJournal(ui, message = '') {
     stopScreen = () => { clearInterval(timer); clearInterval(check); loading?.abort(); if (objectURL) URL.revokeObjectURL(objectURL); document.removeEventListener('keydown', key); };
     frameSignOut = signedOut;
     main.append(image, caption, controls, status, note('Plates change once a minute while playing. This does not refresh the wall panel.')); show();
+  } else if (area === 'candidate') {
+    base('Review candidate', 'Generated art is not approved artwork. Inspect the complete plate before deciding.');
+    main.append(link('Back to plate work', 'work'));
+    const candidate = await api('/v1/owner/candidates/' + encodeURIComponent(query.get('bird') || ''));
+    const content = el('section', '', 'journal-card'); content.append(el('h2', candidate.common_name), note(candidate.scientific_name), note(candidate.notice));
+    const image = el('img', '', 'detail-art'); image.src = candidate.portrait_url; image.alt = 'Unapproved candidate: ' + candidate.common_name;
+    content.append(image, el('h2', 'Saved quality review'));
+    const scores = el('dl', '', 'measurements');
+    for (const [name, score] of Object.entries(candidate.quality_review)) scores.append(el('dt', name.replaceAll('_', ' ')), el('dd', String(score)));
+    content.append(scores);
+    if (candidate.profile) {
+      content.append(el('h2', 'Candidate field notes'), note(candidate.profile.family));
+      for (const [name, value] of Object.entries(candidate.profile.measurements)) content.append(el('p', name + ': ' + value));
+      const marks = el('ul'); for (const mark of candidate.profile.field_marks) marks.append(el('li', mark));
+      content.append(marks, el('p', candidate.profile.habitat), el('p', candidate.profile.behavior));
+    }
+    content.append(el('h2', 'Review sources'));
+    for (const source of candidate.verification_sources) { const link = el('a', source.title, 'text-link'); link.href = source.url; link.target = '_blank'; link.rel = 'noopener noreferrer'; content.append(link); }
+    let loaded = false; image.addEventListener('load', () => { loaded = true; });
+    if (image.complete && image.naturalWidth) loaded = true;
+    const problem = el('p', '', 'error'); problem.setAttribute('role', 'alert');
+    function decision(approve, reason = '') {
+      const key = Array.from(crypto.getRandomValues(new Uint8Array(16)), item => item.toString(16).padStart(2, '0')).join('');
+      let request = null;
+      return button(approve ? 'Confirm local approval' : 'Confirm rejection', async event => {
+        const control = event.currentTarget; control.disabled = true;
+        try {
+          if (approve && !loaded) throw new Error('The full candidate image must load before you can approve it.');
+          if (!request) { const settings = await api('/v1/owner/settings'); request = {key, configuration_revision: settings.revision, candidate_revision: candidate.candidate_revision, confirm: true}; if (!approve) request.reason = reason(); }
+          const receipt = await api('/v1/owner/candidates/' + candidate.taxon_id + '/' + (approve ? 'approve' : 'reject'), request);
+          location.assign(href('operation', {operation: receipt.operation_id}));
+        } catch (error) { control.disabled = false; if (error.code === 'sign_in_required') ui.showProblem(error); else problem.textContent = error.message + ' Check recent operations if the response was lost.'; }
+      });
+    }
+    if (candidate.can_approve) {
+      const label = el('label', '', 'check-label'), consent = el('input'); consent.type = 'checkbox';
+      label.append(consent, document.createTextNode('I inspected the full plate, its text, anatomy and cited review. Make this artwork approved locally and eligible for existing publication.'));
+      const approve = decision(true); approve.disabled = true; consent.addEventListener('change', () => { approve.disabled = !consent.checked; });
+      content.append(label, approve, note('Approval copies this reviewed candidate into the local catalog. Published copies cannot be recalled. Replacing approved art later needs the deliberate operator migration workflow.'));
+    }
+    const form = el('form'), label = el('label', 'Why reject this candidate?'); label.htmlFor = 'candidate-reason';
+    const reason = el('textarea'); reason.id = label.htmlFor; reason.maxLength = 2000; reason.required = true;
+    const reject = decision(false, () => { if (!reason.value.trim()) throw new Error('Give a rejection reason.'); return reason.value; });
+    form.append(label, reason, reject); content.append(form, note('Rejection preserves the artifact privately and keeps a hold. It does not start another model attempt.'), problem); main.append(content);
   } else if (area === 'operation') {
     base('Operation outcome', 'Inky saves this result on the controller. Reloading this page does not repeat the action.');
     main.append(link('Back to Manage', 'manage'));
@@ -452,6 +524,12 @@ export async function openJournal(ui, message = '') {
     } else if (area === 'work') {
       main.append(note(management.generation_enabled ? 'Generation is enabled. Eligible work follows the scheduler and existing review rules.' : 'Generation is off. History, queued work and approved plates stay intact.'), link('Generation settings', 'settings'));
       if (!management.work.complete) main.append(el('p', 'Discovery is ' + management.work.discovery_status + '. Work counts may be incomplete.', 'notice'));
+      const pending = management.work.in_review;
+      main.append(el('h2', 'In review or recovery · ' + pending.candidates.length));
+      if (pending.status !== 'ok') main.append(el('p', 'Pending inventory is incomplete or unavailable. Use the operator recovery guide; do not treat this count as complete.', 'notice'));
+      for (const candidate of pending.candidates) main.append(candidate.inspect_available ? link('Inspect ' + candidate.common_name, 'candidate', {bird: candidate.taxon_id}, 'primary-link') : note(candidate.common_name + ': incomplete or unsafe pending state. Use operator recovery before retrying.'));
+      const requested = byId.get(Number(query.get('bird')));
+      if (requested && !requested.plate_ready && !pending.candidates.some(candidate => candidate.taxon_id === requested.taxon_id) && !management.work.needs_attention.includes(requested.taxon_id)) main.append(el('h2', 'Explicit recovery: ' + requested.common_name), operationAction('Review retry for ' + requested.common_name, 'retry', 'This bird may be outside the current live selection. Explicit retry preserves correction guidance and mandatory review, makes it durable, and can use AI allowance when generation is enabled. It does not run a model now.', requested.taxon_id));
       for (const [key, label] of [['can_run', 'Can run'], ['waiting', 'Waiting until retry'], ['needs_attention', 'Needs attention']]) {
         const ids = management.work[key], section = el('section', '', 'journal-card'); section.append(el('h2', label + ' · ' + ids.length));
         for (const id of ids) {

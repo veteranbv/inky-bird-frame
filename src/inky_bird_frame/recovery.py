@@ -2,17 +2,24 @@
 
 from __future__ import annotations
 
+import hashlib
 import json
+import os
 import shutil
+import stat
 from pathlib import Path
+from typing import cast
 
 from .catalog import (
+    approve_candidate,
     catalog_state_lock,
     find_taxon_directory,
     has_valid_approved_candidate,
     read_json,
+    reject_candidate,
     sha256_file,
 )
+from .codex_runner import parse_species_profile
 from .config import AppConfig
 from .controller import (
     HUMAN_REVIEW_SOURCE,
@@ -24,9 +31,236 @@ from .controller import (
     read_generation_queue,
     retry_approved_candidate,
 )
-from .errors import CatalogError, SpeciesStateError
-from .models import ProfileConflict
+from .errors import CatalogError, CatalogPublishError, GenerationError, SpeciesStateError
+from .http import MAX_ASSET_BYTES
+from .journal import MAX_JOURNAL_BYTES, JournalConflictError, JournalError
+from .models import ProfileConflict, SpeciesProfileData
+from .publisher import validate_pending_candidate
 from .retry import RetryStore, parse_retry_profile_conflicts
+
+
+def _candidate_bytes(path: Path, maximum: int) -> bytes:
+    try:
+        descriptor = os.open(path, os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK)
+        with os.fdopen(descriptor, "rb") as handle:
+            info = os.fstat(handle.fileno())
+            if not stat.S_ISREG(info.st_mode) or info.st_size > maximum:
+                raise ValueError("file")
+            body = handle.read(maximum + 1)
+        if len(body) > maximum:
+            raise ValueError("size")
+        return body
+    except (OSError, ValueError) as exc:
+        raise JournalError(
+            "This candidate asset is unavailable or unsafe. Use operator recovery."
+        ) from exc
+
+
+def _pending_manifest(config: AppConfig, taxon_id: int) -> tuple[Path, dict[str, object], bytes]:
+    pending_root = config.controller.state_dir / "pending"
+    if pending_root.is_symlink():
+        raise JournalError("Pending candidate storage is unsafe. Use operator recovery.")
+    root = pending_root.resolve()
+    path = find_taxon_directory(root, taxon_id)
+    if path is None:
+        raise JournalConflictError("This candidate is no longer pending. Reload Plate work.")
+    if path.resolve() != path or not path.is_dir():
+        raise JournalError("Pending candidate storage is unsafe. Use operator recovery.")
+    manifest_bytes = _candidate_bytes(path / "manifest.json", MAX_JOURNAL_BYTES)
+    try:
+        manifest = json.loads(manifest_bytes)
+        if (
+            not isinstance(manifest, dict)
+            or type(manifest.get("taxon_id")) is not int
+            or manifest["taxon_id"] != taxon_id
+            or manifest.get("status") != "pending"
+            or not all(
+                isinstance(manifest.get(key), str) and manifest[key].strip()
+                for key in ("common_name", "scientific_name", "slug")
+            )
+            or path.name != f"{taxon_id}-{manifest['slug']}"
+        ):
+            raise ValueError("identity")
+    except (ValueError, UnicodeDecodeError) as exc:
+        raise JournalError("This pending manifest is invalid. Use operator recovery.") from exc
+    return path, cast(dict[str, object], manifest), manifest_bytes
+
+
+def _pending_candidate(
+    config: AppConfig, taxon_id: int
+) -> tuple[Path, dict[str, object], bytes, str]:
+    path, manifest, manifest_bytes = _pending_manifest(config, taxon_id)
+    portrait = _candidate_bytes(path / "portrait.png", MAX_ASSET_BYTES)
+    display = _candidate_bytes(path / "display.png", MAX_ASSET_BYTES)
+    digests = {
+        "manifest.json": hashlib.sha256(manifest_bytes).hexdigest(),
+        "portrait.png": hashlib.sha256(portrait).hexdigest(),
+        "display.png": hashlib.sha256(display).hexdigest(),
+    }
+    for filename in ("profile.json", "quality-review.json"):
+        if (path / filename).exists():
+            digests[filename] = hashlib.sha256(
+                _candidate_bytes(path / filename, MAX_JOURNAL_BYTES)
+            ).hexdigest()
+    revision = hashlib.sha256(json.dumps(digests, sort_keys=True).encode()).hexdigest()
+    return path, manifest, portrait, revision
+
+
+def pending_inventory(config: AppConfig) -> dict[str, object]:
+    """Inventory manifests only; status polling must not re-hash full images."""
+    root = config.controller.state_dir / "pending"
+    if root.is_symlink() or root.exists() and not root.is_dir():
+        return {"status": "unavailable", "candidates": []}
+    candidates: list[dict[str, object]] = []
+    ids = set()
+    unknown = False
+    for directory in sorted(root.iterdir()) if root.exists() else []:
+        prefix, separator, _ = directory.name.partition("-")
+        if not separator or not prefix.isascii() or not prefix.isdigit() or int(prefix) <= 0:
+            unknown = True
+            continue
+        taxon_id = int(prefix)
+        if taxon_id in ids:
+            unknown = True
+            continue
+        ids.add(taxon_id)
+        try:
+            _, manifest, _ = _pending_manifest(config, taxon_id)
+            if any(
+                not (directory / filename).is_file() or (directory / filename).is_symlink()
+                for filename in ("portrait.png", "display.png")
+            ):
+                raise JournalError("Candidate assets need operator recovery")
+            candidates.append(
+                {
+                    "taxon_id": taxon_id,
+                    "common_name": manifest["common_name"],
+                    "scientific_name": manifest["scientific_name"],
+                    "inspect_available": True,
+                }
+            )
+        except (JournalError, CatalogError, OSError):
+            candidates.append(
+                {
+                    "taxon_id": taxon_id,
+                    "common_name": f"Taxon {taxon_id}",
+                    "scientific_name": "",
+                    "inspect_available": False,
+                }
+            )
+    return {"status": "incomplete" if unknown else "ok", "candidates": candidates}
+
+
+def pending_candidate(config: AppConfig, taxon_id: int) -> dict[str, object]:
+    """Owner-only allowlist; generated candidates are never approved/public art."""
+    with catalog_state_lock(config.controller.state_dir):
+        path, manifest, _, revision = _pending_candidate(config, taxon_id)
+        ready = True
+        try:
+            validate_pending_candidate(path)
+        except (CatalogPublishError, CatalogError, OSError, ValueError):
+            ready = False
+        profile: SpeciesProfileData | None
+        try:
+            profile = parse_species_profile(manifest.get("profile"))
+            if (
+                profile["taxon_id"] != taxon_id
+                or profile["common_name"] != manifest["common_name"]
+                or profile["scientific_name"] != manifest["scientific_name"]
+            ):
+                profile = None
+                ready = False
+        except GenerationError:
+            profile = None
+            ready = False
+        review = manifest.get("quality_review")
+        if not isinstance(review, dict):
+            review = {}
+        sources = review.get("verification_sources", [])
+        return {
+            "taxon_id": taxon_id,
+            "common_name": manifest["common_name"],
+            "scientific_name": manifest["scientific_name"],
+            "candidate_revision": revision,
+            "portrait_url": f"/v1/owner/candidates/{taxon_id}/portrait?revision={revision}",
+            "can_approve": ready,
+            "profile": profile,
+            "quality_review": {
+                key: review[key]
+                for key in (
+                    "passed",
+                    "species_accuracy",
+                    "anatomy_accuracy",
+                    "text_accuracy",
+                    "composition_quality",
+                    "location_free",
+                )
+                if type(review.get(key)) in {int, bool}
+            },
+            "verification_sources": [
+                {"title": item["title"], "url": item["url"]}
+                for item in sources
+                if isinstance(item, dict)
+                and isinstance(item.get("title"), str)
+                and isinstance(item.get("url"), str)
+                and item["url"].startswith("https://")
+            ]
+            if isinstance(sources, list)
+            else [],
+            "notice": "Not approved artwork. Approve only after checking the full plate "
+            "and sourced review. Approval makes it available locally and to your "
+            "existing publication policy."
+            if ready
+            else "This candidate does not meet ordinary publication checks. "
+            "It cannot be approved here. Reject it or use explicit operator recovery; "
+            "do not bypass the gate.",
+        }
+
+
+def pending_portrait(config: AppConfig, taxon_id: int, *, revision: str) -> bytes:
+    with catalog_state_lock(config.controller.state_dir):
+        _, _, body, current = _pending_candidate(config, taxon_id)
+        if current != revision:
+            raise JournalConflictError("This candidate changed. Reload its review before viewing.")
+        return body
+
+
+def decide_pending_candidate(
+    config: AppConfig, taxon_id: int, *, revision: str, approve: bool, reason: str = ""
+) -> dict[str, object]:
+    with catalog_state_lock(config.controller.state_dir):
+        path, _, _, current = _pending_candidate(config, taxon_id)
+        if current != revision:
+            raise JournalConflictError(
+                "This candidate changed. Inspect the current plate before deciding."
+            )
+        if has_valid_approved_candidate(config.controller.catalog_dir, taxon_id):
+            raise JournalError(
+                "Approved art already exists. Replacement requires the explicit "
+                "operator migration workflow."
+            )
+        if approve:
+            try:
+                validate_pending_candidate(path)
+            except (CatalogPublishError, CatalogError, OSError, ValueError) as exc:
+                raise JournalError(
+                    "This candidate cannot pass ordinary approval. "
+                    "Use operator recovery without bypassing review."
+                ) from exc
+            approve_candidate(config.controller.state_dir, config.controller.catalog_dir, taxon_id)
+        else:
+            if not reason.strip() or len(reason) > 2000:
+                raise JournalError("Give a rejection reason of 1–2000 characters")
+            reject_candidate(config.controller.state_dir, taxon_id, reason.strip())
+    return {
+        "taxon_id": taxon_id,
+        "status": "approved" if approve else "rejected",
+        "message": "Candidate approved locally. "
+        "Existing catalog publication and display schedules still apply."
+        if approve
+        else "Candidate rejected. It remains held until an explicit reviewed retry; "
+        "no model was started.",
+    }
 
 
 def _retry_quality_guidance(

@@ -52,7 +52,6 @@ from .journal import (
     JournalError,
     JournalService,
     remove_collection,
-    save_collection,
 )
 from .oidc import OIDCError, authorization_url, metadata, provider_id, verified_identity
 from .owner_operations import (
@@ -66,6 +65,7 @@ from .server import CatalogService
 from .settings import (
     SettingsConflictError,
     SettingsError,
+    confirmed_config,
     current_config,
     save_settings,
     settings_status,
@@ -886,6 +886,62 @@ def create_app(config: ControllerConfig, *, app_config: AppConfig | None = None)
             return _result(await run_in_threadpool(journal.profile, taxon_id))
         return _error(404, "not_found", "This bird page does not exist")
 
+    async def candidate_work(request: Request) -> Response:
+        from .recovery import decide_pending_candidate, pending_candidate, pending_portrait
+
+        await authorized(request)
+        if app_config is None:
+            raise JournalError("Start Inky with its configuration file")
+        taxon_id = request.path_params["taxon_id"]
+        action = request.path_params.get("action")
+        if request.method == "GET":
+            if action == "portrait":
+                body = await run_in_threadpool(
+                    pending_portrait,
+                    app_config,
+                    taxon_id,
+                    revision=request.query_params.get("revision", ""),
+                )
+                return Response(body, media_type="image/png")
+            return _result(await run_in_threadpool(pending_candidate, app_config, taxon_id))
+        if action not in {"approve", "reject"}:
+            return _error(404, "not_found", "Choose a supported candidate decision")
+        fields = {"key", "configuration_revision", "candidate_revision", "confirm"}
+        if action == "reject":
+            fields.add("reason")
+        body_json = await _json_body(request, fields, structured={"confirm"})
+        if body_json["confirm"] is not True:
+            raise JournalError("Inspect the full candidate and confirm this decision")
+
+        def execute() -> dict[str, object]:
+            captured = confirmed_config(
+                app_config, cast(str, body_json["configuration_revision"]), load_secrets=False
+            )
+            return decide_pending_candidate(
+                captured,
+                taxon_id,
+                revision=cast(str, body_json["candidate_revision"]),
+                approve=action == "approve",
+                reason=cast(str, body_json.get("reason", "")),
+            )
+
+        return _result(
+            await run_in_threadpool(
+                operations.submit,
+                "approve-candidate" if action == "approve" else "reject-candidate",
+                key=cast(str, body_json["key"]),
+                inputs={
+                    "taxon_id": taxon_id,
+                    **{
+                        key: value
+                        for key, value in body_json.items()
+                        if key not in {"key", "confirm"}
+                    },
+                },
+                execute=execute,
+            )
+        )
+
     async def journal_collection(request: Request) -> JSONResponse:
         await authorized(request)
         action = request.path_params["action"]
@@ -897,6 +953,46 @@ def create_app(config: ControllerConfig, *, app_config: AppConfig | None = None)
             )
         if request.method != "POST":
             return _error(405, "method_not_allowed", "Use the documented collection operation")
+        if action in {"queue-preview", "queue"}:
+            if app_config is None:
+                raise JournalError("Start Inky with its configuration file")
+            extra = {"preview_hash", "key", "confirm"} if action == "queue" else set()
+            body = await _json_body(
+                request,
+                {"collection_id", "revision", "configuration_revision"} | extra,
+                structured={"revision", "confirm"},
+            )
+
+            def selection_service() -> JournalService:
+                captured = confirmed_config(
+                    app_config, cast(str, body["configuration_revision"]), load_secrets=False
+                )
+                return JournalService(captured.controller, app_config=captured)
+
+            if action == "queue-preview":
+                result_preview = await run_in_threadpool(
+                    lambda: selection_service().queue_preview(
+                        collection_id=cast(str, body["collection_id"]), revision=body["revision"]
+                    )
+                )
+                return _result(result_preview)
+            if body["confirm"] is not True:
+                raise JournalError("Confirm the missing-plate request preview")
+            return _result(
+                await run_in_threadpool(
+                    operations.submit,
+                    "queue-plates",
+                    key=cast(str, body["key"]),
+                    inputs={
+                        key: value for key, value in body.items() if key not in {"key", "confirm"}
+                    },
+                    execute=lambda: selection_service().queue_collection(
+                        collection_id=cast(str, body["collection_id"]),
+                        revision=body["revision"],
+                        preview_hash=cast(str, body["preview_hash"]),
+                    ),
+                )
+            )
         if action == "favorite":
             body = await _json_body(
                 request,
@@ -928,7 +1024,7 @@ def create_app(config: ControllerConfig, *, app_config: AppConfig | None = None)
                 optional={"collection_id"},
                 structured={"revision", "taxon_ids"},
             )
-            result = await run_in_threadpool(save_collection, config.state_dir, **body)
+            result = await run_in_threadpool(journal.save_selection, **body)
         elif action == "remove":
             body = await _json_body(request, {"revision", "collection_id"}, structured={"revision"})
             result = await run_in_threadpool(remove_collection, config.state_dir, **body)
@@ -996,6 +1092,10 @@ def create_app(config: ControllerConfig, *, app_config: AppConfig | None = None)
         Route("/v1/owner/imports/upload/{kind}", upload_history, methods=["POST"]),
         Route("/v1/owner/imports/{action}", import_action, methods=["POST"]),
         Route("/v1/owner/journal/birds/{taxon_id:int}/{kind}", journal_bird),
+        Route("/v1/owner/candidates/{taxon_id:int}", candidate_work),
+        Route(
+            "/v1/owner/candidates/{taxon_id:int}/{action}", candidate_work, methods=["GET", "POST"]
+        ),
         Route(
             "/v1/owner/journal/collections/{action}", journal_collection, methods=["GET", "POST"]
         ),

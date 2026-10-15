@@ -119,6 +119,20 @@ def test_named_selections_leave_legacy_membership_and_generation_untouched(tmp_p
     assert (controller.state_dir / "collection.json").read_bytes() == before
 
 
+def test_manual_selection_retains_names_and_rejects_unknown_ids(tmp_path: Path) -> None:
+    controller = config(tmp_path)
+    catalog(controller)
+    service = JournalService(controller)
+    state = service.save_selection(revision=0, label="Learning birds", taxon_ids=[1])
+    assert state.collections[0].members == (JournalMember(1, "Robin", "Turdus migratorius"),)
+    (controller.catalog_dir / "index.json").unlink()
+    birds = cast(list[dict[str, object]], service.snapshot()["birds"])
+    assert birds[0]["scientific_name"] == "Turdus migratorius"
+    with pytest.raises(JournalError, match="Choose birds"):
+        service.save_selection(revision=1, label="Unknown", taxon_ids=[999])
+    assert read_journal(controller.state_dir) == state
+
+
 def test_browsing_art_never_claims_private_evidence_or_writes_state(tmp_path: Path) -> None:
     controller = config(tmp_path)
     catalog(controller)
