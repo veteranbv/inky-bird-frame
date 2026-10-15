@@ -14,7 +14,8 @@ h1:focus { outline: none; }
 .connection { width: fit-content; padding: 6px 12px; background: #e5eddf; border-radius: 20px; font-size: 14px; }
 form { background: #fffef8; padding: 20px; border: 1px solid #d3dcce; border-radius: 12px; }
 label { display: block; font-weight: 650; }
-input, button { display: block; width: 100%; min-height: 48px; padding: 12px; font: inherit; border: 1px solid #91a58d; border-radius: 7px; }
+input, button, select { display: block; width: 100%; min-height: 48px; padding: 12px; font: inherit; border: 1px solid #91a58d; border-radius: 7px; }
+select { color: #253b2c; background: #fff; margin-top: 8px; }
 input { margin-top: 8px; background: #fff; color: #253b2c; min-width: 0; }
 button { margin-top: 16px; color: #fff; background: #325a3d; cursor: pointer; }
 button:disabled, input:disabled { opacity: .65; cursor: not-allowed; }
@@ -40,6 +41,8 @@ code { font-size: 13px; overflow-wrap: anywhere; }
 .device { padding: 16px; margin: 12px 0; background: #fffef8; border: 1px solid #d3dcce; border-radius: 10px; }
 a { color: #325a3d; overflow-wrap: anywhere; }
 .journal main { max-width: 1120px; padding-bottom: max(110px, calc(90px + env(safe-area-inset-bottom))); }
+.journal main > form { max-width: 720px; }
+.text-link { display: inline-flex; align-items: center; min-height: 44px; margin-right: 16px; padding-block: 8px; }
 .journal-navigation { position: fixed; bottom: 0; inset-inline: 0; z-index: 5; display: flex; justify-content: center; background: #fffef8; border-top: 1px solid #d3dcce; padding-bottom: env(safe-area-inset-bottom); }
 .journal-navigation a { flex: 1; min-width: 0; max-width: 200px; padding: 15px 4px; font-size: clamp(14px, 3.6vw, 17px); white-space: nowrap; text-align: center; text-decoration: none; min-height: 52px; }
 .journal-navigation [aria-current] { color: #203b29; background: #e5eddf; box-shadow: inset 0 3px #325a3d; font-weight: 700; }

@@ -1,6 +1,7 @@
 // The controller owns birds and collections. No private journal enters browser storage.
+import {renderSettings} from '/app/settings.js';
 let run = 0;
-let stopPresentation = () => {};
+let stopScreen = () => {};
 let frameSignOut = null;
 export function retainSignedOutFrame() {
   if (!frameSignOut) return false;
@@ -8,7 +9,7 @@ export function retainSignedOutFrame() {
 }
 export function closeJournal() {
   run += 1;
-  stopPresentation(); stopPresentation = () => {};
+  stopScreen(); stopScreen = () => {};
   frameSignOut = null;
   document.querySelector('#journal-navigation')?.remove();
   document.body.classList.remove('journal', 'presenting');
@@ -34,7 +35,7 @@ export async function openJournal(ui, message = '') {
   function href(page, extra = {}) {
     return '/app?' + new URLSearchParams({page, ...extra});
   }
-  function link(text, page, extra = {}, style = '') {
+  function link(text, page, extra = {}, style = 'text-link') {
     const node = el('a', text, style); node.href = href(page, extra); return node;
   }
   function note(text) { return el('p', text, 'hint'); }
@@ -80,6 +81,36 @@ export async function openJournal(ui, message = '') {
   }
   function playLink(key) { return link('Play', 'frame', {view: key}, 'primary-link'); }
   const management = data.management;
+  const operationNames = {refresh: 'Refresh observations', retry: 'Make a plate eligible for retry',
+    'notification-test': 'Test notification delivery', 'notification-retry': 'Retry notification dead letters'};
+  function operationAction(label, kind, explanation, taxonId) {
+    const section = el('section', '', 'journal-card');
+    let preview = null;
+    const start = button(label, async () => {
+      if (preview) { preview.querySelector('button')?.focus(); return; }
+      preview = el('div', '', 'notice');
+      const problem = el('p', '', 'error'); problem.setAttribute('role', 'alert');
+      let revision, key;
+      try {
+        const settings = await api('/v1/owner/settings'); revision = settings.revision;
+        if (!revision) throw new Error('This service has no authoritative configuration file.');
+        key = Array.from(crypto.getRandomValues(new Uint8Array(24)), item => item.toString(16).padStart(2, '0')).join('');
+      } catch (error) { preview = null; ui.showProblem(error); return; }
+      preview.append(el('h2', operationNames[kind]), note(explanation),
+        button('Confirm action', async event => {
+          const control = event.currentTarget; control.disabled = true;
+          try {
+            const body = {kind, key, revision, confirm: true}; if (taxonId) body.taxon_id = taxonId;
+            const receipt = await api('/v1/owner/operations', body);
+            location.assign(href('operation', {operation: receipt.operation_id}));
+          } catch (error) {
+            if (error.code === 'sign_in_required') ui.showProblem(error);
+            else { problem.textContent = error.message + ' Check recent operations if the connection was lost.'; control.disabled = false; }
+          }
+        }), button('Cancel', () => { preview.remove(); preview = null; start.focus(); }), problem);
+      section.append(preview); preview.querySelector('button').focus();
+    }); section.append(start); return section;
+  }
   if (area === 'home') {
     base('Your field journal', 'Birds worth keeping close.');
     const featured = byId.get(data.featured_taxon_id);
@@ -281,15 +312,48 @@ export async function openJournal(ui, message = '') {
         } else { pause(); loading?.abort(); status.textContent = 'Offline. Keeping the last approved plate.'; }
       }
     }, 60000);
-    stopPresentation = () => { clearInterval(timer); clearInterval(check); loading?.abort(); if (objectURL) URL.revokeObjectURL(objectURL); document.removeEventListener('keydown', key); };
+    stopScreen = () => { clearInterval(timer); clearInterval(check); loading?.abort(); if (objectURL) URL.revokeObjectURL(objectURL); document.removeEventListener('keydown', key); };
     frameSignOut = signedOut;
     main.append(image, caption, controls, status, note('Plates change once a minute while playing. This does not refresh the wall panel.')); show();
+  } else if (area === 'operation') {
+    base('Operation outcome', 'Inky saves this result on the controller. Reloading this page does not repeat the action.');
+    main.append(link('Back to Manage', 'manage'));
+    const content = el('section', '', 'journal-card'); main.append(content);
+    let timer, stopped = false;
+    stopScreen = () => { stopped = true; clearTimeout(timer); };
+    async function update() {
+      try {
+        const receipt = await api('/v1/owner/operations/' + encodeURIComponent(query.get('operation') || ''));
+        if (stopped || !content.isConnected) return;
+        content.replaceChildren(el('h2', operationNames[receipt.kind] || 'Owner operation'), el('p', receipt.status));
+        if (receipt.result) {
+          if (receipt.result.message) content.append(el('p', receipt.result.message));
+          for (const [key, value] of Object.entries(receipt.result)) {
+            if (key === 'message') continue;
+            if (key === 'providers') {
+              for (const provider of value) content.append(el('p', (sourceNames[provider.name]?.[0] || provider.name) + ': ' + provider.status + ' · ' + provider.species_count + ' species'));
+            } else if (['string', 'number', 'boolean'].includes(typeof value)) content.append(note(key.replaceAll('_', ' ') + ': ' + value));
+          }
+        }
+        if (['pending', 'running'].includes(receipt.status)) timer = setTimeout(update, document.hidden ? 5000 : 1000);
+        else content.append(link('Check sources', 'sources'), link('Check plate work', 'work'), link('Check notifications', 'notifications'));
+      } catch (error) {
+        if (error.code === 'sign_in_required') ui.showProblem(error);
+        else if (!stopped) { content.replaceChildren(note(error.message), button('Check again', update)); }
+      }
+    }
+    await update();
+  } else if (area === 'settings') {
+    const source = query.get('source');
+    if (source && !sourceNames[source]) throw new Error('Choose a supported source.');
+    await renderSettings(ui, {base, link, note, sourceNames, source});
   } else if (area === 'manage') {
     base('Manage', 'One controller. The same sources, reviewed plates and work rules.');
     const sections = [['sources', 'Sources', 'Check all seven supported inputs and the shared observation window.'],
       ['work', 'Plate work', 'Keep stopped, waiting and runnable work distinct.'],
       ['displays', 'Displays', 'Check the last confirmed physical panel update.'],
-      ['notifications', 'Notifications', 'Check delivery separately from bird discovery.']];
+      ['notifications', 'Notifications', 'Check delivery separately from bird discovery.'],
+      ['settings', 'Settings and backups', 'Source choices, generation policy and configuration ownership.']];
     for (const [key, title, text] of sections) {
       const node = link('', key, {}, 'journal-card'); node.append(el('h2', title), el('p', text)); main.append(node);
     }
@@ -300,6 +364,7 @@ export async function openJournal(ui, message = '') {
     if (!management.available) { main.append(empty('Full configuration unavailable', 'Start Inky through its documented serve command to include controller settings.')); return; }
     if (area === 'sources') {
       main.append(note('Shared live window: ' + management.window + '. Scheduled refresh: every ' + management.refresh_minutes + ' minutes.'));
+      main.append(operationAction('Refresh observations', 'refresh', 'Read all enabled sources now. Partial failures stay isolated. New live results can become eligible for your existing generation policy. This action does not start a model itself.'));
       for (const source of management.sources) {
         const [name, kind] = sourceNames[source.name]; const node = el('section', '', 'journal-card');
         const imported = ['ebird-archive', 'birdnet-analyzer'].includes(source.name);
@@ -310,14 +375,18 @@ export async function openJournal(ui, message = '') {
         if (imported) node.append(note('Imported history is not a live connection.'));
         if (source.enabled && !management.work.complete) node.append(note('Discovery is ' + management.work.discovery_status + '. This is saved state, not a current connection test.'));
         if (source.unresolved_count) node.append(note(source.unresolved_count + ' unresolved species do not trigger generation.'));
-        node.append(note('This installation uses managed configuration. The configuration file remains authoritative.'));
+        node.append(link('Set up ' + name, 'settings', {source: source.name}, 'primary-link'));
         main.append(node);
       }
     } else if (area === 'work') {
+      main.append(note(management.generation_enabled ? 'Generation is enabled. Eligible work follows the scheduler and existing review rules.' : 'Generation is off. History, queued work and approved plates stay intact.'), link('Generation settings', 'settings'));
       if (!management.work.complete) main.append(el('p', 'Discovery is ' + management.work.discovery_status + '. Work counts may be incomplete.', 'notice'));
       for (const [key, label] of [['can_run', 'Can run'], ['waiting', 'Waiting until retry'], ['needs_attention', 'Needs attention']]) {
         const ids = management.work[key], section = el('section', '', 'journal-card'); section.append(el('h2', label + ' · ' + ids.length));
-        for (const id of ids) section.append(link(byId.get(id)?.common_name || 'Taxon ' + id, 'bird', {bird: id})); main.append(section);
+        for (const id of ids) {
+          section.append(link(byId.get(id)?.common_name || 'Taxon ' + id, 'bird', {bird: id}));
+          if (key !== 'can_run') section.append(operationAction('Review retry for ' + (byId.get(id)?.common_name || 'Taxon ' + id), 'retry', 'Make this species eligible for a new attempt. Inky retains correction guidance, archives the previous attempt, and preserves mandatory review. Generation can use your AI allowance or incur costs when enabled. A retry does not promise a better result or an immediate run.', id));
+        } main.append(section);
       }
       main.append(note('Past failed artifacts are not counted as runnable backlog. Browsing never starts a paid generation.'));
     } else if (area === 'displays') {
@@ -328,7 +397,15 @@ export async function openJournal(ui, message = '') {
       const state = management.notifications;
       main.append(el('p', state.enabled ? 'Notifications enabled' : 'Notifications off'), el('p', state.pending + ' pending · ' + state.dead_letters + ' dead letters'));
       for (const destination of state.destinations) main.append(el('p', destination.name + ' · ' + destination.events.join(', ')));
-      main.append(note('Destination secrets stay on the controller. This managed configuration is changed through the existing operator tools.'));
+      main.append(note('Destination secrets stay on the controller. App-managed settings can change destinations; managed settings stay with the installer.'));
+      main.append(link('Notification settings', 'settings'));
+      if (state.enabled) main.append(operationAction('Send a test notification', 'notification-test', 'Send one clearly labeled test to each configured destination. This is a real external notification. The result reports failures separately.'));
+      if (state.enabled && state.dead_letters) main.append(operationAction('Retry dead letters', 'notification-retry', 'Return failed messages to the existing outbox and request delivery. Destinations that already received a message are not sent it again.'));
+    }
+    const recent = await api('/v1/owner/operations');
+    if (main.isConnected && recent.operations.length) {
+      main.append(el('h2', 'Recent owner operations'));
+      for (const receipt of recent.operations.slice().reverse()) main.append(link((operationNames[receipt.kind] || 'Operation') + ' · ' + receipt.status, 'operation', {operation: receipt.operation_id}));
     }
   } else { base('Page not found', 'Choose a place in your journal.'); }
 }

@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import hashlib
+import json
 import math
 import tomllib
 from collections.abc import Iterable
@@ -141,6 +143,8 @@ class ControllerConfig:
     tls_certificate: Path | None = None
     tls_private_key: Path | None = field(default=None, repr=False)
     oidc: OIDCConfig | None = None
+    generation_enabled: bool = True
+    configuration_ownership: str = "managed"
 
 
 @dataclass(frozen=True)
@@ -218,6 +222,8 @@ class AppConfig:
     schedule: ScheduleConfig = ScheduleConfig()
     research: ResearchConfig = ResearchConfig()
     notifications: NotificationsConfig = NotificationsConfig()
+    configuration_path: Path | None = field(default=None, repr=False, compare=False)
+    discovery_revision: str | None = field(default=None, repr=False, compare=False)
 
 
 def _section(data: object, name: str) -> dict[str, object]:
@@ -605,6 +611,12 @@ def load_config(path: Path, *, load_secrets: bool = True) -> AppConfig:
     except tomllib.TOMLDecodeError as exc:
         raise ConfigurationError(f"Invalid TOML in {path}: {exc}") from exc
 
+    return parse_config(raw, path=path, load_secrets=load_secrets)
+
+
+def parse_config(raw: object, *, path: Path, load_secrets: bool = True) -> AppConfig:
+    """Validate an entire candidate before replacing the authoritative TOML file."""
+
     discovery = _section(raw, "discovery")
     controller = _section(raw, "controller")
     display_node = _section(raw, "display_node")
@@ -624,8 +636,6 @@ def load_config(path: Path, *, load_secrets: bool = True) -> AppConfig:
         raise ConfigurationError("Choose discovery.source or discovery.sources, not both")
     if "sources" in discovery:
         source_values = _string_tuple(discovery, "sources")
-        if not source_values:
-            raise ConfigurationError("discovery.sources must contain at least one provider")
         try:
             discovery_sources = tuple(parse_discovery_provider(value) for value in source_values)
         except ValueError as exc:
@@ -815,8 +825,15 @@ def load_config(path: Path, *, load_secrets: bool = True) -> AppConfig:
         )
     if ("tls_certificate" in controller) != ("tls_private_key" in controller):
         raise ConfigurationError("tls_certificate and tls_private_key must be supplied together")
+    ownership = _optional_string(controller, "configuration_ownership", default="managed")
+    if ownership not in {"managed", "app"}:
+        raise ConfigurationError("configuration_ownership must be managed or app")
 
     return AppConfig(
+        configuration_path=path.absolute(),
+        discovery_revision=hashlib.sha256(
+            json.dumps(discovery, sort_keys=True, default=str).encode()
+        ).hexdigest(),
         discovery=DiscoveryConfig(
             sources=discovery_sources,
             zip_code=zip_code,
@@ -841,6 +858,10 @@ def load_config(path: Path, *, load_secrets: bool = True) -> AppConfig:
             birdnet_go_url=birdnet_go_url,
         ),
         controller=ControllerConfig(
+            configuration_ownership=ownership,
+            generation_enabled=_optional_boolean(
+                controller, "generation_enabled", default=ownership != "app"
+            ),
             workspace_dir=_path(_string(controller, "workspace_dir"), base_dir),
             catalog_dir=_path(_string(controller, "catalog_dir"), base_dir),
             state_dir=_path(_string(controller, "state_dir"), base_dir),

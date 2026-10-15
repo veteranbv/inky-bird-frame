@@ -22,6 +22,7 @@ refresh_plist="${agents_dir}/com.inky-bird-frame.refresh.plist"
 generation_plist="${agents_dir}/com.inky-bird-frame.generate.plist"
 catalog_publish_plist="${agents_dir}/com.inky-bird-frame.catalog-publish.plist"
 notifications_plist="${agents_dir}/com.inky-bird-frame.notifications.plist"
+scheduler_plist="${agents_dir}/com.inky-bird-frame.scheduler.plist"
 legacy_cycle_plist="${agents_dir}/com.inky-bird-frame.controller-cycle.plist"
 
 restore_catalog_publisher_schedule() {
@@ -109,7 +110,7 @@ cleanup() {
   status=$?
   trap - EXIT
   if [ "${installation_complete}" != true ]; then
-    for label in serve refresh generate catalog-publish notifications; do
+    for label in serve refresh generate catalog-publish notifications scheduler; do
       if was_previously_loaded "${label}"; then
         restore_previous_agent "${label}"
       else
@@ -129,7 +130,7 @@ cleanup() {
 }
 trap cleanup EXIT
 
-for label in serve refresh generate catalog-publish notifications; do
+for label in serve refresh generate catalog-publish notifications scheduler; do
   if launchctl print "gui/${uid}/com.inky-bird-frame.${label}" >/dev/null 2>&1; then
     previously_loaded_labels+=("${label}")
   fi
@@ -141,7 +142,7 @@ done
 
 "${app_dir}/.venv/bin/python" - \
   "${serve_plist}" "${refresh_plist}" "${generation_plist}" "${catalog_publish_plist}" \
-  "${notifications_plist}" \
+  "${notifications_plist}" "${scheduler_plist}" \
   "${root}" "${app_dir}" "${config_path}" "${log_dir}" <<'PY'
 import plistlib
 import sys
@@ -159,6 +160,7 @@ from inky_bird_frame.publisher import sync_public_catalog
     generation_path,
     catalog_publish_path,
     notifications_path,
+    scheduler_path,
     root,
     app_dir,
     config_path,
@@ -225,7 +227,10 @@ def managed_agent(name: str) -> dict[str, object]:
     return {
         **common,
         "EnvironmentVariables": {
-            "PATH": controller_executable_path(config.controller.codex_path),
+            "PATH": controller_executable_path(
+                config.controller.codex_path,
+                generation_enabled=config.controller.generation_enabled,
+            ),
             "PYTHONUNBUFFERED": "1",
             "INKY_BIRD_MANAGED_LOG_PATH": str(log_dir / f"{name}.log"),
         },
@@ -291,10 +296,14 @@ notifications = {
 for path, payload in (
     (serve_path, serve),
     (refresh_path, refresh),
-    (generation_path, generation),
 ):
     with path.open("wb") as handle:
         plistlib.dump(payload, handle, sort_keys=True)
+if config.controller.generation_enabled:
+    with generation_path.open("wb") as handle:
+        plistlib.dump(generation, handle, sort_keys=True)
+else:
+    generation_path.unlink(missing_ok=True)
 if config.public_catalog.enabled:
     with catalog_publish_path.open("wb") as handle:
         plistlib.dump(catalog_publish, handle, sort_keys=True)
@@ -305,6 +314,23 @@ if config.notifications.enabled:
         plistlib.dump(notifications, handle, sort_keys=True)
 else:
     notifications_path.unlink(missing_ok=True)
+if config.controller.configuration_ownership == "app":
+    scheduler = {
+        **managed_agent("scheduler"),
+        "Label": "com.inky-bird-frame.scheduler",
+        "ProgramArguments": [str(executable), "scheduler", "--config", str(config_path)],
+        "RunAtLoad": True,
+        "KeepAlive": {"SuccessfulExit": False},
+        "ThrottleInterval": 10,
+        "StandardOutPath": str(log_dir / "scheduler.log"),
+        "StandardErrorPath": str(log_dir / "scheduler.error.log"),
+    }
+    with scheduler_path.open("wb") as handle:
+        plistlib.dump(scheduler, handle, sort_keys=True)
+    for path in (refresh_path, generation_path, catalog_publish_path, notifications_path):
+        path.unlink(missing_ok=True)
+else:
+    scheduler_path.unlink(missing_ok=True)
 PY
 
 if [ -f "${catalog_publish_plist}" ]; then
@@ -327,9 +353,17 @@ launchctl bootout "gui/${uid}/com.inky-bird-frame.refresh" 2>/dev/null || true
 launchctl bootout "gui/${uid}/com.inky-bird-frame.generate" 2>/dev/null || true
 launchctl bootout "gui/${uid}/com.inky-bird-frame.catalog-publish" 2>/dev/null || true
 launchctl bootout "gui/${uid}/com.inky-bird-frame.notifications" 2>/dev/null || true
+launchctl bootout "gui/${uid}/com.inky-bird-frame.scheduler" 2>/dev/null || true
 launchctl bootstrap "gui/${uid}" "${serve_plist}"
-launchctl bootstrap "gui/${uid}" "${refresh_plist}"
-launchctl bootstrap "gui/${uid}" "${generation_plist}"
+if [ -f "${refresh_plist}" ]; then
+  launchctl bootstrap "gui/${uid}" "${refresh_plist}"
+fi
+if [ -f "${scheduler_plist}" ]; then
+  launchctl bootstrap "gui/${uid}" "${scheduler_plist}"
+fi
+if [ -f "${generation_plist}" ]; then
+  launchctl bootstrap "gui/${uid}" "${generation_plist}"
+fi
 if [ -f "${catalog_publish_plist}" ]; then
   launchctl bootstrap "gui/${uid}" "${catalog_publish_plist}"
 fi
@@ -337,8 +371,15 @@ if [ -f "${notifications_plist}" ]; then
   launchctl bootstrap "gui/${uid}" "${notifications_plist}"
 fi
 launchctl print "gui/${uid}/com.inky-bird-frame.serve" >/dev/null
-launchctl print "gui/${uid}/com.inky-bird-frame.refresh" >/dev/null
-launchctl print "gui/${uid}/com.inky-bird-frame.generate" >/dev/null
+if [ -f "${refresh_plist}" ]; then
+  launchctl print "gui/${uid}/com.inky-bird-frame.refresh" >/dev/null
+fi
+if [ -f "${scheduler_plist}" ]; then
+  launchctl print "gui/${uid}/com.inky-bird-frame.scheduler" >/dev/null
+fi
+if [ -f "${generation_plist}" ]; then
+  launchctl print "gui/${uid}/com.inky-bird-frame.generate" >/dev/null
+fi
 if [ -f "${catalog_publish_plist}" ]; then
   launchctl print "gui/${uid}/com.inky-bird-frame.catalog-publish" >/dev/null
 fi

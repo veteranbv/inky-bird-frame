@@ -19,6 +19,61 @@ class FakeClock:
 
 
 class SchedulerTests(unittest.TestCase):
+    def test_policy_edit_during_refresh_does_not_start_old_generation_job(self) -> None:
+        clock = FakeClock()
+        revision = "old"
+        calls: list[tuple[str, str]] = []
+
+        def jobs() -> list[ScheduledJob]:
+            return [
+                ScheduledJob("refresh", ("refresh",), 60, policy_revision=revision),
+                ScheduledJob("generate", ("generate",), 300, True, revision),
+            ]
+
+        def runner(arguments: tuple[str, ...]) -> int:
+            nonlocal revision
+            calls.append((arguments[0], revision))
+            if len(calls) == 1:
+                revision = "new"
+            return 0
+
+        run_scheduler(
+            jobs(),
+            runner,
+            stop_requested=lambda: len(calls) >= 3,
+            wait=clock.wait,
+            monotonic=clock.monotonic,
+            jobs_provider=jobs,
+        )
+        self.assertEqual(calls, [("refresh", "old"), ("refresh", "new"), ("generate", "new")])
+
+    def test_removed_generation_never_runs_from_an_already_due_list(self) -> None:
+        clock = FakeClock()
+        enabled = True
+        calls: list[tuple[str, ...]] = []
+
+        def jobs() -> list[ScheduledJob]:
+            return [
+                ScheduledJob("refresh", ("refresh",), 60),
+                *([ScheduledJob("generate", ("generate",), 300, True)] if enabled else []),
+            ]
+
+        def runner(arguments: tuple[str, ...]) -> int:
+            nonlocal enabled
+            calls.append(arguments)
+            enabled = False
+            return 0
+
+        run_scheduler(
+            jobs(),
+            runner,
+            stop_requested=lambda: len(calls) >= 2,
+            wait=clock.wait,
+            monotonic=clock.monotonic,
+            jobs_provider=jobs,
+        )
+        self.assertEqual(calls, [("refresh",), ("refresh",)])
+
     def test_subprocess_runner_forwards_termination_to_active_process_group(self) -> None:
         process = Mock(pid=42)
         runner = SubprocessCommandRunner(("python", "-m", "example"))

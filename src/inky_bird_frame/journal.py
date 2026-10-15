@@ -24,6 +24,7 @@ from .errors import CatalogError, GenerationError, InkyBirdFrameError
 from .http import write_bytes_atomic
 from .notifications import notification_status
 from .server import featured_plate_entry, project_catalog
+from .settings import current_config
 from .timeutil import parse_utc_timestamp
 
 # Larger than the HTTP edit bound, to hold many small independently edited groups.
@@ -215,6 +216,8 @@ class JournalService:
         return cast(list[dict[str, object]], projected["species"])
 
     def snapshot(self) -> dict[str, object]:
+        if self.app_config is not None:
+            self.app_config = current_config(self.app_config)
         with catalog_state_lock(self.config.state_dir):
             state = read_journal(self.config.state_dir)
             saved = [entry.taxon_id for entry in read_collection(self.config.state_dir)]
@@ -325,7 +328,8 @@ class JournalService:
         succeeded_at = panel.get("succeeded_at") if isinstance(panel, dict) else None
         return {
             "available": True,
-            "configuration_ownership": "managed",
+            "configuration_ownership": config.controller.configuration_ownership,
+            "generation_enabled": config.controller.generation_enabled,
             "sources": sources,
             "window": config.discovery.observation_window.value,
             "refresh_minutes": config.schedule.refresh_minutes,

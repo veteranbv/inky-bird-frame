@@ -669,11 +669,8 @@ class ConfigTests(unittest.TestCase):
             with self.assertRaisesRegex(ConfigurationError, "source or discovery.sources"):
                 load_config(path)
 
-    def test_rejects_empty_or_duplicate_sources(self) -> None:
-        for value, message in (
-            ("[]", "at least one"),
-            ('["inaturalist", "inaturalist"]', "duplicates"),
-        ):
+    def test_rejects_duplicate_sources(self) -> None:
+        for value, message in (('["inaturalist", "inaturalist"]', "duplicates"),):
             with self.subTest(value=value), TemporaryDirectory() as temporary:
                 path = Path(temporary) / "config.toml"
                 path.write_text(
@@ -681,6 +678,26 @@ class ConfigTests(unittest.TestCase):
                 )
                 with self.assertRaisesRegex(ConfigurationError, message):
                     load_config(path)
+
+    def test_viewing_only_is_explicit_and_preserves_old_generation_default(self) -> None:
+        with TemporaryDirectory() as temporary:
+            path = Path(temporary) / "config.toml"
+            path.write_text(CONFIG.replace("[discovery]\n", "[discovery]\nsources = []\n"))
+            self.assertEqual(load_config(path).discovery.sources, ())
+            self.assertTrue(load_config(path).controller.generation_enabled)
+            path.write_text(
+                path.read_text().replace(
+                    "[controller]\n", '[controller]\nconfiguration_ownership = "app"\n'
+                )
+            )
+            self.assertFalse(load_config(path).controller.generation_enabled)
+            path.write_text(
+                path.read_text().replace(
+                    "[controller]\n", '[controller]\ngeneration_enabled = "yes"\n'
+                )
+            )
+            with self.assertRaises(ConfigurationError):
+                load_config(path)
 
     def test_explicit_former_all_sources_require_both_provider_credentials(self) -> None:
         configured = CONFIG.replace(

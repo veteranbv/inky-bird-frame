@@ -69,7 +69,7 @@ from .catalog import (
     write_collection,
 )
 from .codex_runner import CodexRunner, parse_species_profile
-from .config import AppConfig, DiscoveryProvider, discovery_source_label
+from .config import AppConfig, DiscoveryProvider, NotificationEvent, discovery_source_label
 from .ebird_archive import read_ebird_archive_history
 from .errors import (
     CatalogError,
@@ -86,6 +86,7 @@ from .geo import DiscoveryLocation, resolve_discovery_location
 from .http import write_json_atomic
 from .images import prepare_generated_plate
 from .models import ProfileConflict, ReferencePhoto, SpeciesProfileData
+from .notifications import safe_notify, safe_record_degradation, safe_record_recovery
 from .prompts import PROMPT_VERSION
 from .references import download_references, fetch_reference_candidates
 from .research import ResearchBudget
@@ -108,6 +109,7 @@ class DiscoverySnapshot:
     state: str
     species: list[BirdSpecies]
     notification_baseline_taxa: frozenset[int] | None = None
+    configuration_revision: str | None = None
 
 
 @dataclass(frozen=True)
@@ -240,7 +242,7 @@ def discover_species(
     species_limit: int | None = None,
     persist_taxonomy_cache: bool = True,
 ) -> DiscoveryResult:
-    selected_sources = sources or config.discovery.sources
+    selected_sources = config.discovery.sources if sources is None else sources
     selected_window = window or config.discovery.observation_window
     selected_radius = radius_km if radius_km is not None else config.discovery.radius_km
     selected_limit = species_limit if species_limit is not None else config.discovery.species_limit
@@ -577,7 +579,7 @@ def discover_species(
                     )
                 )
 
-    if not provider_species:
+    if selected_sources and not provider_species:
         failures = "; ".join(
             f"{provider.name}: {provider.error}" for provider in providers if provider.error
         )
@@ -1039,6 +1041,101 @@ def _write_active_catalog(
     return len(active)
 
 
+def refresh_observations(config: AppConfig) -> dict[str, object]:
+    try:
+        result = run_refresh_cycle(config)
+    except (InkyBirdFrameError, OSError) as exc:
+        safe_record_degradation(
+            config,
+            key="observation-refresh",
+            title="Bird discovery is degraded",
+            body=f"Observation refresh failed ({type(exc).__name__}). "
+            "Check controller logs for details.",
+        )
+        raise
+    safe_record_recovery(
+        config,
+        key="observation-refresh",
+        title="Bird discovery recovered",
+        body="Observation refresh is succeeding again.",
+    )
+    providers = result.get("providers")
+    successful_providers: set[str] = set()
+    if isinstance(providers, list):
+        for provider in providers:
+            if not isinstance(provider, dict) or not isinstance(provider.get("name"), str):
+                continue
+            name = provider["name"]
+            if provider.get("status") == "error":
+                safe_record_degradation(
+                    config,
+                    key=f"observation-provider-{name}",
+                    title=f"{name} bird discovery is degraded",
+                    body=f"The {name} provider failed; another configured provider supplied data.",
+                )
+            else:
+                successful_providers.add(name)
+                safe_record_recovery(
+                    config,
+                    key=f"observation-provider-{name}",
+                    title=f"{name} bird discovery recovered",
+                    body=f"The {name} provider is succeeding again.",
+                )
+    unresolved = result.get("unresolved_species")
+    unresolved_by_provider: dict[str, int] = {}
+    if isinstance(unresolved, list):
+        for item in unresolved:
+            if not isinstance(item, dict) or not isinstance(item.get("provider"), str):
+                continue
+            provider = item["provider"]
+            unresolved_by_provider[provider] = unresolved_by_provider.get(provider, 0) + 1
+    taxonomy_providers = {
+        "ebird": "eBird",
+        "ebird-archive": "eBird Archive",
+        "birdweather": "BirdWeather",
+        "birdbuddy": "Bird Buddy",
+        "birdnet-analyzer": "BirdNET Analyzer",
+        "birdnet-go": "BirdNET-Go",
+    }
+    for provider, display_name in taxonomy_providers.items():
+        unresolved_count = unresolved_by_provider.get(provider, 0)
+        if unresolved_count:
+            safe_record_degradation(
+                config,
+                key=f"{provider}-taxonomy",
+                title=f"Some {display_name} species are awaiting taxonomy matching",
+                body=(f"{unresolved_count} species were deferred without blocking bird discovery."),
+            )
+        elif provider in successful_providers:
+            safe_record_recovery(
+                config,
+                key=f"{provider}-taxonomy",
+                title=f"{display_name} taxonomy matching recovered",
+                body=f"Deferred {display_name} taxonomy matches have cleared.",
+            )
+    new_species = result.get("new_species")
+    if isinstance(new_species, list) and new_species:
+        names: list[str] = []
+        taxon_ids: list[str] = []
+        for item in new_species:
+            if not isinstance(item, dict):
+                continue
+            common_name = item.get("common_name")
+            taxon_id = item.get("taxon_id")
+            if isinstance(common_name, str):
+                names.append(common_name)
+            if isinstance(taxon_id, int):
+                taxon_ids.append(str(taxon_id))
+        safe_notify(
+            config,
+            NotificationEvent.DISCOVERY,
+            dedupe_key=":".join(taxon_ids),
+            title=f"{len(names)} new bird species discovered",
+            body=", ".join(names),
+        )
+    return result
+
+
 def run_refresh_cycle(config: AppConfig) -> dict[str, object]:
     with exclusive_refresh_lock(config.controller.state_dir):
         notification_baseline: frozenset[int] | None = frozenset()
@@ -1075,6 +1172,7 @@ def run_refresh_cycle(config: AppConfig) -> dict[str, object]:
                 _snapshot_path(config),
                 {
                     "schema_version": 2,
+                    "configuration_revision": config.discovery_revision,
                     "refreshed_at": refreshed_at.isoformat(),
                     "place_name": place_name,
                     "state": state,
@@ -1155,7 +1253,14 @@ def _read_discovery_snapshot(config: AppConfig) -> DiscoverySnapshot:
             )
         )
         notification_baseline = None if incomplete else frozenset(item.taxon_id for item in species)
-    return DiscoverySnapshot(refreshed, place_name, state, species, notification_baseline)
+    revision = raw.get("configuration_revision")
+    if revision is not None and (
+        not isinstance(revision, str)
+        or len(revision) != 64
+        or any(char not in "0123456789abcdef" for char in revision)
+    ):
+        raise CatalogError("Invalid discovery configuration revision")
+    return DiscoverySnapshot(refreshed, place_name, state, species, notification_baseline, revision)
 
 
 def current_discovery_species(config: AppConfig) -> list[BirdSpecies]:
@@ -2176,6 +2281,8 @@ def calculate_generation_work(
     retry_records: list[RetryRecord],
     now: datetime,
     maximum_age: timedelta,
+    expected_discovery_revision: str | None = None,
+    require_bound_discovery: bool = False,
 ) -> GenerationWork:
     """Classify generation work from an explicit, side-effect-free state snapshot."""
     if snapshot is None:
@@ -2188,6 +2295,13 @@ def calculate_generation_work(
         complete = now.astimezone(UTC) - refreshed_at <= maximum_age
         discovery_status = "fresh" if complete else "stale"
         observed_species = snapshot.species
+        if (
+            expected_discovery_revision is not None
+            and (snapshot.configuration_revision is not None or require_bound_discovery)
+            and snapshot.configuration_revision != expected_discovery_revision
+        ):
+            complete = False
+            discovery_status = "configuration_changed"
 
     retry_by_taxon = {record.taxon_id: record for record in retry_records}
     generation_species = list(observed_species)
@@ -2308,6 +2422,8 @@ def read_generation_work(
         retry_records=retained_retries,
         now=now or datetime.now(UTC),
         maximum_age=timedelta(minutes=config.schedule.refresh_minutes * 2),
+        expected_discovery_revision=config.discovery_revision,
+        require_bound_discovery=config.controller.configuration_ownership == "app",
     )
 
 
@@ -2367,6 +2483,10 @@ def approve_passing_candidates(config: AppConfig) -> list[dict[str, object]]:
 
 
 def run_generation_cycle(config: AppConfig) -> dict[str, object]:
+    # The command is also an explicit safety boundary for old timers and callers.
+    # Disabled mode must not approve, migrate, dequeue or start a model process.
+    if not config.controller.generation_enabled:
+        return {"generation_enabled": False, "generated": [], "published": []}
     with exclusive_cycle_lock(config.controller.state_dir):
         queued_species = read_generation_queue(config)
         with catalog_state_lock(config.controller.state_dir):
@@ -2398,6 +2518,8 @@ def run_generation_cycle(config: AppConfig) -> dict[str, object]:
             retry_records=retry_store.records(),
             now=datetime.now(UTC),
             maximum_age=timedelta(minutes=config.schedule.refresh_minutes * 2),
+            expected_discovery_revision=config.discovery_revision,
+            require_bound_discovery=config.controller.configuration_ownership == "app",
         )
         if not work.complete:
             raise DataSourceError(

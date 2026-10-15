@@ -17,6 +17,7 @@ class ScheduledJob:
     arguments: tuple[str, ...]
     interval_seconds: int
     requires_refresh: bool = False
+    policy_revision: str | None = None
 
 
 CommandRunner = Callable[[tuple[str, ...]], int]
@@ -72,6 +73,7 @@ def run_scheduler(
     stop_requested: Callable[[], bool],
     wait: Waiter,
     monotonic: Callable[[], float] = time.monotonic,
+    jobs_provider: Callable[[], Sequence[ScheduledJob]] | None = None,
 ) -> None:
     """Run due jobs serially, isolating failures and gating generation on refresh."""
     if not jobs:
@@ -86,14 +88,39 @@ def run_scheduler(
 
     while not stop_requested():
         now = monotonic()
+        if jobs_provider is not None:
+            updated = jobs_provider()
+            if (
+                not updated
+                or any(job.interval_seconds < 1 for job in updated)
+                or len({job.name for job in updated}) != len(updated)
+            ):
+                raise ValueError("Scheduler configuration has invalid jobs")
+            previous = {job.name: job for job in jobs}
+            if tuple(updated) != tuple(jobs):
+                # A changed policy must complete a new refresh before generation.
+                refresh_succeeded = False
+                next_runs = {
+                    job.name: min(next_runs.get(job.name, now), now + job.interval_seconds)
+                    if previous.get(job.name) == job
+                    else now
+                    for job in updated
+                }
+                next_runs["refresh"] = now
+            jobs = updated
         due_jobs = [job for job in jobs if next_runs[job.name] <= now]
         if not due_jobs:
-            wait(max(0.0, min(next_runs.values()) - now))
+            delay = max(0.0, min(next_runs.values()) - now)
+            wait(min(delay, 1.0) if jobs_provider is not None else delay)
             continue
 
         for job in due_jobs:
             if stop_requested():
                 return
+            if jobs_provider is not None and job not in jobs_provider():
+                # Settings can change while the previous child is running.
+                # Never start a removed or changed job from a stale due list.
+                continue
             if job.requires_refresh and not refresh_succeeded:
                 refresh_next_run = next_runs.get("refresh")
                 next_runs[job.name] = (

@@ -124,7 +124,8 @@ def test_macos_controller_installer_limits_log_retention_and_permissions() -> No
         assert f'**managed_agent("{name}")' in script
     assert '"INKY_BIRD_MANAGED_LOG_PATH": str(log_dir / f"{name}.log")' in script
     assert "from inky_bird_frame.installation import controller_executable_path" in script
-    assert '"PATH": controller_executable_path(config.controller.codex_path)' in script
+    assert '"PATH": controller_executable_path(' in script
+    assert "generation_enabled=config.controller.generation_enabled" in script
 
 
 def test_systemd_controller_installer_restarts_boot_persistent_services() -> None:
@@ -183,7 +184,9 @@ def test_macos_controller_installer_restores_previously_loaded_agents_on_failure
     assert script.index('if was_previously_loaded "${label}"') < script.index(
         "# Not running before this install: undo any half-installed agent."
     )
-    assert "for label in serve refresh generate catalog-publish notifications; do" in script
+    assert (
+        "for label in serve refresh generate catalog-publish notifications scheduler; do" in script
+    )
     assert 'restore_catalog_publisher_schedule "${uid}" || true' in script
     assert 'rm -rf "${plist_backup_dir}"' in script
 

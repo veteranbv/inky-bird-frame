@@ -70,6 +70,7 @@ from inky_bird_frame.retry import RetryStore
 def controller_config(state_dir: Path, catalog_dir: Path | None = None) -> SimpleNamespace:
     return SimpleNamespace(
         controller=SimpleNamespace(
+            generation_enabled=True,
             state_dir=state_dir,
             catalog_dir=catalog_dir if catalog_dir is not None else state_dir / "catalog",
         ),
@@ -903,8 +904,11 @@ class CliTests(unittest.TestCase):
             index_before = index.read_bytes()
             modified_before = index.stat().st_mtime_ns
             config = SimpleNamespace(
-                controller=SimpleNamespace(catalog_dir=catalog, state_dir=state),
+                controller=SimpleNamespace(
+                    catalog_dir=catalog, state_dir=state, configuration_ownership="managed"
+                ),
                 schedule=SimpleNamespace(refresh_minutes=15),
+                discovery_revision=None,
             )
             output = io.StringIO()
 
@@ -1725,7 +1729,7 @@ rotation_mode = "shuffle_bag"
             with (
                 patch("inky_bird_frame.cli._config", return_value=config),
                 patch(
-                    "inky_bird_frame.cli.has_valid_approved_candidate",
+                    "inky_bird_frame.recovery.has_valid_approved_candidate",
                     return_value=True,
                 ),
                 self.assertRaisesRegex(ValueError, "use --replace-approved"),
@@ -1775,7 +1779,7 @@ rotation_mode = "shuffle_bag"
             with (
                 patch("inky_bird_frame.cli._config", return_value=config),
                 patch(
-                    "inky_bird_frame.cli.retry_approved_candidate",
+                    "inky_bird_frame.recovery.retry_approved_candidate",
                     return_value=expected,
                 ) as replace,
                 redirect_stdout(output),
@@ -2663,7 +2667,7 @@ rotation_mode = "shuffle_bag"
 
             with (
                 patch("inky_bird_frame.cli._config", return_value=config),
-                patch("inky_bird_frame.cli.shutil.move", side_effect=OSError("interrupted")),
+                patch("inky_bird_frame.recovery.shutil.move", side_effect=OSError("interrupted")),
                 self.assertRaisesRegex(OSError, "interrupted"),
             ):
                 retry_command(Namespace(taxon_id=42, source_attempt=1))
@@ -2712,7 +2716,7 @@ rotation_mode = "shuffle_bag"
             config = controller_config(state_dir)
             with (
                 patch("inky_bird_frame.cli._config", return_value=config),
-                patch("inky_bird_frame.cli.shutil.move", side_effect=interrupt_reference_move),
+                patch("inky_bird_frame.recovery.shutil.move", side_effect=interrupt_reference_move),
                 self.assertRaisesRegex(OSError, "cache archival interrupted"),
             ):
                 retry_command(
@@ -2764,7 +2768,7 @@ rotation_mode = "shuffle_bag"
             config = controller_config(state_dir)
             with (
                 patch("inky_bird_frame.cli._config", return_value=config),
-                patch("inky_bird_frame.cli.shutil.move", side_effect=interrupt_reference_move),
+                patch("inky_bird_frame.recovery.shutil.move", side_effect=interrupt_reference_move),
                 self.assertRaisesRegex(OSError, "cache archival interrupted"),
             ):
                 retry_command(Namespace(taxon_id=42, refresh_research=True))
@@ -2844,8 +2848,8 @@ rotation_mode = "shuffle_bag"
 
             with (
                 patch("inky_bird_frame.cli._config", return_value=config),
-                patch("inky_bird_frame.cli.catalog_state_lock", side_effect=state_lock),
-                patch("inky_bird_frame.cli.shutil.move", side_effect=move),
+                patch("inky_bird_frame.recovery.catalog_state_lock", side_effect=state_lock),
+                patch("inky_bird_frame.recovery.shutil.move", side_effect=move),
                 redirect_stdout(output),
             ):
                 retry_command(Namespace(taxon_id=42))
@@ -3390,10 +3394,10 @@ rotation_mode = "shuffle_bag"
         with (
             patch("inky_bird_frame.cli._config"),
             patch(
-                "inky_bird_frame.cli.run_refresh_cycle",
+                "inky_bird_frame.controller.run_refresh_cycle",
                 side_effect=DataSourceError(secret),
             ),
-            patch("inky_bird_frame.cli.safe_record_degradation") as degradation,
+            patch("inky_bird_frame.controller.safe_record_degradation") as degradation,
             self.assertRaises(DataSourceError),
         ):
             from inky_bird_frame.cli import refresh_command
@@ -3420,9 +3424,9 @@ rotation_mode = "shuffle_bag"
         }
         with (
             patch("inky_bird_frame.cli._config", return_value=config),
-            patch("inky_bird_frame.cli.run_refresh_cycle", return_value=result),
-            patch("inky_bird_frame.cli.safe_record_degradation"),
-            patch("inky_bird_frame.cli.safe_record_recovery") as recover,
+            patch("inky_bird_frame.controller.run_refresh_cycle", return_value=result),
+            patch("inky_bird_frame.controller.safe_record_degradation"),
+            patch("inky_bird_frame.controller.safe_record_recovery") as recover,
             redirect_stdout(io.StringIO()),
         ):
             refresh_command(Namespace())
@@ -3478,9 +3482,9 @@ rotation_mode = "shuffle_bag"
         }
         with (
             patch("inky_bird_frame.cli._config", return_value=config),
-            patch("inky_bird_frame.cli.run_refresh_cycle", return_value=result),
-            patch("inky_bird_frame.cli.safe_record_degradation") as degradation,
-            patch("inky_bird_frame.cli.safe_record_recovery") as recovery,
+            patch("inky_bird_frame.controller.run_refresh_cycle", return_value=result),
+            patch("inky_bird_frame.controller.safe_record_degradation") as degradation,
+            patch("inky_bird_frame.controller.safe_record_recovery") as recovery,
             redirect_stdout(io.StringIO()),
         ):
             refresh_command(Namespace())
@@ -3509,9 +3513,9 @@ rotation_mode = "shuffle_bag"
         }
         with (
             patch("inky_bird_frame.cli._config", return_value=config),
-            patch("inky_bird_frame.cli.run_refresh_cycle", return_value=result),
-            patch("inky_bird_frame.cli.safe_record_degradation"),
-            patch("inky_bird_frame.cli.safe_record_recovery") as recovery,
+            patch("inky_bird_frame.controller.run_refresh_cycle", return_value=result),
+            patch("inky_bird_frame.controller.safe_record_degradation"),
+            patch("inky_bird_frame.controller.safe_record_recovery") as recovery,
             redirect_stdout(io.StringIO()),
         ):
             refresh_command(Namespace())

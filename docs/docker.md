@@ -61,7 +61,10 @@ the controller. Include its actual listener hostname and port in
 Do not disable certificate validation to pass a health check. A reverse proxy
 that terminates HTTPS leaves the backend listener and health check on HTTP.
 
-The host `config.toml` is authoritative. Compose bind-mounts it read-only into
+For existing managed installations, the host `config.toml` is authoritative.
+The [app-managed candidate](settings.md) instead preserves its private runtime
+file across restarts; the original host file is only its first-start seed.
+Compose bind-mounts the host file read-only into
 the one-shot `config-sync` service, not the long-running services. Local Docker
 Compose cannot remap the owner or mode of a file-backed config, so mounting a
 mode-0600 host file directly into the unprivileged controller is not portable.

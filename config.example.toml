@@ -1,5 +1,6 @@
 [discovery]
-# Select one or more providers explicitly. iNaturalist needs no credentials, eBird provides
+# Select providers explicitly, or use [] to browse art without discovery.
+# iNaturalist needs no credentials, eBird provides
 # nearby public sightings, eBird Archive imports your private personal history, BirdWeather
 # and self-hosted BirdNET-Go provide acoustic station detections, BirdNET Analyzer imports
 # private CSV history, and authorized Bird Buddy accounts provide read-only feeder postcards.
@@ -42,6 +43,13 @@ birdbuddy_include_manual_sightings = false
 # birdnet_go_url = "http://birdnet-go.local:8080"
 
 [controller]
+# Existing files remain managed. `config init` creates app-owned, art-first setup.
+# To change this existing file through the browser, use the explicit adoption
+# preview in Settings, then re-run the installer and restart the service.
+# configuration_ownership = "managed"
+# Existing configurations keep generation enabled. Turn it off to use only
+# approved artwork. Re-run native setup to remove the generation timer.
+# generation_enabled = false
 # Keep Codex's writable workspace separate from configuration, catalog, and state.
 workspace_dir = "workspace"
 catalog_dir = "catalog"

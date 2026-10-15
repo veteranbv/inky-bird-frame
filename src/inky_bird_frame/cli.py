@@ -6,7 +6,6 @@ import argparse
 import getpass
 import json
 import os
-import shutil
 import signal
 import sys
 import threading
@@ -27,11 +26,8 @@ from .birds import BirdSpecies, DateRange, ObservationWindow, parse_observation_
 from .catalog import (
     approve_candidate,
     catalog_state_lock,
-    find_taxon_directory,
-    has_valid_approved_candidate,
     read_json,
     reject_candidate,
-    sha256_file,
 )
 from .config import (
     AppConfig,
@@ -41,33 +37,24 @@ from .config import (
     load_config,
 )
 from .controller import (
-    HUMAN_REVIEW_SOURCE,
-    REVIEW_FAILURE_FALLBACK,
     add_collection_member,
-    archive_invalid_approved_catalog_state,
     collection_status,
-    current_discovery_species,
     discover_species,
     enqueue_seed_species,
-    ensure_generation_retry,
-    exclusive_cycle_lock,
     import_approved_collection,
-    read_generation_queue,
     read_generation_queue_partition,
     read_generation_work,
+    refresh_observations,
     remove_collection_member,
-    retry_approved_candidate,
     run_controller_cycle,
     run_generation_cycle,
-    run_refresh_cycle,
 )
 from .display import show_on_inky
 from .display_node import run_display_cycle
 from .ebird_archive import import_ebird_archive, read_ebird_archive_history
-from .errors import CatalogError, DataSourceError, InkyBirdFrameError, SpeciesStateError
+from .errors import DataSourceError, InkyBirdFrameError
 from .images import prepare_uploaded_image
 from .installation import InstallationRole, doctor, setup
-from .models import ProfileConflict
 from .notifications import (
     check_display_heartbeat,
     dispatch_notifications,
@@ -86,9 +73,11 @@ from .publisher import (
     validate_catalog_additions,
     validate_public_catalog,
 )
-from .retry import RetryStore, parse_retry_profile_conflicts
+from .recovery import retry_species
+from .retry import RetryStore
 from .scheduler import ScheduledJob, SubprocessCommandRunner, run_scheduler
 from .server import serve_catalog
+from .settings import initialize_config
 
 CATALOG_SYNC_REVIEWED_MIGRATIONS_ENV = "INKY_CATALOG_SYNC_APPLY_REVIEWED_MIGRATIONS"
 CATALOG_SYNC_RETAIN_INDEPENDENT_ENV = "INKY_CATALOG_SYNC_RETAIN_INDEPENDENT_APPROVALS"
@@ -173,103 +162,15 @@ def controller_cycle_command(args: argparse.Namespace) -> int:
 
 
 def refresh_command(args: argparse.Namespace) -> int:
-    config = _config(args)
-    try:
-        result = run_refresh_cycle(config)
-    except (InkyBirdFrameError, OSError) as exc:
-        safe_record_degradation(
-            config,
-            key="observation-refresh",
-            title="Bird discovery is degraded",
-            body=_failure_notification("Observation refresh", exc),
-        )
-        raise
-    safe_record_recovery(
-        config,
-        key="observation-refresh",
-        title="Bird discovery recovered",
-        body="Observation refresh is succeeding again.",
-    )
-    providers = result.get("providers")
-    successful_providers: set[str] = set()
-    if isinstance(providers, list):
-        for provider in providers:
-            if not isinstance(provider, dict) or not isinstance(provider.get("name"), str):
-                continue
-            name = provider["name"]
-            if provider.get("status") == "error":
-                safe_record_degradation(
-                    config,
-                    key=f"observation-provider-{name}",
-                    title=f"{name} bird discovery is degraded",
-                    body=f"The {name} provider failed; another configured provider supplied data.",
-                )
-            else:
-                successful_providers.add(name)
-                safe_record_recovery(
-                    config,
-                    key=f"observation-provider-{name}",
-                    title=f"{name} bird discovery recovered",
-                    body=f"The {name} provider is succeeding again.",
-                )
-    unresolved = result.get("unresolved_species")
-    unresolved_by_provider: dict[str, int] = {}
-    if isinstance(unresolved, list):
-        for item in unresolved:
-            if not isinstance(item, dict) or not isinstance(item.get("provider"), str):
-                continue
-            provider = item["provider"]
-            unresolved_by_provider[provider] = unresolved_by_provider.get(provider, 0) + 1
-    taxonomy_providers = {
-        "ebird": "eBird",
-        "ebird-archive": "eBird Archive",
-        "birdweather": "BirdWeather",
-        "birdbuddy": "Bird Buddy",
-        "birdnet-analyzer": "BirdNET Analyzer",
-        "birdnet-go": "BirdNET-Go",
-    }
-    for provider, display_name in taxonomy_providers.items():
-        unresolved_count = unresolved_by_provider.get(provider, 0)
-        if unresolved_count:
-            safe_record_degradation(
-                config,
-                key=f"{provider}-taxonomy",
-                title=f"Some {display_name} species are awaiting taxonomy matching",
-                body=(f"{unresolved_count} species were deferred without blocking bird discovery."),
-            )
-        elif provider in successful_providers:
-            safe_record_recovery(
-                config,
-                key=f"{provider}-taxonomy",
-                title=f"{display_name} taxonomy matching recovered",
-                body=f"Deferred {display_name} taxonomy matches have cleared.",
-            )
-    new_species = result.get("new_species")
-    if isinstance(new_species, list) and new_species:
-        names: list[str] = []
-        taxon_ids: list[str] = []
-        for item in new_species:
-            if not isinstance(item, dict):
-                continue
-            common_name = item.get("common_name")
-            taxon_id = item.get("taxon_id")
-            if isinstance(common_name, str):
-                names.append(common_name)
-            if isinstance(taxon_id, int):
-                taxon_ids.append(str(taxon_id))
-        safe_notify(
-            config,
-            NotificationEvent.DISCOVERY,
-            dedupe_key=":".join(taxon_ids),
-            title=f"{len(names)} new bird species discovered",
-            body=", ".join(names),
-        )
-    print_result(result)
+    print_result(refresh_observations(_config(args)))
     return 0
 
 
 def generate_command(args: argparse.Namespace) -> int:
     config = _config(args)
+    if not config.controller.generation_enabled:
+        print_result(run_generation_cycle(config))
+        return 0
     try:
         result = run_generation_cycle(config)
     except (InkyBirdFrameError, OSError) as exc:
@@ -453,624 +354,19 @@ def reject_command(args: argparse.Namespace) -> int:
     return 0
 
 
-def _retry_quality_guidance(
-    failed_directories: list[Path],
-    source_attempt: int | None,
-    allowed_domains: tuple[str, ...] | None,
-) -> tuple[tuple[str, ...], Path | None, tuple[ProfileConflict, ...]]:
-    if not failed_directories:
-        if source_attempt is not None:
-            raise ValueError("--source-attempt requires retained failed generation attempts")
-        return (), None, ()
-    attempts: list[tuple[int, Path]] = []
-    for attempt_path in failed_directories[-1].glob("attempt-*"):
-        if attempt_path.name == "attempt-history.json":
-            continue
-        try:
-            attempt_number = int(attempt_path.name.removeprefix("attempt-"))
-        except ValueError as exc:
-            raise SpeciesStateError(f"Invalid generation attempt: {attempt_path}") from exc
-        if attempt_number <= 0 or not attempt_path.is_dir():
-            raise SpeciesStateError(f"Invalid generation attempt: {attempt_path}")
-        attempts.append((attempt_number, attempt_path))
-    if not attempts:
-        if source_attempt is not None:
-            raise ValueError("--source-attempt requires retained failed generation attempts")
-        return (), None, ()
-    attempts_by_number = dict(attempts)
-    if source_attempt is None:
-        selected_attempt, attempt_path = max(attempts, key=lambda item: item[0])
-    else:
-        if source_attempt <= 0 or source_attempt not in attempts_by_number:
-            available = ", ".join(str(number) for number in sorted(attempts_by_number))
-            raise ValueError(
-                f"Generation attempt {source_attempt} is unavailable; choose one of: {available}"
-            )
-        selected_attempt = source_attempt
-        attempt_path = attempts_by_number[source_attempt]
-    review_path = attempt_path / "quality-review.json"
-    if not review_path.is_file():
-        raise SpeciesStateError(
-            f"Generation attempt {selected_attempt} has no quality review: {attempt_path}"
-        )
-    try:
-        review = json.loads(review_path.read_text())
-    except (json.JSONDecodeError, UnicodeDecodeError) as exc:
-        raise SpeciesStateError(f"Invalid quality review: {review_path}") from exc
-    if not isinstance(review, dict) or review.get("passed") is not False:
-        raise SpeciesStateError(f"Invalid failed quality review: {review_path}")
-    findings = review.get("correction_findings")
-    if findings is None:
-        findings = review.get("findings")
-    if not isinstance(findings, list) or any(
-        not isinstance(finding, str) or not finding.strip() for finding in findings
-    ):
-        raise SpeciesStateError(f"Invalid quality review findings: {review_path}")
-    try:
-        profile_conflicts = parse_retry_profile_conflicts(
-            review.get("profile_conflicts", []),
-            review_path,
-        )
-    except CatalogError as exc:
-        raise SpeciesStateError(f"Invalid quality review profile conflicts: {review_path}") from exc
-    if allowed_domains is not None:
-        try:
-            profile_conflicts = parse_retry_profile_conflicts(
-                list(profile_conflicts),
-                review_path,
-                allowed_domains=allowed_domains,
-            )
-        except CatalogError as exc:
-            raise SpeciesStateError(
-                "Retained profile conflict sources are outside the current research "
-                "allowlist; restore the authorized domains or retry with --refresh-research"
-            ) from exc
-    source_plate = None
-    if source_attempt is not None:
-        source_plate = attempt_path / "portrait.png"
-        if not source_plate.is_file():
-            raise SpeciesStateError(
-                f"Generation attempt {selected_attempt} has no portrait: {attempt_path}"
-            )
-    quality_findings = tuple(findings)
-    if not quality_findings and not profile_conflicts:
-        quality_findings = (REVIEW_FAILURE_FALLBACK,)
-    return quality_findings, source_plate, profile_conflicts
-
-
-def _retry_archived_quality_guidance(
-    state_dir: Path,
-    taxon_id: int,
-    source_run: str,
-    source_attempt: int,
-    allowed_domains: tuple[str, ...] | None,
-) -> tuple[tuple[str, ...], Path, tuple[ProfileConflict, ...]]:
-    run_name = source_run.strip()
-    if (
-        not run_name
-        or Path(run_name).is_absolute()
-        or Path(run_name).parts != (run_name,)
-        or not run_name.startswith(f"{taxon_id}-")
-    ):
-        raise ValueError("--source-run must be an archive directory name for the requested taxon")
-    archive = (state_dir / "archive").resolve()
-    run = state_dir / "archive" / run_name
-    profile_path = run / "profile.json"
-    if (
-        run.is_symlink()
-        or not run.is_dir()
-        or run.resolve().parent != archive
-        or profile_path.is_symlink()
-        or not profile_path.is_file()
-        or profile_path.resolve().parent != run.resolve()
-    ):
-        raise ValueError(f"Retained generation run is unavailable: {run_name}")
-    profile = read_json(profile_path)
-    if not isinstance(profile, dict) or profile.get("taxon_id") != taxon_id:
-        raise SpeciesStateError(
-            f"Retained generation profile identity does not match taxon {taxon_id}: {profile_path}"
-        )
-    for attempt_path in run.glob("attempt-*"):
-        if attempt_path.name == "attempt-history.json":
-            continue
-        if (
-            attempt_path.is_symlink()
-            or not attempt_path.is_dir()
-            or attempt_path.resolve().parent != run.resolve()
-        ):
-            raise SpeciesStateError(
-                f"Retained generation attempt escapes its archive run: {attempt_path}"
-            )
-        for filename in ("quality-review.json", "portrait.png"):
-            artifact_path = attempt_path / filename
-            if artifact_path.is_symlink() or (
-                artifact_path.exists() and artifact_path.resolve().parent != attempt_path.resolve()
-            ):
-                raise SpeciesStateError(
-                    f"Retained generation artifact escapes its attempt: {artifact_path}"
-                )
-    findings, source_plate, profile_conflicts = _retry_quality_guidance(
-        [run],
-        source_attempt,
-        allowed_domains,
-    )
-    if source_plate is None:
-        raise SpeciesStateError(f"Retained generation attempt is unavailable: {run_name}")
-    return findings, source_plate, profile_conflicts
-
-
-def _retry_candidate_guidance(
-    state_dir: Path,
-    taxon_id: int,
-    source_candidate: str,
-) -> tuple[tuple[str, ...], Path, tuple[ProfileConflict, ...]]:
-    candidate_name = source_candidate.strip()
-    if (
-        not candidate_name
-        or Path(candidate_name).is_absolute()
-        or Path(candidate_name).parts != (candidate_name,)
-        or not candidate_name.startswith(f"{taxon_id}-")
-    ):
-        raise ValueError(
-            "--source-candidate must be the archive directory name for the requested taxon"
-        )
-    archive = (state_dir / "archive").resolve()
-    candidate = state_dir / "archive" / candidate_name
-    if candidate.is_symlink() or not candidate.is_dir() or candidate.resolve().parent != archive:
-        raise ValueError(f"Retained candidate is unavailable: {candidate_name}")
-    manifest_path = candidate / "manifest.json"
-    if (
-        manifest_path.is_symlink()
-        or not manifest_path.is_file()
-        or manifest_path.resolve().parent != candidate.resolve()
-    ):
-        raise SpeciesStateError(f"Retained candidate has no valid manifest: {candidate}")
-    manifest = read_json(manifest_path)
-    rejection_reason = manifest.get("rejection_reason") if isinstance(manifest, dict) else None
-    assets = manifest.get("assets") if isinstance(manifest, dict) else None
-    portrait_asset = assets.get("portrait") if isinstance(assets, dict) else None
-    if (
-        not isinstance(manifest, dict)
-        or manifest.get("schema_version") != 1
-        or manifest.get("status") != "rejected"
-        or manifest.get("taxon_id") != taxon_id
-        or not isinstance(rejection_reason, str)
-        or not rejection_reason.strip()
-        or not isinstance(portrait_asset, dict)
-        or portrait_asset.get("filename") != "portrait.png"
-        or not isinstance(portrait_asset.get("sha256"), str)
-    ):
-        raise SpeciesStateError(f"Invalid retained candidate manifest: {manifest_path}")
-    portrait = candidate / "portrait.png"
-    if (
-        portrait.is_symlink()
-        or not portrait.is_file()
-        or portrait.resolve().parent != candidate.resolve()
-    ):
-        raise SpeciesStateError(f"Retained candidate has no portrait: {candidate}")
-    if sha256_file(portrait) != portrait_asset["sha256"]:
-        raise SpeciesStateError(f"Retained candidate portrait checksum mismatch: {portrait}")
-    return (rejection_reason.strip(),), portrait, ()
-
-
-def _retry_species_identity(
-    taxon_id: int,
-    sources: list[Path],
-    *,
-    deferred_malformed_errors: list[CatalogError | SpeciesStateError] | None = None,
-) -> tuple[str, str, Path] | None:
-    identity: tuple[str, str, Path] | None = None
-    for source in dict.fromkeys(sources):
-        for filename in ("profile.json", "references.json", "manifest.json", "failure.json"):
-            identity_path = source / filename
-            if not identity_path.is_file():
-                continue
-            try:
-                payload = read_json(identity_path)
-            except CatalogError as exc:
-                if deferred_malformed_errors is None:
-                    raise
-                deferred_malformed_errors.append(exc)
-                continue
-            if not isinstance(payload, dict):
-                error = SpeciesStateError(f"Invalid retained candidate identity: {identity_path}")
-                if deferred_malformed_errors is None:
-                    raise error
-                deferred_malformed_errors.append(error)
-                continue
-            retained_taxon_id = payload.get("taxon_id")
-            if retained_taxon_id is None:
-                continue
-            if retained_taxon_id != taxon_id:
-                raise SpeciesStateError(
-                    f"Retained candidate identity does not match taxon {taxon_id}: {identity_path}"
-                )
-            common_name = payload.get("common_name")
-            scientific_name = payload.get("scientific_name")
-            if not isinstance(common_name, str) or not isinstance(scientific_name, str):
-                continue
-            candidate_identity = (common_name, scientific_name, identity_path)
-            if identity is not None and identity[:2] != candidate_identity[:2]:
-                raise SpeciesStateError(
-                    f"Retained candidate identities conflict for taxon {taxon_id}"
-                )
-            identity = candidate_identity
-    return identity
-
-
-def _retry_archive_plan(
-    state_dir: Path,
-    sources: list[Path],
-    correction_owner: Path | None,
-    correction_source: Path | None,
-) -> tuple[list[tuple[Path, Path]], Path | None]:
-    archive = state_dir / "archive"
-    archive.mkdir(parents=True, exist_ok=True)
-    reserved: set[Path] = set()
-    moves: list[tuple[Path, Path]] = []
-    archived_correction_source: Path | None = None
-    for source in dict.fromkeys(sources):
-        destination = archive / source.name
-        counter = 1
-        while destination.exists() or destination in reserved:
-            destination = archive / f"{source.name}-{counter}"
-            counter += 1
-        reserved.add(destination)
-        moves.append((source, destination))
-        if source == correction_owner and correction_source is not None:
-            archived_correction_source = destination / correction_source.relative_to(source)
-    return moves, archived_correction_source
-
-
 def retry_command(args: argparse.Namespace) -> int:
-    config = _config(args)
-    replace_approved = bool(getattr(args, "replace_approved", False))
-    refresh_research = bool(getattr(args, "refresh_research", False))
-    raw_reason = getattr(args, "reason", None)
-    reason = raw_reason.strip() if isinstance(raw_reason, str) else None
-    source_attempt = getattr(args, "source_attempt", None)
-    source_candidate = getattr(args, "source_candidate", None)
-    source_run = getattr(args, "source_run", None)
-    raw_corrections = getattr(args, "correction", None)
-    correction_override: tuple[str, ...] = ()
-    if raw_corrections is not None:
-        if not isinstance(raw_corrections, list) or any(
-            not isinstance(correction, str) or not correction.strip()
-            for correction in raw_corrections
-        ):
-            raise ValueError("--correction values must be non-empty")
-        correction_override = tuple(correction.strip() for correction in raw_corrections)
-        if len(set(correction_override)) != len(correction_override):
-            raise ValueError("--correction values must not repeat")
-    if source_attempt is not None and source_candidate is not None:
-        raise ValueError("--source-attempt cannot be combined with --source-candidate")
-    if source_run is not None and source_candidate is not None:
-        raise ValueError("--source-run cannot be combined with --source-candidate")
-    if source_run is not None and source_attempt is None:
-        raise ValueError("--source-run requires --source-attempt")
-    if correction_override and source_attempt is None and source_candidate is None:
-        raise ValueError("--correction requires --source-attempt or --source-candidate")
-    if replace_approved:
-        if (
-            source_attempt is not None
-            or source_candidate is not None
-            or source_run is not None
-            or correction_override
-        ):
-            raise ValueError(
-                "--replace-approved cannot be combined with a correction source selector"
-            )
-        if not reason:
-            raise ValueError("--replace-approved requires a non-empty --reason")
-        print_result(
-            retry_approved_candidate(
-                config,
-                args.taxon_id,
-                reason,
-                refresh_research=refresh_research,
-            )
-        )
-        return 0
-    if raw_reason is not None:
-        raise ValueError("--reason requires --replace-approved")
-
-    with exclusive_cycle_lock(config.controller.state_dir):
-        pending = find_taxon_directory(config.controller.state_dir / "pending", args.taxon_id)
-        if pending is not None and (pending / "manifest.json").is_file():
-            raise ValueError("Pending candidates must be approved or rejected before retrying")
-        with catalog_state_lock(config.controller.state_dir):
-            if has_valid_approved_candidate(config.controller.catalog_dir, args.taxon_id):
-                raise ValueError(
-                    f"Taxon {args.taxon_id} is already approved; use --replace-approved "
-                    "with --reason after human review"
-                )
-        failed_directories = sorted(
-            (config.controller.state_dir / "failed").glob(f"{args.taxon_id}-*")
-        )
-        quality_findings: tuple[str, ...]
-        correction_source: Path | None
-        profile_conflicts: tuple[ProfileConflict, ...]
-        if source_run is not None and source_attempt is not None:
-            quality_findings, correction_source, profile_conflicts = (
-                _retry_archived_quality_guidance(
-                    config.controller.state_dir,
-                    args.taxon_id,
-                    source_run,
-                    source_attempt,
-                    None if refresh_research else config.research.allowed_domains,
-                )
-            )
-        elif source_candidate is None:
-            quality_findings, correction_source, profile_conflicts = _retry_quality_guidance(
-                failed_directories,
-                source_attempt,
-                None if refresh_research else config.research.allowed_domains,
-            )
-        else:
-            quality_findings, correction_source, profile_conflicts = _retry_candidate_guidance(
-                config.controller.state_dir,
-                args.taxon_id,
-                source_candidate,
-            )
-        if correction_override:
-            quality_findings = correction_override
-        sources = [pending] if pending is not None else []
-        sources.extend(failed_directories)
-        sources.extend(
-            sorted((config.controller.state_dir / "rejected").glob(f"{args.taxon_id}-*"))
-        )
-        terminal_sources = list(sources)
-        retry_store = RetryStore(config.controller.state_dir / "generation-retries.json")
-        existing_guidance = retry_store.quality_guidance(args.taxon_id)
-        if existing_guidance is not None and not refresh_research:
-            try:
-                existing_profile_conflicts = parse_retry_profile_conflicts(
-                    list(existing_guidance.profile_conflicts),
-                    retry_store.path,
-                    allowed_domains=config.research.allowed_domains,
-                )
-            except CatalogError as exc:
-                raise SpeciesStateError(
-                    "Stored profile conflict sources are outside the current research "
-                    "allowlist; restore the authorized domains or retry with --refresh-research"
-                ) from exc
-        else:
-            existing_profile_conflicts = ()
-        if refresh_research:
-            profile_conflicts = ()
-            if existing_guidance is not None and not quality_findings:
-                quality_findings = existing_guidance.findings
-        selected_profile_conflicts = profile_conflicts
-        reuse_existing_guidance = (
-            not refresh_research
-            and not quality_findings
-            and not selected_profile_conflicts
-            and existing_guidance is not None
-        )
-        if reuse_existing_guidance:
-            assert existing_guidance is not None
-            quality_findings = existing_guidance.findings
-        conflicts_by_field = {
-            conflict["field"]: conflict
-            for conflicts in (
-                existing_profile_conflicts,
-                profile_conflicts,
-            )
-            for conflict in conflicts
-        }
-        profile_conflicts = tuple(conflicts_by_field.values())
-        retry_record = retry_store.get(args.taxon_id)
-        deferred = retry_record is not None
-        if not sources and not deferred and source_candidate is None and source_run is None:
-            raise ValueError(
-                f"No failed, rejected, or deferred candidate exists for taxon {args.taxon_id}"
-            )
-        observed = next(
-            (
-                species
-                for species in current_discovery_species(config)
-                if species.taxon_id == args.taxon_id
-            ),
-            None,
-        )
-        deferred_identity_errors: list[CatalogError | SpeciesStateError] = []
-        terminal_identity = _retry_species_identity(
-            args.taxon_id,
-            terminal_sources,
-            deferred_malformed_errors=deferred_identity_errors,
-        )
-        identity = (
-            (
-                observed.common_name,
-                observed.scientific_name,
-                config.controller.state_dir / "discovery.json",
-            )
-            if observed is not None
-            else None
-        )
-        queued = next(
-            (
-                species
-                for species in read_generation_queue(config)
-                if species.taxon_id == args.taxon_id
-            ),
-            None,
-        )
-        if identity is None and queued is not None and HUMAN_REVIEW_SOURCE in queued.sources:
-            identity = (
-                queued.common_name,
-                queued.scientific_name,
-                config.controller.state_dir / "generation-queue.json",
-            )
-        if (
-            identity is None
-            and retry_record is not None
-            and retry_record.common_name is not None
-            and retry_record.scientific_name is not None
-        ):
-            identity = (
-                retry_record.common_name,
-                retry_record.scientific_name,
-                retry_store.path,
-            )
-        if identity is None:
-            identity = terminal_identity
-        if identity is None and queued is not None:
-            identity = (
-                queued.common_name,
-                queued.scientific_name,
-                config.controller.state_dir / "generation-queue.json",
-            )
-        profile_cache = config.controller.state_dir / "profiles" / str(args.taxon_id)
-        cached_profile_identity = (
-            _retry_species_identity(
-                args.taxon_id,
-                [profile_cache],
-                deferred_malformed_errors=(deferred_identity_errors if refresh_research else None),
-            )
-            if profile_cache.exists() and (not refresh_research or identity is None)
-            else None
-        )
-        if identity is None:
-            identity = cached_profile_identity
-        incompatible_cached_profile = (
-            identity is not None
-            and cached_profile_identity is not None
-            and cached_profile_identity[:2] != identity[:2]
-        )
-        cleared_cached_profile = (
-            refresh_research or incompatible_cached_profile
-        ) and profile_cache.exists()
-        if cleared_cached_profile:
-            sources.append(profile_cache)
-        reference_cache = config.controller.state_dir / "references" / str(args.taxon_id)
-        if identity is None:
-            identity = _retry_species_identity(args.taxon_id, [reference_cache])
-        cleared_cached_references = refresh_research and reference_cache.exists()
-        if cleared_cached_references:
-            sources.append(reference_cache)
-        correction_owner = (
-            next(
-                (source for source in sources if correction_source.is_relative_to(source)),
-                None,
-            )
-            if correction_source is not None
-            else None
-        )
-        retained_correction_source = (
-            correction_source if source_candidate is not None or source_run is not None else None
-        )
-        if (
-            correction_source is not None
-            and correction_owner is None
-            and retained_correction_source is None
-        ):
-            raise SpeciesStateError("The selected correction source is outside retained state")
-        if identity is None and correction_source is not None:
-            identity = _retry_species_identity(
-                args.taxon_id,
-                [correction_source.parent, correction_source.parent.parent],
-            )
-        if identity is None and deferred_identity_errors:
-            raise deferred_identity_errors[0]
-        if identity is None:
-            raise SpeciesStateError(
-                f"Taxon {args.taxon_id} has no recoverable species identity; "
-                "wait for rediscovery or restore its retained profile or references"
-            )
-        if identity is not None and retry_record is not None:
-            retry_record = retry_store.set_identity(
-                args.taxon_id,
-                identity[0],
-                identity[1],
-            )
-        invalid_approved_archive = archive_invalid_approved_catalog_state(
-            config,
-            args.taxon_id,
-        )
-        moved = [str(invalid_approved_archive)] if invalid_approved_archive is not None else []
-        archive_plan, planned_correction_source = _retry_archive_plan(
-            config.controller.state_dir,
-            sources,
-            correction_owner,
-            correction_source,
-        )
-        archived_correction_source = retained_correction_source or planned_correction_source
-        guidance_source_plate = (
-            archived_correction_source.relative_to(config.controller.state_dir).as_posix()
-            if archived_correction_source is not None
-            else existing_guidance.source_plate
-            if existing_guidance is not None
-            else None
-        )
-        final_guidance = None if refresh_research else existing_guidance
-        if refresh_research and existing_guidance is not None:
-            retry_store.clear_quality_guidance(args.taxon_id)
-        if (quality_findings or profile_conflicts) and not reuse_existing_guidance:
-            final_guidance = retry_store.set_quality_guidance(
-                args.taxon_id,
-                quality_findings,
-                source_plate=guidance_source_plate,
-                invariant_findings=(
-                    existing_guidance.invariant_findings if existing_guidance is not None else ()
-                ),
-                profile_conflicts=profile_conflicts,
-            )
-        terminal_source_set = set(terminal_sources)
-        cache_moves = [move for move in archive_plan if move[0] not in terminal_source_set]
-        terminal_moves = [move for move in archive_plan if move[0] in terminal_source_set]
-        if identity is not None and terminal_moves:
-            ensure_generation_retry(
-                config,
-                args.taxon_id,
-                identity[0],
-                identity[1],
-                identity[2],
-            )
-        for source, destination in cache_moves:
-            shutil.move(str(source), destination)
-            moved.append(str(destination))
-        if identity is not None and not terminal_moves:
-            ensure_generation_retry(
-                config,
-                args.taxon_id,
-                identity[0],
-                identity[1],
-                identity[2],
-            )
-        if terminal_moves:
-            with catalog_state_lock(config.controller.state_dir):
-                for source, destination in terminal_moves:
-                    shutil.move(str(source), destination)
-                    moved.append(str(destination))
-        retry_store.clear(args.taxon_id)
-        queued_for_generation = any(
-            species.taxon_id == args.taxon_id for species in read_generation_queue(config)
-        )
     print_result(
-        {
-            "taxon_id": args.taxon_id,
-            "status": "eligible",
-            "archived": moved,
-            "cleared_deferred_retry": deferred,
-            "cleared_cached_profile": cleared_cached_profile,
-            "cleared_cached_references": cleared_cached_references,
-            "preserved_quality_findings_count": (
-                len(final_guidance.findings) if final_guidance is not None else 0
-            ),
-            "preserved_profile_conflicts_count": (
-                len(final_guidance.profile_conflicts) if final_guidance is not None else 0
-            ),
-            "replaced_approved": False,
-            "source_attempt": source_attempt,
-            "source_candidate": source_candidate,
-            "source_run": source_run,
-            "correction_override_count": len(correction_override),
-            "queued_for_generation": queued_for_generation,
-            "preserved_correction_source": (
-                final_guidance is not None and final_guidance.source_plate is not None
-            ),
-        }
+        retry_species(
+            _config(args),
+            args.taxon_id,
+            replace_approved=bool(getattr(args, "replace_approved", False)),
+            refresh_research=bool(getattr(args, "refresh_research", False)),
+            reason=getattr(args, "reason", None),
+            source_attempt=getattr(args, "source_attempt", None),
+            source_candidate=getattr(args, "source_candidate", None),
+            source_run=getattr(args, "source_run", None),
+            corrections=getattr(args, "correction", None),
+        )
     )
     return 0
 
@@ -1322,6 +618,11 @@ def config_validate_command(args: argparse.Namespace) -> int:
 
 def config_install_command(args: argparse.Namespace) -> int:
     destination = args.destination
+    if destination.exists():
+        existing = load_config(destination, load_secrets=False)
+        if existing.controller.configuration_ownership == "app":
+            print_result({"installed": False, "preserved": True, "ownership": "app"})
+            return 0
     destination.parent.mkdir(parents=True, exist_ok=True)
     temporary_path: Path | None = None
     try:
@@ -1344,6 +645,20 @@ def config_install_command(args: argparse.Namespace) -> int:
             temporary_path.unlink(missing_ok=True)
         raise
     print_result({"config": str(destination), "installed": True, "valid": True})
+    return 0
+
+
+def config_init_command(args: argparse.Namespace) -> int:
+    initialize_config(args.destination, container=args.container)
+    print_result(
+        {
+            "created": True,
+            "ownership": "app",
+            "generation_enabled": False,
+            "sources": [],
+            "config": str(args.destination),
+        }
+    )
     return 0
 
 
@@ -1483,22 +798,26 @@ def notifications_retry_command(args: argparse.Namespace) -> int:
     return 0
 
 
-def scheduler_command(args: argparse.Namespace) -> int:
-    config = _config(args)
-    config_arguments = ("--config", str(args.config))
+def controller_jobs(config: AppConfig, config_path: Path) -> list[ScheduledJob]:
+    config_arguments = ("--config", str(config_path))
     jobs = [
         ScheduledJob(
             "refresh",
             ("refresh", *config_arguments),
             config.schedule.refresh_minutes * 60,
-        ),
-        ScheduledJob(
-            "generate",
-            ("generate", *config_arguments),
-            config.schedule.generation_minutes * 60,
-            requires_refresh=True,
+            policy_revision=config.discovery_revision,
         ),
     ]
+    if config.controller.generation_enabled:
+        jobs.append(
+            ScheduledJob(
+                "generate",
+                ("generate", *config_arguments),
+                config.schedule.generation_minutes * 60,
+                requires_refresh=True,
+                policy_revision=config.discovery_revision,
+            )
+        )
     if config.public_catalog.enabled:
         jobs.append(
             ScheduledJob(
@@ -1516,6 +835,12 @@ def scheduler_command(args: argparse.Namespace) -> int:
             )
         )
 
+    return jobs
+
+
+def scheduler_command(args: argparse.Namespace) -> int:
+    config = load_config(args.config, load_secrets=False)
+    jobs = controller_jobs(config, args.config)
     stop = threading.Event()
 
     command_runner = SubprocessCommandRunner((sys.executable, "-m", "inky_bird_frame.cli"))
@@ -1536,6 +861,9 @@ def scheduler_command(args: argparse.Namespace) -> int:
             command_runner,
             stop_requested=stop.is_set,
             wait=wait,
+            jobs_provider=lambda: controller_jobs(
+                load_config(args.config, load_secrets=False), args.config
+            ),
         )
     finally:
         signal.signal(signal.SIGTERM, previous_sigterm)
@@ -1913,6 +1241,14 @@ def build_parser() -> argparse.ArgumentParser:
     )
     config_install_parser.add_argument("--destination", type=Path, required=True)
     config_install_parser.set_defaults(func=config_install_command)
+    config_init_parser = config_subparsers.add_parser(
+        "init", help="Create a private art-first configuration without replacing an existing file"
+    )
+    config_init_parser.add_argument("--destination", type=Path, required=True)
+    config_init_parser.add_argument(
+        "--container", action="store_true", help="Use /data paths inside Docker"
+    )
+    config_init_parser.set_defaults(func=config_init_command)
 
     birdbuddy_parser = subparsers.add_parser(
         "birdbuddy", help="Manage private Bird Buddy discovery authentication"

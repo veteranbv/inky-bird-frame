@@ -3,6 +3,8 @@
 from __future__ import annotations
 
 import json
+from collections.abc import AsyncIterator
+from contextlib import asynccontextmanager
 from dataclasses import asdict
 from ipaddress import ip_address
 from pathlib import Path
@@ -41,7 +43,16 @@ from .journal import (
     save_collection,
 )
 from .oidc import OIDCError, authorization_url, metadata, provider_id, verified_identity
+from .owner_operations import (
+    KINDS,
+    OperationKind,
+    OwnerOperationBusyError,
+    OwnerOperationError,
+    OwnerOperations,
+    execute_owner_operation,
+)
 from .server import CatalogService
+from .settings import SettingsConflictError, SettingsError, save_settings, settings_status
 
 if TYPE_CHECKING:
     from uvicorn._types import ASGI3Application
@@ -221,6 +232,7 @@ def create_app(config: ControllerConfig, *, app_config: AppConfig | None = None)
         )
     catalog = CatalogService(config)
     journal = JournalService(config, app_config=app_config)
+    operations = OwnerOperations(config.state_dir)
     assets = Path(__file__).parent / "web"
 
     def set_session_cookie(
@@ -524,6 +536,74 @@ def create_app(config: ControllerConfig, *, app_config: AppConfig | None = None)
         await authorized(request)
         return _result(await run_in_threadpool(journal.snapshot))
 
+    async def application_settings(request: Request) -> JSONResponse:
+        await authorized(request)
+        if app_config is None:
+            raise SettingsError("Start Inky with its configuration file to manage settings")
+        if request.method == "GET":
+            return _result(await run_in_threadpool(settings_status, app_config))
+        body = await _json_body(
+            request,
+            {"revision", "changes"},
+            optional={"adopt", "confirm_generation"},
+            structured={"changes", "adopt", "confirm_generation"},
+        )
+        adopt = body.get("adopt", False)
+        if type(adopt) is not bool:
+            raise SettingsError("Adoption must be explicitly true or false")
+        consent = body.get("confirm_generation", False)
+        if type(consent) is not bool:
+            raise SettingsError("Generation confirmation must be true or false")
+        return _result(
+            await run_in_threadpool(
+                save_settings,
+                app_config,
+                revision=cast(str, body["revision"]),
+                changes=body["changes"],
+                adopt=adopt,
+                confirm_generation=consent,
+            )
+        )
+
+    async def owner_operations(request: Request) -> JSONResponse:
+        await authorized(request)
+        if request.method == "GET":
+            return _result(
+                await run_in_threadpool(operations.status, request.path_params.get("operation_id"))
+            )
+        if app_config is None:
+            raise OwnerOperationError("Start Inky with its configuration file")
+        body = await _json_body(
+            request,
+            {"kind", "key", "revision", "confirm"},
+            optional={"taxon_id"},
+            structured={"confirm", "taxon_id"},
+        )
+        kind = body["kind"]
+        if kind not in KINDS or body["confirm"] is not True:
+            raise OwnerOperationError("Review and confirm a supported owner action")
+        taxon_id = body.get("taxon_id")
+        if kind == "retry":
+            if type(taxon_id) is not int or taxon_id <= 0:
+                raise OwnerOperationError("Choose a valid species for this retry")
+        elif taxon_id is not None:
+            raise OwnerOperationError("This action does not accept a species identifier")
+        inputs = {"revision": body["revision"], "taxon_id": taxon_id}
+        return _result(
+            await run_in_threadpool(
+                operations.submit,
+                cast(OperationKind, kind),
+                key=cast(str, body["key"]),
+                inputs=inputs,
+                execute=lambda: execute_owner_operation(
+                    app_config,
+                    cast(OperationKind, kind),
+                    revision=cast(str, body["revision"]),
+                    taxon_id=taxon_id,
+                ),
+            )
+        )
+
     async def journal_bird(request: Request) -> Response:
         await authorized(request)
         taxon_id = request.path_params["taxon_id"]
@@ -561,6 +641,7 @@ def create_app(config: ControllerConfig, *, app_config: AppConfig | None = None)
             "/app/app.js": "app.js",
             "/app/app.css": "app.css",
             "/app/journal.js": "journal.js",
+            "/app/settings.js": "settings.js",
             "/app/access-guide": "access-guide.txt",
         }[request.url.path]
         if filename == "access-guide.txt":
@@ -581,6 +662,7 @@ def create_app(config: ControllerConfig, *, app_config: AppConfig | None = None)
         Route("/app/app.js", page),
         Route("/app/app.css", page),
         Route("/app/journal.js", page),
+        Route("/app/settings.js", page),
         Route("/app/access-guide", page),
         Route("/v1/access", safe_access_state),
         Route("/v1/owner/setup", establish, methods=["POST"]),
@@ -599,6 +681,9 @@ def create_app(config: ControllerConfig, *, app_config: AppConfig | None = None)
         Route("/v1/owner/oidc/unlink", unlink_oidc, methods=["POST"]),
         Route("/v1/owner/oidc/callback", oidc_callback),
         Route("/v1/owner/journal", journal_snapshot),
+        Route("/v1/owner/settings", application_settings, methods=["GET", "POST"]),
+        Route("/v1/owner/operations", owner_operations, methods=["GET", "POST"]),
+        Route("/v1/owner/operations/{operation_id}", owner_operations),
         Route("/v1/owner/journal/birds/{taxon_id:int}/{kind}", journal_bird),
         Route("/v1/owner/journal/collections/{action}", journal_collection, methods=["POST"]),
         Route(
@@ -630,9 +715,13 @@ def create_app(config: ControllerConfig, *, app_config: AppConfig | None = None)
         return _error(400, "access_error", str(exc))
 
     async def journal_error(request: Request, exc: Exception) -> Response:
-        if isinstance(exc, JournalConflictError):
+        if isinstance(exc, OwnerOperationBusyError):
+            return _error(409, "operation_busy", str(exc))
+        if isinstance(exc, OwnerOperationError):
+            return _error(400, "operation_error", str(exc))
+        if isinstance(exc, (JournalConflictError, SettingsConflictError)):
             return _error(409, "journal_changed", str(exc))
-        if isinstance(exc, JournalError):
+        if isinstance(exc, (JournalError, SettingsError)):
             return _error(400, "journal_error", str(exc))
         return _error(
             503,
@@ -641,12 +730,22 @@ def create_app(config: ControllerConfig, *, app_config: AppConfig | None = None)
             "do not delete private history.",
         )
 
+    @asynccontextmanager
+    async def lifespan(_app: Starlette) -> AsyncIterator[None]:
+        try:
+            yield
+        finally:
+            operations.close()
+
     app: ASGIApp = OwnerBoundary(
         Starlette(
             routes=routes,
+            lifespan=lifespan,
             exception_handlers={
                 AccessError: access_error,
                 JournalError: journal_error,
+                SettingsError: journal_error,
+                OwnerOperationError: journal_error,
                 CatalogError: journal_error,
                 OSError: journal_error,
             },

@@ -132,9 +132,11 @@ def _systemd_quote(value: str) -> str:
     return f'"{escaped}"'
 
 
-def controller_executable_path(codex_path: Path) -> str:
+def controller_executable_path(codex_path: Path, *, generation_enabled: bool = True) -> str:
     """Return a deterministic PATH for managed controller services."""
     if not codex_path.is_absolute():
+        if not generation_enabled:
+            return ":".join(MANAGED_CONTROLLER_DEFAULT_EXECUTABLE_PATH)
         raise InstallationError(
             "Codex CLI must resolve to an absolute path for managed controller services"
         )
@@ -154,7 +156,9 @@ def controller_systemd_units(
     user: str,
 ) -> dict[str, str]:
     """Render the complete systemd controller unit set for one installation."""
-    service_path = controller_executable_path(config.controller.codex_path)
+    service_path = controller_executable_path(
+        config.controller.codex_path, generation_enabled=config.controller.generation_enabled
+    )
     common = (
         f"User={user}\n"
         f"WorkingDirectory={_systemd_literal(str(app_dir))}\n"
@@ -182,9 +186,25 @@ RestartSec=10s
 WantedBy=multi-user.target
 """
     }
+    if config.controller.configuration_ownership == "app":
+        units["inky-bird-frame-scheduler.service"] = f"""[Unit]
+Description=Schedule Inky Bird Frame application-owned work
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+{common}ExecStart={command("scheduler", "--config", str(config_path))}
+Restart=on-failure
+RestartSec=10s
+
+[Install]
+WantedBy=multi-user.target
+"""
+        return units
     jobs = (
         ("refresh", config.schedule.refresh_minutes, True),
-        ("generate", config.schedule.generation_minutes, True),
+        ("generate", config.schedule.generation_minutes, config.controller.generation_enabled),
         ("catalog-publish", config.schedule.catalog_publish_minutes, config.public_catalog.enabled),
         (
             "notifications",
@@ -472,12 +492,15 @@ def _launchd_checks(config: AppConfig) -> Iterable[DiagnosticCheck]:
     labels = [
         "com.inky-bird-frame.serve",
         "com.inky-bird-frame.refresh",
-        "com.inky-bird-frame.generate",
     ]
+    if config.controller.generation_enabled:
+        labels.append("com.inky-bird-frame.generate")
     if config.public_catalog.enabled:
         labels.append("com.inky-bird-frame.catalog-publish")
     if config.notifications.enabled:
         labels.append("com.inky-bird-frame.notifications")
+    if config.controller.configuration_ownership == "app":
+        labels = ["com.inky-bird-frame.serve", "com.inky-bird-frame.scheduler"]
     uid = os.getuid()
     for label in labels:
         result = _run(["launchctl", "print", f"gui/{uid}/{label}"])
@@ -533,7 +556,12 @@ def _systemd_last_run_check(
 
 def _systemd_controller_checks(config: AppConfig) -> Iterable[DiagnosticCheck]:
     yield _systemd_unit_check("inky-bird-frame-controller.service")
-    jobs = [("refresh", "observation refresh"), ("generate", "generation cycle")]
+    if config.controller.configuration_ownership == "app":
+        yield _systemd_unit_check("inky-bird-frame-scheduler.service")
+        return
+    jobs = [("refresh", "observation refresh")]
+    if config.controller.generation_enabled:
+        jobs.append(("generate", "generation cycle"))
     if config.public_catalog.enabled:
         jobs.append(("catalog-publish", "catalog publication"))
     if config.notifications.enabled:
@@ -632,11 +660,14 @@ def doctor(role: InstallationRole, config_path: Path) -> DoctorReport:
                 _existing_writable_directory("workspace", config.controller.workspace_dir),
                 _writable_directory("catalog", config.controller.catalog_dir),
                 _writable_directory("controller_state", config.controller.state_dir),
-                _executable_check(config.controller.codex_path),
             )
         )
-        if config.controller.codex_path.is_file():
-            checks.append(_codex_auth_check(config.controller.codex_path))
+        if config.controller.generation_enabled:
+            checks.append(_executable_check(config.controller.codex_path))
+            if config.controller.codex_path.is_file():
+                checks.append(_codex_auth_check(config.controller.codex_path))
+        else:
+            checks.append(_pass("generation", "Generation is off; Codex is not required"))
         if DiscoveryProvider.BIRDBUDDY in config.discovery.sources:
             checks.append(_birdbuddy_auth_check(config))
         if platform.system() == "Darwin":

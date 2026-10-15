@@ -22,8 +22,13 @@ working deployment with this branch. The complete acceptance scope remains in
   once a minute. Previous, Next, Pause, Details and Exit remain available. Reading
   details stops playback. Fullscreen depends on browser support.
 - Manage shows all seven source types, current work partitions, notification
-  counts and the last confirmed physical panel update. Configuration remains
-  managed by the existing file and operator tools in this checkpoint.
+  counts and the last confirmed physical panel update. Existing configuration
+  stays managed. [App-managed settings](settings.md) add source and policy edits
+  with preview, private backup and stale-edit protection.
+- New setup can start with approved art, no sources and generation off. Native
+  service definitions, the dynamic scheduler and doctor understand that mode.
+- [Owner actions](owner-operations.md) provide confirmed source refresh, normal
+  plate retry, notification tests and dead-letter retry with private outcomes.
 
 Named selections do not write `collection.json`, request generation or change
 the wall. Existing CLI collection commands still mean Saved birds. Current and
@@ -61,11 +66,12 @@ runtime and its matching complete backup.
 
 The paths above do not stand in for these remaining acceptance gates:
 
-- generation-optional installation and explicit app-owned configuration;
+- complete live qualification of generation-optional installation and ownership
+  migration across native and Docker service restarts;
 - complete eBird and Analyzer upload/preview/commit paths, accurate trip evidence
   and interrupted-operation recovery;
-- browser source setup, Bird Buddy authentication, bounded refresh and the
-  permitted work/notification recovery actions;
+- Bird Buddy browser authentication, complete pending-candidate recovery and
+  live qualification of source/work/notification actions;
 - Favorites, portable collection import/export and evidence-correction handling;
 - separately paired read-only screens, selected wall routing and scoped
   Homepage/Home Assistant views and service credentials;
