@@ -107,6 +107,8 @@ This development branch adds an [account and access preview](docs/browser-access
 at `/app`: local username/password setup, optional HTTPS and optional Authentik
 single sign-on. No setup code is needed for normal use. The complete bird
 journal is still being built in [#310](https://github.com/veteranbv/inky-bird-frame/issues/310).
+The development [journal guide](docs/journal.md) distinguishes working viewing
+and collection paths from the remaining 1.0 release gates.
 See [first setup](docs/browser-access.md#ordinary-home-network-setup) and
 [what changes on upgrade](docs/browser-access.md#what-changes-on-an-existing-installation).
 

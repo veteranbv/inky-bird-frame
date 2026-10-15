@@ -679,7 +679,7 @@ class CliTests(unittest.TestCase):
 
         self.assertEqual(result, 0)
         load.assert_called_once_with(Path("instance.toml"), load_secrets=False)
-        serve.assert_called_once_with(controller)
+        serve.assert_called_once_with(controller, app_config=load.return_value)
 
     def test_access_bootstrap_never_prints_the_setup_secret(self) -> None:
         with TemporaryDirectory() as temporary:

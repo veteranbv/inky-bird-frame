@@ -14,7 +14,7 @@ truth:
 | --- | --- | --- |
 | `config.toml` | Provider credentials, notification destinations, paths, schedules, and private location | Secret and private |
 | `catalog_dir` | Approved plates, manifests, and index | Reusable art; may also hold local-only approved work |
-| `state_dir` | Observations, collection membership, imports, retry state, notifications, run history, and optional Bird Buddy refresh token | Private; credential-sensitive when Bird Buddy is enabled |
+| `state_dir` | Observations, collections, imports, retries, notifications, owner access, run history and optional Bird Buddy refresh token | Private and credential-sensitive |
 | `workspace_dir` | Current generated work and downloaded references | Private working data |
 
 Relative paths resolve from the directory that contains `config.toml`. Record
@@ -27,6 +27,12 @@ a rotating refresh token and makes every backup that includes it
 credential-sensitive. `birdbuddy-detections.json`, eBird Archive state, BirdNET
 Analyzer state, discovery snapshots, and run records contain private species and
 time history even when they contain no account credentials or precise location.
+
+The browser candidate also keeps private owner/session state in this directory.
+Treat a backup containing it as credential-sensitive even without Bird Buddy.
+Named selections in `journal.json` can reveal travel and personal interests.
+They supplement, and do not replace, the legacy Saved birds `collection.json`.
+Stop browser serving as well as scheduled writers before copying these files.
 
 Codex and optional GitHub authentication are separate from the application
 paths. Reauthentication on a restored host is safer than copying those stores.

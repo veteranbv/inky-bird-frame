@@ -31,7 +31,15 @@ from .access import (
     SessionCredentials,
     session_csrf_token,
 )
-from .config import ControllerConfig, OwnerAccessMode
+from .config import AppConfig, ControllerConfig, OwnerAccessMode
+from .errors import CatalogError
+from .journal import (
+    JournalConflictError,
+    JournalError,
+    JournalService,
+    remove_collection,
+    save_collection,
+)
 from .oidc import OIDCError, authorization_url, metadata, provider_id, verified_identity
 from .server import CatalogService
 
@@ -117,7 +125,8 @@ async def _json_body(
     fields: set[str],
     *,
     optional: set[str] | None = None,
-) -> dict[str, str | bool]:
+    structured: set[str] | None = None,
+) -> dict[str, object]:
     if request.headers.get("content-type", "").partition(";")[0] != "application/json":
         raise AccessError("Send this operation as application/json")
     body = bytearray()
@@ -136,12 +145,16 @@ async def _json_body(
     ):
         raise AccessError("Owner request has unsupported fields")
     boolean_fields = {"remember", "return_to_access"}
-    if any(not isinstance(item, str) for key, item in value.items() if key not in boolean_fields):
+    if any(
+        not isinstance(item, str)
+        for key, item in value.items()
+        if key not in boolean_fields | (structured or set())
+    ):
         raise AccessError("Owner request fields must be text")
     for key in boolean_fields & value.keys():
         if not isinstance(value[key], bool):
             raise AccessError(f"{key} must be true or false")
-    return cast(dict[str, str | bool], value)
+    return cast(dict[str, object], value)
 
 
 class OwnerBoundary:
@@ -194,7 +207,7 @@ class OwnerBoundary:
         await self.app(scope, receive, protected_send)
 
 
-def create_app(config: ControllerConfig) -> ASGIApp:
+def create_app(config: ControllerConfig, *, app_config: AppConfig | None = None) -> ASGIApp:
     """Build the single application; no separate server or client-side state store."""
     store = AccessStore(
         config.state_dir,
@@ -207,6 +220,7 @@ def create_app(config: ControllerConfig) -> ASGIApp:
             "local operator recovery remains available"
         )
     catalog = CatalogService(config)
+    journal = JournalService(config, app_config=app_config)
     assets = Path(__file__).parent / "web"
 
     def set_session_cookie(
@@ -506,6 +520,38 @@ def create_app(config: ControllerConfig) -> ASGIApp:
         set_session_cookie(request, credentials, response)
         return response
 
+    async def journal_snapshot(request: Request) -> JSONResponse:
+        await authorized(request)
+        return _result(await run_in_threadpool(journal.snapshot))
+
+    async def journal_bird(request: Request) -> Response:
+        await authorized(request)
+        taxon_id = request.path_params["taxon_id"]
+        if request.path_params["kind"] == "portrait":
+            return Response(
+                await run_in_threadpool(journal.portrait, taxon_id), media_type="image/png"
+            )
+        if request.path_params["kind"] == "profile":
+            return _result(await run_in_threadpool(journal.profile, taxon_id))
+        return _error(404, "not_found", "This bird page does not exist")
+
+    async def journal_collection(request: Request) -> JSONResponse:
+        await authorized(request)
+        if request.path_params["action"] == "save":
+            body = await _json_body(
+                request,
+                {"revision", "label", "taxon_ids"},
+                optional={"collection_id"},
+                structured={"revision", "taxon_ids"},
+            )
+            result = await run_in_threadpool(save_collection, config.state_dir, **body)
+        elif request.path_params["action"] == "remove":
+            body = await _json_body(request, {"revision", "collection_id"}, structured={"revision"})
+            result = await run_in_threadpool(remove_collection, config.state_dir, **body)
+        else:
+            return _error(404, "not_found", "This collection action does not exist")
+        return _result(result.as_dict())
+
     async def page(request: Request) -> Response:
         from starlette.responses import FileResponse
 
@@ -514,6 +560,7 @@ def create_app(config: ControllerConfig) -> ASGIApp:
             "/app/": "index.html",
             "/app/app.js": "app.js",
             "/app/app.css": "app.css",
+            "/app/journal.js": "journal.js",
             "/app/access-guide": "access-guide.txt",
         }[request.url.path]
         if filename == "access-guide.txt":
@@ -533,6 +580,7 @@ def create_app(config: ControllerConfig) -> ASGIApp:
         Route("/app/", page),
         Route("/app/app.js", page),
         Route("/app/app.css", page),
+        Route("/app/journal.js", page),
         Route("/app/access-guide", page),
         Route("/v1/access", safe_access_state),
         Route("/v1/owner/setup", establish, methods=["POST"]),
@@ -550,6 +598,9 @@ def create_app(config: ControllerConfig) -> ASGIApp:
         Route("/v1/owner/oidc/link", start_oidc, methods=["POST"]),
         Route("/v1/owner/oidc/unlink", unlink_oidc, methods=["POST"]),
         Route("/v1/owner/oidc/callback", oidc_callback),
+        Route("/v1/owner/journal", journal_snapshot),
+        Route("/v1/owner/journal/birds/{taxon_id:int}/{kind}", journal_bird),
+        Route("/v1/owner/journal/collections/{action}", journal_collection, methods=["POST"]),
         Route(
             "/{path:path}",
             catalog.dispatch,
@@ -578,8 +629,29 @@ def create_app(config: ControllerConfig) -> ASGIApp:
             return _error(401, "sign_in_required", str(exc))
         return _error(400, "access_error", str(exc))
 
+    async def journal_error(request: Request, exc: Exception) -> Response:
+        if isinstance(exc, JournalConflictError):
+            return _error(409, "journal_changed", str(exc))
+        if isinstance(exc, JournalError):
+            return _error(400, "journal_error", str(exc))
+        return _error(
+            503,
+            "journal_unavailable",
+            "The journal cannot read its local state. Check storage and the approved catalog; "
+            "do not delete private history.",
+        )
+
     app: ASGIApp = OwnerBoundary(
-        Starlette(routes=routes, exception_handlers={AccessError: access_error}), config
+        Starlette(
+            routes=routes,
+            exception_handlers={
+                AccessError: access_error,
+                JournalError: journal_error,
+                CatalogError: journal_error,
+                OSError: journal_error,
+            },
+        ),
+        config,
     )
     if config.trusted_proxy_addresses:
         # Both libraries implement ASGI 3, but publish different typing aliases.

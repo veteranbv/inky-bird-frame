@@ -1,3 +1,5 @@
+import {openJournal, closeJournal} from '/app/journal.js';
+
 const main = document.querySelector('#main');
 let csrf = '';
 let lastActivity = -Infinity;
@@ -48,6 +50,7 @@ function button(text, action, className = 'secondary') {
 }
 
 function screen(title, description) {
+  closeJournal();
   document.title = title + ' | Inky';
   const heading = element('h1', title); heading.tabIndex = -1;
   main.replaceChildren(heading, element('p', description, 'intro'));
@@ -217,14 +220,8 @@ async function signOut() {
 async function signedIn(access, message = '') {
   const session = await api('/v1/owner/session'); csrf = session.csrf;
   if (location.hash === '#account') { await accountAccess(access, session, message); return; }
-  screen('You’re connected to Inky', 'You control access to this installation.');
-  if (message) main.append(noticeMessage(message));
-  const notice = element('section', '', 'notice');
-  notice.append(element('h2', 'Access preview'), element('p', 'Account setup and access controls work here. The full bird journal is still being built. This isolated preview does not manage your real birds.'));
-  const account = button('Account and access', async () => {
-    account.disabled = true; await accountAccess(access, session);
-  });
-  main.append(notice, account, button('Sign out', signOut));
+  await openJournal({api, element, button, screen, signOut, showProblem,
+    account: () => accountAccess(access, session)}, message);
 }
 
 async function accountAccess(access, session, message = '') {

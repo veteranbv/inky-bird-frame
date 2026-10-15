@@ -5,9 +5,10 @@ setup code, online account or password-manager subscription is required.
 The first account owns this installation. Inky closes account creation once
 that account exists. Finish setup before sharing access.
 
-This worktree currently provides account setup and access controls, not the
-complete bird journal. The remaining interface is tracked in [issue #310](https://github.com/veteranbv/inky-bird-frame/issues/310).
-Do not treat this access checkpoint as a release-ready full application.
+This development candidate includes account controls, bird browsing, readable
+profiles, private named selections and browser presentation. It is not the
+complete journal promised for 1.0. See the [journal guide](journal.md) for the
+implemented paths and remaining release gates in [issue #310](https://github.com/veteranbv/inky-bird-frame/issues/310).
 
 ## Ordinary home-network setup
 
@@ -168,9 +169,15 @@ use your existing proxy; Inky does not require one for ordinary local setup.
 
 | Your setup | Recommended path | Verification so far |
 | --- | --- | --- |
-| Existing Traefik homelab | Keep Traefik and its certificate setup. Use the private route below. | Live private reference route, headers, blocked paths and callback-log privacy checked. Real owner SSO remains a separate gate. |
-| New optional HTTPS setup | Caddy can issue a private certificate. You must choose how each device trusts it. | Isolated Caddy 2.11.7 HTTPS, restart, blocked paths, spoof rejection and error-log privacy checked. No device trust was installed. |
-| Existing Nginx, Nginx Proxy Manager or another HTTP proxy | Keep your proxy if it can meet the route, header and logging rules below. | Same Inky transport contract; these products have not had a separate live qualification in this worktree. |
+| Existing Traefik homelab | Keep Traefik and its certificate setup. Use the private route below. | Traefik 3.7.14 completed real Authentik owner linking, sign-in, confirmation, denial and logout. Callback-log privacy passed a forced upstream failure. |
+| New optional HTTPS setup | Caddy can issue a private certificate. Each device must trust it deliberately. | Caddy 2.11.7 completed real Authentik sign-in. Separate tests checked certificate rejection, restart and callback error-log privacy. |
+| Existing Nginx | Keep Nginx with the private route and logging policy below. | Nginx 1.30.6 completed the same real sign-in flow, header checks, blocked routes and upstream-failure privacy test. |
+| Nginx Proxy Manager | Do not use a location-only logging override for OIDC. | Version 2.16.0 passed sign-in, but a malformed request retained synthetic callback query values in its server error log. It does not pass this candidate's privacy gate. |
+
+These checks used a disposable identity service, synthetic accounts and verified
+TLS in Chromium. They qualify the access checkpoint, not the finished journal,
+every phone's certificate trust or your installation. Repeat the checks after
+changing proxy versions, routes or logging policy.
 
 These are proxy setups, not separate Inky providers or login systems. Your
 proxy supplies HTTPS. Inky still owns account setup, sign-in and optional OIDC.
@@ -339,8 +346,66 @@ entry separately. Do not delete your only CA backup before recovering clients.
 
 An isolated test checked HTTPS, exact proxy trust, blocked legacy paths,
 certificate rejection, persistent CA across restart and callback error-log
-privacy. It used synthetic data and request-scoped certificate trust. It did
-not change OS/browser trust, test your phone or complete a real SSO exchange.
+privacy. A further isolated Caddy test completed the real Authentik code
+exchange, linked-owner sign-in, unlinked/denied-account rejection and logout.
+These tests did not install host trust or test your phone.
+
+## Advanced: Nginx
+
+Keep this server private. Replace the example hostname, certificate paths and
+controller address. Trust only the exact Nginx address in Inky's configuration.
+Put `log_format` inside Nginx's `http` block, outside the `server` block:
+
+~~~nginx
+log_format inky_status '$status';
+
+server {
+    listen 443 ssl;
+    server_name inky.example.test;
+    ssl_certificate /path/to/certificate.pem;
+    ssl_certificate_key /path/to/private-key.pem;
+
+    access_log /var/log/nginx/inky-status.log inky_status;
+    error_log /dev/null;
+
+    location ~ ^/(app(/(app\.js|journal\.js|app\.css|access-guide))?/?|v1/access|v1/owner/.*)$ {
+        proxy_set_header Host $http_host;
+        proxy_set_header X-Forwarded-Proto https;
+        proxy_set_header X-Forwarded-For $remote_addr;
+        proxy_pass http://127.0.0.1:8793;
+    }
+    location / { return 404; }
+}
+~~~
+
+Check `nginx -t` before reloading. Keep the status log private and under your
+existing bounded rotation policy. It records response status only, not URLs,
+headers or client addresses. Nginx error messages can include the original
+callback query. This server therefore suppresses request error logs at the
+server level, including errors before location selection. Startup configuration
+checks and query-free status logging remain available. Do not enable request
+debug logging for this server.
+
+See the official [Nginx access-log](https://nginx.org/en/docs/http/ngx_http_log_module.html)
+and [error-log](https://nginx.org/en/docs/ngx_core_module.html#error_log) rules.
+If your installation requires detailed request error logs, choose a proxy with
+verified field redaction instead of silently recording sign-in credentials.
+
+### Nginx Proxy Manager limitation
+
+Nginx Proxy Manager generates a server-level error log for each proxy host.
+An Advanced-tab `location` override can protect normal callbacks and upstream
+failures, but it cannot protect errors that occur before a location is chosen.
+An isolated malformed-header test demonstrated this with synthetic values.
+The [generated host template](https://github.com/NginxProxyManager/nginx-proxy-manager/blob/v2.16.0/backend/templates/proxy_host.conf)
+and [custom configuration hooks](https://nginxproxymanager.com/advanced-config/#custom-nginx-configurations)
+explain that boundary.
+
+Do not assume that passing ordinary login is enough. This candidate does not
+provide a qualified Nginx Proxy Manager OIDC recipe. Use Caddy, Traefik or the
+server-level Nginx recipe for the owner endpoint. Do not change shared templates
+or other applications' logging to work around this limitation without a separate
+review.
 
 ## Advanced: Authentik and other OpenID Connect providers
 

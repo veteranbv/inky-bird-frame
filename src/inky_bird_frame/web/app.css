@@ -35,7 +35,35 @@ summary { padding: 12px 0; min-height: 48px; cursor: pointer; font-weight: 600; 
 details p { font-size: 15px; overflow-wrap: anywhere; }
 pre { padding: 14px; background: #e9ece4; border-radius: 7px; white-space: pre-wrap; }
 code { font-size: 13px; overflow-wrap: anywhere; }
-.check-label { display: flex; align-items: center; gap: 12px; margin-top: 20px; font-size: 16px; }
+.check-label { display: flex; align-items: center; min-height: 44px; gap: 12px; margin-top: 20px; font-size: 16px; }
 .check-label input { width: 24px; min-height: 24px; margin: 0; flex-shrink: 0; accent-color: #325a3d; }
 .device { padding: 16px; margin: 12px 0; background: #fffef8; border: 1px solid #d3dcce; border-radius: 10px; }
 a { color: #325a3d; overflow-wrap: anywhere; }
+.journal main { max-width: 1120px; padding-bottom: max(110px, calc(90px + env(safe-area-inset-bottom))); }
+.journal-navigation { position: fixed; bottom: 0; inset-inline: 0; z-index: 5; display: flex; justify-content: center; background: #fffef8; border-top: 1px solid #d3dcce; padding-bottom: env(safe-area-inset-bottom); }
+.journal-navigation a { flex: 1; min-width: 0; max-width: 200px; padding: 15px 4px; font-size: clamp(14px, 3.6vw, 17px); white-space: nowrap; text-align: center; text-decoration: none; min-height: 52px; }
+.journal-navigation [aria-current] { color: #203b29; background: #e5eddf; box-shadow: inset 0 3px #325a3d; font-weight: 700; }
+.bird-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 230px), 1fr)); gap: 20px; margin-block: 24px; }
+.bird-card, .journal-card { display: block; min-width: 0; padding: 18px; border: 1px solid #d3dcce; border-radius: 12px; background: #fffef8; text-decoration: none; margin-block: 16px; }
+.bird-card h2 { font-size: 21px; margin-bottom: 6px; }
+.bird-card p { margin-block: 4px; }
+.bird-card img, .journal-card img { width: 100%; height: 260px; object-fit: contain; background: #f2eddd; border-radius: 7px; }
+.scientific { font-style: italic; color: #53644f; }
+.missing-art { display: grid; place-items: center; height: 200px; border: 1px dashed #91a58d; color: #53644f; }
+.featured-art { display: block; width: fit-content; margin: auto; }
+.featured-art img { display: block; max-width: 100%; max-height: 67svh; object-fit: contain; border-radius: 8px; }
+.primary-link { display: block; width: fit-content; min-height: 48px; padding: 12px 28px; background: #325a3d; color: #fff; border-radius: 7px; margin-block: 16px; text-align: center; text-decoration: none; }
+.collection-title { font: 700 24px/1.3 Georgia, serif; display: block; margin-block: 12px; }
+.detail-art { width: 100%; max-height: 80svh; object-fit: contain; margin-block: 20px; }
+.measurements { display: grid; grid-template-columns: auto 1fr; gap: 10px 20px; }
+.measurements dd { margin: 0; }
+fieldset { border: 1px solid #d3dcce; margin: 24px 0; padding: 16px; min-width: 0; }
+.attention-link { display: block; min-height: 48px; padding-block: 14px; }
+.presenting header { display: none; }
+.presenting main { max-width: none; padding: 12px; text-align: center; }
+.presenting h1, .presenting .intro { font-size: 17px; margin-block: 8px; }
+.frame-art { display: block; width: 100%; height: 72svh; object-fit: contain; }
+.frame-controls { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; align-items: center; }
+.frame-controls button, .frame-controls a { width: auto; min-height: 48px; padding: 12px; margin: 0; }
+@media (min-width: 800px) { .journal-navigation { position: static; border-top: 0; border-bottom: 1px solid #d3dcce; } .journal #main { padding-top: 28px; } .journal-navigation { position: fixed; top: 0; bottom: auto; left: auto; max-width: 580px; background: transparent; border: 0; } .journal header { min-height: 64px; padding-right: 590px; } }
+@media (prefers-reduced-motion: no-preference) { .bird-card { transition: box-shadow .15s; } .bird-card:hover { box-shadow: 0 5px 18px #253b2c18; } }

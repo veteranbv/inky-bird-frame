@@ -1173,7 +1173,8 @@ def access_recover_command(args: argparse.Namespace) -> int:
 
 
 def serve_command(args: argparse.Namespace) -> int:
-    serve_catalog(_config(args, load_secrets=False).controller)
+    config = _config(args, load_secrets=False)
+    serve_catalog(config.controller, app_config=config)
     return 0
 
 

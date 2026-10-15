@@ -24,6 +24,8 @@ if TYPE_CHECKING:
     from starlette.requests import Request
     from starlette.responses import Response
 
+    from .config import AppConfig
+
 CATALOG_SCHEMA_VERSION = 1
 MAX_TELEMETRY_REQUEST_BYTES = 1024
 FEATURED_PLATE_REFRESH_SECONDS = 15 * 60
@@ -68,7 +70,7 @@ def _catalog_asset_path(value: object, field: str) -> str:
     return value
 
 
-def _project_active_catalog(payload: object) -> tuple[dict[str, object], dict[str, str]]:
+def project_catalog(payload: object) -> tuple[dict[str, object], dict[str, str]]:
     if (
         not isinstance(payload, dict)
         or not isinstance(payload.get("schema_version"), int)
@@ -175,7 +177,7 @@ def _species_count(path: Path) -> int:
     return 0
 
 
-def _featured_plate_entry(payload: dict[str, object]) -> dict[str, object] | None:
+def featured_plate_entry(payload: dict[str, object]) -> dict[str, object] | None:
     raw_species = payload.get("species")
     if not isinstance(raw_species, list):
         raise CatalogError("Active catalog has no species list")
@@ -247,7 +249,7 @@ class CatalogService:
         self.active_catalog_path = config.state_dir / "active-catalog.json"
 
     def _load(self) -> tuple[dict[str, object], dict[str, str]]:
-        return _project_active_catalog(read_json(self.active_catalog_path))
+        return project_catalog(read_json(self.active_catalog_path))
 
     def _browser_headers(self, request: Request) -> dict[str, str]:
         if not self.config.cors_allowed_origins:
@@ -306,7 +308,7 @@ class CatalogService:
         elif path == "/v1/embed/featured-plate":
             try:
                 payload, _ = self._load()
-                entry = _featured_plate_entry(payload)
+                entry = featured_plate_entry(payload)
             except (CatalogError, OSError):
                 body = _featured_plate_document(None, empty_message="Featured plate unavailable")
                 status = 503
@@ -530,7 +532,7 @@ def rebuild_index_logging_failures(catalog_dir: Path) -> None:
         print(json.dumps({"event": "catalog_index_rebuild_failed"}))
 
 
-def serve_catalog(config: ControllerConfig) -> None:
+def serve_catalog(config: ControllerConfig, *, app_config: AppConfig | None = None) -> None:
     try:
         import uvicorn
 
@@ -563,7 +565,7 @@ def serve_catalog(config: ControllerConfig) -> None:
     config.catalog_dir.mkdir(parents=True, exist_ok=True)
     rebuild_index_logging_failures(config.catalog_dir)
     uvicorn.run(
-        create_app(config),
+        create_app(config, app_config=app_config),
         host=config.bind_host,
         port=config.port,
         access_log=False,
