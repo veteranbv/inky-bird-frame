@@ -19,7 +19,7 @@ Compose starts four services from the same image:
 | --- | --- | --- |
 | `config-sync` | Validates the host `config.toml`, installs a private runtime copy, then exits | Configuration file and referenced environment values |
 | `bootstrap` | Copies the included public bird catalog into persistent storage, then exits | None |
-| `controller` | Serves the browser journal, paired screens, health and approved art on port 8793 | Private owner hashes; optional identity-service client secret |
+| `controller` | Serves the browser journal, paired screens, health and approved art on port 8793; runs explicit browser actions | Private owner hashes, configured provider/destination credentials, optional identity-service client secret |
 | `scheduler` | Refreshes observations and runs generation, notifications, and optional catalog publication | Codex and any configured service credentials |
 
 The controller and scheduler use the same commands as a native installation.
@@ -30,10 +30,10 @@ The development [browser journal](journal.md) opens at `/app`.
 Create a local username and password; no setup code is required. The optional
 `access.env` file supplies only controller access credentials such as an OIDC
 client secret. Protect it with mode `0600`. It is separate from `controller.env`,
-which supplies discovery and generation credentials to the scheduler.
-Browser source actions also run in the serving process. If you enable those
-actions, supply only their required provider variables to both long-running
-services. Do not give the controller a vault service token or unrelated host
+which supplies provider and destination credentials to both long-running
+services. Browser source and notification actions need those variables in the
+serving process as well as the scheduler. Keep only required Inky variables in
+these files. Do not give the controller a vault service token or unrelated host
 credentials. Both processes use the same private configuration and history.
 See [migration](migration-v1.md) and [history imports](history-imports.md).
 
@@ -441,9 +441,11 @@ Compose uses `restart: unless-stopped`, so the HTTP service and scheduler return
 after Docker starts following a reboot. The scheduler requires a successful
 observation refresh before it generates anything.
 
-Back up `config.toml`, `controller.env`, `.env`, and the `controller-data`
-volume. Treat every backup containing `controller-data` as credential-sensitive
-when Bird Buddy is enabled. Protect authentication volumes if you include them.
+Back up `config.toml`, `.env`, any `controller.env` and `access.env` files, and
+the `controller-data` volume. Include any alternate files selected through
+`INKY_BIRD_ENV` or `INKY_ACCESS_ENV`. These backups are credential-sensitive:
+they can contain owner access state, private history, provider secrets and a
+Bird Buddy refresh token. Protect authentication volumes if you include them.
 `docker compose down` keeps all volumes. `docker compose down --volumes`
 deletes permanent controller state and should not be part of a normal update.
 Use the [backup and restore guide](backup.md) for a quiesced volume snapshot,
@@ -486,7 +488,7 @@ curl --fail --silent http://127.0.0.1:8793/health
 
 After editing `config.toml`, rerun `config-sync` and recreate the controller and
 scheduler so both processes load the same validated copy. Recreating the
-services is also required after changing `controller.env`; a restart does not
+services is also required after changing `controller.env` or `access.env`; a restart does not
 reload a container's environment.
 
 Changing the image tag rolls back application code only; it does not roll back

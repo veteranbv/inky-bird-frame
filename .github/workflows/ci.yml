@@ -102,17 +102,24 @@ jobs:
         run: |
           set -euo pipefail
           env_file="$(mktemp)"
+          access_env_file="$(mktemp)"
           compose_json="$(mktemp)"
           build_json="$(mktemp)"
-          trap 'rm -f "$env_file" "$compose_json" "$build_json"' EXIT
+          trap 'rm -f "$env_file" "$access_env_file" "$compose_json" "$build_json"' EXIT
           printf '%s\n' 'SECRET_BOUNDARY_SENTINEL=present' > "$env_file"
-          INKY_BIRD_ENV="$env_file" docker compose config --format json > "$compose_json"
+          printf '%s\n' 'ACCESS_BOUNDARY_SENTINEL=present' > "$access_env_file"
+          INKY_BIRD_ENV="$env_file" INKY_ACCESS_ENV="$access_env_file" \
+            docker compose config --format json > "$compose_json"
           INKY_BIRD_ENV="$env_file" docker compose \
             -f compose.yaml -f compose.build.yaml config \
             --no-path-resolution --format json > "$build_json"
           jq -e '
             .services.scheduler.environment.SECRET_BOUNDARY_SENTINEL == "present"
-            and (.services.controller.environment.SECRET_BOUNDARY_SENTINEL == null)
+            and (.services.controller.environment.SECRET_BOUNDARY_SENTINEL == "present")
+            and (.services.controller.environment.ACCESS_BOUNDARY_SENTINEL == "present")
+            and (.services.scheduler.environment.ACCESS_BOUNDARY_SENTINEL == null)
+            and (.services.bootstrap.environment.ACCESS_BOUNDARY_SENTINEL == null)
+            and (.services["config-sync"].environment.ACCESS_BOUNDARY_SENTINEL == null)
             and (.services.bootstrap.environment.SECRET_BOUNDARY_SENTINEL == null)
             and (.services["config-sync"].environment.SECRET_BOUNDARY_SENTINEL == "present")
             and ([.services[] | .image] | all(. == "ghcr.io/veteranbv/inky-bird-frame:latest"))

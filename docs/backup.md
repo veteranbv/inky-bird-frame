@@ -415,8 +415,11 @@ Compose stores application data in three named volumes:
 - `codex-auth` contains Codex authentication; and
 - `github-auth` contains optional publication authentication.
 
-The host-side `config.toml`, `controller.env`, and `.env` are also required to
-reproduce the deployment. Treat all four controller artifacts as private.
+The host-side `config.toml`, `.env`, and any `controller.env` or `access.env`
+files are also required to reproduce the deployment. Include alternate files
+selected through `INKY_BIRD_ENV` or `INKY_ACCESS_ENV`; the commands below use
+the default names. Treat all these artifacts as credential-sensitive. Owner
+access state and private history need protection even without Bird Buddy.
 
 ### 1. Stop writers
 
@@ -488,11 +491,16 @@ fi
 docker compose run --rm --no-deps -T --entrypoint tar controller \
   -C /data -czf - . > "$BACKUP/controller-data.tar.gz"
 
-cp config.toml controller.env .env "$BACKUP/"
+cp config.toml .env "$BACKUP/"
+for private_env in controller.env access.env; do
+  if [ -f "$private_env" ]; then
+    cp "$private_env" "$BACKUP/"
+    chmod 600 "$BACKUP/$private_env"
+  fi
+done
 chmod 600 \
   "$BACKUP/controller-data.tar.gz" \
   "$BACKUP/config.toml" \
-  "$BACKUP/controller.env" \
   "$BACKUP/.env"
 tar -tzf "$BACKUP/controller-data.tar.gz" >/dev/null
 ```
@@ -560,14 +568,20 @@ command with the same project name.
 
 1. Download and extract the same release bundle. Start a new shell in that
    bundle, re-declare the private backup location, then restore its `.env`,
-   `controller.env`, and host-side `config.toml`:
+   host-side `config.toml`, and any provider/access environment files:
 
    ```bash
    cd /path/to/inky-bird-frame-docker
    BACKUP=/path/to/private-backup/inky-bird-frame-docker
    HEALTH_URL=http://127.0.0.1:8793/health
-   cp "$BACKUP/.env" "$BACKUP/controller.env" "$BACKUP/config.toml" .
-   chmod 600 .env controller.env config.toml
+   cp "$BACKUP/.env" "$BACKUP/config.toml" .
+   chmod 600 .env config.toml
+   for private_env in controller.env access.env; do
+     if [ -f "$BACKUP/$private_env" ]; then
+       cp "$BACKUP/$private_env" .
+       chmod 600 "$private_env"
+     fi
+   done
    ```
 
    Set `HEALTH_URL` to the controller's published host port from
