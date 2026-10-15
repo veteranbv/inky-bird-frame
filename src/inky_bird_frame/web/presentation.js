@@ -27,7 +27,7 @@ export async function renderPresentation(ui, {base, link, note, data, area}) {
   }
   main.append(link('Back to Manage','manage'));
   if(area==='displays') {
-    main.append(el('h2','Browser screens'),note('Open /screen on the tablet or computer you want to pair. A pairing code connects a read-only screen; it is not part of normal owner sign-in.'),el('a','Open screen pairing'));
+    main.append(el('h2','Browser screens'),note('Open /screen through HTTPS on the tablet or computer you want to pair. Genuine controller loopback also works. Plain LAN HTTP can use owner Frame instead. A pairing code connects a read-only screen; it is not part of normal owner sign-in.'),el('a','Open screen pairing'));
     main.lastChild.href='/screen';main.lastChild.className='text-link';
     for(const grant of state.grants.filter(grant=>grant.kind!=='status')) {
       const section=el('section','','journal-card');section.append(el('h2',grant.kind==='pending' ? 'Pairing request · '+grant.pairing_code : grant.name));

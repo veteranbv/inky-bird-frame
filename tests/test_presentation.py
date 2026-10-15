@@ -302,3 +302,19 @@ def test_https_only_blocks_direct_backend_for_all_new_surfaces(tmp_path: Path) -
             "/wall/v1/catalog",
         ):
             assert client.get(path).status_code == 403
+
+
+def test_local_owner_access_does_not_permit_plain_lan_screen_credentials(tmp_path: Path) -> None:
+    config, _, access = fixture(tmp_path)
+    origin = "http://inky.example.test"
+    config = replace(
+        config, owner_access_mode=OwnerAccessMode.LOCAL, owner_allowed_origins=(origin,)
+    )
+    with TestClient(create_app(config), base_url=origin, client=("192.168.1.20", 41000)) as client:
+        assert client.get("/v1/access").status_code == 200
+        result = client.post("/v1/screen/pair", json={}, headers={"Origin": origin})
+        assert result.status_code == 401
+        assert "HTTPS or" in result.json()["error"]["message"]
+        assert "inky-local-screen" not in client.cookies
+        assert client.get("/v1/screen/view").status_code == 401
+        assert access.status()["grants"] == []

@@ -37,7 +37,9 @@ presentation. For a tablet that should keep running, pair it instead.
 ## Pair a read-only screen
 
 1. Finish owner setup first.
-2. Open the controller's address followed by `/screen` on the intended screen.
+2. Open the controller's HTTPS address followed by `/screen` on the intended
+   screen. Genuine controller loopback also works for local testing. Plain LAN
+   HTTP can use owner Frame, but cannot issue or use a long-lived screen grant.
 3. Choose **Pair this screen**. It shows an eight-character recognition code.
 4. On your signed-in owner device, open **Manage → Displays**. Reload to see a
    new request. Match its code on the actual screen.
@@ -51,8 +53,8 @@ resume without consuming another slot.
 
 The screen receives a random 256-bit secret in an HttpOnly, same-site cookie.
 HTTPS uses a Secure host-only cookie. No credential goes in a link, QR code,
-browser storage or routine logs. Local HTTP has the same trusted-network and
-interception limits as local owner access; use HTTPS when you need encryption.
+browser storage or routine logs. Pairing and screen reads require HTTPS or
+genuine loopback, even when ordinary local owner login uses LAN HTTP.
 
 Access defaults to 90 days; choose 1–365 days. Polling does not extend expiry.
 Displays shows the permitted view, expiry and last connection at hour precision.

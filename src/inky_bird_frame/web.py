@@ -822,7 +822,19 @@ def create_app(config: ControllerConfig, *, app_config: AppConfig | None = None)
     def screen_cookie(request: Request) -> str:
         return "__Host-inky-screen" if request.url.scheme == "https" else "inky-local-screen"
 
+    def require_screen_transport(request: Request) -> None:
+        if request.url.scheme != "https" and not (
+            _loopback(request.url.hostname)
+            and request.client is not None
+            and _loopback(request.client.host)
+        ):
+            raise AccessDeniedError(
+                "Paired screens need HTTPS or the controller's genuine loopback address. "
+                "Local owner Frame remains available without pairing."
+            )
+
     async def screen_pair(request: Request) -> JSONResponse:
+        require_screen_transport(request)
         await _json_body(request, set())
         if await run_in_threadpool(store.setup_status) is not None:
             raise AccessDeniedError("Set up the Inky owner first, then pair this screen")
@@ -842,6 +854,7 @@ def create_app(config: ControllerConfig, *, app_config: AppConfig | None = None)
         return response
 
     async def screen_data(request: Request) -> Response:
+        require_screen_transport(request)
         grant = await run_in_threadpool(
             presentation.authenticate, request.cookies.get(screen_cookie(request), ""), "viewer"
         )
