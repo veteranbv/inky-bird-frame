@@ -93,6 +93,12 @@ services. Owner access at `/app` has a separate secure boundary; see
 reverse proxy when traffic crosses an untrusted network. Do not assume that
 adding owner sign-in protects the legacy routes.
 
+For owner sign-in, also trust the other web services reachable on the same
+hostname or IP, even on different ports. Browser cookies do not isolate ports.
+If you host an untrusted service, follow the
+[host-isolation requirements](browser-access.md#sessions-and-private-files)
+before using that address for Inky.
+
 The example configuration sets `controller.bind_host = "0.0.0.0"`, which
 listens on every interface of the controller host. On a multi-homed
 controller, set `bind_host` to the specific LAN address the display uses so

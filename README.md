@@ -140,6 +140,10 @@ visitor cannot claim retained bird history during an upgrade. Read
 [first setup](docs/browser-access.md#ordinary-home-network-setup) or the
 [1.0 migration guide](docs/migration-v1.md).
 
+Local HTTP assumes a trusted network and trusted web services on the same
+address. Different ports do not isolate browser sign-in cookies; see the
+[access requirements](docs/browser-access.md#sessions-and-private-files).
+
 The legacy catalog and embed routes remain trusted-network services. Owner
 sign-in does not protect them. Do not expose the controller directly to the internet.
 

@@ -330,7 +330,9 @@ def test_prepare_rejects_unsafe_config_and_initialization_locks(tmp_path: Path, 
     if kind == "config-permissions":
         path.chmod(0o644)
     elif kind == "lock-permissions":
-        (tmp_path / "owner-init.lock").touch(mode=0o644)
+        lock = tmp_path / "owner-init.lock"
+        lock.touch()
+        lock.chmod(0o644)
     else:
         os.mkfifo(tmp_path / "owner-init.lock", 0o600)
     with pytest.raises(AccessError, match="private regular"):

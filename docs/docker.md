@@ -53,6 +53,11 @@ TLS reverse proxy, use its exact HTTPS address and `owner_access_mode = "https-o
 as described in the access guide. This explicit address check prevents an
 unrelated hostname from reaching owner forms through DNS rebinding.
 
+Trust the other web services on that hostname or IP, including other ports:
+browsers share sign-in cookies across ports. A separate HTTP hostname alone
+does not isolate an untrusted service. See the
+[host-isolation requirements](browser-access.md#sessions-and-private-files).
+
 The controller health check reads the same configuration as `doctor`. It uses
 HTTP for a plain listener and HTTPS for direct TLS. It validates certificate
 trust and the response, not just a successful TCP connection. For direct TLS,

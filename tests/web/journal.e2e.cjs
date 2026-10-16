@@ -154,6 +154,30 @@ let browser,
   phase = 'registration';
   await page.reload();
   await heading('Make Inky yours');
+  const cookieTrustNotice =
+    'Use this address only with web apps you trust. A different port does not keep sign-in cookies separate.';
+  await page.getByText(cookieTrustNotice, { exact: true }).waitFor();
+  // Check the HTTPS rendering branch only; real TLS is qualified separately.
+  const encryptedStatus = async (route) => {
+    const response = await route.fetch();
+    const payload = await response.json();
+    payload.data.encrypted = true;
+    await route.fulfill({ response, json: payload });
+  };
+  await context.route(origin + '/v1/access', encryptedStatus);
+  await page.reload();
+  await page.getByText(/Encrypted connection/).waitFor();
+  await page.getByText(cookieTrustNotice, { exact: true }).waitFor();
+  await context.unroute(origin + '/v1/access', encryptedStatus);
+  await page.reload();
+  await heading('Make Inky yours');
+  for (const width of [320, 390]) {
+    await page.setViewportSize({ width, height: 844 });
+    assert(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth));
+  }
+  fs.writeFileSync(fixture + '/sign-in-phone.png', await page.screenshot({ fullPage: true }), {
+    mode: 0o600,
+  });
   await page.getByLabel('Username', { exact: true }).fill(username);
   await page.getByLabel('Choose your Inky password', { exact: true }).fill(password);
   await page.getByLabel('Confirm your password', { exact: true }).fill(password);
@@ -701,6 +725,7 @@ let browser,
         accessibility: !!process.env.INKY_QA_AXE,
         checks: [
           'owner setup',
+          'HTTP and HTTPS cookie-host trust guidance (HTTPS rendering synthetic)',
           'Favorites separate from sightings',
           'complete archive upload',
           'separate history confirmation',

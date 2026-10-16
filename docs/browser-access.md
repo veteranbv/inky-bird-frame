@@ -19,6 +19,12 @@ required before a production upgrade.
 4. Choose a username and an Inky password of at least 15 characters.
 5. Save the password and complete account creation.
 
+Trust every web service reachable on the hostname or IP address you use for
+Inky, even on another port. Browsers share sign-in cookies across ports.
+If another service is outside your trust boundary, use the
+[isolation guidance below](#sessions-and-private-files) before signing in.
+An HTTP hostname alone does not provide that isolation.
+
 A username uses 3–64 ASCII letters, numbers, dots, hyphens or underscores.
 Letter case does not matter. A password can contain Unicode and unrelated
 words. Your bird-service passwords and API keys are separate.
@@ -152,8 +158,22 @@ mode 0600 in a mode-0700 directory. Unsafe permissions, symlinks and corrupt
 state fail closed. HTTPS cookies use Secure, HttpOnly, SameSite=Strict and the
 __Host- prefix. Local HTTP uses a separate host-only cookie.
 Browser cookies are not scoped by port. Another service on the same hostname
-can receive the cookie. Use a dedicated hostname when other services share
-the computer and are outside your trust boundary.
+or IP can receive and replay the cookie. This applies to HTTPS services too;
+the `__Host-` prefix does not isolate ports. Trust every service reachable at
+the address where you sign in, not only the network.
+
+For untrusted services, use a separate device or a separate IP/interface on
+which those services cannot listen. Merely adding an HTTP hostname does not
+help: another listener can accept that hostname on its own port. Alternatively,
+use an Inky-only HTTPS hostname, keep its certificate and private key away
+from untrusted services, and serve no untrusted app under that hostname on any
+HTTPS port. The trusted proxy and its keys are part of that boundary. Inky
+cannot inspect or enforce isolation of another service on the host.
+
+These are deployment requirements, not protection supplied by cookie flags,
+origin checks or a different port. Local HTTP deliberately supports a trusted
+home network and trusted host services; it does not isolate hostile apps.
+See [RFC 6265's cookie security limits](https://www.rfc-editor.org/rfc/rfc6265#section-8.5).
 
 ## Recover a forgotten password
 

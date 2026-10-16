@@ -240,12 +240,17 @@ function rememberField(form, access) {
 }
 
 function connectionNotice(access) {
+  const hostTrust = element(
+    'p',
+    'Use this address only with web apps you trust. A different port does not keep sign-in cookies separate.',
+    'hint',
+  );
   if (access.encrypted) {
     const notice = element('p', '', 'connection');
     const check = element('span', '✓ ');
     check.setAttribute('aria-hidden', 'true');
     notice.append(check, document.createTextNode('Encrypted connection'));
-    main.append(notice);
+    main.append(notice, hostTrust);
     return;
   }
   const section = element('section', '', 'notice');
@@ -255,9 +260,11 @@ function connectionNotice(access) {
       'This connection is not encrypted. Use a unique password on a trusted home network. Do not expose Inky to the internet.',
     ),
   );
+  section.append(hostTrust);
   section.append(
     help('About this home-network connection', [
       'People who can inspect your network traffic could read passwords, session credentials and private data. HTTPS encrypts that traffic. You can add it later, but Inky does not require it for trusted home-network use.',
+      'Other web apps on this same hostname or IP address can receive your Inky sign-in cookie, even on a different port. If you do not trust those apps, use a separate device or an isolated address. A new HTTP hostname alone does not isolate them. See the access guide for HTTPS isolation.',
     ]),
   );
   main.append(section);
