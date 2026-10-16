@@ -53,6 +53,11 @@ and the existing persistent volume. Keep a private copy of the old image referen
 and the stopped volume backup. A fresh Compose volume is a new installation,
 not an upgrade of your existing birds.
 
+Review and adopt the target release's Compose changes as well as its image.
+Preserve your private files and local overrides. An image-only update cannot add
+the new controller-side provider or optional SSO environment wiring. It keeps
+the older scheduled path running; it does not replace this migration step.
+
 Managed `config-sync` continues to validate and install the host configuration.
 An app-managed runtime file is deliberately preserved on later starts. Do not
 restore only the original host seed after browser edits; back up the authoritative

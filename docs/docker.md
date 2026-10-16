@@ -478,6 +478,15 @@ bootstrap, refresh, generation status, and display verification.
 Read the release notes and take a verified backup, then change
 `INKY_BIRD_IMAGE` in `.env` to the desired version:
 
+Also review the [Compose file](../compose.yaml) from that same release. Keep
+your private `.env`, configuration, credential files and persistent volumes.
+Back up your old Compose file and preserve deliberate local overrides; do not
+blindly overwrite a customized file. An image pull alone cannot add new Compose
+wiring. The browser-journal release adds controller-side provider credentials
+and the separate optional `access.env` for single sign-on. Update that wiring
+before relying on new browser source actions or advanced access. Existing
+scheduled work does not depend on completing the new owner setup.
+
 When moving from v0.8.1 or earlier, confirm that the host `config.toml` contains
 the settings currently installed in `controller-data` before replacing the old
 Compose file. If the runtime copy may be newer, export it without printing its
