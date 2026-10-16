@@ -13,6 +13,7 @@ from unittest.mock import patch
 from inky_bird_frame.birds import DateRange, EbirdArchiveSpecies, ObservationWindow
 from inky_bird_frame.ebird_archive import (
     CSV_FILENAME,
+    MAX_ZIP_METADATA_BYTES,
     REQUIRED_COLUMNS,
     import_ebird_archive,
     read_ebird_archive_history,
@@ -63,6 +64,68 @@ def _write_zip(path: Path, rows: list[dict[str, str]]) -> None:
 
 
 class EbirdArchiveImportTests(unittest.TestCase):
+    def test_zip_metadata_is_bounded_before_member_objects_are_allocated(self) -> None:
+        for zip64 in [False, True]:
+            with self.subTest(zip64=zip64), TemporaryDirectory() as temporary:
+                root = Path(temporary)
+                path = root / "many-members.zip"
+                with (
+                    patch("zipfile.ZIP64_LIMIT", 0 if zip64 else zipfile.ZIP64_LIMIT),
+                    zipfile.ZipFile(path, "w") as archive,
+                ):
+                    for index in range(5000):
+                        archive.writestr(str(index), b"")
+                with (
+                    patch("inky_bird_frame.ebird_archive.zipfile.ZipInfo") as member,
+                    self.assertRaisesRegex(DataSourceError, "ZIP metadata"),
+                ):
+                    import_ebird_archive(path, root / "state")
+                member.assert_not_called()
+                self.assertFalse((root / "state/ebird-archive-observations.json").exists())
+
+    def test_forged_member_count_cannot_bypass_metadata_byte_limit(self) -> None:
+        with TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            path = root / "many-members.zip"
+            with zipfile.ZipFile(path, "w") as archive:
+                for index in range(5000):
+                    archive.writestr(str(index), b"")
+            contents = bytearray(path.read_bytes())
+            # EOCD's two 16-bit member counts start eight bytes into its header.
+            contents[-14:-10] = b"\x01\x00\x01\x00"
+            path.write_bytes(contents)
+            with (
+                patch("inky_bird_frame.ebird_archive.zipfile.ZipInfo") as member,
+                self.assertRaisesRegex(DataSourceError, "ZIP metadata"),
+            ):
+                import_ebird_archive(path, root / "state")
+            member.assert_not_called()
+            self.assertFalse((root / "state/ebird-archive-observations.json").exists())
+
+    def test_single_file_zip64_archive_is_accepted(self) -> None:
+        with TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            path = root / "zip64.zip"
+            with patch("zipfile.ZIP64_LIMIT", 0):
+                _write_zip(
+                    path, [_row("S1", "Northern Cardinal", "Cardinalis cardinalis", "2026-08-08")]
+                )
+            self.assertIn(b"PK\x06\x06", path.read_bytes())
+            self.assertEqual(import_ebird_archive(path, root / "state").checklists, 1)
+
+    def test_metadata_read_limit_does_not_limit_streamed_csv_content(self) -> None:
+        with TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            path = root / "history.zip"
+            rows = [
+                _row(f"S{index}", "Northern Cardinal", "Cardinalis cardinalis", "2026-08-08")
+                for index in range(3000)
+            ]
+            _write_zip(path, rows)
+            with zipfile.ZipFile(path) as archive:
+                self.assertGreater(archive.getinfo(CSV_FILENAME).file_size, MAX_ZIP_METADATA_BYTES)
+            self.assertEqual(import_ebird_archive(path, root / "state").checklists, 3000)
+
     def test_zip_import_is_private_atomic_and_idempotent(self) -> None:
         rows = [
             _row("S1", "Eastern Bluebird", "Sialia sialis", "2026-08-08"),

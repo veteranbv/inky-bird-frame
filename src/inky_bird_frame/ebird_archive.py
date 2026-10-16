@@ -13,7 +13,7 @@ from collections.abc import Iterator
 from contextlib import contextmanager, nullcontext
 from dataclasses import dataclass
 from datetime import UTC, date, datetime
-from io import TextIOWrapper
+from io import BufferedReader, TextIOWrapper
 from pathlib import Path
 from typing import TextIO
 
@@ -52,6 +52,25 @@ REQUIRED_COLUMNS = (
 # A streamed 512 MiB ceiling accommodates millions of personal observations while
 # bounding decompression and parsing work for an untrusted or damaged archive.
 MAX_UNCOMPRESSED_BYTES = 512 * 1024 * 1024
+# One ZIP central-directory entry has a 46-byte header and three fields with
+# unsigned 16-bit lengths: filename, extra data and comment. Bound metadata
+# reads before ZipFile allocates entries, including ZIP64 directory metadata.
+# This is separate from the streamed CSV limit and needs no custom ZIP parser.
+MAX_ZIP_METADATA_BYTES = 46 + 3 * (2**16 - 1)
+
+
+class _BoundedZipMetadata(BufferedReader):
+    metadata_checked = False
+
+    def read(self, size: int | None = -1) -> bytes:
+        if self.metadata_checked:
+            return super().read(size)
+        if size is not None and size > MAX_ZIP_METADATA_BYTES:
+            raise DataSourceError("eBird ZIP metadata exceeds the safe single-file limit")
+        data = super().read(MAX_ZIP_METADATA_BYTES + 1 if size is None or size < 0 else size)
+        if len(data) > MAX_ZIP_METADATA_BYTES:
+            raise DataSourceError("eBird ZIP metadata exceeds the safe single-file limit")
+        return data
 
 
 @dataclass(frozen=True)
@@ -323,7 +342,12 @@ def _open_archive_csv(archive_path: Path) -> Iterator[TextIO]:
             raise DataSourceError("Could not read eBird archive") from exc
         return
     try:
-        with zipfile.ZipFile(archive_path) as archive:
+        with (
+            archive_path.open("rb", buffering=0) as raw_archive,
+            _BoundedZipMetadata(raw_archive) as bounded_archive,
+            zipfile.ZipFile(bounded_archive) as archive,
+        ):
+            bounded_archive.metadata_checked = True
             members = [item for item in archive.infolist() if not item.is_dir()]
             if len(members) != 1 or Path(members[0].filename).name != CSV_FILENAME:
                 raise DataSourceError(

@@ -71,7 +71,11 @@ private. No raw checklist ID, location, credential or source file enters the
 reusable public catalog or portable collection export.
 
 The browser wire limit is 512 MiB. eBird ZIP contents have a separate existing
-512 MiB decoded CSV limit. These are rejection bounds, not measured promises
+512 MiB decoded CSV limit. ZIP directory metadata has a separate 196,651-byte
+ceiling, the ZIP format's maximum size for one entry's header, name, extra data
+and comment. Inky bounds these reads before allocating member objects; ZIP64
+remains supported. Large CSV contents still stream under the decoded limit.
+These are rejection bounds, not measured promises
 that every maximum-size archive is practical on every controller. An offline
 synthetic test checked 900,000 rows in 90,000 checklists: 509.7 MiB decoded CSV,
 4.1 MiB ZIP, and 108.3 MiB resulting private history. Complete checking and
