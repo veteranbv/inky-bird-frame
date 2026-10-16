@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import getpass
 import io
 import json
 import shutil
@@ -23,6 +24,11 @@ from inky_bird_frame.birds import BirdSpecies, DateRange
 from inky_bird_frame.catalog import rebuild_catalog_index, sha256_file
 from inky_bird_frame.cli import (
     _confirm_birdbuddy_authorization,
+    access_bootstrap_command,
+    access_prepare_command,
+    access_recover_command,
+    access_setup_command,
+    access_status_command,
     approve_command,
     birdbuddy_login_command,
     birdbuddy_logout_command,
@@ -67,6 +73,7 @@ from inky_bird_frame.retry import RetryStore
 def controller_config(state_dir: Path, catalog_dir: Path | None = None) -> SimpleNamespace:
     return SimpleNamespace(
         controller=SimpleNamespace(
+            generation_enabled=True,
             state_dir=state_dir,
             catalog_dir=catalog_dir if catalog_dir is not None else state_dir / "catalog",
         ),
@@ -676,7 +683,197 @@ class CliTests(unittest.TestCase):
 
         self.assertEqual(result, 0)
         load.assert_called_once_with(Path("instance.toml"), load_secrets=False)
-        serve.assert_called_once_with(controller)
+        serve.assert_called_once_with(controller, app_config=load.return_value)
+
+    def test_access_bootstrap_never_prints_the_setup_secret(self) -> None:
+        with TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            output = io.StringIO()
+            args = build_parser().parse_args(["access", "bootstrap", "--config", "instance.toml"])
+            with (
+                patch("inky_bird_frame.cli._config", return_value=controller_config(root)),
+                redirect_stdout(output),
+            ):
+                self.assertEqual(access_bootstrap_command(args), 0)
+            secret = (root / "web-access" / "bootstrap-secret").read_text().strip()
+            self.assertNotIn(secret, output.getvalue())
+            payload = json.loads(output.getvalue())
+            self.assertFalse(payload["data"]["credentials_in_output"])
+            self.assertEqual(payload["data"]["expires_in_seconds"], 600)
+
+    def test_access_recover_requires_confirmation_and_a_terminal(self) -> None:
+        args = build_parser().parse_args(["access", "recover", "--config", "instance.toml"])
+        with patch("inky_bird_frame.cli._config") as config:
+            with (
+                patch("sys.stdin.isatty", return_value=True),
+                patch("builtins.input", return_value="no"),
+                self.assertRaisesRegex(ValueError, "cancelled"),
+            ):
+                access_recover_command(args)
+            args.yes = True
+            with (
+                patch("sys.stdin.isatty", return_value=False),
+                self.assertRaisesRegex(ValueError, "interactive terminal"),
+            ):
+                access_recover_command(args)
+            config.assert_not_called()
+
+    def test_access_recover_uses_hidden_prompt_without_secret_output(self) -> None:
+        args = build_parser().parse_args(
+            ["access", "recover", "--config", "instance.toml", "--yes"]
+        )
+        with TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            output = io.StringIO()
+            password = "private synthetic recovery password"
+            with (
+                patch("sys.stdin.isatty", return_value=True),
+                patch("builtins.input", return_value="birder"),
+                patch("getpass.getpass", side_effect=[password, password]),
+                patch("inky_bird_frame.cli._config", return_value=controller_config(root)),
+                redirect_stdout(output),
+            ):
+                self.assertEqual(access_recover_command(args), 0)
+            self.assertNotIn(password, output.getvalue())
+            self.assertNotIn(password, (root / "web-access/access.json").read_text())
+            self.assertTrue(json.loads(output.getvalue())["data"]["sessions_revoked"])
+
+    def test_access_reset_uses_private_interactive_recovery(self) -> None:
+        args = build_parser().parse_args(["access", "reset", "--config", "instance.toml"])
+        self.assertIs(args.func, access_recover_command)
+        with (
+            patch("inky_bird_frame.cli._config") as config,
+            patch("sys.stdin.isatty", return_value=False),
+        ):
+            with self.assertRaisesRegex(ValueError, "interactive terminal"):
+                args.func(args)
+            config.assert_not_called()
+
+    def test_access_show_code_rejects_pipes_before_config_or_state_changes(self) -> None:
+        args = build_parser().parse_args(
+            ["access", "bootstrap", "--config", "instance.toml", "--show-code"]
+        )
+        with (
+            patch("inky_bird_frame.cli._config") as config,
+            patch("inky_bird_frame.cli.sys.stdout.isatty", return_value=False),
+            patch("inky_bird_frame.cli.sys.stderr.isatty", return_value=True),
+        ):
+            with self.assertRaisesRegex(ValueError, "private interactive terminal"):
+                access_bootstrap_command(args)
+            config.assert_not_called()
+
+    def test_access_show_code_is_explicit_terminal_only_and_not_in_json(self) -> None:
+        with TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            args = build_parser().parse_args(
+                ["access", "bootstrap", "--config", "instance.toml", "--show-code"]
+            )
+            with (
+                patch("inky_bird_frame.cli._config", return_value=controller_config(root)),
+                patch("inky_bird_frame.cli.sys.stdout") as output,
+                patch("inky_bird_frame.cli.sys.stderr") as terminal,
+            ):
+                output.isatty.return_value = terminal.isatty.return_value = True
+                self.assertEqual(access_bootstrap_command(args), 0)
+                secret = (root / "web-access" / "bootstrap-secret").read_text().strip()
+                self.assertNotIn(secret, str(output.write.call_args_list))
+                self.assertIn(secret, str(terminal.write.call_args_list))
+
+    def test_access_status_does_not_resolve_provider_secrets(self) -> None:
+        with TemporaryDirectory() as temporary:
+            args = build_parser().parse_args(["access", "status", "--config", "instance.toml"])
+            with (
+                patch(
+                    "inky_bird_frame.cli._config", return_value=controller_config(Path(temporary))
+                ) as config,
+                redirect_stdout(io.StringIO()) as output,
+            ):
+                self.assertEqual(access_status_command(args), 0)
+            config.assert_called_once_with(args, load_secrets=False)
+            self.assertFalse(json.loads(output.getvalue())["data"]["owner_configured"])
+
+    def test_access_prepare_requires_explicit_new_installation_before_reading_config(self) -> None:
+        args = build_parser().parse_args(["access", "prepare", "--config", "instance.toml"])
+        with patch("inky_bird_frame.cli._config") as config:
+            with self.assertRaisesRegex(ValueError, "--new-installation"):
+                access_prepare_command(args)
+            config.assert_not_called()
+
+    def test_unattended_owner_setup_keeps_service_running_without_prompting(self) -> None:
+        from inky_bird_frame.access import AccessStore
+
+        args = build_parser().parse_args(
+            ["access", "setup", "--if-needed", "--config", "instance.toml"]
+        )
+        with TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            retained = root / "private-history.json"
+            retained.write_bytes(b"retained birds")
+            with (
+                patch("inky_bird_frame.cli._config", return_value=controller_config(root)) as load,
+                patch("sys.stdin.isatty", return_value=False),
+                patch("builtins.input") as username,
+                patch("getpass.getpass") as password,
+                redirect_stdout(io.StringIO()) as output,
+            ):
+                self.assertEqual(access_setup_command(args), 0)
+                username.assert_not_called()
+                password.assert_not_called()
+                self.assertEqual(json.loads(output.getvalue())["data"]["setup_mode"], "local")
+                load.assert_called_once_with(args, load_secrets=False)
+            self.assertEqual(retained.read_bytes(), b"retained birds")
+            self.assertFalse(AccessStore(root).owner_exists())
+
+    def test_owner_setup_uses_hidden_prompt_and_never_replaces_an_owner(self) -> None:
+        from inky_bird_frame.access import AccessStore
+
+        args = build_parser().parse_args(["access", "setup", "--config", "instance.toml"])
+        password = "a private synthetic owner password"
+        with TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            with (
+                patch("inky_bird_frame.cli._config", return_value=controller_config(root)),
+                patch("sys.stdin.isatty", return_value=True),
+                patch("builtins.input", return_value="birder") as username,
+                patch("getpass.getpass", side_effect=[password, password]) as prompt,
+                redirect_stdout(io.StringIO()) as output,
+            ):
+                self.assertEqual(access_setup_command(args), 0)
+                before = AccessStore(root).path.read_bytes()
+                self.assertEqual(access_setup_command(args), 0)
+                username.assert_called_once()
+                self.assertEqual(prompt.call_count, 2)
+                self.assertNotIn(password, output.getvalue())
+            self.assertEqual(AccessStore(root).path.read_bytes(), before)
+            self.assertNotIn(password.encode(), before)
+
+    def test_owner_setup_rejects_no_terminal_echo_fallback_and_mismatch(self) -> None:
+        from inky_bird_frame.access import AccessStore
+
+        args = build_parser().parse_args(["access", "setup", "--config", "instance.toml"])
+        with TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            with (
+                patch("inky_bird_frame.cli._config", return_value=controller_config(root)),
+                patch("sys.stdin.isatty", return_value=False),
+                patch("builtins.input") as username,
+            ):
+                with self.assertRaisesRegex(ValueError, "private interactive terminal"):
+                    access_setup_command(args)
+                username.assert_not_called()
+            for prompts, message in (
+                (getpass.GetPassWarning("synthetic fallback"), "hidden password"),
+                (["synthetic password one", "synthetic password two"], "do not match"),
+            ):
+                with (
+                    patch("inky_bird_frame.cli._config", return_value=controller_config(root)),
+                    patch("sys.stdin.isatty", return_value=True),
+                    patch("builtins.input", return_value="birder"),
+                    patch("getpass.getpass", side_effect=prompts),
+                    self.assertRaisesRegex(ValueError, message),
+                ):
+                    access_setup_command(args)
+                self.assertFalse(AccessStore(root).path.exists())
 
     def test_seed_supports_year_window_and_overrides(self) -> None:
         args = build_parser().parse_args(
@@ -793,8 +990,11 @@ class CliTests(unittest.TestCase):
             index_before = index.read_bytes()
             modified_before = index.stat().st_mtime_ns
             config = SimpleNamespace(
-                controller=SimpleNamespace(catalog_dir=catalog, state_dir=state),
+                controller=SimpleNamespace(
+                    catalog_dir=catalog, state_dir=state, configuration_ownership="managed"
+                ),
                 schedule=SimpleNamespace(refresh_minutes=15),
+                discovery_revision=None,
             )
             output = io.StringIO()
 
@@ -1615,7 +1815,7 @@ rotation_mode = "shuffle_bag"
             with (
                 patch("inky_bird_frame.cli._config", return_value=config),
                 patch(
-                    "inky_bird_frame.cli.has_valid_approved_candidate",
+                    "inky_bird_frame.recovery.has_valid_approved_candidate",
                     return_value=True,
                 ),
                 self.assertRaisesRegex(ValueError, "use --replace-approved"),
@@ -1665,7 +1865,7 @@ rotation_mode = "shuffle_bag"
             with (
                 patch("inky_bird_frame.cli._config", return_value=config),
                 patch(
-                    "inky_bird_frame.cli.retry_approved_candidate",
+                    "inky_bird_frame.recovery.retry_approved_candidate",
                     return_value=expected,
                 ) as replace,
                 redirect_stdout(output),
@@ -2553,7 +2753,7 @@ rotation_mode = "shuffle_bag"
 
             with (
                 patch("inky_bird_frame.cli._config", return_value=config),
-                patch("inky_bird_frame.cli.shutil.move", side_effect=OSError("interrupted")),
+                patch("inky_bird_frame.recovery.shutil.move", side_effect=OSError("interrupted")),
                 self.assertRaisesRegex(OSError, "interrupted"),
             ):
                 retry_command(Namespace(taxon_id=42, source_attempt=1))
@@ -2602,7 +2802,7 @@ rotation_mode = "shuffle_bag"
             config = controller_config(state_dir)
             with (
                 patch("inky_bird_frame.cli._config", return_value=config),
-                patch("inky_bird_frame.cli.shutil.move", side_effect=interrupt_reference_move),
+                patch("inky_bird_frame.recovery.shutil.move", side_effect=interrupt_reference_move),
                 self.assertRaisesRegex(OSError, "cache archival interrupted"),
             ):
                 retry_command(
@@ -2654,7 +2854,7 @@ rotation_mode = "shuffle_bag"
             config = controller_config(state_dir)
             with (
                 patch("inky_bird_frame.cli._config", return_value=config),
-                patch("inky_bird_frame.cli.shutil.move", side_effect=interrupt_reference_move),
+                patch("inky_bird_frame.recovery.shutil.move", side_effect=interrupt_reference_move),
                 self.assertRaisesRegex(OSError, "cache archival interrupted"),
             ):
                 retry_command(Namespace(taxon_id=42, refresh_research=True))
@@ -2734,8 +2934,8 @@ rotation_mode = "shuffle_bag"
 
             with (
                 patch("inky_bird_frame.cli._config", return_value=config),
-                patch("inky_bird_frame.cli.catalog_state_lock", side_effect=state_lock),
-                patch("inky_bird_frame.cli.shutil.move", side_effect=move),
+                patch("inky_bird_frame.recovery.catalog_state_lock", side_effect=state_lock),
+                patch("inky_bird_frame.recovery.shutil.move", side_effect=move),
                 redirect_stdout(output),
             ):
                 retry_command(Namespace(taxon_id=42))
@@ -3280,10 +3480,10 @@ rotation_mode = "shuffle_bag"
         with (
             patch("inky_bird_frame.cli._config"),
             patch(
-                "inky_bird_frame.cli.run_refresh_cycle",
+                "inky_bird_frame.controller.run_refresh_cycle",
                 side_effect=DataSourceError(secret),
             ),
-            patch("inky_bird_frame.cli.safe_record_degradation") as degradation,
+            patch("inky_bird_frame.controller.safe_record_degradation") as degradation,
             self.assertRaises(DataSourceError),
         ):
             from inky_bird_frame.cli import refresh_command
@@ -3310,9 +3510,9 @@ rotation_mode = "shuffle_bag"
         }
         with (
             patch("inky_bird_frame.cli._config", return_value=config),
-            patch("inky_bird_frame.cli.run_refresh_cycle", return_value=result),
-            patch("inky_bird_frame.cli.safe_record_degradation"),
-            patch("inky_bird_frame.cli.safe_record_recovery") as recover,
+            patch("inky_bird_frame.controller.run_refresh_cycle", return_value=result),
+            patch("inky_bird_frame.controller.safe_record_degradation"),
+            patch("inky_bird_frame.controller.safe_record_recovery") as recover,
             redirect_stdout(io.StringIO()),
         ):
             refresh_command(Namespace())
@@ -3368,9 +3568,9 @@ rotation_mode = "shuffle_bag"
         }
         with (
             patch("inky_bird_frame.cli._config", return_value=config),
-            patch("inky_bird_frame.cli.run_refresh_cycle", return_value=result),
-            patch("inky_bird_frame.cli.safe_record_degradation") as degradation,
-            patch("inky_bird_frame.cli.safe_record_recovery") as recovery,
+            patch("inky_bird_frame.controller.run_refresh_cycle", return_value=result),
+            patch("inky_bird_frame.controller.safe_record_degradation") as degradation,
+            patch("inky_bird_frame.controller.safe_record_recovery") as recovery,
             redirect_stdout(io.StringIO()),
         ):
             refresh_command(Namespace())
@@ -3399,9 +3599,9 @@ rotation_mode = "shuffle_bag"
         }
         with (
             patch("inky_bird_frame.cli._config", return_value=config),
-            patch("inky_bird_frame.cli.run_refresh_cycle", return_value=result),
-            patch("inky_bird_frame.cli.safe_record_degradation"),
-            patch("inky_bird_frame.cli.safe_record_recovery") as recovery,
+            patch("inky_bird_frame.controller.run_refresh_cycle", return_value=result),
+            patch("inky_bird_frame.controller.safe_record_degradation"),
+            patch("inky_bird_frame.controller.safe_record_recovery") as recovery,
             redirect_stdout(io.StringIO()),
         ):
             refresh_command(Namespace())

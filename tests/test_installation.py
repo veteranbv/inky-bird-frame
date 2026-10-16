@@ -1,14 +1,20 @@
 from __future__ import annotations
 
+import json
 import os
+import plistlib
 import subprocess
 import sys
+import tomllib
 import unittest
+from dataclasses import replace
 from pathlib import Path
 from tempfile import TemporaryDirectory
 from unittest.mock import patch
 
-from inky_bird_frame.config import load_config
+import pytest
+
+from inky_bird_frame.config import AppConfig, OIDCConfig, load_config
 from inky_bird_frame.errors import InstallationError
 from inky_bird_frame.installation import (
     CheckStatus,
@@ -18,11 +24,12 @@ from inky_bird_frame.installation import (
     _birdbuddy_auth_check,
     _codex_auth_check,
     _display_hardware_check,
-    _health_url,
     controller_executable_path,
     controller_systemd_units,
     display_systemd_units,
     doctor,
+    health_url,
+    native_oidc_environment,
     setup,
 )
 
@@ -56,6 +63,173 @@ rotation_mode = "shuffle_bag"
     )
     path.chmod(0o600)
     return path
+
+
+def native_oidc_config(directory: Path) -> tuple[AppConfig, Path]:
+    path = write_config(directory, Path("/usr/local/bin/codex"))
+    config = load_config(path)
+    return replace(
+        config,
+        controller=replace(
+            config.controller,
+            generation_enabled=False,
+            configuration_ownership="app",
+            oidc=OIDCConfig(
+                "https://id.example.test/",
+                "client",
+                "https://inky.example.test/v1/owner/oidc/callback",
+                "NATIVE_TEST_SECRET",
+            ),
+        ),
+    ), path
+
+
+@pytest.mark.parametrize(
+    "installer",
+    ["install-controller.sh", "install-controller-systemd.sh", "install-display-local.sh"],
+)
+def test_native_managed_copy_preserves_required_package_inputs(
+    tmp_path: Path, installer: str
+) -> None:
+    project = Path(__file__).resolve().parents[1]
+    settings = tomllib.loads((project / "pyproject.toml").read_text())
+    required = settings["tool"]["hatch"]["build"]["targets"]["wheel"]["force-include"]
+    source, managed = tmp_path / "source checkout", tmp_path / "managed app"
+    for root in (source, managed):
+        for name in ("src", "catalog", "deploy"):
+            (root / name).mkdir(parents=True)
+    for name in ("pyproject.toml", "uv.lock", "README.md", "LICENSE", *required):
+        path = source / name
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text("synthetic package input\n")
+    (source / "deploy" / installer).write_text("# synthetic staging input\n")
+    script = (project / "deploy" / installer).read_text()
+    staging = script.split('if [ "${root}" != "${app_dir}" ]; then\n', 1)[1].split("\nfi\n", 1)[0]
+    # Execute only real file staging, not an installer, service or package manager.
+    subprocess.run(
+        ["bash", "-e", "-c", "root=$1; app_dir=$2\n" + staging, "stage", str(source), str(managed)],
+        check=True,
+        capture_output=True,
+    )
+    for name in required:
+        assert (managed / name).read_bytes() == (source / name).read_bytes()
+
+
+def test_remote_display_copy_includes_the_required_bundled_guide() -> None:
+    script = (Path(__file__).resolve().parents[1] / "deploy/install-display-node.sh").read_text()
+    assert '"$1/docs"' in script
+    assert (
+        "for file in pyproject.toml uv.lock README.md LICENSE docs/browser-access.md; do" in script
+    )
+
+
+def test_native_oidc_secret_persists_privately_and_rotates_without_other_environment(
+    tmp_path: Path,
+) -> None:
+    config, path = native_oidc_config(tmp_path)
+    secret = "synthetic with spaces, \\ \" and $ % ` apostrophe' ☃"
+    with patch.dict(os.environ, {"NATIVE_TEST_SECRET": secret, "UNRELATED": "do-not-copy"}):
+        assert native_oidc_environment(config, path) == {"NATIVE_TEST_SECRET": secret}
+    cache = tmp_path / "native-access.env"
+    assert cache.stat().st_mode & 0o777 == 0o600
+    assert json.loads(cache.read_text().partition("=")[2]) == secret
+    assert "UNRELATED" not in cache.read_text()
+    with patch.dict(os.environ, {}, clear=True):
+        assert native_oidc_environment(config, path) == {"NATIVE_TEST_SECRET": secret}
+    with patch.dict(os.environ, {"NATIVE_TEST_SECRET": "replacement-synthetic"}):
+        assert native_oidc_environment(config, path) == {
+            "NATIVE_TEST_SECRET": "replacement-synthetic"
+        }
+
+
+@pytest.mark.parametrize("kind", ["public", "symlink", "invalid", "oversize"])
+def test_native_oidc_cache_rejects_unsafe_or_invalid_state(tmp_path: Path, kind: str) -> None:
+    config, path = native_oidc_config(tmp_path)
+    cache = tmp_path / "native-access.env"
+    cache.write_text('NATIVE_TEST_SECRET="private-synthetic"\n')
+    cache.chmod(0o600)
+    if kind == "public":
+        cache.chmod(0o644)
+    elif kind == "symlink":
+        target = tmp_path / "private-original"
+        cache.rename(target)
+        cache.symlink_to(target)
+    elif kind == "invalid":
+        cache.write_text("NATIVE_TEST_SECRET=not-json-private-detail")
+    else:
+        cache.write_bytes(b"x" * (64 * 1024 + 1))
+    with patch.dict(os.environ, {}, clear=True), pytest.raises(InstallationError) as error:
+        native_oidc_environment(config, path)
+    assert "private-synthetic" not in str(error.value)
+    assert "not-json-private-detail" not in str(error.value)
+
+
+def test_native_oidc_missing_secret_and_failed_replacement_are_safe(tmp_path: Path) -> None:
+    config, path = native_oidc_config(tmp_path)
+    with patch.dict(os.environ, {}, clear=True), pytest.raises(InstallationError):
+        native_oidc_environment(config, path)
+    with patch.dict(os.environ, {"NATIVE_TEST_SECRET": "original-synthetic"}):
+        native_oidc_environment(config, path)
+    cache = tmp_path / "native-access.env"
+    original = cache.read_bytes()
+    with (
+        patch.dict(os.environ, {"NATIVE_TEST_SECRET": "replacement-synthetic"}),
+        patch(
+            "inky_bird_frame.http.Path.replace", side_effect=OSError("private replacement detail")
+        ),
+        pytest.raises(InstallationError) as error,
+    ):
+        native_oidc_environment(config, path)
+    assert "private replacement detail" not in str(error.value)
+    assert cache.read_bytes() == original
+    assert not list(tmp_path.glob(".native-access.env.*.tmp"))
+
+
+def test_native_oidc_secret_is_serving_only_in_systemd_and_private_launchd(tmp_path: Path) -> None:
+    config, config_path = native_oidc_config(tmp_path)
+    units = controller_systemd_units(
+        config,
+        executable=tmp_path / "inky",
+        app_dir=tmp_path,
+        config_path=config_path,
+        home=tmp_path,
+        user="synthetic",
+    )
+    assert "EnvironmentFile=" in units["inky-bird-frame-controller.service"]
+    assert "native-access.env" not in units["inky-bird-frame-scheduler.service"]
+    script = (Path(__file__).resolve().parents[1] / "deploy/install-controller.sh").read_text()
+    code = script.split("<<'PY'\n", 1)[1].split("\nPY\n", 1)[0]
+    paths = [
+        tmp_path / (name + ".plist")
+        for name in (
+            "serve",
+            "refresh",
+            "generate",
+            "catalog-publish",
+            "notifications",
+            "scheduler",
+        )
+    ]
+    arguments = [
+        "installer",
+        *map(str, paths),
+        str(tmp_path),
+        str(tmp_path),
+        str(config_path),
+        str(tmp_path),
+    ]
+    with (
+        patch("sys.argv", arguments),
+        patch("inky_bird_frame.config.load_config", return_value=config),
+        patch("inky_bird_frame.publisher.sync_public_catalog"),
+        patch.dict(os.environ, {"NATIVE_TEST_SECRET": "synthetic-serving-only"}),
+    ):
+        exec(compile(code, "native-installer-fixture", "exec"), {})
+    serving = plistlib.loads(paths[0].read_bytes())
+    assert serving["EnvironmentVariables"]["NATIVE_TEST_SECRET"] == "synthetic-serving-only"
+    assert paths[0].stat().st_mode & 0o777 == 0o600
+    scheduler = plistlib.loads(paths[-1].read_bytes())
+    assert "NATIVE_TEST_SECRET" not in scheduler["EnvironmentVariables"]
 
 
 class InstallationTests(unittest.TestCase):
@@ -303,9 +477,41 @@ display_startup_delay_seconds = 30
             config = load_config(path)
 
         self.assertEqual(
-            _health_url(config, InstallationRole.DISPLAY),
+            health_url(config, InstallationRole.DISPLAY),
             "https://frame.example/inky/health",
         )
+
+    def test_controller_health_uses_direct_tls_origin_and_ipv6_loopback(self) -> None:
+        with TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            codex = root / "codex"
+            codex.touch(mode=0o700)
+            path = write_config(root, codex)
+            tls_settings = (
+                '\ntls_certificate = "cert.pem"\ntls_private_key = "key.pem"\n'
+                'owner_allowed_origins = ["https://inky.example.test:8793"]'
+            )
+            path.write_text(
+                path.read_text().replace(
+                    'bind_host = "0.0.0.0"',
+                    'bind_host = "::"' + tls_settings,
+                )
+            )
+            config = load_config(path)
+            self.assertEqual(
+                health_url(config, InstallationRole.CONTROLLER),
+                "https://inky.example.test:8793/health",
+            )
+            path.write_text(
+                path.read_text().replace(
+                    tls_settings,
+                    "",
+                )
+            )
+            self.assertEqual(
+                health_url(load_config(path), InstallationRole.CONTROLLER),
+                "http://[::1]:8793/health",
+            )
 
     def test_setup_preview_does_not_run_installer(self) -> None:
         with TemporaryDirectory() as temporary:

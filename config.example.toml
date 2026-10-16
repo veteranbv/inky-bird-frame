@@ -1,5 +1,6 @@
 [discovery]
-# Select one or more providers explicitly. iNaturalist needs no credentials, eBird provides
+# Select providers explicitly, or use [] to browse art without discovery.
+# iNaturalist needs no credentials, eBird provides
 # nearby public sightings, eBird Archive imports your private personal history, BirdWeather
 # and self-hosted BirdNET-Go provide acoustic station detections, BirdNET Analyzer imports
 # private CSV history, and authorized Bird Buddy accounts provide read-only feeder postcards.
@@ -42,6 +43,16 @@ birdbuddy_include_manual_sightings = false
 # birdnet_go_url = "http://birdnet-go.local:8080"
 
 [controller]
+# Existing files remain managed. `config init` creates app-owned, art-first setup.
+# To change this existing file through the browser, use the explicit adoption
+# preview in Settings, then re-run the installer and restart the service.
+# configuration_ownership = "managed"
+# Existing configurations keep generation enabled. Turn it off to use only
+# approved artwork. Re-run native setup to remove the generation timer.
+# generation_enabled = false
+# Private upload previews expire after 24 hours; choose 1–168. Cleanup never
+# removes confirmed history or saved trips. Restart after changing this policy.
+# owner_import_retention_hours = 24
 # Keep Codex's writable workspace separate from configuration, catalog, and state.
 workspace_dir = "workspace"
 catalog_dir = "catalog"
@@ -62,6 +73,22 @@ port = 8793
 # Policy does not reliably match IP address sources, so these origins must use DNS hostnames.
 # Underscores and trailing dots are also rejected.
 # embed_allowed_origins = ["https://home.example.test"]
+# Owner access: home-network HTTP is the default for new installations.
+# Create a username/password in /app. No setup code is needed. HTTP does not
+# encrypt credentials or private data; use only on a trusted home network.
+# owner_access_mode = "local"
+# A local IP reached directly is checked against the server's actual socket.
+# Add a named local origin explicitly, for example http://inky.home:8793.
+# Existing configurations with owner_allowed_origins default to https-only,
+# preserving their old boundary. Set owner_access_mode deliberately to change it.
+# HTTPS-only also denies direct insecure backend access, including loopback.
+# owner_access_mode = "https-only"
+# owner_allowed_origins = ["https://inky.example.test"]
+# Trust forwarding headers only from your proxy's explicit IP address, never "*".
+# trusted_proxy_addresses = ["192.0.2.10"]
+# Direct HTTPS is optional. Supply both files; the private key must use mode 0600.
+# tls_certificate = "private/fullchain.pem"
+# tls_private_key = "private/key.pem"
 references_per_species = 4
 generations_per_cycle = 1
 # Failed visual reviews are regenerated with their findings as corrective input.
@@ -73,6 +100,15 @@ retry_initial_minutes = 30
 retry_max_minutes = 1440
 # Licensed photos can appear later, so an insufficient set is deferred, not failed forever.
 insufficient_references_retry_minutes = 10080
+# Optional SSO: add this table only after configuring an identity-service client.
+# [controller.oidc]
+# issuer = "https://auth.example.test/application/o/inky/"
+# client_id = "your-client-id"
+# client_secret_env = "INKY_OIDC_CLIENT_SECRET"
+# callback_url = "https://inky.example.test/v1/owner/oidc/callback"
+# label = "Authentik"
+# sso_only = false
+# owner_subject = "exact-verified-owner-subject" # optional managed headless binding
 
 [research]
 # Successful profiles are cached by taxon, so retries of the artwork do not research the

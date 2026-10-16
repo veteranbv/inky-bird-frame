@@ -2,10 +2,10 @@
 
 Inky Bird Frame has three roles. The controller discovers birds and creates
 plates. The display node pulls approved images. An optional publisher sends new
-plates to a shared GitHub catalog. A trusted browser application can also read
-the active catalog through a same-origin proxy or, for direct cross-origin
-access, after the operator allows its exact origin. Inky provides that read-only
-interface but does not include the browser application.
+plates to a shared GitHub catalog. The controller also serves its bundled browser
+journal. Owner sessions can manage private choices. Separate read-only screen
+grants and status credentials cannot perform owner actions. An operator-supplied
+application can still consume the compatible catalog interface.
 
 ```mermaid
 flowchart LR
@@ -15,10 +15,9 @@ flowchart LR
     A --> C
     D["Display node"] -- "GET catalog and images" --> C
     C -- "Approved plates" --> D
-    B["Trusted browser app (optional)"] -- "HTTPS GET" --> X["Application proxy or TLS endpoint"]
-    X -- "GET catalog and images" --> C
-    C -- "Approved catalog" --> X
-    X -- "Approved catalog" --> B
+    B["Owner browser journal"] -- "Sign in; explicit private actions" --> C
+    V["Paired read-only screen"] -- "Read one approved view" --> C
+    H["Home Assistant or Homepage"] -- "Scoped art or status reads" --> C
     A -. "optional catalog-only PR" .-> P["Public catalog"]
 ```
 
@@ -44,6 +43,14 @@ flowchart LR
   semantics rather than an accidental extension.
 
 ## Roles
+
+The browser is a client of the same controller, not a second database, scheduler
+or generation service. Named collections and history links stay in private
+versioned JSON. A bounded owner-operation worker records outcomes for reconnects;
+it never runs a model or accepts shell commands. Generation uses the existing
+queue and scheduler, with a deliberate off switch. See [journal](journal.md),
+[owner actions](owner-operations.md), [settings](settings.md) and
+[presentation boundaries](presentation.md).
 
 ### Controller
 

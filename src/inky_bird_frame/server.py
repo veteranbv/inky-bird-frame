@@ -3,15 +3,15 @@
 from __future__ import annotations
 
 import base64
+import errno
 import hashlib
 import json
 import re
 from datetime import datetime
 from html import escape
-from http import HTTPStatus
-from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path, PurePosixPath
-from urllib.parse import parse_qs, quote, unquote, urlsplit
+from typing import TYPE_CHECKING
+from urllib.parse import quote
 
 from . import __version__
 from .catalog import read_json, rebuild_catalog_index, utc_now
@@ -20,6 +20,12 @@ from .errors import CatalogError
 from .http import write_json_atomic
 from .images import slugify
 from .timeutil import parse_utc_timestamp
+
+if TYPE_CHECKING:
+    from starlette.requests import Request
+    from starlette.responses import Response
+
+    from .config import AppConfig
 
 CATALOG_SCHEMA_VERSION = 1
 MAX_TELEMETRY_REQUEST_BYTES = 1024
@@ -65,7 +71,7 @@ def _catalog_asset_path(value: object, field: str) -> str:
     return value
 
 
-def _project_active_catalog(payload: object) -> tuple[dict[str, object], dict[str, str]]:
+def project_catalog(payload: object) -> tuple[dict[str, object], dict[str, str]]:
     if (
         not isinstance(payload, dict)
         or not isinstance(payload.get("schema_version"), int)
@@ -172,7 +178,7 @@ def _species_count(path: Path) -> int:
     return 0
 
 
-def _featured_plate_entry(payload: dict[str, object]) -> dict[str, object] | None:
+def featured_plate_entry(payload: dict[str, object]) -> dict[str, object] | None:
     raw_species = payload.get("species")
     if not isinstance(raw_species, list):
         raise CatalogError("Active catalog has no species list")
@@ -236,376 +242,341 @@ def _featured_plate_document(
     ).encode()
 
 
-class CatalogRequestHandler(BaseHTTPRequestHandler):
-    catalog_dir: Path
-    active_catalog_path: Path
-    state_dir: Path
-    cors_allowed_origins: tuple[str, ...] = ()
-    embed_allowed_origins: tuple[str, ...] = ()
+class CatalogService:
+    """The existing display/catalog contract, also used by the browser service."""
 
-    def _has_origin(self) -> bool:
-        return bool(self.headers.get_all("Origin", failobj=[]))
+    def __init__(self, config: ControllerConfig) -> None:
+        self.config = config
+        self.active_catalog_path = config.state_dir / "active-catalog.json"
 
-    def _load_active_catalog(self) -> tuple[dict[str, object], dict[str, str]]:
-        return _project_active_catalog(read_json(self.active_catalog_path))
+    def _load(self) -> tuple[dict[str, object], dict[str, str]]:
+        return project_catalog(read_json(self.active_catalog_path))
 
-    def _send_browser_access_headers(self) -> None:
-        if not self.cors_allowed_origins:
-            return
-        self.send_header("Vary", "Origin")
-        origins = self.headers.get_all("Origin", failobj=[])
-        if len(origins) != 1:
-            return
-        # Emit the canonical configured value, never the request header value.
-        allowed_origin = next(
-            (candidate for candidate in self.cors_allowed_origins if candidate == origins[0]),
-            None,
-        )
-        if allowed_origin is not None:
-            self.send_header("Access-Control-Allow-Origin", allowed_origin)
+    def _browser_headers(self, request: Request) -> dict[str, str]:
+        if not self.config.cors_allowed_origins:
+            return {}
+        headers = {"Vary": "Origin"}
+        origins = request.headers.getlist("origin")
+        if len(origins) == 1 and origins[0] in self.config.cors_allowed_origins:
+            headers["Access-Control-Allow-Origin"] = origins[0]
+        return headers
 
-    def _send_json(
-        self,
-        status: HTTPStatus,
-        payload: object,
-        *,
-        allow_browser_access: bool = False,
-        head_only: bool = False,
-    ) -> None:
-        body = json.dumps(payload, sort_keys=True).encode()
-        self.send_response(status)
-        self.send_header("Content-Type", "application/json")
-        self.send_header("Content-Length", str(len(body)))
-        self.send_header("Cache-Control", "no-store")
-        self.send_header("X-Content-Type-Options", "nosniff")
-        if allow_browser_access:
-            self._send_browser_access_headers()
-        self.end_headers()
-        if not head_only:
-            self.wfile.write(body)
+    def _json(
+        self, request: Request, status: int, payload: object, *, browser: bool = False
+    ) -> Response:
+        from starlette.responses import Response
 
-    def _send_featured_plate(
-        self,
-        status: HTTPStatus,
-        entry: dict[str, object] | None,
-        *,
-        empty_message: str,
-    ) -> None:
-        body = _featured_plate_document(entry, empty_message=empty_message)
-        frame_ancestors = " ".join(("'self'", *self.embed_allowed_origins))
-        content_security_policy = "; ".join(
-            (
-                "default-src 'none'",
-                "img-src 'self'",
-                f"style-src 'sha256-{_FEATURED_PLATE_STYLE_HASH}'",
-                "script-src 'none'",
-                "object-src 'none'",
-                "base-uri 'none'",
-                "form-action 'none'",
-                f"frame-ancestors {frame_ancestors}",
-            )
-        )
-        self.send_response(status)
-        self.send_header("Content-Type", "text/html; charset=utf-8")
-        self.send_header("Content-Length", str(len(body)))
-        self.send_header("Cache-Control", "no-store")
-        self.send_header("Content-Security-Policy", content_security_policy)
-        self.send_header("Referrer-Policy", "no-referrer")
-        self.send_header("X-Content-Type-Options", "nosniff")
-        self.end_headers()
-        self.wfile.write(body)
-
-    def _send_file(
-        self,
-        path: Path,
-        requested_sha256: list[str] | None,
-        expected_sha256: str,
-    ) -> None:
-        try:
-            body = path.read_bytes()
-        except OSError:
-            self._send_json(
-                HTTPStatus.SERVICE_UNAVAILABLE,
-                {"ok": False, "error": "active asset unavailable", "schema_version": 1},
-                allow_browser_access=True,
-            )
-            return
-        actual_sha256 = hashlib.sha256(body).hexdigest()
-        if actual_sha256 != expected_sha256:
-            self._send_json(
-                HTTPStatus.SERVICE_UNAVAILABLE,
-                {"ok": False, "error": "active asset unavailable", "schema_version": 1},
-                allow_browser_access=True,
-            )
-            return
-        content_addressed = requested_sha256 == [expected_sha256]
-        self.send_response(HTTPStatus.OK)
-        self.send_header("Content-Type", "image/png")
-        self.send_header("Content-Length", str(len(body)))
-        self.send_header("X-Content-Type-Options", "nosniff")
-        self._send_browser_access_headers()
-        self.send_header(
-            "Cache-Control",
-            "public, max-age=86400, immutable" if content_addressed else "no-cache",
-        )
-        self.end_headers()
-        self.wfile.write(body)
-
-    def _record_display_event(self, filename: str, timestamp_field: str) -> bool:
-        try:
-            write_json_atomic(
-                self.state_dir / filename,
-                {"schema_version": 1, timestamp_field: utc_now()},
-            )
-        except OSError:
-            print(
-                json.dumps(
-                    {
-                        "event": "display_telemetry_write_failed",
-                        "file": filename,
-                    }
-                )
-            )
-            return False
-        return True
-
-    def _send_telemetry_unavailable(self) -> None:
-        self._send_json(
-            HTTPStatus.SERVICE_UNAVAILABLE,
-            {"ok": False, "error": "display telemetry unavailable", "schema_version": 1},
+        headers = {"Cache-Control": "no-store", "X-Content-Type-Options": "nosniff"}
+        if browser:
+            headers.update(self._browser_headers(request))
+        return Response(
+            json.dumps(payload, sort_keys=True).encode(),
+            status_code=status,
+            media_type="application/json",
+            headers=headers,
         )
 
-    def _read_telemetry_payload(self) -> bool:
-        if self._has_origin():
-            self._send_json(
-                HTTPStatus.FORBIDDEN,
-                {"ok": False, "error": "browser telemetry is not accepted", "schema_version": 1},
-            )
-            return False
-        media_type = self.headers.get("Content-Type", "").partition(";")[0].strip().lower()
-        if media_type != "application/json":
-            self._send_json(
-                HTTPStatus.UNSUPPORTED_MEDIA_TYPE,
-                {"ok": False, "error": "expected application/json", "schema_version": 1},
-            )
-            return False
-        lengths = self.headers.get_all("Content-Length", failobj=[])
-        if len(lengths) != 1:
-            self._send_json(
-                HTTPStatus.LENGTH_REQUIRED,
-                {"ok": False, "error": "content length required", "schema_version": 1},
-            )
-            return False
-        try:
-            content_length = int(lengths[0])
-        except ValueError:
-            content_length = -1
-        if content_length < 0:
-            self._send_json(
-                HTTPStatus.BAD_REQUEST,
-                {"ok": False, "error": "invalid content length", "schema_version": 1},
-            )
-            return False
-        if content_length > MAX_TELEMETRY_REQUEST_BYTES:
-            self._send_json(
-                HTTPStatus.REQUEST_ENTITY_TOO_LARGE,
-                {"ok": False, "error": "request body too large", "schema_version": 1},
-            )
-            return False
-        try:
-            payload = json.loads(self.rfile.read(content_length))
-        except (UnicodeDecodeError, json.JSONDecodeError):
-            self._send_json(
-                HTTPStatus.BAD_REQUEST,
-                {"ok": False, "error": "invalid JSON", "schema_version": 1},
-            )
-            return False
-        if (
-            not isinstance(payload, dict)
-            or set(payload) != {"schema_version"}
-            or not isinstance(payload.get("schema_version"), int)
-            or isinstance(payload.get("schema_version"), bool)
-            or payload["schema_version"] != 1
-        ):
-            self._send_json(
-                HTTPStatus.BAD_REQUEST,
-                {"ok": False, "error": "invalid telemetry payload", "schema_version": 1},
-            )
-            return False
-        return True
+    def read_response(self, request: Request) -> Response:
+        from starlette.responses import Response
 
-    def do_GET(self) -> None:  # noqa: N802 - BaseHTTPRequestHandler API
-        split = urlsplit(self.path)
-        request_path = split.path
-        if request_path == "/health":
-            self._send_json(
-                HTTPStatus.OK,
+        path = request.url.path
+        if request.method == "HEAD" and path != "/v1/catalog":
+            response = self._json(request, 404, {"ok": False, "error": "not found"})
+        elif path == "/health":
+            response = self._json(
+                request,
+                200,
                 {
                     "ok": True,
-                    "approved_species": _species_count(self.catalog_dir / "index.json"),
+                    "approved_species": _species_count(self.config.catalog_dir / "index.json"),
                     "active_species": _species_count(self.active_catalog_path),
                     "version": __version__,
                     "schema_version": 1,
                 },
             )
-            return
-        if request_path == "/v1/catalog":
+        elif path == "/v1/catalog":
             try:
-                payload, _asset_hashes = self._load_active_catalog()
+                payload, _ = self._load()
             except (CatalogError, OSError):
-                self._send_json(
-                    HTTPStatus.SERVICE_UNAVAILABLE,
+                response = self._json(
+                    request,
+                    503,
                     {"ok": False, "error": "active catalog unavailable", "schema_version": 1},
-                    allow_browser_access=True,
+                    browser=True,
                 )
-                return
-            self._send_json(HTTPStatus.OK, payload, allow_browser_access=True)
-            return
-        if request_path == "/v1/embed/featured-plate":
+            else:
+                response = self._json(request, 200, payload, browser=True)
+        elif path == "/v1/embed/featured-plate":
             try:
-                payload, _asset_hashes = self._load_active_catalog()
-                entry = _featured_plate_entry(payload)
+                payload, _ = self._load()
+                entry = featured_plate_entry(payload)
             except (CatalogError, OSError):
-                self._send_featured_plate(
-                    HTTPStatus.SERVICE_UNAVAILABLE,
-                    None,
-                    empty_message="Featured plate unavailable",
+                body = _featured_plate_document(None, empty_message="Featured plate unavailable")
+                status = 503
+            else:
+                body = _featured_plate_document(entry, empty_message="No active plate yet")
+                status = 200
+            ancestors = " ".join(("'self'", *self.config.embed_allowed_origins))
+            csp = "; ".join(
+                (
+                    "default-src 'none'",
+                    "img-src 'self'",
+                    f"style-src 'sha256-{_FEATURED_PLATE_STYLE_HASH}'",
+                    "script-src 'none'",
+                    "object-src 'none'",
+                    "base-uri 'none'",
+                    "form-action 'none'",
+                    f"frame-ancestors {ancestors}",
                 )
-                return
-            self._send_featured_plate(
-                HTTPStatus.OK,
-                entry,
-                empty_message="No active plate yet",
             )
-            return
-        prefix = "/v1/assets/"
-        if request_path.startswith(prefix):
-            relative_text = unquote(request_path.removeprefix(prefix))
-            try:
-                _payload, asset_hashes = self._load_active_catalog()
-            except (CatalogError, OSError):
-                self._send_json(
-                    HTTPStatus.SERVICE_UNAVAILABLE,
-                    {"ok": False, "error": "active catalog unavailable", "schema_version": 1},
-                    allow_browser_access=True,
-                )
-                return
-            expected_sha256 = asset_hashes.get(relative_text)
-            if expected_sha256 is None:
-                self._send_json(
-                    HTTPStatus.NOT_FOUND,
-                    {"ok": False, "error": "not found"},
-                    allow_browser_access=True,
-                )
-                return
-            try:
-                relative = Path(relative_text)
-                root = self.catalog_dir.resolve()
-                candidate = root / relative
-                resolved_candidate = candidate.resolve()
-            except (OSError, RuntimeError, ValueError):
-                self._send_json(
-                    HTTPStatus.NOT_FOUND,
-                    {"ok": False, "error": "not found"},
-                    allow_browser_access=True,
-                )
-                return
+            response = Response(
+                body,
+                status_code=status,
+                media_type="text/html",
+                headers={
+                    "Cache-Control": "no-store",
+                    "Content-Security-Policy": csp,
+                    "Referrer-Policy": "no-referrer",
+                    "X-Content-Type-Options": "nosniff",
+                },
+            )
+        elif path.startswith("/v1/assets/"):
+            response = self.asset_response(request)
+        else:
+            response = self._json(request, 404, {"ok": False, "error": "not found"})
+        if request.method == "HEAD":
+            # Keep the content length of GET while suppressing the wire body.
+            response.body = b""
+        return response
+
+    def asset_response(self, request: Request) -> Response:
+        from starlette.responses import Response
+
+        relative_text = request.url.path.removeprefix("/v1/assets/")
+        try:
+            _, asset_hashes = self._load()
+        except (CatalogError, OSError):
+            return self._json(
+                request,
+                503,
+                {"ok": False, "error": "active catalog unavailable", "schema_version": 1},
+                browser=True,
+            )
+        digest = asset_hashes.get(relative_text)
+        if digest is None:
+            return self._json(request, 404, {"ok": False, "error": "not found"}, browser=True)
+        try:
+            root = self.config.catalog_dir.resolve()
+            relative = Path(relative_text)
+            candidate = root / relative
+            resolved = candidate.resolve()
             if (
                 relative.suffix.lower() != ".png"
-                or any(part.startswith(".") for part in relative.parts)
-                or not resolved_candidate.is_relative_to(root)
-                or resolved_candidate != candidate
+                or any(p.startswith(".") for p in relative.parts)
+                or not resolved.is_relative_to(root)
+                or resolved != candidate
                 or not candidate.is_file()
             ):
-                self._send_json(
-                    HTTPStatus.NOT_FOUND,
-                    {"ok": False, "error": "not found"},
-                    allow_browser_access=True,
-                )
-                return
-            self._send_file(
-                candidate,
-                parse_qs(split.query).get("sha256"),
-                expected_sha256,
+                return self._json(request, 404, {"ok": False, "error": "not found"}, browser=True)
+            body = candidate.read_bytes()
+        except (OSError, RuntimeError, ValueError) as exc:
+            # Python 3.12 reports a symlink loop as RuntimeError; newer
+            # pathlib versions can report ELOOP. Neither is a usable asset.
+            if not isinstance(exc, OSError) or exc.errno == errno.ELOOP:
+                return self._json(request, 404, {"ok": False, "error": "not found"}, browser=True)
+            return self._json(
+                request,
+                503,
+                {"ok": False, "error": "active asset unavailable", "schema_version": 1},
+                browser=True,
             )
-            return
-        self._send_json(HTTPStatus.NOT_FOUND, {"ok": False, "error": "not found"})
-
-    def do_HEAD(self) -> None:  # noqa: N802 - BaseHTTPRequestHandler API
-        request_path = urlsplit(self.path).path
-        if request_path != "/v1/catalog":
-            self._send_json(
-                HTTPStatus.NOT_FOUND,
-                {"ok": False, "error": "not found"},
-                head_only=True,
+        if hashlib.sha256(body).hexdigest() != digest:
+            return self._json(
+                request,
+                503,
+                {"ok": False, "error": "active asset unavailable", "schema_version": 1},
+                browser=True,
             )
-            return
-        try:
-            payload, _asset_hashes = self._load_active_catalog()
-        except (CatalogError, OSError):
-            self._send_json(
-                HTTPStatus.SERVICE_UNAVAILABLE,
-                {"ok": False, "error": "active catalog unavailable", "schema_version": 1},
-                allow_browser_access=True,
-                head_only=True,
-            )
-            return
-        self._send_json(
-            HTTPStatus.OK,
-            payload,
-            allow_browser_access=True,
-            head_only=True,
+        addressed = request.query_params.getlist("sha256") == [digest]
+        return Response(
+            body,
+            media_type="image/png",
+            headers={
+                "Cache-Control": "public, max-age=86400, immutable" if addressed else "no-cache",
+                "X-Content-Type-Options": "nosniff",
+                **self._browser_headers(request),
+            },
         )
 
-    def do_POST(self) -> None:  # noqa: N802 - BaseHTTPRequestHandler API
-        request_path = urlsplit(self.path).path
+    def _record_event(self, filename: str, field: str) -> bool:
+        try:
+            write_json_atomic(
+                self.config.state_dir / filename, {"schema_version": 1, field: utc_now()}
+            )
+        except OSError:
+            print(json.dumps({"event": "display_telemetry_write_failed", "file": filename}))
+            return False
+        return True
+
+    async def telemetry_response(self, request: Request) -> Response:
+        from starlette.concurrency import run_in_threadpool
+
         events = {
             "/v1/display-fetch": ("display-last-fetch.json", "fetched_at"),
             "/v1/display-success": ("display-last-success.json", "succeeded_at"),
         }
-        event = events.get(request_path)
+        event = events.get(request.url.path.removeprefix("/wall"))
         if event is None:
-            self._send_json(HTTPStatus.NOT_FOUND, {"ok": False, "error": "not found"})
-            return
-        if not self._read_telemetry_payload():
-            return
-        if not self._record_display_event(*event):
-            self._send_telemetry_unavailable()
-            return
-        self._send_json(HTTPStatus.OK, {"ok": True, "schema_version": 1})
+            return self._json(request, 404, {"ok": False, "error": "not found"})
+        if request.headers.getlist("origin"):
+            return self._json(
+                request,
+                403,
+                {"ok": False, "error": "browser telemetry is not accepted", "schema_version": 1},
+            )
+        media_type = request.headers.get("content-type", "").partition(";")[0].strip().lower()
+        if media_type != "application/json":
+            return self._json(
+                request,
+                415,
+                {"ok": False, "error": "expected application/json", "schema_version": 1},
+            )
+        lengths = request.headers.getlist("content-length")
+        if len(lengths) != 1:
+            return self._json(
+                request, 411, {"ok": False, "error": "content length required", "schema_version": 1}
+            )
+        try:
+            length = int(lengths[0])
+        except ValueError:
+            length = -1
+        if length < 0:
+            return self._json(
+                request, 400, {"ok": False, "error": "invalid content length", "schema_version": 1}
+            )
+        if length > MAX_TELEMETRY_REQUEST_BYTES:
+            return self._json(
+                request, 413, {"ok": False, "error": "request body too large", "schema_version": 1}
+            )
+        body = bytearray()
+        async for chunk in request.stream():
+            body.extend(chunk)
+            if len(body) > MAX_TELEMETRY_REQUEST_BYTES:
+                return self._json(
+                    request,
+                    413,
+                    {"ok": False, "error": "request body too large", "schema_version": 1},
+                )
+        try:
+            payload = json.loads(body)
+        except (UnicodeDecodeError, json.JSONDecodeError):
+            return self._json(
+                request, 400, {"ok": False, "error": "invalid JSON", "schema_version": 1}
+            )
+        if (
+            not isinstance(payload, dict)
+            or set(payload) != {"schema_version"}
+            or type(payload.get("schema_version")) is not int
+            or payload["schema_version"] != 1
+        ):
+            return self._json(
+                request,
+                400,
+                {"ok": False, "error": "invalid telemetry payload", "schema_version": 1},
+            )
+        if not await run_in_threadpool(self._record_event, *event):
+            return self._json(
+                request,
+                503,
+                {"ok": False, "error": "display telemetry unavailable", "schema_version": 1},
+            )
+        return self._json(request, 200, {"ok": True, "schema_version": 1})
 
-    def log_message(self, message_format: str, *args: object) -> None:
-        message = message_format % args
+    async def dispatch(self, request: Request) -> Response:
+        from starlette.concurrency import run_in_threadpool
+
+        if request.method in {"GET", "HEAD"}:
+            response = await run_in_threadpool(self.read_response, request)
+        elif request.method == "POST":
+            response = await self.telemetry_response(request)
+        else:
+            response = self._json(request, 501, {"ok": False, "error": "method not supported"})
+        # Never log a query, cookie, address, asset identity, or arbitrary path.
+        path = request.url.path
+        route = (
+            path
+            if path
+            in {
+                "/health",
+                "/v1/catalog",
+                "/v1/embed/featured-plate",
+                "/v1/display-fetch",
+                "/v1/display-success",
+            }
+            else "/v1/assets/{asset}"
+            if path.startswith("/v1/assets/")
+            else "/not-found"
+        )
         print(
             json.dumps(
-                {"event": "http_request", "client": self.client_address[0], "message": message}
+                {
+                    "event": "http_request",
+                    "method": request.method,
+                    "route": route,
+                    "status": response.status_code,
+                }
             )
         )
+        return response
 
 
 def rebuild_index_logging_failures(catalog_dir: Path) -> None:
     try:
         rebuild_catalog_index(catalog_dir)
-    except (CatalogError, OSError) as exc:
-        print(json.dumps({"event": "catalog_index_rebuild_failed", "error": str(exc)}))
+    except (CatalogError, OSError):
+        print(json.dumps({"event": "catalog_index_rebuild_failed"}))
 
 
-def serve_catalog(config: ControllerConfig) -> None:
+def serve_catalog(config: ControllerConfig, *, app_config: AppConfig | None = None) -> None:
+    try:
+        import uvicorn
+
+        from .web import create_app
+    except ImportError as exc:
+        from .errors import MissingDependencyError
+
+        raise MissingDependencyError("Install inky-bird-frame[controller] to serve Inky") from exc
+
+    if config.tls_certificate is not None or config.tls_private_key is not None:
+        import ssl
+        import stat
+
+        from .errors import ConfigurationError
+
+        if config.tls_certificate is None or config.tls_private_key is None:
+            raise ConfigurationError("Supply both the TLS certificate and private key")
+        try:
+            key_stat = config.tls_private_key.lstat()
+            if not stat.S_ISREG(key_stat.st_mode) or stat.S_IMODE(key_stat.st_mode) & 0o077:
+                raise ConfigurationError("TLS private key must be a regular file with mode 0600")
+            context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
+            # Never let OpenSSL prompt on a supervised/headless service start.
+            context.load_cert_chain(config.tls_certificate, config.tls_private_key, password="")
+        except (OSError, ssl.SSLError) as exc:
+            raise ConfigurationError(
+                "Cannot load the TLS certificate/key; check files and their match"
+            ) from exc
+
     config.catalog_dir.mkdir(parents=True, exist_ok=True)
     rebuild_index_logging_failures(config.catalog_dir)
-    handler = type(
-        "ConfiguredCatalogRequestHandler",
-        (CatalogRequestHandler,),
-        {
-            "catalog_dir": config.catalog_dir,
-            "active_catalog_path": config.state_dir / "active-catalog.json",
-            "state_dir": config.state_dir,
-            "cors_allowed_origins": config.cors_allowed_origins,
-            "embed_allowed_origins": config.embed_allowed_origins,
-        },
+    uvicorn.run(
+        create_app(config, app_config=app_config),
+        host=config.bind_host,
+        port=config.port,
+        access_log=False,
+        server_header=False,
+        proxy_headers=False,
+        ssl_certfile=str(config.tls_certificate) if config.tls_certificate else None,
+        ssl_keyfile=str(config.tls_private_key) if config.tls_private_key else None,
+        ssl_keyfile_password="" if config.tls_private_key else None,
     )
-    server = ThreadingHTTPServer((config.bind_host, config.port), handler)
-    try:
-        server.serve_forever()
-    finally:
-        server.server_close()

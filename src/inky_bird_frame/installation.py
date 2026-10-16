@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import json
 import os
 import platform
 import shutil
@@ -17,11 +18,13 @@ from urllib.parse import urlsplit, urlunsplit
 from .birdbuddy import birdbuddy_status
 from .config import AppConfig, DiscoveryProvider, load_config
 from .errors import ConfigurationError, InkyBirdFrameError, InstallationError
-from .http import get_json
+from .http import get_json, write_bytes_atomic
 from .images import SUPPORTED_HARDWARE_SIZES
 
 SUDO_AUTHORIZATION_TIMEOUT_SECONDS = 300
 INSTALLER_TIMEOUT_SECONDS = 3600
+# One native sign-in credential, bounded below normal OS environment limits.
+MAX_NATIVE_ACCESS_BYTES = 64 * 1024
 MANAGED_CONTROLLER_DEFAULT_EXECUTABLE_PATH = (
     "/usr/local/sbin",
     "/usr/local/bin",
@@ -132,9 +135,11 @@ def _systemd_quote(value: str) -> str:
     return f'"{escaped}"'
 
 
-def controller_executable_path(codex_path: Path) -> str:
+def controller_executable_path(codex_path: Path, *, generation_enabled: bool = True) -> str:
     """Return a deterministic PATH for managed controller services."""
     if not codex_path.is_absolute():
+        if not generation_enabled:
+            return ":".join(MANAGED_CONTROLLER_DEFAULT_EXECUTABLE_PATH)
         raise InstallationError(
             "Codex CLI must resolve to an absolute path for managed controller services"
         )
@@ -142,6 +147,43 @@ def controller_executable_path(codex_path: Path) -> str:
         (str(codex_path.parent), *MANAGED_CONTROLLER_DEFAULT_EXECUTABLE_PATH)
     )
     return ":".join(executable_paths)
+
+
+def native_oidc_environment(config: AppConfig, config_path: Path) -> dict[str, str]:
+    """Persist only the configured OIDC secret for restart-safe native serving."""
+    if config.controller.oidc is None:
+        return {}
+    name = config.controller.oidc.client_secret_env
+    path = config_path.resolve().parent / "native-access.env"
+    cached: object = None
+    try:
+        if path.exists() or path.is_symlink():
+            descriptor = os.open(path, os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK)
+            with os.fdopen(descriptor, "rb") as handle:
+                info = os.fstat(handle.fileno())
+                if not stat.S_ISREG(info.st_mode) or stat.S_IMODE(info.st_mode) & 0o077:
+                    raise InstallationError("Native access cache must be private and regular")
+                body = handle.read(MAX_NATIVE_ACCESS_BYTES + 1)
+            if len(body) > MAX_NATIVE_ACCESS_BYTES:
+                raise InstallationError("Native access cache exceeds its supported size")
+            key, separator, value = body.decode().partition("=")
+            if separator and key == name:
+                cached = json.loads(value)
+        secret = os.environ.get(name, cached)
+        if not isinstance(secret, str) or not secret or not secret.isprintable():
+            raise InstallationError(
+                "Supply the configured OIDC client secret when running native setup; "
+                "use one nonempty printable value"
+            )
+        # JSON's printable UTF-8 string form is also a systemd EnvironmentFile
+        # double-quoted value. No shell is used and no expansion is performed.
+        content = f"{name}={json.dumps(secret, ensure_ascii=False)}\n".encode()
+        if len(content) > MAX_NATIVE_ACCESS_BYTES:
+            raise InstallationError("Native OIDC client secret exceeds its supported size")
+        write_bytes_atomic(path, content, mode=0o600)
+    except (OSError, UnicodeError, ValueError):
+        raise InstallationError("Native access cache is invalid or cannot be written") from None
+    return {name: secret}
 
 
 def controller_systemd_units(
@@ -154,7 +196,9 @@ def controller_systemd_units(
     user: str,
 ) -> dict[str, str]:
     """Render the complete systemd controller unit set for one installation."""
-    service_path = controller_executable_path(config.controller.codex_path)
+    service_path = controller_executable_path(
+        config.controller.codex_path, generation_enabled=config.controller.generation_enabled
+    )
     common = (
         f"User={user}\n"
         f"WorkingDirectory={_systemd_literal(str(app_dir))}\n"
@@ -162,10 +206,17 @@ def controller_systemd_units(
         f"Environment={_systemd_quote(f'PATH={service_path}')}\n"
         "Environment=PYTHONUNBUFFERED=1\n"
     )
+    access_path = config_path.resolve().parent / "native-access.env"
+    owner_environment = (
+        f"EnvironmentFile={_systemd_quote(str(access_path))}\n"
+        if config.controller.oidc is not None
+        else ""
+    )
 
     def command(*arguments: str) -> str:
         return " ".join(_systemd_quote(argument) for argument in (str(executable), *arguments))
 
+    serving = common + owner_environment + SYSTEMD_SERVICE_HARDENING
     units = {
         "inky-bird-frame-controller.service": f"""[Unit]
 Description=Serve the Inky Bird Frame approved catalog
@@ -174,7 +225,7 @@ Wants=network-online.target
 
 [Service]
 Type=simple
-{common}{SYSTEMD_SERVICE_HARDENING}ExecStart={command("serve", "--config", str(config_path))}
+{serving}ExecStart={command("serve", "--config", str(config_path))}
 Restart=on-failure
 RestartSec=10s
 
@@ -182,9 +233,25 @@ RestartSec=10s
 WantedBy=multi-user.target
 """
     }
+    if config.controller.configuration_ownership == "app":
+        units["inky-bird-frame-scheduler.service"] = f"""[Unit]
+Description=Schedule Inky Bird Frame application-owned work
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+{common}ExecStart={command("scheduler", "--config", str(config_path))}
+Restart=on-failure
+RestartSec=10s
+
+[Install]
+WantedBy=multi-user.target
+"""
+        return units
     jobs = (
         ("refresh", config.schedule.refresh_minutes, True),
-        ("generate", config.schedule.generation_minutes, True),
+        ("generate", config.schedule.generation_minutes, config.controller.generation_enabled),
         ("catalog-publish", config.schedule.catalog_publish_minutes, config.public_catalog.enabled),
         (
             "notifications",
@@ -422,21 +489,33 @@ def _codex_auth_check(path: Path) -> DiagnosticCheck:
     )
 
 
-def _health_url(config: AppConfig, role: InstallationRole) -> str:
+def health_url(config: AppConfig, role: InstallationRole) -> str:
+    """Select the configured service endpoint for doctor and container probes."""
     if role is InstallationRole.CONTROLLER:
+        if config.controller.tls_certificate:
+            for origin in config.controller.owner_allowed_origins:
+                parsed_origin = urlsplit(origin)
+                if (
+                    parsed_origin.scheme == "https"
+                    and (parsed_origin.port or 443) == config.controller.port
+                ):
+                    return f"{origin}/health"
         host = config.controller.bind_host
-        if host in {"0.0.0.0", "::", "[::]"}:
+        if host == "0.0.0.0":
             host = "127.0.0.1"
+        elif host in {"::", "[::]"}:
+            host = "::1"
         if ":" in host and not host.startswith("["):
             host = f"[{host}]"
-        return f"http://{host}:{config.controller.port}/health"
+        scheme = "https" if config.controller.tls_certificate else "http"
+        return f"{scheme}://{host}:{config.controller.port}/health"
     parsed = urlsplit(config.display_node.controller_url)
     health_path = f"{parsed.path.rstrip('/')}/health"
     return urlunsplit((parsed.scheme, parsed.netloc, health_path, "", ""))
 
 
 def _controller_health_check(config: AppConfig, role: InstallationRole) -> DiagnosticCheck:
-    url = _health_url(config, role)
+    url = health_url(config, role)
     try:
         payload = get_json(url, timeout_seconds=5)
     except (InkyBirdFrameError, OSError, ValueError) as exc:
@@ -460,12 +539,15 @@ def _launchd_checks(config: AppConfig) -> Iterable[DiagnosticCheck]:
     labels = [
         "com.inky-bird-frame.serve",
         "com.inky-bird-frame.refresh",
-        "com.inky-bird-frame.generate",
     ]
+    if config.controller.generation_enabled:
+        labels.append("com.inky-bird-frame.generate")
     if config.public_catalog.enabled:
         labels.append("com.inky-bird-frame.catalog-publish")
     if config.notifications.enabled:
         labels.append("com.inky-bird-frame.notifications")
+    if config.controller.configuration_ownership == "app":
+        labels = ["com.inky-bird-frame.serve", "com.inky-bird-frame.scheduler"]
     uid = os.getuid()
     for label in labels:
         result = _run(["launchctl", "print", f"gui/{uid}/{label}"])
@@ -521,7 +603,12 @@ def _systemd_last_run_check(
 
 def _systemd_controller_checks(config: AppConfig) -> Iterable[DiagnosticCheck]:
     yield _systemd_unit_check("inky-bird-frame-controller.service")
-    jobs = [("refresh", "observation refresh"), ("generate", "generation cycle")]
+    if config.controller.configuration_ownership == "app":
+        yield _systemd_unit_check("inky-bird-frame-scheduler.service")
+        return
+    jobs = [("refresh", "observation refresh")]
+    if config.controller.generation_enabled:
+        jobs.append(("generate", "generation cycle"))
     if config.public_catalog.enabled:
         jobs.append(("catalog-publish", "catalog publication"))
     if config.notifications.enabled:
@@ -620,11 +707,14 @@ def doctor(role: InstallationRole, config_path: Path) -> DoctorReport:
                 _existing_writable_directory("workspace", config.controller.workspace_dir),
                 _writable_directory("catalog", config.controller.catalog_dir),
                 _writable_directory("controller_state", config.controller.state_dir),
-                _executable_check(config.controller.codex_path),
             )
         )
-        if config.controller.codex_path.is_file():
-            checks.append(_codex_auth_check(config.controller.codex_path))
+        if config.controller.generation_enabled:
+            checks.append(_executable_check(config.controller.codex_path))
+            if config.controller.codex_path.is_file():
+                checks.append(_codex_auth_check(config.controller.codex_path))
+        else:
+            checks.append(_pass("generation", "Generation is off; Codex is not required"))
         if DiscoveryProvider.BIRDBUDDY in config.discovery.sources:
             checks.append(_birdbuddy_auth_check(config))
         if platform.system() == "Darwin":
@@ -718,6 +808,8 @@ def setup(
         "install and enable native service-manager definitions",
         "verify the installed services with the native service manager",
     ]
+    if role is InstallationRole.CONTROLLER and config.controller.oidc is not None:
+        changes.append("retain the named OIDC secret in a private serving-only native cache")
     result: dict[str, object] = {
         "role": role.value,
         "source": str(script.parent.parent),

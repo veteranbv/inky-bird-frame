@@ -1,6 +1,52 @@
 from __future__ import annotations
 
 from pathlib import Path
+from unittest.mock import patch
+
+import pytest
+
+
+def test_serving_container_receives_provider_credentials_but_sso_stays_separate() -> None:
+    root = Path(__file__).resolve().parents[1]
+    compose = (root / "compose.yaml").read_text()
+    serving = compose.split("  controller:\n", 1)[1].split("  scheduler:\n", 1)[0]
+    scheduler = compose.split("  scheduler:\n", 1)[1].split("\nvolumes:", 1)[0]
+    assert "${INKY_BIRD_ENV:-./controller.env}" in serving
+    assert "${INKY_ACCESS_ENV:-./access.env}" in serving
+    assert "${INKY_BIRD_ENV:-./controller.env}" in scheduler
+    assert "INKY_ACCESS_ENV" not in scheduler
+    workflow = (root / ".github" / "workflows" / "ci.yml").read_text()
+    assert '.services.controller.environment.SECRET_BOUNDARY_SENTINEL == "present"' in workflow
+    assert '.services.controller.environment.ACCESS_BOUNDARY_SENTINEL == "present"' in workflow
+    for role in ("scheduler", "bootstrap"):
+        assert f".services.{role}.environment.ACCESS_BOUNDARY_SENTINEL == null" in workflow
+    assert '.services["config-sync"].environment.ACCESS_BOUNDARY_SENTINEL == null' in workflow
+
+
+@pytest.mark.parametrize("ready", [True, False])
+def test_docker_health_probe_uses_configured_transport_and_validates_readiness(ready: bool) -> None:
+    root = Path(__file__).resolve().parents[1]
+    health = (root / "compose.yaml").read_text().split("    healthcheck:\n", 1)[1]
+    health = health.split("      interval:", 1)[0]
+    assert "- CMD\n" in health and "- python\n" in health and "- -c\n" in health
+    script = " ".join(line.strip() for line in health.split("- >-\n", 1)[1].splitlines())
+    compile(script, "compose-health", "exec")
+    with (
+        patch("inky_bird_frame.config.load_config") as load,
+        patch(
+            "inky_bird_frame.installation.health_url",
+            return_value="https://controller.test:8793/health",
+        ) as url,
+        patch("inky_bird_frame.http.get_json", return_value={"ok": ready}) as request,
+    ):
+        if ready:
+            exec(script, {})
+        else:
+            with pytest.raises(AssertionError):
+                exec(script, {})
+        load.assert_called_once_with(Path("/data/config.toml"), load_secrets=False)
+        url.assert_called_once()
+        request.assert_called_once_with("https://controller.test:8793/health", timeout_seconds=5)
 
 
 def test_docker_config_sync_keeps_the_host_file_authoritative_and_private() -> None:
@@ -36,6 +82,20 @@ def _controller_installers() -> list[str]:
         (root / "install-controller.sh").read_text(),
         (root / "install-controller-systemd.sh").read_text(),
     ]
+
+
+def test_native_installers_finish_without_exposing_or_blocking_owner_registration() -> None:
+    for script in _controller_installers():
+        setup = script.index('access setup --if-needed --config "${config_path}"')
+        assert script.index("installation_complete=true") < setup
+        assert "owner setup is incomplete" in script[setup:]
+        assert "access prepare" not in script
+    root = Path(__file__).resolve().parents[1]
+    assert "access prepare" not in (root / "compose.yaml").read_text()
+    assert "/data/var/controller" not in (root / "Dockerfile").read_text()
+    workflow = (root / ".github/workflows/ci.yml").read_text()
+    assert "access prepare --new-installation --config /data/config.toml" in workflow
+    assert "set(p.name for p in path.parent.iterdir()) == {'config.toml'}" in workflow
 
 
 def test_docker_bootstrap_applies_only_reviewed_catalog_migrations() -> None:
@@ -95,7 +155,8 @@ def test_macos_controller_installer_limits_log_retention_and_permissions() -> No
         assert f'**managed_agent("{name}")' in script
     assert '"INKY_BIRD_MANAGED_LOG_PATH": str(log_dir / f"{name}.log")' in script
     assert "from inky_bird_frame.installation import controller_executable_path" in script
-    assert '"PATH": controller_executable_path(config.controller.codex_path)' in script
+    assert '"PATH": controller_executable_path(' in script
+    assert "generation_enabled=config.controller.generation_enabled" in script
 
 
 def test_systemd_controller_installer_restarts_boot_persistent_services() -> None:
@@ -140,7 +201,7 @@ def test_macos_controller_installer_restores_previously_loaded_agents_on_failure
     script = (Path(__file__).resolve().parents[1] / "deploy" / "install-controller.sh").read_text()
 
     backup = script.index('cp "${plist}" "${plist_backup_dir}/"')
-    plist_write = script.index("plistlib.dump(payload, handle, sort_keys=True)")
+    plist_write = script.index("write_bytes_atomic(path, plistlib.dumps(payload, sort_keys=True)")
     unconditional_bootout = script.index('launchctl bootout "gui/${uid}/com.inky-bird-frame.serve"')
     bootstrap = script.index('launchctl bootstrap "gui/${uid}" "${serve_plist}"')
     completion = script.index("installation_complete=true")
@@ -154,7 +215,9 @@ def test_macos_controller_installer_restores_previously_loaded_agents_on_failure
     assert script.index('if was_previously_loaded "${label}"') < script.index(
         "# Not running before this install: undo any half-installed agent."
     )
-    assert "for label in serve refresh generate catalog-publish notifications; do" in script
+    assert (
+        "for label in serve refresh generate catalog-publish notifications scheduler; do" in script
+    )
     assert 'restore_catalog_publisher_schedule "${uid}" || true' in script
     assert 'rm -rf "${plist_backup_dir}"' in script
 

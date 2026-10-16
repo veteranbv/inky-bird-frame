@@ -194,6 +194,17 @@ class BirdBuddyFeeder:
     role: str
 
 
+class BirdBuddyFeederSelectionRequiredError(DataSourceError):
+    """Structured feeder choices; browser adapters never parse exception text."""
+
+    def __init__(self, feeders: list[BirdBuddyFeeder]) -> None:
+        self.feeders = tuple(feeders)
+        super().__init__(
+            "Bird Buddy account has multiple feeders; rerun login with --feeder-id using one of: "
+            + ", ".join(f"{feeder.name} ({feeder.feeder_id})" for feeder in feeders)
+        )
+
+
 @dataclass(frozen=True)
 class BirdBuddyAuthState:
     authorization_confirmed_at: str
@@ -465,10 +476,7 @@ def _select_feeder(feeders: list[BirdBuddyFeeder], feeder_id: str | None) -> Bir
     if feeder_id is None:
         if len(feeders) == 1:
             return feeders[0]
-        raise DataSourceError(
-            "Bird Buddy account has multiple feeders; rerun login with --feeder-id using one of: "
-            + ", ".join(f"{feeder.name} ({feeder.feeder_id})" for feeder in feeders)
-        )
+        raise BirdBuddyFeederSelectionRequiredError(feeders)
     selected = next((feeder for feeder in feeders if feeder.feeder_id == feeder_id), None)
     if selected is None:
         raise DataSourceError("Selected Bird Buddy feeder is not accessible to this account")
@@ -1405,7 +1413,7 @@ def _aggregate_species(
     history: FeederHistory,
     window: ObservationWindow,
     now: datetime,
-    limit: int,
+    limit: int | None,
     *,
     include_manual_sightings: bool,
 ) -> list[BirdBuddySpecies]:
@@ -1759,6 +1767,32 @@ def sync_birdbuddy_detections(
         confirmed_records_ignored=confirmed.records_ignored,
     )
     return BirdBuddySyncResult(species, stats)
+
+
+def read_birdbuddy_history_species(
+    state_dir: Path, *, include_manual_sightings: bool = False
+) -> tuple[list[BirdBuddySpecies], str]:
+    """Read one selected feeder's retained history; never refresh authentication."""
+    with _history_lock(state_dir):
+        histories = _read_history(state_dir)
+    if not histories:
+        return [], "No retained feeder history"
+    if _auth_path(state_dir).exists():
+        selected = _read_auth_state(state_dir).feeder.feeder_id
+    elif len(histories) == 1:
+        selected = next(iter(histories))
+    else:
+        raise DataSourceError("Select a feeder with Bird Buddy login to inspect retained history")
+    history = histories.get(selected)
+    if history is None:
+        return [], "No retained history for the selected feeder"
+    return _aggregate_species(
+        history,
+        ObservationWindow.ALL_TIME,
+        datetime.now(UTC),
+        None,
+        include_manual_sightings=include_manual_sightings,
+    ), "Since integration began; confirmed presence is not an exact visit count"
 
 
 def birdbuddy_status(

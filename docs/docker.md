@@ -19,14 +19,61 @@ Compose starts four services from the same image:
 | --- | --- | --- |
 | `config-sync` | Validates the host `config.toml`, installs a private runtime copy, then exits | Configuration file and referenced environment values |
 | `bootstrap` | Copies the included public bird catalog into persistent storage, then exits | None |
-| `controller` | Serves health, catalog metadata, and approved images on port 8793 | None |
+| `controller` | Serves the browser journal, paired screens, health and approved art on port 8793; runs explicit browser actions | Private owner hashes, configured provider/destination credentials, optional identity-service client secret |
 | `scheduler` | Refreshes observations and runs generation, notifications, and optional catalog publication | Codex and any configured service credentials |
 
 The controller and scheduler use the same commands as a native installation.
 One failed scheduled job is logged and retried later without stopping the HTTP
 service or unrelated jobs.
 
-The host `config.toml` is authoritative. Compose bind-mounts it read-only into
+The development [browser journal](journal.md) opens at `/app`.
+Create a local username and password; no setup code is required. The optional
+`access.env` file supplies only controller access credentials such as an OIDC
+client secret. Protect it with mode `0600`. It is separate from `controller.env`,
+which supplies provider and destination credentials to both long-running
+services. Browser source and notification actions need those variables in the
+serving process as well as the scheduler. Keep only required Inky variables in
+these files. Do not give the controller a vault service token or unrelated host
+credentials. Both processes use the same private configuration and history.
+See [migration](migration-v1.md) and [history imports](history-imports.md).
+
+Docker port forwarding changes the address seen by the application. List the
+exact browser address in your host `config.toml`, including any non-default
+port. For access from the same computer:
+
+```toml
+[controller]
+owner_access_mode = "local"
+owner_allowed_origins = ["http://localhost:8793"]
+```
+
+For a phone on your home network, replace that example with the controller's
+actual LAN address. Add each address you use, rather than a wildcard. With a
+TLS reverse proxy, use its exact HTTPS address and `owner_access_mode = "https-only"`
+as described in the access guide. This explicit address check prevents an
+unrelated hostname from reaching owner forms through DNS rebinding.
+
+Trust the other web services on that hostname or IP, including other ports:
+browsers share sign-in cookies across ports. A separate HTTP hostname alone
+does not isolate an untrusted service. See the
+[host-isolation requirements](browser-access.md#sessions-and-private-files).
+
+The controller health check reads the same configuration as `doctor`. It uses
+HTTP for a plain listener and HTTPS for direct TLS. It validates certificate
+trust and the response, not just a successful TCP connection. For direct TLS,
+put the matching certificate and mode-0600 private key in the private data
+volume, readable by UID 10001. Configure their paths as described in the
+[access guide](browser-access.md#advanced-supply-a-certificate). If using a
+private CA, mount only its public trust certificate and set `SSL_CERT_FILE` for
+the controller. Include its actual listener hostname and port in
+`owner_allowed_origins`; that address must resolve inside the container too.
+Do not disable certificate validation to pass a health check. A reverse proxy
+that terminates HTTPS leaves the backend listener and health check on HTTP.
+
+For existing managed installations, the host `config.toml` is authoritative.
+The [app-managed candidate](settings.md) instead preserves its private runtime
+file across restarts; the original host file is only its first-start seed.
+Compose bind-mounts the host file read-only into
 the one-shot `config-sync` service, not the long-running services. Local Docker
 Compose cannot remap the owner or mode of a file-backed config, so mounting a
 mode-0600 host file directly into the unprivileged controller is not portable.
@@ -98,9 +145,14 @@ You need:
 - Docker Engine with the Compose plugin, or Docker Desktop;
 - a 64-bit AMD64 or ARM64 host;
 - enough storage for generated images and controller state;
-- a ChatGPT plan that includes Codex, or an OpenAI API key with separate API
-  billing; and
-- a controller address that the display Pi can reach on TCP 8793.
+- a ChatGPT plan that includes Codex, or a separately billed OpenAI API key,
+  only if you want to generate missing art; and
+- a reachable controller address if you use a physical display or another device.
+
+The browser-journal release can start with approved artwork, no sources and
+generation off. It needs neither Codex sign-in nor an e-paper frame. Do not run
+the new art-first commands with an older published image; follow that release's
+existing configuration path and the [migration guide](migration-v1.md).
 
 Do not expose port 8793 to the public internet. It serves a read-only catalog
 and accepts narrow, unauthenticated display-health reports on a trusted
@@ -136,6 +188,38 @@ If you prefer a source checkout, clone the repository and use the same
 add the [source-build override](#build-from-source).
 
 ## 2. Create private configuration
+
+For a new browser-journal installation, create the seed with the release image
+you selected in `.env`. No host Python installation is needed:
+
+```bash
+cp .env.example .env
+chmod 600 .env
+inky_image=$(docker compose config --images | sort -u)
+docker run --rm --network none --read-only --cap-drop ALL \
+  --security-opt no-new-privileges --user "$(id -u):$(id -g)" \
+  --mount "type=bind,src=$PWD,dst=/setup" "$inky_image" \
+  config init --container --destination /setup/config.toml
+```
+
+This refuses to replace an existing file. The seed selects app-managed settings,
+no observation sources and generation off. Inside its existing `[controller]`
+section, add your exact browser origin. The generated file writes this as
+`["controller"]`; both spellings mean the same section. Edit that section rather
+than adding a second one. For access on the Docker host:
+
+```toml
+owner_access_mode = "local"
+owner_allowed_origins = ["http://localhost:8793"]
+```
+
+Use the actual LAN address and port for a phone. Do not duplicate the TOML
+section or use a wildcard. No provider `controller.env` is needed for art-only
+use. Skip Codex authentication until you deliberately enable generation.
+Continue at step 4, then start and verify. [Settings](settings.md) explains
+ownership, source setup and the separate AI-use confirmation.
+
+For an existing managed configuration or operator-led setup, keep the established path:
 
 ```bash
 cp config.example.toml config.toml
@@ -175,6 +259,10 @@ events = ["generation_approved", "terminal_error", "degraded", "recovered"]
 
 Then set the matching values in `controller.env`, one `NAME=value` per line.
 Do not quote a value unless the quote characters are part of the secret.
+Both the controller and scheduler read this file: browser-triggered source and
+notification actions need the same credentials as scheduled work. The separate
+`access.env` file carries only optional sign-in-provider secrets and goes only
+to the controller. Never put a vault service-account token in either file.
 
 For self-hosted BirdNET-Go, `birdnet_go_url` must be reachable from inside the
 controller container. A DNS name or LAN address is usually clearer than a
@@ -293,7 +381,27 @@ docker compose run --rm --no-deps scheduler \
 copy. An invalid edit leaves the last valid runtime copy untouched and prevents
 dependent services from starting through `docker compose up`.
 
+For a **new empty installation only**, prepare browser account creation now,
+before the first `up` or catalog bootstrap:
+
+```bash
+docker compose run --rm --no-deps controller \
+  access prepare --new-installation --config /data/config.toml
+```
+
+This checks the entire runtime root, not just the absence of an account file.
+It refuses an existing or partially initialized volume without changing its
+bird data. After success, continue below; create your username and password at
+`/app`. This step needs no password or setup code. Do not add it to startup or
+upgrade automation. If you already started the stack, or have retained data,
+use [local account setup](browser-access.md#what-changes-on-an-existing-installation)
+after startup instead. Do not delete a volume to retry browser setup.
+
 ## 5. Authenticate Codex
+
+Skip this step while generation is off. Browsing and importing approved art do
+not need Codex authentication. Before enabling generation on Ubuntu, complete
+the AppArmor step above and the controller doctor checks.
 
 Codex credentials live in a separate persistent Docker volume. Sign in once:
 
@@ -354,9 +462,11 @@ Compose uses `restart: unless-stopped`, so the HTTP service and scheduler return
 after Docker starts following a reboot. The scheduler requires a successful
 observation refresh before it generates anything.
 
-Back up `config.toml`, `controller.env`, `.env`, and the `controller-data`
-volume. Treat every backup containing `controller-data` as credential-sensitive
-when Bird Buddy is enabled. Protect authentication volumes if you include them.
+Back up `config.toml`, `.env`, any `controller.env` and `access.env` files, and
+the `controller-data` volume. Include any alternate files selected through
+`INKY_BIRD_ENV` or `INKY_ACCESS_ENV`. These backups are credential-sensitive:
+they can contain owner access state, private history, provider secrets and a
+Bird Buddy refresh token. Protect authentication volumes if you include them.
 `docker compose down` keeps all volumes. `docker compose down --volumes`
 deletes permanent controller state and should not be part of a normal update.
 Use the [backup and restore guide](backup.md) for a quiesced volume snapshot,
@@ -372,6 +482,15 @@ bootstrap, refresh, generation status, and display verification.
 
 Read the release notes and take a verified backup, then change
 `INKY_BIRD_IMAGE` in `.env` to the desired version:
+
+Also review the [Compose file](../compose.yaml) from that same release. Keep
+your private `.env`, configuration, credential files and persistent volumes.
+Back up your old Compose file and preserve deliberate local overrides; do not
+blindly overwrite a customized file. An image pull alone cannot add new Compose
+wiring. The browser-journal release adds controller-side provider credentials
+and the separate optional `access.env` for single sign-on. Update that wiring
+before relying on new browser source actions or advanced access. Existing
+scheduled work does not depend on completing the new owner setup.
 
 When moving from v0.8.1 or earlier, confirm that the host `config.toml` contains
 the settings currently installed in `controller-data` before replacing the old
@@ -397,9 +516,21 @@ docker compose run --rm --no-deps controller --version
 curl --fail --silent http://127.0.0.1:8793/health
 ```
 
+The new owner account does not interrupt catalog serving or scheduled work.
+If this installation has no owner yet, create one locally after startup:
+
+```bash
+docker compose exec controller inky-bird-frame access setup --config /data/config.toml
+```
+
+Existing owners do not need that command. It will not replace them. An
+unattended image update, including `:latest`, keeps new browser controls locked
+until local account setup. It does not wait for input or authorize the first
+network visitor. Do not run `access prepare` on an upgrade.
+
 After editing `config.toml`, rerun `config-sync` and recreate the controller and
 scheduler so both processes load the same validated copy. Recreating the
-services is also required after changing `controller.env`; a restart does not
+services is also required after changing `controller.env` or `access.env`; a restart does not
 reload a container's environment.
 
 Changing the image tag rolls back application code only; it does not roll back

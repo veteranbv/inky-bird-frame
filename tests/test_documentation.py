@@ -115,6 +115,22 @@ def test_homepage_dashboard_examples_are_public_and_metadata_free() -> None:
             assert not image.getexif()
 
 
+def test_journal_screenshots_are_generic_demo_images_without_metadata() -> None:
+    readme = (ROOT / "README.md").read_text(encoding="utf-8")
+    assert "public approved artwork and manual" in readme
+    for name, size in (
+        ("journal-home.png", (430, 1100)),
+        ("journal-collection.png", (430, 1600)),
+    ):
+        assert name in readme
+        with Image.open(ROOT / "docs/images" / name) as image:
+            image.verify()
+        with Image.open(ROOT / "docs/images" / name) as image:
+            assert image.size == size
+            assert image.info == {}
+            assert not image.getexif()
+
+
 def test_plate_problem_form_requires_supporting_sources() -> None:
     form = (ROOT / ".github/ISSUE_TEMPLATE/plate_problem.yml").read_text(encoding="utf-8")
     evidence = form.split("    id: evidence", 1)[1].split("\n  - type:", 1)[0]

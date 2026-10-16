@@ -12,7 +12,7 @@ from collections.abc import Iterator
 from contextlib import contextmanager
 from pathlib import Path
 from tempfile import TemporaryDirectory, mkdtemp
-from typing import cast
+from typing import Literal, cast
 
 from PIL import Image
 
@@ -28,8 +28,9 @@ from .catalog import (
     rebuild_catalog_index,
     sha256_file,
 )
+from .codex_runner import parse_species_profile
 from .config import AppConfig, PublicCatalogConfig
-from .errors import CatalogPublishError
+from .errors import CatalogPublishError, GenerationError
 from .http import write_json_atomic
 from .timeutil import parse_utc_timestamp
 
@@ -225,7 +226,9 @@ def _validate_catalog_root(catalog_dir: Path, *, allow_create: bool) -> None:
         raise CatalogPublishError(f"Species root does not exist: {species_root}")
 
 
-def _validate_species_directory(directory: Path) -> tuple[int, str]:
+def _validate_species_directory(
+    directory: Path, *, expected_status: Literal["approved", "pending"] = "approved"
+) -> tuple[int, str]:
     if directory.is_symlink() or not directory.is_dir():
         raise CatalogPublishError(f"Species path must be a directory, not a symlink: {directory}")
     files = {path.name for path in directory.iterdir()}
@@ -249,7 +252,7 @@ def _validate_species_directory(directory: Path) -> tuple[int, str]:
     taxon_id = manifest.get("taxon_id")
     slug = manifest.get("slug")
     if (
-        manifest.get("status") != "approved"
+        manifest.get("status") != expected_status
         or not isinstance(taxon_id, int)
         or isinstance(taxon_id, bool)
         or not isinstance(slug, str)
@@ -285,7 +288,7 @@ def _validate_species_directory(directory: Path) -> tuple[int, str]:
     legacy = _legacy_seed_review_passed(review, generation) or _legacy_sourced_review_passed(
         review, generation
     )
-    if not automated and not legacy:
+    if not automated and not (expected_status == "approved" and legacy):
         raise CatalogPublishError(f"Manifest lacks a publishable quality review: {directory}")
 
     for path in directory.glob("*.json"):
@@ -298,6 +301,22 @@ def _validate_species_directory(directory: Path) -> tuple[int, str]:
     for filename, dimensions in _IMAGE_DIMENSIONS.items():
         _validate_image(directory / filename, dimensions)
     return taxon_id, slug
+
+
+def validate_pending_candidate(directory: Path) -> None:
+    """Use the publication gates before ordinary owner approval, without legacy bypasses."""
+    _validate_species_directory(directory, expected_status="pending")
+    manifest = read_json(directory / "manifest.json")
+    if not isinstance(manifest, dict):
+        raise CatalogPublishError("Pending profile is invalid")
+    try:
+        profile = parse_species_profile(manifest.get("profile"))
+    except GenerationError as exc:
+        raise CatalogPublishError("Pending profile is incomplete") from exc
+    if any(
+        profile[key] != manifest.get(key) for key in ("taxon_id", "common_name", "scientific_name")
+    ):
+        raise CatalogPublishError("Pending profile identity does not match the candidate")
 
 
 def validate_public_catalog(catalog_dir: Path) -> list[CatalogEntry]:

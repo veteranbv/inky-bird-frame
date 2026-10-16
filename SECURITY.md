@@ -18,6 +18,10 @@ have separate support windows yet.
 
 ## Trust boundaries
 
+- Owner cookies are host-scoped, not port-scoped. Trust all services reachable
+  at the owner hostname/IP, or use the [documented address or HTTPS identity
+  isolation](docs/browser-access.md#sessions-and-private-files). Local HTTP does
+  not isolate hostile services on the same host address or network.
 - Pull requests from forks run only deterministic checks on GitHub-hosted runners.
 - External pull requests do not receive Codex, notification, deployment, or publishing credentials.
 - Trusted controller workflows must never execute code from an untrusted pull request.

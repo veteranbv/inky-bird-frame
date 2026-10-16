@@ -85,6 +85,12 @@ jobs:
 
       - name: Ruff lint
         run: uv run ruff check .
+      - name: Check bundled browser modules and interaction regressions
+        run: |
+          for source in src/inky_bird_frame/web/*.js; do
+            node --input-type=module --check < "$source"
+          done
+          node --test tests/web/*.test.mjs
 
       - name: MyPy
         run: uv run mypy
@@ -96,17 +102,24 @@ jobs:
         run: |
           set -euo pipefail
           env_file="$(mktemp)"
+          access_env_file="$(mktemp)"
           compose_json="$(mktemp)"
           build_json="$(mktemp)"
-          trap 'rm -f "$env_file" "$compose_json" "$build_json"' EXIT
+          trap 'rm -f "$env_file" "$access_env_file" "$compose_json" "$build_json"' EXIT
           printf '%s\n' 'SECRET_BOUNDARY_SENTINEL=present' > "$env_file"
-          INKY_BIRD_ENV="$env_file" docker compose config --format json > "$compose_json"
+          printf '%s\n' 'ACCESS_BOUNDARY_SENTINEL=present' > "$access_env_file"
+          INKY_BIRD_ENV="$env_file" INKY_ACCESS_ENV="$access_env_file" \
+            docker compose config --format json > "$compose_json"
           INKY_BIRD_ENV="$env_file" docker compose \
             -f compose.yaml -f compose.build.yaml config \
             --no-path-resolution --format json > "$build_json"
           jq -e '
             .services.scheduler.environment.SECRET_BOUNDARY_SENTINEL == "present"
-            and (.services.controller.environment.SECRET_BOUNDARY_SENTINEL == null)
+            and (.services.controller.environment.SECRET_BOUNDARY_SENTINEL == "present")
+            and (.services.controller.environment.ACCESS_BOUNDARY_SENTINEL == "present")
+            and (.services.scheduler.environment.ACCESS_BOUNDARY_SENTINEL == null)
+            and (.services.bootstrap.environment.ACCESS_BOUNDARY_SENTINEL == null)
+            and (.services["config-sync"].environment.ACCESS_BOUNDARY_SENTINEL == null)
             and (.services.bootstrap.environment.SECRET_BOUNDARY_SENTINEL == null)
             and (.services["config-sync"].environment.SECRET_BOUNDARY_SENTINEL == "present")
             and ([.services[] | .image] | all(. == "ghcr.io/veteranbv/inky-bird-frame:latest"))
@@ -195,7 +208,16 @@ jobs:
           INKY_BIRD_IMAGE=inky-bird-frame:ci INKY_BIRD_CONFIG="$config_source" \
             docker compose -p "$compose_project" run --rm --no-deps \
             --entrypoint python scheduler -c \
-            "from pathlib import Path; import stat; from inky_bird_frame.config import load_config; path = Path('/data/config.toml'); metadata = path.stat(); assert metadata.st_uid == 10001; assert metadata.st_gid == 10001; assert stat.S_IMODE(metadata.st_mode) == 0o600; config = load_config(path); assert config.controller.workspace_dir == Path('/data/workspace'); assert config.controller.workspace_dir.is_dir()"
+            "from pathlib import Path; import stat; from inky_bird_frame.config import load_config; path = Path('/data/config.toml'); metadata = path.stat(); assert metadata.st_uid == 10001; assert metadata.st_gid == 10001; assert stat.S_IMODE(metadata.st_mode) == 0o600; config = load_config(path); assert config.controller.workspace_dir == Path('/data/workspace'); assert set(p.name for p in path.parent.iterdir()) == {'config.toml'}"
+          # Only this fresh disposable CI volume is prepared. Normal Compose
+          # startup and upgrades must never grant network account creation.
+          INKY_BIRD_IMAGE=inky-bird-frame:ci INKY_BIRD_CONFIG="$config_source" \
+            docker compose -p "$compose_project" run --rm --no-deps controller \
+            access prepare --new-installation --config /data/config.toml
+          INKY_BIRD_IMAGE=inky-bird-frame:ci INKY_BIRD_CONFIG="$config_source" \
+            docker compose -p "$compose_project" run --rm --no-deps \
+            --entrypoint python controller -c \
+            "from pathlib import Path; from inky_bird_frame.config import load_config; from inky_bird_frame.access import AccessStore; c = load_config(Path('/data/config.toml'), load_secrets=False); s = AccessStore(c.controller.state_dir).setup_status(); assert s is not None and s.state == 'missing'"
 
   python-compatibility:
     name: Python ${{ matrix.python-version }}

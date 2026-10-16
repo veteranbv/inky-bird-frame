@@ -13,8 +13,9 @@ truth:
 | Data | Why it matters | Sensitivity |
 | --- | --- | --- |
 | `config.toml` | Provider credentials, notification destinations, paths, schedules, and private location | Secret and private |
+| Optional `native-access.env` beside the native config | Persistent OIDC client secret used by the serving service | Secret |
 | `catalog_dir` | Approved plates, manifests, and index | Reusable art; may also hold local-only approved work |
-| `state_dir` | Observations, collection membership, imports, retry state, notifications, run history, and optional Bird Buddy refresh token | Private; credential-sensitive when Bird Buddy is enabled |
+| `state_dir` | Observations, collections, imports, retries, notifications, owner access, run history and optional Bird Buddy refresh token | Private and credential-sensitive |
 | `workspace_dir` | Current generated work and downloaded references | Private working data |
 
 Relative paths resolve from the directory that contains `config.toml`. Record
@@ -27,6 +28,16 @@ a rotating refresh token and makes every backup that includes it
 credential-sensitive. `birdbuddy-detections.json`, eBird Archive state, BirdNET
 Analyzer state, discovery snapshots, and run records contain private species and
 time history even when they contain no account credentials or precise location.
+
+The browser candidate also keeps private owner/session state in this directory.
+Treat a backup containing it as credential-sensitive even without Bird Buddy.
+Named selections in `journal.json` can reveal travel and personal interests.
+They supplement, and do not replace, the legacy Saved birds `collection.json`.
+`presentation-access.json` holds hashed screen/status credentials, expiry and
+private view choices. Keep it with the matching owner state. Restore can restore
+previously valid access; revoke lost screens and credentials after recovery.
+Temporary history/community previews may contain private source selections.
+Stop browser serving as well as scheduled writers before copying these files.
 
 Codex and optional GitHub authentication are separate from the application
 paths. Reauthentication on a restored host is safer than copying those stores.
@@ -192,6 +203,10 @@ different parent directories.
 ```bash
 mkdir -p "$BACKUP/config" "$BACKUP/workspace" "$BACKUP/catalog" "$BACKUP/state"
 rsync -a "$CONFIG" "$BACKUP/config/config.toml"
+if [ -f "$(dirname "$CONFIG")/native-access.env" ]; then
+  rsync -a "$(dirname "$CONFIG")/native-access.env" "$BACKUP/config/native-access.env"
+  chmod 600 "$BACKUP/config/native-access.env"
+fi
 rsync -a "$WORKSPACE/" "$BACKUP/workspace/"
 rsync -a "$CATALOG/" "$BACKUP/catalog/"
 rsync -a "$STATE/" "$BACKUP/state/"
@@ -203,6 +218,9 @@ commands produce no output when the backup matches the source:
 
 ```bash
 cmp "$CONFIG" "$BACKUP/config/config.toml"
+if [ -f "$BACKUP/config/native-access.env" ]; then
+  cmp "$(dirname "$CONFIG")/native-access.env" "$BACKUP/config/native-access.env"
+fi
 rsync -acni --delete "$WORKSPACE/" "$BACKUP/workspace/"
 rsync -acni --delete "$CATALOG/" "$BACKUP/catalog/"
 rsync -acni --delete "$STATE/" "$BACKUP/state/"
@@ -323,7 +341,7 @@ wildcard bind such as `0.0.0.0` is checked through `127.0.0.1`.
    directories at the recorded paths, then restore as the controller account:
 
    ```bash
-   for target in "$CONFIG" "$WORKSPACE" "$CATALOG" "$STATE"; do
+   for target in "$CONFIG" "$WORKSPACE" "$CATALOG" "$STATE" "$(dirname "$CONFIG")/native-access.env"; do
      if [ -e "$target" ] || [ -L "$target" ]; then
        printf 'Refusing to merge restored state into existing path: %s\n' "$target" >&2
        exit 1
@@ -331,6 +349,10 @@ wildcard bind such as `0.0.0.0` is checked through `127.0.0.1`.
    done
    mkdir -p "$(dirname "$CONFIG")" "$WORKSPACE" "$CATALOG" "$STATE"
    rsync -a "$BACKUP/config/config.toml" "$CONFIG"
+   if [ -f "$BACKUP/config/native-access.env" ]; then
+     rsync -a "$BACKUP/config/native-access.env" "$(dirname "$CONFIG")/native-access.env"
+     chmod 600 "$(dirname "$CONFIG")/native-access.env"
+   fi
    rsync -a "$BACKUP/workspace/" "$WORKSPACE/"
    rsync -a "$BACKUP/catalog/" "$CATALOG/"
    rsync -a "$BACKUP/state/" "$STATE/"
@@ -405,8 +427,11 @@ Compose stores application data in three named volumes:
 - `codex-auth` contains Codex authentication; and
 - `github-auth` contains optional publication authentication.
 
-The host-side `config.toml`, `controller.env`, and `.env` are also required to
-reproduce the deployment. Treat all four controller artifacts as private.
+The host-side `config.toml`, `.env`, and any `controller.env` or `access.env`
+files are also required to reproduce the deployment. Include alternate files
+selected through `INKY_BIRD_ENV` or `INKY_ACCESS_ENV`; the commands below use
+the default names. Treat all these artifacts as credential-sensitive. Owner
+access state and private history need protection even without Bird Buddy.
 
 ### 1. Stop writers
 
@@ -478,11 +503,16 @@ fi
 docker compose run --rm --no-deps -T --entrypoint tar controller \
   -C /data -czf - . > "$BACKUP/controller-data.tar.gz"
 
-cp config.toml controller.env .env "$BACKUP/"
+cp config.toml .env "$BACKUP/"
+for private_env in controller.env access.env; do
+  if [ -f "$private_env" ]; then
+    cp "$private_env" "$BACKUP/"
+    chmod 600 "$BACKUP/$private_env"
+  fi
+done
 chmod 600 \
   "$BACKUP/controller-data.tar.gz" \
   "$BACKUP/config.toml" \
-  "$BACKUP/controller.env" \
   "$BACKUP/.env"
 tar -tzf "$BACKUP/controller-data.tar.gz" >/dev/null
 ```
@@ -550,14 +580,20 @@ command with the same project name.
 
 1. Download and extract the same release bundle. Start a new shell in that
    bundle, re-declare the private backup location, then restore its `.env`,
-   `controller.env`, and host-side `config.toml`:
+   host-side `config.toml`, and any provider/access environment files:
 
    ```bash
    cd /path/to/inky-bird-frame-docker
    BACKUP=/path/to/private-backup/inky-bird-frame-docker
    HEALTH_URL=http://127.0.0.1:8793/health
-   cp "$BACKUP/.env" "$BACKUP/controller.env" "$BACKUP/config.toml" .
-   chmod 600 .env controller.env config.toml
+   cp "$BACKUP/.env" "$BACKUP/config.toml" .
+   chmod 600 .env config.toml
+   for private_env in controller.env access.env; do
+     if [ -f "$BACKUP/$private_env" ]; then
+       cp "$BACKUP/$private_env" .
+       chmod 600 "$private_env"
+     fi
+   done
    ```
 
    Set `HEALTH_URL` to the controller's published host port from

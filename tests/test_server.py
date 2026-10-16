@@ -1,28 +1,160 @@
 from __future__ import annotations
 
+import errno
 import hashlib
 import io
 import json
+import socket
+import ssl
 import threading
+import time
 import unittest
 from collections.abc import Iterator
 from contextlib import contextmanager, redirect_stdout
-from http.client import HTTPConnection
-from http.server import ThreadingHTTPServer
+from dataclasses import replace
+from datetime import UTC, datetime, timedelta
+from http.client import HTTPConnection, HTTPSConnection
+from ipaddress import ip_address
 from pathlib import Path
 from tempfile import TemporaryDirectory
 from unittest.mock import patch
 
+import uvicorn
+from cryptography import x509
+from cryptography.hazmat.primitives import hashes, serialization
+from cryptography.hazmat.primitives.asymmetric import rsa
+from cryptography.x509.oid import NameOID
+
 from inky_bird_frame import __version__
+from inky_bird_frame.config import ControllerConfig
 from inky_bird_frame.http import USER_AGENT
 from inky_bird_frame.server import (
     MAX_TELEMETRY_REQUEST_BYTES,
-    CatalogRequestHandler,
     rebuild_index_logging_failures,
+    serve_catalog,
 )
+from inky_bird_frame.web import create_app
 
 PNG_BYTES = b"\x89PNG\r\n\x1a\n" + b"\x00" * 16
 GENERATED_AT = "2026-08-30T12:00:00+00:00"
+
+
+def test_real_direct_tls_keeps_certificate_validation_and_encrypts_owner_access(
+    tmp_path: Path,
+) -> None:
+    key = rsa.generate_private_key(public_exponent=65537, key_size=2048)
+    name = x509.Name([x509.NameAttribute(NameOID.COMMON_NAME, "localhost")])
+    now = datetime.now(UTC)
+    certificate = (
+        x509.CertificateBuilder()
+        .subject_name(name)
+        .issuer_name(name)
+        .public_key(key.public_key())
+        .serial_number(x509.random_serial_number())
+        .not_valid_before(now - timedelta(minutes=1))
+        .not_valid_after(now + timedelta(days=1))
+        .add_extension(x509.BasicConstraints(ca=True, path_length=None), critical=True)
+        .add_extension(
+            x509.SubjectAlternativeName(
+                [x509.DNSName("localhost"), x509.IPAddress(ip_address("127.0.0.1"))]
+            ),
+            critical=False,
+        )
+        .sign(key, hashes.SHA256())
+    )
+    cert_path = tmp_path / "cert.pem"
+    key_path = tmp_path / "key.pem"
+    cert_path.write_bytes(certificate.public_bytes(serialization.Encoding.PEM))
+    key_path.write_bytes(
+        key.private_bytes(
+            serialization.Encoding.PEM,
+            serialization.PrivateFormat.PKCS8,
+            serialization.NoEncryption(),
+        )
+    )
+    key_path.chmod(0o600)
+    config = ControllerConfig(
+        tmp_path,
+        tmp_path / "catalog",
+        tmp_path / "state",
+        Path("codex"),
+        None,
+        "127.0.0.1",
+        8793,
+        3,
+        1,
+        3,
+        tls_certificate=cert_path,
+        tls_private_key=key_path,
+    )
+    with patch("uvicorn.run") as run:
+        serve_catalog(config)
+    assert run.call_args.kwargs["ssl_certfile"] == str(cert_path)
+    assert run.call_args.kwargs["ssl_keyfile"] == str(key_path)
+    assert run.call_args.kwargs["ssl_keyfile_password"] == ""
+    with _serving(
+        config.catalog_dir,
+        config.state_dir / "active-catalog.json",
+        config.state_dir,
+        certificate=cert_path,
+        private_key=key_path,
+    ) as port:
+        trusted = ssl.create_default_context(cafile=str(cert_path))
+        connection = HTTPSConnection("127.0.0.1", port, context=trusted, timeout=5)
+        try:
+            connection.request("GET", "/v1/access")
+            response = connection.getresponse()
+            assert response.status == 200
+            assert json.loads(response.read())["data"]["encrypted"] is True
+        finally:
+            connection.close()
+        untrusted = HTTPSConnection("127.0.0.1", port, timeout=5)
+        import pytest
+
+        try:
+            with pytest.raises(ssl.SSLCertVerificationError):
+                untrusted.request("GET", "/v1/access")
+        finally:
+            untrusted.close()
+
+
+def test_tls_startup_refuses_an_insecure_key_before_starting_any_listener(tmp_path: Path) -> None:
+    import pytest
+
+    from inky_bird_frame.errors import ConfigurationError
+
+    key = tmp_path / "key.pem"
+    key.write_text("synthetic invalid key")
+    key.chmod(0o644)
+    config = ControllerConfig(
+        tmp_path,
+        tmp_path / "catalog",
+        tmp_path / "state",
+        Path("codex"),
+        None,
+        "127.0.0.1",
+        8793,
+        3,
+        1,
+        3,
+        tls_certificate=tmp_path / "cert.pem",
+        tls_private_key=key,
+    )
+    with patch("uvicorn.run") as run, pytest.raises(ConfigurationError, match="0600"):
+        serve_catalog(config)
+    run.assert_not_called()
+    key.chmod(0o600)
+    link = tmp_path / "key-link.pem"
+    link.symlink_to(key)
+    with patch("uvicorn.run") as run, pytest.raises(ConfigurationError, match="regular file"):
+        serve_catalog(replace(config, tls_private_key=link))
+    run.assert_not_called()
+    with patch("uvicorn.run") as run, pytest.raises(ConfigurationError, match="Cannot load"):
+        serve_catalog(config)
+    run.assert_not_called()
+    with patch("uvicorn.run") as run, pytest.raises(ConfigurationError, match="Supply both"):
+        serve_catalog(replace(config, tls_certificate=None))
+    run.assert_not_called()
 
 
 def _catalog_entry(
@@ -69,27 +201,53 @@ def _serving(
     *,
     cors_allowed_origins: tuple[str, ...] = (),
     embed_allowed_origins: tuple[str, ...] = (),
+    certificate: Path | None = None,
+    private_key: Path | None = None,
 ) -> Iterator[int]:
-    handler = type(
-        "TestCatalogRequestHandler",
-        (CatalogRequestHandler,),
-        {
-            "catalog_dir": catalog_dir,
-            "active_catalog_path": active_catalog_path,
-            "state_dir": state_dir,
-            "cors_allowed_origins": cors_allowed_origins,
-            "embed_allowed_origins": embed_allowed_origins,
-        },
-    )
-    server = ThreadingHTTPServer(("127.0.0.1", 0), handler)
-    thread = threading.Thread(target=server.serve_forever)
-    thread.start()
-    try:
-        yield server.server_port
-    finally:
-        server.shutdown()
-        server.server_close()
-        thread.join()
+    assert active_catalog_path == state_dir / "active-catalog.json"
+    with socket.socket() as listener:
+        listener.bind(("127.0.0.1", 0))
+        port = listener.getsockname()[1]
+        config = ControllerConfig(
+            workspace_dir=state_dir,
+            catalog_dir=catalog_dir,
+            state_dir=state_dir,
+            codex_path=Path("codex"),
+            codex_model=None,
+            bind_host="127.0.0.1",
+            port=port,
+            references_per_species=3,
+            generations_per_cycle=1,
+            max_generation_attempts=3,
+            cors_allowed_origins=cors_allowed_origins,
+            embed_allowed_origins=embed_allowed_origins,
+            owner_allowed_origins=(f"https://127.0.0.1:{port}",) if certificate else (),
+        )
+        server = uvicorn.Server(
+            uvicorn.Config(
+                create_app(config),
+                log_config=None,
+                log_level="critical",
+                access_log=False,
+                proxy_headers=False,
+                server_header=False,
+                ssl_certfile=str(certificate) if certificate else None,
+                ssl_keyfile=str(private_key) if private_key else None,
+            )
+        )
+        thread = threading.Thread(target=server.run, kwargs={"sockets": [listener]}, daemon=True)
+        thread.start()
+        try:
+            deadline = time.monotonic() + 5
+            while not server.started:
+                if not thread.is_alive() or time.monotonic() >= deadline:
+                    raise AssertionError("Catalog service did not start")
+                time.sleep(0.01)
+            yield port
+        finally:
+            server.should_exit = True
+            thread.join(timeout=5)
+            assert not thread.is_alive(), "Catalog service did not stop"
 
 
 def _get(
@@ -99,7 +257,11 @@ def _get(
     try:
         connection.request("GET", path, headers=headers or {})
         response = connection.getresponse()
-        return response.status, dict(response.getheaders()), response.read()
+        return (
+            response.status,
+            {key.title(): value for key, value in response.getheaders()},
+            response.read(),
+        )
     finally:
         connection.close()
 
@@ -111,7 +273,11 @@ def _head(
     try:
         connection.request("HEAD", path, headers=headers or {})
         response = connection.getresponse()
-        return response.status, dict(response.getheaders()), response.read()
+        return (
+            response.status,
+            {key.title(): value for key, value in response.getheaders()},
+            response.read(),
+        )
     finally:
         connection.close()
 
@@ -128,7 +294,11 @@ def _post(
     try:
         connection.request("POST", path, body=body, headers=request_headers)
         response = connection.getresponse()
-        return response.status, dict(response.getheaders()), response.read()
+        return (
+            response.status,
+            {key.title(): value for key, value in response.getheaders()},
+            response.read(),
+        )
     finally:
         connection.close()
 
@@ -146,7 +316,11 @@ def _post_with_content_length(
             connection.putheader("Content-Length", content_length)
         connection.endheaders()
         response = connection.getresponse()
-        return response.status, dict(response.getheaders()), response.read()
+        return (
+            response.status,
+            {key.title(): value for key, value in response.getheaders()},
+            response.read(),
+        )
     finally:
         connection.close()
 
@@ -828,6 +1002,26 @@ class ServerTests(unittest.TestCase):
         self.assertEqual(status, 404)
         self.assertEqual(json.loads(body), {"ok": False, "error": "not found"})
 
+    def test_pathlib_loop_variants_return_the_same_controlled_not_found(self) -> None:
+        for error in (RuntimeError("symlink loop"), OSError(errno.ELOOP, "symlink loop")):
+            with (
+                self.subTest(error=type(error).__name__),
+                self._environment() as (
+                    _,
+                    catalog_dir,
+                    state_dir,
+                ),
+            ):
+                active = state_dir / "active-catalog.json"
+                active.write_text(json.dumps(_active_catalog(_catalog_entry())))
+                with (
+                    _serving(catalog_dir, active, state_dir) as port,
+                    patch("inky_bird_frame.server.Path.resolve", side_effect=error),
+                ):
+                    status, _, body = _get(port, "/v1/assets/species/1-robin/portrait.png")
+                self.assertEqual(status, 404)
+                self.assertEqual(json.loads(body), {"ok": False, "error": "not found"})
+
     def test_asset_path_traversal_is_rejected(self) -> None:
         secret = b"top secret"
         with self._environment() as (root, catalog_dir, state_dir):
@@ -1083,8 +1277,10 @@ class ServerTests(unittest.TestCase):
 
         log = json.loads(output.getvalue().strip())
         self.assertEqual(log["event"], "http_request")
-        self.assertEqual(log["client"], "127.0.0.1")
-        self.assertIn("GET /health?probe=1", log["message"])
+        self.assertEqual(log["method"], "GET")
+        self.assertEqual(log["route"], "/health")
+        self.assertNotIn("probe=1", output.getvalue())
+        self.assertNotIn("127.0.0.1", output.getvalue())
         self.assertNotIn("display.example.test", output.getvalue())
         self.assertNotIn("private-browser-detail", output.getvalue())
 

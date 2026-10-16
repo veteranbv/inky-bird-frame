@@ -22,6 +22,7 @@ refresh_plist="${agents_dir}/com.inky-bird-frame.refresh.plist"
 generation_plist="${agents_dir}/com.inky-bird-frame.generate.plist"
 catalog_publish_plist="${agents_dir}/com.inky-bird-frame.catalog-publish.plist"
 notifications_plist="${agents_dir}/com.inky-bird-frame.notifications.plist"
+scheduler_plist="${agents_dir}/com.inky-bird-frame.scheduler.plist"
 legacy_cycle_plist="${agents_dir}/com.inky-bird-frame.controller-cycle.plist"
 
 restore_catalog_publisher_schedule() {
@@ -79,9 +80,10 @@ mkdir -p "${app_dir}/catalog" "${app_dir}/deploy" "${support_dir}" "${log_dir}" 
 chmod 700 "${support_dir}" "${log_dir}"
 find "${log_dir}" -maxdepth 1 -type f -name '*.log*' -exec chmod 600 {} +
 if [ "${root}" != "${app_dir}" ]; then
+  mkdir -p "${app_dir}/docs"
   rsync -a --delete "${root}/src/" "${app_dir}/src/"
   install -m 0755 "${root}/deploy/install-controller.sh" "${app_dir}/deploy/"
-  for file in pyproject.toml uv.lock README.md LICENSE; do
+  for file in pyproject.toml uv.lock README.md LICENSE docs/browser-access.md; do
     install -m 0644 "${root}/${file}" "${app_dir}/${file}"
   done
 fi
@@ -109,7 +111,7 @@ cleanup() {
   status=$?
   trap - EXIT
   if [ "${installation_complete}" != true ]; then
-    for label in serve refresh generate catalog-publish notifications; do
+    for label in serve refresh generate catalog-publish notifications scheduler; do
       if was_previously_loaded "${label}"; then
         restore_previous_agent "${label}"
       else
@@ -129,7 +131,7 @@ cleanup() {
 }
 trap cleanup EXIT
 
-for label in serve refresh generate catalog-publish notifications; do
+for label in serve refresh generate catalog-publish notifications scheduler; do
   if launchctl print "gui/${uid}/com.inky-bird-frame.${label}" >/dev/null 2>&1; then
     previously_loaded_labels+=("${label}")
   fi
@@ -141,7 +143,7 @@ done
 
 "${app_dir}/.venv/bin/python" - \
   "${serve_plist}" "${refresh_plist}" "${generation_plist}" "${catalog_publish_plist}" \
-  "${notifications_plist}" \
+  "${notifications_plist}" "${scheduler_plist}" \
   "${root}" "${app_dir}" "${config_path}" "${log_dir}" <<'PY'
 import plistlib
 import sys
@@ -150,7 +152,8 @@ from pathlib import Path
 from inky_bird_frame.catalog import catalog_state_lock
 from inky_bird_frame.config import DiscoveryProvider, load_config
 from inky_bird_frame.errors import ConfigurationError
-from inky_bird_frame.installation import controller_executable_path
+from inky_bird_frame.http import write_bytes_atomic
+from inky_bird_frame.installation import controller_executable_path, native_oidc_environment
 from inky_bird_frame.publisher import sync_public_catalog
 
 (
@@ -159,6 +162,7 @@ from inky_bird_frame.publisher import sync_public_catalog
     generation_path,
     catalog_publish_path,
     notifications_path,
+    scheduler_path,
     root,
     app_dir,
     config_path,
@@ -193,6 +197,7 @@ if environment_destinations:
         "The macOS LaunchAgent installer requires direct notification URLs in the "
         f"private config file; replace url_env for: {names}"
     )
+owner_environment = native_oidc_environment(config, config_path)
 schedule = config.schedule
 config.controller.workspace_dir.mkdir(parents=True, exist_ok=True)
 config.controller.catalog_dir.parent.mkdir(parents=True, exist_ok=True)
@@ -225,9 +230,13 @@ def managed_agent(name: str) -> dict[str, object]:
     return {
         **common,
         "EnvironmentVariables": {
-            "PATH": controller_executable_path(config.controller.codex_path),
+            "PATH": controller_executable_path(
+                config.controller.codex_path,
+                generation_enabled=config.controller.generation_enabled,
+            ),
             "PYTHONUNBUFFERED": "1",
             "INKY_BIRD_MANAGED_LOG_PATH": str(log_dir / f"{name}.log"),
+            **(owner_environment if name == "serve" else {}),
         },
     }
 
@@ -291,20 +300,36 @@ notifications = {
 for path, payload in (
     (serve_path, serve),
     (refresh_path, refresh),
-    (generation_path, generation),
 ):
-    with path.open("wb") as handle:
-        plistlib.dump(payload, handle, sort_keys=True)
+    write_bytes_atomic(path, plistlib.dumps(payload, sort_keys=True), mode=0o600)
+if config.controller.generation_enabled:
+    write_bytes_atomic(generation_path, plistlib.dumps(generation, sort_keys=True), mode=0o600)
+else:
+    generation_path.unlink(missing_ok=True)
 if config.public_catalog.enabled:
-    with catalog_publish_path.open("wb") as handle:
-        plistlib.dump(catalog_publish, handle, sort_keys=True)
+    write_bytes_atomic(catalog_publish_path, plistlib.dumps(catalog_publish, sort_keys=True), mode=0o600)
 else:
     catalog_publish_path.unlink(missing_ok=True)
 if config.notifications.enabled:
-    with notifications_path.open("wb") as handle:
-        plistlib.dump(notifications, handle, sort_keys=True)
+    write_bytes_atomic(notifications_path, plistlib.dumps(notifications, sort_keys=True), mode=0o600)
 else:
     notifications_path.unlink(missing_ok=True)
+if config.controller.configuration_ownership == "app":
+    scheduler = {
+        **managed_agent("scheduler"),
+        "Label": "com.inky-bird-frame.scheduler",
+        "ProgramArguments": [str(executable), "scheduler", "--config", str(config_path)],
+        "RunAtLoad": True,
+        "KeepAlive": {"SuccessfulExit": False},
+        "ThrottleInterval": 10,
+        "StandardOutPath": str(log_dir / "scheduler.log"),
+        "StandardErrorPath": str(log_dir / "scheduler.error.log"),
+    }
+    write_bytes_atomic(scheduler_path, plistlib.dumps(scheduler, sort_keys=True), mode=0o600)
+    for path in (refresh_path, generation_path, catalog_publish_path, notifications_path):
+        path.unlink(missing_ok=True)
+else:
+    scheduler_path.unlink(missing_ok=True)
 PY
 
 if [ -f "${catalog_publish_plist}" ]; then
@@ -327,9 +352,17 @@ launchctl bootout "gui/${uid}/com.inky-bird-frame.refresh" 2>/dev/null || true
 launchctl bootout "gui/${uid}/com.inky-bird-frame.generate" 2>/dev/null || true
 launchctl bootout "gui/${uid}/com.inky-bird-frame.catalog-publish" 2>/dev/null || true
 launchctl bootout "gui/${uid}/com.inky-bird-frame.notifications" 2>/dev/null || true
+launchctl bootout "gui/${uid}/com.inky-bird-frame.scheduler" 2>/dev/null || true
 launchctl bootstrap "gui/${uid}" "${serve_plist}"
-launchctl bootstrap "gui/${uid}" "${refresh_plist}"
-launchctl bootstrap "gui/${uid}" "${generation_plist}"
+if [ -f "${refresh_plist}" ]; then
+  launchctl bootstrap "gui/${uid}" "${refresh_plist}"
+fi
+if [ -f "${scheduler_plist}" ]; then
+  launchctl bootstrap "gui/${uid}" "${scheduler_plist}"
+fi
+if [ -f "${generation_plist}" ]; then
+  launchctl bootstrap "gui/${uid}" "${generation_plist}"
+fi
 if [ -f "${catalog_publish_plist}" ]; then
   launchctl bootstrap "gui/${uid}" "${catalog_publish_plist}"
 fi
@@ -337,8 +370,15 @@ if [ -f "${notifications_plist}" ]; then
   launchctl bootstrap "gui/${uid}" "${notifications_plist}"
 fi
 launchctl print "gui/${uid}/com.inky-bird-frame.serve" >/dev/null
-launchctl print "gui/${uid}/com.inky-bird-frame.refresh" >/dev/null
-launchctl print "gui/${uid}/com.inky-bird-frame.generate" >/dev/null
+if [ -f "${refresh_plist}" ]; then
+  launchctl print "gui/${uid}/com.inky-bird-frame.refresh" >/dev/null
+fi
+if [ -f "${scheduler_plist}" ]; then
+  launchctl print "gui/${uid}/com.inky-bird-frame.scheduler" >/dev/null
+fi
+if [ -f "${generation_plist}" ]; then
+  launchctl print "gui/${uid}/com.inky-bird-frame.generate" >/dev/null
+fi
 if [ -f "${catalog_publish_plist}" ]; then
   launchctl print "gui/${uid}/com.inky-bird-frame.catalog-publish" >/dev/null
 fi
@@ -354,3 +394,6 @@ rm -f "${legacy_cycle_plist}"
 echo "Controller installed from ${root} into ${app_dir}."
 echo "Configuration: ${config_path}"
 echo "Logs: ${log_dir}"
+if ! "${app_dir}/.venv/bin/inky-bird-frame" access setup --if-needed --config "${config_path}"; then
+  echo "Controller installation completed; owner setup is incomplete. Run access setup in a private terminal. Display and scheduled work continue." >&2
+fi

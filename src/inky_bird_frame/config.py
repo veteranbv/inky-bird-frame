@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import hashlib
+import json
 import math
 import tomllib
 from collections.abc import Iterable
@@ -22,6 +24,11 @@ class RotationMode(StrEnum):
     SHUFFLE = "shuffle"
     SHUFFLE_BAG = "shuffle_bag"
     WEIGHTED = "weighted"
+
+
+class OwnerAccessMode(StrEnum):
+    LOCAL = "local"
+    HTTPS_ONLY = "https-only"
 
 
 class DiscoveryProvider(StrEnum):
@@ -102,6 +109,17 @@ class DiscoveryConfig:
 
 
 @dataclass(frozen=True)
+class OIDCConfig:
+    issuer: str
+    client_id: str
+    callback_url: str
+    client_secret_env: str = field(repr=False)
+    label: str = "Authentik"
+    owner_subject: str | None = field(default=None, repr=False)
+    sso_only: bool = False
+
+
+@dataclass(frozen=True)
 class ControllerConfig:
     workspace_dir: Path
     catalog_dir: Path
@@ -119,6 +137,15 @@ class ControllerConfig:
     insufficient_references_retry_minutes: int = 10080
     cors_allowed_origins: tuple[str, ...] = ()
     embed_allowed_origins: tuple[str, ...] = ()
+    owner_allowed_origins: tuple[str, ...] = ()
+    trusted_proxy_addresses: tuple[str, ...] = ()
+    owner_access_mode: OwnerAccessMode = OwnerAccessMode.LOCAL
+    tls_certificate: Path | None = None
+    tls_private_key: Path | None = field(default=None, repr=False)
+    oidc: OIDCConfig | None = None
+    generation_enabled: bool = True
+    configuration_ownership: str = "managed"
+    owner_import_retention_hours: int = 24
 
 
 @dataclass(frozen=True)
@@ -196,6 +223,8 @@ class AppConfig:
     schedule: ScheduleConfig = ScheduleConfig()
     research: ResearchConfig = ResearchConfig()
     notifications: NotificationsConfig = NotificationsConfig()
+    configuration_path: Path | None = field(default=None, repr=False, compare=False)
+    discovery_revision: str | None = field(default=None, repr=False, compare=False)
 
 
 def _section(data: object, name: str) -> dict[str, object]:
@@ -380,6 +409,94 @@ def _csp_frame_origins(section: dict[str, object], name: str) -> tuple[str, ...]
     return origins
 
 
+def _owner_origins(section: dict[str, object]) -> tuple[str, ...]:
+    origins = _http_origins(section, "owner_allowed_origins")
+    if _owner_mode(section) == OwnerAccessMode.HTTPS_ONLY and any(
+        urlsplit(origin).scheme != "https" for origin in origins
+    ):
+        raise ConfigurationError("owner_allowed_origins must use HTTPS in https-only mode")
+    return origins
+
+
+def _owner_mode(section: dict[str, object]) -> OwnerAccessMode:
+    # Preserve the stricter boundary of installations that already chose HTTPS.
+    default = "https-only" if section.get("owner_allowed_origins") else "local"
+    try:
+        return OwnerAccessMode(_optional_string(section, "owner_access_mode", default=default))
+    except ValueError as exc:
+        raise ConfigurationError("owner_access_mode must be local or https-only") from exc
+
+
+def _proxy_addresses(section: dict[str, object]) -> tuple[str, ...]:
+    values = _string_tuple(section, "trusted_proxy_addresses")
+    try:
+        addresses = tuple(str(ip_address(value)) for value in values)
+    except ValueError as exc:
+        raise ConfigurationError(
+            "trusted_proxy_addresses must contain explicit IP addresses"
+        ) from exc
+    if len(set(addresses)) != len(addresses):
+        raise ConfigurationError("trusted_proxy_addresses must not contain duplicate addresses")
+    return addresses
+
+
+def _oidc_config(section: dict[str, object]) -> OIDCConfig | None:
+    raw = section.get("oidc")
+    if raw is None:
+        return None
+    if not isinstance(raw, dict):
+        raise ConfigurationError("controller.oidc must be a table")
+    issuer = _string(raw, "issuer")
+    callback = _string(raw, "callback_url")
+    for name, url in (("issuer", issuer), ("callback_url", callback)):
+        try:
+            parts = urlsplit(url)
+            port = parts.port
+        except ValueError as exc:
+            raise ConfigurationError(f"OIDC {name} must be a valid HTTPS URL") from exc
+        if (
+            parts.scheme != "https"
+            or not parts.hostname
+            or parts.username is not None
+            or parts.password is not None
+            or parts.query
+            or parts.fragment
+            or port == 0
+        ):
+            raise ConfigurationError(
+                f"OIDC {name} must be an HTTPS URL without credentials or query"
+            )
+    callback_parts = urlsplit(callback)
+    if callback_parts.path != "/v1/owner/oidc/callback":
+        raise ConfigurationError("OIDC callback_url must end with /v1/owner/oidc/callback")
+    if f"https://{callback_parts.netloc}" not in _owner_origins(section):
+        raise ConfigurationError("OIDC callback origin must be in owner_allowed_origins")
+    secret_env = _string(raw, "client_secret_env")
+    if (
+        not secret_env.isascii()
+        or not secret_env.replace("_", "").isalnum()
+        or secret_env[0].isdigit()
+    ):
+        raise ConfigurationError("OIDC client_secret_env must name an environment variable")
+    label = _optional_string(raw, "label", default="Authentik")
+    if not 1 <= len(label) <= 64 or any(ord(c) < 32 for c in label):
+        raise ConfigurationError("OIDC label must contain 1 to 64 printable characters")
+    subject = _optional_string(raw, "owner_subject", default="") or None
+    if subject is not None and (not subject.isascii() or len(subject) > 255):
+        raise ConfigurationError(
+            "OIDC owner_subject must be an exact ASCII subject of at most 255 characters"
+        )
+    return OIDCConfig(
+        issuer,
+        _string(raw, "client_id"),
+        callback,
+        secret_env,
+        label,
+        subject,
+        _optional_boolean(raw, "sso_only", default=False),
+    )
+
+
 def _notification_destinations(
     raw: object, *, load_secrets: bool
 ) -> tuple[NotificationDestination, ...]:
@@ -495,6 +612,12 @@ def load_config(path: Path, *, load_secrets: bool = True) -> AppConfig:
     except tomllib.TOMLDecodeError as exc:
         raise ConfigurationError(f"Invalid TOML in {path}: {exc}") from exc
 
+    return parse_config(raw, path=path, load_secrets=load_secrets)
+
+
+def parse_config(raw: object, *, path: Path, load_secrets: bool = True) -> AppConfig:
+    """Validate an entire candidate before replacing the authoritative TOML file."""
+
     discovery = _section(raw, "discovery")
     controller = _section(raw, "controller")
     display_node = _section(raw, "display_node")
@@ -514,8 +637,6 @@ def load_config(path: Path, *, load_secrets: bool = True) -> AppConfig:
         raise ConfigurationError("Choose discovery.source or discovery.sources, not both")
     if "sources" in discovery:
         source_values = _string_tuple(discovery, "sources")
-        if not source_values:
-            raise ConfigurationError("discovery.sources must contain at least one provider")
         try:
             discovery_sources = tuple(parse_discovery_provider(value) for value in source_values)
         except ValueError as exc:
@@ -703,8 +824,21 @@ def load_config(path: Path, *, load_secrets: bool = True) -> AppConfig:
         raise ConfigurationError(
             "retry_max_minutes must be greater than or equal to retry_initial_minutes"
         )
+    if ("tls_certificate" in controller) != ("tls_private_key" in controller):
+        raise ConfigurationError("tls_certificate and tls_private_key must be supplied together")
+    ownership = _optional_string(controller, "configuration_ownership", default="managed")
+    if ownership not in {"managed", "app"}:
+        raise ConfigurationError("configuration_ownership must be managed or app")
+    import_retention = _optional_integer(controller, "owner_import_retention_hours", default=24)
+    # A preview must not outlive the seven-day operation receipt recovery window.
+    if import_retention > 7 * 24:
+        raise ConfigurationError("owner_import_retention_hours must be between 1 and 168")
 
     return AppConfig(
+        configuration_path=path.absolute(),
+        discovery_revision=hashlib.sha256(
+            json.dumps(discovery, sort_keys=True, default=str).encode()
+        ).hexdigest(),
         discovery=DiscoveryConfig(
             sources=discovery_sources,
             zip_code=zip_code,
@@ -729,6 +863,11 @@ def load_config(path: Path, *, load_secrets: bool = True) -> AppConfig:
             birdnet_go_url=birdnet_go_url,
         ),
         controller=ControllerConfig(
+            owner_import_retention_hours=import_retention,
+            configuration_ownership=ownership,
+            generation_enabled=_optional_boolean(
+                controller, "generation_enabled", default=ownership != "app"
+            ),
             workspace_dir=_path(_string(controller, "workspace_dir"), base_dir),
             catalog_dir=_path(_string(controller, "catalog_dir"), base_dir),
             state_dir=_path(_string(controller, "state_dir"), base_dir),
@@ -751,6 +890,22 @@ def load_config(path: Path, *, load_secrets: bool = True) -> AppConfig:
             ),
             cors_allowed_origins=_http_origins(controller, "cors_allowed_origins"),
             embed_allowed_origins=_csp_frame_origins(controller, "embed_allowed_origins"),
+            owner_allowed_origins=_owner_origins(controller),
+            trusted_proxy_addresses=_proxy_addresses(controller),
+            owner_access_mode=_owner_mode(controller),
+            tls_certificate=(
+                _path(_string(controller, "tls_certificate"), base_dir)
+                if "tls_certificate" in controller
+                else None
+            ),
+            tls_private_key=(
+                # Keep the final component lexical so startup can reject a
+                # symlink equally for relative and absolute key paths.
+                base_dir / Path(_string(controller, "tls_private_key")).expanduser()
+                if "tls_private_key" in controller
+                else None
+            ),
+            oidc=_oidc_config(controller),
         ),
         display_node=DisplayNodeConfig(
             controller_url=controller_url,

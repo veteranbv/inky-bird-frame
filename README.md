@@ -1,7 +1,14 @@
 # Inky Bird Frame
 
-Turn the birds around you, the birds your station hears, and the birds you have
-seen into reviewed field-journal plates on a color e-paper frame.
+Keep birding present between outings. Bring the birds around you, the birds
+your station hears, and the birds you remember from a trip to your wall,
+browser or dashboard as reviewed field-journal plates.
+
+Start with the shared artwork. Add your sources when you are ready. An e-paper
+frame and AI generation are optional; your private history stays on your controller.
+
+This branch is the 1.0 development candidate. The published release remains the
+safe production choice until the candidate completes qualification and review.
 
 [![CI](https://github.com/veteranbv/inky-bird-frame/actions/workflows/ci.yml/badge.svg)](https://github.com/veteranbv/inky-bird-frame/actions/workflows/ci.yml)
 [![Latest release](https://img.shields.io/github/v/release/veteranbv/inky-bird-frame)](https://github.com/veteranbv/inky-bird-frame/releases/latest)
@@ -52,6 +59,10 @@ appear. Your discovery location and observation history stay private.
 
 ## Start here
 
+Choose the part you want first. You can browse the shared artwork before
+buying hardware or connecting a bird service.
+
+- **Just see the birds:** [browse the plate gallery](https://henrysowell.com/birds).
 - **Build the complete wall frame:** choose parts in the
   [hardware guide](docs/hardware.md), then follow the
   [native installation](docs/installation.md).
@@ -61,15 +72,41 @@ appear. Your discovery location and observation history stay private.
   [native installation guide](docs/installation.md).
 - **Connect eBird, BirdNET, Bird Buddy, or another source:** choose providers in
   the [discovery guide](docs/discovery.md).
-- **Connect a trusted browser application:** read the
-  [browser application boundary](docs/installation.md#browser-applications).
-  Inky provides a read-only catalog, image interface, and narrow plate embed,
-  not a standalone browser application.
-- **Add Inky to a Homepage dashboard:** use the
-  [stock Homepage recipe](docs/installation.md#homepage-dashboard) for compact
-  catalog stats and an optional upright plate.
+- **Use a phone, tablet or computer:** open the [browser journal](docs/journal.md).
+  Browse birds, keep Favorites and trip collections, connect sources, and play
+  full plates. Normal setup needs only an Inky username and password.
+- **Add a dashboard:** use the [Home Assistant and Homepage guide](docs/presentation.md)
+  for a selected art view and separate read-only status sensors. The existing
+  [Homepage recipe](docs/installation.md#homepage-dashboard) remains compatible.
+- **Already running Inky:** read the [update steps](docs/installation.md#update)
+  and [backup guide](docs/backup.md) before changing versions.
 - **Request or contribute a bird:** start with
   [Contributing](CONTRIBUTING.md).
+
+## Your journal, on your screen
+
+Keep Favorites, remember a trip, or just enjoy the artwork. The browser uses
+the same controller as the wall frame. It does not create a second bird list
+or turn a saved selection into a sighting.
+
+<table>
+  <tr>
+    <td width="50%" valign="top" align="center">
+      <a href="docs/images/journal-home.png"><img src="docs/images/journal-home.png" alt="Inky journal Home showing an approved American Robin plate and its Saved selection label" width="330"></a>
+      <br><strong>A bird worth keeping close</strong>
+    </td>
+    <td width="50%" valign="top" align="center">
+      <a href="docs/images/journal-collection.png"><img src="docs/images/journal-collection.png" alt="A manual Garden birds collection showing Northern Cardinal and American Robin artwork, with collection tools below the plates" width="330"></a>
+      <br><strong>A collection, ready to play</strong>
+    </td>
+  </tr>
+</table>
+
+These are actual candidate screens with public approved artwork and manual
+demo selections. They contain no personal sightings or deployment information.
+Open either image for the full-size view. Start with the
+[journal guide](docs/journal.md), or add a
+[read-only screen or dashboard](docs/presentation.md).
 
 ## How it works
 
@@ -90,11 +127,25 @@ The project has two installed roles:
 - The **display node** downloads approved assets, verifies their checksums, and
   rotates them on the Inky panel. It never runs discovery or Codex.
 
-A trusted browser application may also read the catalog through a same-origin
-proxy or an explicitly allowed origin. Inky supplies the data interface and a
-narrow, script-free plate embed, not a standalone application. The controller
-has no built-in authentication or TLS and must not be exposed directly to the
-internet.
+The controller includes one [browser journal](docs/journal.md) at `/app`, not
+a separate companion service. Home, Birds, Collections and Manage share the
+same approved art, source history and work rules. A long-running tablet can
+use a paired read-only screen instead of holding an owner login.
+
+Use local username/password setup, optional HTTPS, or optional Authentik single
+sign-on. No setup code is needed for normal use. Existing installs keep their
+source choices, generation policy and default wall behavior. New installs create
+the owner in the browser; existing unowned installs do it once locally, so a
+visitor cannot claim retained bird history during an upgrade. Read
+[first setup](docs/browser-access.md#ordinary-home-network-setup) or the
+[1.0 migration guide](docs/migration-v1.md).
+
+Local HTTP assumes a trusted network and trusted web services on the same
+address. Different ports do not isolate browser sign-in cookies; see the
+[access requirements](docs/browser-access.md#sessions-and-private-files).
+
+The legacy catalog and embed routes remain trusted-network services. Owner
+sign-in does not protect them. Do not expose the controller directly to the internet.
 
 The controller and display may run on one capable Raspberry Pi, but the
 recommended wall build keeps a lightweight Pi behind the frame and runs the
@@ -117,8 +168,10 @@ API, embed, privacy, and network limits.
 - **Nearby public sightings: iNaturalist or eBird.** These use the configured
   point, radius, and supported time window.
 - **Your sightings and trips: eBird Archive.** Inky imports the official
-  **Download My Data** ZIP or CSV without storing account credentials, locations,
-  comments, counts, or media references.
+  **Download My Data** ZIP or CSV. Retained history keeps species, dates and
+  hashed checklist links, not account credentials, locations or media. The
+  temporary upload can contain private trip details; see its
+  [deletion and retention rules](docs/history-imports.md#private-files-retention-and-backup).
 - **A live acoustic station: BirdWeather or BirdNET-Go.** Inky reads species
   summaries and never receives recordings or manages microphones.
 - **Offline acoustic results: BirdNET Analyzer.** Only CSV history you
@@ -319,6 +372,9 @@ shares an issue, plate, fix, or idea.
 | Back up or restore private controller state | [Backup and restore](docs/backup.md) |
 | Configure alerts | [Notifications](docs/notifications.md) |
 | Add Inky to a Homepage dashboard | [Homepage dashboard](docs/installation.md#homepage-dashboard) |
+| Use the journal and private trip collections | [Browser journal](docs/journal.md) |
+| Pair screens, choose a wall view, or add Home Assistant | [Presentation](docs/presentation.md) |
+| Upgrade to the browser journal without losing settings | [Migration](docs/migration-v1.md) |
 | Diagnose a failure | [Troubleshooting](docs/troubleshooting.md) |
 | Understand trust, privacy, and data flow | [Architecture](docs/architecture.md) |
 | Submit a change or plate | [Contributing](CONTRIBUTING.md) |

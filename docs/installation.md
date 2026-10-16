@@ -50,6 +50,11 @@ physical panel independently.
 
 ## Before you begin
 
+Want the journal without building a frame? Start with [approved art and no
+generation](settings.md#start-with-approved-art). You do not need panel hardware,
+Codex authentication or a bird-service account for that path. The requirements
+below describe the complete observation-driven wall installation.
+
 You need:
 
 - the framed-display parts in the [hardware guide](hardware.md);
@@ -81,11 +86,18 @@ controller. Give the controller a stable DNS name or DHCP reservation because
 the display stores its URL. The display itself may use ordinary DHCP because it
 initiates every application connection.
 
-Do not expose the configured controller port to the public internet. The
-built-in server is an unauthenticated LAN service. It serves the active catalog
-and accepts only narrow display-health reports; it does not provide user
-authentication. Use a VPN or an authenticated TLS reverse proxy if traffic must
-cross an untrusted network.
+Do not expose the configured controller port to the public internet. Catalog,
+asset, embed, and narrow display-health routes remain unauthenticated LAN
+services. Owner access at `/app` has a separate secure boundary; see
+[owner setup and recovery](browser-access.md). Use a VPN or a reviewed TLS
+reverse proxy when traffic crosses an untrusted network. Do not assume that
+adding owner sign-in protects the legacy routes.
+
+For owner sign-in, also trust the other web services reachable on the same
+hostname or IP, even on different ports. Browser cookies do not isolate ports.
+If you host an untrusted service, follow the
+[host-isolation requirements](browser-access.md#sessions-and-private-files)
+before using that address for Inky.
 
 The example configuration sets `controller.bind_host = "0.0.0.0"`, which
 listens on every interface of the controller host. On a multi-homed
@@ -94,9 +106,14 @@ the service is not offered on other networks.
 
 ### Browser applications
 
-Inky does not include a standalone browser application. This section is for an
-operator-supplied application that consumes Inky's read-only catalog API or
-frames its narrow featured-plate embed.
+For Inky's own bundled journal, follow [first setup](browser-access.md) and
+[the journal guide](journal.md). For paired screens, selected wall views and
+scoped dashboard recipes, use [presentation setup](presentation.md). The
+compatible external catalog interface below remains separate from owner access.
+
+The [owner access page](browser-access.md) is separate from the read-only
+integration routes below. This section is for an operator-supplied application
+that consumes the catalog API or frames its narrow featured-plate embed.
 Both permissions are disabled by default. To let a trusted web application
 fetch the active catalog and its images directly, list its exact origin under
 `[controller]`:
@@ -149,10 +166,10 @@ Direct cross-origin access through cookie, session, client-certificate, or HTTP
 Authorization proxies is not compatible with this interface. Inky does not
 permit credentialed CORS requests and does not implement CORS or Private
 Network Access preflight. Standard catalog `GET` requests use no custom request
-headers. The service logs each request locally with the source IP address,
-request path and query, and HTTP status. It does not log request headers or send
-browser analytics to an external service. Normal systemd journal or macOS log
-retention applies.
+headers. Routine application request logs use a fixed route label, method and
+status, not source addresses, arbitrary paths, queries, cookies or credentials.
+Do not enable proxy request logging for authentication callbacks. Normal systemd
+journal or bounded private macOS log retention applies.
 
 #### Homepage dashboard
 
@@ -649,6 +666,13 @@ each source checkout to that tag, review the changes, and rerun the same setup
 command. Setup is idempotent and replaces managed application code and native
 service definitions without replacing the private configuration. Replace
 `vX.Y.Z` below with that target tag.
+
+If no browser owner exists, interactive controller setup finishes by asking for
+a username and password. Password entry is hidden. Cancelling leaves the
+installed controller running and owner controls locked. Run `access setup`
+later in a private terminal. Unattended setup never waits for account entry;
+display and scheduled work continue. Existing owners remain unchanged. See
+[the migration guide](migration-v1.md) before this first browser-journal upgrade.
 
 ```bash
 INKY_VERSION=vX.Y.Z
