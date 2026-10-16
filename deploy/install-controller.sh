@@ -80,9 +80,10 @@ mkdir -p "${app_dir}/catalog" "${app_dir}/deploy" "${support_dir}" "${log_dir}" 
 chmod 700 "${support_dir}" "${log_dir}"
 find "${log_dir}" -maxdepth 1 -type f -name '*.log*' -exec chmod 600 {} +
 if [ "${root}" != "${app_dir}" ]; then
+  mkdir -p "${app_dir}/docs"
   rsync -a --delete "${root}/src/" "${app_dir}/src/"
   install -m 0755 "${root}/deploy/install-controller.sh" "${app_dir}/deploy/"
-  for file in pyproject.toml uv.lock README.md LICENSE; do
+  for file in pyproject.toml uv.lock README.md LICENSE docs/browser-access.md; do
     install -m 0644 "${root}/${file}" "${app_dir}/${file}"
   done
 fi

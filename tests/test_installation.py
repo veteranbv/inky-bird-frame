@@ -5,6 +5,7 @@ import os
 import plistlib
 import subprocess
 import sys
+import tomllib
 import unittest
 from dataclasses import replace
 from pathlib import Path
@@ -81,6 +82,45 @@ def native_oidc_config(directory: Path) -> tuple[AppConfig, Path]:
             ),
         ),
     ), path
+
+
+@pytest.mark.parametrize(
+    "installer",
+    ["install-controller.sh", "install-controller-systemd.sh", "install-display-local.sh"],
+)
+def test_native_managed_copy_preserves_required_package_inputs(
+    tmp_path: Path, installer: str
+) -> None:
+    project = Path(__file__).resolve().parents[1]
+    settings = tomllib.loads((project / "pyproject.toml").read_text())
+    required = settings["tool"]["hatch"]["build"]["targets"]["wheel"]["force-include"]
+    source, managed = tmp_path / "source checkout", tmp_path / "managed app"
+    for root in (source, managed):
+        for name in ("src", "catalog", "deploy"):
+            (root / name).mkdir(parents=True)
+    for name in ("pyproject.toml", "uv.lock", "README.md", "LICENSE", *required):
+        path = source / name
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text("synthetic package input\n")
+    (source / "deploy" / installer).write_text("# synthetic staging input\n")
+    script = (project / "deploy" / installer).read_text()
+    staging = script.split('if [ "${root}" != "${app_dir}" ]; then\n', 1)[1].split("\nfi\n", 1)[0]
+    # Execute only real file staging, not an installer, service or package manager.
+    subprocess.run(
+        ["bash", "-e", "-c", "root=$1; app_dir=$2\n" + staging, "stage", str(source), str(managed)],
+        check=True,
+        capture_output=True,
+    )
+    for name in required:
+        assert (managed / name).read_bytes() == (source / name).read_bytes()
+
+
+def test_remote_display_copy_includes_the_required_bundled_guide() -> None:
+    script = (Path(__file__).resolve().parents[1] / "deploy/install-display-node.sh").read_text()
+    assert '"$1/docs"' in script
+    assert (
+        "for file in pyproject.toml uv.lock README.md LICENSE docs/browser-access.md; do" in script
+    )
 
 
 def test_native_oidc_secret_persists_privately_and_rotates_without_other_environment(

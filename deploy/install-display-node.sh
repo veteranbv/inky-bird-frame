@@ -18,13 +18,13 @@ fi
 
 ssh "${ssh_options[@]}" "${remote}" bash -s -- "${remote_app}" <<'REMOTE'
 set -euo pipefail
-mkdir -p "$1/src" "$1/catalog" "$1/deploy"
+mkdir -p "$1/src" "$1/catalog" "$1/deploy" "$1/docs"
 REMOTE
 rsync -a --delete -e "ssh -i '${ssh_key}' -o BatchMode=yes -o IdentitiesOnly=yes" \
   "${root}/src/" "${remote}:${remote_app}/src/"
 rsync -a -e "ssh -i '${ssh_key}' -o BatchMode=yes -o IdentitiesOnly=yes" \
   "${root}/catalog/" "${remote}:${remote_app}/catalog/"
-for file in pyproject.toml uv.lock README.md LICENSE; do
+for file in pyproject.toml uv.lock README.md LICENSE docs/browser-access.md; do
   rsync -a -e "ssh -i '${ssh_key}' -o BatchMode=yes -o IdentitiesOnly=yes" \
     "${root}/${file}" "${remote}:${remote_app}/${file}"
 done
