@@ -93,6 +93,9 @@ def test_native_installers_finish_without_exposing_or_blocking_owner_registratio
     root = Path(__file__).resolve().parents[1]
     assert "access prepare" not in (root / "compose.yaml").read_text()
     assert "/data/var/controller" not in (root / "Dockerfile").read_text()
+    workflow = (root / ".github/workflows/ci.yml").read_text()
+    assert "access prepare --new-installation --config /data/config.toml" in workflow
+    assert "set(p.name for p in path.parent.iterdir()) == {'config.toml'}" in workflow
 
 
 def test_docker_bootstrap_applies_only_reviewed_catalog_migrations() -> None:

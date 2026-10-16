@@ -208,7 +208,16 @@ jobs:
           INKY_BIRD_IMAGE=inky-bird-frame:ci INKY_BIRD_CONFIG="$config_source" \
             docker compose -p "$compose_project" run --rm --no-deps \
             --entrypoint python scheduler -c \
-            "from pathlib import Path; import stat; from inky_bird_frame.config import load_config; path = Path('/data/config.toml'); metadata = path.stat(); assert metadata.st_uid == 10001; assert metadata.st_gid == 10001; assert stat.S_IMODE(metadata.st_mode) == 0o600; config = load_config(path); assert config.controller.workspace_dir == Path('/data/workspace'); assert config.controller.workspace_dir.is_dir()"
+            "from pathlib import Path; import stat; from inky_bird_frame.config import load_config; path = Path('/data/config.toml'); metadata = path.stat(); assert metadata.st_uid == 10001; assert metadata.st_gid == 10001; assert stat.S_IMODE(metadata.st_mode) == 0o600; config = load_config(path); assert config.controller.workspace_dir == Path('/data/workspace'); assert set(p.name for p in path.parent.iterdir()) == {'config.toml'}"
+          # Only this fresh disposable CI volume is prepared. Normal Compose
+          # startup and upgrades must never grant network account creation.
+          INKY_BIRD_IMAGE=inky-bird-frame:ci INKY_BIRD_CONFIG="$config_source" \
+            docker compose -p "$compose_project" run --rm --no-deps controller \
+            access prepare --new-installation --config /data/config.toml
+          INKY_BIRD_IMAGE=inky-bird-frame:ci INKY_BIRD_CONFIG="$config_source" \
+            docker compose -p "$compose_project" run --rm --no-deps \
+            --entrypoint python controller -c \
+            "from pathlib import Path; from inky_bird_frame.config import load_config; from inky_bird_frame.access import AccessStore; c = load_config(Path('/data/config.toml'), load_secrets=False); s = AccessStore(c.controller.state_dir).setup_status(); assert s is not None and s.state == 'missing'"
 
   python-compatibility:
     name: Python ${{ matrix.python-version }}
