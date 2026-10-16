@@ -6,6 +6,7 @@ from unittest.mock import patch
 import pytest
 from starlette.testclient import TestClient
 
+from inky_bird_frame.access import AccessStore
 from inky_bird_frame.birdbuddy import BirdBuddyFeeder
 from inky_bird_frame.config import ControllerConfig
 from inky_bird_frame.errors import DataSourceError
@@ -30,9 +31,10 @@ def controller(root: Path, origin: str = ORIGIN) -> ControllerConfig:
     )
 
 
-def register(client: TestClient, origin: str = ORIGIN) -> dict[str, str]:
+def login(client: TestClient, config: ControllerConfig, origin: str = ORIGIN) -> dict[str, str]:
+    AccessStore(config.state_dir).setup_owner("qa-owner", "long synthetic password")
     result = client.post(
-        "/v1/owner/register",
+        "/v1/owner/login",
         json={"username": "qa-owner", "passphrase": "long synthetic password"},
         headers={"Origin": origin},
     )
@@ -52,7 +54,7 @@ def test_birdbuddy_account_requires_owner_csrf_and_explicit_attestation(tmp_path
     config = controller(tmp_path)
     with TestClient(create_app(config), base_url=ORIGIN) as client:
         assert client.get("/v1/owner/birdbuddy").status_code == 401
-        headers = register(client)
+        headers = login(client, config)
         with patch("inky_bird_frame.birdbuddy._authenticate") as authenticate:
             assert (
                 client.post(
@@ -86,7 +88,7 @@ def test_bootstrap_is_denied_on_local_network_http_without_contacting_provider(
     origin = "http://inky.example.test"
     config = controller(tmp_path, origin)
     with TestClient(create_app(config), base_url=origin, client=("192.168.1.12", 12345)) as client:
-        headers = register(client, origin)
+        headers = login(client, config, origin)
         assert not client.get("/v1/owner/birdbuddy").json()["data"]["secure_bootstrap"]
         with patch("inky_bird_frame.birdbuddy._authenticate") as authenticate:
             response = client.post("/v1/owner/birdbuddy/login", json=credentials(), headers=headers)
@@ -102,7 +104,7 @@ def test_structured_feeder_choice_and_bootstrap_secret_redaction(tmp_path: Path)
         BirdBuddyFeeder("fixture-second", "Fixture feeder two", "member"),
     ]
     with TestClient(create_app(config), base_url=ORIGIN) as client:
-        headers = register(client)
+        headers = login(client, config)
         with patch(
             "inky_bird_frame.birdbuddy._authenticate",
             return_value=("SYNTHETIC_ACCESS", "SYNTHETIC_REFRESH", feeders),
@@ -148,7 +150,7 @@ def test_structured_feeder_choice_and_bootstrap_secret_redaction(tmp_path: Path)
 def test_provider_errors_never_echo_credentials_paths_or_server_payloads(tmp_path: Path) -> None:
     config = controller(tmp_path)
     with TestClient(create_app(config), base_url=ORIGIN) as client:
-        headers = register(client)
+        headers = login(client, config)
         with patch(
             "inky_bird_frame.birdbuddy._authenticate",
             side_effect=DataSourceError(
@@ -173,7 +175,7 @@ def test_invalid_bootstrap_inputs_fail_before_provider_call(
 ) -> None:
     config = controller(tmp_path)
     with TestClient(create_app(config), base_url=ORIGIN) as client:
-        headers = register(client)
+        headers = login(client, config)
         with patch("inky_bird_frame.birdbuddy._authenticate") as authenticate:
             assert (
                 client.post(

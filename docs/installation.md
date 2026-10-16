@@ -661,6 +661,13 @@ command. Setup is idempotent and replaces managed application code and native
 service definitions without replacing the private configuration. Replace
 `vX.Y.Z` below with that target tag.
 
+If no browser owner exists, interactive controller setup finishes by asking for
+a username and password. Password entry is hidden. Cancelling leaves the
+installed controller running and owner controls locked. Run `access setup`
+later in a private terminal. Unattended setup never waits for account entry;
+display and scheduled work continue. Existing owners remain unchanged. See
+[the migration guide](migration-v1.md) before this first browser-journal upgrade.
+
 ```bash
 INKY_VERSION=vX.Y.Z
 git fetch --tags --prune

@@ -311,7 +311,7 @@ def save_settings(
     return {"saved": True, "revision": _revision(encoded), "restart_required": adopt}
 
 
-def initialize_config(path: Path, *, container: bool = False) -> None:
+def initialize_config(path: Path, *, container: bool = False) -> bool:
     """Create a new art-first installation; never replace an existing config.
 
     Discovery radius/limit/window and generation limits match config.example.toml.
@@ -344,5 +344,10 @@ def initialize_config(path: Path, *, container: bool = False) -> None:
         if path.exists() or path.is_symlink():
             raise SettingsError("Configuration already exists; it was not replaced")
         encoded = _toml(raw)
-        parse_config(raw, path=path, load_secrets=False)
+        config = parse_config(raw, path=path, load_secrets=False)
         write_bytes_atomic(path, encoded, mode=0o600)
+        if not container:
+            from .access import prepare_browser_registration
+
+            return prepare_browser_registration(path, config.controller)
+    return False

@@ -376,6 +376,22 @@ docker compose run --rm --no-deps scheduler \
 copy. An invalid edit leaves the last valid runtime copy untouched and prevents
 dependent services from starting through `docker compose up`.
 
+For a **new empty installation only**, prepare browser account creation now,
+before the first `up` or catalog bootstrap:
+
+```bash
+docker compose run --rm --no-deps controller \
+  access prepare --new-installation --config /data/config.toml
+```
+
+This checks the entire runtime root, not just the absence of an account file.
+It refuses an existing or partially initialized volume without changing its
+bird data. After success, continue below; create your username and password at
+`/app`. This step needs no password or setup code. Do not add it to startup or
+upgrade automation. If you already started the stack, or have retained data,
+use [local account setup](browser-access.md#what-changes-on-an-existing-installation)
+after startup instead. Do not delete a volume to retry browser setup.
+
 ## 5. Authenticate Codex
 
 Skip this step while generation is off. Browsing and importing approved art do
@@ -485,6 +501,18 @@ docker compose up --detach --remove-orphans --force-recreate
 docker compose run --rm --no-deps controller --version
 curl --fail --silent http://127.0.0.1:8793/health
 ```
+
+The new owner account does not interrupt catalog serving or scheduled work.
+If this installation has no owner yet, create one locally after startup:
+
+```bash
+docker compose exec controller inky-bird-frame access setup --config /data/config.toml
+```
+
+Existing owners do not need that command. It will not replace them. An
+unattended image update, including `:latest`, keeps new browser controls locked
+until local account setup. It does not wait for input or authorize the first
+network visitor. Do not run `access prepare` on an upgrade.
 
 After editing `config.toml`, rerun `config-sync` and recreate the controller and
 scheduler so both processes load the same validated copy. Recreating the

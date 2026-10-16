@@ -28,6 +28,8 @@ from .http import write_bytes_atomic, write_json_atomic
 if TYPE_CHECKING:
     from argon2 import PasswordHasher
 
+    from .config import ControllerConfig
+
 # A normal login lasts one working day. Remembered logins last at most a
 # month, with a week of inactivity allowed for occasional birding visits.
 # Background polling does not renew either limit. Wall screens use read-only grants.
@@ -100,7 +102,7 @@ class SessionCredentials:
 
 @dataclass(frozen=True)
 class SetupCodeStatus:
-    state: Literal["missing", "ready", "expired"]
+    state: Literal["missing", "local", "ready", "expired"]
     expires_in_seconds: int | None = None
 
 
@@ -128,6 +130,7 @@ class OIDCTransaction:
 
 @dataclass
 class AccessState:
+    allow_registration: bool = False
     owner_hash: str | None = field(default=None, repr=False)
     bootstrap_hash: str | None = field(default=None, repr=False)
     bootstrap_expires_at: float | None = None
@@ -253,6 +256,7 @@ def _parse_state(value: object) -> AccessState:
         )
     expiry = value.get("bootstrap_expires_at")
     state = AccessState(
+        allow_registration=_boolean(value.get("allow_registration", False)),
         owner_hash=_optional_hash(value.get("owner_hash")),
         bootstrap_hash=_optional_hash(value.get("bootstrap_hash")),
         bootstrap_expires_at=_number(expiry) if expiry is not None else None,
@@ -343,6 +347,47 @@ def _transactions(value: object) -> list[OIDCTransaction]:
     return result
 
 
+def prepare_browser_registration(config_path: Path, controller: ControllerConfig) -> bool:
+    """Explicit installer authorization, only in a positively empty runtime root.
+
+    The config and initialization locks are the only allowed existing entries.
+    Never call this from startup, catalog bootstrap, or configuration sync.
+    Failed/interrupted initialization stays locked until local owner setup.
+    """
+    path = config_path.expanduser().absolute()
+    info = path.lstat()
+    if not stat.S_ISREG(info.st_mode) or stat.S_IMODE(info.st_mode) & 0o077:
+        raise AccessError("New-installation configuration must be a private regular file")
+    root = path.parent.resolve()
+    for data_path in (controller.workspace_dir, controller.catalog_dir, controller.state_dir):
+        resolved = data_path.resolve()
+        if resolved == root or not resolved.is_relative_to(root):
+            return False
+    fd = os.open(
+        root / "owner-init.lock", os.O_CREAT | os.O_RDWR | os.O_NOFOLLOW | os.O_NONBLOCK, 0o600
+    )
+    with os.fdopen(fd, "rb", buffering=0) as handle:
+        metadata = os.fstat(handle.fileno())
+        if not stat.S_ISREG(metadata.st_mode) or stat.S_IMODE(metadata.st_mode) & 0o077:
+            raise AccessError("Owner initialization lock must be a private regular file")
+        fcntl.flock(handle.fileno(), fcntl.LOCK_EX)
+        for entry in root.iterdir():
+            if entry.name not in {path.name, "owner-init.lock", "catalog-state.lock"}:
+                return False
+            entry_info = entry.lstat()
+            if not stat.S_ISREG(entry_info.st_mode):
+                return False
+            if entry.name != path.name and entry_info.st_size != 0:
+                return False
+        store = AccessStore(controller.state_dir)
+        with store._locked() as state:
+            if store.path.exists() or state.owner_hash is not None:
+                return False
+            state.allow_registration = True
+            store._save(state)
+    return True
+
+
 class AccessStore:
     """One owner store, shared by the HTTP service and local recovery commands."""
 
@@ -370,9 +415,11 @@ class AccessStore:
             ):
                 raise AccessError("Owner access directory must be private and not a symlink")
             fd = os.open(
-                self.directory / "access.lock", os.O_CREAT | os.O_RDWR | os.O_NOFOLLOW, 0o600
+                self.directory / "access.lock",
+                os.O_CREAT | os.O_RDWR | os.O_NOFOLLOW | os.O_NONBLOCK,
+                0o600,
             )
-            with os.fdopen(fd, "a+") as handle:
+            with os.fdopen(fd, "rb", buffering=0) as handle:
                 lock_stat = os.fstat(handle.fileno())
                 if not stat.S_ISREG(lock_stat.st_mode) or stat.S_IMODE(lock_stat.st_mode) & 0o077:
                     raise AccessError("Owner access lock must use mode 0600")
@@ -388,7 +435,7 @@ class AccessStore:
 
     def _read(self) -> AccessState:
         try:
-            fd = os.open(self.path, os.O_RDONLY | os.O_NOFOLLOW)
+            fd = os.open(self.path, os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK)
         except FileNotFoundError:
             return AccessState()
         with os.fdopen(fd, "rb") as handle:
@@ -432,6 +479,11 @@ class AccessStore:
                 raise AccessDeniedError(
                     "The installer reserved owner setup; finish setup on the controller"
                 )
+            if not state.allow_registration:
+                raise AccessDeniedError(
+                    "Owner setup is required on the controller; run access setup"
+                )
+            state.allow_registration = False
             state.owner_hash = _hash_passphrase(passphrase)
             state.username = name
             state.bootstrap_hash = None
@@ -442,11 +494,30 @@ class AccessStore:
             (self.directory / "bootstrap-secret").unlink(missing_ok=True)
             return credentials
 
+    def setup_owner(self, username: str, passphrase: str) -> None:
+        """Create the first owner locally; never replace a concurrently created owner."""
+        name = normalize_username(username)
+        with self._locked() as state:
+            if state.owner_hash is not None:
+                raise AccessDeniedError("An owner already exists; sign in or use access recover")
+            state.owner_hash = _hash_passphrase(passphrase)
+            state.username = name
+            state.allow_registration = False
+            state.bootstrap_hash = None
+            state.bootstrap_expires_at = None
+            state.sessions.clear()
+            state.login_failures.clear()
+            state.oidc_transactions.clear()
+            state.access_revision += 1
+            self._save(state)
+            (self.directory / "bootstrap-secret").unlink(missing_ok=True)
+
     def recover_owner(self, username: str, passphrase: str) -> None:
         """Local operator recovery: never leave registration open on the network."""
         name = normalize_username(username)
         encoded = _hash_passphrase(passphrase)
         with self._locked() as state:
+            state.allow_registration = False
             state.owner_hash = encoded
             state.username = name
             state.bootstrap_hash = None
@@ -467,7 +538,7 @@ class AccessStore:
             if state.owner_hash is not None:
                 return None
             if state.bootstrap_expires_at is None:
-                return SetupCodeStatus("missing")
+                return SetupCodeStatus("missing" if state.allow_registration else "local")
             remaining = ceil(state.bootstrap_expires_at - timestamp)
             if remaining <= 0:
                 return SetupCodeStatus("expired", 0)
@@ -486,6 +557,7 @@ class AccessStore:
                     "An owner already exists; use access recover in a private terminal"
                 )
             secret = secrets.token_urlsafe(32)
+            state.allow_registration = False
             state.bootstrap_hash = _digest(secret)
             state.bootstrap_expires_at = (now + timedelta(seconds=BOOTSTRAP_SECONDS)).timestamp()
             secret_path = self.directory / "bootstrap-secret"
@@ -564,6 +636,7 @@ class AccessStore:
                     "Setup code is invalid or expired; create a new code on the Inky computer"
                 )
             state.owner_hash = _hash_passphrase(passphrase)
+            state.allow_registration = False
             state.bootstrap_hash = None
             state.bootstrap_expires_at = None
             state.login_failures.clear()

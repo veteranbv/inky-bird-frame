@@ -393,3 +393,6 @@ rm -f "${legacy_cycle_plist}"
 echo "Controller installed from ${root} into ${app_dir}."
 echo "Configuration: ${config_path}"
 echo "Logs: ${log_dir}"
+if ! "${app_dir}/.venv/bin/inky-bird-frame" access setup --if-needed --config "${config_path}"; then
+  echo "Controller installation completed; owner setup is incomplete. Run access setup in a private terminal. Display and scheduled work continue." >&2
+fi

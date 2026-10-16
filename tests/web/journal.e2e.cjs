@@ -16,6 +16,8 @@ const origin = 'http://127.0.0.1:18796',
 const publicCatalog = JSON.parse(fs.readFileSync(root + '/catalog/index.json')).species;
 const cardinal = publicCatalog.find((bird) => bird.common_name === 'Northern Cardinal');
 const robin = publicCatalog.find((bird) => bird.common_name === 'American Robin');
+// Explicit new-install initialization must precede any synthetic catalog/history.
+execFileSync(python, ['-c', `from pathlib import Path\nfrom inky_bird_frame.settings import initialize_config\ninitialize_config(Path(${JSON.stringify(configPath)}))`], {cwd:root});
 fs.mkdirSync(path.join(fixture, 'catalog/species'), { recursive: true });
 fs.cpSync(
   path.join(root, 'catalog', path.dirname(cardinal.portrait_path)),
@@ -35,7 +37,6 @@ from pathlib import Path
 from inky_bird_frame.settings import initialize_config,_toml
 from inky_bird_frame.ebird_archive import REQUIRED_COLUMNS
 root=Path(${JSON.stringify(fixture)})
-initialize_config(root/'config.toml')
 p=root/'config.toml'
 raw=tomllib.loads(p.read_text());raw['controller'].update(catalog_dir=str(root/'catalog'),port=18796,bind_host='127.0.0.1');p.write_bytes(_toml(raw))
 birds=json.loads(${JSON.stringify(JSON.stringify([cardinal, robin]))})
@@ -43,7 +44,7 @@ with (root/'archive.csv').open('w',newline='') as handle:
  writer=csv.DictWriter(handle,fieldnames=REQUIRED_COLUMNS);writer.writeheader()
  for n,bird in enumerate(birds):
   row=dict.fromkeys(REQUIRED_COLUMNS,'');row.update({'Submission ID':f'S-SYNTHETIC-{n}','Date':['2001-03-01','2001-03-02'][n],'Location':f'Fixture garden {n}','Scientific Name':bird['scientific_name'],'Common Name':bird['common_name']});writer.writerow(row)
-state=root/'var/controller';state.mkdir(parents=True)
+state=root/'var/controller';state.mkdir(parents=True,exist_ok=True)
 cache={'schema_version':1,'entries':{bird['scientific_name']:{'taxon_id':bird['taxon_id'],'common_name':bird['common_name'],'scientific_name':bird['scientific_name']} for bird in birds}}
 (state/'ebird-archive-taxonomy-crosswalk.json').write_text(json.dumps(cache))
 from PIL import Image,ImageDraw

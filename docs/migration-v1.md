@@ -38,9 +38,11 @@ Use the same configuration path and installation role. The installer preserves
 managed ownership. Run setup's preview first, inspect the service changes, then
 apply. Do not start a second scheduler alongside existing one-shot timers.
 
-After updating, run both doctors. Open the actual controller address at `/app`
-on the trusted network and create the single owner. Later visits offer sign-in,
-not another setup wizard. Restart the service and check the same account,
+After updating, run both doctors. Existing owners keep their account. If none
+exists, native interactive setup asks you to create one locally, with hidden
+password entry. If you skipped that step, run `inky-bird-frame access setup
+--config <config.toml>` in a private terminal. Then open the actual controller
+address at `/app` and sign in. Restart the service and check the same account,
 collections and source settings again. The browser needs no provider reconnection
 or history reimport merely because you upgraded.
 
@@ -57,6 +59,19 @@ restore only the original host seed after browser edits; back up the authoritati
 runtime file in the persistent volume. Both serving and scheduled operations
 need access to any applicable configured environment secrets. Inject only the
 specific provider/destination values, never a vault service-account token.
+
+If this is the first version with an owner account, run this after startup:
+
+```bash
+docker compose exec controller inky-bird-frame access setup --config /data/config.toml
+```
+
+Do not run new-installation preparation on an upgrade. A pull of `:latest` or
+another unattended upgrade does not pause for account entry. Existing display,
+catalog and scheduled operations continue; only new owner controls remain
+locked. The browser shows local setup instructions rather than letting a
+visitor claim the installation. Account setup does not enable generation or
+change your configuration ownership. See [access and recovery](browser-access.md).
 
 ## Choose configuration ownership deliberately
 

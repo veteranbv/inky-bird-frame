@@ -14,7 +14,9 @@ uv run inky-bird-frame setup controller --config ./private/config.toml
 ```
 
 The first command creates a mode-0600 configuration. It refuses to replace an
-existing file. The second command previews native installation; repeat it with
+existing file. Use an empty `private` directory for browser account creation;
+prior files or runtime paths outside that directory require local account setup
+instead. The second command previews native installation; repeat it with
 `--yes` only after checking its paths. Setup copies the approved catalog and
 starts the native services. Follow the [installation guide](installation.md)
 for operating-system prerequisites and service-account behavior.
@@ -40,7 +42,9 @@ uv run inky-bird-frame config init --container --destination ./config.toml
 Before starting Compose, add the exact browser origin to
 `controller.owner_allowed_origins` and keep `owner_access_mode = "local"` for
 deliberate home-network HTTP. Docker must not infer trust from a forwarded
-Host header. Continue with the [Docker guide](docker.md).
+Host header. Continue with the [Docker guide](docker.md), including its explicit
+empty-volume preparation before first startup. The host seed command alone
+cannot check or authorize a Docker volume.
 
 ## One file, one owner
 

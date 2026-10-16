@@ -342,6 +342,7 @@ def create_app(config: ControllerConfig, *, app_config: AppConfig | None = None)
             {
                 "secure": True,
                 "setup_required": setup is not None,
+                "registration_allowed": setup is not None and setup.state == "missing",
                 "setup_code": asdict(setup) if setup is not None else None,
                 "password_min_length": MIN_PASSWORD_CHARACTERS,
                 "password_max_length": MAX_PASSWORD_CHARACTERS,

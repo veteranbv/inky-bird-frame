@@ -1,9 +1,10 @@
 # Set up and sign in to Inky
 
-Open Inky on your home network and create a username and password. No email,
-setup code, online account or password-manager subscription is required.
-The first account owns this installation. Inky closes account creation once
-that account exists. Finish setup before sharing access.
+On a prepared new installation, open Inky on your home network and create a
+username and password. No email, setup code, online account or password-manager
+subscription is required. The first account owns this installation. Finish
+setup before sharing access. Existing installations create that first account
+locally, so a visitor cannot claim your retained birds during an upgrade.
 
 This development candidate includes the [browser journal](journal.md), source
 setup, history imports, collections, plate work and [scoped presentation](presentation.md).
@@ -12,7 +13,7 @@ required before a production upgrade.
 
 ## Ordinary home-network setup
 
-1. Install the controller extra, or follow the [Docker address setup](docker.md#what-runs) for the container.
+1. Follow [new native setup](settings.md#start-with-approved-art), or the [Docker guide](docker.md#2-create-private-configuration), including its one-time new-installation preparation.
 2. Keep the controller on your trusted home network.
 3. Open the controller's local address followed by /app.
 4. Choose a username and an Inky password of at least 15 characters.
@@ -69,12 +70,42 @@ or [Docker update](docker.md#update) procedure for the exact reviewed candidate.
 There is no published 1.0 release yet. Do not use this development branch as
 an unattended production upgrade.
 
-After updating, check controller and display health before opening `/app`.
-Your first visit offers account creation if no owner exists. Create the owner
-on the trusted network before sharing the address. Later visits show sign-in,
-not another setup wizard. Restart the controller and confirm the same account
-still works. No source reconnection or detection import is needed for this
-upgrade. Import new records only when you deliberately want to update history.
+After updating, check controller and display health. An existing owner keeps
+the same account. If no owner exists, native interactive setup asks for a
+username and a password with hidden entry. You can also create it yourself:
+
+~~~bash
+inky-bird-frame access setup --config <config.toml>
+~~~
+
+For Docker, run this from a private interactive terminal:
+
+~~~bash
+docker compose exec controller inky-bird-frame access setup --config /data/config.toml
+~~~
+
+Then open `/app` and sign in. This command creates an owner only if none exists.
+It cannot replace an account, including one created while you enter credentials.
+It never accepts a password argument or password environment variable.
+
+An unattended upgrade does not wait for a prompt. Catalog serving, displays
+and scheduled work continue. The new owner controls stay locked until you run
+local setup; the page explains how. This also applies to an automatic pull of
+`:latest`. Pin a release tag or digest when you want control over upgrade timing.
+An update does not run new-installation preparation automatically.
+
+Restart the controller and confirm the same account still works. No source
+reconnection or detection import is needed merely because you upgraded. Import
+new records only when you deliberately want to update history.
+
+Browser account creation requires a private authorization written during
+explicit new-installation preparation. Native `config init` writes it only
+when the configuration's directory contains no prior runtime data. All runtime
+paths must stay inside that directory. Docker's guide prepares the empty volume
+before catalog bootstrap. Any other file or directory, even an empty or unknown
+one, keeps browser setup closed. Use local setup instead; never delete bird
+data or access state to make an installation look new. Losing an access file,
+restarting, config sync and an expired pilot setup code do not reopen setup.
 
 An upgrade does not opt you into HTTPS or Authentik. Keep ordinary local login,
 or follow the advanced steps below. An existing named HTTPS origin keeps
@@ -159,7 +190,8 @@ original password. Use Account and access to choose a username and password.
 Existing pilot sessions retain their original 30-minute/eight-hour limits.
 The earlier `access bootstrap` command remains for pilot compatibility.
 An existing bootstrap reservation, including an expired one, closes ordinary
-browser account creation. Use local recovery to choose the owner credentials;
+browser account creation. Use local `access setup` if no owner exists, or
+`access recover` to replace an existing owner;
 do not delete the reservation or access state to reopen setup.
 `access reset` now aliases interactive recovery. It does not generate a code or
 leave account creation open. Headless reset scripts must change to a deliberate

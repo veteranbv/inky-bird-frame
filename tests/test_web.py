@@ -10,11 +10,48 @@ import pytest
 from starlette.testclient import TestClient
 
 from inky_bird_frame.access import AccessDeniedError, AccessStore
-from inky_bird_frame.config import ControllerConfig, OIDCConfig, OwnerAccessMode
+from inky_bird_frame.config import ControllerConfig, OIDCConfig, OwnerAccessMode, load_config
 from inky_bird_frame.oidc import VerifiedIdentity, provider_id
+from inky_bird_frame.settings import initialize_config
 from inky_bird_frame.web import LOCAL_OWNER_COOKIE, OWNER_COOKIE, create_app
 
 PASSPHRASE = "a long synthetic browser passphrase"
+
+
+def test_ownerless_upgrade_stays_healthy_but_requires_local_account_setup(tmp_path: Path) -> None:
+    config = _config(tmp_path)
+    config.state_dir.mkdir()
+    retained = config.state_dir / "retained-history.json"
+    retained.write_bytes(b"private existing bird history")
+    origin = "https://inky.example.test"
+    for _ in range(2):  # HTTP restarts must not authorize a network owner claim.
+        with TestClient(create_app(config), base_url=origin) as client:
+            status = client.get("/v1/access").json()["data"]
+            assert status["setup_required"] is True
+            assert status["registration_allowed"] is False
+            assert status["setup_code"]["state"] == "local"
+            assert client.get("/health").json()["ok"] is True
+            assert client.get("/app").status_code == 200
+            result = client.post(
+                "/v1/owner/register",
+                json={"username": "intruder", "passphrase": PASSPHRASE},
+                headers={"Origin": origin},
+            )
+            assert result.status_code == 401 and "set-cookie" not in result.headers
+            assert client.get("/v1/owner/session").status_code == 401
+            assert retained.read_bytes() == b"private existing bird history"
+    AccessStore(config.state_dir).setup_owner("birder", PASSPHRASE)
+    with TestClient(create_app(config), base_url=origin) as client:
+        assert not client.get("/v1/access").json()["data"]["setup_required"]
+        assert (
+            client.post(
+                "/v1/owner/login",
+                json={"username": "birder", "passphrase": PASSPHRASE},
+                headers={"Origin": origin},
+            ).status_code
+            == 200
+        )
+    assert retained.read_bytes() == b"private existing bird history"
 
 
 def test_reserved_setup_cannot_be_claimed_by_browser_registration(tmp_path: Path) -> None:
@@ -37,7 +74,9 @@ def test_reserved_setup_cannot_be_claimed_by_browser_registration(tmp_path: Path
 
 
 def test_local_network_setup_needs_no_code_and_remember_is_explicit(tmp_path: Path) -> None:
-    config = replace(_config(tmp_path), bind_host="0.0.0.0", owner_allowed_origins=())
+    path = tmp_path / "config.toml"
+    assert initialize_config(path)
+    config = replace(load_config(path).controller, port=8000)
     origin = "http://192.168.1.50:8000"
     with TestClient(create_app(config), base_url=origin, client=("192.168.1.20", 42000)) as client:
         state = client.get("/v1/access").json()["data"]
@@ -78,9 +117,11 @@ def test_username_only_update_keeps_password_and_rotates_browser_credentials(
     tmp_path: Path,
 ) -> None:
     origin = "https://inky.example.test"
-    with TestClient(create_app(_config(tmp_path)), base_url=origin) as client:
+    config = _config(tmp_path)
+    AccessStore(config.state_dir).setup_owner("birder", PASSPHRASE)
+    with TestClient(create_app(config), base_url=origin) as client:
         created = client.post(
-            "/v1/owner/register",
+            "/v1/owner/login",
             json={"username": "birder", "passphrase": PASSPHRASE},
             headers={"Origin": origin},
         )
@@ -160,13 +201,14 @@ def test_oidc_link_requires_owner_csrf_and_callback_is_one_use(tmp_path: Path) -
     )
     config = replace(_config(tmp_path), oidc=oidc)
     origin = "https://inky.example.test"
+    AccessStore(config.state_dir).setup_owner("birder", PASSPHRASE)
     with TestClient(create_app(config), base_url=origin) as client:
         assert (
             client.post("/v1/owner/oidc/link", json={}, headers={"Origin": origin}).status_code
             == 401
         )
         created = client.post(
-            "/v1/owner/register",
+            "/v1/owner/login",
             json={"username": "birder", "passphrase": PASSPHRASE},
             headers={"Origin": origin},
         )
@@ -184,8 +226,6 @@ def test_oidc_link_requires_owner_csrf_and_callback_is_one_use(tmp_path: Path) -
             )
         assert started.status_code == 200
         assert "SameSite=lax" in started.headers["set-cookie"]
-        from inky_bird_frame.access import AccessStore
-
         store = AccessStore(config.state_dir, oidc_provider_id=provider_id(oidc))
         import json
 
@@ -224,7 +264,7 @@ def test_sso_only_requires_a_successful_verified_exchange(tmp_path: Path) -> Non
     )
     from inky_bird_frame.access import AccessError
 
-    AccessStore(tmp_path / "state").register_owner("birder", PASSPHRASE)
+    AccessStore(tmp_path / "state").setup_owner("birder", PASSPHRASE)
     with pytest.raises(AccessError, match="Link and test"):
         create_app(replace(_config(tmp_path), oidc=oidc))
 
@@ -239,7 +279,8 @@ def test_sso_only_cannot_use_password_to_confirm_browser_changes(tmp_path: Path)
     )
     config = replace(_config(tmp_path), oidc=oidc)
     store = AccessStore(config.state_dir, oidc_provider_id=provider_id(oidc))
-    local = store.register_owner("birder", PASSPHRASE)
+    store.setup_owner("birder", PASSPHRASE)
+    local = store.login(PASSPHRASE, username="birder")
     tx, browser = store.begin_oidc(link_secret=local.secret)
     consumed = store.consume_oidc(tx.state, browser)
     sso = store.complete_oidc(
@@ -327,7 +368,8 @@ def test_oidc_confirmation_callback_rotates_only_the_current_session(tmp_path: P
     )
     config = replace(_config(tmp_path), oidc=oidc)
     store = AccessStore(config.state_dir, oidc_provider_id=provider_id(oidc))
-    local = store.register_owner("birder", PASSPHRASE)
+    store.setup_owner("birder", PASSPHRASE)
+    local = store.login(PASSPHRASE, username="birder")
     other_local = store.login(PASSPHRASE, username="birder")
     original_local = store.authenticate(other_local.secret)
     tx, browser = store.begin_oidc(link_secret=local.secret)
@@ -405,7 +447,8 @@ def test_genuine_loopback_owner_journey_and_session_reload(tmp_path: Path) -> No
         assert access == {
             "secure": True,
             "setup_required": True,
-            "setup_code": {"state": "missing", "expires_in_seconds": None},
+            "registration_allowed": False,
+            "setup_code": {"state": "local", "expires_in_seconds": None},
             "password_min_length": 15,
             "password_max_length": 1024,
             "encrypted": False,

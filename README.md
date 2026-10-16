@@ -134,7 +134,9 @@ use a paired read-only screen instead of holding an owner login.
 
 Use local username/password setup, optional HTTPS, or optional Authentik single
 sign-on. No setup code is needed for normal use. Existing installs keep their
-source choices, generation policy and default wall behavior. Read
+source choices, generation policy and default wall behavior. New installs create
+the owner in the browser; existing unowned installs do it once locally, so a
+visitor cannot claim retained bird history during an upgrade. Read
 [first setup](docs/browser-access.md#ordinary-home-network-setup) or the
 [1.0 migration guide](docs/migration-v1.md).
 

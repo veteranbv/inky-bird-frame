@@ -11,7 +11,7 @@ from unittest.mock import patch
 import pytest
 from starlette.testclient import TestClient
 
-from inky_bird_frame.access import AccessDeniedError, AccessRateLimitError
+from inky_bird_frame.access import AccessDeniedError, AccessRateLimitError, AccessStore
 from inky_bird_frame.config import ControllerConfig, OwnerAccessMode
 from inky_bird_frame.http import write_json_atomic
 from inky_bird_frame.journal import (
@@ -239,8 +239,9 @@ def test_readonly_http_boundaries_selected_wall_and_minimal_embed(tmp_path: Path
         assert (
             screen.post("/v1/screen/pair", json={}, headers={"Origin": ORIGIN}).status_code == 401
         )
+        AccessStore(config.state_dir).setup_owner("fixture-owner", "long synthetic password")
         login = owner.post(
-            "/v1/owner/register",
+            "/v1/owner/login",
             json={"username": "fixture-owner", "passphrase": "long synthetic password"},
             headers={"Origin": ORIGIN},
         )

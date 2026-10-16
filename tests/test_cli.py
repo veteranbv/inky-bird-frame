@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import getpass
 import io
 import json
 import shutil
@@ -24,7 +25,9 @@ from inky_bird_frame.catalog import rebuild_catalog_index, sha256_file
 from inky_bird_frame.cli import (
     _confirm_birdbuddy_authorization,
     access_bootstrap_command,
+    access_prepare_command,
     access_recover_command,
+    access_setup_command,
     access_status_command,
     approve_command,
     birdbuddy_login_command,
@@ -788,6 +791,89 @@ class CliTests(unittest.TestCase):
                 self.assertEqual(access_status_command(args), 0)
             config.assert_called_once_with(args, load_secrets=False)
             self.assertFalse(json.loads(output.getvalue())["data"]["owner_configured"])
+
+    def test_access_prepare_requires_explicit_new_installation_before_reading_config(self) -> None:
+        args = build_parser().parse_args(["access", "prepare", "--config", "instance.toml"])
+        with patch("inky_bird_frame.cli._config") as config:
+            with self.assertRaisesRegex(ValueError, "--new-installation"):
+                access_prepare_command(args)
+            config.assert_not_called()
+
+    def test_unattended_owner_setup_keeps_service_running_without_prompting(self) -> None:
+        from inky_bird_frame.access import AccessStore
+
+        args = build_parser().parse_args(
+            ["access", "setup", "--if-needed", "--config", "instance.toml"]
+        )
+        with TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            retained = root / "private-history.json"
+            retained.write_bytes(b"retained birds")
+            with (
+                patch("inky_bird_frame.cli._config", return_value=controller_config(root)) as load,
+                patch("sys.stdin.isatty", return_value=False),
+                patch("builtins.input") as username,
+                patch("getpass.getpass") as password,
+                redirect_stdout(io.StringIO()) as output,
+            ):
+                self.assertEqual(access_setup_command(args), 0)
+                username.assert_not_called()
+                password.assert_not_called()
+                self.assertEqual(json.loads(output.getvalue())["data"]["setup_mode"], "local")
+                load.assert_called_once_with(args, load_secrets=False)
+            self.assertEqual(retained.read_bytes(), b"retained birds")
+            self.assertFalse(AccessStore(root).owner_exists())
+
+    def test_owner_setup_uses_hidden_prompt_and_never_replaces_an_owner(self) -> None:
+        from inky_bird_frame.access import AccessStore
+
+        args = build_parser().parse_args(["access", "setup", "--config", "instance.toml"])
+        password = "a private synthetic owner password"
+        with TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            with (
+                patch("inky_bird_frame.cli._config", return_value=controller_config(root)),
+                patch("sys.stdin.isatty", return_value=True),
+                patch("builtins.input", return_value="birder") as username,
+                patch("getpass.getpass", side_effect=[password, password]) as prompt,
+                redirect_stdout(io.StringIO()) as output,
+            ):
+                self.assertEqual(access_setup_command(args), 0)
+                before = AccessStore(root).path.read_bytes()
+                self.assertEqual(access_setup_command(args), 0)
+                username.assert_called_once()
+                self.assertEqual(prompt.call_count, 2)
+                self.assertNotIn(password, output.getvalue())
+            self.assertEqual(AccessStore(root).path.read_bytes(), before)
+            self.assertNotIn(password.encode(), before)
+
+    def test_owner_setup_rejects_no_terminal_echo_fallback_and_mismatch(self) -> None:
+        from inky_bird_frame.access import AccessStore
+
+        args = build_parser().parse_args(["access", "setup", "--config", "instance.toml"])
+        with TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            with (
+                patch("inky_bird_frame.cli._config", return_value=controller_config(root)),
+                patch("sys.stdin.isatty", return_value=False),
+                patch("builtins.input") as username,
+            ):
+                with self.assertRaisesRegex(ValueError, "private interactive terminal"):
+                    access_setup_command(args)
+                username.assert_not_called()
+            for prompts, message in (
+                (getpass.GetPassWarning("synthetic fallback"), "hidden password"),
+                (["synthetic password one", "synthetic password two"], "do not match"),
+            ):
+                with (
+                    patch("inky_bird_frame.cli._config", return_value=controller_config(root)),
+                    patch("sys.stdin.isatty", return_value=True),
+                    patch("builtins.input", return_value="birder"),
+                    patch("getpass.getpass", side_effect=prompts),
+                    self.assertRaisesRegex(ValueError, message),
+                ):
+                    access_setup_command(args)
+                self.assertFalse(AccessStore(root).path.exists())
 
     def test_seed_supports_year_window_and_overrides(self) -> None:
         args = build_parser().parse_args(

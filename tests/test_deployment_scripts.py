@@ -84,6 +84,17 @@ def _controller_installers() -> list[str]:
     ]
 
 
+def test_native_installers_finish_without_exposing_or_blocking_owner_registration() -> None:
+    for script in _controller_installers():
+        setup = script.index('access setup --if-needed --config "${config_path}"')
+        assert script.index("installation_complete=true") < setup
+        assert "owner setup is incomplete" in script[setup:]
+        assert "access prepare" not in script
+    root = Path(__file__).resolve().parents[1]
+    assert "access prepare" not in (root / "compose.yaml").read_text()
+    assert "/data/var/controller" not in (root / "Dockerfile").read_text()
+
+
 def test_docker_bootstrap_applies_only_reviewed_catalog_migrations() -> None:
     compose = (Path(__file__).resolve().parents[1] / "compose.yaml").read_text()
 

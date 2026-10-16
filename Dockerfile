@@ -76,10 +76,7 @@ COPY --from=tool-downloads /out/licenses/ /usr/share/licenses/inky-bird-frame/th
 COPY LICENSE THIRD_PARTY_NOTICES.md /usr/share/licenses/inky-bird-frame/
 COPY --chown=10001:10001 catalog /app/catalog
 RUN mkdir -p \
-      /data/catalog/species \
-      /data/public-catalog \
-      /data/var/controller \
-      /data/workspace \
+      /data \
       /home/inky/.codex \
       /home/inky/.config/git \
       /home/inky/.config/gh \

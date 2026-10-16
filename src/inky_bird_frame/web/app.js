@@ -775,10 +775,10 @@ async function load(notice = '') {
       );
       return;
     }
-    if (access.setup_required && access.setup_code?.state !== 'missing') {
+    if (access.setup_required && (!access.registration_allowed || access.setup_code?.state !== 'missing')) {
       screen(
         'Finish setup on the controller',
-        'The installer reserved owner setup. Browser account creation cannot replace it, even after its setup window ends.',
+        'Create the first owner account in a private terminal on the controller. Existing bird data, display service and scheduled work stay unchanged.',
       );
       main.append(
         help(
@@ -786,7 +786,7 @@ async function load(notice = '') {
           [
             'Use a private terminal on the controller to choose the owner username and password. This does not change bird history or artwork. Do not delete access files to reopen browser setup.',
           ],
-          'inky-bird-frame access recover --config <config.toml>',
+          'inky-bird-frame access setup --config <config.toml>',
         ),
         button('Check again', () => load()),
       );

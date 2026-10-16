@@ -29,13 +29,161 @@ from inky_bird_frame.access import (
     AccessRateLimitError,
     AccessState,
     AccessStore,
+    SessionCredentials,
+    prepare_browser_registration,
 )
+from inky_bird_frame.config import load_config
+from inky_bird_frame.settings import initialize_config
+
+
+def _owner_session(
+    store: AccessStore,
+    username: str,
+    password: str,
+    *,
+    remembered: bool = False,
+    now: datetime | None = None,
+) -> SessionCredentials:
+    """Session-policy tests use trusted local setup, not an implicit network claim."""
+    store.setup_owner(username, password)
+    return store.login(password, username=username, remembered=remembered, now=now)
+
+
+def _prepared_store(root: Path) -> AccessStore:
+    path = root / "config.toml"
+    assert initialize_config(path)
+    return AccessStore(load_config(path, load_secrets=False).controller.state_dir)
+
+
+@pytest.mark.parametrize("schema", [None, 1, 2])
+def test_unprepared_or_legacy_state_never_opens_browser_registration(
+    tmp_path: Path, schema: int | None
+) -> None:
+    store = AccessStore(tmp_path)
+    if schema is not None:
+        with store._locked() as state:
+            store._save(state)
+        raw = json.loads(store.path.read_text())
+        raw.pop("allow_registration")
+        raw["schema_version"] = schema
+        store.path.write_text(json.dumps(raw))
+    before = store.path.read_bytes() if store.path.exists() else None
+    with patch("inky_bird_frame.access._hash_passphrase") as hasher:
+        with pytest.raises(AccessDeniedError, match="controller"):
+            store.register_owner("intruder", PASSPHRASE)
+        hasher.assert_not_called()
+    assert (store.path.read_bytes() if store.path.exists() else None) == before
+    status = store.setup_status()
+    assert status is not None and status.state == "local"
+
+
+@pytest.mark.parametrize("value", [1, "true", None, [], {}])
+def test_registration_authorization_requires_a_strict_boolean(
+    tmp_path: Path, value: object
+) -> None:
+    store = _prepared_store(tmp_path)
+    raw = json.loads(store.path.read_text())
+    raw["allow_registration"] = value
+    store.path.write_text(json.dumps(raw))
+    with pytest.raises(AccessError, match="invalid"):
+        store.register_owner("intruder", PASSPHRASE)
+
+
+def test_prepared_browser_registration_is_atomic_and_consumed_once(tmp_path: Path) -> None:
+    store = _prepared_store(tmp_path)
+    status = store.setup_status()
+    assert status is not None and status.state == "missing"
+
+    def claim(index: int) -> str:
+        try:
+            AccessStore(store.directory.parent).register_owner(f"birder-{index}", PASSPHRASE)
+            return "created"
+        except AccessDeniedError:
+            return "denied"
+
+    with ThreadPoolExecutor(max_workers=4) as pool:
+        outcomes = list(pool.map(claim, range(4)))
+    assert outcomes.count("created") == 1
+    assert json.loads(store.path.read_text())["allow_registration"] is False
+    assert store.setup_status() is None
+
+
+def test_local_setup_and_browser_claim_cannot_replace_each_other(tmp_path: Path) -> None:
+    store = _prepared_store(tmp_path)
+
+    def claim(local: bool) -> str:
+        try:
+            if local:
+                store.setup_owner("local-birder", PASSPHRASE)
+            else:
+                store.register_owner("browser-birder", PASSPHRASE)
+            return "created"
+        except AccessDeniedError:
+            return "denied"
+
+    with ThreadPoolExecutor(max_workers=2) as pool:
+        outcomes = list(pool.map(claim, [True, False]))
+    assert outcomes.count("created") == 1
+    before = store.path.read_bytes()
+    with pytest.raises(AccessDeniedError):
+        store.setup_owner("replacement", PASSPHRASE)
+    assert store.path.read_bytes() == before
+
+
+@pytest.mark.parametrize("operation", ["setup", "recover", "bootstrap", "establish"])
+def test_trusted_owner_paths_close_prepared_registration(tmp_path: Path, operation: str) -> None:
+    store = _prepared_store(tmp_path)
+    if operation == "setup":
+        store.setup_owner("birder", PASSPHRASE)
+    elif operation == "recover":
+        store.recover_owner("birder", PASSPHRASE)
+    else:
+        secret = store.bootstrap(now=NOW).read_text().strip()
+        if operation == "establish":
+            store.establish_owner(secret, PASSPHRASE, now=NOW)
+    assert json.loads(store.path.read_text())["allow_registration"] is False
+    with pytest.raises(AccessDeniedError):
+        store.register_owner("intruder", PASSPHRASE, now=NOW + timedelta(days=1))
+
+
+def test_failed_claim_does_not_consume_the_prepared_grant(tmp_path: Path) -> None:
+    store = _prepared_store(tmp_path)
+    before = store.path.read_bytes()
+    with pytest.raises(AccessError):
+        store.register_owner("birder", "short")
+    assert store.path.read_bytes() == before
+    with (
+        patch("inky_bird_frame.http.Path.replace", side_effect=OSError("private detail")),
+        pytest.raises(AccessError),
+    ):
+        store.register_owner("birder", PASSPHRASE)
+    assert store.path.read_bytes() == before
+    store.register_owner("birder", PASSPHRASE)
+
+
+def test_lost_access_file_does_not_reopen_registration(tmp_path: Path) -> None:
+    store = _prepared_store(tmp_path)
+    store.register_owner("birder", PASSPHRASE)
+    store.path.unlink()
+    config = load_config(tmp_path / "config.toml", load_secrets=False)
+    assert not prepare_browser_registration(tmp_path / "config.toml", config.controller)
+    with pytest.raises(AccessDeniedError):
+        store.register_owner("intruder", PASSPHRASE)
+
+
+@pytest.mark.parametrize("target", ["access.lock", "access.json"])
+def test_named_pipes_in_access_state_fail_without_blocking(tmp_path: Path, target: str) -> None:
+    store = AccessStore(tmp_path)
+    store.directory.mkdir(mode=0o700)
+    os.mkfifo(store.directory / target, 0o600)
+    with pytest.raises(AccessError, match="regular|0600"):
+        store.owner_exists()
 
 
 @pytest.mark.parametrize("operation", ["read", "activity", "confirm", "login", "link"])
 def test_waiting_request_samples_time_after_the_state_lock(tmp_path: Path, operation: str) -> None:
     store = AccessStore(tmp_path, oidc_provider_id="synthetic-provider")
-    credential = store.register_owner("birder", PASSPHRASE, now=NOW)
+    credential = _owner_session(store, "birder", PASSPHRASE, now=NOW)
     original_lock = store._locked
     waiting = Event()
 
@@ -78,7 +226,7 @@ def test_waiting_request_samples_time_after_the_state_lock(tmp_path: Path, opera
 def test_first_account_is_atomic_and_username_is_required(tmp_path: Path) -> None:
     def claim(_: int) -> str:
         try:
-            AccessStore(tmp_path).register_owner("Birder", PASSPHRASE)
+            _owner_session(AccessStore(tmp_path), "Birder", PASSPHRASE)
             return "created"
         except AccessDeniedError:
             return "denied"
@@ -96,7 +244,7 @@ def test_first_account_is_atomic_and_username_is_required(tmp_path: Path) -> Non
 
 def test_remembered_session_survives_restart_but_polling_does_not_extend_it(tmp_path: Path) -> None:
     store = AccessStore(tmp_path)
-    credential = store.register_owner("birder", PASSPHRASE, remembered=True, now=NOW)
+    credential = _owner_session(store, "birder", PASSPHRASE, remembered=True, now=NOW)
     restarted = AccessStore(tmp_path)
     session = restarted.authenticate(credential.secret, now=NOW + timedelta(days=6))
     assert session.expires_at == NOW.timestamp() + REMEMBERED_ABSOLUTE_SECONDS
@@ -108,7 +256,7 @@ def test_remembered_session_survives_restart_but_polling_does_not_extend_it(tmp_
 
 def test_remembered_actions_cannot_extend_absolute_expiry(tmp_path: Path) -> None:
     store = AccessStore(tmp_path)
-    credential = store.register_owner("birder", PASSPHRASE, remembered=True, now=NOW)
+    credential = _owner_session(store, "birder", PASSPHRASE, remembered=True, now=NOW)
     for days in range(1, 30):
         store.authenticate(credential.secret, active=True, now=NOW + timedelta(days=days))
     with pytest.raises(AccessDeniedError):
@@ -119,7 +267,7 @@ def test_remembered_actions_cannot_extend_absolute_expiry(tmp_path: Path) -> Non
 
 def test_legacy_session_keeps_its_original_expiry(tmp_path: Path) -> None:
     store = AccessStore(tmp_path)
-    credential = store.register_owner("birder", PASSPHRASE, now=NOW)
+    credential = _owner_session(store, "birder", PASSPHRASE, now=NOW)
     raw = json.loads(store.path.read_text())
     raw["schema_version"] = 1
     for field in (
@@ -139,7 +287,7 @@ def test_recovery_preserves_birds_and_replaces_access_without_open_registration(
     tmp_path: Path,
 ) -> None:
     store = AccessStore(tmp_path)
-    first = store.register_owner("birder", PASSPHRASE)
+    first = _owner_session(store, "birder", PASSPHRASE)
     retained = tmp_path / "private-history.json"
     retained.write_text("bird history")
     store.recover_owner("new-owner", "new long synthetic passphrase")
@@ -154,7 +302,7 @@ def test_recovery_preserves_birds_and_replaces_access_without_open_registration(
 
 def test_session_revocation_and_account_change_need_recent_confirmation(tmp_path: Path) -> None:
     store = AccessStore(tmp_path)
-    first = store.register_owner("birder", PASSPHRASE)
+    first = _owner_session(store, "birder", PASSPHRASE)
     other = store.login(PASSPHRASE, username="birder")
     raw = json.loads(store.path.read_text())
     raw["sessions"][0]["authenticated_at"] -= 601
@@ -175,7 +323,7 @@ def test_session_revocation_and_account_change_need_recent_confirmation(tmp_path
 
 def test_username_only_change_preserves_password_and_revokes_old_cookies(tmp_path: Path) -> None:
     store = AccessStore(tmp_path)
-    first = store.register_owner("birder", PASSPHRASE)
+    first = _owner_session(store, "birder", PASSPHRASE)
     with patch("inky_bird_frame.access._hash_passphrase") as hasher:
         replacement = store.update_account(first.secret, "new-birder")
         hasher.assert_not_called()
@@ -187,7 +335,7 @@ def test_username_only_change_preserves_password_and_revokes_old_cookies(tmp_pat
 
 def test_oidc_transactions_are_private_single_use_and_bound_to_the_browser(tmp_path: Path) -> None:
     store = AccessStore(tmp_path, oidc_provider_id="synthetic-provider")
-    local = store.register_owner("birder", PASSPHRASE, now=NOW)
+    local = _owner_session(store, "birder", PASSPHRASE, now=NOW)
     tx, browser = store.begin_oidc(link_secret=local.secret, now=NOW)
     assert browser not in store.path.read_text()
     for value in (browser, tx.state, tx.nonce, tx.verifier):
@@ -204,7 +352,7 @@ def test_oidc_transactions_are_private_single_use_and_bound_to_the_browser(tmp_p
 
 def test_oidc_expiry_owner_binding_revocation_and_provider_change(tmp_path: Path) -> None:
     store = AccessStore(tmp_path, oidc_provider_id="synthetic-provider")
-    local = store.register_owner("birder", PASSPHRASE, now=NOW)
+    local = _owner_session(store, "birder", PASSPHRASE, now=NOW)
     expired, browser = store.begin_oidc(now=NOW)
     with pytest.raises(AccessDeniedError):
         store.consume_oidc(
@@ -250,7 +398,7 @@ def test_oidc_expiry_owner_binding_revocation_and_provider_change(tmp_path: Path
 
 def test_unlink_prevents_an_inflight_callback_from_relinking(tmp_path: Path) -> None:
     store = AccessStore(tmp_path, oidc_provider_id="synthetic-provider")
-    local = store.register_owner("birder", PASSPHRASE)
+    local = _owner_session(store, "birder", PASSPHRASE)
     tx, browser = store.begin_oidc(link_secret=local.secret)
     consumed = store.consume_oidc(tx.state, browser)
     store.unlink_oidc(local.secret)
@@ -268,7 +416,7 @@ def test_oidc_link_replaces_current_session_without_leaking_capacity(
     tmp_path: Path, remembered: bool
 ) -> None:
     store = AccessStore(tmp_path, oidc_provider_id="synthetic-provider")
-    current = store.register_owner("birder", PASSPHRASE, remembered=remembered, now=NOW)
+    current = _owner_session(store, "birder", PASSPHRASE, remembered=remembered, now=NOW)
     others = [
         store.login(PASSPHRASE, username="birder", now=NOW) for _ in range(MAX_OWNER_SESSIONS - 1)
     ]
@@ -305,7 +453,7 @@ def test_oidc_confirmation_rotates_current_session_at_capacity(
     tmp_path: Path, remembered: bool
 ) -> None:
     store = AccessStore(tmp_path, oidc_provider_id="synthetic-provider")
-    local = store.register_owner("birder", PASSPHRASE, remembered=remembered, now=NOW)
+    local = _owner_session(store, "birder", PASSPHRASE, remembered=remembered, now=NOW)
     tx, browser = store.begin_oidc(link_secret=local.secret, remembered=remembered, now=NOW)
     current = store.complete_oidc(
         store.consume_oidc(tx.state, browser, now=NOW),
@@ -351,7 +499,7 @@ def test_oidc_confirmation_requires_the_original_session_and_identity(
     tmp_path: Path, change: str
 ) -> None:
     store = AccessStore(tmp_path, oidc_provider_id="synthetic-provider")
-    local = store.register_owner("birder", PASSPHRASE, now=NOW)
+    local = _owner_session(store, "birder", PASSPHRASE, now=NOW)
     tx, browser = store.begin_oidc(link_secret=local.secret, now=NOW)
     current = store.complete_oidc(
         store.consume_oidc(tx.state, browser, now=NOW),
@@ -378,7 +526,7 @@ def test_oidc_confirmation_requires_the_original_session_and_identity(
 
 def test_sso_return_preserves_provider_authentication_age(tmp_path: Path) -> None:
     store = AccessStore(tmp_path, oidc_provider_id="synthetic-provider")
-    local = store.register_owner("birder", PASSPHRASE, now=NOW)
+    local = _owner_session(store, "birder", PASSPHRASE, now=NOW)
     tx, browser = store.begin_oidc(link_secret=local.secret, now=NOW)
     tx = store.consume_oidc(tx.state, browser, now=NOW)
     authenticated_at = NOW.timestamp() - RECENT_AUTH_SECONDS + 10
@@ -403,7 +551,7 @@ def test_account_rotation_does_not_refresh_authentication(
     tmp_path: Path, sso: bool, change_password: bool
 ) -> None:
     store = AccessStore(tmp_path, oidc_provider_id="synthetic-provider")
-    credentials = store.register_owner("birder", PASSPHRASE, now=NOW)
+    credentials = _owner_session(store, "birder", PASSPHRASE, now=NOW)
     if sso:
         tx, browser = store.begin_oidc(link_secret=credentials.secret, now=NOW)
         tx = store.consume_oidc(tx.state, browser, now=NOW)
@@ -433,7 +581,7 @@ def test_sso_return_rejects_old_or_invalid_authentication_before_mutating(
     tmp_path: Path, age: float
 ) -> None:
     store = AccessStore(tmp_path, oidc_provider_id="synthetic-provider")
-    local = store.register_owner("birder", PASSPHRASE, now=NOW)
+    local = _owner_session(store, "birder", PASSPHRASE, now=NOW)
     tx, browser = store.begin_oidc(link_secret=local.secret, now=NOW)
     tx = store.consume_oidc(tx.state, browser, now=NOW)
     before = store.path.read_bytes()
@@ -510,7 +658,7 @@ def test_expired_bootstrap_never_hashes_a_password(tmp_path: Path) -> None:
 def test_setup_status_tracks_missing_ready_expired_and_established(tmp_path: Path) -> None:
     store = AccessStore(tmp_path)
     missing = store.setup_status(now=NOW)
-    assert missing is not None and missing.state == "missing"
+    assert missing is not None and missing.state == "local"
     assert missing.expires_in_seconds is None
     secret = store.bootstrap(now=NOW).read_text().strip()
     ready = store.setup_status(now=NOW + timedelta(seconds=1.25))

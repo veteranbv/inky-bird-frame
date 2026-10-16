@@ -9,6 +9,7 @@ import os
 import signal
 import sys
 import threading
+import warnings
 from contextlib import nullcontext
 from datetime import date
 from pathlib import Path
@@ -438,12 +439,75 @@ def access_status_command(args: argparse.Namespace) -> int:
     from .access import AccessStore
 
     store = AccessStore(_config(args, load_secrets=False).controller.state_dir)
-    print_result({"owner_configured": store.owner_exists()})
+    status = store.setup_status()
+    print_result(
+        {"owner_configured": status is None, "setup_mode": status.state if status else None}
+    )
+    return 0
+
+
+def access_prepare_command(args: argparse.Namespace) -> int:
+    from .access import prepare_browser_registration
+
+    if not args.new_installation:
+        raise ValueError("access prepare requires --new-installation for an empty installation")
+    config = _config(args, load_secrets=False)
+    if not prepare_browser_registration(args.config, config.controller):
+        raise ValueError(
+            "This installation is not empty; browser registration stays closed. "
+            "Use access setup to create the first owner locally. Do not delete bird data."
+        )
+    print_result({"browser_registration_prepared": True, "owner_configured": False})
+    return 0
+
+
+def _prompt_owner_credentials() -> tuple[str, str]:
+    from .access import normalize_username
+
+    print("Inky username: ", file=sys.stderr, end="", flush=True)
+    username = normalize_username(input())
+    # getpass must never fall back to echoing a password into a service log.
+    with warnings.catch_warnings():
+        warnings.simplefilter("error", getpass.GetPassWarning)
+        try:
+            password = getpass.getpass("Inky password: ")
+            confirmation = getpass.getpass("Confirm Inky password: ")
+        except getpass.GetPassWarning as exc:
+            raise ValueError("A private terminal with hidden password entry is required") from exc
+    if password != confirmation:
+        raise ValueError("Passwords do not match; owner access is unchanged")
+    return username, password
+
+
+def access_setup_command(args: argparse.Namespace) -> int:
+    from .access import AccessStore
+
+    store = AccessStore(_config(args, load_secrets=False).controller.state_dir)
+    status = store.setup_status()
+    if status is None:
+        print_result({"owner_configured": True, "changed": False})
+        return 0
+    if args.if_needed and status.state == "missing":
+        print_result({"owner_configured": False, "setup_mode": "browser", "changed": False})
+        return 0
+    if not sys.stdin.isatty():
+        if not args.if_needed:
+            raise ValueError("access setup requires a private interactive terminal")
+        print(
+            "Owner browser controls stay locked. Run inky-bird-frame access setup "
+            "with this configuration in a private terminal. Display and scheduled work continue.",
+            file=sys.stderr,
+        )
+        print_result({"owner_configured": False, "setup_mode": "local", "changed": False})
+        return 0
+    username, password = _prompt_owner_credentials()
+    store.setup_owner(username, password)
+    print_result({"owner_configured": True, "changed": True})
     return 0
 
 
 def access_recover_command(args: argparse.Namespace) -> int:
-    from .access import AccessStore, normalize_username
+    from .access import AccessStore
 
     if not sys.stdin.isatty():
         raise ValueError("access recover requires a private interactive terminal")
@@ -458,10 +522,7 @@ def access_recover_command(args: argparse.Namespace) -> int:
         != "yes"
     ):
         raise ValueError("Recovery cancelled; owner access is unchanged")
-    username = normalize_username(input("Inky username: "))
-    password = getpass.getpass("New Inky password: ")
-    if password != getpass.getpass("Confirm new password: "):
-        raise ValueError("Passwords do not match; owner access is unchanged")
+    username, password = _prompt_owner_credentials()
     store = AccessStore(_config(args, load_secrets=False).controller.state_dir)
     store.recover_owner(username, password)
     print_result({"owner_configured": True, "sessions_revoked": True})
@@ -649,10 +710,11 @@ def config_install_command(args: argparse.Namespace) -> int:
 
 
 def config_init_command(args: argparse.Namespace) -> int:
-    initialize_config(args.destination, container=args.container)
+    prepared = initialize_config(args.destination, container=args.container)
     print_result(
         {
             "created": True,
+            "browser_registration_prepared": prepared,
             "ownership": "app",
             "generation_enabled": False,
             "sources": [],
@@ -1127,6 +1189,20 @@ def build_parser() -> argparse.ArgumentParser:
     access_status = access_subparsers.add_parser("status")
     add_config_argument(access_status)
     access_status.set_defaults(func=access_status_command)
+    access_prepare = access_subparsers.add_parser(
+        "prepare", help="Prepare browser signup only for a genuinely empty new installation"
+    )
+    add_config_argument(access_prepare)
+    access_prepare.add_argument("--new-installation", action="store_true")
+    access_prepare.set_defaults(func=access_prepare_command)
+    access_setup = access_subparsers.add_parser(
+        "setup", help="Create the first owner locally without replacing an existing owner"
+    )
+    add_config_argument(access_setup)
+    access_setup.add_argument(
+        "--if-needed", action="store_true", help="Installer mode; never prompt without a terminal"
+    )
+    access_setup.set_defaults(func=access_setup_command)
     access_recover = access_subparsers.add_parser(
         "recover",
         aliases=["reset"],

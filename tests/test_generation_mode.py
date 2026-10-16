@@ -23,7 +23,7 @@ def test_generation_off_has_no_work_or_notification_side_effects(tmp_path: Path)
     path = tmp_path / "config.toml"
     initialize_config(path)
     config = load_config(path)
-    config.controller.state_dir.mkdir(parents=True)
+    config.controller.state_dir.mkdir(parents=True, exist_ok=True)
     retained = config.controller.state_dir / "generation-queue.json"
     retained.write_bytes(b"retained invalid fixture: must not read or replace")
     before = retained.read_bytes()
@@ -40,7 +40,8 @@ def test_generation_off_has_no_work_or_notification_side_effects(tmp_path: Path)
     degradation.assert_not_called()
     assert retained.read_bytes() == before
     assert sorted(item.name for item in config.controller.state_dir.iterdir()) == [
-        "generation-queue.json"
+        "generation-queue.json",
+        "web-access",
     ]
 
 

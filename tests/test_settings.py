@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import os
 import tomllib
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
@@ -9,6 +10,7 @@ import pytest
 from starlette.testclient import TestClient
 from test_config import CONFIG
 
+from inky_bird_frame.access import AccessError, AccessStore, prepare_browser_registration
 from inky_bird_frame.config import load_config
 from inky_bird_frame.settings import (
     SettingsConflictError,
@@ -222,7 +224,7 @@ def test_initialization_is_art_first_private_and_never_overwrites(
     tmp_path: Path, container: bool
 ) -> None:
     path = tmp_path / "new/config.toml"
-    initialize_config(path, container=container)
+    assert initialize_config(path, container=container) is not container
     config = load_config(path)
     assert config.discovery.sources == ()
     assert not config.controller.generation_enabled
@@ -237,6 +239,105 @@ def test_initialization_is_art_first_private_and_never_overwrites(
     assert path.read_bytes() == before
 
 
+@pytest.mark.parametrize("kind", ["file", "directory", "symlink", "broken-symlink"])
+def test_initialization_with_any_retained_entry_keeps_network_setup_closed(
+    tmp_path: Path, kind: str
+) -> None:
+    retained = tmp_path / "unrecognized-state"
+    if kind == "file":
+        retained.write_bytes(b"private history")
+    elif kind == "directory":
+        retained.mkdir()
+    else:
+        target = tmp_path.parent / (tmp_path.name + "-outside")
+        if kind == "symlink":
+            target.write_bytes(b"private history")
+        retained.symlink_to(target)
+    path = tmp_path / "config.toml"
+    assert not initialize_config(path)
+    controller = load_config(path, load_secrets=False).controller
+    assert not (controller.state_dir / "web-access").exists()
+    assert not prepare_browser_registration(path, controller)
+    assert retained.is_symlink() if "symlink" in kind else retained.exists()
+
+
+@pytest.mark.parametrize("name", ["owner-init.lock", "catalog-state.lock"])
+def test_nonempty_bookkeeping_files_do_not_count_as_an_empty_installation(
+    tmp_path: Path, name: str
+) -> None:
+    retained = tmp_path / name
+    retained.write_bytes(b"unrecognized retained data")
+    retained.chmod(0o600)
+    assert not initialize_config(tmp_path / "config.toml")
+    assert retained.read_bytes() == b"unrecognized retained data"
+
+
+def test_interrupted_first_initialization_stays_closed_until_local_setup(tmp_path: Path) -> None:
+    from unittest.mock import patch
+
+    path = tmp_path / "config.toml"
+    with (
+        patch.object(AccessStore, "_save", side_effect=OSError("synthetic failure")),
+        pytest.raises(AccessError),
+    ):
+        initialize_config(path)
+    controller = load_config(path, load_secrets=False).controller
+    assert not prepare_browser_registration(path, controller)
+    store = AccessStore(controller.state_dir)
+    status = store.setup_status()
+    assert status is not None and status.state == "local"
+    store.setup_owner("birder", "a synthetic long password")
+    assert store.owner_exists()
+
+
+@pytest.mark.parametrize("outside", ["state_dir", "workspace_dir", "catalog_dir"])
+def test_prepare_rejects_runtime_paths_outside_the_empty_installation(
+    tmp_path: Path, outside: str
+) -> None:
+    from dataclasses import replace
+
+    path = tmp_path / "config.toml"
+    initialize_config(path, container=True)
+    controller = replace(
+        load_config(path, load_secrets=False).controller,
+        state_dir=tmp_path / "state",
+        workspace_dir=tmp_path / "work",
+        catalog_dir=tmp_path / "catalog",
+    )
+    target = tmp_path.parent / "outside"
+    if outside == "state_dir":
+        controller = replace(controller, state_dir=target)
+    elif outside == "workspace_dir":
+        controller = replace(controller, workspace_dir=target)
+    else:
+        controller = replace(controller, catalog_dir=target)
+    assert not prepare_browser_registration(path, controller)
+    assert set(p.name for p in tmp_path.iterdir()) == {"config.toml", "catalog-state.lock"}
+
+
+@pytest.mark.parametrize("kind", ["config-permissions", "lock-permissions", "lock-fifo"])
+def test_prepare_rejects_unsafe_config_and_initialization_locks(tmp_path: Path, kind: str) -> None:
+    from dataclasses import replace
+
+    path = tmp_path / "config.toml"
+    initialize_config(path, container=True)
+    controller = replace(
+        load_config(path, load_secrets=False).controller,
+        state_dir=tmp_path / "state",
+        workspace_dir=tmp_path / "work",
+        catalog_dir=tmp_path / "catalog",
+    )
+    if kind == "config-permissions":
+        path.chmod(0o644)
+    elif kind == "lock-permissions":
+        (tmp_path / "owner-init.lock").touch(mode=0o644)
+    else:
+        os.mkfifo(tmp_path / "owner-init.lock", 0o600)
+    with pytest.raises(AccessError, match="private regular"):
+        prepare_browser_registration(path, controller)
+    assert not AccessStore(controller.state_dir).path.exists()
+
+
 def test_settings_http_auth_origin_csrf_redaction_and_revision(tmp_path: Path) -> None:
     path = fixture(tmp_path)
     origin = "https://inky.example.test"
@@ -248,8 +349,13 @@ def test_settings_http_auth_origin_csrf_redaction_and_revision(tmp_path: Path) -
     config = load_config(path, load_secrets=False)
     with TestClient(create_app(config.controller, app_config=config), base_url=origin) as client:
         assert client.get("/v1/owner/settings").status_code == 401
+        from inky_bird_frame.access import AccessStore
+
+        AccessStore(config.controller.state_dir).setup_owner(
+            "fixture-owner", "synthetic only long password"
+        )
         signed = client.post(
-            "/v1/owner/register",
+            "/v1/owner/login",
             json={
                 "username": "fixture-owner",
                 "passphrase": "synthetic only long password",

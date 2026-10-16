@@ -10,6 +10,7 @@ from unittest.mock import patch
 import pytest
 from starlette.testclient import TestClient
 
+from inky_bird_frame.access import AccessStore
 from inky_bird_frame.birds import EbirdArchiveSpecies, ObservationWindow
 from inky_bird_frame.catalog import (
     CollectionEntry,
@@ -311,6 +312,7 @@ def test_profile_and_portrait_allowlists_integrity_and_symlink_boundary(tmp_path
 def test_every_journal_route_uses_owner_and_csrf_boundary(tmp_path: Path) -> None:
     controller = config(tmp_path)
     catalog(controller)
+    AccessStore(controller.state_dir).setup_owner("qa-owner", "a synthetic long passphrase")
     with TestClient(create_app(controller), base_url=ORIGIN) as client:
         for route in [
             "/v1/owner/journal",
@@ -322,7 +324,7 @@ def test_every_journal_route_uses_owner_and_csrf_boundary(tmp_path: Path) -> Non
             assert response.headers["cache-control"] == "no-store"
             assert "frame-ancestors 'none'" in response.headers["content-security-policy"]
         login = client.post(
-            "/v1/owner/register",
+            "/v1/owner/login",
             headers={"Origin": ORIGIN},
             json={"username": "qa-owner", "passphrase": "a synthetic long passphrase"},
         )
@@ -615,13 +617,14 @@ def test_portable_taxonomy_conflict_does_not_relabel_or_enqueue(tmp_path: Path) 
 def test_collection_portability_routes_have_owner_and_csrf_guards(tmp_path: Path) -> None:
     controller = config(tmp_path)
     catalog(controller)
+    AccessStore(controller.state_dir).setup_owner("qa-owner", "a synthetic long passphrase")
     with TestClient(create_app(controller), base_url=ORIGIN) as client:
         assert (
             client.get("/v1/owner/journal/collections/export?collection=" + "a" * 32).status_code
             == 401
         )
         login = client.post(
-            "/v1/owner/register",
+            "/v1/owner/login",
             headers={"Origin": ORIGIN},
             json={"username": "qa-owner", "passphrase": "a synthetic long passphrase"},
         )
