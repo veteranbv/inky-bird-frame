@@ -775,7 +775,10 @@ async function load(notice = '') {
       );
       return;
     }
-    if (access.setup_required && (!access.registration_allowed || access.setup_code?.state !== 'missing')) {
+    if (
+      access.setup_required &&
+      (!access.registration_allowed || access.setup_code?.state !== 'missing')
+    ) {
       screen(
         'Finish setup on the controller',
         'Create the first owner account in a private terminal on the controller. Existing bird data, display service and scheduled work stay unchanged.',
@@ -785,11 +788,23 @@ async function load(notice = '') {
           'For the person who installed Inky',
           [
             'Use a private terminal on the controller to choose the owner username and password. This does not change bird history or artwork. Do not delete access files to reopen browser setup.',
+            'For a source checkout, prefix the command with uv run. Use the same configuration file as your existing controller.',
           ],
           'inky-bird-frame access setup --config <config.toml>',
         ),
+        help(
+          'If you use Docker',
+          [
+            'Open a private terminal on the Docker host, in the folder containing your Compose file. Run this command, choose your username and password, then check again.',
+          ],
+          'docker compose exec controller inky-bird-frame access setup --config /data/config.toml',
+        ),
         button('Check again', () => load()),
       );
+      const docs = element('a', 'Download the setup and recovery guide (.md)');
+      docs.href = '/app/access-guide';
+      docs.download = 'Inky-access-guide.md';
+      main.append(docs);
       return;
     }
     try {

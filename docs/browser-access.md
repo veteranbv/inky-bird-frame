@@ -72,7 +72,10 @@ an unattended production upgrade.
 
 After updating, check controller and display health. An existing owner keeps
 the same account. If no owner exists, native interactive setup asks for a
-username and a password with hidden entry. You can also create it yourself:
+username and a password with hidden entry. You can also create it yourself.
+
+In a source checkout, prefix the command with `uv run`. Use the same
+configuration file that runs your controller.
 
 ~~~bash
 inky-bird-frame access setup --config <config.toml>

@@ -142,6 +142,14 @@ let browser,
   await page.goto(origin + '/app');
   await heading('Finish setup on the controller');
   assert.equal(await page.locator('input').count(), 0);
+  await page.getByText('If you use Docker', {exact: true}).click();
+  await page.getByText('docker compose exec controller inky-bird-frame access setup --config /data/config.toml', {exact: true}).waitFor();
+  const guide = await context.request.get(origin + '/app/access-guide');
+  assert.equal(guide.status(), 200);
+  assert((await guide.text()).includes('An unattended upgrade does not wait for a prompt.'));
+  await page.setViewportSize({width: 320, height: 844});
+  assert(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth));
+  await page.setViewportSize({width: 390, height: 844});
   await context.unroute(origin + '/v1/access', reservedStatus);
   phase = 'registration';
   await page.reload();
