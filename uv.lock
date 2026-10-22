@@ -273,7 +273,7 @@ requires-dist = [
     { name = "apprise", marker = "extra == 'dev'", specifier = ">=1.12.0,<2" },
     { name = "inky", marker = "extra == 'inky'", specifier = ">=2.4" },
     { name = "mypy", marker = "extra == 'dev'", specifier = ">=1.8.0" },
-    { name = "pillow", specifier = ">=10.0" },
+    { name = "pillow", specifier = ">=13.0.0" },
     { name = "pytest", marker = "extra == 'dev'", specifier = ">=8.0.0" },
     { name = "ruff", marker = "extra == 'dev'", specifier = ">=0.4.0" },
 ]
