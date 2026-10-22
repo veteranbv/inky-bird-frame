@@ -618,7 +618,7 @@ requires-dist = [
     { name = "joserfc", marker = "extra == 'controller'", specifier = ">=1.7.5,<2" },
     { name = "joserfc", marker = "extra == 'dev'", specifier = ">=1.7.5,<2" },
     { name = "mypy", marker = "extra == 'dev'", specifier = ">=1.8.0" },
-    { name = "pillow", specifier = ">=10.0" },
+    { name = "pillow", specifier = ">=13.0.0" },
     { name = "pytest", marker = "extra == 'dev'", specifier = ">=8.0.0" },
     { name = "ruff", marker = "extra == 'dev'", specifier = ">=0.4.0" },
     { name = "starlette", marker = "extra == 'controller'", specifier = ">=1.8.0" },
