@@ -1,6 +1,6 @@
 [project]
 name = "inky-bird-frame"
-version = "0.9.7"
+version = "0.9.8"
 description = "Discover birds and display reviewed field-journal plates on color e-paper"
 readme = "README.md"
 requires-python = ">=3.11"
@@ -29,7 +29,7 @@ classifiers = [
     "Topic :: Multimedia :: Graphics",
 ]
 dependencies = [
-    "pillow>=10.0",
+    "pillow>=13.0.0",
 ]
 
 [project.urls]
