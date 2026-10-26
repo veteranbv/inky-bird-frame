@@ -1,0 +1,37 @@
+{
+  "anatomy_accuracy": 4,
+  "composition_quality": 5,
+  "correction_findings": [],
+  "findings": [
+    "The candidate accurately depicts an adult American Herring Gull in nonbreeding plumage: robust gull proportions, pale-gray mantle, white underparts, gray-brown head and neck streaking, pale iris, yellow bill with a red gonys spot, dull-pink legs, and black wingtips with white markings.",
+    "The primary specimen has one head, one bill, a convincing complete pair of folded wings, two attached legs with intact feet, and one tail; far-side structures are naturally overlapped rather than duplicated or detached.",
+    "Both adult bill depictions now show a clearly hooked upper mandible projecting materially beyond the lower mandible, consistent with the clearest side-profile reference. The earlier correction has not regressed.",
+    "The detached wing and head are clearly supplementary studies and do not appear attached to the primary specimen. Their anatomy and plumage are consistent with the species.",
+    "All visible headings, names, measurements, field marks, habitat text, behavior text, and palette labels are legible and faithfully reproduce the proposed profile.",
+    "Audubon directly supports the displayed measurement set: length 56\u201366 cm, wingspan 120\u2013150 cm, and weight 800\u20131,250 g, with sexes similar.",
+    "The vertical length diagram increases from 56 cm at the bottom to 66 cm at the top, agrees with the printed body-length range, uses centimeters consistently, and is explicitly labeled \u201cSCHEMATIC \u2014 NOT TO SCALE.\u201d",
+    "The plate contains no place name, ZIP code, coordinates, map, or local-observation detail."
+  ],
+  "location_free": true,
+  "passed": true,
+  "species_accuracy": 5,
+  "text_accuracy": 5,
+  "verification_sources": [
+    {
+      "title": "American Herring Gull Identification \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Herring_Gull/id"
+    },
+    {
+      "title": "American Herring Gull Life History \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Herring_Gull/lifehistory"
+    },
+    {
+      "title": "American Herring Gull \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/american-herring-gull"
+    },
+    {
+      "title": "American herring gull \u2014 Wikipedia",
+      "url": "https://en.wikipedia.org/wiki/American_herring_gull"
+    }
+  ]
+}

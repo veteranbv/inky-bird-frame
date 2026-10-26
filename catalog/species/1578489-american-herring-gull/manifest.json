@@ -1,0 +1,160 @@
+{
+  "approved_at": "2026-10-26T18:40:27+00:00",
+  "assets": {
+    "display": {
+      "filename": "display.png",
+      "sha256": "a3385c4e32207eeb97e959a01986ffc9d7fd6da7df28d56a79f0449b3e42d85a"
+    },
+    "portrait": {
+      "filename": "portrait.png",
+      "sha256": "c30b8ba321b9941e9cbb6dce8e749c8f49fd7ebd88d2279943944acbb4554c1f"
+    }
+  },
+  "common_name": "American Herring Gull",
+  "generation": {
+    "attempt": 3,
+    "correction_source_sha256": "9a7dd3749d1380004866a3f3cb6b232ad9c030f649a4d73bd8d59dca181076a9",
+    "generated_at": "2026-10-26T18:40:24+00:00",
+    "generator": "Codex subscription / built-in gpt-image-2",
+    "max_attempts": 3,
+    "prompt_version": "field-journal-v6"
+  },
+  "profile": {
+    "behavior": "An opportunistic omnivore that forages while walking, swimming, or flying; takes food from land or the water\u2019s surface, sometimes plunge-dives, steals from other birds, scavenges, and drops hard-shelled prey onto rocks to break it open.",
+    "common_name": "American Herring Gull",
+    "family": "Laridae",
+    "field_marks": [
+      "Large, robust body with broad, pointed wings",
+      "Heavy bill; yellow with a red spot in adults, dark in young birds",
+      "Pale eyes and dull pink legs in adults",
+      "Breeding adults have a white head and underparts with a pale-gray back; nonbreeding adults have gray-brown or dusky streaking on the head and neck",
+      "Black adult wingtips show small white spots",
+      "Immatures are mottled brown, with a dark tail band when young"
+    ],
+    "habitat": "Occupies water-associated habitats including coasts, bays, beaches, open water, mudflats, lakes, major rivers, marshes, fields, docks, and refuse sites. It commonly nests on islands or other open ground and sometimes on gravel roofs.",
+    "measurements": {
+      "length": "56\u201366 cm (22 in\u20132 ft 2 in), sexes similar",
+      "weight": "800\u20131,250 g (1 lb 12 oz\u20132 lb 12 oz), sexes similar",
+      "wingspan": "120\u2013150 cm (3 ft 11 in\u20134 ft 11 in), sexes similar"
+    },
+    "palette": [
+      "white",
+      "pale gray",
+      "mottled brown",
+      "black",
+      "dull pink"
+    ],
+    "scientific_name": "Larus smithsonianus",
+    "sources": [
+      {
+        "title": "American Herring Gull Identification \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/herring_gull/id"
+      },
+      {
+        "title": "American Herring Gull Life History \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Herring_Gull/lifehistory"
+      },
+      {
+        "title": "American Herring Gull \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/american-herring-gull"
+      }
+    ],
+    "taxon_id": 1578489
+  },
+  "quality_review": {
+    "anatomy_accuracy": 4,
+    "composition_quality": 5,
+    "correction_findings": [],
+    "findings": [
+      "The candidate accurately depicts an adult American Herring Gull in nonbreeding plumage: robust gull proportions, pale-gray mantle, white underparts, gray-brown head and neck streaking, pale iris, yellow bill with a red gonys spot, dull-pink legs, and black wingtips with white markings.",
+      "The primary specimen has one head, one bill, a convincing complete pair of folded wings, two attached legs with intact feet, and one tail; far-side structures are naturally overlapped rather than duplicated or detached.",
+      "Both adult bill depictions now show a clearly hooked upper mandible projecting materially beyond the lower mandible, consistent with the clearest side-profile reference. The earlier correction has not regressed.",
+      "The detached wing and head are clearly supplementary studies and do not appear attached to the primary specimen. Their anatomy and plumage are consistent with the species.",
+      "All visible headings, names, measurements, field marks, habitat text, behavior text, and palette labels are legible and faithfully reproduce the proposed profile.",
+      "Audubon directly supports the displayed measurement set: length 56\u201366 cm, wingspan 120\u2013150 cm, and weight 800\u20131,250 g, with sexes similar.",
+      "The vertical length diagram increases from 56 cm at the bottom to 66 cm at the top, agrees with the printed body-length range, uses centimeters consistently, and is explicitly labeled \u201cSCHEMATIC \u2014 NOT TO SCALE.\u201d",
+      "The plate contains no place name, ZIP code, coordinates, map, or local-observation detail."
+    ],
+    "location_free": true,
+    "passed": true,
+    "species_accuracy": 5,
+    "text_accuracy": 5,
+    "verification_sources": [
+      {
+        "title": "American Herring Gull Identification \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Herring_Gull/id"
+      },
+      {
+        "title": "American Herring Gull Life History \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Herring_Gull/lifehistory"
+      },
+      {
+        "title": "American Herring Gull \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/american-herring-gull"
+      },
+      {
+        "title": "American herring gull \u2014 Wikipedia",
+        "url": "https://en.wikipedia.org/wiki/American_herring_gull"
+      }
+    ]
+  },
+  "references": [
+    {
+      "attribution": "no rights reserved",
+      "filename": "01-179421065.jpeg",
+      "height": 1286,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/179421065/large.jpeg",
+      "license_code": "cc0",
+      "observation_id": 106762856,
+      "observer": "wildreturn",
+      "photo_id": 179421065,
+      "sha256": "fa87e29c7a492cf4923c3b8dc070d74fec0d809ef4e3a8931bded2be12be2aac",
+      "source_url": "https://www.inaturalist.org/observations/106762856",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) Mila C., some rights reserved (CC BY)",
+      "filename": "02-245897403.jpeg",
+      "height": 1536,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/245897403/large.jpeg",
+      "license_code": "cc-by",
+      "observation_id": 143387652,
+      "observer": "mbwildlife",
+      "photo_id": 245897403,
+      "sha256": "11276780e3a1d692297e75fbdb1e061d53279af147d71ebb55564702029c732e",
+      "source_url": "https://www.inaturalist.org/observations/143387652",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) Dan Riley, some rights reserved (CC BY)",
+      "filename": "03-345466242.jpg",
+      "height": 1152,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/345466242/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 196252817,
+      "observer": "driley",
+      "photo_id": 345466242,
+      "sha256": "fc58228aa5d1241633b7f27ac86951f3440b38deaa87b5db88732b71cc77dd8a",
+      "source_url": "https://www.inaturalist.org/observations/196252817",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) Andrew Hrycyna, some rights reserved (CC BY)",
+      "filename": "04-321004506.jpg",
+      "height": 1364,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/321004506/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 183945335,
+      "observer": "hryc111",
+      "photo_id": 321004506,
+      "sha256": "2ab6e7aae8f89993f84a2d5d6d34e5bd15cd6299e5cdf9c5be9f19ad8a71c471",
+      "source_url": "https://www.inaturalist.org/observations/183945335",
+      "width": 2048
+    }
+  ],
+  "schema_version": 1,
+  "scientific_name": "Larus smithsonianus",
+  "slug": "american-herring-gull",
+  "status": "approved",
+  "taxon_id": 1578489
+}

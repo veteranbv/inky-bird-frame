@@ -1,0 +1,42 @@
+{
+  "behavior": "An opportunistic omnivore that forages while walking, swimming, or flying; takes food from land or the water\u2019s surface, sometimes plunge-dives, steals from other birds, scavenges, and drops hard-shelled prey onto rocks to break it open.",
+  "common_name": "American Herring Gull",
+  "family": "Laridae",
+  "field_marks": [
+    "Large, robust body with broad, pointed wings",
+    "Heavy bill; yellow with a red spot in adults, dark in young birds",
+    "Pale eyes and dull pink legs in adults",
+    "Breeding adults have a white head and underparts with a pale-gray back; nonbreeding adults have gray-brown or dusky streaking on the head and neck",
+    "Black adult wingtips show small white spots",
+    "Immatures are mottled brown, with a dark tail band when young"
+  ],
+  "habitat": "Occupies water-associated habitats including coasts, bays, beaches, open water, mudflats, lakes, major rivers, marshes, fields, docks, and refuse sites. It commonly nests on islands or other open ground and sometimes on gravel roofs.",
+  "measurements": {
+    "length": "56\u201366 cm (22 in\u20132 ft 2 in), sexes similar",
+    "weight": "800\u20131,250 g (1 lb 12 oz\u20132 lb 12 oz), sexes similar",
+    "wingspan": "120\u2013150 cm (3 ft 11 in\u20134 ft 11 in), sexes similar"
+  },
+  "palette": [
+    "white",
+    "pale gray",
+    "mottled brown",
+    "black",
+    "dull pink"
+  ],
+  "scientific_name": "Larus smithsonianus",
+  "sources": [
+    {
+      "title": "American Herring Gull Identification \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/herring_gull/id"
+    },
+    {
+      "title": "American Herring Gull Life History \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Herring_Gull/lifehistory"
+    },
+    {
+      "title": "American Herring Gull \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/american-herring-gull"
+    }
+  ],
+  "taxon_id": 1578489
+}
