@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-14T18:37:38+00:00",
+  "generated_at": "2026-10-26T18:40:27+00:00",
   "schema_version": 1,
   "species": [
     {
@@ -45,6 +45,17 @@
       "scientific_name": "Spinus tristis",
       "slug": "american-goldfinch",
       "taxon_id": 145310
+    },
+    {
+      "approved_at": "2026-10-26T18:40:27+00:00",
+      "common_name": "American Herring Gull",
+      "display_path": "species/1578489-american-herring-gull/display.png",
+      "display_sha256": "a3385c4e32207eeb97e959a01986ffc9d7fd6da7df28d56a79f0449b3e42d85a",
+      "portrait_path": "species/1578489-american-herring-gull/portrait.png",
+      "portrait_sha256": "c30b8ba321b9941e9cbb6dce8e749c8f49fd7ebd88d2279943944acbb4554c1f",
+      "scientific_name": "Larus smithsonianus",
+      "slug": "american-herring-gull",
+      "taxon_id": 1578489
     },
     {
       "approved_at": "2026-08-13T13:05:48+00:00",
