@@ -9,10 +9,17 @@ on:
 permissions:
   contents: read
 
+# A new push to a PR supersedes its old run; main runs are never cancelled.
+concurrency:
+  group: ci-${{ github.event.pull_request.number || github.sha }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+# Timeouts are about 3x the slowest of the last 12 successful runs.
 jobs:
   core-quality:
     name: Core quality
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -222,6 +229,7 @@ jobs:
   python-compatibility:
     name: Python ${{ matrix.python-version }}
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     strategy:
       fail-fast: false
       matrix:
@@ -256,6 +264,7 @@ jobs:
       - core-quality
       - python-compatibility
     runs-on: ubuntu-latest
+    timeout-minutes: 2
     steps:
       - name: Require every quality job
         env:

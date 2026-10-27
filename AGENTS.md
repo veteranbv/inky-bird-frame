@@ -57,3 +57,36 @@ uv run inky-bird-frame catalog validate --catalog catalog
 - Container publication runs only from trusted `main`, a repository release,
   or an owner-started workflow. Pull requests never publish packages.
 - Never expose or copy a ChatGPT/Codex login into GitHub Actions.
+
+## Pull Requests and Review
+
+- Finish and test a coherent change locally, then run a local code and security
+  review (`/code-review` and `/security-review` in Claude Code, or
+  `codex review --base main` in Codex CLI) before asking for remote review.
+- The owner requests remote Codex review for the exact pushed head. Address
+  every finding on the same pull request and resolve its thread; after three
+  rounds that still find substantive issues, stop and reconsider the change.
+- Required checks are `quality` and `review-gate`. `review-gate` runs only
+  base-branch code with a read-only token and never runs pull request code.
+- No AI attribution in commits, titles, or descriptions, and commits come from
+  a person's identity, never an app or bot account; `review-gate` rejects both.
+
+### Review guidelines
+
+Reviewers (Codex, Claude Code, humans) apply these to every pull request.
+
+- Failure here means: workflows that run pull request code with secrets, write
+  tokens, or the self-hosted controller runner; publication or deployment from
+  anything but trusted `main`; Codex or ChatGPT credentials reaching Actions;
+  personal hosts, addresses, paths, observation data, or credentials in public
+  files; edits to approved taxa without a migration; the display node consuming
+  anything but the approved HTTP catalog. Prioritize these.
+- Treat contributed images and JSON as untrusted data.
+- Report only issues the change introduces or makes worse; mark pre-existing
+  problems as pre-existing.
+- Every finding needs file:line evidence and a concrete failure scenario.
+- At most three nitpicks per review; skip what ruff and mypy enforce.
+- Skip `uv.lock` and generated catalog checksums and indexes. Always check
+  fixtures for personal or private content.
+- Start the summary with the number of findings; say plainly when nothing needs
+  fixing.
