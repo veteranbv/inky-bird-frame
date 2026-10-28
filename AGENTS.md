@@ -66,8 +66,13 @@ uv run inky-bird-frame catalog validate --catalog catalog
 - The owner requests remote Codex review for the exact pushed head. Address
   every finding on the same pull request and resolve its thread; after three
   rounds that still find substantive issues, stop and reconsider the change.
-- Required checks are `quality` and `review-gate`. `review-gate` runs only
-  base-branch code with a read-only token and never runs pull request code.
+- Required checks are `quality` and `review-gate`. `review-gate` comes from
+  `.github/workflows/review-gate-trusted.yml` (`pull_request_target`): it runs
+  the default branch's copy with a read-only token and never runs pull request
+  code, so a pull request cannot rewrite it. Protection pins the check to the
+  GitHub Actions app, not that workflow, so a pull request could still add a
+  same-named job. Merge only through the owner's qualification tooling, which
+  counts the trusted run alone, never the merge button or auto-merge.
 - No AI attribution in commits, titles, or descriptions, and commits come from
   a person's identity, never an app or bot account; `review-gate` rejects both.
 
