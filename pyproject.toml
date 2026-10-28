@@ -87,6 +87,8 @@ python_version = "3.11"
 strict = true
 warn_unused_configs = true
 files = ["src/inky_bird_frame", "tests"]
+# The vendored review contract is loaded by path; let tests type-check against it.
+mypy_path = ".github/scripts"
 
 [[tool.mypy.overrides]]
 # Authlib ships no PEP 561 metadata. oidc.py checks its two imported surfaces
