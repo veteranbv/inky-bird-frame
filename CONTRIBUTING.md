@@ -227,10 +227,15 @@ validation, and the repository review gate. The repository owner controls the
 exact-head Codex review request and production deployment. External pull
 requests never receive those credentials.
 
-For a draft pull request, mark it ready before the owner's final exact-head
-Codex review request. The ready-for-review transition invalidates review signals
-from the draft lifecycle; wait for the post-ready review gate to finish before
-merging or enabling auto-merge.
+The review gate is a short check that never waits for a model. It passes only
+when the owner's review request names the exact current head commit, Codex has
+completed a code review of that commit, and every review thread is resolved.
+Marking a draft ready, reopening, force-pushing or changing the base starts a
+new review generation, so earlier review evidence no longer counts. Commits,
+titles and descriptions must not carry AI attribution lines, and commits must
+come from a person's identity rather than an app or bot account (Dependabot
+excepted); the gate rejects both. The owner merges only a freshly qualified
+head.
 
 ## Documentation and agent guidance
 

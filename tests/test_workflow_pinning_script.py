@@ -115,22 +115,25 @@ def test_current_workflows_are_sha_pinned() -> None:
     assert workflow_pinning.scan_workflows(workflows_dir) == []
 
 
-def test_review_gate_runs_when_draft_becomes_ready() -> None:
+def test_review_gate_runs_only_trusted_base_code() -> None:
     workflow = (
         Path(__file__).resolve().parents[1] / ".github/workflows/review-gate.yml"
-    ).read_text()
+    ).read_text(encoding="utf-8")
 
-    assert "types: [opened, synchronize, reopened, ready_for_review]" in workflow
-    assert (
-        "if: github.event.action == 'ready_for_review' || !github.event.pull_request.draft"
-    ) in workflow
+    # One suite per head: reopen/ready reruns go through `homelab pr recheck`.
+    assert "types: [opened, synchronize]" in workflow
+    assert "ref: ${{ github.event.pull_request.base.sha }}" in workflow
+    assert "ref: ${{ github.event.pull_request.head.sha }}" not in workflow
+    assert "persist-credentials: false" in workflow
+    assert "python3 -I" in workflow
+    assert "write" not in workflow.split("jobs:")[0]
 
 
-def test_review_gate_retrigger_accepts_only_exact_head_owner_requests() -> None:
+def test_review_gate_retrigger_admits_only_codex_bot() -> None:
     workflow = (
         Path(__file__).resolve().parents[1] / ".github/workflows/review-gate-retrigger.yml"
     ).read_text(encoding="utf-8")
 
-    assert "github.event.comment.user.login == github.repository_owner" in workflow
-    assert '[[ "${COMMENT_BODY}" != *"${HEAD_SHA}"* ]]' in workflow
-    assert "Skipping fork PR" not in workflow
+    assert workflow.count("user.login == 'chatgpt-codex-connector[bot]'") == 2
+    assert "github.repository_owner" not in workflow
+    assert "${{ github.event.comment.body }}" not in workflow

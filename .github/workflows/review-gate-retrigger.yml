@@ -1,43 +1,25 @@
 name: review-gate-retrigger
 
-# Re-evaluates the required `review-gate` check when Codex submits, edits, or
-# dismisses a review, or when one of its inline finding comments is edited or
-# deleted. Instead of running the gate directly (which
-# would create a second check suite on the head SHA — any non-success
-# conclusion there blocks required-status evaluation; see review-gate.yml),
-# this re-runs the existing pull_request-event gate job IN PLACE. A re-run is
-# a new attempt of the same check suite, so it replaces the stale conclusion
-# rather than competing with it. This is the automated form of the manual
-# `gh run rerun` that previously unblocked stalled auto-merges.
+# Re-runs the required `review-gate` job IN PLACE (a new attempt of the same
+# check suite) when Codex posts a completion receipt or its typed summary
+# records code-review completion (the receipt can land a second before the
+# summary does), so the short gate re-reads current evidence. The summary's
+# compact, key-sorted JSON puts `code_review` first, so
+# `"status":"completed"},"security_review"` means code review completed even
+# while advisory security review is still running. It never runs the gate itself, which would add a
+# second same-named check suite on the head. Not a required check.
 #
-# This workflow is NOT a required check, so its own conclusions (including
-# cancellations from the concurrency group below) can never block a merge.
-#
-# `pull_request_review_comment` matters because Codex's blocking markers live
-# in review-thread comments, not review bodies: editing or deleting an inline
-# finding emits only this event, and without it the gate would keep a stale
-# verdict until an unrelated rerun.
-#
-# Fork PRs: review and review-comment events from fork heads arrive with a
-# read-only GITHUB_TOKEN (GitHub downgrades it even though the workflow runs
-# in the base repository), so they cannot re-run the gate. The owner's
-# exact-head `@codex review` comment is the supported recovery path for a
-# delayed review on a fork PR — issue_comment events are always privileged.
+# The `if:` below admits only the exact Codex bot before any runner starts or
+# API call is made, so other commenters cannot trigger billed reruns. Comment
+# and review bodies are never interpolated into shell. Thread resolution,
+# ready/reopen and missed events have no trigger here: use
+# `homelab pr recheck <n> --repo veteranbv/inky-bird-frame --yes` (HomeLab CLI).
 
 on:
-  pull_request_review:
-    types: [submitted, edited, dismissed]
-  pull_request_review_comment:
-    types: [edited, deleted]
   issue_comment:
     types: [created, edited]
-
-# Later review events supersede earlier ones: the gate re-run fetches live PR
-# state, so the surviving retrigger's re-run covers every review up to that
-# point. Cancelled retrigger runs are harmless (not a required check).
-concurrency:
-  group: review-gate-retrigger-${{ github.event.pull_request.number || github.event.issue.number }}
-  cancel-in-progress: true
+  pull_request_review:
+    types: [submitted, dismissed]
 
 permissions:
   actions: write
@@ -45,121 +27,69 @@ permissions:
 
 jobs:
   retrigger:
-    # Bot reviews, Codex clean comments, edits to Codex's inline findings,
-    # and exact-head owner review requests can change the gate's verdict.
-    #
-    # The review and review-comment paths are guarded to same-repo heads:
-    # although these events always run in the BASE repository, GitHub
-    # downgrades GITHUB_TOKEN to read-only when the triggering activity
-    # comes from a public fork, so the job rerun POST would 403. Fork PRs
-    # recover through the owner's exact-head `@codex review` comment below —
-    # `issue_comment` runs fully privileged regardless of where the PR head
-    # lives, and the gate requires that owner request anyway.
     if: >-
       (
+        github.event_name == 'issue_comment'
+        && github.event.issue.pull_request
+        && github.event.comment.user.login == 'chatgpt-codex-connector[bot]'
+        && github.event.comment.user.type == 'Bot'
+        && (
+          (github.event.action == 'created'
+            && contains(github.event.comment.body, '<!-- codex-review-receipt:v1 -->'))
+          || (github.event.action == 'edited'
+            && contains(github.event.comment.body, '<!-- codex-review-state:v1 ')
+            && contains(github.event.comment.body, '"status":"completed"},"security_review"'))
+        )
+      )
+      || (
         github.event_name == 'pull_request_review'
         && github.event.pull_request.head.repo.full_name == github.repository
         && github.event.review.user.login == 'chatgpt-codex-connector[bot]'
+        && github.event.review.user.type == 'Bot'
       )
-      || (
-        github.event_name == 'pull_request_review_comment'
-        && github.event.pull_request.head.repo.full_name == github.repository
-        && github.event.comment.user.login == 'chatgpt-codex-connector[bot]'
-      )
-      || (
-        github.event_name == 'issue_comment'
-        && github.event.issue.pull_request
-        && github.event.comment.user.login == 'chatgpt-codex-connector[bot]'
-        && contains(github.event.comment.body, 'Codex Review:')
-      )
-      || (
-        github.event_name == 'issue_comment'
-        && github.event.issue.pull_request
-        && github.event.comment.user.login == github.repository_owner
-        && contains(github.event.comment.body, '@codex review')
-      )
-    runs-on: ubuntu-latest
+    # Job-level, not workflow-level: a workflow-level group lets an event whose
+    # job is skipped by `if:` (e.g. a still-running summary edit) cancel the
+    # real rerun, as observed on PR549 (runs 40576244215/40576247488). Later
+    # admitted events supersede earlier ones; the survivor reads all evidence.
+    concurrency:
+      group: review-gate-retrigger-${{ github.event.pull_request.number || github.event.issue.number }}
+      cancel-in-progress: true
+    runs-on: ubuntu-24.04
+    timeout-minutes: 2
     steps:
-      - name: Re-run the review-gate job for this head SHA
+      - name: Re-run the canonical review-gate job for the current head
         env:
           GH_TOKEN: ${{ github.token }}
           REPO: ${{ github.repository }}
           PR_NUMBER: ${{ github.event.pull_request.number || github.event.issue.number }}
-          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
-          COMMENT_AUTHOR: ${{ github.event.comment.user.login }}
-          COMMENT_BODY: ${{ github.event.comment.body }}
-          REPO_OWNER: ${{ github.repository_owner }}
-        # Decision table for the gate run's status at event time:
-        #   completed   -> re-run: its verdict may predate this review.
-        #   queued      -> skip: it hasn't fetched PR state yet, so its run
-        #                  will include this review.
-        #   in_progress -> ambiguous. If it's mid-poll, every later fetch
-        #                  includes this review (the gate evaluates live
-        #                  state), so a re-run is redundant. If it's already
-        #                  past its final fetch, it finishes within seconds.
-        #                  A short grace poll separates the two: completion
-        #                  within ~2 min means it may have raced -> re-run;
-        #                  still running after that means mid-poll -> skip.
         run: |
           set -euo pipefail
-
-          if [ "${GITHUB_EVENT_NAME}" = "issue_comment" ]; then
-            pr_json=$(gh api "repos/${REPO}/pulls/${PR_NUMBER}")
-            HEAD_SHA=$(jq -r '.head.sha' <<<"${pr_json}")
-            if [ "${COMMENT_AUTHOR}" = "${REPO_OWNER}" ] \
-              && [[ "${COMMENT_BODY}" != *"${HEAD_SHA}"* ]]; then
-              echo "Owner review request does not name the exact current head; skipping."
-              exit 0
-            fi
+          pr_json=$(gh api "repos/${REPO}/pulls/${PR_NUMBER}")
+          if [ "$(jq -r '.head.repo.full_name' <<<"${pr_json}")" != "${REPO}" ]; then
+            echo "Fork PR: its read-only token cannot re-run jobs; use homelab pr recheck --repo veteranbv/inky-bird-frame."
+            exit 0
           fi
-
-          deadline=$(( SECONDS + 150 ))
-          while :; do
-            # Transient API failures (e.g. the 2026-06-10 GraphQL 401 blip)
-            # must not kill the retrigger via set -e; retry within the grace
-            # period and fail visibly only if the API never recovers.
-            if ! run_json=$(gh api \
-              "repos/${REPO}/actions/workflows/review-gate.yml/runs?head_sha=${HEAD_SHA}&event=pull_request&per_page=1" \
-              --jq '.workflow_runs[0]'); then
-              if [ "${SECONDS}" -ge "${deadline}" ]; then
-                echo "Could not list review-gate runs within the grace period." >&2
-                exit 1
-              fi
-              echo "API error listing review-gate runs; rechecking in 15s..."
-              sleep 15
-              continue
-            fi
-            if [ -z "${run_json}" ] || [ "${run_json}" = "null" ]; then
-              echo "No review-gate run exists for ${HEAD_SHA}; nothing to retrigger."
-              exit 0
-            fi
-            run_id=$(jq -r '.id' <<<"${run_json}")
-            run_status=$(jq -r '.status' <<<"${run_json}")
-            case "${run_status}" in
-              completed)
-                break
-                ;;
-              queued|waiting|pending|requested)
-                echo "Run ${run_id} is ${run_status}; it will see this review once it starts."
-                exit 0
-                ;;
-            esac
-            if [ "${SECONDS}" -ge "${deadline}" ]; then
-              echo "Run ${run_id} still in progress after grace period; its poll loop sees this review."
-              exit 0
-            fi
-            echo "Run ${run_id} is ${run_status}; rechecking in 15s..."
-            sleep 15
-          done
-
-          # Re-run only the gate job. A full-run re-run would also repeat
-          # request-codex-review, posting another "@codex review" comment and
-          # looping forever: review -> retrigger -> comment -> review -> ...
-          job_id=$(gh api "repos/${REPO}/actions/runs/${run_id}/jobs?filter=latest&per_page=100" \
-            --jq '[.jobs[] | select(.name == "review-gate")][0].id')
-          if [ -z "${job_id}" ] || [ "${job_id}" = "null" ]; then
-            echo "review-gate job not found in run ${run_id}" >&2
+          head_sha=$(jq -r '.head.sha' <<<"${pr_json}")
+          # shellcheck disable=SC2016  # $ENV is a jq variable, not shell expansion
+          runs=$(gh api \
+            "repos/${REPO}/actions/workflows/review-gate.yml/runs?head_sha=${head_sha}&event=pull_request&per_page=100" \
+            --jq '[.workflow_runs[] | select(any(.pull_requests[]; .number == ($ENV.PR_NUMBER | tonumber)))]')
+          count=$(jq 'length' <<<"${runs}")
+          if [ "${count}" -ne 1 ]; then
+            echo "::error::Expected one canonical review-gate run for ${head_sha}, found ${count}."
             exit 1
           fi
-          echo "Re-running review-gate job ${job_id} (run ${run_id}) to evaluate this review."
+          run_id=$(jq -r '.[0].id' <<<"${runs}")
+          if [ "$(jq -r '.[0].status' <<<"${runs}")" != "completed" ]; then
+            # Never cancel or wait on a running gate; it reads live evidence.
+            echo "Run ${run_id} is still running; if it missed this receipt, run homelab pr recheck --repo veteranbv/inky-bird-frame."
+            exit 0
+          fi
+          job_id=$(gh api "repos/${REPO}/actions/runs/${run_id}/jobs?filter=latest&per_page=100" \
+            --jq '[.jobs[] | select(.name == "review-gate")] | if length == 1 then .[0].id else empty end')
+          if [ -z "${job_id}" ]; then
+            echo "::error::Run ${run_id} has no single review-gate job."
+            exit 1
+          fi
           gh api -X POST "repos/${REPO}/actions/jobs/${job_id}/rerun"
+          echo "Re-ran review-gate job ${job_id} (run ${run_id}) for ${head_sha}."

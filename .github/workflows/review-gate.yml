@@ -1,89 +1,67 @@
 name: review-gate
 
-# Bridges Codex review comments into a required CheckRun. Codex posts findings
-# as PR review comments (not as CheckRuns), so the standard
-# `required_status_checks` mechanism cannot gate on them directly. This
-# workflow runs for each pushed head and ready-for-review transition, and fails
-# when Codex has flagged a blocking-severity finding. Codex review submissions
-# are handled by
-# `review-gate-retrigger.yml`, which re-runs this workflow's gate job IN PLACE
-# (a new attempt of the same check suite) rather than starting a parallel run.
+# Required check: exact-version Codex review qualification (vendored
+# `.github/scripts/review_contract.py`; process: veteranbv/homelab
+# docs/standards/code-review.md).
+# The job answers once from current evidence in seconds and never waits for a
+# model. It fails until the owner's `@codex review` for this head has a typed
+# code-review completion and receipt and every review thread is resolved.
+# Security review is advisory; its findings block when reported.
 #
-# Severity mapping (see `.github/scripts/review_gate.py`):
-#   Codex  `P0 Badge` / `P1 Badge`  -> blocking
+# Later evidence re-runs this job IN PLACE (same check suite):
+# `review-gate-retrigger.yml` on Codex receipts, and `homelab pr recheck` for
+# events Actions cannot see (thread resolution, ready/reopen, late or missed
+# events). The gate runs only on opened/synchronize: a same-head
+# reopen/ready run would add a second same-named check suite.
 
 on:
   pull_request:
-    types: [opened, synchronize, reopened, ready_for_review]
-  # Deliberately NOT `pull_request_review`: a review-event run creates a
-  # second check suite with a same-named check run on the same head SHA, and
-  # required-status evaluation demands EVERY suite's run pass. Combined with
-  # cancel-in-progress this left cancelled runs blocking auto-merge until a
-  # manual `gh run rerun` (PRs #76/#79/#80/#81). Review events now re-run the
-  # gate job via `review-gate-retrigger.yml` instead.
-  #
-  # Note: GitHub does NOT expose `pull_request_review_thread` as a workflow
-  # trigger (only as a webhook), so clicking "Resolve conversation" doesn't
-  # auto-fire this gate. To re-evaluate after resolving threads, push any
-  # commit (`git commit --allow-empty -m "rerun" && git push`).
+    types: [opened, synchronize]
 
-# One run per reviewable lifecycle event, never cancelled: ready-for-review
-# intentionally starts a new run on the same head so draft review signals
-# cannot authorize a merge. A cancelled conclusion on the current head blocks
-# required-status evaluation (the auto-merge stall this group previously
-# caused). Runs for superseded heads exit early on their own. review_gate.py
-# returns success as soon as it sees the PR head move or the PR merge, because
-# a post-merge timeout cannot protect the completed merge, so CI minutes stay
-# bounded without cancel-in-progress.
+# One run per head SHA, never cancelled: a cancelled conclusion on the current
+# head would block required-status evaluation.
 concurrency:
   group: review-gate-${{ github.event.pull_request.number }}-${{ github.event.pull_request.head.sha }}
   cancel-in-progress: false
 
 permissions:
-  # Audited against every endpoint review_gate.py touches:
-  #   /repos/{r}/pulls/{n}             -> pull-requests: read
-  #   /repos/{r}/pulls/{n}/reviews     -> pull-requests: read
-  #   /repos/{r}/pulls/{n}/comments    -> pull-requests: read
-  #   /repos/{r}/issues/{n}/reactions  -> issues: read
-  #   /repos/{r}/commits/{sha}         -> contents: read
-  #   /repos/{r}/commits/{sha}/check-runs -> checks: read
-  checks: read
   contents: read
   issues: read
   pull-requests: read
 
-# The gate intentionally does not post `@codex review`. GitHub Actions comments
-# are authored by a bot account that cannot authorize Codex. A maintainer must
-# request review with the exact current head SHA. The gate verifies both the
-# owner identity and SHA, keeping contributor PRs from advancing through the
-# full lifecycle without owner action.
 jobs:
   review-gate:
-    # Draft review is useful feedback, but it cannot certify merge readiness.
-    # Skip draft lifecycle runs so they cannot time out and leave a failed
-    # same-head suite that a later ready-for-review run cannot supersede.
-    if: github.event.action == 'ready_for_review' || !github.event.pull_request.draft
-    runs-on: ubuntu-latest
-    # Explicit job-level permissions (mirrors the workflow-level audit) so
-    # static review tools can see at a glance that this job has what it needs.
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
     permissions:
-      checks: read
       contents: read
       issues: read
       pull-requests: read
     steps:
-      - name: Checkout
+      # Reviewed base-branch code only: the evaluator is checked out at the
+      # PR's base SHA, never from the PR, with no persisted credentials.
+      - name: Check out trusted base evaluator
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-
-      - name: Set up Python
-        uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
         with:
-          python-version: "3.12"
+          ref: ${{ github.event.pull_request.base.sha }}
+          path: trusted
+          persist-credentials: false
+          sparse-checkout: |
+            .github/scripts/review_qualification.py
+            .github/scripts/review_contract.py
+          sparse-checkout-cone-mode: false
 
-      - name: Run review gate
+      - name: Evaluate exact-version review evidence
         env:
           GH_TOKEN: ${{ github.token }}
           GITHUB_REPOSITORY: ${{ github.repository }}
           PR_NUMBER: ${{ github.event.pull_request.number }}
           PR_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
-        run: python .github/scripts/review_gate.py
+          PR_BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        run: |
+          script=trusted/.github/scripts/review_qualification.py
+          if [ ! -f "$script" ] || [ ! -f trusted/.github/scripts/review_contract.py ]; then
+            echo "::error::Base ${PR_BASE_SHA} has no trusted evaluator."
+            exit 1
+          fi
+          python3 -I "$script"
