@@ -123,6 +123,7 @@ def test_review_gate_runs_only_trusted_base_code() -> None:
     # One suite per head: reopen/ready reruns go through `homelab pr recheck`.
     assert "types: [opened, synchronize]" in workflow
     assert "ref: ${{ github.event.pull_request.base.sha }}" in workflow
+    assert "ref: ${{ github.event.pull_request.head.sha }}" not in workflow
     assert "persist-credentials: false" in workflow
     assert "python3 -I" in workflow
     assert "write" not in workflow.split("jobs:")[0]

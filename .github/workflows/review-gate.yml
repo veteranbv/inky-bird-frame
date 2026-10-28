@@ -11,7 +11,7 @@ name: review-gate
 # Later evidence re-runs this job IN PLACE (same check suite):
 # `review-gate-retrigger.yml` on Codex receipts, and `homelab pr recheck` for
 # events Actions cannot see (thread resolution, ready/reopen, late or missed
-# events). Bootstrap runs only on opened/synchronize: a same-head
+# events). The gate runs only on opened/synchronize: a same-head
 # reopen/ready run would add a second same-named check suite.
 
 on:
@@ -44,26 +44,6 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           ref: ${{ github.event.pull_request.base.sha }}
-          path: trusted
-          persist-credentials: false
-          sparse-checkout: |
-            .github/scripts/review_qualification.py
-            .github/scripts/review_contract.py
-            .github/scripts/review_gate.py
-          sparse-checkout-cone-mode: false
-
-      # Bootstrap only: while the base still has the retired polling gate and no
-      # evaluator, use the PR's copy. A pull_request workflow already comes from
-      # the PR, so this is no weaker than the accepted model. Once merged, the
-      # base never again has the old script, so a later deleted evaluator fails
-      # visibly instead of silently re-enabling this path.
-      - name: Bootstrap evaluator from the PR on the migration PR only
-        if: >-
-          hashFiles('trusted/.github/scripts/review_qualification.py') == ''
-          && hashFiles('trusted/.github/scripts/review_gate.py') != ''
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          ref: ${{ github.event.pull_request.head.sha }}
           path: trusted
           persist-credentials: false
           sparse-checkout: |
