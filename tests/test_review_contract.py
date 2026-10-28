@@ -181,6 +181,25 @@ def test_generated_request_body_is_a_valid_request() -> None:
         assert request is not None and request["base_sha"] == "d" * 40
 
 
+@pytest.mark.parametrize(
+    "body",
+    [
+        # Generated request for another head whose base field names this head.
+        rc.request_body(OTHER, "main", HEAD),
+        # Hand-typed request for another head that mentions this one in prose.
+        f"@codex review {OTHER}\nThe new head is {HEAD}.",
+        # Marker contradicting the commit the text names.
+        f"@codex review {HEAD}\n\n" + rc.request_body(OTHER, "main", "d" * 40).split("\n\n", 2)[2],
+        # Malformed marker never falls back to scanning the text.
+        f'@codex review {HEAD}\n\n<!-- homelab-review-request:v1 {{"head_sha":1}} -->',
+    ],
+)
+def test_request_must_target_the_current_head(body: str) -> None:
+    snapshot = _base()
+    _request(snapshot)["body"] = body
+    _blocked(snapshot, "code_review:request_missing")
+
+
 # --- Lifecycle and generation freshness ---------------------------------
 
 

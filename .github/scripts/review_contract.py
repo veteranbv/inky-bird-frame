@@ -1,4 +1,4 @@
-# Vendored from veteranbv/homelab@6e42860 (tools/src/homelab_tools/review_contract.py).
+# Vendored from veteranbv/homelab@7d42ac6 (tools/src/homelab_tools/review_contract.py).
 # Keep in sync with that source; see docs/standards/code-review.md there.
 """Exact-version Codex code+security review qualification.
 
@@ -9,9 +9,11 @@ therefore standard-library only; `test_review_contract.py` enforces that.
 A PR qualifies only when all of these hold for the live head:
 
 * open, ready-for-review lifecycle, complete paginated evidence;
-* a present, unedited request from the exact repository owner naming the full
-  head SHA, created after the last lifecycle reset (ready, reopen, force-push,
-  base change), so an older generation cannot qualify a force-push back;
+* a present, unedited request from the exact repository owner targeting the
+  full head SHA (the generated marker's head, or the only commit a hand-typed
+  request names; prose mentions never authorize another target), created
+  after the last lifecycle reset (ready, reopen, force-push, base change), so
+  an older generation cannot qualify a force-push back;
 * code review: the bot's typed `codex-review-state:v1` summary reports
   `completed` on the full head with no unresolved findings, its table row
   agrees and completed after that request, and an unedited, immutable receipt
@@ -215,7 +217,8 @@ def _request_kinds(body: str) -> tuple[Kind, ...]:
     return KINDS
 
 
-def _request_base(body: str) -> str | None:
+def _marker(body: str) -> dict[str, str] | None:
+    """The generated request's structured head/base, or None when absent or malformed."""
     match = _REQUEST_MARKER_RE.search(body)
     if not match:
         return None
@@ -223,8 +226,33 @@ def _request_base(body: str) -> str | None:
         marker = json.loads(match.group(1))
     except json.JSONDecodeError:
         return None
-    base = marker.get("base_sha") if isinstance(marker, dict) else None
-    return base if isinstance(base, str) and re.fullmatch(r"[0-9a-f]{40}", base) else None
+    if not isinstance(marker, dict):
+        return None
+    head, base = marker.get("head_sha"), marker.get("base_sha")
+    if not all(isinstance(sha, str) and re.fullmatch(r"[0-9a-f]{40}", sha) for sha in (head, base)):
+        return None
+    return {"head_sha": cast(str, head), "base_sha": cast(str, base)}
+
+
+def _request_head(body: str) -> str | None:
+    """The one head a request targets, or None when it names none or several.
+
+    A generated request names its head in the marker and may mention only that
+    head and its base. A hand-typed request must name exactly one full commit,
+    so prose mentioning the current head never authorizes a different target.
+    """
+    named = set(_SHA_RE.findall(body))
+    if _REQUEST_MARKER_RE.search(body):
+        marker = _marker(body)
+        if marker is None or not named <= {marker["head_sha"], marker["base_sha"]}:
+            return None
+        return marker["head_sha"]
+    return named.pop() if len(named) == 1 else None
+
+
+def _request_base(body: str) -> str | None:
+    marker = _marker(body)
+    return marker["base_sha"] if marker else None
 
 
 def _is_bot(comment: Comment) -> bool:
@@ -306,7 +334,7 @@ def _latest_request(
             continue
         if kind not in _request_kinds(comment["body"]):
             continue
-        if snapshot["head_sha"] not in _SHA_RE.findall(comment["body"]):
+        if _request_head(comment["body"]) != snapshot["head_sha"]:
             continue
         created = parse_time(comment["created_at"])
         if created is None or (epoch is not None and created <= epoch):
@@ -475,7 +503,7 @@ def evaluate(snapshot: Snapshot) -> Verdict:
             and (epoch is None or (created is not None and created > epoch))
             and comment["author"] == snapshot["owner"]
             and _request_kinds(comment["body"])
-            and snapshot["head_sha"] in _SHA_RE.findall(comment["body"])
+            and snapshot["head_sha"] in _SHA_RE.findall(comment["body"])  # any claim on this head
         ):
             reasons.append("request_edited")
             break
