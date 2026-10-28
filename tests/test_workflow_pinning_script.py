@@ -134,6 +134,10 @@ def test_review_gate_retrigger_admits_only_codex_bot() -> None:
         Path(__file__).resolve().parents[1] / ".github/workflows/review-gate-retrigger.yml"
     ).read_text(encoding="utf-8")
 
-    assert workflow.count("user.login == 'chatgpt-codex-connector[bot]'") == 2
+    triggers = workflow.split("\non:\n", 1)[1].split("\npermissions:", 1)[0]
+    # issue_comment only: a pull_request_review trigger would run the PR's copy.
+    assert "issue_comment:" in triggers
+    assert "pull_request_review" not in triggers
+    assert workflow.count("user.login == 'chatgpt-codex-connector[bot]'") == 1
     assert "github.repository_owner" not in workflow
     assert "${{ github.event.comment.body }}" not in workflow
