@@ -1,8 +1,8 @@
-# Vendored from veteranbv/homelab@7d42ac6 (tools/src/homelab_tools/review_contract.py).
-# Keep in sync with that source; see docs/standards/code-review.md there.
+# Vendored copy of the shared exact-version review evaluator. Do not
+# edit here; change it at its source and re-vendor.
 """Exact-version Codex code+security review qualification.
 
-One evaluator shared by the CLI (`homelab pr ...`) and the required `review-gate`
+One evaluator shared by the maintainer's review CLI and the required `review-gate`
 Actions job, which loads this file by path from trusted base-branch code. It is
 therefore standard-library only; `test_review_contract.py` enforces that.
 
@@ -49,7 +49,7 @@ REQUIRED_KINDS: tuple[Kind, ...] = ("code_review",)
 RECEIPT_SKEW = timedelta(seconds=120)
 
 _SHA_RE = re.compile(r"\b[0-9a-f]{40}\b")
-_REQUEST_RE = re.compile(r"\A\s*@codex (security )?review(?=\s|\Z)", re.IGNORECASE)
+_REQUEST_RE = re.compile(r"\A\s*@codex[ \t]+(security[ \t]+)?review(?=\s|\Z)", re.IGNORECASE)
 _REQUEST_MARKER_RE = re.compile(r"<!-- homelab-review-request:v1 (\{[^\n]*?\}) -->")
 _SUMMARY_MARKER = "<!-- codex-pull-request-review-summary -->"
 _STATE_RE = re.compile(r"<!-- codex-review-state:(v\d+) (\{[^\n]*?\}) -->")
@@ -193,16 +193,20 @@ def format_time(value: datetime | None) -> str | None:
 
 
 def request_body(head_sha: str, base_ref: str, base_sha: str) -> str:
-    """The exact owner request `homelab pr request-review` posts."""
-    command = "@codex review"
+    """The exact owner request the maintainer's review CLI posts.
+
+    The first line is the bare `@codex review <head>` command, so repositories
+    still on the retired polling gate (which matches only that line) recognize
+    it during migration.
+    """
     marker = json.dumps(
         {"head_sha": head_sha, "base_ref": base_ref, "base_sha": base_sha},
         sort_keys=True,
         separators=(",", ":"),
     )
     return (
-        f"{command}\n\nReview exactly head `{head_sha}` against `{base_ref}` "
-        f"at `{base_sha}`.\n\n<!-- homelab-review-request:v1 {marker} -->"
+        f"@codex review {head_sha}\n\nAgainst `{base_ref}` at `{base_sha}`.\n\n"
+        f"<!-- homelab-review-request:v1 {marker} -->"
     )
 
 

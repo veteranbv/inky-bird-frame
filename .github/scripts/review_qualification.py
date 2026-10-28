@@ -3,7 +3,7 @@
 Runs from a checkout of the PR's BASE commit, never PR content, and reads only
 live GitHub metadata with a read-only token. It never waits for a model: the
 verdict is computed once from current evidence and the job ends. Late review
-events are reconciled by re-running this job in place (`homelab pr recheck`).
+events are reconciled by re-running this job in place (the maintainer's `pr recheck`).
 
 Standard-library only, executed with `python3 -I` beside the trusted
 `review_contract.py`.
@@ -20,7 +20,7 @@ import time
 from pathlib import Path
 from types import ModuleType
 
-# Vendored from veteranbv/homelab@6e42860; the contract sits beside this script.
+# Vendored; the contract sits beside this script.
 CONTRACT = Path(__file__).with_name("review_contract.py")
 ATTEMPTS = 3
 
