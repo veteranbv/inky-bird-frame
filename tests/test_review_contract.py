@@ -594,10 +594,25 @@ def _node(identifier: int, login: str, typename: str) -> dict[str, object]:
     }
 
 
+def _final(head: str, events: list[dict[str, object]]) -> dict[str, object]:
+    """The post-pagination identity and lifecycle read."""
+    data = cast(
+        dict[str, dict[str, dict[str, object]]],
+        _page(head, comments=[], next_page=False)["data"],
+    )
+    pull = data["repository"]["pullRequest"]
+    pull["timelineItems"] = {"totalCount": len(events), "nodes": events[-1:]}
+    return {"data": {"repository": {"pullRequest": pull}}}
+
+
+REOPENED: dict[str, object] = {"__typename": "ReopenedEvent", "createdAt": "2026-10-27T01:00:00Z"}
+
+
 def test_collect_pages_and_normalizes_bot_identity() -> None:
     pages = [
         _page(HEAD, comments=[_node(1, "chatgpt-codex-connector", "Bot")], next_page=True),
         _page(HEAD, comments=[_node(2, "veteranbv", "User")], next_page=False),
+        _final(HEAD, [REOPENED]),
     ]
     snapshot = rc.collect(lambda args: pages.pop(0), "veteranbv/homelab", 547)
     assert [c["author"] for c in snapshot["comments"]] == [rc.BOT_LOGIN, "veteranbv"]
@@ -612,6 +627,37 @@ def test_collect_fails_closed_when_head_moves_between_pages() -> None:
         _page(OTHER, comments=[], next_page=False),
     ]
     with pytest.raises(rc.EvidenceError, match="changed while reading"):
+        rc.collect(lambda args: pages.pop(0), "veteranbv/homelab", 547)
+
+
+@pytest.mark.parametrize(
+    "events",
+    [
+        # A draft flip and back while later pages were read: same identity.
+        [
+            REOPENED,
+            {"__typename": "ConvertToDraftEvent", "createdAt": "2026-10-27T03:00:00Z"},
+            {"__typename": "ReadyForReviewEvent", "createdAt": "2026-10-27T03:00:05Z"},
+        ],
+        # A force-push away and back to the same head.
+        [
+            REOPENED,
+            {"__typename": "HeadRefForcePushedEvent", "createdAt": "2026-10-27T03:00:00Z"},
+        ],
+        # Same count, different newest event.
+        [{"__typename": "ConvertToDraftEvent", "createdAt": "2026-10-27T03:00:00Z"}],
+    ],
+)
+def test_collect_fails_closed_when_lifecycle_moves_during_pagination(
+    events: list[dict[str, object]],
+) -> None:
+    """flappy-bible#16 (Codex P2): identity alone missed resets between pages."""
+    pages = [
+        _page(HEAD, comments=[], next_page=True),
+        _page(HEAD, comments=[], next_page=False),
+        _final(HEAD, events),
+    ]
+    with pytest.raises(rc.EvidenceError, match="lifecycle changed"):
         rc.collect(lambda args: pages.pop(0), "veteranbv/homelab", 547)
 
 
