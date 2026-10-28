@@ -11,6 +11,7 @@ import ast
 import copy
 import importlib.util
 import json
+import re
 import sys
 from pathlib import Path
 from typing import TYPE_CHECKING, cast
@@ -154,6 +155,17 @@ def test_request_must_name_full_current_head() -> None:
 
 
 @pytest.mark.parametrize(
+    "body",
+    [f"@codex  review {HEAD}", f"@codex\treview {HEAD}", f"@codex  security\treview {HEAD}"],
+)
+def test_horizontal_whitespace_between_command_words_is_accepted(body: str) -> None:
+    """The retired polling gate accepted any spaces or tabs between the words."""
+    snapshot = _base()
+    _request(snapshot)["body"] = body
+    assert _verdict(snapshot).qualified
+
+
+@pytest.mark.parametrize(
     "body", [f"note: @codex review {HEAD} later", f"@codex review-please {HEAD}"]
 )
 def test_non_command_text_is_not_a_request(body: str) -> None:
@@ -169,6 +181,14 @@ def test_either_command_authorizes_both_kinds() -> None:
     snapshot = _base()
     _request(snapshot)["body"] = f"@codex security review {HEAD}"
     assert _verdict(snapshot).qualified
+
+
+def test_generated_request_first_line_is_the_legacy_exact_head_command() -> None:
+    """Repositories still on the retired polling gate match only this line."""
+    legacy = re.compile(r"^[ \t]*@codex[ \t]+review[ \t]+([0-9a-f]{40})[ \t]*\r?$", re.I | re.M)
+    first = rc.request_body(HEAD, "main", "d" * 40).splitlines()[0]
+    match = legacy.match(first)
+    assert match is not None and match.group(1) == HEAD
 
 
 def test_generated_request_body_is_a_valid_request() -> None:
