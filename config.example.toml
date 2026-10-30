@@ -89,6 +89,9 @@ port = 8793
 # Direct HTTPS is optional. Supply both files; the private key must use mode 0600.
 # tls_certificate = "private/fullchain.pem"
 # tls_private_key = "private/key.pem"
+# Doctor/container probes can use the backend certificate name independently
+# of the browser origin above. Match the direct listener's scheme and port.
+# healthcheck_origin = "https://inky-backend.example.test:8793"
 references_per_species = 4
 generations_per_cycle = 1
 # Failed visual reviews are regenerated with their findings as corrective input.

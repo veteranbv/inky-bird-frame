@@ -338,12 +338,33 @@ Startup checks both files and their match. Invalid or unreadable files stop
 startup; Inky does not start an HTTP replacement. Update the files and restart
 Inky after certificate renewal. Inky does not issue or renew certificates.
 
+If the browser address differs from the backend certificate name or port, set
+the direct probe address separately:
+
+~~~toml
+[controller]
+healthcheck_origin = "https://inky-backend.example.test:8793"
+~~~
+
+Add this key to your existing controller section. It selects `/health` for doctor
+and container probes. Use the listener's scheme and port, with no credentials,
+path, query or fragment. The name must resolve from each probe environment and
+match the certificate. Normal certificate checks stay enabled. This setting does
+not change the listener, display URL, allowed owner origins or certificate trust.
+Do not add a backend address to the allowed owner origins just to make doctor
+pass. Existing probe selection stays unchanged when this key is absent.
+
+Inky's shared HTTP fetcher also rejects an HTTPS redirect to HTTP. Fix a source's
+HTTPS route instead of relying on a plaintext redirect. Ordinary HTTP sources,
+HTTP-to-HTTPS upgrades and HTTPS-to-HTTPS redirects remain supported.
+
 For Docker, mount the files read-only through a private Compose override.
 The service runs as UID 10001. Arrange file ownership so that user can read the
 key without making it public. The bundled health check reads the configuration
 and selects HTTPS itself. Configure normal certificate trust, resolve the
 listener hostname inside the container, and include its exact origin in
-owner_allowed_origins. Never use an unverified SSL context. Doctor validates
+healthcheck_origin when it differs from the browser origin. Never use an
+unverified SSL context. Doctor validates
 the same hostname and certificate chain.
 
 A private certificate authority requires deliberate trust on each client and
