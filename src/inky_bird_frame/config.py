@@ -146,6 +146,7 @@ class ControllerConfig:
     generation_enabled: bool = True
     configuration_ownership: str = "managed"
     owner_import_retention_hours: int = 24
+    healthcheck_origin: str | None = None
 
 
 @dataclass(frozen=True)
@@ -826,6 +827,26 @@ def parse_config(raw: object, *, path: Path, load_secrets: bool = True) -> AppCo
         )
     if ("tls_certificate" in controller) != ("tls_private_key" in controller):
         raise ConfigurationError("tls_certificate and tls_private_key must be supplied together")
+    healthcheck_origin = None
+    if "healthcheck_origin" in controller:
+        healthcheck_origin = _http_origins(
+            {"healthcheck_origin": [_string(controller, "healthcheck_origin")]},
+            "healthcheck_origin",
+        )[0]
+        health_target = urlsplit(healthcheck_origin)
+        health_scheme = "https" if "tls_certificate" in controller else "http"
+        health_port = health_target.port
+        if health_port is None:
+            health_port = 443 if health_target.scheme == "https" else 80
+        if (
+            health_target.scheme != health_scheme
+            or health_port != _integer(controller, "port", maximum=65535)
+            or health_target.hostname in {"0.0.0.0", "::"}
+        ):
+            raise ConfigurationError(
+                "healthcheck_origin must match the controller listener scheme and port "
+                "and use a reachable hostname or address"
+            )
     ownership = _optional_string(controller, "configuration_ownership", default="managed")
     if ownership not in {"managed", "app"}:
         raise ConfigurationError("configuration_ownership must be managed or app")
@@ -893,6 +914,7 @@ def parse_config(raw: object, *, path: Path, load_secrets: bool = True) -> AppCo
             owner_allowed_origins=_owner_origins(controller),
             trusted_proxy_addresses=_proxy_addresses(controller),
             owner_access_mode=_owner_mode(controller),
+            healthcheck_origin=healthcheck_origin,
             tls_certificate=(
                 _path(_string(controller, "tls_certificate"), base_dir)
                 if "tls_certificate" in controller

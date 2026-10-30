@@ -68,6 +68,7 @@ class ConfigTests(unittest.TestCase):
         self.assertEqual(config.controller.owner_allowed_origins, ())
         self.assertEqual(config.controller.trusted_proxy_addresses, ())
         self.assertEqual(config.controller.owner_access_mode, OwnerAccessMode.LOCAL)
+        self.assertIsNone(config.controller.healthcheck_origin)
 
     def test_owner_proxy_configuration_is_explicit_and_normalized(self) -> None:
         with TemporaryDirectory() as temporary:
@@ -117,6 +118,95 @@ class ConfigTests(unittest.TestCase):
             self.assertEqual(
                 config.controller.tls_certificate, (Path(temporary) / "cert.pem").resolve()
             )
+
+    def test_healthcheck_origin_matches_listener_transport_and_port(self) -> None:
+        with TemporaryDirectory() as temporary:
+            path = Path(temporary) / "config.toml"
+            for tls in (False, True):
+                scheme = "https" if tls else "http"
+                settings = (
+                    '\ntls_certificate = "cert.pem"\ntls_private_key = "key.pem"' if tls else ""
+                )
+                path.write_text(
+                    CONFIG.replace(
+                        'bind_host = "0.0.0.0"',
+                        f'bind_host = "0.0.0.0"{settings}\n'
+                        f'healthcheck_origin = "{scheme}://Backend.example.test:8793/"',
+                    )
+                )
+                config = load_config(path)
+                self.assertEqual(
+                    config.controller.healthcheck_origin, f"{scheme}://backend.example.test:8793"
+                )
+
+    def test_healthcheck_origin_rejects_mismatched_or_unsafe_targets(self) -> None:
+        invalid = (
+            "http://backend.example.test:8793",
+            "https://backend.example.test",
+            "https://backend.example.test:8794",
+            "https://user:secret@backend.example.test:8793",
+            "https://backend.example.test:8793/path",
+            "https://backend.example.test:8793/?secret=value",
+            "https://backend.example.test:8793/#fragment",
+            "https://[broken:8793",
+            "https://0.0.0.0:8793",
+            "https://[::]:8793",
+        )
+        with TemporaryDirectory() as temporary:
+            path = Path(temporary) / "config.toml"
+            for origin in invalid:
+                with self.subTest(origin=origin):
+                    path.write_text(
+                        CONFIG.replace(
+                            'bind_host = "0.0.0.0"',
+                            'bind_host = "0.0.0.0"\n'
+                            'tls_certificate = "cert.pem"\ntls_private_key = "key.pem"\n'
+                            f'healthcheck_origin = "{origin}"',
+                        )
+                    )
+                    with self.assertRaisesRegex(ConfigurationError, "healthcheck_origin"):
+                        load_config(path)
+
+    def test_healthcheck_origin_handles_ipv6_and_default_ports(self) -> None:
+        with TemporaryDirectory() as temporary:
+            path = Path(temporary) / "config.toml"
+            for origin, port in (("https://[::1]:8793", 8793), ("https://backend.test", 443)):
+                with self.subTest(origin=origin):
+                    path.write_text(
+                        CONFIG.replace("port = 8793", f"port = {port}").replace(
+                            'bind_host = "0.0.0.0"',
+                            'bind_host = "0.0.0.0"\n'
+                            'tls_certificate = "cert.pem"\ntls_private_key = "key.pem"\n'
+                            f'healthcheck_origin = "{origin}"',
+                        )
+                    )
+                    self.assertEqual(load_config(path).controller.healthcheck_origin, origin)
+
+    def test_healthcheck_origin_does_not_treat_port_zero_as_default(self) -> None:
+        with TemporaryDirectory() as temporary:
+            path = Path(temporary) / "config.toml"
+            path.write_text(
+                CONFIG.replace("port = 8793", "port = 443").replace(
+                    'bind_host = "0.0.0.0"',
+                    'bind_host = "0.0.0.0"\n'
+                    'tls_certificate = "cert.pem"\ntls_private_key = "key.pem"\n'
+                    'healthcheck_origin = "https://backend.test:0"',
+                )
+            )
+            with self.assertRaisesRegex(ConfigurationError, "healthcheck_origin"):
+                load_config(path)
+
+    def test_http_listener_rejects_https_healthcheck_origin(self) -> None:
+        with TemporaryDirectory() as temporary:
+            path = Path(temporary) / "config.toml"
+            path.write_text(
+                CONFIG.replace(
+                    'bind_host = "0.0.0.0"',
+                    'bind_host = "0.0.0.0"\nhealthcheck_origin = "https://backend.test:8793"',
+                )
+            )
+            with self.assertRaisesRegex(ConfigurationError, "healthcheck_origin"):
+                load_config(path)
 
     def test_relative_and_absolute_tls_keys_preserve_the_final_symlink(self) -> None:
         with TemporaryDirectory() as temporary:

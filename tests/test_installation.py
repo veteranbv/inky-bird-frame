@@ -513,6 +513,34 @@ display_startup_delay_seconds = 30
                 "http://[::1]:8793/health",
             )
 
+    def test_controller_health_origin_is_separate_from_owner_and_display_origins(self) -> None:
+        with TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            codex = root / "codex"
+            codex.touch(mode=0o700)
+            path = write_config(root, codex)
+            path.write_text(
+                path.read_text().replace(
+                    'bind_host = "0.0.0.0"',
+                    'bind_host = "0.0.0.0"\n'
+                    'tls_certificate = "cert.pem"\ntls_private_key = "key.pem"\n'
+                    'healthcheck_origin = "https://backend.example.test:8793"\n'
+                    'owner_allowed_origins = ["https://inky.example.test"]',
+                )
+            )
+            config = load_config(path)
+            self.assertEqual(
+                health_url(config, InstallationRole.CONTROLLER),
+                "https://backend.example.test:8793/health",
+            )
+            self.assertEqual(
+                config.controller.owner_allowed_origins, ("https://inky.example.test",)
+            )
+            self.assertEqual(
+                health_url(config, InstallationRole.DISPLAY),
+                config.display_node.controller_url + "/health",
+            )
+
     def test_setup_preview_does_not_run_installer(self) -> None:
         with TemporaryDirectory() as temporary:
             root = Path(temporary)
