@@ -1,0 +1,42 @@
+{
+  "behavior": "Forages in trees, shrubs, low vegetation, and sometimes on the ground, eating mainly seeds and buds along with fruit and insects. Often feeds in small flocks outside the nesting season; flight is undulating. Courting males hop with drooped wings and a raised tail, sing softly, and may make a short fluttering ascent.",
+  "common_name": "Purple Finch",
+  "family": "Fringillidae",
+  "field_marks": [
+    "Stocky, large-headed finch with a short, distinctly notched tail",
+    "Thick, powerful, conical seed-cracking bill",
+    "Adult male washed raspberry-red across the head, breast, and back",
+    "Male has brown wings and a cloudy whitish lower belly, and typically lacks obvious dark stripes on the sides",
+    "Female and immature are brown with coarse streaking below, a pale eyebrow, and a dark cheek or throat-side line",
+    "Dark eye and dusky pink-brown legs and feet"
+  ],
+  "habitat": "Breeds mainly in cool coniferous forest and mixed woodland, including forest edges and wooded stream corridors. Outside the breeding season it also uses shrublands, old fields, hedgerows, semi-open woods, and planted areas with trees.",
+  "measurements": {
+    "length": "Both sexes: 4.7\u20136.3 in (12\u201316 cm)",
+    "weight": "Both sexes: 0.6\u20131.1 oz (18\u201332 g)",
+    "wingspan": "Both sexes: 8.7\u201310.2 in (22\u201326 cm)"
+  },
+  "palette": [
+    "raspberry red",
+    "warm brown",
+    "cloudy white",
+    "pale tan",
+    "dusky pink-brown"
+  ],
+  "scientific_name": "Haemorhous purpureus",
+  "sources": [
+    {
+      "title": "Purple Finch Identification \u2014 All About Birds, Cornell Lab of Ornithology",
+      "url": "https://www.allaboutbirds.org/guide/Purple_Finch/id"
+    },
+    {
+      "title": "Purple Finch Life History \u2014 All About Birds, Cornell Lab of Ornithology",
+      "url": "https://www.allaboutbirds.org/guide/Purple_Finch/lifehistory"
+    },
+    {
+      "title": "Purple Finch \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/purple-finch"
+    }
+  ],
+  "taxon_id": 199841
+}

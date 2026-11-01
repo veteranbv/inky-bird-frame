@@ -1,0 +1,31 @@
+{
+  "anatomy_accuracy": 4,
+  "composition_quality": 5,
+  "correction_findings": [],
+  "findings": [
+    "The primary specimen is a convincing adult male Purple Finch: stocky and large-headed, with a compact conical bill, raspberry-red wash extending onto the back, brown wings, cloudy whitish lower belly, and no conspicuous dark flank streaking.",
+    "The rounded, softly puffy crown now agrees with Purple Finch structure in the references and avoids the pronounced crestlike peak associated with Cassin's Finch.",
+    "The primary specimen has one head, one bill, one visible eye, one tail, two convincingly attached legs with intact feet, and a complete wing pair with the far-side wing naturally occluded by the side-on pose.",
+    "The detached head and folded-wing studies read as intentional supplementary anatomy and do not appear attached to or duplicated on the primary specimen.",
+    "The bill proportions are compact and powerful in both depicted heads, without a truncated, reversed, or materially inconsistent mandible rendering.",
+    "The vertical body-length schematic increases correctly from 4.7 in (12 cm) at the bottom to 6.3 in (16 cm) at the top and is explicitly marked \u201cSCHEMATIC \u2014 NOT TO SCALE.\u201d",
+    "All displayed measurements exactly match Cornell's published both-sexes set: length 4.7\u20136.3 in (12\u201316 cm), weight 0.6\u20131.1 oz (18\u201332 g), and wingspan 8.7\u201310.2 in (22\u201326 cm).",
+    "The common name, scientific name, family, habitat, behavior, and field-mark text are legible and consistent with the proposed profile and the verified Cornell and Audubon accounts.",
+    "The palette labels match the depicted adult-male coloration and supporting neutral colors.",
+    "No place name, ZIP code, coordinates, map, or local-observation detail appears."
+  ],
+  "location_free": true,
+  "passed": true,
+  "species_accuracy": 4,
+  "text_accuracy": 5,
+  "verification_sources": [
+    {
+      "title": "Purple Finch Identification \u2014 All About Birds, Cornell Lab of Ornithology",
+      "url": "https://www.allaboutbirds.org/guide/Purple_Finch/id"
+    },
+    {
+      "title": "Purple Finch \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/purple-finch"
+    }
+  ]
+}
