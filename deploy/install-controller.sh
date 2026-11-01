@@ -66,6 +66,16 @@ restore_previous_agent() {
   fi
 }
 
+# The user installer must not compete with an operator-managed system service.
+for label in serve refresh generate catalog-publish notifications scheduler controller-cycle; do
+  system_plist="/Library/LaunchDaemons/com.inky-bird-frame.${label}.plist"
+  if [ -e "${system_plist}" ] || [ -L "${system_plist}" ] || \
+      launchctl print "system/com.inky-bird-frame.${label}" >/dev/null 2>&1; then
+    echo "Inky uses operator-managed system services. Use that deployment process to upgrade; the user installer made no changes." >&2
+    exit 1
+  fi
+done
+
 if [ ! -f "${config_path}" ]; then
   echo "Controller configuration is missing: ${config_path}" >&2
   exit 1

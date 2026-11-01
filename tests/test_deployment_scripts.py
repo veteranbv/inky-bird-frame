@@ -1,9 +1,51 @@
 from __future__ import annotations
 
+import os
+import subprocess
 from pathlib import Path
 from unittest.mock import patch
 
 import pytest
+
+
+@pytest.mark.parametrize("label", ["serve", "scheduler", "generate", "controller-cycle"])
+def test_macos_user_installer_refuses_system_jobs_before_changing_files(
+    tmp_path: Path, label: str
+) -> None:
+    scripts = tmp_path / "bin"
+    scripts.mkdir()
+    for name, content in {
+        "uname": "#!/bin/sh\nprintf '%s\\n' Darwin\n",
+        "launchctl": f'#!/bin/sh\n[ "$2" = system/com.inky-bird-frame.{label} ]\n',
+    }.items():
+        executable = scripts / name
+        executable.write_text(content)
+        executable.chmod(0o755)
+    home = tmp_path / "home"
+    home.mkdir()
+    installer = Path(__file__).resolve().parents[1] / "deploy/install-controller.sh"
+    result = subprocess.run(
+        ["/bin/bash", str(installer)],
+        env={"HOME": str(home), "PATH": f"{scripts}{os.pathsep}{os.defpath}"},
+        capture_output=True,
+        text=True,
+        timeout=10,
+    )
+    assert result.returncode == 1
+    assert "operator-managed system services" in result.stderr
+    assert list(home.iterdir()) == []
+
+
+def test_system_job_guard_precedes_every_user_installer_mutation() -> None:
+    installer = (Path(__file__).resolve().parents[1] / "deploy/install-controller.sh").read_text()
+    guard = installer.index(
+        "for label in serve refresh generate catalog-publish "
+        "notifications scheduler controller-cycle;"
+    )
+    assert guard < installer.index('chmod 600 "${config_path}"')
+    assert guard < installer.index('mkdir -p "${app_dir}/catalog"')
+    assert guard < installer.index('"${uv_bin}" sync')
+    assert '[ -e "${system_plist}" ] || [ -L "${system_plist}" ]' in installer
 
 
 def test_serving_container_receives_provider_credentials_but_sso_stays_separate() -> None:
