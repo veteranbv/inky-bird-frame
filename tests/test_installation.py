@@ -120,6 +120,18 @@ def test_native_tls_environment_is_explicit_and_survives_rerendering(tmp_path: P
     assert trust.read_bytes() == original
 
 
+def test_absent_native_tls_file_keeps_existing_trust_with_shared_ancestors(tmp_path: Path) -> None:
+    shared = tmp_path / "shared-home"
+    shared.mkdir(mode=0o775)
+    shared.chmod(0o775)
+    private = shared / "private-config"
+    private.mkdir(mode=0o700)
+    config = private / "config.toml"
+    config.write_text("# existing configuration, no native TLS trust opt-in\n")
+    config.chmod(0o600)
+    assert native_tls_environment(config) == {}
+
+
 @pytest.mark.parametrize(
     "case",
     [

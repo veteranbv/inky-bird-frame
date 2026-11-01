@@ -217,12 +217,15 @@ def _read_native_trust_file(path: Path, maximum: int) -> bytes:
 
 def native_tls_environment(config_path: Path) -> dict[str, str]:
     """Read only explicit operator-owned native CA trust, never ambient secrets."""
+    path = config_path.resolve().parent / "native-tls.env"
     try:
-        body = _read_native_trust_file(
-            config_path.resolve().parent / "native-tls.env", MAX_NATIVE_TLS_BYTES
-        )
+        path.lstat()
     except FileNotFoundError:
         return {}
+    except OSError:
+        raise InstallationError("Native TLS trust file cannot be inspected") from None
+    try:
+        body = _read_native_trust_file(path, MAX_NATIVE_TLS_BYTES)
     except (OSError, ValueError):
         raise InstallationError("Native TLS trust file is unsafe or cannot be read") from None
     try:
