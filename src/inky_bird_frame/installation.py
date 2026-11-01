@@ -5,6 +5,7 @@ from __future__ import annotations
 import json
 import os
 import platform
+import plistlib
 import shutil
 import ssl
 import stat
@@ -15,6 +16,7 @@ from dataclasses import dataclass
 from enum import StrEnum
 from pathlib import Path
 from urllib.parse import urlsplit, urlunsplit
+from xml.parsers.expat import ExpatError
 
 from .birdbuddy import birdbuddy_status
 from .config import AppConfig, DiscoveryProvider, load_config
@@ -608,6 +610,32 @@ def _controller_health_check(config: AppConfig, role: InstallationRole) -> Diagn
     )
 
 
+def _launchd_target(label: str, uid: int) -> tuple[str, str]:
+    """Accept an administrator-managed system job only for the calling identity."""
+    import pwd
+
+    path = Path("/Library/LaunchDaemons") / f"{label}.plist"
+    try:
+        info = path.lstat()
+    except FileNotFoundError:
+        return f"gui/{uid}/{label}", "LaunchAgent"
+    if (
+        not stat.S_ISREG(info.st_mode)
+        or info.st_nlink != 1
+        or info.st_uid != 0
+        or stat.S_IMODE(info.st_mode) & 0o022
+    ):
+        raise ValueError("The system plist must be a protected administrator-owned regular file")
+    with path.open("rb") as handle:
+        job = plistlib.load(handle)
+    if not isinstance(job, dict) or job.get("Label") != label:
+        raise ValueError("The system plist label does not match")
+    username = job.get("UserName")
+    if not isinstance(username, str) or pwd.getpwnam(username).pw_uid != uid:
+        raise ValueError("Run doctor as the system service account")
+    return f"system/{label}", "LaunchDaemon"
+
+
 def _launchd_checks(config: AppConfig) -> Iterable[DiagnosticCheck]:
     labels = [
         "com.inky-bird-frame.serve",
@@ -623,14 +651,28 @@ def _launchd_checks(config: AppConfig) -> Iterable[DiagnosticCheck]:
         labels = ["com.inky-bird-frame.serve", "com.inky-bird-frame.scheduler"]
     uid = os.getuid()
     for label in labels:
-        result = _run(["launchctl", "print", f"gui/{uid}/{label}"])
+        try:
+            target, kind = _launchd_target(label, uid)
+        except (OSError, ValueError, KeyError, plistlib.InvalidFileException, ExpatError) as exc:
+            yield _fail(
+                f"service_{label.rsplit('.', 1)[-1]}",
+                f"Cannot verify the operator-managed system job: {label}",
+                detail=str(exc),
+                remediation="Ask the service operator to verify its plist and service account.",
+            )
+            continue
+        result = _run(["launchctl", "print", target])
         if result.returncode == 0:
-            yield _pass(f"service_{label.rsplit('.', 1)[-1]}", f"LaunchAgent is loaded: {label}")
+            yield _pass(f"service_{label.rsplit('.', 1)[-1]}", f"{kind} is loaded: {label}")
         else:
             yield _fail(
                 f"service_{label.rsplit('.', 1)[-1]}",
-                f"LaunchAgent is not loaded: {label}",
-                remediation="Run setup controller --yes in the logged-in service account.",
+                f"{kind} is not loaded: {label}",
+                remediation=(
+                    "Ask the service operator to load the system job."
+                    if kind == "LaunchDaemon"
+                    else "Run setup controller --yes in the logged-in service account."
+                ),
             )
 
 

@@ -279,6 +279,15 @@ examples with the exact release you intend to install.
 
 ### macOS controller
 
+The standard installer creates jobs for your logged-in macOS user. It does not
+create a system account or install administrator-managed services. If an operator
+already runs Inky through system LaunchDaemons (jobs that can start before login),
+use that deployment process for upgrades. The standard installer refuses to
+compete with those jobs before it changes files. Run `doctor controller` as the
+configured service account; it recognizes protected, administrator-owned system
+plists for that account. This check confirms job registration, not the security
+of a custom deployment or its process environment.
+
 Install prerequisites with Homebrew:
 
 ```bash

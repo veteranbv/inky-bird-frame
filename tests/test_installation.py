@@ -3,6 +3,7 @@ from __future__ import annotations
 import json
 import os
 import plistlib
+import stat
 import subprocess
 import sys
 import tomllib
@@ -10,7 +11,9 @@ import unittest
 from dataclasses import replace
 from pathlib import Path
 from tempfile import TemporaryDirectory
+from types import SimpleNamespace
 from unittest.mock import patch
+from xml.parsers.expat import ExpatError
 
 import pytest
 
@@ -24,6 +27,8 @@ from inky_bird_frame.installation import (
     _birdbuddy_auth_check,
     _codex_auth_check,
     _display_hardware_check,
+    _launchd_checks,
+    _launchd_target,
     controller_executable_path,
     controller_systemd_units,
     display_systemd_units,
@@ -83,6 +88,99 @@ def native_oidc_config(directory: Path) -> tuple[AppConfig, Path]:
             ),
         ),
     ), path
+
+
+@pytest.mark.parametrize(
+    "case",
+    [
+        "absent",
+        "system",
+        "owner",
+        "writable",
+        "symlink",
+        "hardlink",
+        "label",
+        "user",
+        "missing-user",
+    ],
+)
+def test_launchd_domain_is_bound_to_protected_system_plist_and_account(
+    tmp_path: Path, case: str
+) -> None:
+    label = "com.inky-bird-frame.serve"
+    job = {"Label": label, "UserName": "controller-test"}
+    if case == "label":
+        job["Label"] = "unrelated"
+    if case == "missing-user":
+        del job["UserName"]
+    (tmp_path / f"{label}.plist").write_bytes(plistlib.dumps(job))
+    info = SimpleNamespace(
+        st_mode=(stat.S_IFLNK if case == "symlink" else stat.S_IFREG)
+        | (0o664 if case == "writable" else 0o644),
+        st_uid=1002 if case == "owner" else 0,
+        st_nlink=2 if case == "hardlink" else 1,
+    )
+    with (
+        patch("inky_bird_frame.installation.Path", return_value=tmp_path),
+        patch.object(
+            Path,
+            "lstat",
+            side_effect=FileNotFoundError if case == "absent" else None,
+            return_value=info,
+        ),
+        patch(
+            "pwd.getpwnam", return_value=SimpleNamespace(pw_uid=1003 if case == "user" else 1002)
+        ),
+    ):
+        if case == "absent":
+            assert _launchd_target(label, 1002) == (f"gui/1002/{label}", "LaunchAgent")
+        elif case == "system":
+            assert _launchd_target(label, 1002) == (f"system/{label}", "LaunchDaemon")
+        else:
+            with pytest.raises(ValueError):
+                _launchd_target(label, 1002)
+
+
+@pytest.mark.parametrize("loaded", [True, False])
+def test_launchd_doctor_checks_operator_system_domain(tmp_path: Path, loaded: bool) -> None:
+    config, _ = native_oidc_config(tmp_path)
+    with (
+        patch(
+            "inky_bird_frame.installation._launchd_target",
+            side_effect=lambda label, uid: (f"system/{label}", "LaunchDaemon"),
+        ),
+        patch(
+            "inky_bird_frame.installation._run",
+            return_value=CommandResult(0 if loaded else 1, "", ""),
+        ) as run,
+    ):
+        checks = list(_launchd_checks(config))
+    assert len(checks) == 2
+    assert all(
+        check.status == (CheckStatus.PASS if loaded else CheckStatus.FAIL) for check in checks
+    )
+    assert all("LaunchDaemon" in check.summary for check in checks)
+    assert [call.args[0] for call in run.call_args_list] == [
+        ["launchctl", "print", "system/com.inky-bird-frame.serve"],
+        ["launchctl", "print", "system/com.inky-bird-frame.scheduler"],
+    ]
+
+
+@pytest.mark.parametrize(
+    "error",
+    [PermissionError(), ValueError(), KeyError(), plistlib.InvalidFileException(), ExpatError()],
+)
+def test_launchd_doctor_never_falls_back_from_invalid_system_job(
+    tmp_path: Path, error: Exception
+) -> None:
+    config, _ = native_oidc_config(tmp_path)
+    with (
+        patch("inky_bird_frame.installation._launchd_target", side_effect=error),
+        patch("inky_bird_frame.installation._run") as run,
+    ):
+        checks = list(_launchd_checks(config))
+    assert all(check.status == CheckStatus.FAIL for check in checks)
+    run.assert_not_called()
 
 
 def test_native_tls_environment_is_explicit_and_survives_rerendering(tmp_path: Path) -> None:
