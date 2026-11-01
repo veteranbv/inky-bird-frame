@@ -74,6 +74,8 @@ class _HTTPOnlyRedirectHandler(HTTPRedirectHandler):
         scheme = urlsplit(newurl).scheme
         if scheme not in ("http", "https"):
             raise DataSourceError(f"Refusing redirect to non-HTTP URL scheme: {scheme or 'none'}")
+        if urlsplit(req.full_url).scheme == "https" and scheme == "http":
+            raise DataSourceError("Refusing HTTPS-to-HTTP redirect")
         return super().redirect_request(req, fp, code, msg, headers, newurl)
 
 

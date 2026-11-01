@@ -5,13 +5,14 @@ import unittest
 from collections.abc import Iterator
 from contextlib import contextmanager
 from email.message import Message
-from http.client import IncompleteRead, RemoteDisconnected
+from http.client import HTTPMessage, IncompleteRead, RemoteDisconnected
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from tempfile import TemporaryDirectory
 from threading import Thread
 from unittest.mock import MagicMock, patch
 from urllib.error import HTTPError
+from urllib.request import Request
 
 import inky_bird_frame.http
 from inky_bird_frame.errors import DataSourceError
@@ -188,6 +189,40 @@ class JsonHttpTests(unittest.TestCase):
             body = get_bytes(f"http://127.0.0.1:{port}/http-redirect")
 
         self.assertEqual(body, b"payload-bytes")
+
+    def test_rejects_https_downgrades_before_creating_redirect_request(self) -> None:
+        handler = inky_bird_frame.http._HTTPOnlyRedirectHandler()
+        for code in (301, 302, 303, 307, 308):
+            for method in ("GET", "HEAD"):
+                with self.subTest(code=code, method=method):
+                    request = Request("https://example.test/private?secret=value", method=method)
+                    with self.assertRaisesRegex(DataSourceError, "HTTPS-to-HTTP") as caught:
+                        handler.redirect_request(
+                            request,
+                            MagicMock(),
+                            code,
+                            "Redirect",
+                            HTTPMessage(),
+                            "http://example.test/private",
+                        )
+                    self.assertNotIn("secret", str(caught.exception))
+                    self.assertNotIn("example.test", str(caught.exception))
+
+    def test_allows_https_redirects_and_http_upgrades(self) -> None:
+        handler = inky_bird_frame.http._HTTPOnlyRedirectHandler()
+        for source in ("http://example.test/start", "https://example.test/start"):
+            with self.subTest(source=source):
+                redirected = handler.redirect_request(
+                    Request(source),
+                    MagicMock(),
+                    302,
+                    "Redirect",
+                    HTTPMessage(),
+                    "https://example.test/end",
+                )
+                self.assertIsNotNone(redirected)
+                assert redirected is not None
+                self.assertEqual(redirected.full_url, "https://example.test/end")
 
 
 if __name__ == "__main__":

@@ -492,6 +492,8 @@ def _codex_auth_check(path: Path) -> DiagnosticCheck:
 def health_url(config: AppConfig, role: InstallationRole) -> str:
     """Select the configured service endpoint for doctor and container probes."""
     if role is InstallationRole.CONTROLLER:
+        if config.controller.healthcheck_origin is not None:
+            return f"{config.controller.healthcheck_origin}/health"
         if config.controller.tls_certificate:
             for origin in config.controller.owner_allowed_origins:
                 parsed_origin = urlsplit(origin)
