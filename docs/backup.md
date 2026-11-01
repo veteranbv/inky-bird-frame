@@ -14,6 +14,7 @@ truth:
 | --- | --- | --- |
 | `config.toml` | Provider credentials, notification destinations, paths, schedules, and private location | Secret and private |
 | Optional `native-access.env` beside the native config | Persistent OIDC client secret used by the serving service | Secret |
+| Optional `native-tls.env` and its referenced CA bundle | Native client trust for providers, sign-in and the controller | Public certificates; integrity-sensitive |
 | `catalog_dir` | Approved plates, manifests, and index | Reusable art; may also hold local-only approved work |
 | `state_dir` | Observations, collections, imports, retries, notifications, owner access, run history and optional Bird Buddy refresh token | Private and credential-sensitive |
 | `workspace_dir` | Current generated work and downloaded references | Private working data |
@@ -203,10 +204,12 @@ different parent directories.
 ```bash
 mkdir -p "$BACKUP/config" "$BACKUP/workspace" "$BACKUP/catalog" "$BACKUP/state"
 rsync -a "$CONFIG" "$BACKUP/config/config.toml"
-if [ -f "$(dirname "$CONFIG")/native-access.env" ]; then
-  rsync -a "$(dirname "$CONFIG")/native-access.env" "$BACKUP/config/native-access.env"
-  chmod 600 "$BACKUP/config/native-access.env"
-fi
+for name in native-access.env native-tls.env; do
+  if [ -f "$(dirname "$CONFIG")/$name" ]; then
+    rsync -a "$(dirname "$CONFIG")/$name" "$BACKUP/config/$name"
+    chmod 600 "$BACKUP/config/$name"
+  fi
+done
 rsync -a "$WORKSPACE/" "$BACKUP/workspace/"
 rsync -a "$CATALOG/" "$BACKUP/catalog/"
 rsync -a "$STATE/" "$BACKUP/state/"
@@ -218,16 +221,21 @@ commands produce no output when the backup matches the source:
 
 ```bash
 cmp "$CONFIG" "$BACKUP/config/config.toml"
-if [ -f "$BACKUP/config/native-access.env" ]; then
-  cmp "$(dirname "$CONFIG")/native-access.env" "$BACKUP/config/native-access.env"
-fi
+for name in native-access.env native-tls.env; do
+  if [ -f "$BACKUP/config/$name" ]; then
+    cmp "$(dirname "$CONFIG")/$name" "$BACKUP/config/$name"
+  fi
+done
 rsync -acni --delete "$WORKSPACE/" "$BACKUP/workspace/"
 rsync -acni --delete "$CATALOG/" "$BACKUP/catalog/"
 rsync -acni --delete "$STATE/" "$BACKUP/state/"
 ```
 
 Record the application release or commit and the four original absolute paths
-beside the backup. Do not put credentials into that note.
+beside the backup. If using `native-tls.env`, separately back up its referenced
+public CA bundle and record its original path and verified fingerprint. Restore
+that bundle with protected ownership before starting a recovered role. Do not
+put credentials into that note.
 
 ### 4. Restart and verify
 
@@ -341,7 +349,8 @@ wildcard bind such as `0.0.0.0` is checked through `127.0.0.1`.
    directories at the recorded paths, then restore as the controller account:
 
    ```bash
-   for target in "$CONFIG" "$WORKSPACE" "$CATALOG" "$STATE" "$(dirname "$CONFIG")/native-access.env"; do
+   for target in "$CONFIG" "$WORKSPACE" "$CATALOG" "$STATE" \
+     "$(dirname "$CONFIG")/native-access.env" "$(dirname "$CONFIG")/native-tls.env"; do
      if [ -e "$target" ] || [ -L "$target" ]; then
        printf 'Refusing to merge restored state into existing path: %s\n' "$target" >&2
        exit 1
@@ -349,10 +358,12 @@ wildcard bind such as `0.0.0.0` is checked through `127.0.0.1`.
    done
    mkdir -p "$(dirname "$CONFIG")" "$WORKSPACE" "$CATALOG" "$STATE"
    rsync -a "$BACKUP/config/config.toml" "$CONFIG"
-   if [ -f "$BACKUP/config/native-access.env" ]; then
-     rsync -a "$BACKUP/config/native-access.env" "$(dirname "$CONFIG")/native-access.env"
-     chmod 600 "$(dirname "$CONFIG")/native-access.env"
-   fi
+   for name in native-access.env native-tls.env; do
+     if [ -f "$BACKUP/config/$name" ]; then
+       rsync -a "$BACKUP/config/$name" "$(dirname "$CONFIG")/$name"
+       chmod 600 "$(dirname "$CONFIG")/$name"
+     fi
+   done
    rsync -a "$BACKUP/workspace/" "$WORKSPACE/"
    rsync -a "$BACKUP/catalog/" "$CATALOG/"
    rsync -a "$BACKUP/state/" "$STATE/"

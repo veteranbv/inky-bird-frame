@@ -3,6 +3,7 @@ from __future__ import annotations
 import getpass
 import io
 import json
+import os
 import shutil
 import stat
 import unittest
@@ -17,6 +18,8 @@ from tempfile import TemporaryDirectory
 from types import SimpleNamespace
 from typing import cast
 from unittest.mock import patch
+
+import pytest
 
 import inky_bird_frame
 from inky_bird_frame.birdnet_analyzer import BirdNetAnalyzerImportStats
@@ -68,6 +71,33 @@ from inky_bird_frame.errors import (
 )
 from inky_bird_frame.models import ProfileConflict
 from inky_bird_frame.retry import RetryStore
+
+
+@pytest.mark.parametrize("previous", [None, "/previous/roots.pem"])
+@pytest.mark.parametrize("failure", [False, True])
+def test_cli_scopes_native_trust_without_retaining_it(previous: str | None, failure: bool) -> None:
+    def command(args: Namespace) -> int:
+        assert os.environ["SSL_CERT_FILE"] == "/operator/roots.pem"
+        if failure:
+            raise ValueError("synthetic failure")
+        return 0
+
+    with (
+        patch.dict(os.environ, {}, clear=True),
+        patch("inky_bird_frame.cli.build_parser") as parser,
+        patch(
+            "inky_bird_frame.cli.native_tls_environment",
+            return_value={"SSL_CERT_FILE": "/operator/roots.pem"},
+        ),
+        redirect_stdout(io.StringIO()),
+    ):
+        if previous is not None:
+            os.environ["SSL_CERT_FILE"] = previous
+        parser.return_value.parse_args.return_value = Namespace(
+            config=Path("config.toml"), func=command
+        )
+        assert main([]) == int(failure)
+        assert os.environ.get("SSL_CERT_FILE") == previous
 
 
 def controller_config(state_dir: Path, catalog_dir: Path | None = None) -> SimpleNamespace:

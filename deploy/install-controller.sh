@@ -153,7 +153,8 @@ from inky_bird_frame.catalog import catalog_state_lock
 from inky_bird_frame.config import DiscoveryProvider, load_config
 from inky_bird_frame.errors import ConfigurationError
 from inky_bird_frame.http import write_bytes_atomic
-from inky_bird_frame.installation import controller_executable_path, native_oidc_environment
+from inky_bird_frame.installation import controller_executable_path
+from inky_bird_frame.installation import native_oidc_environment, native_tls_environment
 from inky_bird_frame.publisher import sync_public_catalog
 
 (
@@ -198,6 +199,7 @@ if environment_destinations:
         f"private config file; replace url_env for: {names}"
     )
 owner_environment = native_oidc_environment(config, config_path)
+tls_environment = native_tls_environment(config_path)
 schedule = config.schedule
 config.controller.workspace_dir.mkdir(parents=True, exist_ok=True)
 config.controller.catalog_dir.parent.mkdir(parents=True, exist_ok=True)
@@ -236,6 +238,7 @@ def managed_agent(name: str) -> dict[str, object]:
             ),
             "PYTHONUNBUFFERED": "1",
             "INKY_BIRD_MANAGED_LOG_PATH": str(log_dir / f"{name}.log"),
+            **tls_environment,
             **(owner_environment if name == "serve" else {}),
         },
     }

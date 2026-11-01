@@ -6,6 +6,7 @@ import json
 import os
 import platform
 import shutil
+import ssl
 import stat
 import subprocess
 import sys
@@ -25,6 +26,9 @@ SUDO_AUTHORIZATION_TIMEOUT_SECONDS = 300
 INSTALLER_TIMEOUT_SECONDS = 3600
 # One native sign-in credential, bounded below normal OS environment limits.
 MAX_NATIVE_ACCESS_BYTES = 64 * 1024
+# One JSON-quoted path; the separate PEM bound leaves room for combined root sets.
+MAX_NATIVE_TLS_BYTES = 16 * 1024
+MAX_NATIVE_CA_BYTES = 4 * 1024 * 1024
 MANAGED_CONTROLLER_DEFAULT_EXECUTABLE_PATH = (
     "/usr/local/sbin",
     "/usr/local/bin",
@@ -186,6 +190,62 @@ def native_oidc_environment(config: AppConfig, config_path: Path) -> dict[str, s
     return {name: secret}
 
 
+def _read_native_trust_file(path: Path, maximum: int) -> bytes:
+    directory = path.parent.resolve(strict=True)
+    for parent in (directory, *directory.parents):
+        info = parent.stat()
+        root_sticky = info.st_uid == 0 and bool(info.st_mode & stat.S_ISVTX)
+        if info.st_uid not in (0, os.getuid()) or (
+            stat.S_IMODE(info.st_mode) & 0o022 and not root_sticky
+        ):
+            raise ValueError("Native trust parents must be protected")
+    descriptor = os.open(directory / path.name, os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK)
+    with os.fdopen(descriptor, "rb") as handle:
+        info = os.fstat(handle.fileno())
+        if (
+            not stat.S_ISREG(info.st_mode)
+            or info.st_nlink != 1
+            or info.st_uid not in (0, os.getuid())
+            or stat.S_IMODE(info.st_mode) & 0o022
+        ):
+            raise ValueError("Unsafe native trust file")
+        body = handle.read(maximum + 1)
+    if len(body) > maximum:
+        raise ValueError("Native trust file exceeds its supported size")
+    return body
+
+
+def native_tls_environment(config_path: Path) -> dict[str, str]:
+    """Read only explicit operator-owned native CA trust, never ambient secrets."""
+    try:
+        body = _read_native_trust_file(
+            config_path.resolve().parent / "native-tls.env", MAX_NATIVE_TLS_BYTES
+        )
+    except FileNotFoundError:
+        return {}
+    except (OSError, ValueError):
+        raise InstallationError("Native TLS trust file is unsafe or cannot be read") from None
+    try:
+        name, separator, encoded = body.decode().strip().partition("=")
+        if name != "SSL_CERT_FILE" or not separator:
+            raise ValueError("Only SSL_CERT_FILE is supported")
+        value = json.loads(encoded)
+        if not isinstance(value, str) or not Path(value).is_absolute() or not value.isprintable():
+            raise ValueError("Native CA bundle requires an absolute path")
+        # Consumers reopen the returned name. Keep it independent of any mutable
+        # directory alias, while still refusing a symlink at the final component.
+        bundle = Path(value).parent.resolve(strict=True) / Path(value).name
+        certificates = _read_native_trust_file(bundle, MAX_NATIVE_CA_BYTES)
+        if not certificates.strip():
+            raise ValueError("Native CA bundle must contain certificates")
+        ssl.create_default_context(cadata=certificates.decode("ascii"))
+    except (OSError, UnicodeError, ValueError):
+        raise InstallationError(
+            "Native TLS trust requires only SSL_CERT_FILE with a protected, readable PEM bundle"
+        ) from None
+    return {"SSL_CERT_FILE": str(bundle)}
+
+
 def controller_systemd_units(
     config: AppConfig,
     *,
@@ -199,12 +259,16 @@ def controller_systemd_units(
     service_path = controller_executable_path(
         config.controller.codex_path, generation_enabled=config.controller.generation_enabled
     )
+    tls_environment = "".join(
+        f"Environment={_systemd_quote(f'{name}={value}')}\n"
+        for name, value in native_tls_environment(config_path).items()
+    )
     common = (
         f"User={user}\n"
         f"WorkingDirectory={_systemd_literal(str(app_dir))}\n"
         f"Environment={_systemd_quote(f'HOME={home}')}\n"
         f"Environment={_systemd_quote(f'PATH={service_path}')}\n"
-        "Environment=PYTHONUNBUFFERED=1\n"
+        "Environment=PYTHONUNBUFFERED=1\n" + tls_environment
     )
     access_path = config_path.resolve().parent / "native-access.env"
     owner_environment = (
@@ -310,6 +374,10 @@ def display_systemd_units(
         f"{_systemd_quote(str(executable))} display-cycle "
         f"--config {_systemd_quote(str(config_path))}"
     )
+    tls_environment = "".join(
+        f"Environment={_systemd_quote(f'{name}={value}')}\n"
+        for name, value in native_tls_environment(config_path).items()
+    )
     service = f"""[Unit]
 Description=Rotate the next approved Inky Bird Frame plate
 After=network-online.target
@@ -320,7 +388,7 @@ Type=oneshot
 User={user}
 WorkingDirectory={_systemd_literal(str(app_dir))}
 Environment=PYTHONUNBUFFERED=1
-{SYSTEMD_SERVICE_HARDENING}ExecStart={exec_start}
+{tls_environment}{SYSTEMD_SERVICE_HARDENING}ExecStart={exec_start}
 TimeoutStartSec=15min
 """
     timer = f"""[Unit]

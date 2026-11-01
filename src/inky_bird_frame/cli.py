@@ -55,7 +55,7 @@ from .display_node import run_display_cycle
 from .ebird_archive import import_ebird_archive, read_ebird_archive_history
 from .errors import DataSourceError, InkyBirdFrameError
 from .images import prepare_uploaded_image
-from .installation import InstallationRole, doctor, setup
+from .installation import InstallationRole, doctor, native_tls_environment, setup
 from .notifications import (
     check_display_heartbeat,
     dispatch_notifications,
@@ -1450,11 +1450,23 @@ def build_parser() -> argparse.ArgumentParser:
 def main(argv: list[str] | None = None) -> int:
     parser = build_parser()
     args = parser.parse_args(argv)
+    previous_ca = os.environ.get("SSL_CERT_FILE")
+    tls_environment: dict[str, str] = {}
     try:
+        config_path = getattr(args, "config", None)
+        if config_path is not None:
+            tls_environment = native_tls_environment(config_path)
+            os.environ.update(tls_environment)
         return int(args.func(args))
     except (InkyBirdFrameError, OSError, ValueError) as exc:
         print_error(exc)
         return 1
+    finally:
+        if tls_environment:
+            if previous_ca is None:
+                os.environ.pop("SSL_CERT_FILE", None)
+            else:
+                os.environ["SSL_CERT_FILE"] = previous_ca
 
 
 if __name__ == "__main__":

@@ -372,6 +372,39 @@ on the controller used by doctor. Transfer its root through an authenticated
 channel and verify the fingerprint. Do not install trust automatically, share
 the signing key or teach users to ignore browser warnings.
 
+### Keep native client trust across updates
+
+For a native controller or display, place an optional `native-tls.env` beside
+that role's `config.toml`. It accepts exactly one setting, with a JSON-quoted
+absolute path to a PEM certificate bundle:
+
+~~~text
+SSL_CERT_FILE="/etc/inky/client-roots.pem"
+~~~
+
+Use a combined bundle of current public roots and your verified private CA.
+A private-root-only file can break public providers and single sign-on.
+Keep both files regular, owned by root or the service account, and not writable
+by a group or others. Final-component symlinks and hard links are refused.
+Mode `0644` is suitable for these public-only files; protect their parent
+directories too.
+Inky resolves directory aliases before passing the bundle path to clients.
+Never put a certificate signing key, server private key or credential in them.
+
+Native setup retains this file and puts only `SSL_CERT_FILE` into each role's
+service environment. The CLI also reads it when you pass `--config`, including
+doctor and install-time checks. Unrelated shell variables are never cached.
+Later native updates read the same file, so trust does not depend on a manual
+edit to a generated service. An invalid file fails closed with a safe error.
+The separate `native-access.env` keeps its serving-only OIDC secret behavior.
+
+Your certificate tooling still owns bundle updates. Restart the affected Inky
+services after changing trust, then run both doctors and check real clients.
+To return to the platform's default trust, stop the affected services, remove
+only `native-tls.env`, rerun native setup, and restart. Check the result before
+removing the bundle. This does not issue a certificate, change operating-system
+trust, or make a browser trust your private CA.
+
 ## Advanced: optional Caddy private certificates
 
 [Caddy's local HTTPS guide](https://caddyserver.com/docs/automatic-https#local-https)
