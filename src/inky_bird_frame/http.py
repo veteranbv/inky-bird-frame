@@ -79,9 +79,6 @@ class _HTTPOnlyRedirectHandler(HTTPRedirectHandler):
         return super().redirect_request(req, fp, code, msg, headers, newurl)
 
 
-_OPENER = build_opener(_HTTPOnlyRedirectHandler)
-
-
 class _SameOriginRedirectHandler(_HTTPOnlyRedirectHandler):
     def redirect_request(
         self,
@@ -103,9 +100,6 @@ class _SameOriginRedirectHandler(_HTTPOnlyRedirectHandler):
         return super().redirect_request(req, fp, code, msg, headers, newurl)
 
 
-_POST_OPENER = build_opener(_SameOriginRedirectHandler)
-
-
 def get_json(
     url: str,
     timeout_seconds: float = 10.0,
@@ -119,7 +113,11 @@ def get_json(
     display_url = error_label or url
     request = _checked_request(url, request_headers)
     try:
-        with _OPENER.open(request, timeout=timeout_seconds) as response:
+        # Python 3.14 snapshots default CA trust when creating the handler.
+        # Build it after the caller has selected this process's native trust.
+        with build_opener(_HTTPOnlyRedirectHandler).open(
+            request, timeout=timeout_seconds
+        ) as response:
             body = _read_capped(cast(HTTPResponse, response), MAX_JSON_BYTES, display_url)
     except HTTPError as exc:
         raise DataSourceError(f"HTTP {exc.code} from {display_url}") from exc
@@ -160,7 +158,9 @@ def post_json(
         raise ValueError("JSON request body was not serializable") from exc
     request = _checked_request(url, request_headers, data=encoded, method="POST")
     try:
-        with _POST_OPENER.open(request, timeout=timeout_seconds) as response:
+        with build_opener(_SameOriginRedirectHandler).open(
+            request, timeout=timeout_seconds
+        ) as response:
             body = _read_capped(cast(HTTPResponse, response), MAX_JSON_BYTES, display_url)
     except HTTPError as exc:
         raise DataSourceError(f"HTTP {exc.code} from {display_url}") from exc
@@ -182,7 +182,9 @@ def post_json(
 def get_bytes(url: str, timeout_seconds: float = 30.0) -> bytes:
     request = _checked_request(url, {"User-Agent": USER_AGENT})
     try:
-        with _OPENER.open(request, timeout=timeout_seconds) as response:
+        with build_opener(_HTTPOnlyRedirectHandler).open(
+            request, timeout=timeout_seconds
+        ) as response:
             return _read_capped(cast(HTTPResponse, response), MAX_ASSET_BYTES, url)
     except HTTPError as exc:
         raise DataSourceError(f"HTTP {exc.code} from {url}") from exc
