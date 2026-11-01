@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-01T00:04:36+00:00",
+  "generated_at": "2026-11-01T19:28:55+00:00",
   "schema_version": 1,
   "species": [
     {
@@ -1464,6 +1464,17 @@
       "scientific_name": "Protonotaria citrea",
       "slug": "prothonotary-warbler",
       "taxon_id": 10729
+    },
+    {
+      "approved_at": "2026-11-01T19:28:55+00:00",
+      "common_name": "Purple Finch",
+      "display_path": "species/199841-purple-finch/display.png",
+      "display_sha256": "3c86a0c4075c83631a6a4f267cf75a910329665a7a52d92571367d5e1706fa18",
+      "portrait_path": "species/199841-purple-finch/portrait.png",
+      "portrait_sha256": "717a496947b2190ff43f7f4ace9731f1f5f7a91f9f9ea03be55e12cf255cbc4d",
+      "scientific_name": "Haemorhous purpureus",
+      "slug": "purple-finch",
+      "taxon_id": 199841
     },
     {
       "approved_at": "2026-07-26T00:58:12+00:00",

@@ -1,0 +1,154 @@
+{
+  "approved_at": "2026-11-01T19:28:55+00:00",
+  "assets": {
+    "display": {
+      "filename": "display.png",
+      "sha256": "3c86a0c4075c83631a6a4f267cf75a910329665a7a52d92571367d5e1706fa18"
+    },
+    "portrait": {
+      "filename": "portrait.png",
+      "sha256": "717a496947b2190ff43f7f4ace9731f1f5f7a91f9f9ea03be55e12cf255cbc4d"
+    }
+  },
+  "common_name": "Purple Finch",
+  "generation": {
+    "attempt": 3,
+    "correction_source_sha256": "919d9f1e5a0275037fdeee8b4b46b08ef6d56f0f88150311139142070d07d3c8",
+    "generated_at": "2026-11-01T19:28:53+00:00",
+    "generator": "Codex subscription / built-in gpt-image-2",
+    "max_attempts": 3,
+    "prompt_version": "field-journal-v6"
+  },
+  "profile": {
+    "behavior": "Forages in trees, shrubs, low vegetation, and sometimes on the ground, eating mainly seeds and buds along with fruit and insects. Often feeds in small flocks outside the nesting season; flight is undulating. Courting males hop with drooped wings and a raised tail, sing softly, and may make a short fluttering ascent.",
+    "common_name": "Purple Finch",
+    "family": "Fringillidae",
+    "field_marks": [
+      "Stocky, large-headed finch with a short, distinctly notched tail",
+      "Thick, powerful, conical seed-cracking bill",
+      "Adult male washed raspberry-red across the head, breast, and back",
+      "Male has brown wings and a cloudy whitish lower belly, and typically lacks obvious dark stripes on the sides",
+      "Female and immature are brown with coarse streaking below, a pale eyebrow, and a dark cheek or throat-side line",
+      "Dark eye and dusky pink-brown legs and feet"
+    ],
+    "habitat": "Breeds mainly in cool coniferous forest and mixed woodland, including forest edges and wooded stream corridors. Outside the breeding season it also uses shrublands, old fields, hedgerows, semi-open woods, and planted areas with trees.",
+    "measurements": {
+      "length": "Both sexes: 4.7\u20136.3 in (12\u201316 cm)",
+      "weight": "Both sexes: 0.6\u20131.1 oz (18\u201332 g)",
+      "wingspan": "Both sexes: 8.7\u201310.2 in (22\u201326 cm)"
+    },
+    "palette": [
+      "raspberry red",
+      "warm brown",
+      "cloudy white",
+      "pale tan",
+      "dusky pink-brown"
+    ],
+    "scientific_name": "Haemorhous purpureus",
+    "sources": [
+      {
+        "title": "Purple Finch Identification \u2014 All About Birds, Cornell Lab of Ornithology",
+        "url": "https://www.allaboutbirds.org/guide/Purple_Finch/id"
+      },
+      {
+        "title": "Purple Finch Life History \u2014 All About Birds, Cornell Lab of Ornithology",
+        "url": "https://www.allaboutbirds.org/guide/Purple_Finch/lifehistory"
+      },
+      {
+        "title": "Purple Finch \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/purple-finch"
+      }
+    ],
+    "taxon_id": 199841
+  },
+  "quality_review": {
+    "anatomy_accuracy": 4,
+    "composition_quality": 5,
+    "correction_findings": [],
+    "findings": [
+      "The primary specimen is a convincing adult male Purple Finch: stocky and large-headed, with a compact conical bill, raspberry-red wash extending onto the back, brown wings, cloudy whitish lower belly, and no conspicuous dark flank streaking.",
+      "The rounded, softly puffy crown now agrees with Purple Finch structure in the references and avoids the pronounced crestlike peak associated with Cassin's Finch.",
+      "The primary specimen has one head, one bill, one visible eye, one tail, two convincingly attached legs with intact feet, and a complete wing pair with the far-side wing naturally occluded by the side-on pose.",
+      "The detached head and folded-wing studies read as intentional supplementary anatomy and do not appear attached to or duplicated on the primary specimen.",
+      "The bill proportions are compact and powerful in both depicted heads, without a truncated, reversed, or materially inconsistent mandible rendering.",
+      "The vertical body-length schematic increases correctly from 4.7 in (12 cm) at the bottom to 6.3 in (16 cm) at the top and is explicitly marked \u201cSCHEMATIC \u2014 NOT TO SCALE.\u201d",
+      "All displayed measurements exactly match Cornell's published both-sexes set: length 4.7\u20136.3 in (12\u201316 cm), weight 0.6\u20131.1 oz (18\u201332 g), and wingspan 8.7\u201310.2 in (22\u201326 cm).",
+      "The common name, scientific name, family, habitat, behavior, and field-mark text are legible and consistent with the proposed profile and the verified Cornell and Audubon accounts.",
+      "The palette labels match the depicted adult-male coloration and supporting neutral colors.",
+      "No place name, ZIP code, coordinates, map, or local-observation detail appears."
+    ],
+    "location_free": true,
+    "passed": true,
+    "species_accuracy": 4,
+    "text_accuracy": 5,
+    "verification_sources": [
+      {
+        "title": "Purple Finch Identification \u2014 All About Birds, Cornell Lab of Ornithology",
+        "url": "https://www.allaboutbirds.org/guide/Purple_Finch/id"
+      },
+      {
+        "title": "Purple Finch \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/purple-finch"
+      }
+    ]
+  },
+  "references": [
+    {
+      "attribution": "(c) Dani Alba, some rights reserved (CC BY)",
+      "filename": "01-488054029.jpg",
+      "height": 945,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/488054029/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 271330241,
+      "observer": "tyrannidae",
+      "photo_id": 488054029,
+      "sha256": "076711b60c834fba1f452f095a7871e7b0efcaf9de4becd2b3e5e5d16d610b1a",
+      "source_url": "https://www.inaturalist.org/observations/271330241",
+      "width": 2048
+    },
+    {
+      "attribution": "no rights reserved",
+      "filename": "02-73218113.jpg",
+      "height": 1206,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/73218113/large.jpg",
+      "license_code": "cc0",
+      "observation_id": 46165608,
+      "observer": "davidfbird",
+      "photo_id": 73218113,
+      "sha256": "f779c2b40dc3f15574752209b527b9e72318ebec8b3aca735173b65c61044b7e",
+      "source_url": "https://www.inaturalist.org/observations/46165608",
+      "width": 1623
+    },
+    {
+      "attribution": "(c) Juli Mallett, some rights reserved (CC BY)",
+      "filename": "03-67709646.jpeg",
+      "height": 1531,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/67709646/large.jpeg",
+      "license_code": "cc-by",
+      "observation_id": 42638416,
+      "observer": "caladri",
+      "photo_id": 67709646,
+      "sha256": "0d82eccb9e8d0ffeea3eef829be88648b388f6233f0d432ca5b19750fb4a01bf",
+      "source_url": "https://www.inaturalist.org/observations/42638416",
+      "width": 855
+    },
+    {
+      "attribution": "(c) Rudyard, some rights reserved (CC BY)",
+      "filename": "04-16101046.jpg",
+      "height": 1772,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/16101046/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 11310957,
+      "observer": "rudyard",
+      "photo_id": 16101046,
+      "sha256": "524da281dbd05de7cde4b719caf7c0449ea286e6a92af8a6c3092005adbab4b1",
+      "source_url": "https://www.inaturalist.org/observations/11310957",
+      "width": 2048
+    }
+  ],
+  "schema_version": 1,
+  "scientific_name": "Haemorhous purpureus",
+  "slug": "purple-finch",
+  "status": "approved",
+  "taxon_id": 199841
+}
