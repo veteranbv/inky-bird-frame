@@ -1,0 +1,162 @@
+{
+  "approved_at": "2026-11-01T00:04:36+00:00",
+  "assets": {
+    "display": {
+      "filename": "display.png",
+      "sha256": "b18fbeaaf82b6348d92aebe9c98ddb4419277b2101f3807cc7f3e445bda120bc"
+    },
+    "portrait": {
+      "filename": "portrait.png",
+      "sha256": "276fff078981981f7902b1195c8fa5f4b876a29a176080eacef8c81d7704fbef"
+    }
+  },
+  "common_name": "Green-winged Teal",
+  "generation": {
+    "attempt": 2,
+    "correction_source_sha256": "aa776081292d515ba4d8d304b3255985056d1b44b8058327b6bdf0485268e154",
+    "generated_at": "2026-11-01T00:04:33+00:00",
+    "generator": "Codex subscription / built-in gpt-image-2",
+    "max_attempts": 3,
+    "prompt_version": "field-journal-v6"
+  },
+  "profile": {
+    "behavior": "A migratory dabbling duck that forages in shallow water by surface-feeding, filtering mud, and tipping up. It flies rapidly and agilely, often gathering in flocks outside the breeding season.",
+    "common_name": "Green-winged Teal",
+    "family": "Anatidae",
+    "field_marks": [
+      "Very small, compact duck with a large head, short neck, and short tail",
+      "Adult male has a chestnut head with a broad iridescent-green patch behind the eye",
+      "Finely patterned gray body with a buff breast marked by dark spots",
+      "Short, narrow, dark bill and dark brown eye",
+      "Both sexes have a glossy green secondary-wing patch, often concealed when resting",
+      "Female is mottled brown and tan with a strong dark eyeline and grayish bill"
+    ],
+    "habitat": "Shallow freshwater and brackish wetlands, including marshes, wooded ponds, lakeshores, river margins, mudflats, estuaries, and flooded fields; nesting typically occurs in dense ground vegetation near water.",
+    "measurements": {
+      "length": "31\u201339 cm (12.2\u201315.3 in), both sexes",
+      "weight": "140\u2013500 g (4.9\u201317.6 oz), both sexes",
+      "wingspan": "52\u201359 cm (20.5\u201323.2 in), both sexes"
+    },
+    "palette": [
+      "chestnut brown",
+      "iridescent green",
+      "slate gray",
+      "cream",
+      "black"
+    ],
+    "scientific_name": "Anas crecca",
+    "sources": [
+      {
+        "title": "Green-winged Teal Identification \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/green-winged_teal/id"
+      },
+      {
+        "title": "Green-winged Teal Life History \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/green-winged_teal/lifehistory"
+      },
+      {
+        "title": "Anas crecca (common teal) \u2014 Animal Diversity Web",
+        "url": "https://animaldiversity.org/accounts/Anas_crecca/"
+      }
+    ],
+    "taxon_id": 6937
+  },
+  "quality_review": {
+    "anatomy_accuracy": 4,
+    "composition_quality": 4,
+    "correction_findings": [],
+    "findings": [
+      "The primary specimen is identifiable as an adult male Green-winged Teal and agrees closely with the reference photographs: compact proportions, large rounded head, short neck and tail, narrow dark bill, chestnut head, broad green eye patch, spotted buff breast, finely patterned gray body, vertical white side marking, cream undertail patch, and green speculum.",
+      "The primary bird has exactly one head, one bill, one tail, two attached legs, two complete webbed feet, and a convincing pair of wings with the far wing naturally occluded. The detached wing and head are clearly supplementary studies rather than additional attached anatomy.",
+      "Both primary feet now visibly have interdigital membranes joining the three forward toes. The earlier non-webbed-foot defect has not regressed.",
+      "The bill contours are continuous from base to tip and consistent between the primary and supplementary heads; neither mandible appears truncated, reversed, or materially malformed.",
+      "The supplementary wing accurately presents the glossy green secondary patch with contrasting pale and dark borders, consistent with the direct identification source and reference photographs.",
+      "All visible headings, taxonomy, measurements, habitat text, behavior text, field-mark bullets, and the bottom body-length caption are legible and match the proposed facts without material spelling, numerical, duplication, omission, or word-order errors.",
+      "The proposed 31\u201339 cm length, 140\u2013500 g weight, and 52\u201359 cm wingspan are directly supported as a both-sexes measurement set by All About Birds. Audubon's somewhat narrower measurement set is an independently supported alternative and does not create a profile conflict.",
+      "The vertical ruler increases correctly from 31 cm at the bottom to 39 cm at the top, agrees with the printed length range, contains no contradictory marker, and is explicitly identified as \u201cSCHEMATIC \u2014 NOT TO SCALE.\u201d",
+      "Direct sources support the plate's family, field marks, shallow-wetland habitat, surface feeding, mud filtering, tipping-up behavior, fast agile flight, and nonbreeding flocking.",
+      "No place name, ZIP code, coordinates, map, or local-observation detail is visible."
+    ],
+    "location_free": true,
+    "passed": true,
+    "species_accuracy": 5,
+    "text_accuracy": 5,
+    "verification_sources": [
+      {
+        "title": "Green-winged Teal Identification \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Green-winged_Teal/id"
+      },
+      {
+        "title": "Green-winged Teal Life History \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Green-winged_Teal/lifehistory"
+      },
+      {
+        "title": "Green-winged Teal \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/green-winged-teal"
+      },
+      {
+        "title": "Anas crecca (common teal) \u2014 Animal Diversity Web",
+        "url": "https://animaldiversity.org/accounts/Anas_crecca/"
+      }
+    ]
+  },
+  "references": [
+    {
+      "attribution": "(c) Daniel Pineda Vera, some rights reserved (CC BY)",
+      "filename": "01-364941358.jpg",
+      "height": 1152,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/364941358/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 206341523,
+      "observer": "el_neotropico",
+      "photo_id": 364941358,
+      "sha256": "06f0bcef98bbf9f14a247c192db0899c9f95c03001c9548191dcf54128790dcc",
+      "source_url": "https://www.inaturalist.org/observations/206341523",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) \u0415\u043b\u0435\u043d\u0430 \u0421\u043c\u0438\u0440\u043d\u043e\u0432\u0430, some rights reserved (CC BY)",
+      "filename": "02-175161097.jpg",
+      "height": 963,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/175161097/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 104525876,
+      "observer": "elenasmirnova",
+      "photo_id": 175161097,
+      "sha256": "c53107814df090a2a3b16ef3d6905d89301d6393c8f9fcde0d7365535a240e94",
+      "source_url": "https://www.inaturalist.org/observations/104525876",
+      "width": 1376
+    },
+    {
+      "attribution": "no rights reserved",
+      "filename": "03-108186568.jpeg",
+      "height": 1365,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/108186568/large.jpeg",
+      "license_code": "cc0",
+      "observation_id": 67024246,
+      "observer": "radrat",
+      "photo_id": 108186568,
+      "sha256": "81b682514f578f10d485a934c210a0a221e0532186d801d96a7891fda31a2cb1",
+      "source_url": "https://www.inaturalist.org/observations/67024246",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) wweellll, some rights reserved (CC BY)",
+      "filename": "04-608709086.jpg",
+      "height": 1366,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/608709086/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 335108472,
+      "observer": "wweellll",
+      "photo_id": 608709086,
+      "sha256": "f2a5ef0cbc3e4ec2ec37ca111a7c6e7e78e41693da4386b876689da42311720c",
+      "source_url": "https://www.inaturalist.org/observations/335108472",
+      "width": 2048
+    }
+  ],
+  "schema_version": 1,
+  "scientific_name": "Anas crecca",
+  "slug": "green-winged-teal",
+  "status": "approved",
+  "taxon_id": 6937
+}

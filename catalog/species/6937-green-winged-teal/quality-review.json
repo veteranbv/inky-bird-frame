@@ -1,0 +1,39 @@
+{
+  "anatomy_accuracy": 4,
+  "composition_quality": 4,
+  "correction_findings": [],
+  "findings": [
+    "The primary specimen is identifiable as an adult male Green-winged Teal and agrees closely with the reference photographs: compact proportions, large rounded head, short neck and tail, narrow dark bill, chestnut head, broad green eye patch, spotted buff breast, finely patterned gray body, vertical white side marking, cream undertail patch, and green speculum.",
+    "The primary bird has exactly one head, one bill, one tail, two attached legs, two complete webbed feet, and a convincing pair of wings with the far wing naturally occluded. The detached wing and head are clearly supplementary studies rather than additional attached anatomy.",
+    "Both primary feet now visibly have interdigital membranes joining the three forward toes. The earlier non-webbed-foot defect has not regressed.",
+    "The bill contours are continuous from base to tip and consistent between the primary and supplementary heads; neither mandible appears truncated, reversed, or materially malformed.",
+    "The supplementary wing accurately presents the glossy green secondary patch with contrasting pale and dark borders, consistent with the direct identification source and reference photographs.",
+    "All visible headings, taxonomy, measurements, habitat text, behavior text, field-mark bullets, and the bottom body-length caption are legible and match the proposed facts without material spelling, numerical, duplication, omission, or word-order errors.",
+    "The proposed 31\u201339 cm length, 140\u2013500 g weight, and 52\u201359 cm wingspan are directly supported as a both-sexes measurement set by All About Birds. Audubon's somewhat narrower measurement set is an independently supported alternative and does not create a profile conflict.",
+    "The vertical ruler increases correctly from 31 cm at the bottom to 39 cm at the top, agrees with the printed length range, contains no contradictory marker, and is explicitly identified as \u201cSCHEMATIC \u2014 NOT TO SCALE.\u201d",
+    "Direct sources support the plate's family, field marks, shallow-wetland habitat, surface feeding, mud filtering, tipping-up behavior, fast agile flight, and nonbreeding flocking.",
+    "No place name, ZIP code, coordinates, map, or local-observation detail is visible."
+  ],
+  "location_free": true,
+  "passed": true,
+  "species_accuracy": 5,
+  "text_accuracy": 5,
+  "verification_sources": [
+    {
+      "title": "Green-winged Teal Identification \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Green-winged_Teal/id"
+    },
+    {
+      "title": "Green-winged Teal Life History \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Green-winged_Teal/lifehistory"
+    },
+    {
+      "title": "Green-winged Teal \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/green-winged-teal"
+    },
+    {
+      "title": "Anas crecca (common teal) \u2014 Animal Diversity Web",
+      "url": "https://animaldiversity.org/accounts/Anas_crecca/"
+    }
+  ]
+}
