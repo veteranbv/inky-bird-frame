@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import asyncio
 import errno
 import hashlib
 import io
@@ -9,6 +10,7 @@ import ssl
 import threading
 import time
 import unittest
+from argparse import Namespace
 from collections.abc import Iterator
 from contextlib import contextmanager, redirect_stdout
 from dataclasses import replace
@@ -26,8 +28,11 @@ from cryptography.hazmat.primitives.asymmetric import rsa
 from cryptography.x509.oid import NameOID
 
 from inky_bird_frame import __version__
+from inky_bird_frame.cli import main
 from inky_bird_frame.config import ControllerConfig
 from inky_bird_frame.http import USER_AGENT
+from inky_bird_frame.http import get_json as get_http_json
+from inky_bird_frame.oidc import _get_json as get_oidc_json
 from inky_bird_frame.server import (
     MAX_TELEMETRY_REQUEST_BYTES,
     rebuild_index_logging_failures,
@@ -116,6 +121,21 @@ def test_real_direct_tls_keeps_certificate_validation_and_encrypts_owner_access(
                 untrusted.request("GET", "/v1/access")
         finally:
             untrusted.close()
+        trust = tmp_path / "native-tls.env"
+        trust.write_text(f"SSL_CERT_FILE={json.dumps(str(cert_path))}\n")
+        trust.chmod(0o600)
+
+        def native_command(args: Namespace) -> int:
+            url = f"https://localhost:{port}/health"
+            assert isinstance(get_http_json(url), dict)
+            assert isinstance(asyncio.run(get_oidc_json(url)), dict)
+            return 0
+
+        with patch("inky_bird_frame.cli.build_parser") as parser:
+            parser.return_value.parse_args.return_value = Namespace(
+                config=tmp_path / "config.toml", func=native_command
+            )
+            assert main([]) == 0
 
 
 def test_tls_startup_refuses_an_insecure_key_before_starting_any_listener(tmp_path: Path) -> None:

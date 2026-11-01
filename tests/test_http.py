@@ -112,9 +112,10 @@ class JsonHttpTests(unittest.TestCase):
         error = HTTPError(url, 429, "Rate limited", Message(), None)
 
         with (
-            patch.object(inky_bird_frame.http._POST_OPENER, "open", side_effect=error),
+            patch("inky_bird_frame.http.build_opener") as opener,
             self.assertRaises(DataSourceError) as raised,
         ):
+            opener.return_value.open.side_effect = error
             post_json(url, {"secret": "private"}, error_label="Bird Buddy API")
 
         self.assertEqual(str(raised.exception), "HTTP 429 from Bird Buddy API")
@@ -135,9 +136,10 @@ class JsonHttpTests(unittest.TestCase):
         error = HTTPError(url, 401, "Unauthorized", Message(), None)
 
         with (
-            patch.object(inky_bird_frame.http._OPENER, "open", side_effect=error),
+            patch("inky_bird_frame.http.build_opener") as opener,
             self.assertRaises(DataSourceError) as raised,
         ):
+            opener.return_value.open.side_effect = error
             get_json(url, error_label="BirdWeather API")
 
         self.assertEqual(str(raised.exception), "HTTP 401 from BirdWeather API")
@@ -148,9 +150,10 @@ class JsonHttpTests(unittest.TestCase):
         for error in (RemoteDisconnected("closed"), IncompleteRead(b"{}", 10)):
             with (
                 self.subTest(error=type(error).__name__),
-                patch.object(inky_bird_frame.http._OPENER, "open", side_effect=error),
+                patch("inky_bird_frame.http.build_opener") as opener,
                 self.assertRaises(DataSourceError) as raised,
             ):
+                opener.return_value.open.side_effect = error
                 get_json(url, error_label="BirdNET-Go API")
 
             self.assertEqual(str(raised.exception), "Invalid HTTP response from BirdNET-Go API")
@@ -162,9 +165,10 @@ class JsonHttpTests(unittest.TestCase):
         response.read.return_value = b'\xff{"invalid": true}'
         response.headers = Message()
         with (
-            patch.object(inky_bird_frame.http._OPENER, "open", return_value=response),
+            patch("inky_bird_frame.http.build_opener") as opener,
             self.assertRaises(DataSourceError) as raised,
         ):
+            opener.return_value.open.return_value = response
             get_json(
                 "http://private-controller.local/api",
                 error_label="BirdNET-Go API",

@@ -30,6 +30,7 @@ from inky_bird_frame.installation import (
     doctor,
     health_url,
     native_oidc_environment,
+    native_tls_environment,
     setup,
 )
 
@@ -82,6 +83,162 @@ def native_oidc_config(directory: Path) -> tuple[AppConfig, Path]:
             ),
         ),
     ), path
+
+
+def test_native_tls_environment_is_explicit_and_survives_rerendering(tmp_path: Path) -> None:
+    config, path = native_oidc_config(tmp_path)
+    bundle = tmp_path / "roots with spaces.pem"
+    bundle.write_text("synthetic PEM for parser tests")
+    bundle.chmod(0o644)
+    with patch.dict(os.environ, {"SSL_CERT_FILE": "/unrelated/roots.pem"}):
+        assert native_tls_environment(path) == {}
+    trust = tmp_path / "native-tls.env"
+    original = f"SSL_CERT_FILE={json.dumps(str(bundle))}\n".encode()
+    trust.write_bytes(original)
+    trust.chmod(0o644)
+    with patch("inky_bird_frame.installation.ssl.create_default_context") as context:
+        assert native_tls_environment(path) == {"SSL_CERT_FILE": str(bundle)}
+        assert context.call_args.kwargs == {"cadata": bundle.read_text()}
+        for _ in range(2):
+            units = controller_systemd_units(
+                config,
+                executable=tmp_path / "inky",
+                app_dir=tmp_path,
+                config_path=path,
+                home=tmp_path,
+                user="synthetic",
+            )
+            assert all("SSL_CERT_FILE=" in unit for unit in units.values())
+            display = display_systemd_units(
+                config,
+                executable=tmp_path / "inky",
+                app_dir=tmp_path,
+                config_path=path,
+                user="synthetic",
+            )
+            assert "SSL_CERT_FILE=" in display["inky-bird-frame-display.service"]
+    assert trust.read_bytes() == original
+
+
+def test_absent_native_tls_file_keeps_existing_trust_with_shared_ancestors(tmp_path: Path) -> None:
+    shared = tmp_path / "shared-home"
+    shared.mkdir(mode=0o775)
+    shared.chmod(0o775)
+    private = shared / "private-config"
+    private.mkdir(mode=0o700)
+    config = private / "config.toml"
+    config.write_text("# existing configuration, no native TLS trust opt-in\n")
+    config.chmod(0o600)
+    assert native_tls_environment(config) == {}
+
+
+@pytest.mark.parametrize(
+    "case",
+    [
+        "writable",
+        "symlink",
+        "hardlink",
+        "fifo",
+        "oversized",
+        "wrong-key",
+        "two-keys",
+        "relative",
+        "newline",
+        "nul",
+        "non-string",
+        "missing-bundle",
+        "empty-bundle",
+        "invalid-pem",
+        "bundle-writable",
+        "bundle-symlink",
+        "bundle-fifo",
+        "bundle-oversized",
+    ],
+)
+def test_native_tls_environment_rejects_invalid_state(tmp_path: Path, case: str) -> None:
+    path = tmp_path / "config.toml"
+    bundle = tmp_path / "roots.pem"
+    bundle.write_text("not a certificate")
+    bundle.chmod(0o644)
+    trust = tmp_path / "native-tls.env"
+    trust.write_text(f"SSL_CERT_FILE={json.dumps(str(bundle))}\n")
+    trust.chmod(0o644)
+    if case in {"writable", "bundle-writable"}:
+        (bundle if case.startswith("bundle-") else trust).chmod(0o666)
+    elif case in {"symlink", "hardlink", "fifo", "bundle-symlink", "bundle-fifo"}:
+        source = bundle if case.startswith("bundle-") else trust
+        target = tmp_path / "linked-original"
+        source.rename(target)
+        if case.endswith("symlink"):
+            source.symlink_to(target)
+        elif case == "hardlink":
+            os.link(target, source)
+        else:
+            os.mkfifo(source)
+    elif case in {"oversized", "bundle-oversized"}:
+        (bundle if case.startswith("bundle-") else trust).write_bytes(b"x" * (4 * 1024 * 1024 + 1))
+    elif case == "wrong-key":
+        trust.write_text('UNRELATED_SECRET="sensitive-test-value"\n')
+    elif case == "two-keys":
+        trust.write_text(trust.read_text() + 'OTHER="sensitive-test-value"\n')
+    elif case in {"relative", "newline", "nul", "non-string"}:
+        value = {
+            "relative": "roots.pem",
+            "newline": str(bundle) + "\n",
+            "nul": str(bundle) + "\0",
+            "non-string": 42,
+        }[case]
+        trust.write_text(f"SSL_CERT_FILE={json.dumps(value)}\n")
+    elif case == "missing-bundle":
+        bundle.unlink()
+    elif case == "empty-bundle":
+        bundle.write_bytes(b"")
+    with pytest.raises(InstallationError) as error:
+        native_tls_environment(path)
+    assert "sensitive-test-value" not in str(error.value)
+    assert str(bundle) not in str(error.value)
+
+
+@pytest.mark.parametrize("kind", ["environment", "bundle"])
+def test_native_tls_rejects_writable_parent_directories(tmp_path: Path, kind: str) -> None:
+    bundle_dir = tmp_path / "ca"
+    bundle_dir.mkdir()
+    bundle = bundle_dir / "roots.pem"
+    bundle.write_text("synthetic certificate")
+    bundle.chmod(0o644)
+    trust = tmp_path / "native-tls.env"
+    trust.write_text(f"SSL_CERT_FILE={json.dumps(str(bundle))}\n")
+    trust.chmod(0o644)
+    (tmp_path if kind == "environment" else bundle_dir).chmod(0o777)
+    with pytest.raises(InstallationError):
+        native_tls_environment(tmp_path / "config.toml")
+
+
+def test_native_tls_canonical_bundle_cannot_follow_a_changed_directory_alias(
+    tmp_path: Path,
+) -> None:
+    protected = tmp_path / "protected"
+    protected.mkdir(mode=0o700)
+    bundle = protected / "roots.pem"
+    bundle.write_text("synthetic valid certificate")
+    bundle.chmod(0o644)
+    shared = tmp_path / "shared"
+    shared.mkdir(mode=0o777)
+    shared.chmod(0o777)
+    alias = shared / "alias"
+    alias.symlink_to(protected, target_is_directory=True)
+    trust = tmp_path / "native-tls.env"
+    trust.write_text(f"SSL_CERT_FILE={json.dumps(str(alias / 'roots.pem'))}\n")
+    trust.chmod(0o644)
+    with patch("inky_bird_frame.installation.ssl.create_default_context"):
+        environment = native_tls_environment(tmp_path / "config.toml")
+    assert environment == {"SSL_CERT_FILE": str(bundle.resolve())}
+    replacement = tmp_path / "replacement"
+    replacement.mkdir()
+    (replacement / "roots.pem").write_text("untrusted replacement")
+    alias.unlink()
+    alias.symlink_to(replacement, target_is_directory=True)
+    assert Path(environment["SSL_CERT_FILE"]).read_bytes() == bundle.read_bytes()
 
 
 @pytest.mark.parametrize(
@@ -218,11 +375,16 @@ def test_native_oidc_secret_is_serving_only_in_systemd_and_private_launchd(tmp_p
         str(config_path),
         str(tmp_path),
     ]
+    bundle = tmp_path / "roots.pem"
+    bundle.write_text("synthetic certificate")
+    bundle.chmod(0o644)
+    (tmp_path / "native-tls.env").write_text(f"SSL_CERT_FILE={json.dumps(str(bundle))}\n")
     with (
         patch("sys.argv", arguments),
         patch("inky_bird_frame.config.load_config", return_value=config),
         patch("inky_bird_frame.publisher.sync_public_catalog"),
         patch.dict(os.environ, {"NATIVE_TEST_SECRET": "synthetic-serving-only"}),
+        patch("inky_bird_frame.installation.ssl.create_default_context"),
     ):
         exec(compile(code, "native-installer-fixture", "exec"), {})
     serving = plistlib.loads(paths[0].read_bytes())
@@ -230,6 +392,8 @@ def test_native_oidc_secret_is_serving_only_in_systemd_and_private_launchd(tmp_p
     assert paths[0].stat().st_mode & 0o777 == 0o600
     scheduler = plistlib.loads(paths[-1].read_bytes())
     assert "NATIVE_TEST_SECRET" not in scheduler["EnvironmentVariables"]
+    assert serving["EnvironmentVariables"]["SSL_CERT_FILE"] == str(bundle)
+    assert scheduler["EnvironmentVariables"]["SSL_CERT_FILE"] == str(bundle)
 
 
 class InstallationTests(unittest.TestCase):
