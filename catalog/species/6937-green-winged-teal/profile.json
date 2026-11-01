@@ -1,0 +1,42 @@
+{
+  "behavior": "A migratory dabbling duck that forages in shallow water by surface-feeding, filtering mud, and tipping up. It flies rapidly and agilely, often gathering in flocks outside the breeding season.",
+  "common_name": "Green-winged Teal",
+  "family": "Anatidae",
+  "field_marks": [
+    "Very small, compact duck with a large head, short neck, and short tail",
+    "Adult male has a chestnut head with a broad iridescent-green patch behind the eye",
+    "Finely patterned gray body with a buff breast marked by dark spots",
+    "Short, narrow, dark bill and dark brown eye",
+    "Both sexes have a glossy green secondary-wing patch, often concealed when resting",
+    "Female is mottled brown and tan with a strong dark eyeline and grayish bill"
+  ],
+  "habitat": "Shallow freshwater and brackish wetlands, including marshes, wooded ponds, lakeshores, river margins, mudflats, estuaries, and flooded fields; nesting typically occurs in dense ground vegetation near water.",
+  "measurements": {
+    "length": "31\u201339 cm (12.2\u201315.3 in), both sexes",
+    "weight": "140\u2013500 g (4.9\u201317.6 oz), both sexes",
+    "wingspan": "52\u201359 cm (20.5\u201323.2 in), both sexes"
+  },
+  "palette": [
+    "chestnut brown",
+    "iridescent green",
+    "slate gray",
+    "cream",
+    "black"
+  ],
+  "scientific_name": "Anas crecca",
+  "sources": [
+    {
+      "title": "Green-winged Teal Identification \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/green-winged_teal/id"
+    },
+    {
+      "title": "Green-winged Teal Life History \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/green-winged_teal/lifehistory"
+    },
+    {
+      "title": "Anas crecca (common teal) \u2014 Animal Diversity Web",
+      "url": "https://animaldiversity.org/accounts/Anas_crecca/"
+    }
+  ],
+  "taxon_id": 6937
+}

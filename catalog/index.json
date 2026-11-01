@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-26T18:40:27+00:00",
+  "generated_at": "2026-11-01T00:04:36+00:00",
   "schema_version": 1,
   "species": [
     {
@@ -947,6 +947,17 @@
       "scientific_name": "Butorides virescens",
       "slug": "green-heron",
       "taxon_id": 5020
+    },
+    {
+      "approved_at": "2026-11-01T00:04:36+00:00",
+      "common_name": "Green-winged Teal",
+      "display_path": "species/6937-green-winged-teal/display.png",
+      "display_sha256": "b18fbeaaf82b6348d92aebe9c98ddb4419277b2101f3807cc7f3e445bda120bc",
+      "portrait_path": "species/6937-green-winged-teal/portrait.png",
+      "portrait_sha256": "276fff078981981f7902b1195c8fa5f4b876a29a176080eacef8c81d7704fbef",
+      "scientific_name": "Anas crecca",
+      "slug": "green-winged-teal",
+      "taxon_id": 6937
     },
     {
       "approved_at": "2026-08-09T19:53:03+00:00",
