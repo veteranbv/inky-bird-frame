@@ -1316,13 +1316,20 @@ class JournalService:
                 "retry_details": [
                     {
                         "taxon_id": record.taxon_id,
+                        "common_name": record.common_name,
+                        "scientific_name": record.scientific_name,
                         "attempts": record.attempts,
                         "next_attempt_at": record.next_attempt_at.isoformat(),
                     }
                     for record in [*work.deferred, *work.manual_retry_required]
                 ],
                 "terminal_details": [
-                    {"taxon_id": entry.species.taxon_id, "state": entry.state}
+                    {
+                        "taxon_id": entry.species.taxon_id,
+                        "common_name": entry.species.common_name,
+                        "scientific_name": entry.species.scientific_name,
+                        "state": entry.state,
+                    }
                     for entry in work.terminal_blocked
                 ],
             },

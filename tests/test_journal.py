@@ -3,6 +3,7 @@ from __future__ import annotations
 import hashlib
 import json
 from concurrent.futures import ThreadPoolExecutor
+from datetime import datetime
 from pathlib import Path
 from typing import cast
 from unittest.mock import patch
@@ -11,7 +12,7 @@ import pytest
 from starlette.testclient import TestClient
 
 from inky_bird_frame.access import AccessStore
-from inky_bird_frame.birds import EbirdArchiveSpecies, ObservationWindow
+from inky_bird_frame.birds import BirdSpecies, EbirdArchiveSpecies, ObservationWindow
 from inky_bird_frame.catalog import (
     CollectionEntry,
     CollectionOrigin,
@@ -25,6 +26,7 @@ from inky_bird_frame.config import (
     DiscoveryProvider,
     DisplayNodeConfig,
 )
+from inky_bird_frame.controller import GenerationWork, TerminalQueueEntry
 from inky_bird_frame.ebird_archive import EbirdArchiveHistory
 from inky_bird_frame.errors import CatalogError
 from inky_bird_frame.http import write_json_atomic
@@ -41,6 +43,7 @@ from inky_bird_frame.journal import (
     remove_collection,
     save_collection,
 )
+from inky_bird_frame.retry import RetryRecord
 from inky_bird_frame.web import create_app
 
 STAMP = "2026-10-15T12:00:00+00:00"
@@ -435,6 +438,66 @@ def test_journal_keeps_missing_birds_and_projects_all_source_types_without_raw_e
     assert management["work"]["can_run"] == []  # Stale discovery must not invent eligible work.
     assert "PRIVATE_" not in json.dumps(payload)
     assert management["last_confirmed_panel_update"] is None
+
+
+def test_management_names_stopped_work_without_exposing_private_failure_details(
+    tmp_path: Path,
+) -> None:
+    controller = config(tmp_path)
+    stamp = datetime.fromisoformat(STAMP)
+    manual = RetryRecord(
+        2,
+        3,
+        "PRIVATE_ERROR_TYPE",
+        "PRIVATE_FAILURE_BODY",
+        stamp,
+        stamp,
+        stamp,
+        "American Robin",
+        "Turdus migratorius",
+    )
+    unnamed = RetryRecord(3, 1, "PRIVATE_ERROR_TYPE", "PRIVATE_FAILURE_BODY", stamp, stamp, stamp)
+    terminal = TerminalQueueEntry(
+        BirdSpecies(4, "Northern Cardinal", "Cardinalis cardinalis", 1, "fixture"),
+        "quality-filtered",
+        (tmp_path / "PRIVATE_RUN_PATH",),
+    )
+    work = GenerationWork(True, "fresh", stamp, [], [], [unnamed], [manual], [terminal])
+    app = AppConfig(
+        DiscoveryConfig("12345", None, None, None, None, 8, 20, ObservationWindow.LAST_30_DAYS),
+        controller,
+        DisplayNodeConfig("http://localhost:8000", tmp_path / "display"),
+    )
+    with patch("inky_bird_frame.journal.read_generation_work", return_value=work):
+        management = JournalService(controller, app_config=app).management(approved=set())
+    projected = cast(dict[str, object], management["work"])
+    assert projected["waiting"] == [3]
+    assert projected["needs_attention"] == [2, 4]
+    assert projected["retry_details"] == [
+        {
+            "taxon_id": 3,
+            "common_name": None,
+            "scientific_name": None,
+            "attempts": 1,
+            "next_attempt_at": STAMP,
+        },
+        {
+            "taxon_id": 2,
+            "common_name": "American Robin",
+            "scientific_name": "Turdus migratorius",
+            "attempts": 3,
+            "next_attempt_at": STAMP,
+        },
+    ]
+    assert projected["terminal_details"] == [
+        {
+            "taxon_id": 4,
+            "common_name": "Northern Cardinal",
+            "scientific_name": "Cardinalis cardinalis",
+            "state": "quality-filtered",
+        }
+    ]
+    assert "PRIVATE_" not in json.dumps(management)
 
 
 def test_v1_migration_happens_only_on_edit_and_keeps_exact_private_backup(tmp_path: Path) -> None:
