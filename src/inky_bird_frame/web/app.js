@@ -1,4 +1,5 @@
 import { openJournal, closeJournal, retainSignedOutFrame } from '/app/journal.js';
+import { icon } from '/app/ui.js';
 
 const main = document.querySelector('#main');
 let csrf = '';
@@ -278,6 +279,7 @@ function signIn(access, notice = '') {
       ? 'Create the owner account for your bird journal. No email or online account is needed.'
       : 'Sign in to your Inky bird journal.',
   );
+  main.prepend(icon('feather', 'icon auth-mark'));
   if (notice) main.append(noticeMessage(notice));
   connectionNotice(access);
   if (setup)
@@ -356,6 +358,7 @@ function signIn(access, notice = '') {
         errorMessage(status, error.message);
       }
     });
+    sso.prepend(icon('key'));
     main.append(sso);
   }
   if (access.provider?.error) main.append(element('p', access.provider.error, 'error'));
@@ -366,7 +369,7 @@ function signIn(access, notice = '') {
         'The access guide below gives native and Docker commands. Use your installation’s configuration file. You will confirm the change and enter the new password in a hidden prompt. If someone installed Inky for you, ask them to recover access.',
       ]),
     );
-  const docs = element('a', 'Download the access and recovery guide (.md)');
+  const docs = element('a', 'Download the access and recovery guide (.md)', 'doc-link');
   docs.href = '/app/access-guide';
   docs.download = 'Inky-access-guide.md';
   main.append(docs);

@@ -10,7 +10,8 @@ working deployment with this branch. The complete acceptance scope remains in
 
 ## Find your way around
 
-Home, Birds, Collections and Manage use one controller. Start with
+Home, Birds, Collections, Frame and Manage share one controller behind an
+icon tab bar (bottom on phones, top on wide screens). Start with
 [approved art and generation off](settings.md#start-with-approved-art), create
 your owner account, and browse before connecting a source. On an existing
 installation, follow the [migration guide](migration-v1.md) instead of replacing

@@ -3,6 +3,7 @@ import { renderSettings } from '/app/settings.js';
 import { renderImports } from '/app/imports.js';
 import { renderPresentation } from '/app/presentation.js';
 import { frameTools } from '/app/frame-tools.js';
+import { icon } from '/app/ui.js';
 let run = 0;
 let stopScreen = () => {};
 let frameSignOut = null;
@@ -122,17 +123,19 @@ export async function openJournal(ui, message = '') {
     const nav = el('nav', '', 'journal-navigation');
     nav.id = 'journal-navigation';
     nav.setAttribute('aria-label', 'Journal');
-    for (const [key, name] of [
-      ['home', 'Home'],
-      ['birds', 'Birds'],
-      ['collections', 'Collections'],
-      ['manage', 'Manage'],
+    for (const [key, name, glyph, extra] of [
+      ['home', 'Home', 'home'],
+      ['birds', 'Birds', 'birds'],
+      ['collections', 'Collections', 'collections'],
+      ['frame', 'Frame', 'frame', { view: 'current' }],
+      ['manage', 'Manage', 'manage'],
     ]) {
-      const item = link(name, key);
+      const item = link('', key, extra || {}, '');
+      item.append(icon(glyph), el('span', name));
       if (key === area) item.setAttribute('aria-current', 'page');
       nav.append(item);
     }
-    document.body.append(nav);
+    document.querySelector('header').after(nav);
     if (message) main.append(el('p', message, 'connection'));
   }
   function empty(title, text) {
@@ -276,12 +279,17 @@ export async function openJournal(ui, message = '') {
     if (featured) {
       const hero = link('', 'bird', { bird: featured.taxon_id }, 'featured-art');
       hero.append(art(featured));
-      main.append(
-        hero,
+      const caption = el('div', '', 'featured-caption');
+      caption.append(
         el('h2', featured.common_name),
+        el('p', featured.scientific_name, 'scientific'),
         note(evidence(featured)),
-        playLink('current'),
       );
+      const actions = el('div', '', 'home-actions');
+      const play = playLink('current');
+      play.prepend(icon('play'));
+      actions.append(play, link('Browse your birds', 'birds'));
+      main.append(hero, caption, actions);
     } else
       main.append(
         empty(
@@ -296,14 +304,14 @@ export async function openJournal(ui, message = '') {
         work.needs_attention.length +
         work.in_review.candidates.length +
         management.notifications.dead_letters;
-      main.append(
-        link(
-          attention ? attention + ' items need attention' : 'Check sources and plate work',
-          'manage',
-          {},
-          'attention-link',
-        ),
+      const attentionLink = link(
+        attention ? attention + ' items need attention' : 'Check sources and plate work',
+        'manage',
+        {},
+        'attention-link',
       );
+      attentionLink.prepend(icon(attention ? 'alert' : 'manage'));
+      main.append(attentionLink);
       if (!management.sources.some((source) => source.enabled))
         main.append(
           note('No sources selected for refresh. Artwork and saved collections still work.'),
@@ -403,6 +411,7 @@ export async function openJournal(ui, message = '') {
       return;
     }
     base(bird.common_name, bird.scientific_name);
+    main.querySelector('.intro')?.classList.add('scientific');
     main.append(note(evidence(bird)));
     for (const item of bird.retained_evidence || [])
       main.append(
@@ -1561,12 +1570,27 @@ export async function openJournal(ui, message = '') {
         'Explicit operator workflows for host setup and approved plate repair.',
       ],
     );
+    const glyphs = {
+      sources: 'birds',
+      work: 'feather',
+      displays: 'frame',
+      integrations: 'pulse',
+      notifications: 'bell',
+      settings: 'manage',
+      health: 'pulse',
+      backups: 'archive',
+      advanced: 'wrench',
+    };
+    const grid = el('div', '', 'manage-grid');
     for (const [key, title, text] of sections) {
       const node = link('', key, {}, 'journal-card');
-      node.append(el('h2', title), el('p', text));
-      main.append(node);
+      node.append(icon(glyphs[key]), el('h2', title), el('p', text));
+      grid.append(node);
     }
-    main.append(button('Account and access', ui.account), button('Sign out', ui.signOut));
+    main.append(grid);
+    const account = button('Account and access', ui.account);
+    account.prepend(icon('account'));
+    main.append(account, button('Sign out', ui.signOut));
   } else if (['sources', 'work', 'displays', 'notifications'].includes(area)) {
     base(
       {
@@ -1718,9 +1742,15 @@ export async function openJournal(ui, message = '') {
           section = el('section', '', 'journal-card');
         section.append(el('h2', label + ' · ' + ids.length));
         for (const id of ids) {
-          section.append(link(byId.get(id)?.common_name || 'Taxon ' + id, 'bird', { bird: id }));
           const retry = management.work.retry_details?.find((item) => item.taxon_id === id),
             terminal = management.work.terminal_details?.find((item) => item.taxon_id === id);
+          const known =
+            byId.get(id)?.common_name || retry?.common_name || terminal?.common_name;
+          section.append(link(known || 'Taxon ' + id, 'bird', { bird: id }));
+          if (known && (retry?.scientific_name || terminal?.scientific_name))
+            section.append(
+              el('p', retry?.scientific_name || terminal?.scientific_name, 'scientific'),
+            );
           if (retry)
             section.append(
               note(
@@ -1740,7 +1770,7 @@ export async function openJournal(ui, message = '') {
           if (key !== 'can_run')
             section.append(
               operationAction(
-                'Review retry for ' + (byId.get(id)?.common_name || 'Taxon ' + id),
+                'Review retry for ' + (known || 'Taxon ' + id),
                 'retry',
                 'Make this species eligible for a new attempt. Inky retains correction guidance, archives the previous attempt, and preserves mandatory review. Generation can use your AI allowance or incur costs when enabled. A retry does not promise a better result or an immediate run.',
                 id,
