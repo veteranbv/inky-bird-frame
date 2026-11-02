@@ -137,6 +137,34 @@ export async function openJournal(ui, message = '') {
     }
     document.querySelector('header').after(nav);
     if (message) main.append(el('p', message, 'connection'));
+    if (
+      management.available &&
+      !['manage', 'sources', 'work', 'notifications', 'frame', 'operation', 'candidate'].includes(
+        area,
+      )
+    ) {
+      const parts = [];
+      const stopped = management.work.needs_attention.length;
+      if (stopped) parts.push(stopped === 1 ? '1 plate stopped' : stopped + ' plates stopped');
+      const review = management.work.in_review.candidates.length;
+      if (review)
+        parts.push(review === 1 ? '1 candidate to review' : review + ' candidates to review');
+      if (management.notifications.dead_letters) parts.push('notification delivery failing');
+      const failing = management.sources.filter(
+        (source) => source.enabled && source.status === 'error',
+      ).length;
+      if (failing)
+        parts.push(failing === 1 ? 'a source check failed' : failing + ' source checks failed');
+      if (parts.length) {
+        const banner = link('', 'manage', {}, 'attention-banner');
+        banner.append(
+          icon('alert'),
+          el('span', parts.join(' · ')),
+          el('span', 'Open Manage', 'attention-action'),
+        );
+        main.append(banner);
+      }
+    }
   }
   function empty(title, text) {
     const section = el('section', '', 'journal-card');
@@ -144,7 +172,9 @@ export async function openJournal(ui, message = '') {
     return section;
   }
   function playLink(key) {
-    return link('Play', 'frame', { view: key }, 'primary-link');
+    const node = link('Play', 'frame', { view: key }, 'primary-link');
+    node.prepend(icon('play'));
+    return node;
   }
   const management = data.management;
   const operationNames = {
@@ -286,41 +316,62 @@ export async function openJournal(ui, message = '') {
         note(evidence(featured)),
       );
       const actions = el('div', '', 'home-actions');
-      const play = playLink('current');
-      play.prepend(icon('play'));
-      actions.append(play, link('Browse your birds', 'birds'));
+      actions.append(playLink('current'), link('Browse your birds', 'birds'));
       main.append(hero, caption, actions);
-    } else
-      main.append(
-        empty(
-          'Make room for a bird',
-          'No approved plate is in your current selection yet. Browse available artwork or open a saved collection.',
-        ),
-        link('Browse available artwork', 'birds', { scope: 'art' }, 'primary-link'),
-      );
+    } else {
+      const fresh =
+        !data.birds.some((bird) => bird.known) &&
+        (!management.available || !management.sources.some((source) => source.enabled));
+      if (fresh) {
+        main.append(el('h2', 'Welcome. Start wherever you like.'));
+        const start = el('div', '', 'manage-grid start-paths');
+        for (const [title, text, glyph, page, extra] of [
+          [
+            'Browse the artwork',
+            'Reviewed field-journal plates are ready to enjoy now. Browsing never records a sighting.',
+            'birds',
+            'birds',
+            { scope: 'art' },
+          ],
+          [
+            'Keep birds close',
+            'Save Favorites and build collections for the wall and the Frame view.',
+            'collections',
+            'collections',
+            {},
+          ],
+          [
+            'Connect your birds',
+            'Add eBird, a feeder or a sound station when you are ready. Artwork works without them.',
+            'manage',
+            'sources',
+            {},
+          ],
+        ]) {
+          const card = link('', page, extra, 'journal-card');
+          card.append(icon(glyph), el('h2', title), el('p', text));
+          start.append(card);
+        }
+        main.append(start);
+      } else
+        main.append(
+          empty(
+            'Make room for a bird',
+            'No approved plate is in your current selection yet. Browse available artwork or open a saved collection.',
+          ),
+          link('Browse available artwork', 'birds', { scope: 'art' }, 'primary-link'),
+        );
+    }
     if (management.available) {
-      const work = management.work;
-      const attention =
-        work.needs_attention.length +
-        work.in_review.candidates.length +
-        management.notifications.dead_letters;
-      const attentionLink = link(
-        attention ? attention + ' items need attention' : 'Check sources and plate work',
-        'manage',
-        {},
-        'attention-link',
-      );
-      attentionLink.prepend(icon(attention ? 'alert' : 'manage'));
-      main.append(attentionLink);
       if (!management.sources.some((source) => source.enabled))
         main.append(
           note('No sources selected for refresh. Artwork and saved collections still work.'),
         );
-      else if (!work.complete)
+      else if (!management.work.complete)
         main.append(
           note(
             'Discovery is ' +
-              work.discovery_status +
+              management.work.discovery_status +
               '. The last saved selection may be out of date.',
           ),
         );
@@ -340,13 +391,18 @@ export async function openJournal(ui, message = '') {
         ? 'Approved local plates. Browsing does not add a sighting or change your wall.'
         : 'Birds in retained history, current observations or saved collections. A missing plate does not erase a bird.',
     );
-    main.append(
-      link(
-        artScope ? 'Show your birds' : 'Browse available artwork',
-        'birds',
-        artScope ? {} : { scope: 'art' },
-      ),
-    );
+    const scopes = el('div', '', 'segment');
+    scopes.setAttribute('role', 'navigation');
+    scopes.setAttribute('aria-label', 'Bird scope');
+    for (const [label, active, extra] of [
+      ['Your birds', !artScope, {}],
+      ['Available artwork', artScope, { scope: 'art' }],
+    ]) {
+      const option = link(label, 'birds', extra, '');
+      if (active) option.setAttribute('aria-current', 'page');
+      scopes.append(option);
+    }
+    main.append(scopes);
     const label = el('label', 'Find a bird');
     label.htmlFor = 'bird-search';
     const search = el('input');

@@ -333,13 +333,38 @@ function signIn(access, notice = '') {
       form.setAttribute('aria-busy', 'false');
     }
   });
-  if (setup || access.local_login) main.append(form);
-  else if (access.provider?.linked && access.provider?.ready) {
+  const ssoReady = !setup && access.provider?.linked && access.provider?.ready;
+  if (setup) main.append(form);
+  else if (ssoReady) {
+    // The linked provider is the everyday path, so it leads. The local
+    // password stays one disclosure away and remains the recovery path.
+    const sso = button(
+      'Continue with ' + access.provider.label,
+      async () => {
+        sso.disabled = true;
+        try {
+          await beginSSO('/v1/owner/oidc/start', remember.checked);
+        } catch (error) {
+          sso.disabled = false;
+          if (!main.contains(status)) main.append(status);
+          errorMessage(status, error.message);
+        }
+      },
+      'sso-button',
+    );
+    sso.prepend(icon('key'));
     const preferences = element('div');
     rememberField(preferences, access);
     preferences.querySelector('input').replaceWith(remember);
-    main.append(preferences, element('p', 'Use your linked single sign-on account.', 'hint'));
-  } else
+    main.append(sso, preferences);
+    if (access.local_login) {
+      const alt = element('details', '', 'auth-alt');
+      alt.append(element('summary', 'Sign in with your Inky password instead'));
+      alt.append(form);
+      main.append(alt);
+    } else main.append(element('p', 'Use your linked single sign-on account.', 'hint'));
+  } else if (access.local_login) main.append(form);
+  else
     main.append(
       element(
         'p',
@@ -347,20 +372,6 @@ function signIn(access, notice = '') {
         'notice',
       ),
     );
-  if (!setup && access.provider?.linked && access.provider?.ready) {
-    const sso = button('Sign in with ' + access.provider.label, async () => {
-      sso.disabled = true;
-      try {
-        await beginSSO('/v1/owner/oidc/start', remember.checked);
-      } catch (error) {
-        sso.disabled = false;
-        if (!main.contains(status)) main.append(status);
-        errorMessage(status, error.message);
-      }
-    });
-    sso.prepend(icon('key'));
-    main.append(sso);
-  }
   if (access.provider?.error) main.append(element('p', access.provider.error, 'error'));
   if (!setup)
     main.append(

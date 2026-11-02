@@ -610,6 +610,11 @@ or use a separate callback route with access logging and tracing off. Keep
 ordinary status and error logs without these values. Do not enable OAuth debug
 payload logging on a live installation.
 
+When an identity is linked and the provider is ready, the sign-in page leads
+with Continue with your provider; the local password stays one step away
+behind "Sign in with your Inky password instead" and remains the recovery
+path. Without a ready linked provider, the password form leads unchanged.
+
 A provider outage disables the SSO button with an explanation. Local login
 works unless you deliberately chose SSO-only mode. Signing out of Inky revokes
 only that Inky login. It does not sign out other identity-service applications.
