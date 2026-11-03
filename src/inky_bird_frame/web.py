@@ -606,6 +606,10 @@ def create_app(config: ControllerConfig, *, app_config: AppConfig | None = None)
         await authorized(request)
         return _result(await run_in_threadpool(journal.health))
 
+    async def management_snapshot(request: Request) -> JSONResponse:
+        await authorized(request)
+        return _result(await run_in_threadpool(journal.management_snapshot))
+
     async def application_settings(request: Request) -> JSONResponse:
         await authorized(request)
         if app_config is None:
@@ -646,22 +650,29 @@ def create_app(config: ControllerConfig, *, app_config: AppConfig | None = None)
         body = await _json_body(
             request,
             {"kind", "key", "revision", "confirm"},
-            optional={"taxon_id"},
-            structured={"confirm", "taxon_id"},
+            optional={"taxon_id", "taxon_ids"},
+            structured={"confirm", "taxon_id", "taxon_ids"},
         )
         kind = body["kind"]
         if (
-            kind not in {"refresh", "retry", "notification-test", "notification-retry"}
+            kind not in {"refresh", "retry", "retry-now", "notification-test", "notification-retry"}
             or body["confirm"] is not True
         ):
             raise OwnerOperationError("Review and confirm a supported owner action")
         taxon_id = body.get("taxon_id")
-        if kind == "retry":
-            if type(taxon_id) is not int or taxon_id <= 0:
+        taxon_ids = body.get("taxon_ids")
+        if kind in {"retry", "retry-now"}:
+            ids = taxon_ids if taxon_ids is not None else [taxon_id]
+            if (taxon_ids is not None and taxon_id is not None) or (
+                not isinstance(ids, list)
+                or not 1 <= len(ids) <= 32
+                or any(type(id) is not int or id <= 0 for id in ids)
+                or len(set(ids)) != len(ids)
+            ):
                 raise OwnerOperationError("Choose a valid species for this retry")
-        elif taxon_id is not None:
+        elif taxon_id is not None or taxon_ids is not None:
             raise OwnerOperationError("This action does not accept a species identifier")
-        inputs = {"revision": body["revision"], "taxon_id": taxon_id}
+        inputs = {"revision": body["revision"], "taxon_id": taxon_id, "taxon_ids": taxon_ids}
         return _result(
             await run_in_threadpool(
                 operations.submit,
@@ -672,7 +683,8 @@ def create_app(config: ControllerConfig, *, app_config: AppConfig | None = None)
                     app_config,
                     kind,
                     revision=cast(str, body["revision"]),
-                    taxon_id=taxon_id,
+                    taxon_id=cast(int | None, taxon_id),
+                    taxon_ids=cast(list[int] | None, taxon_ids),
                 ),
             )
         )
@@ -1411,6 +1423,7 @@ def create_app(config: ControllerConfig, *, app_config: AppConfig | None = None)
             "/app/viewer.js": "viewer.js",
             "/app/presentation.js": "presentation.js",
             "/app/frame-tools.js": "frame-tools.js",
+            "/app/work-status.js": "work-status.js",
             "/screen": "screen.html",
             "/app/access-guide": "access-guide.txt",
         }[request.url.path]
@@ -1443,6 +1456,7 @@ def create_app(config: ControllerConfig, *, app_config: AppConfig | None = None)
         Route("/app/viewer.js", page),
         Route("/app/presentation.js", page),
         Route("/app/frame-tools.js", page),
+        Route("/app/work-status.js", page),
         Route("/screen", page),
         Route("/app/access-guide", page),
         Route("/v1/access", safe_access_state),
@@ -1462,6 +1476,7 @@ def create_app(config: ControllerConfig, *, app_config: AppConfig | None = None)
         Route("/v1/owner/oidc/unlink", unlink_oidc, methods=["POST"]),
         Route("/v1/owner/oidc/callback", oidc_callback),
         Route("/v1/owner/journal", journal_snapshot),
+        Route("/v1/owner/management", management_snapshot),
         Route("/v1/owner/health", journal_health),
         Route("/v1/owner/settings", application_settings, methods=["GET", "POST"]),
         Route("/v1/owner/operations", owner_operations, methods=["GET", "POST"]),

@@ -13,6 +13,7 @@ from starlette.testclient import TestClient
 
 from inky_bird_frame import settings as settings_module
 from inky_bird_frame.config import load_config
+from inky_bird_frame.controller import exclusive_cycle_lock
 from inky_bird_frame.owner_operations import (
     MAX_RESULT_BYTES,
     OwnerOperationBusyError,
@@ -20,6 +21,7 @@ from inky_bird_frame.owner_operations import (
     OwnerOperations,
     execute_owner_operation,
 )
+from inky_bird_frame.retry_requests import retry_requests
 from inky_bird_frame.settings import initialize_config, settings_status
 from inky_bird_frame.web import create_app
 
@@ -271,6 +273,7 @@ def test_http_operation_boundary_and_no_secret_or_model_operation(tmp_path: Path
     config = load_config(path)
     with TestClient(create_app(config.controller, app_config=config), base_url=origin) as client:
         assert client.get("/v1/owner/operations").status_code == 401
+        assert client.get("/v1/owner/management").status_code == 401
         signed = client.post(
             "/v1/owner/register",
             json={
@@ -315,3 +318,33 @@ def test_http_operation_boundary_and_no_secret_or_model_operation(tmp_path: Path
             not in (config.controller.state_dir / "owner-operations.json").read_text()
         )
         assert not (config.controller.state_dir / "generation-queue.json").exists()
+        assert client.get("/v1/owner/management").json()["data"]["available"] is True
+        assert client.get("/app/work-status.js").status_code == 200
+        retry_body = {
+            **body,
+            "kind": "retry-now",
+            "key": "http-synthetic-batch-retry",
+            "taxon_ids": [101, 202],
+        }
+        for ids in ([True], [101, 101], [], ["101"]):
+            assert (
+                client.post(
+                    "/v1/owner/operations", json={**retry_body, "taxon_ids": ids}, headers=headers
+                ).status_code
+                == 400
+            )
+        assert (
+            client.post(
+                "/v1/owner/operations", json={**retry_body, "taxon_id": 101}, headers=headers
+            ).status_code
+            == 400
+        )
+        with exclusive_cycle_lock(config.controller.state_dir):
+            response = client.post("/v1/owner/operations", json=retry_body, headers=headers)
+            assert response.status_code == 200
+            receipt_id = response.json()["data"]["operation_id"]
+            result = completed(
+                lambda: client.get("/v1/owner/operations/" + receipt_id).json()["data"]
+            )
+            assert result["status"] == "succeeded"
+        assert [row.taxon_id for row in retry_requests(config.controller.state_dir)] == [101, 202]

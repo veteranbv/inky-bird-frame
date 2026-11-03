@@ -7,6 +7,7 @@ import json
 import os
 import shutil
 import stat
+from contextlib import nullcontext
 from pathlib import Path
 from typing import cast
 
@@ -543,7 +544,10 @@ def retry_species(
     source_candidate: str | None = None,
     source_run: str | None = None,
     corrections: list[str] | None = None,
+    _cycle_locked: bool = False,
 ) -> dict[str, object]:
+    from .retry_requests import complete_operator_retry
+
     raw_reason = reason
     reason = raw_reason.strip() if isinstance(raw_reason, str) else None
     raw_corrections = corrections
@@ -577,16 +581,18 @@ def retry_species(
             )
         if not reason:
             raise ValueError("--replace-approved requires a non-empty --reason")
-        return retry_approved_candidate(
+        result = retry_approved_candidate(
             config,
             taxon_id,
             reason,
             refresh_research=refresh_research,
         )
+        complete_operator_retry(config.controller.state_dir, taxon_id)
+        return result
     if raw_reason is not None:
         raise ValueError("--reason requires --replace-approved")
 
-    with exclusive_cycle_lock(config.controller.state_dir):
+    with nullcontext() if _cycle_locked else exclusive_cycle_lock(config.controller.state_dir):
         pending = find_taxon_directory(config.controller.state_dir / "pending", taxon_id)
         if pending is not None and (pending / "manifest.json").is_file():
             raise ValueError("Pending candidates must be approved or rejected before retrying")
@@ -851,6 +857,8 @@ def retry_species(
         queued_for_generation = any(
             species.taxon_id == taxon_id for species in read_generation_queue(config)
         )
+        if not _cycle_locked:
+            complete_operator_retry(config.controller.state_dir, taxon_id)
     return {
         "taxon_id": taxon_id,
         "status": "eligible",

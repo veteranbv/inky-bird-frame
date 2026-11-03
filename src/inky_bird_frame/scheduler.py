@@ -74,6 +74,8 @@ def run_scheduler(
     wait: Waiter,
     monotonic: Callable[[], float] = time.monotonic,
     jobs_provider: Callable[[], Sequence[ScheduledJob]] | None = None,
+    wake_provider: Callable[[], str | None] | None = None,
+    on_schedule: Callable[[str, float], None] | None = None,
 ) -> None:
     """Run due jobs serially, isolating failures and gating generation on refresh."""
     if not jobs:
@@ -85,6 +87,19 @@ def run_scheduler(
     if len(next_runs) != len(jobs):
         raise ValueError("Scheduler job names must be unique")
     refresh_succeeded = False
+    seen_wake: str | None = None
+    published: dict[str, float] = {}
+    wake_failed = False
+
+    def publish_schedule() -> None:
+        if on_schedule is None:
+            return
+        observed_at = monotonic()
+        for name, deadline in next_runs.items():
+            if published.get(name) != deadline:
+                on_schedule(name, max(0, deadline - observed_at))
+        published.clear()
+        published.update(next_runs)
 
     while not stop_requested():
         now = monotonic()
@@ -108,10 +123,38 @@ def run_scheduler(
                 }
                 next_runs["refresh"] = now
             jobs = updated
+        if wake_provider is not None:
+            try:
+                wake = wake_provider()
+            except Exception as exc:
+                # Corrupt retry state must fail generation closed, not stop
+                # discovery, catalog publication or notification delivery.
+                if not wake_failed:
+                    print(
+                        json.dumps(
+                            {"event": "retry_wake_failed", "error_type": type(exc).__name__}
+                        ),
+                        flush=True,
+                    )
+                wake_failed = True
+                wake = None
+            else:
+                if wake_failed:
+                    print(json.dumps({"event": "retry_wake_recovered"}), flush=True)
+                wake_failed = False
+            if wake is not None and wake != seen_wake and "generate" in next_runs:
+                seen_wake = wake
+                next_runs["generate"] = now
+                if "refresh" in next_runs:
+                    next_runs["refresh"] = now
+                    refresh_succeeded = False
+        publish_schedule()
         due_jobs = [job for job in jobs if next_runs[job.name] <= now]
         if not due_jobs:
             delay = max(0.0, min(next_runs.values()) - now)
-            wait(min(delay, 1.0) if jobs_provider is not None else delay)
+            wait(
+                min(delay, 1.0) if jobs_provider is not None or wake_provider is not None else delay
+            )
             continue
 
         for job in due_jobs:
@@ -129,6 +172,7 @@ def run_scheduler(
                     else now + job.interval_seconds
                 )
                 _log_event("job_deferred", job, reason="awaiting_successful_refresh")
+                publish_schedule()
                 continue
 
             started = monotonic()
@@ -153,3 +197,6 @@ def run_scheduler(
             if job.name == "refresh" and exit_code == 0:
                 refresh_succeeded = True
             next_runs[job.name] = monotonic() + job.interval_seconds
+            # A later job may occupy the runner for minutes. Publish this
+            # deadline now, not after the entire due batch has completed.
+            publish_schedule()

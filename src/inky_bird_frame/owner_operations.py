@@ -24,7 +24,7 @@ from uuid import uuid4
 
 from .catalog import catalog_state_lock
 from .config import AppConfig
-from .errors import InkyBirdFrameError
+from .errors import CatalogError, InkyBirdFrameError
 from .http import write_bytes_atomic
 from .settings import SettingsError, confirmed_config
 from .timeutil import parse_utc_timestamp
@@ -38,6 +38,7 @@ MAX_RESULT_BYTES = 16 * 1024
 OperationKind = Literal[
     "refresh",
     "retry",
+    "retry-now",
     "notification-test",
     "notification-retry",
     "import-preview",
@@ -55,6 +56,7 @@ OperationStatus = Literal["pending", "running", "succeeded", "failed", "interrup
 KINDS = {
     "refresh",
     "retry",
+    "retry-now",
     "notification-test",
     "notification-retry",
     "import-preview",
@@ -423,15 +425,22 @@ class OwnerOperations:
 
 
 def execute_owner_operation(
-    initial: AppConfig, kind: OperationKind, *, revision: str, taxon_id: int | None = None
+    initial: AppConfig,
+    kind: OperationKind,
+    *,
+    revision: str,
+    taxon_id: int | None = None,
+    taxon_ids: list[int] | None = None,
 ) -> dict[str, object]:
     """Adapt only named, typed application operations; never shell text or models."""
     from .controller import refresh_observations
     from .notifications import dispatch_notifications, requeue_dead_letters, send_notification_test
-    from .recovery import retry_species
+    from .retry_requests import queue_retries
 
     try:
-        config = confirmed_config(initial, revision, load_secrets=kind != "retry")
+        config = confirmed_config(
+            initial, revision, load_secrets=kind not in {"retry", "retry-now"}
+        )
     except SettingsError as exc:
         raise OwnerOperationError(str(exc)) from exc
     if kind == "refresh":
@@ -449,23 +458,33 @@ def execute_owner_operation(
                 for row in providers
             ],
         }
-    if kind == "retry":
-        if type(taxon_id) is not int or taxon_id <= 0:
-            raise OwnerOperationError("Choose a species that needs a permitted retry")
-        result = retry_species(config, taxon_id)
+    if kind in {"retry", "retry-now"}:
+        ids = taxon_ids if taxon_ids is not None else [taxon_id]
+        if taxon_ids is not None and taxon_id is not None:
+            raise OwnerOperationError("Choose a species or a batch, not both")
+        if not 1 <= len(ids) <= 32 or any(type(id) is not int or id <= 0 for id in ids):
+            raise OwnerOperationError("Choose between 1 and 32 species for retry")
+        try:
+            requests = queue_retries(
+                config.controller.state_dir, cast(list[int], ids), run_now=kind == "retry-now"
+            )
+        except (ValueError, CatalogError) as exc:
+            raise OwnerOperationError(
+                "Retry queue could not accept this selection; check Plate work or operator evidence"
+            ) from exc
         return {
-            "message": "Made eligible for a new attempt. This did not start generation "
-            "or bypass sourced review. The generation policy and scheduler still apply.",
-            **{
-                key: result[key]
-                for key in (
-                    "taxon_id",
-                    "queued_for_generation",
-                    "preserved_quality_findings_count",
-                    "preserved_profile_conflicts_count",
-                    "preserved_correction_source",
-                )
-            },
+            "message": "Retry requests saved. Preparation waits safely behind any active cycle. "
+            "Approved plates are never replaced. Check Plate work for each bird's outcome. "
+            + (
+                "The existing scheduler was asked to check as soon as possible; "
+                "generation must be enabled and discovery healthy."
+                if kind == "retry-now"
+                else "The next scheduled generation check will prepare these retries. "
+                "No model was started by this action."
+            ),
+            "taxon_ids": [row.taxon_id for row in requests],
+            "request_ids": [row.request_id for row in requests],
+            "generation_enabled": config.controller.generation_enabled,
         }
     if kind == "notification-test":
         result = send_notification_test(config)
