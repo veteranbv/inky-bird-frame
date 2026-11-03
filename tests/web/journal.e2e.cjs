@@ -788,6 +788,26 @@ let browser,
     await page.evaluate(() => document.exitFullscreen());
     await page.waitForFunction(() => !document.fullscreenElement);
   }
+  phase = 'frame-ambient-notice-clearance';
+  // On every engine, at phone width with the controls revealed, a populated
+  // notice must sit fully above the one-row control bar, never behind it.
+  await page.keyboard.press('Shift');
+  await page.locator('.frame-controls:not(.quiet)').waitFor();
+  await page.route('**/v1/owner/journal/birds/*/portrait', (route) => route.abort());
+  // Step by keyboard: the one-row bar scrolls sideways at phone width and
+  // engines disagree about auto-scrolling a translated fixed container.
+  // The shortcut deliberately ignores keys while a control is focused, so
+  // leave the bar first; the revealed state holds (mock clock untouched).
+  await page.evaluate(() => {
+    if (document.activeElement instanceof HTMLElement) document.activeElement.blur();
+  });
+  await page.keyboard.press('ArrowRight');
+  const clearanceNotice = page.getByText(/Plate unavailable\. Keeping the last approved plate\./);
+  await clearanceNotice.waitFor();
+  const noticeBox = await clearanceNotice.boundingBox();
+  const barBox = await page.locator('.frame-controls').boundingBox();
+  assert(noticeBox && barBox && noticeBox.y >= 0 && noticeBox.y + noticeBox.height <= barBox.y);
+  await page.unroute('**/v1/owner/journal/birds/*/portrait');
   phase = 'sso-error-visibility';
   // Frontend contract only: the provider state and start failure are stubbed,
   // like the community query. Real OIDC exchange stays backend-tested.

@@ -545,6 +545,10 @@ a.journal-card:hover h2, a.bird-card:hover h2 { color: var(--accent); }
   background: rgb(27 22 17 / 0.92);
   border: 1px solid #4e4638;
   border-radius: 20px;
+  /* One row always: narrow screens scroll the bar sideways instead of
+     stacking rows, so notices above it can rely on its height. */
+  flex-wrap: nowrap;
+  overflow-x: auto;
 }
 .presenting .frame-controls button, .presenting .frame-controls a {
   min-height: 42px;
@@ -553,6 +557,8 @@ a.journal-card:hover h2, a.bird-card:hover h2 { color: var(--accent); }
   background: transparent;
   border: 0;
   color: #e9e2d2;
+  flex-shrink: 0;
+  white-space: nowrap;
 }
 .presenting .frame-controls button:hover, .presenting .frame-controls a:hover {
   background: rgb(233 226 210 / 0.12);
