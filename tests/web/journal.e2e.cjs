@@ -422,6 +422,45 @@ let browser,
     .getByText('Taxon 9999993: incomplete or unsafe pending state. Use operator recovery before retrying.', { exact: true })
     .waitFor();
   assert.equal(await page.getByRole('link', { name: /Inspect .*9999993/ }).count(), 0);
+  phase = 'collection-filter';
+  await page.goto(origin + '/app?page=edit-collection');
+  await heading('New collection');
+  await page.getByLabel('Collection name', { exact: true }).fill('Filter journey');
+  await page.getByRole('checkbox', { name: /Northern Cardinal/ }).check();
+  // Filtering hides non-matching rows (role queries exclude hidden nodes)
+  // while chosen birds stay chosen. Scientific names match too.
+  await page.getByLabel('Find a bird to add', { exact: true }).fill('Turdus');
+  await page.getByRole('checkbox', { name: /American Robin/ }).waitFor();
+  assert.equal(await page.getByRole('checkbox', { name: /Northern Cardinal/ }).count(), 0);
+  await page.getByRole('checkbox', { name: /American Robin/ }).check();
+  await page.getByLabel('Find a bird to add', { exact: true }).fill('zz-no-such-bird');
+  await page.getByText('0 species shown · chosen birds stay chosen', { exact: true }).waitFor();
+  assert.equal(await page.getByRole('checkbox', { name: /American Robin/ }).count(), 0);
+  await page.getByLabel('Find a bird to add', { exact: true }).fill('');
+  assert(await page.getByRole('checkbox', { name: /Northern Cardinal/ }).isChecked());
+  assert(await page.getByRole('checkbox', { name: /American Robin/ }).isChecked());
+  // Leaving without saving commits nothing.
+  await page.goto(origin + '/app?page=collections');
+  await heading('Collections');
+  assert.equal(await page.getByRole('link', { name: 'Filter journey', exact: true }).count(), 0);
+  await page.goto(origin + '/app?page=edit-collection');
+  await heading('New collection');
+  await page.getByLabel('Collection name', { exact: true }).fill('Filter journey');
+  await page.getByRole('checkbox', { name: /Northern Cardinal/ }).check();
+  await page.getByLabel('Find a bird to add', { exact: true }).fill('American Robin');
+  await page.getByRole('checkbox', { name: /American Robin/ }).check();
+  await page.getByRole('button', { name: 'Save collection', exact: true }).click();
+  await heading('Collections');
+  await page.getByRole('link', { name: 'Filter journey', exact: true }).click();
+  await heading('Filter journey');
+  await page.getByRole('link', { name: /Northern Cardinal/ }).first().waitFor();
+  await page.getByRole('link', { name: /American Robin/ }).first().waitFor();
+  // Remove the journey collection so later phases see the expected state.
+  // The Remove action lives in the collection page's tools.
+  page.once('dialog', (dialog) => dialog.accept());
+  await page.getByRole('button', { name: 'Remove collection', exact: true }).click();
+  await heading('Collections');
+  assert.equal(await page.getByRole('link', { name: 'Filter journey', exact: true }).count(), 0);
   phase = 'pair-readonly-screen';
   await page.goto(origin + '/app?page=displays');
   await heading('Displays');

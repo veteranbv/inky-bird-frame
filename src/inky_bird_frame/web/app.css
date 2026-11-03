@@ -245,6 +245,12 @@ input[type="checkbox"]::before {
 input[type="checkbox"]:checked { background: var(--accent); border-color: var(--accent); }
 input[type="checkbox"]:checked::before { transform: scale(1); }
 input[type="checkbox"]:disabled { opacity: 0.55; cursor: not-allowed; }
+@media (forced-colors: active) {
+  /* High-contrast modes may force both box and mark to one system color,
+     so the native checkbox and its system-drawn indicator come back. */
+  input[type="checkbox"] { appearance: auto; }
+  input[type="checkbox"]::before { content: none; }
+}
 
 fieldset { border: 1px solid var(--line); border-radius: var(--radius); margin: 24px 0; padding: 14px 16px 16px; min-width: 0; }
 legend { float: left; width: 100%; margin: 0 0 10px; font-size: 19px; font-weight: 700; }
