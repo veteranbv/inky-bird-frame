@@ -143,25 +143,33 @@ export async function openJournal(ui, message = '') {
         area,
       )
     ) {
-      const parts = [];
+      // Each issue links to the screen that names the affected birds or
+      // destinations and offers the action, not to a general directory.
+      const issues = [];
       const stopped = management.work.needs_attention.length;
-      if (stopped) parts.push(stopped === 1 ? '1 plate stopped' : stopped + ' plates stopped');
+      if (stopped)
+        issues.push([stopped === 1 ? '1 plate stopped' : stopped + ' plates stopped', 'work']);
       const review = management.work.in_review.candidates.length;
       if (review)
-        parts.push(review === 1 ? '1 candidate to review' : review + ' candidates to review');
-      if (management.notifications.dead_letters) parts.push('notification delivery failing');
+        issues.push([
+          review === 1 ? '1 plate ready for your review' : review + ' plates ready for your review',
+          'work',
+        ]);
+      if (management.notifications.dead_letters)
+        issues.push(['notification delivery failing', 'notifications']);
       const failing = management.sources.filter(
         (source) => source.enabled && source.status === 'error',
       ).length;
       if (failing)
-        parts.push(failing === 1 ? 'a source check failed' : failing + ' source checks failed');
-      if (parts.length) {
-        const banner = link('', 'manage', {}, 'attention-banner');
-        banner.append(
-          icon('alert'),
-          el('span', parts.join(' · ')),
-          el('span', 'Open Manage', 'attention-action'),
-        );
+        issues.push([
+          failing === 1 ? 'a source check failed' : failing + ' source checks failed',
+          'sources',
+        ]);
+      if (issues.length) {
+        const banner = el('div', '', 'attention-banner');
+        banner.setAttribute('role', 'status');
+        banner.append(icon('alert'));
+        for (const [text, page] of issues) banner.append(link(text, page, {}, 'attention-item'));
         main.append(banner);
       }
     }

@@ -409,7 +409,7 @@ a.journal-card:hover h2, a.bird-card:hover h2 { color: var(--accent); }
   font-size: 15.5px;
 }
 .attention-banner .icon { color: var(--gold-ink); }
-.attention-banner .attention-action { margin-left: auto; font-weight: 650; color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
+.attention-banner .attention-item { display: inline-flex; align-items: center; min-height: 36px; font-weight: 600; color: var(--ink); }
 .segment {
   display: inline-flex;
   margin-block: 6px 4px;
