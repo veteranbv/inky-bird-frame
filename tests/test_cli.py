@@ -1006,6 +1006,7 @@ class CliTests(unittest.TestCase):
         self.assertEqual(payload["collection"], {"collection_count": 0})
         self.assertEqual(payload["generation"], generation_payload)
 
+    @pytest.mark.repository_catalog
     def test_status_validates_without_rewriting_catalog_data(self) -> None:
         with TemporaryDirectory() as temporary:
             root = Path(temporary)

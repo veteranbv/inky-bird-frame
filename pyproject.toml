@@ -99,3 +99,6 @@ ignore_missing_imports = true
 [tool.pytest.ini_options]
 addopts = "-q"
 testpaths = ["tests"]
+markers = [
+    "repository_catalog: reads the committed catalog images, so it needs a full checkout",
+]

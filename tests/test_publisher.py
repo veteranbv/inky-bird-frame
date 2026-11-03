@@ -8,6 +8,7 @@ from pathlib import Path
 from tempfile import TemporaryDirectory
 from unittest.mock import call, patch
 
+import pytest
 from PIL import Image, PngImagePlugin
 
 from inky_bird_frame.catalog import rebuild_catalog_index, sha256_file
@@ -370,6 +371,7 @@ class PublisherTests(unittest.TestCase):
                 ],
             )
 
+    @pytest.mark.repository_catalog
     def test_repository_seed_catalog_is_publishable(self) -> None:
         catalog = Path(__file__).parents[1] / "catalog"
 
