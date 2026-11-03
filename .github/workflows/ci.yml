@@ -19,7 +19,9 @@ jobs:
   core-quality:
     name: Core quality
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    # Includes the full catalog checkout, which GitHub served in 415 s of a
+    # 690 s successful run on 2026-11-03 (normally about 15 s of 240 s).
+    timeout-minutes: 35
     steps:
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
