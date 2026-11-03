@@ -59,6 +59,8 @@ for identifier in [9999991,9999992]:
   image=Image.new('RGB',size,'white');ImageDraw.Draw(image).text((80,100),'SYNTHETIC QA CANDIDATE',fill='black',font_size=50);image.save(folder/name)
  profile=SpeciesProfileData(taxon_id=identifier,common_name=bird.common_name,scientific_name=bird.scientific_name,family='Fixture family',measurements={'length':'10 cm','wingspan':'20 cm','weight':'30 g'},field_marks=['One','Two','Three','Four'],habitat='Fixture habitat',behavior='Fixture behavior',palette=['white','gray','black'],sources=links)
  write_candidate_manifest(folder,bird,profile,[],QualityReview(True,5,5,5,5,True,(),tuple(links)),generator='fixture',prompt_version='fixture')
+held=state/'pending'/'9999993-synthetic-recovery-hold';held.mkdir(parents=True)
+image=Image.new('RGB',(1200,1600),'white');ImageDraw.Draw(image).text((80,100),'SYNTHETIC RECOVERY HOLD',fill='black',font_size=50);image.save(held/'portrait.png')
 `,
   ],
   { cwd: root },
@@ -189,6 +191,9 @@ let browser,
     })
     .waitFor();
   assert.equal(await page.getByText(/The last saved selection may be out of date/).count(), 0);
+  await page.getByRole('link', { name: '2 plates ready for your review', exact: true }).waitFor();
+  await page.getByRole('link', { name: '1 plate held for recovery', exact: true }).waitFor();
+  assert.equal(await page.getByText(/3 plates ready for your review/).count(), 0);
   phase = 'birdbuddy-bootstrap-ux';
   await page.goto(origin + '/app?page=settings&source=birdbuddy');
   await heading('Bird Buddy');
@@ -406,6 +411,17 @@ let browser,
       ),
     ),
   );
+  phase = 'recovery-hold-banner';
+  await page.goto(origin + '/app');
+  await heading('Your field journal');
+  await page.getByRole('link', { name: '1 plate held for recovery', exact: true }).waitFor();
+  assert.equal(await page.getByText(/ready for your review/).count(), 0);
+  await page.getByRole('link', { name: '1 plate held for recovery', exact: true }).click();
+  await heading('Plate work');
+  await page
+    .getByText('Taxon 9999993: incomplete or unsafe pending state. Use operator recovery before retrying.', { exact: true })
+    .waitFor();
+  assert.equal(await page.getByRole('link', { name: /Inspect .*9999993/ }).count(), 0);
   phase = 'pair-readonly-screen';
   await page.goto(origin + '/app?page=displays');
   await heading('Displays');
@@ -652,6 +668,72 @@ let browser,
   await page.getByRole('button', { name: 'Zoom', exact: true }).click();
   await page.getByRole('button', { name: 'Fit whole plate', exact: true }).click();
   assert(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth));
+  phase = 'sso-error-visibility';
+  // Frontend contract only: the provider state and start failure are stubbed,
+  // like the community query. Real OIDC exchange stays backend-tested.
+  const ssoContext = await browser.newContext({
+    viewport: { width: 390, height: 844 },
+    reducedMotion: 'reduce',
+  });
+  const ssoPage = await ssoContext.newPage();
+  await ssoPage.route('**/v1/access', (route) =>
+    route.fulfill({
+      json: {
+        ok: true,
+        schema_version: 1,
+        data: {
+          secure: true,
+          setup_required: false,
+          registration_allowed: false,
+          setup_code: null,
+          password_min_length: 15,
+          password_max_length: 1024,
+          encrypted: true,
+          access_mode: 'https-only',
+          legacy_account: false,
+          session_policy: { regular_hours: 24, remembered_days: 30 },
+          provider: { label: 'Authentik', ready: true, linked: true },
+          local_login: true,
+        },
+      },
+    }),
+  );
+  await ssoPage.route('**/v1/owner/oidc/start', (route) =>
+    route.fulfill({
+      status: 502,
+      json: {
+        ok: false,
+        schema_version: 1,
+        error: { code: 'provider_error', message: 'Synthetic provider start failure.' },
+      },
+    }),
+  );
+  await ssoPage.goto(origin + '/app');
+  await ssoPage.getByRole('heading', { name: 'Welcome back', exact: true }).waitFor();
+  const passwordDisclosure = ssoPage.locator('details.auth-alt');
+  assert.equal(await passwordDisclosure.count(), 1);
+  assert(!(await passwordDisclosure.evaluate((node) => node.open)));
+  // One shared stay-signed-in control, one hint, used by the leading action.
+  assert.equal(
+    await ssoPage.getByRole('checkbox', { name: 'Stay signed in on this device' }).count(),
+    1,
+  );
+  assert.equal(await ssoPage.locator('#remember-hint').count(), 1);
+  const ssoStart = ssoPage.getByRole('button', { name: 'Continue with Authentik', exact: true });
+  await ssoStart.click();
+  await ssoPage
+    .getByText('Synthetic provider start failure.', { exact: true })
+    .waitFor({ state: 'visible' });
+  assert(await ssoStart.isEnabled());
+  assert(!(await passwordDisclosure.evaluate((node) => node.open)));
+  await passwordDisclosure.locator('summary').click();
+  assert(await passwordDisclosure.evaluate((node) => node.open));
+  assert.equal(
+    await ssoPage.getByRole('checkbox', { name: 'Stay signed in on this device' }).count(),
+    1,
+  );
+  assert.equal(await ssoPage.locator('#remember-hint').count(), 1);
+  await ssoContext.close();
   if (process.env.INKY_QA_UPLOAD_FILE) {
     phase = 'large-mobile-upload';
     await page.goto(origin + '/app?page=imports&kind=ebird-archive');

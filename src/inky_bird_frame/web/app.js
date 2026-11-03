@@ -299,7 +299,9 @@ function signIn(access, notice = '') {
     : null;
   if (confirmation)
     confirmation.addEventListener('input', () => confirmation.removeAttribute('aria-invalid'));
-  const remember = rememberField(form, access);
+  const ssoReady = !setup && access.provider?.linked && access.provider?.ready;
+  const preferences = ssoReady ? element('div') : null;
+  const remember = rememberField(preferences || form, access);
   const submit = element('button', setup ? 'Create account' : 'Sign in');
   submit.type = 'submit';
   form.append(submit, status);
@@ -333,30 +335,29 @@ function signIn(access, notice = '') {
       form.setAttribute('aria-busy', 'false');
     }
   });
-  const ssoReady = !setup && access.provider?.linked && access.provider?.ready;
   if (setup) main.append(form);
   else if (ssoReady) {
     // The linked provider is the everyday path, so it leads. The local
     // password stays one disclosure away and remains the recovery path.
+    // Its errors render in their own region: the shared form status can sit
+    // inside the closed disclosure, where a message would stay invisible.
+    const ssoStatus = statusBox();
     const sso = button(
       'Continue with ' + access.provider.label,
       async () => {
         sso.disabled = true;
+        ssoStatus.textContent = '';
         try {
           await beginSSO('/v1/owner/oidc/start', remember.checked);
         } catch (error) {
           sso.disabled = false;
-          if (!main.contains(status)) main.append(status);
-          errorMessage(status, error.message);
+          errorMessage(ssoStatus, error.message);
         }
       },
       'sso-button',
     );
     sso.prepend(icon('key'));
-    const preferences = element('div');
-    rememberField(preferences, access);
-    preferences.querySelector('input').replaceWith(remember);
-    main.append(sso, preferences);
+    main.append(sso, ssoStatus, preferences);
     if (access.local_login) {
       const alt = element('details', '', 'auth-alt');
       alt.append(element('summary', 'Sign in with your Inky password instead'));

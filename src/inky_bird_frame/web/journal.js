@@ -149,10 +149,17 @@ export async function openJournal(ui, message = '') {
       const stopped = management.work.needs_attention.length;
       if (stopped)
         issues.push([stopped === 1 ? '1 plate stopped' : stopped + ' plates stopped', 'work']);
-      const review = management.work.in_review.candidates.length;
+      const candidates = management.work.in_review.candidates;
+      const review = candidates.filter((candidate) => candidate.inspect_available).length;
       if (review)
         issues.push([
           review === 1 ? '1 plate ready for your review' : review + ' plates ready for your review',
+          'work',
+        ]);
+      const held = candidates.length - review;
+      if (held)
+        issues.push([
+          held === 1 ? '1 plate held for recovery' : held + ' plates held for recovery',
           'work',
         ]);
       if (management.notifications.dead_letters)
