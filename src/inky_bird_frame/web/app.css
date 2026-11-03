@@ -546,9 +546,13 @@ a.journal-card:hover h2, a.bird-card:hover h2 { color: var(--accent); }
   border: 1px solid #4e4638;
   border-radius: 20px;
   /* One row always: narrow screens scroll the bar sideways instead of
-     stacking rows, so notices above it can rely on its height. */
+     stacking rows, so notices above it can rely on its height. Contents
+     start-align: centering an overflowing flex row pushes its first
+     children into negative, unscrollable space. The bar itself stays
+     centered by its own left/transform placement. */
   flex-wrap: nowrap;
   overflow-x: auto;
+  justify-content: flex-start;
 }
 .presenting .frame-controls button, .presenting .frame-controls a {
   min-height: 42px;

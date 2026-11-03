@@ -794,14 +794,24 @@ let browser,
   await page.keyboard.press('Shift');
   await page.locator('.frame-controls:not(.quiet)').waitFor();
   await page.route('**/v1/owner/journal/birds/*/portrait', (route) => route.abort());
-  // Step by keyboard: the one-row bar scrolls sideways at phone width and
-  // engines disagree about auto-scrolling a translated fixed container.
-  // The shortcut deliberately ignores keys while a control is focused, so
-  // leave the bar first; the revealed state holds (mock clock untouched).
-  await page.evaluate(() => {
-    if (document.activeElement instanceof HTMLElement) document.activeElement.blur();
-  });
-  await page.keyboard.press('ArrowRight');
+  // The scrolling bar must keep every control genuinely reachable: the
+  // first control (Previous) and the last (Keep screen awake) are clicked
+  // and focused through ordinary scrolling, not a keyboard shortcut around
+  // an inaccessible button. Previous steps to the other plate, whose
+  // aborted fetch surfaces the notice for the clearance geometry.
+  const windowWidth = await page.evaluate(() => innerWidth);
+  const reachable = async (locator) => {
+    await locator.evaluate((node) => node.scrollIntoView({ inline: 'nearest', block: 'nearest' }));
+    await locator.focus();
+    assert(await locator.evaluate((node) => document.activeElement === node));
+    const box = await locator.boundingBox();
+    // One-pixel tolerance: engines land scroll-into-view on subpixel edges.
+    assert(box && box.x >= -1 && box.x + box.width <= windowWidth + 1);
+  };
+  await reachable(page.locator('.frame-controls > *:last-child'));
+  const previousControl = page.getByRole('button', { name: 'Previous', exact: true });
+  await reachable(previousControl);
+  await previousControl.click();
   const clearanceNotice = page.getByText(/Plate unavailable\. Keeping the last approved plate\./);
   await clearanceNotice.waitFor();
   const noticeBox = await clearanceNotice.boundingBox();
