@@ -3,27 +3,27 @@
    external fonts or remote assets, and the app must render offline. */
 
 :root {
-  --paper: #f6f1e5;
-  --paper-raised: #fdfaf2;
-  --paper-sunken: #efe9d9;
-  --mat: #f1ebdc;
-  --ink: #26352b;
-  --ink-soft: #57684f;
-  --line: #ddd4bd;
-  --line-strong: #c3b996;
-  --accent: #35603f;
-  --accent-strong: #2a4e33;
-  --accent-soft: #e2ead9;
-  --accent-ink: #fffdf6;
-  --gold-ink: #6d4f10;
-  --gold-soft: #f8efd4;
-  --gold-line: #d8bd77;
-  --danger: #8f3a26;
-  --danger-soft: #f9ebe4;
-  --danger-line: #d49c87;
-  --focus: #7552a1;
-  --shadow: 0 1px 2px rgb(38 53 43 / 0.06), 0 6px 24px rgb(38 53 43 / 0.08);
-  --shadow-soft: 0 1px 2px rgb(38 53 43 / 0.05);
+  --paper: #f6f1e7;
+  --paper-raised: #fcf9f2;
+  --paper-sunken: #ede6d8;
+  --mat: #efe8d7;
+  --ink: #26201a;
+  --ink-soft: #5b5142;
+  --line: #d9cfbc;
+  --line-strong: #b7aa92;
+  --accent: #94472e;
+  --accent-strong: #7a3822;
+  --accent-soft: #f2e3d6;
+  --accent-ink: #fcf9f2;
+  --gold-ink: #7c5c22;
+  --gold-soft: #f5ecd6;
+  --gold-line: #d3b57a;
+  --danger: #8a2d1c;
+  --danger-soft: #f8e7df;
+  --danger-line: #d49a83;
+  --focus: #3e5c55;
+  --shadow: 0 1px 2px rgb(43 35 26 / 0.06), 0 6px 24px rgb(43 35 26 / 0.09);
+  --shadow-soft: 0 1px 2px rgb(43 35 26 / 0.05);
   --radius: 10px;
   --radius-small: 7px;
   --serif: "Iowan Old Style", "Palatino Nova", Palatino, "Book Antiqua", Georgia, serif;
@@ -35,25 +35,25 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --paper: #1d231c;
-    --paper-raised: #262d24;
-    --paper-sunken: #171c16;
-    --mat: #2b332a;
-    --ink: #e9e6d6;
-    --ink-soft: #b2bda6;
-    --line: #3a443a;
-    --line-strong: #4c584a;
-    --accent: #88b894;
-    --accent-strong: #a3cdae;
-    --accent-soft: #2c3a2e;
-    --accent-ink: #15241a;
-    --gold-ink: #dcb96a;
-    --gold-soft: #332b17;
+    --paper: #1b1611;
+    --paper-raised: #251f18;
+    --paper-sunken: #15110c;
+    --mat: #211b14;
+    --ink: #e9e2d2;
+    --ink-soft: #a79a85;
+    --line: #3a332a;
+    --line-strong: #4e4638;
+    --accent: #c87f5f;
+    --accent-strong: #d89474;
+    --accent-soft: #33261e;
+    --accent-ink: #1b1310;
+    --gold-ink: #c9a25e;
+    --gold-soft: #2f2615;
     --gold-line: #6d5a2b;
-    --danger: #e2957e;
-    --danger-soft: #38231c;
+    --danger: #de8f73;
+    --danger-soft: #35201a;
     --danger-line: #7c4733;
-    --focus: #b89ddd;
+    --focus: #8fada2;
     --shadow: 0 1px 2px rgb(0 0 0 / 0.3), 0 6px 24px rgb(0 0 0 / 0.35);
     --shadow-soft: 0 1px 2px rgb(0 0 0 / 0.25);
     color-scheme: dark;
@@ -255,7 +255,7 @@ h1::after {
   background: var(--paper-raised);
   border-top: 1px solid var(--line);
   padding-bottom: env(safe-area-inset-bottom);
-  box-shadow: 0 -4px 18px rgb(38 53 43 / 0.07);
+  box-shadow: 0 -4px 18px rgb(43 35 26 / 0.08);
 }
 .journal-navigation a {
   display: flex;
@@ -464,9 +464,53 @@ a.journal-card:hover h2, a.bird-card:hover h2 { color: var(--accent); }
 .frame-controls:focus-within { opacity: 1; }
 
 .presenting header, .presenting .journal-navigation { display: none; }
-.presenting main { max-width: none; padding: 12px; text-align: center; }
-.presenting h1, .presenting .intro { font-size: 17px; margin-block: 8px; }
-.presenting .frame-art, .presenting .frame-viewport { height: 86svh; }
+/* Lights-out is deliberate in both themes, so presenting text colors are
+   fixed here rather than inherited from the light or dark token set. */
+.presenting, body.presenting { background: #16120c; }
+.presenting main { max-width: none; padding: 0 10px calc(env(safe-area-inset-bottom) + 185px); text-align: center; }
+.presenting .hint, .presenting p { color: #9b8f7a; }
+.presenting a { color: #cf9a7f; }
+.presenting .error { color: #e2957e; background: #35201a; border-color: #7c4733; }
+.presenting .connection { background: #2a241c; color: #d9cfbc; }
+.presenting h1 {
+  margin: 0;
+  padding: 14px 12px 0;
+  font: 650 14px/1.3 system-ui, sans-serif;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: #d9cfbc;
+}
+.presenting h1::after { display: none; }
+.presenting .intro { font-size: 13px; margin: 3px 0 10px; color: #9b8f7a; }
+.presenting .frame-art, .presenting .frame-viewport { height: 80svh; }
+.presenting .frame-art { background: transparent; border: 0; border-radius: 0; }
+.presenting .frame-controls {
+  position: fixed;
+  bottom: max(14px, env(safe-area-inset-bottom));
+  left: 50%;
+  transform: translateX(-50%);
+  width: max-content;
+  max-width: 96vw;
+  margin: 0;
+  padding: 4px 6px;
+  background: rgb(27 22 17 / 0.92);
+  border: 1px solid #4e4638;
+  border-radius: 20px;
+}
+.presenting .frame-controls button, .presenting .frame-controls a {
+  min-height: 42px;
+  padding: 8px 10px;
+  font-size: 14px;
+  background: transparent;
+  border: 0;
+  color: #e9e2d2;
+}
+.presenting .frame-controls button:hover, .presenting .frame-controls a:hover {
+  background: rgb(233 226 210 / 0.12);
+  color: #fcf9f2;
+}
+.presenting .error { position: fixed; top: 10px; inset-inline: 10px; z-index: 6; }
+.presenting .error:empty { position: static; }
 
 /* ---- Desktop ---- */
 
