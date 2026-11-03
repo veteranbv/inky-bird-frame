@@ -8,6 +8,8 @@ from pathlib import Path
 from tempfile import TemporaryDirectory
 from unittest.mock import patch
 
+import pytest
+
 from inky_bird_frame.birds import BirdSpecies
 from inky_bird_frame.catalog import (
     CollectionEntry,
@@ -194,6 +196,7 @@ class CatalogTests(unittest.TestCase):
             with self.assertRaisesRegex(CatalogError, "Invalid collection entry"):
                 read_collection(state)
 
+    @pytest.mark.repository_catalog
     def test_approved_seed_has_valid_checksums(self) -> None:
         catalog = Path(__file__).parents[1] / "catalog"
 

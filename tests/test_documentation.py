@@ -5,6 +5,7 @@ from collections import defaultdict
 from pathlib import Path
 from urllib.parse import unquote, urlsplit
 
+import pytest
 from PIL import Image
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -51,6 +52,7 @@ def _anchors(path: Path) -> set[str]:
     return anchors
 
 
+@pytest.mark.repository_catalog
 def test_internal_documentation_links_and_anchors_resolve() -> None:
     problems: list[str] = []
     anchor_cache: dict[Path, set[str]] = {}
