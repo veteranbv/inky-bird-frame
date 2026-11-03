@@ -399,6 +399,15 @@ uv run pytest
 uv run inky-bird-frame catalog validate --catalog catalog
 ```
 
+## About the maker
+
+Inky Bird is made by [Henry Sowell](https://henrysowell.com) — the plates live
+on [henrysowell.com/birds](https://henrysowell.com/birds). Ideas, feedback and
+bird requests are welcome in
+[GitHub issues](https://github.com/veteranbv/inky-bird-frame/issues). Elsewhere:
+[GitHub](https://github.com/veteranbv) ·
+[X](https://x.com/realhenry).
+
 ## License
 
 Inky Bird is available under the [MIT License](LICENSE). The controller

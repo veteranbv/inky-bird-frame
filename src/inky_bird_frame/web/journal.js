@@ -1700,6 +1700,32 @@ export async function openJournal(ui, message = '') {
     const account = button('Account and access', ui.account);
     account.prepend(icon('account'));
     main.append(account, button('Sign out', ui.signOut));
+    const about = el('section', '', 'journal-card about-card');
+    about.append(el('h2', 'About Inky Bird'));
+    about.append(
+      note('Inky Bird is free, open-source software made by Henry Sowell.'),
+    );
+    const places = el('p');
+    for (const [text, url] of [
+      ['henrysowell.com', 'https://henrysowell.com'],
+      ['GitHub', 'https://github.com/veteranbv'],
+      ['X', 'https://x.com/realhenry'],
+    ]) {
+      const anchor = el('a', text, 'text-link');
+      anchor.href = url;
+      anchor.target = '_blank';
+      anchor.rel = 'noopener noreferrer';
+      places.append(anchor);
+    }
+    about.append(places);
+    const feedback = el('p', '', 'hint');
+    const issues = el('a', 'GitHub issues');
+    issues.href = 'https://github.com/veteranbv/inky-bird-frame/issues';
+    issues.target = '_blank';
+    issues.rel = 'noopener noreferrer';
+    feedback.append(document.createTextNode('Ideas and feedback are welcome on '), issues, document.createTextNode('.'));
+    about.append(feedback);
+    main.append(about);
   } else if (['sources', 'work', 'displays', 'notifications'].includes(area)) {
     base(
       {
