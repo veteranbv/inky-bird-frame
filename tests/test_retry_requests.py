@@ -28,17 +28,23 @@ from inky_bird_frame.owner_operations import execute_owner_operation
 from inky_bird_frame.recovery import retry_species
 from inky_bird_frame.retry_requests import (
     MAX_REQUESTS,
+    RETRY_WAKE_LISTENER,
     prepare_retry_requests,
     queue_retries,
     retry_requests,
     retry_wake_token,
 )
+from inky_bird_frame.runtime_state import state_lock
 from inky_bird_frame.settings import initialize_config, settings_status
 
 
-def app(root: Path) -> AppConfig:
+def app(root: Path, *, generation_enabled: bool = False) -> AppConfig:
     path = root / "config.toml"
     initialize_config(path)
+    if generation_enabled:
+        path.write_text(
+            path.read_text().replace('"generation_enabled" = false', '"generation_enabled" = true')
+        )
     return load_config(path, load_secrets=False)
 
 
@@ -151,9 +157,10 @@ def test_generation_cycle_waits_then_resumes_the_original_retry_request(
 
 
 def test_owner_can_queue_multiple_retries_while_generation_lock_is_held(tmp_path: Path) -> None:
-    config = app(tmp_path)
+    config = app(tmp_path, generation_enabled=True)
     revision = str(settings_status(config)["revision"])
     with (
+        state_lock(config.controller.state_dir / RETRY_WAKE_LISTENER),
         exclusive_cycle_lock(config.controller.state_dir),
         patch("inky_bird_frame.controller.generate_candidate") as model,
     ):

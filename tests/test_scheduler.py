@@ -1,11 +1,33 @@
 from __future__ import annotations
 
 import unittest
+from argparse import Namespace
+from pathlib import Path
 from signal import SIGTERM
 from unittest.mock import Mock, patch
 
+from inky_bird_frame.cli import scheduler_command
+from inky_bird_frame.config import load_config
 from inky_bird_frame.errors import CatalogError
+from inky_bird_frame.retry_requests import RETRY_WAKE_LISTENER
+from inky_bird_frame.runtime_state import state_lock_held
 from inky_bird_frame.scheduler import ScheduledJob, SubprocessCommandRunner, run_scheduler
+from inky_bird_frame.settings import initialize_config
+
+
+def test_scheduler_holds_retry_listener_only_while_running(tmp_path: Path) -> None:
+    config_path = tmp_path / "config.toml"
+    initialize_config(config_path)
+    listener = load_config(config_path).controller.state_dir / RETRY_WAKE_LISTENER
+
+    def run(*_args: object, **_kwargs: object) -> None:
+        assert state_lock_held(listener)
+
+    assert not state_lock_held(listener)
+    with patch("inky_bird_frame.cli.run_scheduler", side_effect=run):
+        assert scheduler_command(Namespace(config=config_path)) == 0
+    assert listener.is_file()
+    assert not state_lock_held(listener)
 
 
 class FakeClock:

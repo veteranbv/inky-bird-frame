@@ -435,7 +435,7 @@ def execute_owner_operation(
     """Adapt only named, typed application operations; never shell text or models."""
     from .controller import refresh_observations
     from .notifications import dispatch_notifications, requeue_dead_letters, send_notification_test
-    from .retry_requests import queue_retries
+    from .retry_requests import queue_retries, retry_wake_available
 
     try:
         config = confirmed_config(
@@ -464,6 +464,10 @@ def execute_owner_operation(
             raise OwnerOperationError("Choose a species or a batch, not both")
         if not 1 <= len(ids) <= 32 or any(type(id) is not int or id <= 0 for id in ids):
             raise OwnerOperationError("Choose between 1 and 32 species for retry")
+        if kind == "retry-now" and not retry_wake_available(config):
+            raise OwnerOperationError(
+                "An immediate check is unavailable. Queue the selection for a scheduled check."
+            )
         try:
             requests = queue_retries(
                 config.controller.state_dir, cast(list[int], ids), run_now=kind == "retry-now"

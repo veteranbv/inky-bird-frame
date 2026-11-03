@@ -35,7 +35,7 @@ from .controller import (
 from .errors import CatalogError, DataSourceError, GenerationError, InkyBirdFrameError
 from .http import write_bytes_atomic
 from .notifications import notification_status
-from .retry_requests import retry_requests
+from .retry_requests import retry_requests, retry_wake_available
 from .runtime_state import read_state
 from .server import featured_plate_entry, project_catalog
 from .settings import current_config
@@ -1444,6 +1444,7 @@ class JournalService:
             "available": True,
             "configuration_ownership": config.controller.configuration_ownership,
             "generation_enabled": config.controller.generation_enabled,
+            "retry_wake_available": retry_wake_available(config),
             "sources": sources,
             "window": config.discovery.observation_window.value,
             "refresh_minutes": config.schedule.refresh_minutes,

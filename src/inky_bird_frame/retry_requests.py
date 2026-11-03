@@ -14,11 +14,12 @@ from uuid import uuid4
 from .catalog import find_taxon_directory, has_valid_approved_candidate, utc_now
 from .config import AppConfig
 from .errors import CatalogError, InkyBirdFrameError, SpeciesStateError
-from .runtime_state import read_state, state_lock, write_state
+from .runtime_state import read_state, state_lock, state_lock_held, write_state
 from .timeutil import parse_utc_timestamp
 
 MAX_REQUESTS = 256
 MAX_BATCH = 32
+RETRY_WAKE_LISTENER = "retry-wake-listener.lock"
 _STATUSES = {"queued", "preparing", "eligible", "approved", "blocked"}
 
 
@@ -146,6 +147,12 @@ def retry_requests(state_dir: Path) -> list[RetryRequest]:
 def retry_wake_token(state_dir: Path) -> str | None:
     rows, wake = _read(state_dir)
     return wake if any(row.status == "queued" and row.run_now for row in rows) else None
+
+
+def retry_wake_available(config: AppConfig) -> bool:
+    return config.controller.generation_enabled and state_lock_held(
+        config.controller.state_dir / RETRY_WAKE_LISTENER
+    )
 
 
 def complete_operator_retry(state_dir: Path, taxon_id: int) -> None:

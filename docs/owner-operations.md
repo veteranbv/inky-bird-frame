@@ -24,8 +24,10 @@ is not replaced, and complete pending candidates still require review.
 
 Choose **Queue selected for the next scheduled check** to wait for the normal
 schedule. **Retry selected as soon as possible** asks the existing scheduler to
-refresh sources and check generation after its current job finishes. Neither
-action starts a model in the web service or interrupts an active plate.
+refresh sources and check generation after its current job finishes. This action
+is available only while generation is enabled and Inky's scheduler is running.
+Installations that use separate system timers can use the scheduled queue.
+Neither action starts a model in the web service or interrupts an active plate.
 Generation must be enabled, discovery must be healthy, and ordinary attempt,
 research and sourced-review limits still apply. Generation can use your AI
 allowance or incur costs.

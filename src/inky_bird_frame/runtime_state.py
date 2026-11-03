@@ -18,18 +18,34 @@ MAX_STATE_BYTES = 256 * 1024
 
 
 @contextmanager
-def state_lock(path: Path) -> Iterator[None]:
+def state_lock(path: Path, *, nonblocking: bool = False) -> Iterator[None]:
     path.parent.mkdir(parents=True, exist_ok=True)
     descriptor = os.open(path, os.O_CREAT | os.O_RDWR | os.O_NOFOLLOW, 0o600)
     with os.fdopen(descriptor, "r+") as handle:
         if not stat.S_ISREG(os.fstat(handle.fileno()).st_mode):
             raise CatalogError("Runtime state lock is unsafe")
         os.fchmod(handle.fileno(), 0o600)
-        fcntl.flock(handle, fcntl.LOCK_EX)
+        fcntl.flock(handle, fcntl.LOCK_EX | (fcntl.LOCK_NB if nonblocking else 0))
         try:
             yield
         finally:
             fcntl.flock(handle, fcntl.LOCK_UN)
+
+
+def state_lock_held(path: Path) -> bool:
+    """Probe for an exclusive holder without creating a file or waiting."""
+    try:
+        descriptor = os.open(path, os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK)
+        with os.fdopen(descriptor, "rb") as handle:
+            if not stat.S_ISREG(os.fstat(handle.fileno()).st_mode):
+                return False
+            try:
+                fcntl.flock(handle, fcntl.LOCK_SH | fcntl.LOCK_NB)
+            except BlockingIOError:
+                return True
+    except OSError:
+        pass
+    return False
 
 
 def read_state(path: Path) -> dict[str, object] | None:
