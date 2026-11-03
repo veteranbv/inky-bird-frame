@@ -84,6 +84,7 @@ header a {
   text-decoration: none;
 }
 header a .icon { width: 26px; height: 26px; color: var(--accent); }
+.brand-icon { width: 28px; height: 28px; border-radius: 7px; border: 1px solid var(--line); }
 header span { font-size: 13.5px; color: var(--ink-soft); letter-spacing: 0.02em; }
 
 .icon {
@@ -231,7 +232,7 @@ h1::after {
 
 /* ---- Welcome and sign-in ---- */
 
-.auth-mark { display: block; width: 52px; height: 52px; margin: 14px 0 4px; color: var(--accent); stroke-width: 1.3; }
+.auth-mark { display: block; width: 64px; height: 64px; margin: 14px 0 6px; border-radius: 14px; border: 1px solid var(--line); box-shadow: var(--shadow-soft); }
 .doc-link { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; margin-top: 14px; }
 .sso-button { min-height: 54px; font-size: 17.5px; }
 .auth-alt { margin-top: 22px; border-bottom: 0; border-top: 1px solid var(--line); }

@@ -279,7 +279,12 @@ function signIn(access, notice = '') {
       ? 'Create the owner account for your bird journal. No email or online account is needed.'
       : 'Sign in to your Inky bird journal.',
   );
-  main.prepend(icon('feather', 'icon auth-mark'));
+  const mark = element('img', '', 'auth-mark');
+  mark.src = '/app/icon-180.png';
+  mark.alt = '';
+  mark.width = 180;
+  mark.height = 180;
+  main.prepend(mark);
   if (notice) main.append(noticeMessage(notice));
   connectionNotice(access);
   if (setup)

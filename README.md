@@ -1,5 +1,9 @@
 # Inky Bird Frame
 
+<p align="center">
+  <img src="docs/images/inky-app-icon.png" width="128" alt="Inky Bird Frame app icon: a layered paper-cut bird in warm madder red with a cream breast, on an ivory rounded square">
+</p>
+
 Keep birding present between outings. Bring the birds around you, the birds
 your station hears, and the birds you remember from a trip to your wall,
 browser or dashboard as reviewed field-journal plates.
