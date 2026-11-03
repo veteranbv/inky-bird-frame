@@ -135,6 +135,7 @@ function present(initial) {
     caption = el('p'),
     status = el('p');
   image.className = 'frame-art';
+  caption.className = 'frame-caption';
   image.hidden = true;
   status.setAttribute('role', 'status');
   const controls = el('div');

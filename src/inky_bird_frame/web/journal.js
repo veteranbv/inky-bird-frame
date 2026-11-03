@@ -1166,7 +1166,7 @@ export async function openJournal(ui, message = '') {
       renderedKey = '',
       loading = null;
     image.hidden = true;
-    const caption = el('p'),
+    const caption = el('p', '', 'frame-caption'),
       status = el('p', '', 'hint');
     status.setAttribute('role', 'status');
     const controls = el('div', '', 'frame-controls');
@@ -1226,7 +1226,10 @@ export async function openJournal(ui, message = '') {
         nextURL = null;
         renderedKey = key;
         position = index;
-        caption.textContent = bird.common_name;
+        caption.replaceChildren(
+          el('span', bird.common_name),
+          el('span', bird.scientific_name, 'scientific'),
+        );
         details.href = href('bird', { bird: bird.taxon_id });
         status.textContent = '';
       } catch (error) {
@@ -1275,6 +1278,13 @@ export async function openJournal(ui, message = '') {
       random.textContent = shuffle ? 'Shuffle on' : 'Shuffle off';
     });
     controls.append(random);
+    const labels = button('Bird name on', () => {
+      const hidden = document.body.classList.toggle('frame-labels-off');
+      labels.textContent = hidden ? 'Bird name off' : 'Bird name on';
+      labels.setAttribute('aria-pressed', String(!hidden));
+    });
+    labels.setAttribute('aria-pressed', 'true');
+    controls.append(labels);
     const stopTools = frameTools({
       viewport,
       controls,

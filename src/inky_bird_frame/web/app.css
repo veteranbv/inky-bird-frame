@@ -554,6 +554,38 @@ a.journal-card:hover h2, a.bird-card:hover h2 { color: var(--accent); }
 }
 .presenting .error { position: fixed; top: 10px; inset-inline: 10px; z-index: 6; }
 .presenting .error:empty { position: static; }
+.presenting .frame-caption {
+  margin: 12px 0 0;
+  font-family: var(--serif);
+  font-size: 20px;
+  color: #e9e2d2;
+}
+.presenting .frame-caption .scientific { display: block; font-size: 15px; color: #9b8f7a; }
+.frame-labels-off .frame-caption { display: none; }
+
+/* Fullscreen is the ambient display: the plate alone, controls floating in
+   on activity, and the bird placard only when labels are on. */
+:root:fullscreen .presenting h1,
+:root:fullscreen .presenting .intro,
+:root:fullscreen .presenting p.hint:not([role="status"]) { display: none; }
+:root:fullscreen .presenting main { padding: 0; }
+:root:fullscreen .presenting .frame-art,
+:root:fullscreen .presenting .frame-viewport { height: 100svh; }
+:root:fullscreen .presenting .frame-caption {
+  position: fixed;
+  left: 16px;
+  top: max(16px, env(safe-area-inset-top));
+  z-index: 5;
+  width: max-content;
+  max-width: 70vw;
+  margin: 0;
+  padding: 10px 16px;
+  text-align: left;
+  background: rgb(27 22 17 / 0.88);
+  border: 1px solid #4e4638;
+  border-radius: 12px;
+}
+:root:fullscreen .frame-labels-off .frame-caption { display: none; }
 
 /* ---- Desktop ---- */
 

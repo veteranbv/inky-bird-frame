@@ -51,7 +51,11 @@ your configuration with a new seed.
 - Frame shows complete portrait plates without cropping. Play changes plates
   once a minute. Previous, Next, Pause, Shuffle, Details, Zoom and Exit remain
   available. Reading details stops playback. Fullscreen and wake lock depend on
-  browser support. Zoom is an explicit pan view, not a change to the plate.
+  browser support. Fullscreen shows the plate alone: the view title and notes
+  leave, controls float in on activity and fade, and the Bird name toggle
+  chooses whether a small placard names the current bird. For a television or
+  other shared screen, pair a read-only screen instead of leaving an owner
+  session signed in on that device. Zoom is an explicit pan view, not a change to the plate.
 - Manage shows all seven source types, current work partitions, notification
   counts and the last confirmed physical panel update. Existing configuration
   stays managed. [App-managed settings](settings.md) add source and policy edits
