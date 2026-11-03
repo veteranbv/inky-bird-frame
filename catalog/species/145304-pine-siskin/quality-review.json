@@ -1,0 +1,32 @@
+{
+  "anatomy_accuracy": 5,
+  "composition_quality": 5,
+  "correction_findings": [],
+  "findings": [
+    "The plate depicts exactly one complete primary specimen with one head, one bill, one tail, a convincing pair of folded wings, and two naturally attached legs with intact grasping feet; the detached wing and head are clearly supplementary studies.",
+    "Both depicted bills now have slender, pointed profiles with only modest upper-mandible projection, consistent with the clearest attached side-profile references; the previously truncated-looking lower mandibles have been corrected.",
+    "The brown-and-cream fine streaking, dark wings, two pale wingbars, yellow wing and tail markings, dark eyes, pinkish-gray legs, and short notched tail support Pine Siskin identification.",
+    "The common name, scientific name, family, measurements, habitat, behavior, and all six field-mark lines are legible and match the proposed profile. The All About Birds measurement set directly supports 11\u201314 cm length, 12\u201318 g weight, and 18\u201322 cm wingspan for both sexes.",
+    "The body-length diagram correctly increases from 11 at the bottom to 14 at the top and is expressly labeled \u201cSCHEMATIC \u2014 NOT TO SCALE.\u201d",
+    "The composition clearly separates the primary specimen, supplementary studies, palette, descriptive text, and schematic ruler without implying extra attached anatomy.",
+    "No place name, ZIP code, coordinates, map, or local-observation detail appears."
+  ],
+  "location_free": true,
+  "passed": true,
+  "species_accuracy": 5,
+  "text_accuracy": 5,
+  "verification_sources": [
+    {
+      "title": "Pine Siskin Identification \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Pine_Siskin/id"
+    },
+    {
+      "title": "Pine Siskin Life History \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Pine_Siskin/lifehistory"
+    },
+    {
+      "title": "Pine Siskin \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/pine-siskin"
+    }
+  ]
+}
