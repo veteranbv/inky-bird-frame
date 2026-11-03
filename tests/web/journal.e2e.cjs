@@ -516,6 +516,22 @@ let browser,
     .data;
   let currentJournal = (await (await context.request.get(origin + '/v1/owner/journal')).json())
     .data;
+  // Where the engine honors a trusted fullscreen request, the paired screen
+  // runs the following state changes as an ambient display, and each notice
+  // must land inside the live window rather than below the full-height plate.
+  let screenAmbient = false;
+  const screenFullscreen = screen.getByRole('button', { name: 'Fullscreen', exact: true });
+  if ((await screenFullscreen.count()) === 1) {
+    await screenFullscreen.click();
+    screenAmbient = (await screen.evaluate(() => document.fullscreenElement?.tagName)) === 'HTML';
+  }
+  const screenInside = async (locator) => {
+    const size = await screen.evaluate(() => ({ width: innerWidth, height: innerHeight }));
+    const box = await locator.boundingBox();
+    return (
+      box && box.y >= 0 && box.x >= 0 && box.y + box.height <= size.height && box.x + box.width <= size.width
+    );
+  };
   await screenContext.route('**/v1/screen/plates/' + replacement.taxon_id + '?*', (route) =>
     route.fulfill({ status: 503, contentType: 'application/json', body: '{"ok":false}' }),
   );
@@ -535,6 +551,7 @@ let browser,
   );
   await screen.clock.runFor(15100);
   await screen.getByText(/temporarily unavailable/).waitFor();
+  if (screenAmbient) assert(await screenInside(screen.getByText(/temporarily unavailable/)));
   assert.equal(await screen.locator('img[src]').count(), 0);
   currentJournal = (await (await context.request.get(origin + '/v1/owner/journal')).json()).data;
   assert.equal(
@@ -547,11 +564,12 @@ let browser,
     200,
   );
   await screen.clock.runFor(15100);
-  await screen
-    .getByText('No approved plates in the permitted view. Inky will not switch views.', {
-      exact: true,
-    })
-    .waitFor();
+  const emptyNotice = screen.getByText(
+    'No approved plates in the permitted view. Inky will not switch views.',
+    { exact: true },
+  );
+  await emptyNotice.waitFor();
+  if (screenAmbient) assert(await screenInside(emptyNotice));
   assert.equal(await screen.locator('img[src]').count(), 0);
   await page.getByRole('button', { name: 'Revoke screen', exact: true }).click();
   await screen.clock.runFor(15100);
