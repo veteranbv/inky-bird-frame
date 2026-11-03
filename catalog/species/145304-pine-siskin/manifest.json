@@ -1,0 +1,155 @@
+{
+  "approved_at": "2026-11-03T11:41:43+00:00",
+  "assets": {
+    "display": {
+      "filename": "display.png",
+      "sha256": "8a278a5b136d6fdce590c3d2f08f98b999c37f4fba6e770307774b5c464dac74"
+    },
+    "portrait": {
+      "filename": "portrait.png",
+      "sha256": "acbcc6b20cfe200298ec2052b4ce41d5812d471b995fc9da0d27b44721fcae5e"
+    }
+  },
+  "common_name": "Pine Siskin",
+  "generation": {
+    "attempt": 3,
+    "correction_source_sha256": "dadd41d9cb3bcde5dcfeed90fc6367281bdc07b762e04d5a0628ed346a3e89ab",
+    "generated_at": "2026-11-03T11:41:42+00:00",
+    "generator": "Codex subscription / built-in gpt-image-2",
+    "max_attempts": 3,
+    "prompt_version": "field-journal-v6"
+  },
+  "profile": {
+    "behavior": "A social, nomadic finch that forages in noisy flocks, clinging acrobatically\u2014sometimes upside down\u2014to cones, branch tips, and seed heads. Its flight is undulating, and winter movements are highly erratic in response to seed availability.",
+    "common_name": "Pine Siskin",
+    "family": "Fringillidae",
+    "field_marks": [
+      "Brown-and-cream plumage with heavy, fine streaking",
+      "Slender, sharply pointed gray bill",
+      "Yellow edging and patches on the dark wings",
+      "Two pale wingbars",
+      "Short, distinctly notched tail with yellow edging",
+      "Dark eyes and pinkish-gray legs"
+    ],
+    "habitat": "Open coniferous and mixed forests, especially edges and clearings; also deciduous woodland, scrubby thickets, weedy fields, grasslands, parks, gardens, and other semi-open areas with abundant seeds.",
+    "measurements": {
+      "length": "11\u201314 cm (4.3\u20135.5 in), both sexes",
+      "weight": "12\u201318 g (0.4\u20130.6 oz), both sexes",
+      "wingspan": "18\u201322 cm (7.1\u20138.7 in), both sexes"
+    },
+    "palette": [
+      "streaked brown",
+      "warm cream",
+      "charcoal gray",
+      "lemon yellow",
+      "soft white"
+    ],
+    "scientific_name": "Spinus pinus",
+    "sources": [
+      {
+        "title": "Pine Siskin Identification \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Pine_Siskin/id"
+      },
+      {
+        "title": "Pine Siskin Life History \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Pine_Siskin/lifehistory"
+      },
+      {
+        "title": "Pine Siskin \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/pine-siskin"
+      }
+    ],
+    "taxon_id": 145304
+  },
+  "quality_review": {
+    "anatomy_accuracy": 5,
+    "composition_quality": 5,
+    "correction_findings": [],
+    "findings": [
+      "The plate depicts exactly one complete primary specimen with one head, one bill, one tail, a convincing pair of folded wings, and two naturally attached legs with intact grasping feet; the detached wing and head are clearly supplementary studies.",
+      "Both depicted bills now have slender, pointed profiles with only modest upper-mandible projection, consistent with the clearest attached side-profile references; the previously truncated-looking lower mandibles have been corrected.",
+      "The brown-and-cream fine streaking, dark wings, two pale wingbars, yellow wing and tail markings, dark eyes, pinkish-gray legs, and short notched tail support Pine Siskin identification.",
+      "The common name, scientific name, family, measurements, habitat, behavior, and all six field-mark lines are legible and match the proposed profile. The All About Birds measurement set directly supports 11\u201314 cm length, 12\u201318 g weight, and 18\u201322 cm wingspan for both sexes.",
+      "The body-length diagram correctly increases from 11 at the bottom to 14 at the top and is expressly labeled \u201cSCHEMATIC \u2014 NOT TO SCALE.\u201d",
+      "The composition clearly separates the primary specimen, supplementary studies, palette, descriptive text, and schematic ruler without implying extra attached anatomy.",
+      "No place name, ZIP code, coordinates, map, or local-observation detail appears."
+    ],
+    "location_free": true,
+    "passed": true,
+    "species_accuracy": 5,
+    "text_accuracy": 5,
+    "verification_sources": [
+      {
+        "title": "Pine Siskin Identification \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Pine_Siskin/id"
+      },
+      {
+        "title": "Pine Siskin Life History \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Pine_Siskin/lifehistory"
+      },
+      {
+        "title": "Pine Siskin \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/pine-siskin"
+      }
+    ]
+  },
+  "references": [
+    {
+      "attribution": "no rights reserved",
+      "filename": "01-339619490.jpg",
+      "height": 1365,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/339619490/large.jpg",
+      "license_code": "cc0",
+      "observation_id": 193337523,
+      "observer": "rawcomposition",
+      "photo_id": 339619490,
+      "sha256": "67fc7c457c22c91147c75af42cc587021590779152887b8100d0a26edad574a2",
+      "source_url": "https://www.inaturalist.org/observations/193337523",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) Nigel Voaden, some rights reserved (CC BY)",
+      "filename": "02-2029363.jpg",
+      "height": 1365,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/2029363/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 1658100,
+      "observer": "terathopius",
+      "photo_id": 2029363,
+      "sha256": "48a9ed3b982ea8f1b0d9916e65cb5022e9d831d32e0fdb36de114dea1f61ce80",
+      "source_url": "http://www.inaturalist.org/observations/1658100",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) Millie Basden, some rights reserved (CC BY)",
+      "filename": "03-367379698.jpeg",
+      "height": 1339,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/367379698/large.jpeg",
+      "license_code": "cc-by",
+      "observation_id": 207683588,
+      "observer": "milliebasden",
+      "photo_id": 367379698,
+      "sha256": "b783dd121c2e7112689c1b877f02658aaa087f96081aae089d503420c57f8153",
+      "source_url": "https://www.inaturalist.org/observations/207683588",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) Marcel_Pepin, some rights reserved (CC BY)",
+      "filename": "04-385934961.jpg",
+      "height": 1158,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/385934961/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 218115000,
+      "observer": "marcel_pepin",
+      "photo_id": 385934961,
+      "sha256": "6c1440e2256f069e7c2628b191c21298359f59d8346b211261bf37816e8a70ba",
+      "source_url": "https://www.inaturalist.org/observations/218115000",
+      "width": 1730
+    }
+  ],
+  "schema_version": 1,
+  "scientific_name": "Spinus pinus",
+  "slug": "pine-siskin",
+  "status": "approved",
+  "taxon_id": 145304
+}

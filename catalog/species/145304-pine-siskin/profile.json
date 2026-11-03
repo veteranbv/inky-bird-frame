@@ -1,0 +1,42 @@
+{
+  "behavior": "A social, nomadic finch that forages in noisy flocks, clinging acrobatically\u2014sometimes upside down\u2014to cones, branch tips, and seed heads. Its flight is undulating, and winter movements are highly erratic in response to seed availability.",
+  "common_name": "Pine Siskin",
+  "family": "Fringillidae",
+  "field_marks": [
+    "Brown-and-cream plumage with heavy, fine streaking",
+    "Slender, sharply pointed gray bill",
+    "Yellow edging and patches on the dark wings",
+    "Two pale wingbars",
+    "Short, distinctly notched tail with yellow edging",
+    "Dark eyes and pinkish-gray legs"
+  ],
+  "habitat": "Open coniferous and mixed forests, especially edges and clearings; also deciduous woodland, scrubby thickets, weedy fields, grasslands, parks, gardens, and other semi-open areas with abundant seeds.",
+  "measurements": {
+    "length": "11\u201314 cm (4.3\u20135.5 in), both sexes",
+    "weight": "12\u201318 g (0.4\u20130.6 oz), both sexes",
+    "wingspan": "18\u201322 cm (7.1\u20138.7 in), both sexes"
+  },
+  "palette": [
+    "streaked brown",
+    "warm cream",
+    "charcoal gray",
+    "lemon yellow",
+    "soft white"
+  ],
+  "scientific_name": "Spinus pinus",
+  "sources": [
+    {
+      "title": "Pine Siskin Identification \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Pine_Siskin/id"
+    },
+    {
+      "title": "Pine Siskin Life History \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Pine_Siskin/lifehistory"
+    },
+    {
+      "title": "Pine Siskin \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/pine-siskin"
+    }
+  ],
+  "taxon_id": 145304
+}

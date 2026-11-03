@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-01T19:28:55+00:00",
+  "generated_at": "2026-11-03T11:41:43+00:00",
   "schema_version": 1,
   "species": [
     {
@@ -1431,6 +1431,17 @@
       "scientific_name": "Dryocopus pileatus",
       "slug": "pileated-woodpecker",
       "taxon_id": 17855
+    },
+    {
+      "approved_at": "2026-11-03T11:41:43+00:00",
+      "common_name": "Pine Siskin",
+      "display_path": "species/145304-pine-siskin/display.png",
+      "display_sha256": "8a278a5b136d6fdce590c3d2f08f98b999c37f4fba6e770307774b5c464dac74",
+      "portrait_path": "species/145304-pine-siskin/portrait.png",
+      "portrait_sha256": "acbcc6b20cfe200298ec2052b4ce41d5812d471b995fc9da0d27b44721fcae5e",
+      "scientific_name": "Spinus pinus",
+      "slug": "pine-siskin",
+      "taxon_id": 145304
     },
     {
       "approved_at": "2026-07-10T18:27:17+00:00",
