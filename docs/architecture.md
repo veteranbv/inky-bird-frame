@@ -1,6 +1,6 @@
 # Architecture
 
-Inky Bird Frame has three roles. The controller discovers birds and creates
+Inky Bird has three roles. The controller discovers birds and creates
 plates. The display node pulls approved images. An optional publisher sends new
 plates to a shared GitHub catalog. The controller also serves its bundled browser
 journal. Owner sessions can manage private choices. Separate read-only screen

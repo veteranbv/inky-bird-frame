@@ -211,7 +211,7 @@ def _featured_plate_document(
     empty_message: str,
 ) -> bytes:
     if entry is None:
-        title = "Inky Bird Frame"
+        title = "Inky Bird"
         content = f'<p role="status">{escape(empty_message)}</p>'
     else:
         common_name = entry.get("common_name")
@@ -226,7 +226,7 @@ def _featured_plate_document(
             or _SHA256_PATTERN.fullmatch(portrait_sha256) is None
         ):
             raise CatalogError("Active catalog entry has invalid featured-plate checksum")
-        title = f"{common_name} | Inky Bird Frame"
+        title = f"{common_name} | Inky Bird"
         portrait_url = f"../assets/{quote(portrait_path, safe='/')}?sha256={portrait_sha256}"
         content = (
             f'<img src="{escape(portrait_url, quote=True)}" '

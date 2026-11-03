@@ -1,5 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1758" role="img" aria-labelledby="title description">
-  <title id="title">How Inky Bird Frame works</title>
+  <title id="title">How Inky Bird works</title>
   <desc id="description">
     Runtime architecture. Upstream services sit at the top: observation services
     (iNaturalist, eBird, eBird Archive, BirdWeather, BirdNET-Go, BirdNET Analyzer, Bird Buddy), licensed reference and research

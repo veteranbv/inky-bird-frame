@@ -1,6 +1,6 @@
 # Discovery sources
 
-Inky Bird Frame reads public observations, your private exported eBird history,
+Inky Bird reads public observations, your private exported eBird history,
 detections from your own acoustic station through BirdWeather or self-hosted
 BirdNET-Go, private CSV history from BirdNET Analyzer, authorized postcard
 detections from your own Bird Buddy account, or a combination. Every result
@@ -246,7 +246,7 @@ configuration does not require coordinates or a postal code.
 
 ### Supported boundary
 
-Inky Bird Frame supports:
+Inky Bird supports:
 
 - reading species names, detection counts, and latest-detection timestamps from
   the authenticated station;
@@ -255,7 +255,7 @@ Inky Bird Frame supports:
 - approved catalog reuse, generation, review, rotation, and publication; and
 - every configured observation window, up to BirdWeather's 100-species API cap.
 
-Inky Bird Frame does not:
+Inky Bird does not:
 
 - install, configure, update, or monitor BirdNET-Pi or other acoustic detectors;
 - configure microphones, recording schedules, storage, retention, or uploads;
@@ -267,7 +267,7 @@ Inky Bird Frame does not:
 
 An acoustic detection is a model classification, not a human-confirmed sighting.
 False positives, overlapping calls, recordings, rebroadcast audio, distant
-sounds, and detector configuration can affect the result. Inky Bird Frame uses
+sounds, and detector configuration can affect the result. Inky Bird uses
 the station's accepted BirdWeather species summary as supplied. Tune and review
 the detector in its own software before relying on those species for display.
 
@@ -439,7 +439,7 @@ the Bird Buddy app. It is not an official developer integration and may change
 without notice. Bird Buddy's current
 [app EULA](https://mybirdbuddy.com/app-eula/) restricts automated and non-app
 access. Obtain Bird Buddy's permission for your account before enabling this
-provider. Inky Bird Frame cannot grant or verify that permission; you are
+provider. Inky Bird cannot grant or verify that permission; you are
 responsible for ensuring it remains valid.
 
 Create a dedicated email-and-password guest account and invite it to the feeder

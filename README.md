@@ -1,8 +1,12 @@
-# Inky Bird Frame
+# Inky Bird
 
 <p align="center">
-  <img src="docs/images/inky-app-icon.png" width="128" alt="Inky Bird Frame app icon: a layered paper-cut bird in warm madder red with a cream breast, on an ivory rounded square">
+  <img src="docs/images/inky-app-icon.png" width="128" alt="Inky Bird app icon: a layered paper-cut bird in warm madder red with a cream breast, on an ivory rounded square">
 </p>
+
+<p align="center"><em>Formerly Inky Bird Frame. The repository, package and
+<code>inky-bird-frame</code> commands keep their existing names, so working
+installations and documented commands are unchanged.</em></p>
 
 Keep birding present between outings. Bring the birds around you, the birds
 your station hears, and the birds you remember from a trip to your wall,
@@ -19,7 +23,7 @@ safe production choice until the candidate completes qualification and review.
 [![License: MIT](https://img.shields.io/github/license/veteranbv/inky-bird-frame)](LICENSE)
 
 <p align="center">
-  <img src="docs/images/framed-installation.jpg" alt="Inky Bird Frame displaying an Eastern Bluebird field-journal plate in a bronze portrait frame" width="560">
+  <img src="docs/images/framed-installation.jpg" alt="Inky Bird displaying an Eastern Bluebird field-journal plate in a bronze portrait frame" width="560">
   <br><em>A finished portrait installation using the recommended 12 x 16 inch frame with a panel-fitted mat opening.</em>
 </p>
 
@@ -204,7 +208,7 @@ from either the local station or BirdWeather data. His detailed
 [AvianVisitors project write-up](https://theodore.net/projects/AvianVisitors/)
 is a great guide to the full listening-station workflow.
 
-Inky Bird Frame meets that ecosystem at a different point. It can bring in
+Inky Bird meets that ecosystem at a different point. It can bring in
 acoustic detections from BirdNET-Go, BirdWeather, and BirdNET Analyzer alongside
 eBird, iNaturalist, Bird Buddy, and personal eBird history, then turn them into
 reviewed, reusable field-journal plates. Inky does not record or analyze raw
@@ -325,12 +329,12 @@ more room, the featured-plate card adds an upright bird plate that refreshes
 every 15 minutes.
 
 <p align="center">
-  <img src="docs/images/homepage-dashboard-compact.png" alt="Compact Homepage service card for Inky Bird Frame showing catalog readiness, active birds, approved plates, and controller version" width="720">
+  <img src="docs/images/homepage-dashboard-compact.png" alt="Compact Homepage service card for Inky Bird showing catalog readiness, active birds, approved plates, and controller version" width="720">
   <br><strong>Compact status</strong>
 </p>
 
 <p align="center">
-  <img src="docs/images/homepage-dashboard-featured-plate.png" alt="Homepage service card for Inky Bird Frame showing catalog stats above an upright featured Eastern Bluebird plate" width="720">
+  <img src="docs/images/homepage-dashboard-featured-plate.png" alt="Homepage service card for Inky Bird showing catalog stats above an upright featured Eastern Bluebird plate" width="720">
   <br><strong>Status and featured plate</strong>
 </p>
 
@@ -397,7 +401,7 @@ uv run inky-bird-frame catalog validate --catalog catalog
 
 ## License
 
-Inky Bird Frame is available under the [MIT License](LICENSE). The controller
+Inky Bird is available under the [MIT License](LICENSE). The controller
 container also includes Codex CLI and GitHub CLI. Their licenses and the exact
 in-image notice paths are listed in
 [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md).

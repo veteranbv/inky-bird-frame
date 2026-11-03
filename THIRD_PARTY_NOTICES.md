@@ -1,6 +1,6 @@
 # Third-party notices
 
-Inky Bird Frame is licensed under the [MIT License](LICENSE). The controller
+Inky Bird is licensed under the [MIT License](LICENSE). The controller
 container also redistributes these command-line tools:
 
 | Component | License | Source |
