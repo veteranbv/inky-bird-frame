@@ -54,7 +54,7 @@ jobs:
       # The evaluator at the default-branch tip: never the PR head, and never
       # the PR's base branch, which the PR chooses. No persisted credentials.
       - name: Check out trusted evaluator
-        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           ref: ${{ github.sha }}
           path: trusted
