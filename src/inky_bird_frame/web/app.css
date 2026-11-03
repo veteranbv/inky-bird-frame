@@ -566,7 +566,27 @@ a.journal-card:hover h2, a.bird-card:hover h2 { color: var(--accent); }
   font-size: 20px;
   color: #e9e2d2;
 }
-.presenting .frame-caption .scientific { display: block; font-size: 15px; color: #9b8f7a; }
+.frame-caption:empty { display: none; }
+/* State notices must stay on screen in the ambient view: the plate owns the
+   full viewport, so anything after it in flow would start below the fold. */
+.presenting .hint[role="status"]:not(:empty) {
+  position: fixed;
+  left: 50%;
+  bottom: calc(env(safe-area-inset-bottom) + 92px);
+  transform: translateX(-50%);
+  z-index: 6;
+  width: max-content;
+  max-width: min(92vw, 560px);
+  margin: 0;
+  padding: 10px 16px;
+  background: rgb(27 22 17 / 0.92);
+  border: 1px solid #6d5a2b;
+  border-radius: 10px;
+  color: #e9e2d2;
+  font-size: 15px;
+}
+.presenting .frame-caption span { display: block; }
+.presenting .frame-caption .scientific { font-size: 15px; color: #9b8f7a; }
 .frame-labels-off .frame-caption { display: none; }
 
 /* Fullscreen is the ambient display: the plate alone, controls floating in

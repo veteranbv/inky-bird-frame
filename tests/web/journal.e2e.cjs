@@ -707,6 +707,69 @@ let browser,
   await page.getByRole('button', { name: 'Zoom', exact: true }).click();
   await page.getByRole('button', { name: 'Fit whole plate', exact: true }).click();
   assert(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth));
+  phase = 'frame-ambient-labels';
+  // The Bird name toggle reports its pressed state and hides the placard.
+  const labelsOn = page.getByRole('button', { name: 'Bird name on', exact: true });
+  assert.equal(await labelsOn.getAttribute('aria-pressed'), 'true');
+  await page.locator('.frame-caption').waitFor();
+  await labelsOn.click();
+  const labelsOff = page.getByRole('button', { name: 'Bird name off', exact: true });
+  await labelsOff.waitFor();
+  assert.equal(await labelsOff.getAttribute('aria-pressed'), 'false');
+  assert(!(await page.locator('.frame-caption').isVisible()));
+  await labelsOff.click();
+  await page.getByRole('button', { name: 'Bird name on', exact: true }).waitFor();
+  await page.locator('.frame-caption').waitFor();
+  phase = 'frame-ambient-fade';
+  // Idle fades the floating controls once focus leaves them; keyboard
+  // activity brings them back. Focus inside the bar deliberately keeps them.
+  await page.evaluate(() => {
+    if (document.activeElement instanceof HTMLElement) document.activeElement.blur();
+  });
+  await page.clock.runFor(5100);
+  await page.locator('.frame-controls.quiet').waitFor();
+  await page.keyboard.press('Shift');
+  await page.locator('.frame-controls:not(.quiet)').waitFor();
+  // Ambient fullscreen, where the engine honors a trusted request: the plate
+  // owns the viewport, the placard stays inside it, a cleared caption leaves
+  // no empty box, and failure notices stay on screen rather than below it.
+  phase = 'frame-ambient-fullscreen';
+  // The all-artwork view always holds at least two ready plates here, so
+  // Next must fetch a new portrait and the aborted request must surface its
+  // notice. The Fullscreen button renders only where the API exists, and an
+  // engine may still refuse the request; both gates skip without weakening
+  // the journeys that do enter real fullscreen.
+  await page.goto(origin + '/app?page=frame&view=all');
+  await page.locator('.frame-art').waitFor();
+  await page.locator('.frame-art').evaluate((image) => image.decode());
+  const fullscreenButton = page.getByRole('button', { name: 'Fullscreen', exact: true });
+  if ((await fullscreenButton.count()) === 1) await fullscreenButton.click();
+  if ((await page.evaluate(() => document.fullscreenElement?.tagName)) === 'HTML') {
+    // Fullscreen can resize the window to the real screen (Firefox), so the
+    // live window metrics are the frame of reference, not the viewport.
+    const size = await page.evaluate(() => ({ width: innerWidth, height: innerHeight }));
+    const inside = (box) =>
+      box && box.y >= 0 && box.x >= 0 && box.y + box.height <= size.height && box.x + box.width <= size.width;
+    assert(inside(await page.locator('.frame-caption').boundingBox()));
+    assert(
+      await page.evaluate(() => {
+        const caption = document.querySelector('.frame-caption');
+        const kept = caption.textContent;
+        caption.textContent = '';
+        const hidden = getComputedStyle(caption).display === 'none';
+        caption.textContent = kept;
+        return hidden;
+      }),
+    );
+    await page.route('**/v1/owner/journal/birds/*/portrait', (route) => route.abort());
+    await page.getByRole('button', { name: 'Next', exact: true }).click();
+    const notice = page.getByText(/Plate unavailable\. Keeping the last approved plate\./);
+    await notice.waitFor();
+    assert(inside(await notice.boundingBox()));
+    await page.unroute('**/v1/owner/journal/birds/*/portrait');
+    await page.evaluate(() => document.exitFullscreen());
+    await page.waitForFunction(() => !document.fullscreenElement);
+  }
   phase = 'sso-error-visibility';
   // Frontend contract only: the provider state and start failure are stubbed,
   // like the community query. Real OIDC exchange stays backend-tested.
