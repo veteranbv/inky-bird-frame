@@ -756,6 +756,18 @@ export async function openJournal(ui, message = '') {
     name.value = group?.label || '';
     const fields = el('fieldset');
     fields.append(el('legend', 'Choose birds'));
+    // Filtering hides rows instead of rebuilding them, so chosen birds stay
+    // chosen while the owner searches. Membership lives in `selected`.
+    const findLabel = el('label', 'Find a bird to add');
+    findLabel.htmlFor = 'collection-search';
+    const finder = el('input');
+    finder.type = 'search';
+    finder.id = findLabel.htmlFor;
+    finder.autocomplete = 'off';
+    const matches = el('p', '', 'hint');
+    matches.setAttribute('role', 'status');
+    fields.append(findLabel, finder, matches);
+    const rows = [];
     for (const bird of data.birds) {
       const row = el('label', '', 'check-label');
       const input = el('input');
@@ -768,8 +780,24 @@ export async function openJournal(ui, message = '') {
         input,
         document.createTextNode(bird.common_name + (bird.plate_ready ? '' : ' · plate not ready')),
       );
+      rows.push([bird, row]);
       fields.append(row);
     }
+    function filterRows() {
+      const term = finder.value.trim().toLocaleLowerCase();
+      let shown = 0;
+      for (const [bird, row] of rows) {
+        const hidden =
+          Boolean(term) &&
+          !(bird.common_name + ' ' + bird.scientific_name).toLocaleLowerCase().includes(term);
+        row.hidden = hidden;
+        if (!hidden) shown += 1;
+      }
+      matches.textContent = term
+        ? shown + (shown === 1 ? ' species shown' : ' species shown') + ' · chosen birds stay chosen'
+        : '';
+    }
+    finder.addEventListener('input', filterRows);
     const problem = el('p', '', 'error');
     problem.setAttribute('role', 'alert');
     const save = el('button', 'Save collection');
