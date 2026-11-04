@@ -21,7 +21,7 @@ Use Python 3.11 or newer and [`uv`](https://docs.astral.sh/uv/):
 
 ```bash
 git clone https://github.com/veteranbv/inky-bird.git
-cd inky-bird-frame
+cd inky-bird
 uv sync --extra dev --locked
 ```
 

@@ -25,9 +25,10 @@ on macOS or `~/.config/inky-bird` on Linux, and the `inky-bird` service family.
 Existing installs keep their detected configuration/runtime/service family.
 Explicit custom paths remain supported.
 
-Setup, doctor and uninstall use the same read-only identity resolver. A config,
-managed environment, installed unit/plist or loaded service identifies an
-installation. If both families exist, setup and uninstall refuse to proceed;
+Setup, doctor and uninstall use the same read-only identity resolver. A support
+root (even with a lost config), managed environment, installed unit/plist or
+loaded service/timer identifies an installation. If both families exist,
+setup and uninstall refuse to proceed;
 doctor reports the conflict. Resolve it with the operator rather than removing
 state or enabling another scheduler. A user LaunchAgent installer still refuses
 to compete with operator-managed system LaunchDaemons under either name.

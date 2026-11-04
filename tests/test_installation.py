@@ -8,6 +8,7 @@ import subprocess
 import sys
 import tomllib
 import unittest
+from collections.abc import Iterator
 from dataclasses import replace
 from pathlib import Path
 from tempfile import TemporaryDirectory
@@ -38,6 +39,15 @@ from inky_bird_frame.installation import (
     native_tls_environment,
     setup,
 )
+from inky_bird_frame.native_names import NativeLayout
+
+
+@pytest.fixture(autouse=True)
+def isolated_native_identity(tmp_path: Path) -> Iterator[None]:
+    """Doctor unit tests must never inspect the developer's installed jobs."""
+    layout = NativeLayout("inky-bird-frame", tmp_path, tmp_path, tmp_path / "config.toml")
+    with patch("inky_bird_frame.installation.resolve_native_layout", return_value=layout):
+        yield
 
 
 def write_config(directory: Path, codex_path: Path) -> Path:
@@ -142,9 +152,16 @@ def test_launchd_domain_is_bound_to_protected_system_plist_and_account(
 
 
 @pytest.mark.parametrize("loaded", [True, False])
-def test_launchd_doctor_checks_operator_system_domain(tmp_path: Path, loaded: bool) -> None:
+@pytest.mark.parametrize("family", ["inky-bird", "inky-bird-frame"])
+def test_launchd_doctor_checks_operator_system_domain(
+    tmp_path: Path, loaded: bool, family: str
+) -> None:
     config, _ = native_oidc_config(tmp_path)
     with (
+        patch(
+            "inky_bird_frame.installation.resolve_native_layout",
+            return_value=NativeLayout(family, tmp_path, tmp_path, tmp_path / "config.toml"),
+        ),
         patch(
             "inky_bird_frame.installation._launchd_target",
             side_effect=lambda label, uid: (f"system/{label}", "LaunchDaemon"),
@@ -161,8 +178,8 @@ def test_launchd_doctor_checks_operator_system_domain(tmp_path: Path, loaded: bo
     )
     assert all("LaunchDaemon" in check.summary for check in checks)
     assert [call.args[0] for call in run.call_args_list] == [
-        ["launchctl", "print", "system/com.inky-bird-frame.serve"],
-        ["launchctl", "print", "system/com.inky-bird-frame.scheduler"],
+        ["launchctl", "print", f"system/com.{family}.serve"],
+        ["launchctl", "print", f"system/com.{family}.scheduler"],
     ]
 
 

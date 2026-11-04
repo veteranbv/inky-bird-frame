@@ -53,8 +53,9 @@ def _loaded(family: str, system: str) -> bool:
         ]
     else:
         commands = [
-            ["systemctl", "show", "--property=LoadState", "--value", f"{family}-{job}.service"]
+            ["systemctl", "show", "--property=LoadState", "--value", f"{family}-{job}.{suffix}"]
             for job in NATIVE_JOBS
+            for suffix in ("service", "timer")
         ]
     for command in commands:
         try:
@@ -63,7 +64,9 @@ def _loaded(family: str, system: str) -> bool:
             return False
         except (OSError, subprocess.TimeoutExpired) as exc:
             raise ValueError("Cannot determine the installed native service identity") from exc
-        if result.returncode == 0 and (system == "Darwin" or result.stdout.strip() == "loaded"):
+        if result.returncode == 0 and (
+            system == "Darwin" or result.stdout.strip() not in ("", "not-found")
+        ):
             return True
     return False
 
@@ -94,9 +97,10 @@ def resolve_native_layout(
         )
         app = home / "Services" / family
         defaults[family] = app, support
-        # A source checkout alone is not an installed runtime. Config or a
-        # managed venv counts, including a dangling link (never silently adopt).
-        markers = [support / "config.toml", app / ".venv"]
+        # A source checkout alone is not an installed runtime. Retain a support
+        # root even if its config was lost: it may still contain private state.
+        # A dangling link also counts; never silently adopt around it.
+        markers = [support, app / ".venv"]
         if system == "Darwin":
             for directory in (home / "Library/LaunchAgents", system_root / "Library/LaunchDaemons"):
                 markers.extend(directory / f"com.{family}.{job}.plist" for job in NATIVE_JOBS)

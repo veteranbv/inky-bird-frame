@@ -16,7 +16,7 @@ import pytest
 from inky_bird_frame import application_version
 from inky_bird_frame.config import load_config
 from inky_bird_frame.installation import controller_systemd_units, display_systemd_units
-from inky_bird_frame.native_names import CANONICAL_NAME, LEGACY_NAME, resolve_native_layout
+from inky_bird_frame.native_names import CANONICAL_NAME, LEGACY_NAME, _loaded, resolve_native_layout
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -31,14 +31,14 @@ class UnitArguments(TypedDict):
 
 @pytest.mark.parametrize("system", ["Darwin", "Linux"])
 @pytest.mark.parametrize("family", [CANONICAL_NAME, LEGACY_NAME, "fresh", "both"])
-@pytest.mark.parametrize("marker", ["config", "service", "runtime"])
+@pytest.mark.parametrize("marker", ["config", "service", "runtime", "retained-state"])
 def test_identity_selection(tmp_path: Path, system: str, family: str, marker: str) -> None:
     home = tmp_path / "home"
     root = tmp_path / "root"
     for name in (CANONICAL_NAME, LEGACY_NAME):
         if family not in (name, "both"):
             continue
-        if marker == "config":
+        if marker in ("config", "retained-state"):
             path = (
                 home
                 / "Library/Application Support"
@@ -47,6 +47,8 @@ def test_identity_selection(tmp_path: Path, system: str, family: str, marker: st
                 if system == "Darwin"
                 else home / ".config" / name / "config.toml"
             )
+            if marker == "retained-state":
+                path = path.parent / "state" / "journal.json"
         elif marker == "runtime":
             path = home / "Services" / name / ".venv" / "pyvenv.cfg"
         else:
@@ -73,7 +75,10 @@ def test_identity_selection(tmp_path: Path, system: str, family: str, marker: st
 def test_unit_references_never_mix_families(tmp_path: Path, family: str, ownership: str) -> None:
     config = load_config(Path(__file__).resolve().parents[1] / "config.example.toml")
     config = replace(
-        config, controller=replace(config.controller, configuration_ownership=ownership)
+        config,
+        controller=replace(
+            config.controller, configuration_ownership=ownership, codex_path=tmp_path / "codex"
+        ),
     )
     common = UnitArguments(
         executable=tmp_path / "inky-bird",
@@ -118,6 +123,23 @@ def test_loaded_jobs_without_definition_files_still_select_legacy(
         assert (
             resolve_native_layout(home=tmp_path, system=system, system_root=tmp_path).family
             == LEGACY_NAME
+        )
+
+
+@pytest.mark.parametrize("state", ["loaded", "masked", "error", "not-found"])
+def test_timer_only_manager_identity_is_not_missed(state: str) -> None:
+    def inspect(command: list[str], **kwargs: object) -> subprocess.CompletedProcess[str]:
+        return subprocess.CompletedProcess(
+            command,
+            0,
+            stdout=state if command[-1] == "inky-bird-frame-display.timer" else "not-found",
+            stderr="",
+        )
+
+    with patch("inky_bird_frame.native_names.subprocess.run", side_effect=inspect) as run:
+        assert _loaded(LEGACY_NAME, "Linux") == (state != "not-found")
+        assert any(
+            call.args[0][-1] == "inky-bird-frame-display.timer" for call in run.call_args_list
         )
 
 
