@@ -168,7 +168,7 @@ def test_cinematic_walkthrough_opens_and_ends_without_blank_fades() -> None:
     assert "fade=t=in" not in cinematic
     assert "fade=t=out" not in cinematic
     assert "[3:v]trim=duration=2.9" in cinematic
-    assert "'inky-walkthrough-poster.png', 'v2-end.png'" in cinematic
+    assert "'v2-title.png', 'v2-end.png'" in cinematic
     assert "'-map', '[cap3]'" in cinematic
     assert "verifyOpeningFrame(ffmpeg" in cinematic
 

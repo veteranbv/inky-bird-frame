@@ -31,9 +31,9 @@ give it a turn on a color e-paper frame.
 Both screenshots are from the app on `main`, with public approved artwork and
 a sample collection. Open either image for the full-size view.
 
-https://github.com/user-attachments/assets/7c6842c6-3114-476a-a3a5-66b7ebb1177d
+https://github.com/user-attachments/assets/a0803447-84fd-4a2f-a2ed-db1595d008be
 
-[Watch the 28-second walkthrough](https://github.com/user-attachments/assets/7c6842c6-3114-476a-a3a5-66b7ebb1177d)
+[Watch the 28-second walkthrough](https://github.com/user-attachments/assets/a0803447-84fd-4a2f-a2ed-db1595d008be)
 · [Text transcript](docs/walkthrough.md) · [Still preview](docs/images/inky-walkthrough-poster.jpg).
 Sample data, accelerated navigation, and a separate e-paper installation;
 browser Play does not refresh the wall.

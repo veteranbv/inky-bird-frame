@@ -133,6 +133,7 @@ async function renderCinematic() {
     [19, 24, 'A separate e-paper frame can show the same plates.'],
   ];
   try {
+    await still('v2-title.png', `<div class="center">${brand}<p>A field journal for the birds you see.</p></div>`);
     await still('v2-end.png', `<div class="center">${brand}<p>Browse the gallery · henrysowell.com/birds</p><p class="repo">github.com/veteranbv/inky-bird</p></div>`,
       '.repo{font:26px/1.5 system-ui,sans-serif;color:var(--ink-soft);margin-top:18px}');
     await still('v2-backdrop.png', '<div class="card"></div><div class="sample">Sample data</div>',
@@ -153,15 +154,15 @@ async function renderCinematic() {
   const ffmpeg = process.env.INKY_QA_FFMPEG || 'ffmpeg';
   const args = ['-hide_banner', '-loglevel', 'error', '-n', '-i', path.join(output, capture.video)];
   for (const file of [cardinal, path.join(root, 'docs/images/framed-installation.jpg'),
-    ...['inky-walkthrough-poster.png', 'v2-end.png', 'v2-backdrop.png', 'v2-mask.png',
+    ...['v2-title.png', 'v2-end.png', 'v2-backdrop.png', 'v2-mask.png',
       ...lines.map((_, i) => `v2-caption-${i}.png`)].map(name => path.join(output, name))])
     args.push('-loop', '1', '-framerate', '30', '-i', file);
   const normalize = 'fps=30,format=yuv420p,settb=AVTB,setpts=PTS-STARTPTS';
   const start = Number(capture.trimStart);
   assert(Number.isFinite(start) && start >= 0);
   const filters = [
-    // GitHub's unplayed preview may use frame zero: start with the full poster,
-    // including artwork and title, rather than fading up from blank paper.
+    // Keep the original simple title card fully visible from frame zero;
+    // GitHub's unplayed preview must not start on blank paper.
     `[3:v]trim=duration=2.9,${normalize}[title]`,
     `[1:v]scale=1920:1200:force_original_aspect_ratio=increase,crop=1920:1200:0:(ih-oh)*0.08,zoompan=z='1+0.035*on/146':x='(iw-iw/zoom)*0.65':y='(ih-ih/zoom)*0.35':d=1:s=1920x1200:fps=30,trim=duration=4.9,${normalize}[art]`,
     '[0:v]split=2[rawjournal][rawframe]',
@@ -191,7 +192,7 @@ async function renderCinematic() {
   command(ffmpeg, args);
   assert(statSync(path.join(output, 'inky-walkthrough.mp4')).size < 10_000_000, 'MP4 exceeds attachment budget');
   const openingPreview = verifyOpeningFrame(ffmpeg, path.join(output, 'inky-walkthrough.mp4'),
-    path.join(output, 'inky-walkthrough-poster.png'));
+    path.join(output, 'v2-title.png'));
   command(ffmpeg, ['-hide_banner', '-loglevel', 'error', '-n', '-i', path.join(output, 'inky-walkthrough.mp4'),
     '-filter_complex', '[0:v]fps=5,scale=600:375:flags=lanczos,split[a][b];[a]palettegen=max_colors=96:stats_mode=diff[p];[b][p]paletteuse=dither=bayer:bayer_scale=3',
     '-loop', '-1', path.join(output, 'inky-walkthrough-share.gif')]);
@@ -206,7 +207,7 @@ async function renderCinematic() {
   writeFileSync(path.join(output, 'inky-walkthrough-transcript.md'),
     '# Inky Bird walkthrough\n\nA silent, 28-second film using the real app, two public approved plates and a synthetic Garden birds collection. '
     + 'No personal sightings, production services or account creation appear. UI scenes are labeled Sample data. Navigation is accelerated; automatic browser playback remains once a minute. Nothing uploads automatically.\n\n'
-    + '- 0:00–0:02.5: Northern Cardinal artwork with the complete Inky Bird title visible from the first frame. A field journal for the birds you see.\n'
+    + '- 0:00–0:02.5: The simple Inky Bird title card is fully visible from the first frame. A field journal for the birds you see.\n'
     + '- 0:02.5–0:07: Close view of the approved Northern Cardinal plate.\n'
     + '- 0:07–0:12: Home, Collections and Garden birds in the actual app.\n'
     + '- 0:12–0:19: Frame mode, a real Play action and a real manual Next action to American Robin. Automatic playback changes once a minute; this short clip does not show an automatic transition.\n'
