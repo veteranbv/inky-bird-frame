@@ -22,6 +22,10 @@ on:
 permissions:
   contents: read
 
+# Repository branding may change; existing installations keep this image name.
+env:
+  CONTROLLER_IMAGE: ghcr.io/${{ github.repository_owner }}/inky-bird-frame
+
 concurrency:
   group: controller-container-publish-${{ github.ref }}
   cancel-in-progress: false
@@ -53,12 +57,11 @@ jobs:
         id: image
         env:
           EVENT_NAME: ${{ github.event_name }}
-          REPOSITORY: ${{ github.repository }}
           REQUESTED_TAG: ${{ inputs.tag }}
           SOURCE_SHA: ${{ github.event_name == 'workflow_run' && github.event.workflow_run.head_sha || github.sha }}
         run: |
           set -euo pipefail
-          image="ghcr.io/${REPOSITORY}"
+          image="${CONTROLLER_IMAGE}"
           version=""
           {
             echo 'tags<<EOF'
@@ -152,7 +155,7 @@ jobs:
           install -m 0644 deploy/apparmor/inky-bird-frame-codex \
             "${bundle}/deploy/apparmor/inky-bird-frame-codex"
           sed \
-            "s|^INKY_BIRD_IMAGE=.*$|INKY_BIRD_IMAGE=ghcr.io/${REPOSITORY}:${VERSION}|" \
+            "s|^INKY_BIRD_IMAGE=.*$|INKY_BIRD_IMAGE=${CONTROLLER_IMAGE}:${VERSION}|" \
             .env.example > "${bundle}/.env.example"
           printf '%s\n' \
             "Docker installation: https://github.com/${REPOSITORY}/blob/v${VERSION}/docs/docker.md" \
