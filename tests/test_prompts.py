@@ -10,7 +10,40 @@ from inky_bird_frame.prompts import PROMPT_VERSION, plate_prompt, profile_prompt
 
 class PromptTests(unittest.TestCase):
     def test_prompt_contract_version(self) -> None:
-        self.assertEqual(PROMPT_VERSION, "field-journal-v6")
+        self.assertEqual(PROMPT_VERSION, "field-journal-v7")
+
+    def test_edit_target_does_not_freeze_anatomy_flagged_for_redraw(self) -> None:
+        species = BirdSpecies(1, "Test Bird", "Avis test", 1, "test")
+        profile = SpeciesProfileData(
+            taxon_id=1,
+            common_name="Test Bird",
+            scientific_name="Avis test",
+            family="Testidae",
+            measurements={"length": "10 cm", "wingspan": "20 cm", "weight": "30 g"},
+            field_marks=["one", "two", "three", "four"],
+            habitat="Woods",
+            behavior="Perches",
+            palette=["red", "green", "blue"],
+            sources=[],
+        )
+        prompt = plate_prompt(
+            species,
+            profile,
+            [],
+            Path("candidate.png"),
+            ("Redraw both feet and recompose the primary body",),
+            invariant_findings=("Keep the accepted wing markings",),
+            has_correction_source=True,
+        )
+        normalized = " ".join(prompt.split())
+        self.assertIn("Current corrections take precedence", normalized)
+        self.assertIn("redraw that whole affected structure", normalized)
+        self.assertIn("not a frozen outline or pose", normalized)
+        self.assertIn("never retain defective geometry", normalized)
+        self.assertIn("structural change is visibly present", normalized)
+        self.assertIn("Keep the accepted wing markings", normalized)
+        self.assertIn("Keep every unflagged factual statement", normalized)
+        self.assertNotIn("smallest complete edit", normalized)
 
     def test_plate_prompt_contains_species_facts_and_excludes_location(self) -> None:
         species = BirdSpecies(12942, "Eastern Bluebird", "Sialia sialis", 26, "iNaturalist")

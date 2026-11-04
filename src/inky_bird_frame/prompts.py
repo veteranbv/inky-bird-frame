@@ -9,7 +9,7 @@ from pathlib import Path
 from .birds import BirdSpecies, TaxonContext
 from .models import ProfileConflict, ReferencePhoto, SpeciesProfileData
 
-PROMPT_VERSION = "field-journal-v6"
+PROMPT_VERSION = "field-journal-v7"
 
 
 class _TextExtractor(HTMLParser):
@@ -136,8 +136,13 @@ Non-regression constraints from earlier accepted reviews:
 {invariants}
 
 Use the supplied current profile as the authority for visible facts, including any text that the
-review requires changing. Preserve correct anatomy and composition from Image 1 while making the
-smallest complete edit that resolves every current correction. A non-regression constraint remains
+review requires changing. Current corrections take precedence over preserving a defective region
+of Image 1. If a correction requires a new silhouette, pose, bill, foot, or limb attachment, redraw
+that whole affected structure from the species references rather than making a cosmetic patch.
+The large specimen footprint means comparable page occupancy, not a frozen outline or pose.
+Preserve the correct unflagged content, but never retain defective geometry merely to make the
+edit smaller. Check that each requested structural change is visibly present in the output.
+A non-regression constraint remains
 mandatory, but it is not a request to redraw a feature that Image 1 already satisfies. Inspect each
 one: preserve an already-correct feature exactly, and change it only if Image 1 still violates the
 constraint.
