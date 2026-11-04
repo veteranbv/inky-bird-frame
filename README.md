@@ -30,6 +30,13 @@ give it a turn on a color e-paper frame.
 Both screenshots are from the app on `main`, with public approved artwork and
 a sample collection. Open either image for the full-size view.
 
+https://github.com/user-attachments/assets/ab99fb77-3844-4e41-8619-2046dc6ed76c
+
+[Watch the 28-second walkthrough](https://github.com/user-attachments/assets/ab99fb77-3844-4e41-8619-2046dc6ed76c)
+· [Text transcript](docs/walkthrough.md) · [Still preview](docs/images/inky-walkthrough-poster.jpg).
+Sample data, accelerated navigation, and a separate e-paper installation;
+browser Play does not refresh the wall.
+
 [![CI](https://github.com/veteranbv/inky-bird-frame/actions/workflows/ci.yml/badge.svg)](https://github.com/veteranbv/inky-bird-frame/actions/workflows/ci.yml)
 [![Latest release](https://img.shields.io/github/v/release/veteranbv/inky-bird-frame)](https://github.com/veteranbv/inky-bird-frame/releases/latest)
 [![License: MIT](https://img.shields.io/github/license/veteranbv/inky-bird-frame)](LICENSE)

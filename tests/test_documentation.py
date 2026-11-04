@@ -111,6 +111,20 @@ def test_status_labels_distinguish_rotation_from_the_approved_library() -> None:
     assert "without changing the entity ID or unique ID" in guide
 
 
+def test_walkthrough_has_accessible_fallbacks_and_honest_scope() -> None:
+    readme = (ROOT / "README.md").read_text(encoding="utf-8")
+    transcript = (ROOT / "docs/walkthrough.md").read_text(encoding="utf-8")
+
+    assert "https://github.com/user-attachments/assets/" in readme
+    assert "[Text transcript](docs/walkthrough.md)" in readme
+    assert "[Still preview](docs/images/inky-walkthrough-poster.jpg)" in readme
+    assert "browser Play does not refresh the wall" in readme
+    assert "automatic browser playback remains once a minute" in transcript
+    assert "does not trigger or synchronize that physical display" in transcript
+    assert "not an interactive controller demo" in transcript
+    assert ".gif" not in readme
+
+
 def test_historical_homepage_images_are_not_presented_as_current() -> None:
     readme = (ROOT / "README.md").read_text(encoding="utf-8")
 
