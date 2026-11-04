@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-03T11:41:43+00:00",
+  "generated_at": "2026-11-04T19:35:36+00:00",
   "schema_version": 1,
   "species": [
     {
@@ -1662,6 +1662,17 @@
       "scientific_name": "Archilochus colubris",
       "slug": "ruby-throated-hummingbird",
       "taxon_id": 6432
+    },
+    {
+      "approved_at": "2026-11-04T19:35:36+00:00",
+      "common_name": "Rusty Blackbird",
+      "display_path": "species/10322-rusty-blackbird/display.png",
+      "display_sha256": "2c41ec8927391475f5a09115949fe4599ed5f214c54dac8c4254df03fbc19846",
+      "portrait_path": "species/10322-rusty-blackbird/portrait.png",
+      "portrait_sha256": "1308162176b112a5d0d4d38bb2e7b11fd41a1792323e1f31af2daf0e2976635b",
+      "scientific_name": "Euphagus carolinus",
+      "slug": "rusty-blackbird",
+      "taxon_id": 10322
     },
     {
       "approved_at": "2026-08-09T22:03:23+00:00",
