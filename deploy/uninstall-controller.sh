@@ -6,15 +6,16 @@ if [ "$(uname -s)" != "Darwin" ]; then
   exit 1
 fi
 
-app_dir=${INKY_BIRD_APP_DIR:-"${HOME}/Services/inky-bird-frame"}
-support_dir=${INKY_BIRD_SUPPORT_DIR:-"${HOME}/Library/Application Support/Inky Bird Frame"}
-config_path=${INKY_BIRD_CONFIG_PATH:-"${support_dir}/config.toml"}
+root=$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)
+native_names=$(python3 "${root}/src/inky_bird_frame/native_names.py")
+service_prefix="" app_dir="" support_dir="" config_path=""
+eval "${native_names}"
 agents_dir="${HOME}/Library/LaunchAgents"
 uid=$(id -u)
 
 # controller-cycle is the legacy single-agent layout replaced by the labels below.
-for label in serve refresh generate catalog-publish notifications controller-cycle; do
-  agent="com.inky-bird-frame.${label}"
+for label in serve refresh generate catalog-publish notifications scheduler controller-cycle; do
+  agent="com.${service_prefix}.${label}"
   plist="${agents_dir}/${agent}.plist"
   if launchctl print "gui/${uid}/${agent}" >/dev/null 2>&1; then
     launchctl bootout "gui/${uid}/${agent}"

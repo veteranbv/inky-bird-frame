@@ -20,7 +20,7 @@ catalog.
 Use Python 3.11 or newer and [`uv`](https://docs.astral.sh/uv/):
 
 ```bash
-git clone https://github.com/veteranbv/inky-bird-frame.git
+git clone https://github.com/veteranbv/inky-bird.git
 cd inky-bird-frame
 uv sync --extra dev --locked
 ```
@@ -28,7 +28,7 @@ uv sync --extra dev --locked
 Run the application from the managed environment:
 
 ```bash
-uv run inky-bird-frame --help
+uv run inky-bird --help
 ```
 
 To test the controller container built from your checkout, add the source-build
@@ -83,7 +83,7 @@ uv run ruff format --check .
 uv run ruff check .
 uv run mypy
 uv run pytest
-uv run inky-bird-frame catalog validate --catalog catalog
+uv run inky-bird catalog validate --catalog catalog
 node --test tests/web/*.test.mjs
 ```
 
@@ -198,11 +198,11 @@ from a checkout of your fork, copy exactly one approved taxon into the public
 catalog:
 
 ```bash
-uv run inky-bird-frame catalog prepare <taxon-id> \
+uv run inky-bird catalog prepare <taxon-id> \
   --source-catalog <approved-catalog> \
   --catalog catalog
 
-uv run inky-bird-frame catalog validate --catalog catalog
+uv run inky-bird catalog validate --catalog catalog
 ```
 
 `catalog prepare` validates the complete source catalog, copies only the
@@ -221,7 +221,7 @@ plate and supporting evidence. Do not upload copyrighted field-guide or
 reference images.
 
 ```bash
-uv run inky-bird-frame catalog prepare <taxon-id> \
+uv run inky-bird catalog prepare <taxon-id> \
   --source-catalog <approved-catalog> \
   --catalog catalog \
   --replace-approved \

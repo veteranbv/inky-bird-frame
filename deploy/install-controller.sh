@@ -7,9 +7,22 @@ if [ "$(uname -s)" != "Darwin" ]; then
 fi
 
 root=$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)
-app_dir=${INKY_BIRD_APP_DIR:-"${HOME}/Services/inky-bird-frame"}
-support_dir=${INKY_BIRD_SUPPORT_DIR:-"${HOME}/Library/Application Support/Inky Bird Frame"}
-config_path=${INKY_BIRD_CONFIG_PATH:-"${support_dir}/config.toml"}
+# Check both families before even starting Python (macOS may initialize its
+# interpreter cache under HOME). A user installer must not touch system jobs.
+for family in inky-bird inky-bird-frame; do
+  for label in serve refresh generate catalog-publish notifications scheduler controller-cycle; do
+    system_plist="/Library/LaunchDaemons/com.${family}.${label}.plist"
+    if [ -e "${system_plist}" ] || [ -L "${system_plist}" ] || \
+        launchctl print "system/com.${family}.${label}" >/dev/null 2>&1; then
+      echo "Inky uses operator-managed system services. Use that deployment process to upgrade; the user installer made no changes." >&2
+      exit 1
+    fi
+  done
+done
+native_names=$(python3 "${root}/src/inky_bird_frame/native_names.py")
+service_prefix="" app_dir="" support_dir="" config_path=""
+eval "${native_names}"
+export INKY_BIRD_SERVICE_PREFIX="${service_prefix}"
 uv_bin=${UV_BIN:-}
 if [ -z "${uv_bin}" ]; then
   uv_bin=$(command -v uv || true)
@@ -17,13 +30,13 @@ fi
 python_version=${INKY_BIRD_PYTHON_VERSION:-3.11}
 log_dir="${support_dir}/logs"
 agents_dir="${HOME}/Library/LaunchAgents"
-serve_plist="${agents_dir}/com.inky-bird-frame.serve.plist"
-refresh_plist="${agents_dir}/com.inky-bird-frame.refresh.plist"
-generation_plist="${agents_dir}/com.inky-bird-frame.generate.plist"
-catalog_publish_plist="${agents_dir}/com.inky-bird-frame.catalog-publish.plist"
-notifications_plist="${agents_dir}/com.inky-bird-frame.notifications.plist"
-scheduler_plist="${agents_dir}/com.inky-bird-frame.scheduler.plist"
-legacy_cycle_plist="${agents_dir}/com.inky-bird-frame.controller-cycle.plist"
+serve_plist="${agents_dir}/com.${service_prefix}.serve.plist"
+refresh_plist="${agents_dir}/com.${service_prefix}.refresh.plist"
+generation_plist="${agents_dir}/com.${service_prefix}.generate.plist"
+catalog_publish_plist="${agents_dir}/com.${service_prefix}.catalog-publish.plist"
+notifications_plist="${agents_dir}/com.${service_prefix}.notifications.plist"
+scheduler_plist="${agents_dir}/com.${service_prefix}.scheduler.plist"
+legacy_cycle_plist="${agents_dir}/com.${service_prefix}.controller-cycle.plist"
 
 restore_catalog_publisher_schedule() {
   local uid=$1
@@ -51,13 +64,13 @@ restore_catalog_publisher_schedule() {
 
 restore_previous_agent() {
   local label=$1
-  local plist="${agents_dir}/com.inky-bird-frame.${label}.plist"
-  local backup="${plist_backup_dir}/com.inky-bird-frame.${label}.plist"
+  local plist="${agents_dir}/com.${service_prefix}.${label}.plist"
+  local backup="${plist_backup_dir}/com.${service_prefix}.${label}.plist"
   if [ ! -f "${backup}" ]; then
     return 0
   fi
   # A loaded label here is the failed replacement; put the saved agent back.
-  launchctl bootout "gui/${uid}/com.inky-bird-frame.${label}" 2>/dev/null || true
+  launchctl bootout "gui/${uid}/com.${service_prefix}.${label}" 2>/dev/null || true
   cp "${backup}" "${plist}" || return 0
   if [ "${label}" = "catalog-publish" ]; then
     restore_catalog_publisher_schedule "${uid}" || true
@@ -65,16 +78,6 @@ restore_previous_agent() {
     launchctl bootstrap "gui/${uid}" "${plist}" || true
   fi
 }
-
-# The user installer must not compete with an operator-managed system service.
-for label in serve refresh generate catalog-publish notifications scheduler controller-cycle; do
-  system_plist="/Library/LaunchDaemons/com.inky-bird-frame.${label}.plist"
-  if [ -e "${system_plist}" ] || [ -L "${system_plist}" ] || \
-      launchctl print "system/com.inky-bird-frame.${label}" >/dev/null 2>&1; then
-    echo "Inky uses operator-managed system services. Use that deployment process to upgrade; the user installer made no changes." >&2
-    exit 1
-  fi
-done
 
 if [ ! -f "${config_path}" ]; then
   echo "Controller configuration is missing: ${config_path}" >&2
@@ -126,12 +129,12 @@ cleanup() {
         restore_previous_agent "${label}"
       else
         # Not running before this install: undo any half-installed agent.
-        launchctl bootout "gui/${uid}/com.inky-bird-frame.${label}" 2>/dev/null || true
-        if [ -f "${plist_backup_dir}/com.inky-bird-frame.${label}.plist" ]; then
-          cp "${plist_backup_dir}/com.inky-bird-frame.${label}.plist" \
-            "${agents_dir}/com.inky-bird-frame.${label}.plist" || true
+        launchctl bootout "gui/${uid}/com.${service_prefix}.${label}" 2>/dev/null || true
+        if [ -f "${plist_backup_dir}/com.${service_prefix}.${label}.plist" ]; then
+          cp "${plist_backup_dir}/com.${service_prefix}.${label}.plist" \
+            "${agents_dir}/com.${service_prefix}.${label}.plist" || true
         else
-          rm -f "${agents_dir}/com.inky-bird-frame.${label}.plist"
+          rm -f "${agents_dir}/com.${service_prefix}.${label}.plist"
         fi
       fi
     done
@@ -142,10 +145,10 @@ cleanup() {
 trap cleanup EXIT
 
 for label in serve refresh generate catalog-publish notifications scheduler; do
-  if launchctl print "gui/${uid}/com.inky-bird-frame.${label}" >/dev/null 2>&1; then
+  if launchctl print "gui/${uid}/com.${service_prefix}.${label}" >/dev/null 2>&1; then
     previously_loaded_labels+=("${label}")
   fi
-  plist="${agents_dir}/com.inky-bird-frame.${label}.plist"
+  plist="${agents_dir}/com.${service_prefix}.${label}.plist"
   if [ -f "${plist}" ]; then
     cp "${plist}" "${plist_backup_dir}/"
   fi
@@ -156,6 +159,7 @@ done
   "${notifications_plist}" "${scheduler_plist}" \
   "${root}" "${app_dir}" "${config_path}" "${log_dir}" <<'PY'
 import plistlib
+import os
 import sys
 from pathlib import Path
 
@@ -179,7 +183,8 @@ from inky_bird_frame.publisher import sync_public_catalog
     config_path,
     log_dir,
 ) = map(Path, sys.argv[1:])
-executable = app_dir / ".venv/bin/inky-bird-frame"
+executable = app_dir / ".venv/bin/inky-bird"
+service_prefix = os.environ["INKY_BIRD_SERVICE_PREFIX"]
 config = load_config(config_path)
 environment_credentials = []
 if config.discovery.geoapify_api_key_env:
@@ -256,7 +261,7 @@ def managed_agent(name: str) -> dict[str, object]:
 
 serve = {
     **managed_agent("serve"),
-    "Label": "com.inky-bird-frame.serve",
+    "Label": f"com.{service_prefix}.serve",
     "ProgramArguments": [str(executable), "serve", "--config", str(config_path)],
     "RunAtLoad": True,
     "KeepAlive": {"SuccessfulExit": False},
@@ -266,7 +271,7 @@ serve = {
 }
 refresh = {
     **managed_agent("refresh"),
-    "Label": "com.inky-bird-frame.refresh",
+    "Label": f"com.{service_prefix}.refresh",
     "ProgramArguments": [str(executable), "refresh", "--config", str(config_path)],
     "RunAtLoad": True,
     "StartInterval": schedule.refresh_minutes * 60,
@@ -275,7 +280,7 @@ refresh = {
 }
 generation = {
     **managed_agent("generate"),
-    "Label": "com.inky-bird-frame.generate",
+    "Label": f"com.{service_prefix}.generate",
     "ProgramArguments": [str(executable), "generate", "--config", str(config_path)],
     "StartInterval": schedule.generation_minutes * 60,
     "StandardOutPath": str(log_dir / "generate.log"),
@@ -283,7 +288,7 @@ generation = {
 }
 catalog_publish = {
     **managed_agent("catalog-publish"),
-    "Label": "com.inky-bird-frame.catalog-publish",
+    "Label": f"com.{service_prefix}.catalog-publish",
     "ProgramArguments": [
         str(executable),
         "catalog-publish",
@@ -297,7 +302,7 @@ catalog_publish = {
 }
 notifications = {
     **managed_agent("notifications"),
-    "Label": "com.inky-bird-frame.notifications",
+    "Label": f"com.{service_prefix}.notifications",
     "ProgramArguments": [
         str(executable),
         "notifications",
@@ -330,7 +335,7 @@ else:
 if config.controller.configuration_ownership == "app":
     scheduler = {
         **managed_agent("scheduler"),
-        "Label": "com.inky-bird-frame.scheduler",
+        "Label": f"com.{service_prefix}.scheduler",
         "ProgramArguments": [str(executable), "scheduler", "--config", str(config_path)],
         "RunAtLoad": True,
         "KeepAlive": {"SuccessfulExit": False},
@@ -347,11 +352,11 @@ PY
 
 if [ -f "${catalog_publish_plist}" ]; then
   publisher_was_loaded=false
-  if launchctl print "gui/${uid}/com.inky-bird-frame.catalog-publish" >/dev/null 2>&1; then
-    launchctl bootout "gui/${uid}/com.inky-bird-frame.catalog-publish"
+  if launchctl print "gui/${uid}/com.${service_prefix}.catalog-publish" >/dev/null 2>&1; then
+    launchctl bootout "gui/${uid}/com.${service_prefix}.catalog-publish"
     publisher_was_loaded=true
   fi
-  if ! "${app_dir}/.venv/bin/inky-bird-frame" catalog-publish \
+  if ! "${app_dir}/.venv/bin/inky-bird" catalog-publish \
     --config "${config_path}" --dry-run; then
     if [ "${publisher_was_loaded}" = true ]; then
       restore_catalog_publisher_schedule "${uid}"
@@ -360,12 +365,12 @@ if [ -f "${catalog_publish_plist}" ]; then
   fi
 fi
 
-launchctl bootout "gui/${uid}/com.inky-bird-frame.serve" 2>/dev/null || true
-launchctl bootout "gui/${uid}/com.inky-bird-frame.refresh" 2>/dev/null || true
-launchctl bootout "gui/${uid}/com.inky-bird-frame.generate" 2>/dev/null || true
-launchctl bootout "gui/${uid}/com.inky-bird-frame.catalog-publish" 2>/dev/null || true
-launchctl bootout "gui/${uid}/com.inky-bird-frame.notifications" 2>/dev/null || true
-launchctl bootout "gui/${uid}/com.inky-bird-frame.scheduler" 2>/dev/null || true
+launchctl bootout "gui/${uid}/com.${service_prefix}.serve" 2>/dev/null || true
+launchctl bootout "gui/${uid}/com.${service_prefix}.refresh" 2>/dev/null || true
+launchctl bootout "gui/${uid}/com.${service_prefix}.generate" 2>/dev/null || true
+launchctl bootout "gui/${uid}/com.${service_prefix}.catalog-publish" 2>/dev/null || true
+launchctl bootout "gui/${uid}/com.${service_prefix}.notifications" 2>/dev/null || true
+launchctl bootout "gui/${uid}/com.${service_prefix}.scheduler" 2>/dev/null || true
 launchctl bootstrap "gui/${uid}" "${serve_plist}"
 if [ -f "${refresh_plist}" ]; then
   launchctl bootstrap "gui/${uid}" "${refresh_plist}"
@@ -382,31 +387,31 @@ fi
 if [ -f "${notifications_plist}" ]; then
   launchctl bootstrap "gui/${uid}" "${notifications_plist}"
 fi
-launchctl print "gui/${uid}/com.inky-bird-frame.serve" >/dev/null
+launchctl print "gui/${uid}/com.${service_prefix}.serve" >/dev/null
 if [ -f "${refresh_plist}" ]; then
-  launchctl print "gui/${uid}/com.inky-bird-frame.refresh" >/dev/null
+  launchctl print "gui/${uid}/com.${service_prefix}.refresh" >/dev/null
 fi
 if [ -f "${scheduler_plist}" ]; then
-  launchctl print "gui/${uid}/com.inky-bird-frame.scheduler" >/dev/null
+  launchctl print "gui/${uid}/com.${service_prefix}.scheduler" >/dev/null
 fi
 if [ -f "${generation_plist}" ]; then
-  launchctl print "gui/${uid}/com.inky-bird-frame.generate" >/dev/null
+  launchctl print "gui/${uid}/com.${service_prefix}.generate" >/dev/null
 fi
 if [ -f "${catalog_publish_plist}" ]; then
-  launchctl print "gui/${uid}/com.inky-bird-frame.catalog-publish" >/dev/null
+  launchctl print "gui/${uid}/com.${service_prefix}.catalog-publish" >/dev/null
 fi
 if [ -f "${notifications_plist}" ]; then
-  launchctl print "gui/${uid}/com.inky-bird-frame.notifications" >/dev/null
+  launchctl print "gui/${uid}/com.${service_prefix}.notifications" >/dev/null
 fi
 
 installation_complete=true
 # Remove the legacy single-agent layout only after the new agents verified,
 # so a failed upgrade leaves the previous controller runnable.
-launchctl bootout "gui/${uid}/com.inky-bird-frame.controller-cycle" 2>/dev/null || true
+launchctl bootout "gui/${uid}/com.${service_prefix}.controller-cycle" 2>/dev/null || true
 rm -f "${legacy_cycle_plist}"
 echo "Controller installed from ${root} into ${app_dir}."
 echo "Configuration: ${config_path}"
 echo "Logs: ${log_dir}"
-if ! "${app_dir}/.venv/bin/inky-bird-frame" access setup --if-needed --config "${config_path}"; then
+if ! "${app_dir}/.venv/bin/inky-bird" access setup --if-needed --config "${config_path}"; then
   echo "Controller installation completed; owner setup is incomplete. Run access setup in a private terminal. Display and scheduled work continue." >&2
 fi

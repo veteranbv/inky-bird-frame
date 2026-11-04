@@ -1,5 +1,5 @@
 [project]
-name = "inky-bird-frame"
+name = "inky-bird"
 version = "0.9.7"
 description = "Discover birds and display reviewed field-journal plates on color e-paper"
 readme = "README.md"
@@ -34,10 +34,10 @@ dependencies = [
 
 [project.urls]
 Homepage = "https://henrysowell.com/birds"
-Documentation = "https://github.com/veteranbv/inky-bird-frame#readme"
-Issues = "https://github.com/veteranbv/inky-bird-frame/issues"
-Releases = "https://github.com/veteranbv/inky-bird-frame/releases"
-Repository = "https://github.com/veteranbv/inky-bird-frame"
+Documentation = "https://github.com/veteranbv/inky-bird#readme"
+Issues = "https://github.com/veteranbv/inky-bird/issues"
+Releases = "https://github.com/veteranbv/inky-bird/releases"
+Repository = "https://github.com/veteranbv/inky-bird"
 
 [project.optional-dependencies]
 controller = [
@@ -66,11 +66,15 @@ dev = [
 ]
 
 [project.scripts]
+inky-bird = "inky_bird_frame.entrypoint:main"
 inky-bird-frame = "inky_bird_frame.entrypoint:main"
 
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/inky_bird_frame"]
 
 [tool.hatch.build.targets.wheel.force-include]
 "docs/browser-access.md" = "inky_bird_frame/web/access-guide.txt"

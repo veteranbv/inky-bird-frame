@@ -23,6 +23,7 @@ from .config import AppConfig, DiscoveryProvider, load_config
 from .errors import ConfigurationError, InkyBirdFrameError, InstallationError
 from .http import get_json, write_bytes_atomic
 from .images import SUPPORTED_HARDWARE_SIZES
+from .native_names import LEGACY_NAME, resolve_native_layout, service_family
 
 SUDO_AUTHORIZATION_TIMEOUT_SECONDS = 300
 INSTALLER_TIMEOUT_SECONDS = 3600
@@ -259,8 +260,10 @@ def controller_systemd_units(
     config_path: Path,
     home: Path,
     user: str,
+    service_prefix: str = LEGACY_NAME,
 ) -> dict[str, str]:
     """Render the complete systemd controller unit set for one installation."""
+    service_prefix = service_family(service_prefix)
     service_path = controller_executable_path(
         config.controller.codex_path, generation_enabled=config.controller.generation_enabled
     )
@@ -287,7 +290,7 @@ def controller_systemd_units(
 
     serving = common + owner_environment + SYSTEMD_SERVICE_HARDENING
     units = {
-        "inky-bird-frame-controller.service": f"""[Unit]
+        f"{service_prefix}-controller.service": f"""[Unit]
 Description=Serve the Inky Bird approved catalog
 After=network-online.target
 Wants=network-online.target
@@ -303,7 +306,7 @@ WantedBy=multi-user.target
 """
     }
     if config.controller.configuration_ownership == "app":
-        units["inky-bird-frame-scheduler.service"] = f"""[Unit]
+        units[f"{service_prefix}-scheduler.service"] = f"""[Unit]
 Description=Schedule Inky Bird application-owned work
 After=network-online.target
 Wants=network-online.target
@@ -337,13 +340,13 @@ WantedBy=multi-user.target
             else (name, "--config", str(config_path))
         )
         unit_dependencies = (
-            "After=network-online.target inky-bird-frame-refresh.service\n"
+            f"After=network-online.target {service_prefix}-refresh.service\n"
             "Wants=network-online.target\n"
-            "Requires=inky-bird-frame-refresh.service"
+            f"Requires={service_prefix}-refresh.service"
             if name == "generate"
             else "After=network-online.target\nWants=network-online.target"
         )
-        units[f"inky-bird-frame-{name}.service"] = f"""[Unit]
+        units[f"{service_prefix}-{name}.service"] = f"""[Unit]
 Description=Run the Inky Bird {name} cycle
 {unit_dependencies}
 
@@ -352,13 +355,13 @@ Type=oneshot
 {common}ExecStart={command(*arguments)}
 TimeoutStartSec=30min
 """
-        units[f"inky-bird-frame-{name}.timer"] = f"""[Unit]
+        units[f"{service_prefix}-{name}.timer"] = f"""[Unit]
 Description=Schedule the Inky Bird {name} cycle
 
 [Timer]
 OnActiveSec=2min
 OnUnitActiveSec={minutes}min
-Unit=inky-bird-frame-{name}.service
+Unit={service_prefix}-{name}.service
 
 [Install]
 WantedBy=timers.target
@@ -373,8 +376,10 @@ def display_systemd_units(
     app_dir: Path,
     config_path: Path,
     user: str,
+    service_prefix: str = LEGACY_NAME,
 ) -> dict[str, str]:
     """Render the display service and timer from validated configuration."""
+    service_prefix = service_family(service_prefix)
     exec_start = (
         f"{_systemd_quote(str(executable))} display-cycle "
         f"--config {_systemd_quote(str(config_path))}"
@@ -403,14 +408,14 @@ Description=Rotate the Inky Bird on its configured schedule
 OnActiveSec={config.schedule.display_startup_delay_seconds}s
 OnUnitActiveSec={config.schedule.rotation_minutes * 60}s
 RandomizedDelaySec={config.schedule.rotation_jitter_seconds}s
-Unit=inky-bird-frame-display.service
+Unit={service_prefix}-display.service
 
 [Install]
 WantedBy=timers.target
 """
     return {
-        "inky-bird-frame-display.service": service,
-        "inky-bird-frame-display.timer": timer,
+        f"{service_prefix}-display.service": service,
+        f"{service_prefix}-display.timer": timer,
     }
 
 
@@ -637,6 +642,11 @@ def _launchd_target(label: str, uid: int) -> tuple[str, str]:
 
 
 def _launchd_checks(config: AppConfig) -> Iterable[DiagnosticCheck]:
+    try:
+        prefix = resolve_native_layout().family
+    except ValueError as exc:
+        yield _fail("native_identity", str(exc))
+        return
     labels = [
         "com.inky-bird-frame.serve",
         "com.inky-bird-frame.refresh",
@@ -651,6 +661,7 @@ def _launchd_checks(config: AppConfig) -> Iterable[DiagnosticCheck]:
         labels = ["com.inky-bird-frame.serve", "com.inky-bird-frame.scheduler"]
     uid = os.getuid()
     for label in labels:
+        label = label.replace(LEGACY_NAME, prefix)
         try:
             target, kind = _launchd_target(label, uid)
         except (OSError, ValueError, KeyError, plistlib.InvalidFileException, ExpatError) as exc:
@@ -717,9 +728,14 @@ def _systemd_last_run_check(
 
 
 def _systemd_controller_checks(config: AppConfig) -> Iterable[DiagnosticCheck]:
-    yield _systemd_unit_check("inky-bird-frame-controller.service")
+    try:
+        prefix = resolve_native_layout().family
+    except ValueError as exc:
+        yield _fail("native_identity", str(exc))
+        return
+    yield _systemd_unit_check(f"{prefix}-controller.service")
     if config.controller.configuration_ownership == "app":
-        yield _systemd_unit_check("inky-bird-frame-scheduler.service")
+        yield _systemd_unit_check(f"{prefix}-scheduler.service")
         return
     jobs = [("refresh", "observation refresh")]
     if config.controller.generation_enabled:
@@ -729,9 +745,9 @@ def _systemd_controller_checks(config: AppConfig) -> Iterable[DiagnosticCheck]:
     if config.notifications.enabled:
         jobs.append(("notifications", "notification dispatch"))
     for name, description in jobs:
-        yield _systemd_unit_check(f"inky-bird-frame-{name}.timer")
+        yield _systemd_unit_check(f"{prefix}-{name}.timer")
         yield _systemd_last_run_check(
-            f"inky-bird-frame-{name}.service",
+            f"{prefix}-{name}.service",
             check_id=f"job_{name.replace('-', '_')}",
             description=description,
         )
@@ -842,14 +858,19 @@ def doctor(role: InstallationRole, config_path: Path) -> DoctorReport:
         checks.append(_display_boot_config_check())
         checks.append(_display_hardware_check())
         if platform.system() == "Linux" and shutil.which("systemctl") is not None:
-            checks.append(_systemd_unit_check("inky-bird-frame-display.timer"))
-            checks.append(
-                _systemd_last_run_check(
-                    "inky-bird-frame-display.service",
-                    check_id="display_last_run",
-                    description="display refresh",
+            try:
+                prefix = resolve_native_layout().family
+            except ValueError as exc:
+                checks.append(_fail("native_identity", str(exc)))
+            else:
+                checks.append(_systemd_unit_check(f"{prefix}-display.timer"))
+                checks.append(
+                    _systemd_last_run_check(
+                        f"{prefix}-display.service",
+                        check_id="display_last_run",
+                        description="display refresh",
+                    )
                 )
-            )
         checks.append(_controller_health_check(config, role))
     return DoctorReport(role, tuple(checks))
 

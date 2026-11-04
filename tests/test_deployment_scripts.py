@@ -9,14 +9,15 @@ import pytest
 
 
 @pytest.mark.parametrize("label", ["serve", "scheduler", "generate", "controller-cycle"])
+@pytest.mark.parametrize("family", ["inky-bird", "inky-bird-frame"])
 def test_macos_user_installer_refuses_system_jobs_before_changing_files(
-    tmp_path: Path, label: str
+    tmp_path: Path, label: str, family: str
 ) -> None:
     scripts = tmp_path / "bin"
     scripts.mkdir()
     for name, content in {
         "uname": "#!/bin/sh\nprintf '%s\\n' Darwin\n",
-        "launchctl": f'#!/bin/sh\n[ "$2" = system/com.inky-bird-frame.{label} ]\n',
+        "launchctl": f'#!/bin/sh\n[ "$2" = system/com.{family}.{label} ]\n',
     }.items():
         executable = scripts / name
         executable.write_text(content)
@@ -161,9 +162,9 @@ def test_controller_installers_use_provider_lists_for_managed_credentials() -> N
 def test_controller_installer_restores_schedule_without_run_at_load_on_failure() -> None:
     script = (Path(__file__).resolve().parents[1] / "deploy" / "install-controller.sh").read_text()
 
-    validation = script.index('"${app_dir}/.venv/bin/inky-bird-frame" catalog-publish')
+    validation = script.index('"${app_dir}/.venv/bin/inky-bird" catalog-publish')
     unload = script.rindex(
-        'launchctl bootout "gui/${uid}/com.inky-bird-frame.catalog-publish"',
+        'launchctl bootout "gui/${uid}/com.${service_prefix}.catalog-publish"',
         0,
         validation,
     )
@@ -207,16 +208,16 @@ def test_systemd_controller_installer_restarts_boot_persistent_services() -> Non
     ).read_text()
 
     assert "controller_systemd_units" in script
-    assert "systemctl enable inky-bird-frame-controller.service" in script
-    assert "systemctl restart inky-bird-frame-controller.service" in script
-    assert "systemctl restart inky-bird-frame-refresh.timer" in script
-    assert "systemctl restart inky-bird-frame-generate.timer" in script
+    assert 'systemctl enable "${service_prefix}-controller.service"' in script
+    assert 'systemctl restart "${service_prefix}-controller.service"' in script
+    assert 'systemctl restart "${service_prefix}-refresh.timer"' in script
+    assert 'systemctl restart "${service_prefix}-generate.timer"' in script
     initial_refresh = script.index(
-        '"${app_dir}/.venv/bin/inky-bird-frame" refresh --config "${config_path}"'
+        '"${app_dir}/.venv/bin/inky-bird" refresh --config "${config_path}"'
     )
     quiesce = script.index('sudo systemctl stop "${timer}"')
     runtime_update = script.index('rsync -a --delete "${root}/src/"')
-    validation = script.index('"${app_dir}/.venv/bin/inky-bird-frame" catalog-publish')
+    validation = script.index('"${app_dir}/.venv/bin/inky-bird" catalog-publish')
     unit_install = script.index('sudo install -m 0644 "${unit}"')
     assert quiesce < runtime_update < initial_refresh < validation < unit_install
     assert "deadline=$((SECONDS + quiesce_timeout_seconds))" in script
@@ -224,8 +225,8 @@ def test_systemd_controller_installer_restarts_boot_persistent_services() -> Non
     assert "active | activating | deactivating | reloading" in script
     assert 'if [ "${installation_complete}" != true ]; then' in script
     assert 'sudo systemctl start "${timer}" || true' in script
-    assert "systemctl is-enabled --quiet inky-bird-frame-catalog-publish.timer" in script
-    assert "systemctl is-active --quiet inky-bird-frame-notifications.timer" in script
+    assert 'systemctl is-enabled --quiet "${service_prefix}-catalog-publish.timer"' in script
+    assert 'systemctl is-active --quiet "${service_prefix}-notifications.timer"' in script
     assert 'if [ "${root}" != "${app_dir}" ]; then' in script
     assert 'rsync -a "${root}/catalog/" "${app_dir}/catalog/"' not in script
     assert "retain_independent_approvals=True" in script
@@ -244,7 +245,9 @@ def test_macos_controller_installer_restores_previously_loaded_agents_on_failure
 
     backup = script.index('cp "${plist}" "${plist_backup_dir}/"')
     plist_write = script.index("write_bytes_atomic(path, plistlib.dumps(payload, sort_keys=True)")
-    unconditional_bootout = script.index('launchctl bootout "gui/${uid}/com.inky-bird-frame.serve"')
+    unconditional_bootout = script.index(
+        'launchctl bootout "gui/${uid}/com.${service_prefix}.serve"'
+    )
     bootstrap = script.index('launchctl bootstrap "gui/${uid}" "${serve_plist}"')
     completion = script.index("installation_complete=true")
 
@@ -287,10 +290,10 @@ def test_local_display_installer_uses_configured_schedule_and_verifies_timer() -
 
     assert "display_systemd_units" in script
     assert "run_initial_display=${INKY_BIRD_RUN_INITIAL_DISPLAY:-false}" in script
-    assert "systemctl enable inky-bird-frame-display.timer" in script
-    assert "systemctl restart inky-bird-frame-display.timer" in script
-    assert "systemctl is-enabled --quiet inky-bird-frame-display.timer" in script
-    assert "systemctl is-active --quiet inky-bird-frame-display.timer" in script
+    assert 'systemctl enable "${service_prefix}-display.timer"' in script
+    assert 'systemctl restart "${service_prefix}-display.timer"' in script
+    assert 'systemctl is-enabled --quiet "${service_prefix}-display.timer"' in script
+    assert 'systemctl is-active --quiet "${service_prefix}-display.timer"' in script
     assert "noninteractive_sudo=${INKY_BIRD_NONINTERACTIVE_SUDO:-false}" in script
     assert "sudo_command+=(-n)" in script
     assert '"${sudo_command[@]}" systemctl daemon-reload' in script
@@ -311,13 +314,13 @@ def test_macos_controller_uninstaller_removes_agents_and_preserves_data() -> Non
 
     assert "set -euo pipefail" in script
     assert (
-        "for label in serve refresh generate catalog-publish notifications controller-cycle; do"
-        in script
+        "for label in serve refresh generate catalog-publish notifications "
+        "scheduler controller-cycle; do" in script
     )
     assert 'launchctl bootout "gui/${uid}/${agent}"' in script
     assert 'rm -f "${plist}"' in script
     assert "Intentionally left in place:" in script
-    assert "${HOME}/Services/inky-bird-frame" in script
+    assert "native_names.py" in script
     assert "rm -rf" not in script
     assert 'rm -f "${config_path}"' not in script
 
@@ -330,8 +333,12 @@ def test_systemd_controller_uninstaller_removes_units_and_preserves_data() -> No
     assert "set -euo pipefail" in script
     assert "for name in refresh generate catalog-publish notifications; do" in script
     assert 'sudo systemctl disable --now "${timer}"' in script
-    assert "sudo systemctl disable --now inky-bird-frame-controller.service" in script
-    assert "for name in controller refresh generate catalog-publish notifications; do" in script
+    assert 'sudo systemctl disable --now "${service_prefix}-controller.service"' in script
+    assert 'sudo systemctl disable --now "${service_prefix}-scheduler.service"' in script
+    assert (
+        "for name in controller scheduler refresh generate catalog-publish notifications; do"
+        in script
+    )
     assert 'sudo rm -f "/etc/systemd/system/${unit}"' in script
     assert "sudo systemctl daemon-reload" in script
     assert "Intentionally left in place:" in script
@@ -347,8 +354,10 @@ def test_local_display_uninstaller_removes_units_and_preserves_data() -> None:
     assert "set -euo pipefail" in script
     assert "noninteractive_sudo=${INKY_BIRD_NONINTERACTIVE_SUDO:-false}" in script
     assert "sudo_command+=(-n)" in script
-    assert '"${sudo_command[@]}" systemctl disable --now inky-bird-frame-display.timer' in script
-    assert '"${sudo_command[@]}" systemctl stop inky-bird-frame-display.service' in script
+    assert (
+        '"${sudo_command[@]}" systemctl disable --now "${service_prefix}-display.timer"' in script
+    )
+    assert '"${sudo_command[@]}" systemctl stop "${service_prefix}-display.service"' in script
     assert '"${sudo_command[@]}" rm -f "/etc/systemd/system/${unit}"' in script
     assert '"${sudo_command[@]}" systemctl daemon-reload' in script
     assert "Intentionally left in place:" in script

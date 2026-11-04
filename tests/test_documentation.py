@@ -92,7 +92,7 @@ def test_installation_native_checks_use_the_managed_runtime() -> None:
     guide = (ROOT / "docs/installation.md").read_text(encoding="utf-8")
     section = guide.split("### Verify controller data", 1)[1].split("\n## ", 1)[0]
 
-    assert 'IBF="$HOME/Services/inky-bird-frame/.venv/bin/inky-bird-frame"' in section
+    assert 'IBF="$HOME/Services/inky-bird/.venv/bin/inky-bird"' in section
     assert re.search(r"^inky-bird-frame(?:\s|$)", section, re.MULTILINE) is None
 
 

@@ -1,5 +1,10 @@
 # Installation
 
+The examples below use the names for a clean installation. Existing installs
+keep their current configuration, data roots and native service names; setup
+detects that identity instead of creating a second scheduler. Before updating
+an existing install, read the [name migration guide](repository-name.md).
+
 This guide starts with a blank controller and Raspberry Pi and ends with a frame
 that returns after a reboot. Follow the sections in order. The first panel test
 uses an included plate, so you can prove the hardware before setting up Codex or
@@ -187,7 +192,7 @@ For a compact status card, add one `customapi` widget:
 - Birds:
     - Inky Bird:
         icon: mdi-bird
-        href: https://github.com/veteranbv/inky-bird-frame
+        href: https://github.com/veteranbv/inky-bird
         description: Observation-driven field-journal plates
         siteMonitor: http://inky-controller:8793/v1/catalog
         widget:
@@ -213,7 +218,7 @@ For the featured-plate card, use Homepage's multiple-widget form and add the
 - Birds:
     - Inky Bird:
         icon: mdi-bird
-        href: https://github.com/veteranbv/inky-bird-frame
+        href: https://github.com/veteranbv/inky-bird
         description: Observation-driven field-journal plates
         siteMonitor: http://inky-controller:8793/v1/catalog
         widgets:
@@ -304,21 +309,21 @@ OpenAI also publishes npm packages and direct release binaries. See the
 Clone and prepare the project:
 
 ```bash
-git clone https://github.com/veteranbv/inky-bird-frame.git
-cd inky-bird-frame
+git clone https://github.com/veteranbv/inky-bird.git
+cd inky-bird
 INKY_VERSION=vX.Y.Z
 git checkout --detach "$INKY_VERSION"
 uv sync --extra controller --locked
-mkdir -p "$HOME/Library/Application Support/Inky Bird Frame"
+mkdir -p "$HOME/Library/Application Support/Inky Bird"
 cp config.example.toml \
-  "$HOME/Library/Application Support/Inky Bird Frame/config.toml"
-chmod 600 "$HOME/Library/Application Support/Inky Bird Frame/config.toml"
+  "$HOME/Library/Application Support/Inky Bird/config.toml"
+chmod 600 "$HOME/Library/Application Support/Inky Bird/config.toml"
 ```
 
 Edit the private file:
 
 ```bash
-open -t "$HOME/Library/Application Support/Inky Bird Frame/config.toml"
+open -t "$HOME/Library/Application Support/Inky Bird/config.toml"
 ```
 
 At minimum, set:
@@ -348,15 +353,15 @@ Edu, or Enterprise plan. API-key login is supported but billed separately. See
 Validate, preview, install, and diagnose:
 
 ```bash
-CONFIG="$HOME/Library/Application Support/Inky Bird Frame/config.toml"
-uv run inky-bird-frame config validate --config "$CONFIG"
-uv run inky-bird-frame setup controller --config "$CONFIG"
-uv run inky-bird-frame setup controller --config "$CONFIG" --yes
-uv run inky-bird-frame doctor controller --config "$CONFIG"
+CONFIG="$HOME/Library/Application Support/Inky Bird/config.toml"
+uv run inky-bird config validate --config "$CONFIG"
+uv run inky-bird setup controller --config "$CONFIG"
+uv run inky-bird setup controller --config "$CONFIG" --yes
+uv run inky-bird doctor controller --config "$CONFIG"
 ```
 
 The preview lists changes and performs no installation. `--yes` copies a managed
-runtime to `~/Services/inky-bird-frame`, installs its locked controller
+runtime to `~/Services/inky-bird`, installs its locked controller
 environment, creates LaunchAgents, loads them, and verifies them with
 `launchctl`.
 
@@ -391,15 +396,15 @@ configuration, so later service starts do not depend on the interactive PATH.
 Clone and prepare the project:
 
 ```bash
-git clone https://github.com/veteranbv/inky-bird-frame.git
-cd inky-bird-frame
+git clone https://github.com/veteranbv/inky-bird.git
+cd inky-bird
 INKY_VERSION=vX.Y.Z
 git checkout --detach "$INKY_VERSION"
 uv sync --extra controller --locked
-mkdir -p "$HOME/.config/inky-bird-frame"
-cp config.example.toml "$HOME/.config/inky-bird-frame/config.toml"
-chmod 600 "$HOME/.config/inky-bird-frame/config.toml"
-nano "$HOME/.config/inky-bird-frame/config.toml"
+mkdir -p "$HOME/.config/inky-bird"
+cp config.example.toml "$HOME/.config/inky-bird/config.toml"
+chmod 600 "$HOME/.config/inky-bird/config.toml"
+nano "$HOME/.config/inky-bird/config.toml"
 ```
 
 Set the same minimum fields listed in the macOS section. On a headless
@@ -417,14 +422,14 @@ documents that requirement and fallback methods.
 Validate, preview, install, and diagnose:
 
 ```bash
-CONFIG="$HOME/.config/inky-bird-frame/config.toml"
-uv run inky-bird-frame config validate --config "$CONFIG"
-uv run inky-bird-frame setup controller --config "$CONFIG"
-uv run inky-bird-frame setup controller --config "$CONFIG" --yes
-uv run inky-bird-frame doctor controller --config "$CONFIG"
+CONFIG="$HOME/.config/inky-bird/config.toml"
+uv run inky-bird config validate --config "$CONFIG"
+uv run inky-bird setup controller --config "$CONFIG"
+uv run inky-bird setup controller --config "$CONFIG" --yes
+uv run inky-bird doctor controller --config "$CONFIG"
 ```
 
-The installer creates a persistent `inky-bird-frame-controller.service` plus
+The installer creates a persistent `inky-bird-controller.service` plus
 refresh, generation, and optional notification/publication timers. It enables
 them for boot and verifies their state through systemd. Setup performs one
 successful refresh before installing the units, then each timer schedules its
@@ -444,7 +449,7 @@ After the controller health check passes, continue at
 Run a read-only discovery, then refresh the active catalog:
 
 ```bash
-IBF="$HOME/Services/inky-bird-frame/.venv/bin/inky-bird-frame"
+IBF="$HOME/Services/inky-bird/.venv/bin/inky-bird"
 "$IBF" discover --config "$CONFIG"
 "$IBF" refresh --config "$CONFIG"
 curl --fail --silent "http://127.0.0.1:8793/health"
@@ -542,12 +547,12 @@ Reboot if the installer asks.
 Clone this project and install it into the same Pimoroni environment:
 
 ```bash
-git clone https://github.com/veteranbv/inky-bird-frame.git
-cd inky-bird-frame
+git clone https://github.com/veteranbv/inky-bird.git
+cd inky-bird
 INKY_VERSION=vX.Y.Z
 git checkout --detach "$INKY_VERSION"
 "$HOME/.virtualenvs/pimoroni/bin/python" -m pip install -e '.[inky]'
-"$HOME/.virtualenvs/pimoroni/bin/inky-bird-frame" display-image \
+"$HOME/.virtualenvs/pimoroni/bin/inky-bird" display-image \
   catalog/species/12942-eastern-bluebird/display.png
 ```
 
@@ -566,11 +571,11 @@ Create a private display configuration. Do not copy the controller's private
 file because it may contain credentials and a private discovery location.
 
 ```bash
-cd "$HOME/inky-bird-frame"
-mkdir -p "$HOME/.config/inky-bird-frame"
-cp config.example.toml "$HOME/.config/inky-bird-frame/config.toml"
-chmod 600 "$HOME/.config/inky-bird-frame/config.toml"
-nano "$HOME/.config/inky-bird-frame/config.toml"
+cd "$HOME/inky-bird"
+mkdir -p "$HOME/.config/inky-bird"
+cp config.example.toml "$HOME/.config/inky-bird/config.toml"
+chmod 600 "$HOME/.config/inky-bird/config.toml"
+nano "$HOME/.config/inky-bird/config.toml"
 ```
 
 Set `display_node.controller_url` to the stable controller URL and choose
@@ -587,8 +592,8 @@ curl --fail --silent "http://YOUR_CONTROLLER:8793/health"
 Then validate, preview, install, and diagnose:
 
 ```bash
-CONFIG="$HOME/.config/inky-bird-frame/config.toml"
-INKY="$HOME/.virtualenvs/pimoroni/bin/inky-bird-frame"
+CONFIG="$HOME/.config/inky-bird/config.toml"
+INKY="$HOME/.virtualenvs/pimoroni/bin/inky-bird"
 "$INKY" config validate --config "$CONFIG"
 "$INKY" setup display --config "$CONFIG" --source-dir "$PWD" \
   --venv "$HOME/.virtualenvs/pimoroni"
@@ -610,9 +615,9 @@ controller first:
 
 ```bash
 # Run these on the controller with its private configuration.
-"$HOME/Services/inky-bird-frame/.venv/bin/inky-bird-frame" generate \
+"$HOME/Services/inky-bird/.venv/bin/inky-bird" generate \
   --config /path/to/controller/config.toml
-"$HOME/Services/inky-bird-frame/.venv/bin/inky-bird-frame" refresh \
+"$HOME/Services/inky-bird/.venv/bin/inky-bird" refresh \
   --config /path/to/controller/config.toml
 ```
 
@@ -627,25 +632,25 @@ Do not call installation complete until both doctor commands report
 On a systemd controller:
 
 ```bash
-systemctl is-enabled inky-bird-frame-controller.service
-systemctl is-active inky-bird-frame-controller.service
-systemctl list-timers 'inky-bird-frame-*'
+systemctl is-enabled inky-bird-controller.service
+systemctl is-active inky-bird-controller.service
+systemctl list-timers 'inky-bird-*'
 ```
 
 On the display:
 
 ```bash
-systemctl is-enabled inky-bird-frame-display.timer
-systemctl is-active inky-bird-frame-display.timer
-systemctl list-timers inky-bird-frame-display.timer
+systemctl is-enabled inky-bird-display.timer
+systemctl is-active inky-bird-display.timer
+systemctl list-timers inky-bird-display.timer
 ```
 
 On macOS:
 
 ```bash
-launchctl print "gui/$(id -u)/com.inky-bird-frame.serve"
-launchctl print "gui/$(id -u)/com.inky-bird-frame.refresh"
-launchctl print "gui/$(id -u)/com.inky-bird-frame.generate"
+launchctl print "gui/$(id -u)/com.inky-bird.serve"
+launchctl print "gui/$(id -u)/com.inky-bird.refresh"
+launchctl print "gui/$(id -u)/com.inky-bird.generate"
 ```
 
 The Pi and Linux controller services return automatically after a reboot. The
@@ -672,6 +677,15 @@ publicly.
 
 ## Update
 
+Keep using your existing `$CONFIG`, runtime directory and service names during
+an upgrade. Do not create the new default config directory beside an existing
+one. If setup detects both native identities, it stops before making changes.
+For the first package-name update on the display, stop its timer, let the
+current service finish, and preserve a recoverable runtime backup. The installer
+refuses to remove the old Python distribution while that role is running.
+Resume the recorded timer state after validation; a forced panel cycle is not
+required. See [package upgrade and rollback](repository-name.md#python-environments).
+
 Read the release notes and take a quiesced backup using the
 [backup and restore guide](backup.md). Choose the exact target release, update
 each source checkout to that tag, review the changes, and rerun the same setup
@@ -691,8 +705,8 @@ INKY_VERSION=vX.Y.Z
 git fetch --tags --prune
 git checkout --detach "$INKY_VERSION"
 uv sync --extra controller --locked       # controller checkout
-uv run inky-bird-frame setup controller --config "$CONFIG" --yes
-uv run inky-bird-frame doctor controller --config "$CONFIG"
+uv run inky-bird setup controller --config "$CONFIG" --yes
+uv run inky-bird doctor controller --config "$CONFIG"
 ```
 
 On the display:
@@ -752,22 +766,22 @@ The equivalent manual removal follows. On a systemd controller:
 
 ```bash
 for unit in \
-  inky-bird-frame-controller.service \
-  inky-bird-frame-refresh.timer \
-  inky-bird-frame-generate.timer \
-  inky-bird-frame-catalog-publish.timer \
-  inky-bird-frame-notifications.timer; do
+  inky-bird-controller.service \
+  inky-bird-refresh.timer \
+  inky-bird-generate.timer \
+  inky-bird-catalog-publish.timer \
+  inky-bird-notifications.timer; do
   sudo systemctl disable --now "$unit" 2>/dev/null || true
 done
-sudo rm -f /etc/systemd/system/inky-bird-frame-{controller,refresh,generate,catalog-publish,notifications}.{service,timer}
+sudo rm -f /etc/systemd/system/inky-bird-{controller,refresh,generate,catalog-publish,notifications}.{service,timer}
 sudo systemctl daemon-reload
 ```
 
 Missing optional units are harmless. On the display:
 
 ```bash
-sudo systemctl disable --now inky-bird-frame-display.timer
-sudo rm -f /etc/systemd/system/inky-bird-frame-display.{service,timer}
+sudo systemctl disable --now inky-bird-display.timer
+sudo rm -f /etc/systemd/system/inky-bird-display.{service,timer}
 sudo systemctl daemon-reload
 ```
 
@@ -776,12 +790,12 @@ On macOS, unload each installed label and remove its matching plist from
 
 ```bash
 for label in serve refresh generate catalog-publish notifications; do
-  launchctl bootout "gui/$(id -u)/com.inky-bird-frame.$label" 2>/dev/null || true
-  rm -f "$HOME/Library/LaunchAgents/com.inky-bird-frame.$label.plist"
+  launchctl bootout "gui/$(id -u)/com.inky-bird.$label" 2>/dev/null || true
+  rm -f "$HOME/Library/LaunchAgents/com.inky-bird.$label.plist"
 done
 ```
 
-After service removal, delete `~/Services/inky-bird-frame` only if its managed
+After service removal, delete `~/Services/inky-bird` only if its managed
 runtime is no longer needed. Delete the private support/configuration directory
 only after saving any catalog or state you want to keep.
 

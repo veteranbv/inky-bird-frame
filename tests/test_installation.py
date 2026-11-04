@@ -481,7 +481,13 @@ def test_native_oidc_secret_is_serving_only_in_systemd_and_private_launchd(tmp_p
         patch("sys.argv", arguments),
         patch("inky_bird_frame.config.load_config", return_value=config),
         patch("inky_bird_frame.publisher.sync_public_catalog"),
-        patch.dict(os.environ, {"NATIVE_TEST_SECRET": "synthetic-serving-only"}),
+        patch.dict(
+            os.environ,
+            {
+                "NATIVE_TEST_SECRET": "synthetic-serving-only",
+                "INKY_BIRD_SERVICE_PREFIX": "inky-bird-frame",
+            },
+        ),
         patch("inky_bird_frame.installation.ssl.create_default_context"),
     ):
         exec(compile(code, "native-installer-fixture", "exec"), {})

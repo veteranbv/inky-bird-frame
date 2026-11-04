@@ -20,7 +20,8 @@ def test_image_tags_keep_the_compatibility_namespace(
     tmp_path: Path, repository: str, event: str
 ) -> None:
     workflow = WORKFLOW.read_text(encoding="utf-8")
-    assert "CONTROLLER_IMAGE: ghcr.io/${{ github.repository_owner }}/inky-bird-frame" in workflow
+    assert "CONTROLLER_IMAGE: ghcr.io/${{ github.repository_owner }}/inky-bird\n" in workflow
+    assert "COMPATIBILITY_IMAGE: ghcr.io/${{ github.repository_owner }}/inky-bird-frame" in workflow
     step = workflow.split("      - name: Validate image tag\n", 1)[1]
     step = step.split("\n      - name:", 1)[0]
     script = dedent(step.split("        run: |\n", 1)[1])
@@ -43,12 +44,12 @@ def test_image_tags_keep_the_compatibility_namespace(
         ["bash", "-eu", "-c", script],
         cwd=tmp_path,
         env={
-            **os.environ,
             "PATH": f"{tmp_path}{os.pathsep}{os.environ['PATH']}",
             "EVENT_NAME": event,
             "GITHUB_REPOSITORY": repository,
             "REPOSITORY": repository,
-            "CONTROLLER_IMAGE": "ghcr.io/veteranbv/inky-bird-frame",
+            "CONTROLLER_IMAGE": "ghcr.io/veteranbv/inky-bird",
+            "COMPATIBILITY_IMAGE": "ghcr.io/veteranbv/inky-bird-frame",
             "REQUESTED_TAG": "preview",
             "GITHUB_REF_NAME": "v1.2.3",
             "SOURCE_SHA": SOURCE_SHA,
@@ -66,7 +67,11 @@ def test_image_tags_keep_the_compatibility_namespace(
         "release": ["1.2.3"],
         "workflow_dispatch": ["preview"],
     }
-    assert tags == [f"ghcr.io/veteranbv/inky-bird-frame:{tag}" for tag in expected[event]]
+    assert tags == [
+        f"ghcr.io/veteranbv/{image}:{tag}"
+        for tag in expected[event]
+        for image in ("inky-bird", "inky-bird-frame")
+    ]
 
 
 def test_release_bundle_uses_the_same_image_but_current_repository_links() -> None:
@@ -80,3 +85,64 @@ def test_release_bundle_uses_the_same_image_but_current_repository_links() -> No
     assert "github.ref == 'refs/heads/main'" in workflow
     assert "github.event.workflow_run.event == 'push'" in workflow
     assert "github.actor == github.repository_owner" in workflow
+
+
+@pytest.mark.parametrize("mismatch", [False, True])
+def test_published_names_must_resolve_to_one_multiarch_attested_digest(
+    tmp_path: Path, mismatch: bool
+) -> None:
+    import json
+
+    workflow = WORKFLOW.read_text(encoding="utf-8")
+    assert workflow.count("uses: docker/build-push-action@") == 1
+    assert "provenance: mode=max" in workflow
+    assert "sbom: true" in workflow
+    step = workflow.split("      - name: Verify both published names\n", 1)[1].split(
+        "\n  release-bundle:", 1
+    )[0]
+    script = dedent(step.split("        run: |\n", 1)[1])
+    expected = "sha256:" + "a" * 64
+    manifest = {
+        "digest": expected,
+        "manifests": [
+            {"platform": {"os": "linux", "architecture": arch}} for arch in ("amd64", "arm64")
+        ]
+        + [
+            {
+                "platform": {"os": "unknown", "architecture": "unknown"},
+                "annotations": {"vnd.docker.reference.type": "attestation-manifest"},
+            }
+        ]
+        * 2,
+    }
+    good = json.dumps(manifest)
+    manifest["digest"] = "sha256:" + "b" * 64
+    bad = json.dumps(manifest)
+    (tmp_path / "docker").write_text(
+        "#!/bin/sh\ncase \"$4\" in\n *inky-bird-frame:*) printf '%s\\n' '"
+        + (bad if mismatch else good)
+        + "';;\n *) printf '%s\\n' '"
+        + good
+        + "';;\nesac\n"
+    )
+    (tmp_path / "sleep").write_text("#!/bin/sh\nexit 0\n")
+    for name in ("docker", "sleep"):
+        (tmp_path / name).chmod(0o755)
+    result = subprocess.run(
+        ["bash", "-c", script],
+        cwd=tmp_path,
+        env={
+            "PATH": f"{tmp_path}{os.pathsep}{os.environ['PATH']}",
+            "EXPECTED_DIGEST": expected,
+            "IMAGE_TAGS": "\n".join(
+                (
+                    "ghcr.io/veteranbv/inky-bird:latest",
+                    "ghcr.io/veteranbv/inky-bird-frame:latest",
+                )
+            ),
+        },
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    assert (result.returncode != 0) is mismatch, result.stderr

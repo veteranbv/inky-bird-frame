@@ -41,7 +41,7 @@ uv run ruff format --check .
 uv run ruff check .
 uv run mypy
 uv run pytest
-uv run inky-bird-frame catalog validate --catalog catalog
+uv run inky-bird catalog validate --catalog catalog
 ```
 
 ## Security

@@ -97,7 +97,7 @@ def test_unmanaged_cli_keeps_terminal_output() -> None:
         check=False,
     )
     assert result.returncode == 0
-    assert "usage: inky-bird-frame" in result.stdout
+    assert "usage: inky-bird" in result.stdout
     assert result.stderr == ""
 
 
