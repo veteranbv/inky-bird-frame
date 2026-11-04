@@ -1,9 +1,13 @@
 # Inky Bird <img src="docs/images/inky-bird-mark.png" width="25" height="25" alt="">
 
-I built Inky to keep birding present between outings. A feeder visit, a bird
-you heard outside your window, or a sighting from a trip years ago can become
-an illustrated plate in your private journal. Revisit it on your phone, or
-give it a turn on a color e-paper frame.
+*A field journal for the birds in your life.*
+
+The cardinal at your feeder deserves a page.
+
+Inky brings public sightings near you, station detections, imported birding
+history and favorite species into a private illustrated journal. Read it on
+your phone, save a collection, or put an approved plate on a color e-paper frame.
+I built Inky to keep birding present between outings.
 
 [**Browse the bird gallery**](https://henrysowell.com/birds) ·
 [Supported sources](#supported-sources) ·
@@ -31,9 +35,9 @@ give it a turn on a color e-paper frame.
 Both screenshots are from the app on `main`, with public approved artwork and
 a sample collection. Open either image for the full-size view.
 
-https://github.com/user-attachments/assets/a0803447-84fd-4a2f-a2ed-db1595d008be
+https://github.com/user-attachments/assets/a20b7917-ed88-4872-b2d9-39086501b73f
 
-[Watch the 28-second walkthrough](https://github.com/user-attachments/assets/a0803447-84fd-4a2f-a2ed-db1595d008be)
+[Watch the 28-second walkthrough](https://github.com/user-attachments/assets/a20b7917-ed88-4872-b2d9-39086501b73f)
 · [Text transcript](docs/walkthrough.md) · [Still preview](docs/images/inky-walkthrough-poster.jpg).
 Sample data, accelerated navigation, and a separate e-paper installation;
 browser Play does not refresh the wall.

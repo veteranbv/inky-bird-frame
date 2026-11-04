@@ -127,13 +127,13 @@ async function renderCinematic() {
   }
   const brand = `<h1 class="brand">Inky Bird<img src="${mark}" alt=""></h1>`;
   const lines = [
-    [2.5, 7, 'Reviewed field-journal plates, ready to revisit.'],
+    [2.5, 7, 'The cardinal at your feeder deserves a page.'],
     [7, 12, 'Keep the birds you want to revisit.'],
     [12, 19, 'Press Play. Plates change once a minute; Next skips ahead.'],
     [19, 24, 'A separate e-paper frame can show the same plates.'],
   ];
   try {
-    await still('v2-title.png', `<div class="center">${brand}<p>A field journal for the birds you see.</p></div>`);
+    await still('v2-title.png', `<div class="center">${brand}<p>A field journal for the birds in your life.</p></div>`);
     await still('v2-end.png', `<div class="center">${brand}<p>Browse the gallery · henrysowell.com/birds</p><p class="repo">github.com/veteranbv/inky-bird</p></div>`,
       '.repo{font:26px/1.5 system-ui,sans-serif;color:var(--ink-soft);margin-top:18px}');
     await still('v2-backdrop.png', '<div class="card"></div><div class="sample">Sample data</div>',
@@ -145,7 +145,7 @@ async function renderCinematic() {
       await still(`v2-caption-${i}.png`, `<div>${lines[i][2]}</div>`,
         'body{background:transparent}body>div{height:100%;display:grid;place-items:center;margin:0 70px;padding:12px 32px;background:rgba(246,241,231,.94);border:1px solid var(--line);border-radius:var(--radius);font:44px/1.2 var(--serif);white-space:nowrap}',
         { width: 1920, height: 100 });
-    await still('inky-walkthrough-poster.png', `<img class="art" src="${plate}" alt=""><div class="poster">${brand}<p>A field journal for the birds you see.</p></div>`,
+    await still('inky-walkthrough-poster.png', `<img class="art" src="${plate}" alt=""><div class="poster">${brand}<p>A field journal for the birds in your life.</p></div>`,
       '.art{width:100%;height:100%;object-fit:cover;object-position:50% 8%}.poster{position:absolute;left:70px;bottom:65px;padding:32px 48px;background:rgba(246,241,231,.94);border:1px solid var(--line);border-radius:var(--radius)}.poster h1{font-size:78px;justify-content:flex-start}.poster p{font-size:28px;margin-top:12px}');
     assert.deepEqual(blocked, []);
     assert.deepEqual(errors, []);
@@ -207,15 +207,15 @@ async function renderCinematic() {
   writeFileSync(path.join(output, 'inky-walkthrough-transcript.md'),
     '# Inky Bird walkthrough\n\nA silent, 28-second film using the real app, two public approved plates and a synthetic Garden birds collection. '
     + 'No personal sightings, production services or account creation appear. UI scenes are labeled Sample data. Navigation is accelerated; automatic browser playback remains once a minute. Nothing uploads automatically.\n\n'
-    + '- 0:00–0:02.5: The simple Inky Bird title card is fully visible from the first frame. A field journal for the birds you see.\n'
-    + '- 0:02.5–0:07: Close view of the approved Northern Cardinal plate.\n'
+    + '- 0:00–0:02.5: The simple Inky Bird title card is fully visible from the first frame. A field journal for the birds in your life.\n'
+    + '- 0:02.5–0:07: Close view of the approved Northern Cardinal plate. The cardinal at your feeder deserves a page.\n'
     + '- 0:07–0:12: Home, Collections and Garden birds in the actual app.\n'
     + '- 0:12–0:19: Frame mode, a real Play action and a real manual Next action to American Robin. Automatic playback changes once a minute; this short clip does not show an automatic transition.\n'
     + '- 0:19–0:24: Hard cut to a photograph of a separate e-paper frame showing Eastern Bluebird. Browser Play does not trigger or synchronize that physical display.\n'
     + '- 0:24–0:28: Gallery and repository links, with a fade to the end card.\n');
   const stamp = value => `00:${value.toFixed(3).padStart(6, '0')}`;
   writeFileSync(path.join(output, 'inky-walkthrough.vtt'), 'WEBVTT\n\n' + [
-    [0, 2.5, 'Inky Bird. A field journal for the birds you see.'], ...lines,
+    [0, 2.5, 'Inky Bird. A field journal for the birds in your life.'], ...lines,
     [24, 28, 'Browse the gallery: henrysowell.com/birds. github.com/veteranbv/inky-bird'],
   ].map(([begin, end, text]) => `${stamp(begin)} --> ${stamp(end)}\n${text}\n`).join('\n'));
   const files = ['inky-walkthrough.mp4', 'inky-walkthrough-share.gif', 'inky-walkthrough-poster.png',
