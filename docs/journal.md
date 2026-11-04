@@ -1,87 +1,79 @@
-# Browser journal: development candidate
+# Browser journal
 
 The browser uses your controller's approved art and private selections. It does
 not run another discovery service or keep a second copy of your history in
 browser storage. Open `/app` and [set up your owner account](browser-access.md).
 
-This is a 1.0 candidate, not a published release. Do not replace a
-working deployment with this branch. The complete acceptance scope remains in
-[issue #310](https://github.com/veteranbv/inky-bird-frame/issues/310).
+This guide describes the app on `main`. Start with [approved art](settings.md#start-with-approved-art)
+if you want to try it without generation, connected sources, or a physical display.
 
 ## Find your way around
 
-Home, Birds, Collections, Frame and Manage share one controller behind an
-icon tab bar (bottom on phones, top on wide screens). Start with
-[approved art and generation off](settings.md#start-with-approved-art), create
-your owner account, and browse before connecting a source. On an existing
-installation, follow the [migration guide](migration-v1.md) instead of replacing
-your configuration with a new seed.
+The tabs sit at the bottom on phones and at the top on wide screens. If you
+already run Inky, follow the [migration guide](migration-v1.md) to keep your
+configuration and data.
 
-- Home opens the current approved selection. If it is empty, it offers available
-  artwork without pretending you observed those birds.
-- Birds separates retained history and current/saved selections from all available artwork.
-  Search by common or scientific name. Open a plate for readable reviewed facts
-  and source links. Older incomplete profiles show an explicit fallback.
-  Retained eBird, Analyzer and selected-feeder Bird Buddy history is not cut to
-  the live window or provider species limit. Each source keeps its own count
-  and unit; Inky never adds checklists to station detections as if they were
-  the same thing. Unknown or ambiguous taxa remain private unmatched names.
-- Collections creates, edits and removes private named selections. Reloading the
-  page reads the saved controller state. A stale edit from another tab fails
-  before it overwrites a newer save. Artwork comes before collection tools.
-  Missing-plate review appears only when there is missing art or an unresolved member.
-- Favorites are separate bookmarks. Add or remove one on a bird's page. They
-  do not join Saved birds or change your wall automatically.
-- Saved birds retains the existing flat membership. Its add/remove and import
-  approved-art actions have a separate preview. They can change the compatible
-  active selection and wall; ordinary Favorites and named collections cannot.
-- Portable collection export includes labels, inclusive dates, species and
-  declared origins, but no private checklist links or credentials. Import
-  previews matches and keeps unknown names unresolved. It does not turn an
-  imported label into verified personal evidence.
-- [History imports](history-imports.md) checks official eBird archives and
-  Analyzer CSV files before a separate confirmed history update. Trip saving
-  selects complete checklists, retains unresolved names and changes neither
-  generation work nor wall selection.
-- Community history is a separate location/radius/date search, labeled **Birds
-  reported near this place**. The query sends that point and dates to iNaturalist.
-  Review the complete species result before saving. A search over 500 species
-  fails with instructions to narrow it, rather than saving a partial first page.
-  It never becomes a claim about your own sightings.
-- Frame shows complete portrait plates without cropping. Play changes plates
-  once a minute. Previous, Next, Pause, Shuffle, Details, Zoom and Exit remain
-  available. Reading details stops playback. Fullscreen and wake lock depend on
-  browser support. Fullscreen shows the plate alone: the view title and notes
-  leave, controls float in on activity and fade, and the Bird name toggle
-  chooses whether a small placard names the current bird. For a television or
-  other shared screen, pair a read-only screen instead of leaving an owner
-  session signed in on that device. Zoom is an explicit pan view, not a change to the plate.
-- Manage shows all seven source types, current work partitions, notification
-  counts and the last confirmed physical panel update. Existing configuration
-  stays managed. [App-managed settings](settings.md) add source and policy edits
-  with preview, private backup and stale-edit protection.
-- New setup can start with approved art, no sources and generation off. Native
-  service definitions, the dynamic scheduler and doctor understand that mode.
-- [Owner actions](owner-operations.md) provide confirmed source refresh, normal
-  plate retry, notification tests and dead-letter retry with private outcomes.
-- Named selections keep their validated species names. Missing-plate requests
-  have a separate preview and confirmation. Pending complete candidates can be
-  inspected, approved through the ordinary publication gates, or rejected with
-  a retained private reason. None of these actions claims a personal sighting.
-- Bird Buddy's source setup includes owner-only guest login, explicit permission
-  attestation, feeder choice, redacted saved-login status and local logout.
-  Bootstrap needs HTTPS or genuine loopback access. It stores no email or password.
-- Displays pairs a read-only screen to one view, revokes it, and chooses the
-  optional selected-wall route. Integrations provides scoped Home Assistant and
-  Homepage artwork and separate status credentials. See [presentation](presentation.md).
-- Health shows redacted application checks. Backups and Advanced tools explain
-  the existing operator boundaries for service checks, consistent backups,
-  package updates and approved-art replacement. They do not run host commands.
+- **Home** opens your current selection of approved plates. If it is empty,
+  you can still browse the available artwork.
+- **Birds** lets you search by common or scientific name. Open a plate to read
+  its reviewed facts and sources. Older plates with incomplete profiles say so.
+- **Collections** keeps named selections and puts the art before the tools.
+  The missing-plate review appears when a collection needs it.
+- **Frame** plays complete portrait plates in your browser, one a minute.
+  For a shared screen, [pair a read-only view](presentation.md#pair-a-read-only-screen).
+- **Manage** shows sources, plate work, notification counts and the last
+  confirmed panel update. Use [owner actions](owner-operations.md) to refresh
+  a source, retry plate work or test notifications.
 
-Named selections do not write `collection.json`, request generation or change
-the wall. Existing CLI collection commands still mean Saved birds. Current and
-saved keeps the existing active-catalog meaning. Available artwork is not a
-list of personal sightings. Missing plates remain visible in selected groups.
+### What you keep and what you saw
+
+Available artwork is yours to browse. It isn't a list of personal sightings.
+Birds separates the artwork from retained history and the current and saved
+selection. Each source keeps its own counts: eBird checklists and station
+detections stay separate. Retained eBird, Analyzer and selected-feeder Bird
+Buddy history can go back beyond the live window and species limit. Unknown
+or ambiguous names stay private and unmatched.
+
+Add a Favorite from a bird's page, or save birds to a named collection for
+playback. Neither changes the default wall selection, writes `collection.json`
+or queues generation. The optional [selected wall view](presentation.md#choose-the-physical-wall-view)
+is configured separately. Missing plates stay visible in the collection, and requests for
+art have their own preview and confirmation. Reload to see what the controller
+saved. If another tab saved first, Inky rejects your stale edit.
+
+**Saved birds** is the existing shared list managed by the CLI collection
+commands. **Current and saved** combines that list with currently observed species for
+the active catalog. Preview changes to Saved birds before you confirm them:
+they can affect the active selection and physical wall.
+
+Portable collections carry labels, dates, species and declared origins.
+Private checklist links and credentials stay out. Import previews matches and
+leaves unknown names unresolved. For personal records, [import an eBird
+archive or Analyzer results](history-imports.md) through the separate history
+flow. Saving a trip selects complete checklists and changes neither generation
+work nor the wall selection.
+
+For a place you want to explore, use **Birds reported near this place**. The
+search sends the location and dates to iNaturalist. Review the species before
+saving; if the search finds over 500 species, narrow it and try again. These
+community reports stay separate from your own sightings.
+
+### Playing plates and managing your setup
+
+In Frame, **Details** pauses playback. **Zoom** lets you pan around the image
+without changing the plate. In fullscreen the title and notes disappear.
+Controls fade between interactions, and **Bird name** toggles a small placard.
+Fullscreen and wake lock depend on the browser. See [Frame and screen
+setup](presentation.md#owner-frame) for display options.
+
+[App-managed settings](settings.md) let you preview source and policy changes
+and keep a private backup. Existing file-managed installations keep their
+configuration. Follow [discovery setup](discovery.md) for Bird Buddy permission
+and login requirements. In Manage, **Displays** pairs screens and selects the
+wall view. **Integrations** has scoped artwork and separate status credentials
+for Home Assistant and Homepage. **Health** shows redacted checks. Backups
+and advanced tools explain what to do on the controller; host commands stay
+with the operator.
 
 Frame never records a successful physical panel update. It checks its view and
 authority once a minute without renewing owner idle time. A successful empty
@@ -120,6 +112,9 @@ prove every newer state file is backward compatible. Roll back with the old
 runtime and its matching complete backup.
 
 ## Verification and release boundary
+
+For contributors: browser tests cover the flows below. Release qualification
+also needs evidence from real phones, providers and hardware.
 
 The maintained browser acceptance test is
 [`tests/web/journal.e2e.cjs`](../tests/web/journal.e2e.cjs). It runs a temporary

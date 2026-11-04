@@ -5,6 +5,9 @@ that returns after a reboot. Follow the sections in order. The first panel test
 uses an included plate, so you can prove the hardware before setting up Codex or
 bird observations.
 
+If you only want the browser journal, use [Start with approved art](settings.md#start-with-approved-art)
+or run the [Docker controller](docker.md) without a display node.
+
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="images/installation-architecture-dark.png">
   <img src="images/installation-architecture.png" alt="Inky Bird runtime architecture showing observation and generation services; the controller; the Raspberry Pi display node and an optional trusted browser application reading the approved catalog over a private network; and the Inky Impression panel">

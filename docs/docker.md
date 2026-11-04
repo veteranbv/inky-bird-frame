@@ -7,6 +7,11 @@ The normal Docker path pulls a published image from GitHub Container Registry.
 It does not build the project from source. Images are available for AMD64 and
 ARM64 hosts.
 
+For a new installation, [download the bundle](#1-download-the-deployment-bundle)
+and [create your configuration](#2-create-private-configuration). To start with
+approved art, leave generation disabled and skip Codex authentication. You can
+add a display or source later. If you already run Inky, go to [Update](#update).
+
 The image includes the project license and the pinned Codex CLI and GitHub CLI
 license material under `/usr/share/licenses/inky-bird-frame/`. See
 [`THIRD_PARTY_NOTICES.md`](../THIRD_PARTY_NOTICES.md) for component details.
@@ -26,7 +31,7 @@ The controller and scheduler use the same commands as a native installation.
 One failed scheduled job is logged and retried later without stopping the HTTP
 service or unrelated jobs.
 
-The development [browser journal](journal.md) opens at `/app`.
+The [browser journal](journal.md) opens at `/app`.
 Create a local username and password; no setup code is required. The optional
 `access.env` file supplies only controller access credentials such as an OIDC
 client secret. Protect it with mode `0600`. It is separate from `controller.env`,
@@ -71,7 +76,7 @@ Do not disable certificate validation to pass a health check. A reverse proxy
 that terminates HTTPS leaves the backend listener and health check on HTTP.
 
 For existing managed installations, the host `config.toml` is authoritative.
-The [app-managed candidate](settings.md) instead preserves its private runtime
+An [app-managed installation](settings.md) instead preserves its private runtime
 file across restarts; the original host file is only its first-start seed.
 Compose bind-mounts the host file read-only into
 the one-shot `config-sync` service, not the long-running services. Local Docker

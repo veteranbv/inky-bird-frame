@@ -127,6 +127,65 @@ CSV. Never supply personal history. These journeys complement unit tests;
 they do not prove live provider contracts, physical hardware or real-phone
 certificate trust.
 
+### Refresh the README screenshots
+
+With the same controller dependencies and Chromium installed, run:
+
+```bash
+INKY_QA_PLAYWRIGHT="$qa_tools/node_modules/playwright" node tests/web/capture-readme.cjs
+```
+
+The script starts the checked-out app on loopback with a disposable owner and
+two approved public plates. It creates a manual collection through the real
+browser UI. Inspect the two PNGs in the printed output directory before copying
+them to `docs/images/`. Publish only those images, not the fixture state.
+
+### Record a sample walkthrough
+
+The same fixture can record Home, a sample collection, Frame mode and a manual
+Next action. Account creation happens before recording. The browser context
+keeps its synthetic session in memory; it does not export cookies.
+
+```bash
+media_output=$(mktemp -d)
+INKY_QA_PLAYWRIGHT="$qa_tools/node_modules/playwright" \
+  node tests/web/capture-readme.cjs "$media_output" --walkthrough
+INKY_QA_PLAYWRIGHT="$qa_tools/node_modules/playwright" \
+  node tests/web/render-walkthrough.cjs "$media_output"
+```
+
+For the 28-second art-first film, record the unchanged 1280 × 800 desktop
+layout and render the title cards, sample-data labels, captions and separate
+wall-photo cut at 1920 × 1200:
+
+```bash
+media_output=$(mktemp -d)
+INKY_QA_PLAYWRIGHT="$qa_tools/node_modules/playwright" \
+  node tests/web/capture-readme.cjs "$media_output" --walkthrough-v2
+INKY_QA_PLAYWRIGHT="$qa_tools/node_modules/playwright" \
+  node tests/web/render-walkthrough.cjs "$media_output" --v2
+```
+
+The UI recording is modestly upscaled with Lanczos filtering; the title
+cards and public plate close-up use the full output resolution. Do not use CSS
+zoom to manufacture a higher-resolution app capture: it changes Frame sizing.
+The film uses the app's typography and color tokens. Navigation is accelerated;
+the captions still identify the real once-a-minute playback and manual Next
+action. The physical-frame photograph begins with a hard cut, not a simulated
+live update. Review `media-review.json` and `review-strip.png` alongside the
+complete video. The MP4 must remain below 10 MB, the sharing GIF below 5 MB,
+and the optimized JPEG poster below 1 MB. Keep the full PNG as local source
+evidence, not the documentation image.
+
+The renderer requires `ffmpeg` with H.264 support. Set `INKY_QA_FFMPEG` for
+another executable. It adds readable captions and a separately labeled cut
+to the existing wall-frame photo. Browser Play does not update that display.
+The output includes a silent MP4, a still, a transcript, WebVTT captions and
+an optional play-once sharing GIF. Nothing uploads automatically. Inspect the
+complete encoded video before sharing; publish only the final media and
+transcript, never the fixture, profile or raw output directory. Keep video
+attachments outside Git history and retain a still/link fallback on GitHub.
+
 ## Catalog contributions
 
 Catalog entries are immutable, location-neutral artifacts. A contribution adds

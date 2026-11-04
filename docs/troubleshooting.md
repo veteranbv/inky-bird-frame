@@ -13,6 +13,15 @@ the role unready, but should still be reviewed.
 
 ## Controller
 
+### Immediate retry is not available
+
+In **Manage → Plate work**, use **Queue selected for the next scheduled check**
+if the immediate option is absent. It requires generation to be enabled and
+the Inky scheduler process to be running. Installations with separate system
+timers use the scheduled queue. An unhealthy or stale source can delay
+preparation even when the scheduler is running. Check the saved request and
+the [source and work status](owner-operations.md) before submitting it again.
+
 ### `config` fails
 
 Run the focused validator:

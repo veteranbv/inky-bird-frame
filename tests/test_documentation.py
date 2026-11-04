@@ -88,26 +88,52 @@ def test_internal_documentation_links_and_anchors_resolve() -> None:
     assert not problems, "\n" + "\n".join(problems)
 
 
-def test_readme_native_checks_use_the_managed_runtime() -> None:
-    readme = (ROOT / "README.md").read_text(encoding="utf-8")
-    section = readme.split("## Living with the frame", 1)[1].split("\n## ", 1)[0]
+def test_installation_native_checks_use_the_managed_runtime() -> None:
+    guide = (ROOT / "docs/installation.md").read_text(encoding="utf-8")
+    section = guide.split("### Verify controller data", 1)[1].split("\n## ", 1)[0]
 
     assert 'IBF="$HOME/Services/inky-bird-frame/.venv/bin/inky-bird-frame"' in section
     assert re.search(r"^inky-bird-frame(?:\s|$)", section, re.MULTILINE) is None
 
 
-def test_homepage_dashboard_examples_are_public_and_metadata_free() -> None:
-    readme = (ROOT / "README.md").read_text(encoding="utf-8")
-    section = readme.split("## Homepage dashboard", 1)[1].split("\n## ", 1)[0]
+def test_status_labels_distinguish_rotation_from_the_approved_library() -> None:
+    guide = (ROOT / "docs/presentation.md").read_text(encoding="utf-8")
+    interface = (ROOT / "src/inky_bird_frame/web/presentation.js").read_text(encoding="utf-8")
 
-    assert "The screenshots use a deterministic v0.7.0 demo" in section
-    assert "162 public plates published in that release and a fixed Eastern Bluebird" in section
+    for text in (guide, interface):
+        assert "Inky plates in rotation" in text
+        assert "label: In rotation" in text
+        assert "label: Approved" in text
+        assert "data.view_ready_count" in text
+        assert "data.approved_count" in text
+        assert "Inky ready plates" not in text
+    assert "Other approved plates remain in the library" in guide
+    assert "without changing the entity ID or unique ID" in guide
+
+
+def test_walkthrough_has_accessible_fallbacks_and_honest_scope() -> None:
+    readme = (ROOT / "README.md").read_text(encoding="utf-8")
+    transcript = (ROOT / "docs/walkthrough.md").read_text(encoding="utf-8")
+
+    assert "https://github.com/user-attachments/assets/" in readme
+    assert "[Text transcript](docs/walkthrough.md)" in readme
+    assert "[Still preview](docs/images/inky-walkthrough-poster.jpg)" in readme
+    assert "browser Play does not refresh the wall" in readme
+    assert "automatic browser playback remains once a minute" in transcript
+    assert "does not trigger or synchronize that physical display" in transcript
+    assert "not an interactive controller demo" in transcript
+    assert ".gif" not in readme
+
+
+def test_historical_homepage_images_are_not_presented_as_current() -> None:
+    readme = (ROOT / "README.md").read_text(encoding="utf-8")
+
     for name, expected_size in (
         ("homepage-dashboard-compact.png", (900, 300)),
         ("homepage-dashboard-featured-plate.png", (900, 920)),
     ):
         path = ROOT / "docs/images" / name
-        assert name in section
+        assert name not in readme
         with Image.open(path) as image:
             image.verify()
         with Image.open(path) as image:
@@ -119,10 +145,11 @@ def test_homepage_dashboard_examples_are_public_and_metadata_free() -> None:
 
 def test_journal_screenshots_are_generic_demo_images_without_metadata() -> None:
     readme = (ROOT / "README.md").read_text(encoding="utf-8")
-    assert "public approved artwork and manual" in readme
+    assert "public approved artwork" in readme
+    assert "a sample collection" in readme
     for name, size in (
-        ("journal-home.png", (430, 1100)),
-        ("journal-collection.png", (430, 1600)),
+        ("journal-home.png", (430, 1200)),
+        ("journal-collection.png", (430, 1200)),
     ):
         assert name in readme
         with Image.open(ROOT / "docs/images" / name) as image:
