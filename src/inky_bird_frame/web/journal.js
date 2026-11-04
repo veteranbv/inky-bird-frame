@@ -1612,7 +1612,7 @@ export async function openJournal(ui, message = '') {
     function guide(title, path, text) {
       const section = el('section', '', 'journal-card'),
         anchor = el('a', 'Open ' + title, 'text-link');
-      anchor.href = 'https://github.com/veteranbv/inky-bird-frame/blob/main/docs/' + path;
+      anchor.href = 'https://github.com/veteranbv/inky-bird/blob/main/docs/' + path;
       anchor.target = '_blank';
       anchor.rel = 'noopener noreferrer';
       section.append(el('h2', title), note(text), anchor);
@@ -1734,7 +1734,7 @@ export async function openJournal(ui, message = '') {
     about.append(places);
     const feedback = el('p', '', 'hint');
     const issues = el('a', 'GitHub issues');
-    issues.href = 'https://github.com/veteranbv/inky-bird-frame/issues';
+    issues.href = 'https://github.com/veteranbv/inky-bird/issues';
     issues.target = '_blank';
     issues.rel = 'noopener noreferrer';
     feedback.append(document.createTextNode('Ideas and feedback are welcome on '), issues, document.createTextNode('.'));
