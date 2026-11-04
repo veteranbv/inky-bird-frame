@@ -87,6 +87,15 @@ def test_release_bundle_uses_the_same_image_but_current_repository_links() -> No
     assert "github.actor == github.repository_owner" in workflow
 
 
+def test_latest_release_download_keeps_the_supported_asset_name() -> None:
+    guide = (ROOT / "docs/docker.md").read_text()
+    workflow = WORKFLOW.read_text()
+    assert "releases/latest/download/inky-bird-frame-docker.tar.gz" in guide
+    assert "releases/latest/download/inky-bird-docker.tar.gz" not in guide
+    assert "inky-bird-frame-docker.tar.gz.sha256" in workflow
+    assert 'cp "${bundle}.tar.gz" inky-bird-frame-docker.tar.gz' in workflow
+
+
 @pytest.mark.parametrize("mismatch", [False, True])
 def test_published_names_must_resolve_to_one_multiarch_attested_digest(
     tmp_path: Path, mismatch: bool
