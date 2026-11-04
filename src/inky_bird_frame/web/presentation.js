@@ -262,7 +262,7 @@ export async function renderPresentation(ui, { base, link, note, data, area }) {
   status.append(
     el('h2', 'Status sensors'),
     note(
-      'A separate read-only credential exposes only version, ready counts, coarse discovery state and panel health. It cannot read collections, histories, source credentials or images. It expires and can be revoked here.',
+      'A separate read-only credential exposes only version, approved-library and in-rotation counts, coarse discovery state and panel health. In rotation counts approved plates in its permitted view, which can differ from the wall view. It cannot read collections, histories, source credentials or images. It expires and can be revoked here.',
     ),
   );
   const name = field(status, 'Credential name', 'text', 'Dashboard status'),
@@ -294,9 +294,9 @@ export async function renderPresentation(ui, { base, link, note, data, area }) {
             location.origin +
             '/v1/integrations/status\nAuthorization: Bearer <saved status credential>\n\nHome Assistant:\nrest:\n  - resource: ' +
             location.origin +
-            '/v1/integrations/status\n    headers:\n      Authorization: !secret inky_status_authorization\n    scan_interval: 60\n    sensor:\n      - name: Inky ready plates\n        value_template: "{{ value_json.data.view_ready_count }}"\n\nHomepage customapi:\nwidget:\n  type: customapi\n  url: ' +
+            '/v1/integrations/status\n    headers:\n      Authorization: !secret inky_status_authorization\n    scan_interval: 60\n    sensor:\n      - name: Inky plates in rotation\n        value_template: "{{ value_json.data.view_ready_count }}"\n      - name: Inky approved plates\n        value_template: "{{ value_json.data.approved_count }}"\n\nHomepage customapi:\nwidget:\n  type: customapi\n  url: ' +
             location.origin +
-            '/v1/integrations/status\n  headers:\n    Authorization: "Bearer {{HOMEPAGE_VAR_INKY_STATUS}}"\n  mappings:\n    - field: data.view_ready_count\n      label: Plates\n      format: number';
+            '/v1/integrations/status\n  headers:\n    Authorization: "Bearer {{HOMEPAGE_VAR_INKY_STATUS}}"\n  mappings:\n    - field: data.view_ready_count\n      label: In rotation\n      format: number\n    - field: data.approved_count\n      label: Approved\n      format: number';
           once.append(
             config,
             button('I saved it · clear this copy', () => location.reload()),

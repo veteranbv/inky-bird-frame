@@ -611,7 +611,10 @@ export async function openJournal(ui, message = '') {
       }
       node.append(
         link(viewLabel(key), 'collection', { view: key }, 'collection-title'),
-        note(ready.length + ' plates ready · ' + (birds.length - ready.length) + ' not ready'),
+        note(
+          ready.length + (ready.length === 1 ? ' plate ready · ' : ' plates ready · ') +
+          (birds.length - ready.length) + ' not ready',
+        ),
         playLink(key),
       );
       grid.append(node);

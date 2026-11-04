@@ -96,6 +96,21 @@ def test_installation_native_checks_use_the_managed_runtime() -> None:
     assert re.search(r"^inky-bird-frame(?:\s|$)", section, re.MULTILINE) is None
 
 
+def test_status_labels_distinguish_rotation_from_the_approved_library() -> None:
+    guide = (ROOT / "docs/presentation.md").read_text(encoding="utf-8")
+    interface = (ROOT / "src/inky_bird_frame/web/presentation.js").read_text(encoding="utf-8")
+
+    for text in (guide, interface):
+        assert "Inky plates in rotation" in text
+        assert "label: In rotation" in text
+        assert "label: Approved" in text
+        assert "data.view_ready_count" in text
+        assert "data.approved_count" in text
+        assert "Inky ready plates" not in text
+    assert "Other approved plates remain in the library" in guide
+    assert "without changing the entity ID or unique ID" in guide
+
+
 def test_historical_homepage_images_are_not_presented_as_current() -> None:
     readme = (ROOT / "README.md").read_text(encoding="utf-8")
 
@@ -116,10 +131,11 @@ def test_historical_homepage_images_are_not_presented_as_current() -> None:
 
 def test_journal_screenshots_are_generic_demo_images_without_metadata() -> None:
     readme = (ROOT / "README.md").read_text(encoding="utf-8")
-    assert "public approved artwork and manual" in readme
+    assert "public approved artwork" in readme
+    assert "a sample collection" in readme
     for name, size in (
-        ("journal-home.png", (430, 1100)),
-        ("journal-collection.png", (430, 1600)),
+        ("journal-home.png", (430, 1200)),
+        ("journal-collection.png", (430, 1200)),
     ):
         assert name in readme
         with Image.open(ROOT / "docs/images" / name) as image:

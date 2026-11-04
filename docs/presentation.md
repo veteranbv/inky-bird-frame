@@ -174,10 +174,22 @@ Reloading loses that displayed copy; revoke and create another if needed.
 `GET /v1/integrations/status` requires `Authorization: Bearer <credential>`.
 Tokens in query strings are refused. The response has the usual `ok`, `data`
 and `schema_version` envelope. Its data is limited to version, service readiness,
-approved count, permitted-view ready count, coarse discovery state and panel
+approved-library count, permitted-view in-rotation count, coarse discovery state and panel
 health. No identity, private timestamp, collection label, host, queue detail,
 history or source credential is included. A status credential cannot read images
 or use owner routes.
+
+**Approved** counts every approved plate in the catalog. **In rotation** counts
+approved plates in this status credential's permitted view. For **Current and
+saved**, that means saved birds plus birds matched by the selected observation
+window. Other approved plates remain in the library; a smaller in-rotation
+count does not mean those plates failed or are unfinished.
+
+The status view can differ from the physical wall's view. This count does not
+prove which plate is on a panel or when it refreshed. The response field remains
+`view_ready_count` for compatibility. On an existing Home Assistant installation,
+change the display name without changing the entity ID or unique ID used by
+cards and automations.
 
 For Home Assistant's [REST integration](https://www.home-assistant.io/integrations/rest/):
 
@@ -188,8 +200,10 @@ rest:
       Authorization: !secret inky_status_authorization
     scan_interval: 60
     sensor:
-      - name: Inky ready plates
+      - name: Inky plates in rotation
         value_template: "{{ value_json.data.view_ready_count }}"
+      - name: Inky approved plates
+        value_template: "{{ value_json.data.approved_count }}"
 ```
 
 In `secrets.yaml`, set `inky_status_authorization` to the complete `Bearer ...`
@@ -206,10 +220,10 @@ widget:
     Authorization: "Bearer {{HOMEPAGE_VAR_INKY_STATUS}}"
   mappings:
     - field: data.view_ready_count
-      label: Ready
+      label: In rotation
       format: number
     - field: data.approved_count
-      label: Plates
+      label: Approved
       format: number
     - field: data.version
       label: Version

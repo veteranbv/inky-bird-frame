@@ -1,36 +1,38 @@
-# Inky Bird
+# Inky Bird <img src="docs/images/inky-bird-mark.png" width="25" height="25" alt="">
 
-<p align="center">
-  <img src="docs/images/inky-app-icon.png" width="96" alt="A paper-cut red bird on a cream background">
-</p>
+I built Inky to keep birding present between outings. A feeder visit, a bird
+you heard outside your window, or a sighting from a trip years ago can become
+an illustrated plate in your private journal. Revisit it on your phone, or
+give it a turn on a color e-paper frame.
 
-A private field journal for the birds you see, hear, and remember. Browse
-illustrated plates on your phone, keep a collection from a favorite trip, or
-let the birds take turns on an optional color e-paper frame.
-
-[Browse the public gallery](https://henrysowell.com/birds) ·
+[**Browse the bird gallery**](https://henrysowell.com/birds) ·
 [Start without a frame](docs/settings.md#start-with-approved-art) ·
 [Build a wall frame](docs/hardware.md)
 
-[![CI](https://github.com/veteranbv/inky-bird-frame/actions/workflows/ci.yml/badge.svg)](https://github.com/veteranbv/inky-bird-frame/actions/workflows/ci.yml)
-[![Latest release](https://img.shields.io/github/v/release/veteranbv/inky-bird-frame)](https://github.com/veteranbv/inky-bird-frame/releases/latest)
-[![License: MIT](https://img.shields.io/github/license/veteranbv/inky-bird-frame)](LICENSE)
+<p align="center">
+  <img src="docs/images/framed-installation.jpg" alt="An Eastern Bluebird field-journal plate on a color e-paper screen in a bronze portrait frame" width="480">
+  <br><em>Eastern Bluebird on the 13.3-inch e-paper build. The frame is optional.</em>
+</p>
 
 <table>
   <tr>
     <td width="50%" align="center" valign="top">
-      <a href="docs/images/journal-home.png"><img src="docs/images/journal-home.png" alt="Inky Bird Home showing an approved Northern Cardinal plate with Play and Browse controls" width="330"></a>
+      <a href="docs/images/journal-home.png"><img src="docs/images/journal-home.png" alt="Inky Bird Home showing an approved Northern Cardinal plate with Play and Browse controls" width="250"></a>
       <br><strong>Open your journal</strong>
     </td>
     <td width="50%" align="center" valign="top">
-      <a href="docs/images/journal-collection.png"><img src="docs/images/journal-collection.png" alt="A private Garden birds collection with Northern Cardinal and American Robin plates" width="330"></a>
+      <a href="docs/images/journal-collection.png"><img src="docs/images/journal-collection.png" alt="A private Garden birds collection with Northern Cardinal and American Robin plates" width="250"></a>
       <br><strong>Keep a collection</strong>
     </td>
   </tr>
 </table>
 
-Screenshots show the app on `main` using public approved artwork and manual
-demo selections. Open either image for the full-size view.
+Both screenshots are from the app on `main`, with public approved artwork and
+a sample collection. Open either image for the full-size view.
+
+[![CI](https://github.com/veteranbv/inky-bird-frame/actions/workflows/ci.yml/badge.svg)](https://github.com/veteranbv/inky-bird-frame/actions/workflows/ci.yml)
+[![Latest release](https://img.shields.io/github/v/release/veteranbv/inky-bird-frame)](https://github.com/veteranbv/inky-bird-frame/releases/latest)
+[![License: MIT](https://img.shields.io/github/license/veteranbv/inky-bird-frame)](LICENSE)
 
 ## Start with what you have
 
@@ -42,14 +44,13 @@ demo selections. Open either image for the full-size view.
 | Connect a station, feeder, or observation account | [Choose a source](docs/discovery.md). Start with one, or keep using saved collections without any sources. |
 | Upgrade an existing installation | [Back up your controller](docs/backup.md), read the notes for the [target release](https://github.com/veteranbv/inky-bird-frame/releases), and follow its update guide. |
 
-Install the controller with Docker or from the terminal. Day-to-day
-browsing, collections, and playback happen in the browser. With approved
+Browse, save collections, and play plates in the browser. With approved
 artwork, you need no camera, microphone, provider account, or Codex login.
-Generation is off in a new configuration until you choose to enable it.
+New app-managed setups start with generation off.
 
-These docs describe `main`. For an existing installation, use the instructions
-shipped with your [tagged release](https://github.com/veteranbv/inky-bird-frame/releases)
-rather than assuming the features shown here are already available to you.
+These docs describe `main`, which may be ahead of your install. If you run a
+[tagged release](https://github.com/veteranbv/inky-bird-frame/releases), follow
+the instructions shipped with it.
 
 ## Bring your own birds
 
@@ -68,32 +69,27 @@ rather than assuming the features shown here are already available to you.
 
 ## One plate, several ways to see it
 
-The controller reuses approved art for a species when it has a match. Save
-birds in Favorites or a named collection, then choose **Play** to see the
-full plates without changing the physical wall. The optional e-paper display
+When a species has an approved plate, your screens reuse it. Save birds to
+Favorites or a named collection, then choose **Play** to see the full plates
+without changing the physical wall. The optional e-paper display
 downloads only approved assets and keeps the last picture if the network goes
 down. Home Assistant and Homepage can show selected art on your trusted
 network and use a separate credential for status. See
 [screens and dashboards](docs/presentation.md).
 
-<p align="center">
-  <img src="docs/images/framed-installation.jpg" alt="An Eastern Bluebird field-journal plate on a color e-paper screen in a bronze portrait frame" width="520">
-  <br><em>Eastern Bluebird on the 13.3-inch portrait build.</em>
-</p>
-
 The shared plates are AI-generated illustrations checked against references
-and reviewed separately before approval. If a species is missing, you can
+and reviewed separately before approval. You can reuse the public catalog
+under the [MIT license](LICENSE). If a species is missing, you can
 [request it](https://github.com/veteranbv/inky-bird-frame/issues/new?template=bird_request.yml)
 or configure your own controller to generate it with Codex. Generation can
 use a subscription allowance or incur API costs. See the
 [review process](docs/architecture.md) and [owner controls](docs/owner-operations.md).
 
-Your private sightings and selections stay separate from the reusable
-catalog. Connected providers and generation still contact the services you
-configure. Keep the controller on a trusted network: owner sign-in does not
-protect the legacy catalog and display routes. Do not port-forward the
-controller to the internet. For private remote access, see the
-[access guide](docs/browser-access.md).
+Your sightings and selections stay separate from the shared catalog. See
+[what stays private and what leaves the controller](docs/privacy.md). Keep
+the controller on a trusted network: owner sign-in does not protect the legacy
+catalog and display routes. Do not port-forward the controller to the internet.
+For private remote access, see the [access guide](docs/browser-access.md).
 
 ## Other bird projects
 
@@ -103,7 +99,7 @@ start. [Fugleramme](https://github.com/arnegiacomo/fugleramme) and
 [Featherframe](https://github.com/wr/featherframe) pair station detections
 with historical natural-history illustrations. Inky is for keeping and
 revisiting birds from several sources, including trips and manual selections,
-as individual field-journal plates. It can start with artwork alone.
+as individual field-journal plates. You can start with the artwork alone.
 
 ## Docs and contributions
 
@@ -115,5 +111,6 @@ as individual field-journal plates. It can start with artwork alone.
 - [Report a security issue privately](SECURITY.md)
 
 Made by [Henry Sowell](https://henrysowell.com). Thanks to
-[@dwalters0](https://github.com/dwalters0) for helping close the trusted
-browser-client gap, and to everyone who has shared a bird, a bug, or a fix.
+[@dwalters0](https://github.com/dwalters0) for helping close the
+[trusted browser-client gap](https://github.com/veteranbv/inky-bird-frame/pull/246),
+and to everyone who has shared a bird, a bug, or a fix.

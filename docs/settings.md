@@ -5,9 +5,14 @@ upgrading a working controller.
 
 ## Start with approved art
 
-Use a fresh checkout with the controller dependencies and the
-[native prerequisites](installation.md#before-you-begin). The hardware and
-Codex requirements for a complete wall installation do not apply to this path.
+Choose [Docker or NAS](docker.md#before-you-begin) or follow the native steps
+below. Neither path requires display hardware or a Codex login to browse
+approved art.
+
+### Native setup
+
+Use a fresh checkout and check the
+[native prerequisites](installation.md#before-you-begin).
 
 ```bash
 uv sync --extra controller --locked
@@ -15,38 +20,24 @@ uv run inky-bird-frame config init --destination ./private/config.toml
 uv run inky-bird-frame setup controller --config ./private/config.toml
 ```
 
-The first command creates a mode-0600 configuration. It refuses to replace an
-existing file. Use an empty `private` directory for browser account creation;
-prior files or runtime paths outside that directory require local account setup
-instead. The second command previews native installation; repeat it with
-`--yes` only after checking its paths. Setup copies the approved catalog and
+The `config init` command creates a mode-0600 configuration and refuses to
+replace an existing file. Use an empty `private` directory for browser account
+creation; prior files or runtime paths outside that directory require local
+account setup instead. The `setup controller` command previews installation.
+Check the paths before repeating it with `--yes`. Setup copies the approved catalog and
 starts the native services. Follow the [installation guide](installation.md)
 for operating-system prerequisites and service-account behavior.
 
 New configurations have no selected sources and generation off. You can create
 your owner account, browse approved artwork, save selections and open Frame
-without Codex authentication or a paid generation. A zero-source refresh is
-healthy; it does not contact an observation service. Saved birds retain their
-existing meaning.
+without Codex authentication or a paid generation. A refresh with no sources
+is healthy and makes no requests to observation services.
 
 Open the controller's actual home-network address followed by `:8793/app`.
 `http://127.0.0.1:8793/app` works only on the controller itself. A phone needs
 the controller's LAN address. Do not treat an untested friendly hostname as a
 working address. See [browser access](browser-access.md) for accepted origins,
 Docker port forwarding and optional HTTPS.
-
-For Docker, create the host seed with container paths:
-
-```bash
-uv run inky-bird-frame config init --container --destination ./config.toml
-```
-
-Before starting Compose, add the exact browser origin to
-`controller.owner_allowed_origins` and keep `owner_access_mode = "local"` for
-deliberate home-network HTTP. Docker must not infer trust from a forwarded
-Host header. Continue with the [Docker guide](docker.md), including its explicit
-empty-volume preparation before first startup. The host seed command alone
-cannot check or authorize a Docker volume.
 
 ## One file, one owner
 

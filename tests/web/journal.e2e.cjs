@@ -443,6 +443,8 @@ let browser,
   await page.goto(origin + '/app?page=collections');
   await heading('Collections');
   assert.equal(await page.getByRole('link', { name: 'Filter journey', exact: true }).count(), 0);
+  await page.getByText('1 plate ready · 0 not ready', { exact: true }).first().waitFor();
+  assert.equal(await page.getByText(/1 plates ready/).count(), 0);
   await page.goto(origin + '/app?page=edit-collection');
   await heading('New collection');
   await page.getByLabel('Collection name', { exact: true }).fill('Filter journey');

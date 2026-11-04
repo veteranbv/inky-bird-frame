@@ -29,6 +29,7 @@ These guides describe `main`. If you run a tagged version, start with the
 ## Maintain an installation
 
 - [Check services, update, or publish a catalog](operations.md).
+- [See what stays private and what leaves the controller](privacy.md).
 - [Back up and restore private data](backup.md).
 - [Diagnose a problem](troubleshooting.md).
 - [Understand how the controller, display, and trust boundaries fit together](architecture.md).
