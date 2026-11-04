@@ -25,13 +25,14 @@ if [ ! -x "${venv}/bin/python" ]; then
 fi
 # Distribution ownership changes only while the display role is quiescent.
 # setup is not a substitute for an operator's backup/upgrade transaction.
-if "${venv}/bin/python" -m pip show inky-bird-frame >/dev/null 2>&1; then
+if "${venv}/bin/python" -m pip show inky-bird-frame >/dev/null 2>&1 || \
+    "${venv}/bin/python" -m pip show inky-bird >/dev/null 2>&1; then
   for suffix in timer service; do
     state=$(systemctl show --property=ActiveState --value "${service_prefix}-display.${suffix}")
     case "${state}" in
       inactive | failed) ;;
       *)
-        echo "Stop the existing display timer and let its service finish before the package-name migration. Preserve a recoverable runtime backup first. No changes made." >&2
+        echo "Stop the existing display timer and let its service finish before updating its runtime. Preserve a recoverable runtime backup first. No changes made." >&2
         exit 1
         ;;
     esac
@@ -41,6 +42,10 @@ sudo_command=(sudo)
 case "${noninteractive_sudo}" in
   true)
     sudo_command+=(-n)
+    if ! "${sudo_command[@]}" -v; then
+      echo "Noninteractive administrator access is required before installing the display service. No changes made." >&2
+      exit 1
+    fi
     ;;
   false)
     if ! sudo -v; then

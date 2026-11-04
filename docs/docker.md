@@ -170,23 +170,27 @@ example configuration, and the Ubuntu AppArmor profile. The bundle pins the
 controller image to that release.
 
 ```bash
-mkdir -p "$HOME/inky-bird-frame"
-cd "$HOME/inky-bird-frame"
+mkdir -p "$HOME/inky-bird"
+cd "$HOME/inky-bird"
 curl -fsSLO \
-  https://github.com/veteranbv/inky-bird/releases/latest/download/inky-bird-docker.tar.gz
+  https://github.com/veteranbv/inky-bird/releases/latest/download/inky-bird-frame-docker.tar.gz
 curl -fsSLO \
-  https://github.com/veteranbv/inky-bird/releases/latest/download/inky-bird-docker.tar.gz.sha256
-sha256sum -c inky-bird-docker.tar.gz.sha256
-tar -xzf inky-bird-docker.tar.gz --strip-components=1
+  https://github.com/veteranbv/inky-bird/releases/latest/download/inky-bird-frame-docker.tar.gz.sha256
+sha256sum -c inky-bird-frame-docker.tar.gz.sha256
+tar -xzf inky-bird-frame-docker.tar.gz --strip-components=1
 ```
 
 The checksum command uses GNU `sha256sum`, which is standard on Linux. On
 macOS, use:
 
 ```bash
-expected=$(cut -d ' ' -f 1 inky-bird-docker.tar.gz.sha256)
-printf '%s  %s\n' "$expected" inky-bird-docker.tar.gz | shasum -a 256 -c -
+expected=$(cut -d ' ' -f 1 inky-bird-frame-docker.tar.gz.sha256)
+printf '%s  %s\n' "$expected" inky-bird-frame-docker.tar.gz | shasum -a 256 -c -
 ```
+
+The download filename stays compatible with existing releases. New bundle
+publication retains this alias, so these commands do not depend on a new tag
+or a renamed historical asset.
 
 If you prefer a source checkout, clone the repository and use the same
 `compose.yaml`. Compose still pulls the published image unless you explicitly

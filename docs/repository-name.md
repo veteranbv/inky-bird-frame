@@ -46,7 +46,7 @@ installing the new one: that can remove files from the working package.
 
 The locked native controller installer uses `uv sync`, which reconciles its
 environment to the selected project. The display installer removes the old
-distribution before installing the renamed one. For that first display upgrade,
+distribution before installing the renamed one. For every display runtime upgrade,
 it requires the timer and service to be inactive before it changes any files.
 Use the existing service family, preserve the last panel image, and record the
 original enabled/active state for restoration.
