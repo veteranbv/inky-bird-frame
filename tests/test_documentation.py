@@ -135,6 +135,44 @@ def test_walkthrough_has_accessible_fallbacks_and_honest_scope() -> None:
     assert ".gif" not in readme
 
 
+def test_readme_screenshots_are_centered_and_sources_are_prominent() -> None:
+    readme = (ROOT / "README.md").read_text(encoding="utf-8")
+    assert '<table align="center">' in readme
+    assert readme.index("## Supported sources") < readme.index("## Start with what you have")
+    assert "[Supported sources](#supported-sources)" in readme
+    sources = readme.split("## Supported sources", 1)[1].split("\n## ", 1)[0]
+    for name in (
+        "iNaturalist",
+        "eBird",
+        "eBird Archive",
+        "BirdWeather",
+        "BirdNET-Go",
+        "BirdNET Analyzer",
+        "Bird Buddy",
+    ):
+        assert f"[{name}]" in sources
+    for caveat in (
+        "no provider account",
+        "not continuous account sync",
+        "private API",
+        "does not record sound",
+        "not a claim that you personally saw a bird",
+        "not published with the reusable artwork catalog",
+    ):
+        assert caveat in sources.replace("\n", " ")
+
+
+def test_cinematic_walkthrough_opens_and_ends_without_blank_fades() -> None:
+    renderer = (ROOT / "tests/web/render-walkthrough.cjs").read_text(encoding="utf-8")
+    cinematic = renderer.split("async function renderCinematic()", 1)[1]
+    assert "fade=t=in" not in cinematic
+    assert "fade=t=out" not in cinematic
+    assert "[3:v]trim=duration=2.9" in cinematic
+    assert "'v2-title.png', 'v2-end.png'" in cinematic
+    assert "'-map', '[cap3]'" in cinematic
+    assert "verifyOpeningFrame(ffmpeg" in cinematic
+
+
 def test_historical_homepage_images_are_not_presented_as_current() -> None:
     readme = (ROOT / "README.md").read_text(encoding="utf-8")
 

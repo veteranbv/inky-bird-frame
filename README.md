@@ -6,6 +6,7 @@ an illustrated plate in your private journal. Revisit it on your phone, or
 give it a turn on a color e-paper frame.
 
 [**Browse the bird gallery**](https://henrysowell.com/birds) ·
+[Supported sources](#supported-sources) ·
 [Start without a frame](docs/settings.md#start-with-approved-art) ·
 [Build a wall frame](docs/hardware.md)
 
@@ -14,7 +15,7 @@ give it a turn on a color e-paper frame.
   <br><em>Eastern Bluebird on the 13.3-inch e-paper build. The frame is optional.</em>
 </p>
 
-<table>
+<table align="center">
   <tr>
     <td width="50%" align="center" valign="top">
       <a href="docs/images/journal-home.png"><img src="docs/images/journal-home.png" alt="Inky Bird Home showing an approved Northern Cardinal plate with Play and Browse controls" width="250"></a>
@@ -30,9 +31,9 @@ give it a turn on a color e-paper frame.
 Both screenshots are from the app on `main`, with public approved artwork and
 a sample collection. Open either image for the full-size view.
 
-https://github.com/user-attachments/assets/ab99fb77-3844-4e41-8619-2046dc6ed76c
+https://github.com/user-attachments/assets/a0803447-84fd-4a2f-a2ed-db1595d008be
 
-[Watch the 28-second walkthrough](https://github.com/user-attachments/assets/ab99fb77-3844-4e41-8619-2046dc6ed76c)
+[Watch the 28-second walkthrough](https://github.com/user-attachments/assets/a0803447-84fd-4a2f-a2ed-db1595d008be)
 · [Text transcript](docs/walkthrough.md) · [Still preview](docs/images/inky-walkthrough-poster.jpg).
 Sample data, accelerated navigation, and a separate e-paper installation;
 browser Play does not refresh the wall.
@@ -40,6 +41,28 @@ browser Play does not refresh the wall.
 [![CI](https://github.com/veteranbv/inky-bird/actions/workflows/ci.yml/badge.svg)](https://github.com/veteranbv/inky-bird/actions/workflows/ci.yml)
 [![Latest release](https://img.shields.io/github/v/release/veteranbv/inky-bird)](https://github.com/veteranbv/inky-bird/releases/latest)
 [![License: MIT](https://img.shields.io/github/license/veteranbv/inky-bird)](LICENSE)
+
+## Supported sources
+
+Bring nearby sightings, feeder visits, station detections and years of personal
+birding history into one journal. Use one source or combine several.
+
+| Source | What you can bring into Inky |
+| --- | --- |
+| [iNaturalist](docs/discovery.md#nearby-inaturalist-and-ebird-setup) | Nearby public bird observations around your location; no provider account. |
+| [eBird](docs/discovery.md#nearby-inaturalist-and-ebird-setup) | Recent public sightings around your location; personal API key. |
+| [eBird Archive](docs/discovery.md#ebird-personal-archive) | Your own checklists, trips and life list from an export; not continuous account sync. |
+| [BirdWeather](docs/discovery.md#birdweather-station-setup) | Your station's acoustic detections; station token. |
+| [BirdNET-Go](docs/discovery.md#self-hosted-birdnet-go-setup) | Your self-hosted station's detections over its read-only API. |
+| [BirdNET Analyzer](docs/discovery.md#birdnet-analyzer-csv-import) | Recorded-audio detections from a CSV import. |
+| [Bird Buddy](docs/discovery.md#bird-buddy-setup) | Feeder postcard species and optional manual sightings; account plus permission to use its private API. |
+
+Inky reads detections; it does not record sound or run the detector. Public
+nearby observations are not a claim that you personally saw a bird. Your imported
+history and collections are not published with the reusable artwork catalog.
+
+No source is required to browse approved art, save collections or play plates.
+[Compare setup options and limits](docs/discovery.md).
 
 ## Start with what you have
 
@@ -58,21 +81,6 @@ New app-managed setups start with generation off.
 These docs describe `main`, which may be ahead of your install. If you run a
 [tagged release](https://github.com/veteranbv/inky-bird/releases), follow
 the instructions shipped with it.
-
-## Bring your own birds
-
-- **Nearby sightings:** use iNaturalist or eBird public observations.
-- **A trip or life list:** import your own eBird archive and turn selected
-  checklists into a private collection. This is an import, not continuous
-  personal eBird sync.
-- **Birds your station heard:** connect BirdWeather or BirdNET-Go, or import
-  BirdNET Analyzer results. Inky reads detections; it does not record sound or
-  run the detector.
-- **Feeder visits:** connect Bird Buddy if you have permission to use its
-  private API. You can also save a bird from the artwork catalog without
-  recording a sighting.
-
-[Compare source options and their limits](docs/discovery.md).
 
 ## One plate, several ways to see it
 

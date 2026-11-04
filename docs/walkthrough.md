@@ -7,7 +7,8 @@ accelerated; automatic browser playback remains once a minute.
 
 ## Transcript
 
-- **0:00–0:02.5:** Inky Bird title card. A field journal for the birds you see.
+- **0:00–0:02.5:** The simple Inky Bird title card is fully visible from the first
+  frame. A field journal for the birds you see.
 - **0:02.5–0:07:** Close view of the approved Northern Cardinal plate.
 - **0:07–0:12:** Home, Collections and Garden birds in the actual app.
 - **0:12–0:19:** Frame mode, a real Play action and a manual Next action to

@@ -4,6 +4,7 @@ const { spawnSync } = require('node:child_process');
 const { readFileSync, writeFileSync, statSync } = require('node:fs');
 const { createHash } = require('node:crypto');
 const path = require('node:path');
+const { verifyOpeningFrame } = require('./walkthrough-preview.cjs');
 const { chromium } = require(process.env.INKY_QA_PLAYWRIGHT || 'playwright');
 
 const output = path.resolve(process.argv[2]);
@@ -160,7 +161,9 @@ async function renderCinematic() {
   const start = Number(capture.trimStart);
   assert(Number.isFinite(start) && start >= 0);
   const filters = [
-    `[3:v]trim=duration=2.9,${normalize},fade=t=in:st=0:d=0.6:color=0xf6f1e7[title]`,
+    // Keep the original simple title card fully visible from frame zero;
+    // GitHub's unplayed preview must not start on blank paper.
+    `[3:v]trim=duration=2.9,${normalize}[title]`,
     `[1:v]scale=1920:1200:force_original_aspect_ratio=increase,crop=1920:1200:0:(ih-oh)*0.08,zoompan=z='1+0.035*on/146':x='(iw-iw/zoom)*0.65':y='(ih-ih/zoom)*0.35':d=1:s=1920x1200:fps=30,trim=duration=4.9,${normalize}[art]`,
     '[0:v]split=2[rawjournal][rawframe]',
     `[rawjournal]trim=start=${start}:end=${start + 8},setpts=(PTS-STARTPTS)*5.4/8,fps=30,scale=1560:975:flags=lanczos,setsar=1,format=yuv420p[jui]`,
@@ -182,12 +185,14 @@ async function renderCinematic() {
   ];
   lines.forEach(([begin, end], i) => filters.push(
     `[${i ? `cap${i-1}` : 'base'}][${i+7}:v]overlay=0:1070:enable='gte(t,${begin})*lt(t,${end})'[cap${i}]`));
-  filters.push('[cap3]fade=t=out:st=27.4:d=0.6:color=0xf6f1e7[final]');
-  args.push('-filter_complex_threads', '1', '-filter_complex', filters.join(';'), '-map', '[final]',
+  // Keep the complete end card too; no blank opening or closing poster frame.
+  args.push('-filter_complex_threads', '1', '-filter_complex', filters.join(';'), '-map', '[cap3]',
     '-t', '28', '-an', '-c:v', 'libx264', '-threads', '2', '-crf', '22', '-preset', 'medium',
-    '-pix_fmt', 'yuv420p', '-map_metadata', '-1', '-movflags', '+faststart', path.join(output, 'inky-walkthrough.mp4'));
+    '-pix_fmt', 'yuv420p', '-force_key_frames', '0', '-map_metadata', '-1', '-movflags', '+faststart', path.join(output, 'inky-walkthrough.mp4'));
   command(ffmpeg, args);
   assert(statSync(path.join(output, 'inky-walkthrough.mp4')).size < 10_000_000, 'MP4 exceeds attachment budget');
+  const openingPreview = verifyOpeningFrame(ffmpeg, path.join(output, 'inky-walkthrough.mp4'),
+    path.join(output, 'v2-title.png'));
   command(ffmpeg, ['-hide_banner', '-loglevel', 'error', '-n', '-i', path.join(output, 'inky-walkthrough.mp4'),
     '-filter_complex', '[0:v]fps=5,scale=600:375:flags=lanczos,split[a][b];[a]palettegen=max_colors=96:stats_mode=diff[p];[b][p]paletteuse=dither=bayer:bayer_scale=3',
     '-loop', '-1', path.join(output, 'inky-walkthrough-share.gif')]);
@@ -202,7 +207,7 @@ async function renderCinematic() {
   writeFileSync(path.join(output, 'inky-walkthrough-transcript.md'),
     '# Inky Bird walkthrough\n\nA silent, 28-second film using the real app, two public approved plates and a synthetic Garden birds collection. '
     + 'No personal sightings, production services or account creation appear. UI scenes are labeled Sample data. Navigation is accelerated; automatic browser playback remains once a minute. Nothing uploads automatically.\n\n'
-    + '- 0:00–0:02.5: Inky Bird title card. A field journal for the birds you see.\n'
+    + '- 0:00–0:02.5: The simple Inky Bird title card is fully visible from the first frame. A field journal for the birds you see.\n'
     + '- 0:02.5–0:07: Close view of the approved Northern Cardinal plate.\n'
     + '- 0:07–0:12: Home, Collections and Garden birds in the actual app.\n'
     + '- 0:12–0:19: Frame mode, a real Play action and a real manual Next action to American Robin. Automatic playback changes once a minute; this short clip does not show an automatic transition.\n'
@@ -219,6 +224,7 @@ async function renderCinematic() {
   writeFileSync(path.join(output, 'media-review.json'), JSON.stringify({ version: 2,
     size: { width: 1920, height: 1200 }, seconds: 28, wallHardCutAt: 19,
     sampleDataVisibleInUI: true, errors, blockedExternalRequests: blocked,
+    openingPreview,
     files: Object.fromEntries(files.map(name => [name, { bytes: statSync(path.join(output, name)).size,
       sha256: createHash('sha256').update(readFileSync(path.join(output, name))).digest('hex') }])),
   }, null, 2) + '\n');
