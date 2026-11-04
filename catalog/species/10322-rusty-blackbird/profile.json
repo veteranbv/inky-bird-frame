@@ -1,0 +1,42 @@
+{
+  "behavior": "Walks and wades while foraging, flipping leaves and debris; often forms small flocks and may mix with other blackbirds.",
+  "common_name": "Rusty Blackbird",
+  "family": "Icteridae",
+  "field_marks": [
+    "Pale yellow eyes contrast with a dark face",
+    "Slender, slightly downcurved black bill",
+    "Dark brown to black body with rusty feather edging outside the breeding season",
+    "Buffy eyebrow, especially prominent in nonbreeding plumage",
+    "Dark legs and feet",
+    "Rounded wings and a medium-length, square-tipped to slightly rounded tail"
+  ],
+  "habitat": "Wet forests and freshwater margins, including wooded swamps, bogs, muskeg, marshes, flooded woods, beaver ponds, and pond or stream edges.",
+  "measurements": {
+    "length": "21\u201325 cm (8.3\u20139.8 in), both sexes",
+    "weight": "47\u201380 g (1.7\u20132.8 oz), both sexes",
+    "wingspan": "37 cm (14.6 in), both sexes"
+  },
+  "palette": [
+    "rust brown",
+    "sooty black",
+    "charcoal gray",
+    "buff",
+    "pale yellow"
+  ],
+  "scientific_name": "Euphagus carolinus",
+  "sources": [
+    {
+      "title": "Rusty Blackbird Identification \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/rusty_blackbird/id"
+    },
+    {
+      "title": "Rusty Blackbird Life History \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Rusty_Blackbird/lifehistory"
+    },
+    {
+      "title": "Rusty Blackbird \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/rusty-blackbird"
+    }
+  ],
+  "taxon_id": 10322
+}

@@ -1,0 +1,162 @@
+{
+  "approved_at": "2026-11-04T19:35:36+00:00",
+  "assets": {
+    "display": {
+      "filename": "display.png",
+      "sha256": "2c41ec8927391475f5a09115949fe4599ed5f214c54dac8c4254df03fbc19846"
+    },
+    "portrait": {
+      "filename": "portrait.png",
+      "sha256": "1308162176b112a5d0d4d38bb2e7b11fd41a1792323e1f31af2daf0e2976635b"
+    }
+  },
+  "common_name": "Rusty Blackbird",
+  "generation": {
+    "attempt": 1,
+    "generated_at": "2026-11-04T19:35:35+00:00",
+    "generator": "Codex subscription / built-in gpt-image-2",
+    "max_attempts": 3,
+    "prompt_version": "field-journal-v6"
+  },
+  "profile": {
+    "behavior": "Walks and wades while foraging, flipping leaves and debris; often forms small flocks and may mix with other blackbirds.",
+    "common_name": "Rusty Blackbird",
+    "family": "Icteridae",
+    "field_marks": [
+      "Pale yellow eyes contrast with a dark face",
+      "Slender, slightly downcurved black bill",
+      "Dark brown to black body with rusty feather edging outside the breeding season",
+      "Buffy eyebrow, especially prominent in nonbreeding plumage",
+      "Dark legs and feet",
+      "Rounded wings and a medium-length, square-tipped to slightly rounded tail"
+    ],
+    "habitat": "Wet forests and freshwater margins, including wooded swamps, bogs, muskeg, marshes, flooded woods, beaver ponds, and pond or stream edges.",
+    "measurements": {
+      "length": "21\u201325 cm (8.3\u20139.8 in), both sexes",
+      "weight": "47\u201380 g (1.7\u20132.8 oz), both sexes",
+      "wingspan": "37 cm (14.6 in), both sexes"
+    },
+    "palette": [
+      "rust brown",
+      "sooty black",
+      "charcoal gray",
+      "buff",
+      "pale yellow"
+    ],
+    "scientific_name": "Euphagus carolinus",
+    "sources": [
+      {
+        "title": "Rusty Blackbird Identification \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/rusty_blackbird/id"
+      },
+      {
+        "title": "Rusty Blackbird Life History \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Rusty_Blackbird/lifehistory"
+      },
+      {
+        "title": "Rusty Blackbird \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/rusty-blackbird"
+      }
+    ],
+    "taxon_id": 10322
+  },
+  "quality_review": {
+    "anatomy_accuracy": 4,
+    "composition_quality": 5,
+    "correction_findings": [],
+    "findings": [
+      "The primary specimen is a convincing Rusty Blackbird in nonbreeding plumage: dark body, extensive rusty feather edging, buff eyebrow, pale yellow iris, dark facial area, and dark legs and feet agree with the supplied field photographs and direct source descriptions.",
+      "The primary specimen has one head, one bill, one tail, two plausibly attached legs with grasping feet, and a convincing folded-wing arrangement; the far-side wing is naturally occluded rather than visibly missing or malformed.",
+      "Both depicted bills can be traced coherently from base to tip. They are dark, slender, and slightly decurved, without a reversed, truncated, or materially exaggerated mandible projection. Their proportions are reasonably consistent with the clearest side-profile references.",
+      "The tail is somewhat visually prominent because of the pose, but remains compatible with the published medium-length, square-tipped to slightly rounded description and does not show the strongly elongated, tapered form expected in a grackle.",
+      "The detached wing and head are clearly supplementary studies and do not appear attached to the primary specimen. The wing study is coherent, rounded, and appropriately feathered; the head study independently preserves the eye, eyebrow, facial contrast, and bill shape.",
+      "The common name, scientific name, and family are correctly written as \u201cRusty Blackbird,\u201d \u201cEuphagus carolinus,\u201d and \u201cIcteridae.\u201d",
+      "All three printed measurements exactly reproduce the compatible Cornell measurement set for both sexes: length 21\u201325 cm (8.3\u20139.8 in), weight 47\u201380 g (1.7\u20132.8 oz), and wingspan 37 cm (14.6 in). Audubon publishes a different supported set, but that does not conflict with the plate\u2019s faithful use of Cornell\u2019s set.",
+      "The separate body-length label repeats the same 21\u201325 cm range and both-sex qualifier without contradiction.",
+      "The measurement diagram is explicitly labeled \u201cSCHEMATIC \u2014 NOT TO SCALE.\u201d Its 21 cm endpoint is at the bottom and its 25 cm endpoint at the top, so values increase upward and agree with the stated published length range. The unlabeled interior ticks function as visual subdivisions and introduce no conflicting measurement.",
+      "The habitat text accurately combines directly supported wet-forest, wooded-swamp, bog, muskeg, marsh, flooded-wood, beaver-pond, and pond-edge habitats; stream edges are also consistent with Audubon\u2019s wooded-stream and riverside-forest descriptions.",
+      "The behavior text accurately states walking and wading while foraging, flipping leaves and debris, forming flocks, and mixing with other blackbirds.",
+      "The field-mark list is materially accurate: pale yellow eyes, dark face, slender slightly decurved dark bill, rusty feather edges in nonbreeding plumage, buff eyebrow, dark legs and feet, rounded wings, and a medium-length square-tipped to slightly rounded tail are supported by the direct sources and references.",
+      "The palette labels match the visible nonbreeding illustration and do not introduce a factual contradiction.",
+      "No duplicated, omitted, substituted, or nonsensical wording was found in the visible plate text.",
+      "No place name, ZIP code, coordinates, map, or local-observation detail appears on the plate."
+    ],
+    "location_free": true,
+    "passed": true,
+    "species_accuracy": 5,
+    "text_accuracy": 5,
+    "verification_sources": [
+      {
+        "title": "Rusty Blackbird Identification \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/rusty_blackbird/id"
+      },
+      {
+        "title": "Rusty Blackbird Life History \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Rusty_Blackbird/lifehistory"
+      },
+      {
+        "title": "Rusty Blackbird \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/rusty-blackbird"
+      }
+    ]
+  },
+  "references": [
+    {
+      "attribution": "(c) John Matthew Erickson, some rights reserved (CC BY)",
+      "filename": "01-342828242.jpg",
+      "height": 1365,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/342828242/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 194949669,
+      "observer": "john_erickson",
+      "photo_id": 342828242,
+      "sha256": "c4ef1cb240024305699d52c8b01cd128f5e3f8d991fe5f23a45d05ee8cb5ec9d",
+      "source_url": "https://www.inaturalist.org/observations/194949669",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) Zac Peterson, some rights reserved (CC BY)",
+      "filename": "02-245722707.jpeg",
+      "height": 1608,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/245722707/large.jpeg",
+      "license_code": "cc-by",
+      "observation_id": 143288503,
+      "observer": "zacpeterson",
+      "photo_id": 245722707,
+      "sha256": "108a77271394dd96011f520e51da5f1c148af59dda69461b4902befd8081e4d1",
+      "source_url": "https://www.inaturalist.org/observations/143288503",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) Dan Vickers, some rights reserved (CC BY)",
+      "filename": "03-595948688.jpg",
+      "height": 2048,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/595948688/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 328832263,
+      "observer": "kodiakgarden",
+      "photo_id": 595948688,
+      "sha256": "4a661cd1fa3a3dd80105567a20034a6f3fbbae9d2662ba9195c91707d298e536",
+      "source_url": "https://www.inaturalist.org/observations/328832263",
+      "width": 2048
+    },
+    {
+      "attribution": "(c) Sean Frey, some rights reserved (CC BY)",
+      "filename": "04-576739552.jpg",
+      "height": 1010,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/576739552/large.jpg",
+      "license_code": "cc-by",
+      "observation_id": 319075050,
+      "observer": "georectified",
+      "photo_id": 576739552,
+      "sha256": "897ab34a717cb9fa21e7ab991030c48dec212b9e43cc88e156a98734c5cd2a38",
+      "source_url": "https://www.inaturalist.org/observations/319075050",
+      "width": 1987
+    }
+  ],
+  "schema_version": 1,
+  "scientific_name": "Euphagus carolinus",
+  "slug": "rusty-blackbird",
+  "status": "approved",
+  "taxon_id": 10322
+}

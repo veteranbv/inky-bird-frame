@@ -1,0 +1,40 @@
+{
+  "anatomy_accuracy": 4,
+  "composition_quality": 5,
+  "correction_findings": [],
+  "findings": [
+    "The primary specimen is a convincing Rusty Blackbird in nonbreeding plumage: dark body, extensive rusty feather edging, buff eyebrow, pale yellow iris, dark facial area, and dark legs and feet agree with the supplied field photographs and direct source descriptions.",
+    "The primary specimen has one head, one bill, one tail, two plausibly attached legs with grasping feet, and a convincing folded-wing arrangement; the far-side wing is naturally occluded rather than visibly missing or malformed.",
+    "Both depicted bills can be traced coherently from base to tip. They are dark, slender, and slightly decurved, without a reversed, truncated, or materially exaggerated mandible projection. Their proportions are reasonably consistent with the clearest side-profile references.",
+    "The tail is somewhat visually prominent because of the pose, but remains compatible with the published medium-length, square-tipped to slightly rounded description and does not show the strongly elongated, tapered form expected in a grackle.",
+    "The detached wing and head are clearly supplementary studies and do not appear attached to the primary specimen. The wing study is coherent, rounded, and appropriately feathered; the head study independently preserves the eye, eyebrow, facial contrast, and bill shape.",
+    "The common name, scientific name, and family are correctly written as \u201cRusty Blackbird,\u201d \u201cEuphagus carolinus,\u201d and \u201cIcteridae.\u201d",
+    "All three printed measurements exactly reproduce the compatible Cornell measurement set for both sexes: length 21\u201325 cm (8.3\u20139.8 in), weight 47\u201380 g (1.7\u20132.8 oz), and wingspan 37 cm (14.6 in). Audubon publishes a different supported set, but that does not conflict with the plate\u2019s faithful use of Cornell\u2019s set.",
+    "The separate body-length label repeats the same 21\u201325 cm range and both-sex qualifier without contradiction.",
+    "The measurement diagram is explicitly labeled \u201cSCHEMATIC \u2014 NOT TO SCALE.\u201d Its 21 cm endpoint is at the bottom and its 25 cm endpoint at the top, so values increase upward and agree with the stated published length range. The unlabeled interior ticks function as visual subdivisions and introduce no conflicting measurement.",
+    "The habitat text accurately combines directly supported wet-forest, wooded-swamp, bog, muskeg, marsh, flooded-wood, beaver-pond, and pond-edge habitats; stream edges are also consistent with Audubon\u2019s wooded-stream and riverside-forest descriptions.",
+    "The behavior text accurately states walking and wading while foraging, flipping leaves and debris, forming flocks, and mixing with other blackbirds.",
+    "The field-mark list is materially accurate: pale yellow eyes, dark face, slender slightly decurved dark bill, rusty feather edges in nonbreeding plumage, buff eyebrow, dark legs and feet, rounded wings, and a medium-length square-tipped to slightly rounded tail are supported by the direct sources and references.",
+    "The palette labels match the visible nonbreeding illustration and do not introduce a factual contradiction.",
+    "No duplicated, omitted, substituted, or nonsensical wording was found in the visible plate text.",
+    "No place name, ZIP code, coordinates, map, or local-observation detail appears on the plate."
+  ],
+  "location_free": true,
+  "passed": true,
+  "species_accuracy": 5,
+  "text_accuracy": 5,
+  "verification_sources": [
+    {
+      "title": "Rusty Blackbird Identification \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/rusty_blackbird/id"
+    },
+    {
+      "title": "Rusty Blackbird Life History \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Rusty_Blackbird/lifehistory"
+    },
+    {
+      "title": "Rusty Blackbird \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/rusty-blackbird"
+    }
+  ]
+}
