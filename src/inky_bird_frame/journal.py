@@ -14,12 +14,13 @@ import stat
 import unicodedata
 from collections.abc import Mapping
 from dataclasses import asdict, dataclass, replace
-from datetime import date
+from datetime import date, datetime
 from enum import StrEnum
 from pathlib import Path
 from typing import cast
 from uuid import uuid4
 
+from .activity import read_activity
 from .birds import BirdSpecies, ObservationWindow, cached_species_identities
 from .catalog import catalog_state_lock, read_collection, read_json
 from .codex_runner import parse_species_profile
@@ -34,6 +35,8 @@ from .controller import (
 from .errors import CatalogError, DataSourceError, GenerationError, InkyBirdFrameError
 from .http import write_bytes_atomic
 from .notifications import notification_status
+from .retry_requests import retry_requests, retry_wake_available
+from .runtime_state import read_state
 from .server import featured_plate_entry, project_catalog
 from .settings import current_config
 from .timeutil import parse_utc_timestamp
@@ -42,6 +45,94 @@ from .timeutil import parse_utc_timestamp
 MAX_JOURNAL_BYTES = 1024 * 1024
 MAX_LABEL_CHARACTERS = 128
 COLLECTION_ID = re.compile(r"[0-9a-f]{32}\Z")
+
+
+def failure_guidance(error_type: object) -> dict[str, str]:
+    """Stable, useful categories; never echo an upstream exception or type name."""
+    messages = {
+        "QualityReviewError": (
+            "quality_review",
+            "The plate exhausted its review rounds without passing. Retry preserves "
+            "correction guidance; inspect a pending candidate before approving.",
+        ),
+        "InsufficientReferencesError": (
+            "references",
+            "Not enough usable reference photos. Wait for source coverage to improve, "
+            "or review the source before retrying.",
+        ),
+        "ResearchLimitError": (
+            "research_limit",
+            "Research allowance is temporarily unavailable. Automatic work waits until "
+            "its next eligibility time.",
+        ),
+        "DataSourceError": (
+            "source",
+            "A source or research request could not complete. Check Sources; "
+            "automatic retry uses backoff.",
+        ),
+        "GenerationError": (
+            "generation",
+            "The model or generated artifact could not complete validation. Retry is "
+            "serialized behind active work; inspect private operator evidence if it repeats.",
+        ),
+        "SpeciesStateError": (
+            "retained_state",
+            "Retained identity or correction evidence needs inspection. Retrying cannot "
+            "bypass provenance or review checks.",
+        ),
+        "MissingDependencyError": (
+            "dependency",
+            "A controller dependency is unavailable. An operator must repair it before retrying.",
+        ),
+    }
+    code, message = messages.get(
+        str(error_type),
+        (
+            "unknown",
+            "Details are unavailable in this saved record. Inspect retained operator "
+            "evidence before repeating the attempt.",
+        ),
+    )
+    return {"failure_kind": code, "failure_message": message}
+
+
+def terminal_failure(paths: tuple[Path, ...], taxon_id: int) -> dict[str, object]:
+    for path in reversed(paths):
+        try:
+            failure = read_state(path / "failure.json") or {}
+            history = read_state(path / "attempt-history.json") or {}
+        except (OSError, CatalogError):
+            continue
+        attempts = history.get("attempts")
+        rounds = attempts if isinstance(attempts, list) and len(attempts) <= 100 else []
+        last = rounds[-1] if rounds and isinstance(rounds[-1], dict) else {}
+        outcome = last.get("outcome")
+        error_type = failure.get("error_type") if failure.get("taxon_id") == taxon_id else None
+        if error_type is None and outcome in {"correction_required", "profile_conflict"}:
+            error_type = "QualityReviewError"
+        if error_type is None and outcome in {"generation_error", "review_error"}:
+            error_type = "GenerationError"
+        if error_type is not None or rounds:
+            review = last.get("quality_review")
+            axes = {"species_accuracy", "anatomy_accuracy", "text_accuracy", "composition_quality"}
+            return {
+                **failure_guidance(error_type),
+                "recorded_attempts": len(rounds),
+                "last_attempt_at": last.get("started_at")
+                if parse_utc_timestamp(last.get("started_at"))
+                else None,
+                "review_scores": {
+                    axis: value
+                    for axis, value in review.items()
+                    if axis in axes and type(value) is int and 1 <= value <= 5
+                }
+                if isinstance(review, dict)
+                else {},
+                "last_failed_at": failure.get("failed_at")
+                if parse_utc_timestamp(failure.get("failed_at"))
+                else None,
+            }
+    return {**failure_guidance(None), "last_failed_at": None}
 
 
 class JournalError(InkyBirdFrameError):
@@ -1244,6 +1335,19 @@ class JournalService:
                 )
         return birds, evidence, coverage, unresolved
 
+    def management_snapshot(self) -> dict[str, object]:
+        """Small polling projection; never scan or join imported source histories."""
+        from .recovery import pending_inventory
+
+        captured = current_config(self.app_config) if self.app_config else None
+        service = JournalService(
+            captured.controller if captured else self.config, app_config=captured
+        )
+        with catalog_state_lock(service.config.state_dir):
+            approved = {cast(int, row["taxon_id"]) for row in service.catalog()}
+            pending = pending_inventory(captured) if captured else None
+            return service.management(approved=approved, pending=pending)
+
     def management(
         self, *, approved: set[int], pending: dict[str, object] | None = None
     ) -> dict[str, object]:
@@ -1254,6 +1358,34 @@ class JournalService:
         # must not re-hash every full-resolution image. Serving an image still
         # checks its actual bytes, and generation keeps its own approval checks.
         work = read_generation_work(config, approved=approved)
+        activity = read_activity(self.config.state_dir)
+        activity_rows = cast(dict[str, dict[str, object]], activity["entries"])
+        requests = retry_requests(self.config.state_dir)
+        priority = {
+            row.taxon_id: index
+            for index, row in enumerate(row for row in requests if row.status == "eligible")
+        }
+        ordered = sorted(
+            work.actionable, key=lambda bird: priority.get(bird.taxon_id, len(priority))
+        )
+        observations = current_discovery_species(config)
+        detections = [
+            {
+                "taxon_id": bird.taxon_id,
+                "common_name": bird.common_name,
+                "scientific_name": bird.scientific_name,
+                "sources": list(bird.sources),
+                "latest_detection_at": bird.latest_detection_at,
+                "timestamp_source": bird.sources[0] if len(bird.sources) == 1 else None,
+            }
+            for bird in observations
+            if parse_utc_timestamp(bird.latest_detection_at)
+            and set(bird.sources) - {"ebird-archive", "birdnet-analyzer", "owner-selection"}
+        ]
+        detections.sort(
+            key=lambda bird: cast(datetime, parse_utc_timestamp(bird["latest_detection_at"])),
+            reverse=True,
+        )
         sources: list[dict[str, object]] = []
         discovery_path = self.config.state_dir / "discovery.json"
         diagnostics = read_json(discovery_path) if discovery_path.exists() else {}
@@ -1285,6 +1417,18 @@ class JournalService:
                     else "off",
                     "species_count": counts[0] if enabled else None,
                     "unresolved_count": counts[1] if enabled else None,
+                    "activity": activity_rows.get("source-" + provider.value, {})
+                    if enabled
+                    else {},
+                    "latest_detection_at": max(
+                        (
+                            cast(str, bird["latest_detection_at"])
+                            for bird in detections
+                            if bird["timestamp_source"] == provider.value
+                        ),
+                        default=None,
+                        key=lambda value: cast(datetime, parse_utc_timestamp(value)),
+                    ),
                     "last_checked_at": diagnostics.get("refreshed_at")
                     if enabled
                     and status in {"ok", "error"}
@@ -1300,13 +1444,39 @@ class JournalService:
             "available": True,
             "configuration_ownership": config.controller.configuration_ownership,
             "generation_enabled": config.controller.generation_enabled,
+            "retry_wake_available": retry_wake_available(config),
             "sources": sources,
             "window": config.discovery.observation_window.value,
             "refresh_minutes": config.schedule.refresh_minutes,
+            "activity": activity,
+            "recent_detections": detections[:100],
+            "discovery_refreshed_at": work.discovery_refreshed_at.isoformat()
+            if work.discovery_refreshed_at
+            else None,
             "work": {
+                "approved_taxon_ids": sorted(approved),
                 "in_review": pending or {"status": "unavailable", "candidates": []},
                 "complete": work.complete,
                 "discovery_status": work.discovery_status,
+                "queue": [
+                    {
+                        "taxon_id": bird.taxon_id,
+                        "common_name": bird.common_name,
+                        "scientific_name": bird.scientific_name,
+                    }
+                    for bird in ordered
+                ],
+                "retry_requests": [
+                    {
+                        "request_id": row.request_id,
+                        "taxon_id": row.taxon_id,
+                        "created_at": row.created_at,
+                        "updated_at": row.updated_at,
+                        "status": "approved" if row.taxon_id in approved else row.status,
+                        "outcome": row.outcome,
+                    }
+                    for row in requests
+                ],
                 "can_run": [bird.taxon_id for bird in work.actionable],
                 "waiting": [record.taxon_id for record in work.deferred],
                 "needs_attention": sorted(
@@ -1316,13 +1486,23 @@ class JournalService:
                 "retry_details": [
                     {
                         "taxon_id": record.taxon_id,
+                        "common_name": record.common_name,
+                        "scientific_name": record.scientific_name,
                         "attempts": record.attempts,
                         "next_attempt_at": record.next_attempt_at.isoformat(),
+                        "last_failed_at": record.last_failed_at.isoformat(),
+                        **failure_guidance(record.error_type),
                     }
                     for record in [*work.deferred, *work.manual_retry_required]
                 ],
                 "terminal_details": [
-                    {"taxon_id": entry.species.taxon_id, "state": entry.state}
+                    {
+                        "taxon_id": entry.species.taxon_id,
+                        "common_name": entry.species.common_name,
+                        "scientific_name": entry.species.scientific_name,
+                        "state": entry.state,
+                        **terminal_failure(entry.paths, entry.species.taxon_id),
+                    }
                     for entry in work.terminal_blocked
                 ],
             },

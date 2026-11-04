@@ -2,13 +2,23 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Inky Bird Frame</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#fcf9f2" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#251f18" media="(prefers-color-scheme: dark)">
+  <title>Inky Bird</title>
+  <link rel="icon" type="image/png" sizes="32x32" href="/app/icon-32.png">
+  <link rel="icon" type="image/png" sizes="64x64" href="/app/icon-64.png">
+  <link rel="apple-touch-icon" href="/app/icon-180.png">
   <link rel="stylesheet" href="/app/app.css">
   <script type="module" src="/app/app.js"></script>
 </head>
 <body>
-  <header><a href="/app">Inky</a><span>Your bird journal</span></header>
+  <header>
+    <a href="/app">
+      <img class="brand-icon" src="/app/icon-64.png" alt="" width="64" height="64">
+      Inky</a>
+    <span>Your bird journal</span>
+  </header>
   <main id="main" aria-busy="true">
     <h1>Open your field journal</h1>
     <p id="status" role="status">Checking your connection…</p>

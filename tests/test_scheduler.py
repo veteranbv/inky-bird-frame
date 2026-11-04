@@ -1,10 +1,33 @@
 from __future__ import annotations
 
 import unittest
+from argparse import Namespace
+from pathlib import Path
 from signal import SIGTERM
 from unittest.mock import Mock, patch
 
+from inky_bird_frame.cli import scheduler_command
+from inky_bird_frame.config import load_config
+from inky_bird_frame.errors import CatalogError
+from inky_bird_frame.retry_requests import RETRY_WAKE_LISTENER
+from inky_bird_frame.runtime_state import state_lock_held
 from inky_bird_frame.scheduler import ScheduledJob, SubprocessCommandRunner, run_scheduler
+from inky_bird_frame.settings import initialize_config
+
+
+def test_scheduler_holds_retry_listener_only_while_running(tmp_path: Path) -> None:
+    config_path = tmp_path / "config.toml"
+    initialize_config(config_path)
+    listener = load_config(config_path).controller.state_dir / RETRY_WAKE_LISTENER
+
+    def run(*_args: object, **_kwargs: object) -> None:
+        assert state_lock_held(listener)
+
+    assert not state_lock_held(listener)
+    with patch("inky_bird_frame.cli.run_scheduler", side_effect=run):
+        assert scheduler_command(Namespace(config=config_path)) == 0
+    assert listener.is_file()
+    assert not state_lock_held(listener)
 
 
 class FakeClock:
@@ -19,6 +42,139 @@ class FakeClock:
 
 
 class SchedulerTests(unittest.TestCase):
+    def test_completed_job_deadline_is_published_before_the_next_long_job(self) -> None:
+        clock = FakeClock()
+        calls: list[str] = []
+        deadlines: dict[str, float] = {}
+
+        def runner(args: tuple[str, ...]) -> int:
+            calls.append(args[0])
+            if args[0] == "refresh":
+                clock.now += 10
+            else:
+                assert deadlines["refresh"] == 70
+                clock.now += 120
+            return 0
+
+        run_scheduler(
+            [
+                ScheduledJob("refresh", ("refresh",), 60),
+                ScheduledJob("generate", ("generate",), 300, True),
+            ],
+            runner,
+            stop_requested=lambda: len(calls) >= 2,
+            wait=clock.wait,
+            monotonic=clock.monotonic,
+            on_schedule=lambda name, delay: deadlines.update({name: clock.now + delay}),
+        )
+        assert deadlines["generate"] == 430
+
+    def test_deferred_job_deadline_is_published_before_another_job(self) -> None:
+        clock = FakeClock()
+        calls: list[str] = []
+        deadlines: dict[str, float] = {}
+
+        def runner(args: tuple[str, ...]) -> int:
+            calls.append(args[0])
+            if args[0] == "notifications":
+                assert deadlines["generate"] == 60
+            return 1 if args[0] == "refresh" else 0
+
+        run_scheduler(
+            [
+                ScheduledJob("refresh", ("refresh",), 60),
+                ScheduledJob("generate", ("generate",), 300, True),
+                ScheduledJob("notifications", ("notifications",), 30),
+            ],
+            runner,
+            stop_requested=lambda: len(calls) >= 2,
+            wait=clock.wait,
+            monotonic=clock.monotonic,
+            on_schedule=lambda name, delay: deadlines.update({name: clock.now + delay}),
+        )
+        assert calls == ["refresh", "notifications"]
+
+    def test_bad_retry_wake_state_does_not_stop_unrelated_jobs(self) -> None:
+        clock = FakeClock()
+        calls: list[str] = []
+        wake = Mock(side_effect=CatalogError("PRIVATE_FILE_PAYLOAD"))
+
+        def runner(args: tuple[str, ...]) -> int:
+            calls.append(args[0])
+            return 0
+
+        with patch("builtins.print") as log:
+            run_scheduler(
+                [
+                    ScheduledJob("refresh", ("refresh",), 60),
+                    ScheduledJob("notifications", ("notifications",), 30),
+                ],
+                runner,
+                stop_requested=lambda: len(calls) >= 5,
+                wait=clock.wait,
+                monotonic=clock.monotonic,
+                wake_provider=wake,
+            )
+        assert calls == ["refresh", "notifications", "notifications", "refresh", "notifications"]
+        messages = [str(call.args[0]) for call in log.call_args_list]
+        assert sum("retry_wake_failed" in message for message in messages) == 1
+        assert not any("PRIVATE_" in message for message in messages)
+
+    def test_retry_wake_waits_for_active_job_then_refreshes_and_runs_once(self) -> None:
+        clock = FakeClock()
+        calls: list[tuple[str, float]] = []
+        wake: str | None = None
+
+        def runner(arguments: tuple[str, ...]) -> int:
+            nonlocal wake
+            calls.append((arguments[0], clock.now))
+            if calls == [("refresh", 0.0), ("generate", 0.0)]:
+                # The owner queues work while this serial runner is occupied.
+                wake = "new-request"
+                clock.now += 120
+            return 0
+
+        run_scheduler(
+            [
+                ScheduledJob("refresh", ("refresh",), 60),
+                ScheduledJob("generate", ("generate",), 300, True),
+            ],
+            runner,
+            stop_requested=lambda: sum(name == "generate" for name, _ in calls) >= 3,
+            wait=clock.wait,
+            monotonic=clock.monotonic,
+            wake_provider=lambda: wake,
+        )
+        assert calls[:4] == [
+            ("refresh", 0.0),
+            ("generate", 0.0),
+            ("refresh", 120.0),
+            ("generate", 120.0),
+        ]
+        assert [stamp for name, stamp in calls if name == "generate"] == [0.0, 120.0, 420.0]
+
+    def test_reported_next_check_is_after_completion_not_start(self) -> None:
+        clock = FakeClock()
+        schedules: list[tuple[str, float]] = []
+
+        def runner(arguments: tuple[str, ...]) -> int:
+            if arguments[0] == "generate":
+                clock.now += 17
+            return 0
+
+        run_scheduler(
+            [
+                ScheduledJob("refresh", ("refresh",), 60),
+                ScheduledJob("generate", ("generate",), 300, True),
+            ],
+            runner,
+            stop_requested=lambda: clock.now > 18,
+            wait=clock.wait,
+            monotonic=clock.monotonic,
+            on_schedule=lambda name, delay: schedules.append((name, clock.now + delay)),
+        )
+        assert ("generate", 317.0) in schedules
+
     def test_policy_edit_during_refresh_does_not_start_old_generation_job(self) -> None:
         clock = FakeClock()
         revision = "old"

@@ -3,6 +3,7 @@ from __future__ import annotations
 import hashlib
 import json
 from concurrent.futures import ThreadPoolExecutor
+from datetime import datetime
 from pathlib import Path
 from typing import cast
 from unittest.mock import patch
@@ -11,7 +12,7 @@ import pytest
 from starlette.testclient import TestClient
 
 from inky_bird_frame.access import AccessStore
-from inky_bird_frame.birds import EbirdArchiveSpecies, ObservationWindow
+from inky_bird_frame.birds import BirdSpecies, EbirdArchiveSpecies, ObservationWindow
 from inky_bird_frame.catalog import (
     CollectionEntry,
     CollectionOrigin,
@@ -25,6 +26,7 @@ from inky_bird_frame.config import (
     DiscoveryProvider,
     DisplayNodeConfig,
 )
+from inky_bird_frame.controller import GenerationWork, TerminalQueueEntry
 from inky_bird_frame.ebird_archive import EbirdArchiveHistory
 from inky_bird_frame.errors import CatalogError
 from inky_bird_frame.http import write_json_atomic
@@ -37,10 +39,12 @@ from inky_bird_frame.journal import (
     JournalService,
     JournalState,
     MemberOrigin,
+    failure_guidance,
     read_journal,
     remove_collection,
     save_collection,
 )
+from inky_bird_frame.retry import RetryRecord
 from inky_bird_frame.web import create_app
 
 STAMP = "2026-10-15T12:00:00+00:00"
@@ -435,6 +439,179 @@ def test_journal_keeps_missing_birds_and_projects_all_source_types_without_raw_e
     assert management["work"]["can_run"] == []  # Stale discovery must not invent eligible work.
     assert "PRIVATE_" not in json.dumps(payload)
     assert management["last_confirmed_panel_update"] is None
+
+
+def test_management_names_stopped_work_without_exposing_private_failure_details(
+    tmp_path: Path,
+) -> None:
+    controller = config(tmp_path)
+    stamp = datetime.fromisoformat(STAMP)
+    manual = RetryRecord(
+        2,
+        3,
+        "PRIVATE_ERROR_TYPE",
+        "PRIVATE_FAILURE_BODY",
+        stamp,
+        stamp,
+        stamp,
+        "American Robin",
+        "Turdus migratorius",
+    )
+    unnamed = RetryRecord(3, 1, "PRIVATE_ERROR_TYPE", "PRIVATE_FAILURE_BODY", stamp, stamp, stamp)
+    terminal = TerminalQueueEntry(
+        BirdSpecies(4, "Northern Cardinal", "Cardinalis cardinalis", 1, "fixture"),
+        "quality-filtered",
+        (tmp_path / "PRIVATE_RUN_PATH",),
+    )
+    work = GenerationWork(True, "fresh", stamp, [], [], [unnamed], [manual], [terminal])
+    app = AppConfig(
+        DiscoveryConfig("12345", None, None, None, None, 8, 20, ObservationWindow.LAST_30_DAYS),
+        controller,
+        DisplayNodeConfig("http://localhost:8000", tmp_path / "display"),
+    )
+    with patch("inky_bird_frame.journal.read_generation_work", return_value=work):
+        management = JournalService(controller, app_config=app).management(approved=set())
+    projected = cast(dict[str, object], management["work"])
+    assert projected["waiting"] == [3]
+    assert projected["needs_attention"] == [2, 4]
+    assert projected["retry_details"] == [
+        {
+            "taxon_id": 3,
+            "common_name": None,
+            "scientific_name": None,
+            "attempts": 1,
+            "next_attempt_at": STAMP,
+            "last_failed_at": STAMP,
+            **failure_guidance(None),
+        },
+        {
+            "taxon_id": 2,
+            "common_name": "American Robin",
+            "scientific_name": "Turdus migratorius",
+            "attempts": 3,
+            "next_attempt_at": STAMP,
+            "last_failed_at": STAMP,
+            **failure_guidance(None),
+        },
+    ]
+    assert projected["terminal_details"] == [
+        {
+            "taxon_id": 4,
+            "common_name": "Northern Cardinal",
+            "scientific_name": "Cardinalis cardinalis",
+            "state": "quality-filtered",
+            "last_failed_at": None,
+            **failure_guidance(None),
+        }
+    ]
+    assert "PRIVATE_" not in json.dumps(management)
+
+
+def test_quality_hold_shows_numeric_evidence_without_raw_model_content(tmp_path: Path) -> None:
+    from inky_bird_frame.journal import terminal_failure
+
+    failed = tmp_path / "42-synthetic-failure"
+    write_json_atomic(
+        failed / "attempt-history.json",
+        {
+            "schema_version": 1,
+            "attempts": [
+                {
+                    "started_at": STAMP,
+                    "outcome": "correction_required",
+                    "quality_review": {
+                        "anatomy_accuracy": 2,
+                        "species_accuracy": 5,
+                        "text_accuracy": True,
+                        "composition_quality": 99,
+                        "correction_findings": ["PRIVATE_MODEL_CONTENT"],
+                        "sources": ["PRIVATE_SOURCE"],
+                    },
+                }
+            ],
+        },
+    )
+    summary = terminal_failure((failed,), 42)
+    assert summary["failure_kind"] == "quality_review"
+    assert summary["recorded_attempts"] == 1
+    assert summary["review_scores"] == {"anatomy_accuracy": 2, "species_accuracy": 5}
+    assert summary["last_attempt_at"] == STAMP
+    assert "PRIVATE_" not in json.dumps(summary)
+
+
+def test_management_poll_does_not_join_source_history(tmp_path: Path) -> None:
+    from inky_bird_frame.config import load_config
+    from inky_bird_frame.settings import initialize_config
+
+    path = tmp_path / "config.toml"
+    initialize_config(path)
+    app = load_config(path, load_secrets=False)
+    with patch.object(
+        JournalService, "_retained_history", side_effect=AssertionError("must not scan history")
+    ):
+        result = JournalService(app.controller, app_config=app).management_snapshot()
+    assert result["available"] is True
+
+
+def test_merged_latest_timestamp_is_not_attributed_to_each_provider(tmp_path: Path) -> None:
+    controller = config(tmp_path)
+    app = AppConfig(
+        DiscoveryConfig(
+            "12345",
+            None,
+            None,
+            None,
+            None,
+            8,
+            20,
+            ObservationWindow.LAST_30_DAYS,
+            sources=(
+                DiscoveryProvider.BIRDWEATHER,
+                DiscoveryProvider.BIRDBUDDY,
+                DiscoveryProvider.EBIRD_ARCHIVE,
+            ),
+        ),
+        controller,
+        DisplayNodeConfig("http://localhost:8000", tmp_path / "display"),
+    )
+    earlier = "2026-10-15T11:00:00+00:00"
+    write_json_atomic(
+        controller.state_dir / "discovery.json",
+        {
+            "schema_version": 1,
+            "refreshed_at": STAMP,
+            "place_name": "",
+            "state": "",
+            "species": [
+                {
+                    "taxon_id": 1,
+                    "common_name": "Combined",
+                    "scientific_name": "Avis combinata",
+                    "observation_count": 1,
+                    "source": "birdweather+birdbuddy+ebird-archive",
+                    "sources": ["birdweather", "birdbuddy", "ebird-archive"],
+                    "latest_detection_at": STAMP,
+                },
+                {
+                    "taxon_id": 2,
+                    "common_name": "Single",
+                    "scientific_name": "Avis sola",
+                    "observation_count": 1,
+                    "source": "birdweather",
+                    "sources": ["birdweather"],
+                    "latest_detection_at": earlier,
+                },
+            ],
+        },
+    )
+    management = JournalService(controller, app_config=app).management(approved=set())
+    sources = {row["name"]: row for row in cast(list[dict[str, object]], management["sources"])}
+    assert sources["birdweather"]["latest_detection_at"] == earlier
+    assert sources["birdbuddy"]["latest_detection_at"] is None
+    assert sources["ebird-archive"]["latest_detection_at"] is None
+    records = cast(list[dict[str, object]], management["recent_detections"])
+    assert records[0]["taxon_id"] == 1 and records[0]["timestamp_source"] is None
+    assert records[1]["timestamp_source"] == "birdweather"
 
 
 def test_v1_migration_happens_only_on_edit_and_keeps_exact_private_backup(tmp_path: Path) -> None:

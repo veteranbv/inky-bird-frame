@@ -1,6 +1,6 @@
 <!-- PNG render: npx -y @resvg/resvg-js-cli@2.6.2-beta.1 readme-overview.svg readme-overview.png -->
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 640" role="img" aria-labelledby="title description">
-  <title id="title">How Inky Bird Frame works</title>
+  <title id="title">How Inky Bird works</title>
   <desc id="description">Configured bird observations and detections enter one private controller. The controller discovers species, reuses approved plates, and optionally creates and reviews missing art. Its bundled journal keeps sources and private collections together. A physical display, paired read-only browser screen, or selected dashboard art view shows approved plates.</desc>
   <defs>
     <marker id="arrow-blue" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">

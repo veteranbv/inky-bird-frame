@@ -10,13 +10,14 @@ import shutil
 from collections.abc import Iterator
 from contextlib import contextmanager, nullcontext
 from copy import deepcopy
-from dataclasses import asdict, dataclass
+from dataclasses import asdict, dataclass, replace
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
 from tempfile import TemporaryDirectory
 from time import monotonic
 from typing import cast
 
+from .activity import activity_run, progress
 from .birdbuddy import sync_birdbuddy_detections
 from .birdnet_analyzer import read_birdnet_analyzer_history
 from .birds import (
@@ -92,6 +93,7 @@ from .prompts import PROMPT_VERSION
 from .references import download_references, fetch_reference_candidates
 from .research import ResearchBudget
 from .retry import RetryRecord, RetryStore, parse_retry_profile_conflicts
+from .retry_requests import prepare_retry_requests, retry_requests
 from .timeutil import parse_utc_timestamp
 
 REVIEW_FAILURE_FALLBACK = "The previous attempt did not meet every automated review threshold."
@@ -243,6 +245,7 @@ def discover_species(
     radius_km: int | None = None,
     species_limit: int | None = None,
     persist_taxonomy_cache: bool = True,
+    record_activity: bool = False,
 ) -> DiscoveryResult:
     selected_sources = config.discovery.sources if sources is None else sources
     selected_window = window or config.discovery.observation_window
@@ -299,287 +302,352 @@ def discover_species(
                 ProviderStatus(name, "error", 0, error=f"Location lookup failed: {exc}")
                 for name in location_provider_names
             )
+            if record_activity:
+                for name in location_provider_names:
+                    with activity_run(config.controller.state_dir, "source-" + name) as activity:
+                        activity.succeeded = False
 
     if location is not None and DiscoveryProvider.INATURALIST in selected_sources:
-        try:
-            inaturalist = fetch_inaturalist_birds(
-                latitude=location.latitude,
-                longitude=location.longitude,
-                radius_km=selected_radius,
-                limit=selected_limit,
-                window=selected_window,
-                date_range=date_range,
-            )
-        except DataSourceError as exc:
-            providers.append(ProviderStatus("inaturalist", "error", 0, error=str(exc)))
-        else:
-            provider_species.append(inaturalist)
-            providers.append(ProviderStatus("inaturalist", "ok", len(inaturalist)))
-
-    if location is not None and DiscoveryProvider.EBIRD in selected_sources:
-        request_duration_ms: int | None = None
-        try:
-            api_key = config.discovery.ebird_api_key
-            if api_key is None and config.discovery.ebird_api_key_env is not None:
-                environment_value = os.environ.get(config.discovery.ebird_api_key_env)
-                api_key = environment_value.strip() if environment_value else None
-            if api_key is None:
-                raise DataSourceError("eBird API key is not configured")
-            request_started = monotonic()
+        with activity_run(
+            config.controller.state_dir if record_activity else None, "source-inaturalist"
+        ) as activity:
             try:
-                observations = fetch_ebird_observations(
+                inaturalist = fetch_inaturalist_birds(
                     latitude=location.latitude,
                     longitude=location.longitude,
                     radius_km=selected_radius,
                     limit=selected_limit,
                     window=selected_window,
-                    api_key=api_key,
+                    date_range=date_range,
                 )
-            finally:
-                request_duration_ms = round((monotonic() - request_started) * 1000)
-            resolution = resolve_ebird_species(
-                observations,
-                config.controller.state_dir / "ebird-taxonomy-crosswalk.json",
-                persist_cache=persist_taxonomy_cache,
+            except DataSourceError as exc:
+                providers.append(ProviderStatus("inaturalist", "error", 0, error=str(exc)))
+            else:
+                provider_species.append(inaturalist)
+                providers.append(ProviderStatus("inaturalist", "ok", len(inaturalist)))
+            activity.succeeded = providers[-1].status == "ok"
+            activity.update(
+                species_count=providers[-1].species_count,
+                unresolved_count=providers[-1].unresolved_count,
             )
-        except (DataSourceError, ValueError) as exc:
-            details: dict[str, object] | None = (
-                {"http_duration_ms": request_duration_ms}
-                if request_duration_ms is not None
-                else None
-            )
-            providers.append(ProviderStatus("ebird", "error", 0, error=str(exc), details=details))
-        else:
-            unresolved.extend(resolution.unresolved)
-            if observations and not resolution.species:
-                providers.append(
-                    ProviderStatus(
-                        "ebird",
-                        "error",
-                        0,
-                        unresolved_count=len(resolution.unresolved),
-                        error="No eBird observations had an exact iNaturalist species match",
-                        details={"http_duration_ms": request_duration_ms},
+
+    if location is not None and DiscoveryProvider.EBIRD in selected_sources:
+        with activity_run(
+            config.controller.state_dir if record_activity else None, "source-ebird"
+        ) as activity:
+            request_duration_ms: int | None = None
+            try:
+                api_key = config.discovery.ebird_api_key
+                if api_key is None and config.discovery.ebird_api_key_env is not None:
+                    environment_value = os.environ.get(config.discovery.ebird_api_key_env)
+                    api_key = environment_value.strip() if environment_value else None
+                if api_key is None:
+                    raise DataSourceError("eBird API key is not configured")
+                request_started = monotonic()
+                try:
+                    observations = fetch_ebird_observations(
+                        latitude=location.latitude,
+                        longitude=location.longitude,
+                        radius_km=selected_radius,
+                        limit=selected_limit,
+                        window=selected_window,
+                        api_key=api_key,
                     )
+                finally:
+                    request_duration_ms = round((monotonic() - request_started) * 1000)
+                resolution = resolve_ebird_species(
+                    observations,
+                    config.controller.state_dir / "ebird-taxonomy-crosswalk.json",
+                    persist_cache=persist_taxonomy_cache,
+                )
+            except (DataSourceError, ValueError) as exc:
+                details: dict[str, object] | None = (
+                    {"http_duration_ms": request_duration_ms}
+                    if request_duration_ms is not None
+                    else None
+                )
+                providers.append(
+                    ProviderStatus("ebird", "error", 0, error=str(exc), details=details)
                 )
             else:
-                provider_species.append(resolution.species)
-                providers.append(
-                    ProviderStatus(
-                        "ebird",
-                        "ok",
-                        len(resolution.species),
-                        unresolved_count=len(resolution.unresolved),
-                        details={"http_duration_ms": request_duration_ms},
+                unresolved.extend(resolution.unresolved)
+                if observations and not resolution.species:
+                    providers.append(
+                        ProviderStatus(
+                            "ebird",
+                            "error",
+                            0,
+                            unresolved_count=len(resolution.unresolved),
+                            error="No eBird observations had an exact iNaturalist species match",
+                            details={"http_duration_ms": request_duration_ms},
+                        )
                     )
-                )
+                else:
+                    provider_species.append(resolution.species)
+                    providers.append(
+                        ProviderStatus(
+                            "ebird",
+                            "ok",
+                            len(resolution.species),
+                            unresolved_count=len(resolution.unresolved),
+                            details={"http_duration_ms": request_duration_ms},
+                        )
+                    )
+            activity.succeeded = providers[-1].status == "ok"
+            activity.update(
+                species_count=providers[-1].species_count,
+                unresolved_count=providers[-1].unresolved_count,
+            )
 
     if DiscoveryProvider.EBIRD_ARCHIVE in selected_sources:
-        try:
-            ebird_archive_history = read_ebird_archive_history(
-                config.controller.state_dir,
-                window=selected_window,
-                limit=selected_limit,
-                date_range=date_range,
-            )
-            resolved, ebird_archive_unresolved = resolve_ebird_archive_species(
-                ebird_archive_history.species,
-                config.controller.state_dir / "ebird-archive-taxonomy-crosswalk.json",
-                persist_cache=persist_taxonomy_cache,
-            )
-        except (DataSourceError, ValueError) as exc:
-            providers.append(ProviderStatus("ebird-archive", "error", 0, error=str(exc)))
-        else:
-            unresolved.extend(ebird_archive_unresolved)
-            if ebird_archive_history.species and not resolved:
-                providers.append(
-                    ProviderStatus(
-                        "ebird-archive",
-                        "error",
-                        0,
-                        unresolved_count=len(ebird_archive_unresolved),
-                        error=(
-                            "No eBird archive observations had an exact iNaturalist species match"
-                        ),
-                        details=ebird_archive_history.details(),
-                    )
+        with activity_run(
+            config.controller.state_dir if record_activity else None, "source-ebird-archive"
+        ) as activity:
+            try:
+                ebird_archive_history = read_ebird_archive_history(
+                    config.controller.state_dir,
+                    window=selected_window,
+                    limit=selected_limit,
+                    date_range=date_range,
                 )
+                resolved, ebird_archive_unresolved = resolve_ebird_archive_species(
+                    ebird_archive_history.species,
+                    config.controller.state_dir / "ebird-archive-taxonomy-crosswalk.json",
+                    persist_cache=persist_taxonomy_cache,
+                )
+            except (DataSourceError, ValueError) as exc:
+                providers.append(ProviderStatus("ebird-archive", "error", 0, error=str(exc)))
             else:
-                provider_species.append(resolved)
-                providers.append(
-                    ProviderStatus(
-                        "ebird-archive",
-                        "ok",
-                        len(resolved),
-                        unresolved_count=len(ebird_archive_unresolved),
-                        details=ebird_archive_history.details(),
+                unresolved.extend(ebird_archive_unresolved)
+                if ebird_archive_history.species and not resolved:
+                    providers.append(
+                        ProviderStatus(
+                            "ebird-archive",
+                            "error",
+                            0,
+                            unresolved_count=len(ebird_archive_unresolved),
+                            error=(
+                                "No eBird archive observations had an exact "
+                                "iNaturalist species match"
+                            ),
+                            details=ebird_archive_history.details(),
+                        )
                     )
-                )
+                else:
+                    provider_species.append(resolved)
+                    providers.append(
+                        ProviderStatus(
+                            "ebird-archive",
+                            "ok",
+                            len(resolved),
+                            unresolved_count=len(ebird_archive_unresolved),
+                            details=ebird_archive_history.details(),
+                        )
+                    )
+            activity.succeeded = providers[-1].status == "ok"
+            activity.update(
+                species_count=providers[-1].species_count,
+                unresolved_count=providers[-1].unresolved_count,
+            )
 
     if DiscoveryProvider.BIRDWEATHER in selected_sources:
-        try:
-            token = config.discovery.birdweather_token
-            if token is None and config.discovery.birdweather_token_env is not None:
-                environment_value = os.environ.get(config.discovery.birdweather_token_env)
-                token = environment_value.strip() if environment_value else None
-            if token is None:
-                raise DataSourceError("BirdWeather station token is not configured")
-            detections = fetch_birdweather_species(
-                token=token,
-                limit=selected_limit,
-                window=selected_window,
-            )
-            resolved, birdweather_unresolved = resolve_birdweather_species(
-                detections,
-                config.controller.state_dir / "birdweather-taxonomy-crosswalk.json",
-                persist_cache=persist_taxonomy_cache,
-            )
-        except (DataSourceError, ValueError) as exc:
-            providers.append(ProviderStatus("birdweather", "error", 0, error=str(exc)))
-        else:
-            unresolved.extend(birdweather_unresolved)
-            if detections and not resolved:
-                providers.append(
-                    ProviderStatus(
-                        "birdweather",
-                        "error",
-                        0,
-                        unresolved_count=len(birdweather_unresolved),
-                        error="No BirdWeather detections had an exact iNaturalist species match",
-                    )
+        with activity_run(
+            config.controller.state_dir if record_activity else None, "source-birdweather"
+        ) as activity:
+            try:
+                token = config.discovery.birdweather_token
+                if token is None and config.discovery.birdweather_token_env is not None:
+                    environment_value = os.environ.get(config.discovery.birdweather_token_env)
+                    token = environment_value.strip() if environment_value else None
+                if token is None:
+                    raise DataSourceError("BirdWeather station token is not configured")
+                detections = fetch_birdweather_species(
+                    token=token,
+                    limit=selected_limit,
+                    window=selected_window,
                 )
+                resolved, birdweather_unresolved = resolve_birdweather_species(
+                    detections,
+                    config.controller.state_dir / "birdweather-taxonomy-crosswalk.json",
+                    persist_cache=persist_taxonomy_cache,
+                )
+            except (DataSourceError, ValueError) as exc:
+                providers.append(ProviderStatus("birdweather", "error", 0, error=str(exc)))
             else:
-                provider_species.append(resolved)
-                providers.append(
-                    ProviderStatus(
-                        "birdweather",
-                        "ok",
-                        len(resolved),
-                        unresolved_count=len(birdweather_unresolved),
+                unresolved.extend(birdweather_unresolved)
+                if detections and not resolved:
+                    providers.append(
+                        ProviderStatus(
+                            "birdweather",
+                            "error",
+                            0,
+                            unresolved_count=len(birdweather_unresolved),
+                            error="No BirdWeather detections had an exact "
+                            "iNaturalist species match",
+                        )
                     )
-                )
+                else:
+                    provider_species.append(resolved)
+                    providers.append(
+                        ProviderStatus(
+                            "birdweather",
+                            "ok",
+                            len(resolved),
+                            unresolved_count=len(birdweather_unresolved),
+                        )
+                    )
+            activity.succeeded = providers[-1].status == "ok"
+            activity.update(
+                species_count=providers[-1].species_count,
+                unresolved_count=providers[-1].unresolved_count,
+            )
 
     if DiscoveryProvider.BIRDBUDDY in selected_sources:
-        try:
-            sync = sync_birdbuddy_detections(
-                config.controller.state_dir,
-                window=selected_window,
-                limit=selected_limit,
-                persist_history=persist_taxonomy_cache,
-                include_manual_sightings=(config.discovery.birdbuddy_include_manual_sightings),
-            )
-            resolved, birdbuddy_unresolved = resolve_birdbuddy_species(
-                sync.species,
-                config.controller.state_dir / "birdbuddy-taxonomy-crosswalk.json",
-                persist_cache=persist_taxonomy_cache,
-            )
-        except (DataSourceError, ValueError) as exc:
-            providers.append(ProviderStatus("birdbuddy", "error", 0, error=str(exc)))
-        else:
-            unresolved.extend(birdbuddy_unresolved)
-            if sync.species and not resolved:
-                providers.append(
-                    ProviderStatus(
-                        "birdbuddy",
-                        "error",
-                        0,
-                        unresolved_count=len(birdbuddy_unresolved),
-                        error="No Bird Buddy detections had an exact iNaturalist species match",
-                        details=sync.stats.as_dict(),
-                    )
+        with activity_run(
+            config.controller.state_dir if record_activity else None, "source-birdbuddy"
+        ) as activity:
+            try:
+                sync = sync_birdbuddy_detections(
+                    config.controller.state_dir,
+                    window=selected_window,
+                    limit=selected_limit,
+                    persist_history=persist_taxonomy_cache,
+                    include_manual_sightings=(config.discovery.birdbuddy_include_manual_sightings),
                 )
+                resolved, birdbuddy_unresolved = resolve_birdbuddy_species(
+                    sync.species,
+                    config.controller.state_dir / "birdbuddy-taxonomy-crosswalk.json",
+                    persist_cache=persist_taxonomy_cache,
+                )
+            except (DataSourceError, ValueError) as exc:
+                providers.append(ProviderStatus("birdbuddy", "error", 0, error=str(exc)))
             else:
-                provider_species.append(resolved)
-                providers.append(
-                    ProviderStatus(
-                        "birdbuddy",
-                        "ok",
-                        len(resolved),
-                        unresolved_count=len(birdbuddy_unresolved),
-                        details=sync.stats.as_dict(),
+                unresolved.extend(birdbuddy_unresolved)
+                if sync.species and not resolved:
+                    providers.append(
+                        ProviderStatus(
+                            "birdbuddy",
+                            "error",
+                            0,
+                            unresolved_count=len(birdbuddy_unresolved),
+                            error="No Bird Buddy detections had an exact iNaturalist species match",
+                            details=sync.stats.as_dict(),
+                        )
                     )
-                )
+                else:
+                    provider_species.append(resolved)
+                    providers.append(
+                        ProviderStatus(
+                            "birdbuddy",
+                            "ok",
+                            len(resolved),
+                            unresolved_count=len(birdbuddy_unresolved),
+                            details=sync.stats.as_dict(),
+                        )
+                    )
+            activity.succeeded = providers[-1].status == "ok"
+            activity.update(
+                species_count=providers[-1].species_count,
+                unresolved_count=providers[-1].unresolved_count,
+            )
 
     if DiscoveryProvider.BIRDNET_GO in selected_sources:
-        try:
-            base_url = config.discovery.birdnet_go_url
-            if base_url is None:
-                raise DataSourceError("BirdNET-Go base URL is not configured")
-            birdnet_go_detections = fetch_birdnet_go_species(
-                base_url=base_url,
-                limit=selected_limit,
-                window=selected_window,
-            )
-            resolved, birdnet_go_unresolved = resolve_birdnet_go_species(
-                birdnet_go_detections,
-                config.controller.state_dir / "birdnet-go-taxonomy-crosswalk.json",
-                persist_cache=persist_taxonomy_cache,
-            )
-        except (DataSourceError, ValueError) as exc:
-            providers.append(ProviderStatus("birdnet-go", "error", 0, error=str(exc)))
-        else:
-            unresolved.extend(birdnet_go_unresolved)
-            if birdnet_go_detections and not resolved:
-                providers.append(
-                    ProviderStatus(
-                        "birdnet-go",
-                        "error",
-                        0,
-                        unresolved_count=len(birdnet_go_unresolved),
-                        error="No BirdNET-Go detections had an exact iNaturalist species match",
-                    )
+        with activity_run(
+            config.controller.state_dir if record_activity else None, "source-birdnet-go"
+        ) as activity:
+            try:
+                base_url = config.discovery.birdnet_go_url
+                if base_url is None:
+                    raise DataSourceError("BirdNET-Go base URL is not configured")
+                birdnet_go_detections = fetch_birdnet_go_species(
+                    base_url=base_url,
+                    limit=selected_limit,
+                    window=selected_window,
                 )
+                resolved, birdnet_go_unresolved = resolve_birdnet_go_species(
+                    birdnet_go_detections,
+                    config.controller.state_dir / "birdnet-go-taxonomy-crosswalk.json",
+                    persist_cache=persist_taxonomy_cache,
+                )
+            except (DataSourceError, ValueError) as exc:
+                providers.append(ProviderStatus("birdnet-go", "error", 0, error=str(exc)))
             else:
-                provider_species.append(resolved)
-                providers.append(
-                    ProviderStatus(
-                        "birdnet-go",
-                        "ok",
-                        len(resolved),
-                        unresolved_count=len(birdnet_go_unresolved),
+                unresolved.extend(birdnet_go_unresolved)
+                if birdnet_go_detections and not resolved:
+                    providers.append(
+                        ProviderStatus(
+                            "birdnet-go",
+                            "error",
+                            0,
+                            unresolved_count=len(birdnet_go_unresolved),
+                            error="No BirdNET-Go detections had an exact iNaturalist species match",
+                        )
                     )
-                )
+                else:
+                    provider_species.append(resolved)
+                    providers.append(
+                        ProviderStatus(
+                            "birdnet-go",
+                            "ok",
+                            len(resolved),
+                            unresolved_count=len(birdnet_go_unresolved),
+                        )
+                    )
+            activity.succeeded = providers[-1].status == "ok"
+            activity.update(
+                species_count=providers[-1].species_count,
+                unresolved_count=providers[-1].unresolved_count,
+            )
 
     if DiscoveryProvider.BIRDNET_ANALYZER in selected_sources:
-        try:
-            birdnet_analyzer_history = read_birdnet_analyzer_history(
-                config.controller.state_dir,
-                window=selected_window,
-                limit=selected_limit,
-            )
-            resolved, birdnet_analyzer_unresolved = resolve_birdnet_analyzer_species(
-                birdnet_analyzer_history.species,
-                config.controller.state_dir / "birdnet-analyzer-taxonomy-crosswalk.json",
-                persist_cache=persist_taxonomy_cache,
-            )
-        except (DataSourceError, ValueError) as exc:
-            providers.append(ProviderStatus("birdnet-analyzer", "error", 0, error=str(exc)))
-        else:
-            unresolved.extend(birdnet_analyzer_unresolved)
-            if birdnet_analyzer_history.species and not resolved:
-                providers.append(
-                    ProviderStatus(
-                        "birdnet-analyzer",
-                        "error",
-                        0,
-                        unresolved_count=len(birdnet_analyzer_unresolved),
-                        error=(
-                            "No BirdNET Analyzer detections had an exact iNaturalist species match"
-                        ),
-                        details=birdnet_analyzer_history.details(),
-                    )
+        with activity_run(
+            config.controller.state_dir if record_activity else None, "source-birdnet-analyzer"
+        ) as activity:
+            try:
+                birdnet_analyzer_history = read_birdnet_analyzer_history(
+                    config.controller.state_dir,
+                    window=selected_window,
+                    limit=selected_limit,
                 )
+                resolved, birdnet_analyzer_unresolved = resolve_birdnet_analyzer_species(
+                    birdnet_analyzer_history.species,
+                    config.controller.state_dir / "birdnet-analyzer-taxonomy-crosswalk.json",
+                    persist_cache=persist_taxonomy_cache,
+                )
+            except (DataSourceError, ValueError) as exc:
+                providers.append(ProviderStatus("birdnet-analyzer", "error", 0, error=str(exc)))
             else:
-                provider_species.append(resolved)
-                providers.append(
-                    ProviderStatus(
-                        "birdnet-analyzer",
-                        "ok",
-                        len(resolved),
-                        unresolved_count=len(birdnet_analyzer_unresolved),
-                        details=birdnet_analyzer_history.details(),
+                unresolved.extend(birdnet_analyzer_unresolved)
+                if birdnet_analyzer_history.species and not resolved:
+                    providers.append(
+                        ProviderStatus(
+                            "birdnet-analyzer",
+                            "error",
+                            0,
+                            unresolved_count=len(birdnet_analyzer_unresolved),
+                            error=(
+                                "No BirdNET Analyzer detections had an exact "
+                                "iNaturalist species match"
+                            ),
+                            details=birdnet_analyzer_history.details(),
+                        )
                     )
-                )
+                else:
+                    provider_species.append(resolved)
+                    providers.append(
+                        ProviderStatus(
+                            "birdnet-analyzer",
+                            "ok",
+                            len(resolved),
+                            unresolved_count=len(birdnet_analyzer_unresolved),
+                            details=birdnet_analyzer_history.details(),
+                        )
+                    )
+            activity.succeeded = providers[-1].status == "ok"
+            activity.update(
+                species_count=providers[-1].species_count,
+                unresolved_count=providers[-1].unresolved_count,
+            )
 
     if selected_sources and not provider_species:
         failures = "; ".join(
@@ -1205,14 +1273,17 @@ def refresh_observations(config: AppConfig) -> dict[str, object]:
 
 
 def run_refresh_cycle(config: AppConfig) -> dict[str, object]:
-    with exclusive_refresh_lock(config.controller.state_dir):
+    with (
+        exclusive_refresh_lock(config.controller.state_dir),
+        activity_run(config.controller.state_dir, "refresh"),
+    ):
         notification_baseline: frozenset[int] | None = frozenset()
         place_name = ""
         state = ""
         if _snapshot_path(config).exists():
             previous = _read_discovery_snapshot(config)
             notification_baseline = previous.notification_baseline_taxa
-        discovery = discover_species(config)
+        discovery = discover_species(config, record_activity=True)
         location = discovery.location
         if location is not None:
             place_name = location.place_name
@@ -2060,6 +2131,7 @@ def generate_candidate(
     if find_taxon_directory(state_dir / "pending", species.taxon_id) is not None:
         raise CatalogError(f"Taxon {species.taxon_id} already has a pending candidate")
 
+    progress("references", taxon_id=species.taxon_id, common_name=species.common_name, attempt=None)
     references = load_or_fetch_references(config, species)
     reference_root = state_dir / "references" / str(species.taxon_id)
     reference_paths = [reference_root / reference.filename for reference in references]
@@ -2085,6 +2157,7 @@ def generate_candidate(
         work = Path(temporary)
         logs = state_dir / "runs" / f"{species.taxon_id}-{_timestamp()}"
         profile_output_path = work / "profile.json"
+        progress("research")
         profile, profile_path = load_or_create_profile(
             config,
             species,
@@ -2104,6 +2177,7 @@ def generate_candidate(
         terminal_detail: str | None = None
         history: list[dict[str, object]] = []
         for attempt in range(1, config.controller.max_generation_attempts + 1):
+            progress("generating", attempt=attempt)
             attempt_dir = work / f"attempt-{attempt:02d}"
             attempt_dir.mkdir()
             portrait_path = attempt_dir / "portrait.png"
@@ -2152,6 +2226,7 @@ def generate_candidate(
                 raise
             history_entry["generation_seconds"] = round(monotonic() - generation_started, 3)
 
+            progress("reviewing")
             review_started = monotonic()
             reviewed_corrections = _deduplicate_findings(
                 prior_review_corrections,
@@ -2515,6 +2590,7 @@ def read_generation_work(
     approved: set[int] | None = None,
     now: datetime | None = None,
     retry_records: list[RetryRecord] | None = None,
+    _include_retry_requests: bool = True,
 ) -> GenerationWork:
     """Read local state and return the same generation classification used by a cycle."""
     snapshot = _read_discovery_snapshot(config) if _snapshot_path(config).exists() else None
@@ -2524,7 +2600,7 @@ def read_generation_work(
         if retry_records is not None
         else RetryStore(config.controller.state_dir / "generation-retries.json").records()
     )
-    return calculate_generation_work(
+    work = calculate_generation_work(
         snapshot=snapshot,
         queued_species=queued_species,
         approved=(
@@ -2540,6 +2616,27 @@ def read_generation_work(
         maximum_age=timedelta(minutes=config.schedule.refresh_minutes * 2),
         expected_discovery_revision=config.discovery_revision,
         require_bound_discovery=config.controller.configuration_ownership == "app",
+    )
+    return _retry_preparation_holds(config, work) if _include_retry_requests else work
+
+
+def _retry_preparation_holds(config: AppConfig, work: GenerationWork) -> GenerationWork:
+    latest = {row.taxon_id: row for row in retry_requests(config.controller.state_dir)}
+    held = {id for id, row in latest.items() if row.status in {"queued", "preparing", "blocked"}}
+    attention = {id for id, row in latest.items() if row.status in {"preparing", "blocked"}}
+    already_terminal = {entry.species.taxon_id for entry in work.terminal_blocked}
+    return replace(
+        work,
+        eligible=[bird for bird in work.eligible if bird.taxon_id not in held],
+        actionable=[bird for bird in work.actionable if bird.taxon_id not in held],
+        terminal_blocked=[
+            *work.terminal_blocked,
+            *[
+                TerminalQueueEntry(bird, "retry_preparation_blocked", ())
+                for bird in work.eligible
+                if bird.taxon_id in attention and bird.taxon_id not in already_terminal
+            ],
+        ],
     )
 
 
@@ -2603,7 +2700,12 @@ def run_generation_cycle(config: AppConfig) -> dict[str, object]:
     # Disabled mode must not approve, migrate, dequeue or start a model process.
     if not config.controller.generation_enabled:
         return {"generation_enabled": False, "generated": [], "published": []}
-    with exclusive_cycle_lock(config.controller.state_dir):
+    with (
+        exclusive_cycle_lock(config.controller.state_dir),
+        activity_run(config.controller.state_dir, "generation"),
+    ):
+        progress("preparing_retries")
+        prepare_retry_requests(config)
         queued_species = read_generation_queue(config)
         with catalog_state_lock(config.controller.state_dir):
             collection, migrated_legacy_queue, migrated_at, migration_applied = (
@@ -2637,6 +2739,7 @@ def run_generation_cycle(config: AppConfig) -> dict[str, object]:
             expected_discovery_revision=config.discovery_revision,
             require_bound_discovery=config.controller.configuration_ownership == "app",
         )
+        work = _retry_preparation_holds(config, work)
         if not work.complete:
             raise DataSourceError(
                 "Discovery state is stale; a successful refresh is required before generation"
@@ -2666,7 +2769,17 @@ def run_generation_cycle(config: AppConfig) -> dict[str, object]:
                 )
             synchronize_generation_retry_identity(config, queued_species, synchronized)
         retry_store = RetryStore(config.controller.state_dir / "generation-retries.json")
-        eligible = work.eligible
+        request_order = {
+            row.taxon_id: index
+            for index, row in enumerate(
+                row
+                for row in retry_requests(config.controller.state_dir)
+                if row.status == "eligible"
+            )
+        }
+        eligible = sorted(
+            work.eligible, key=lambda bird: request_order.get(bird.taxon_id, len(request_order))
+        )
         generated: list[dict[str, object]] = []
         failures: list[dict[str, object]] = []
         attempted_count = 0
@@ -2678,6 +2791,9 @@ def run_generation_cycle(config: AppConfig) -> dict[str, object]:
             if not retry_store.due(species.taxon_id, datetime.now(UTC)):
                 continue
             attempted_count += 1
+            progress(
+                "starting", taxon_id=species.taxon_id, common_name=species.common_name, attempt=None
+            )
             guidance = retry_store.quality_guidance(species.taxon_id)
             try:
                 if guidance is None:
@@ -2725,6 +2841,7 @@ def run_generation_cycle(config: AppConfig) -> dict[str, object]:
                         invariant_correction_findings=guidance.invariant_findings,
                         initial_profile_conflicts=profile_conflicts,
                     )
+                progress("approving")
                 with catalog_state_lock(config.controller.state_dir):
                     entry = approve_candidate(
                         config.controller.state_dir,

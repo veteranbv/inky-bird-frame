@@ -1,4 +1,5 @@
 import { openJournal, closeJournal, retainSignedOutFrame } from '/app/journal.js';
+import { icon } from '/app/ui.js';
 
 const main = document.querySelector('#main');
 let csrf = '';
@@ -278,6 +279,12 @@ function signIn(access, notice = '') {
       ? 'Create the owner account for your bird journal. No email or online account is needed.'
       : 'Sign in to your Inky bird journal.',
   );
+  const mark = element('img', '', 'auth-mark');
+  mark.src = '/app/icon-180.png';
+  mark.alt = '';
+  mark.width = 180;
+  mark.height = 180;
+  main.prepend(mark);
   if (notice) main.append(noticeMessage(notice));
   connectionNotice(access);
   if (setup)
@@ -297,7 +304,9 @@ function signIn(access, notice = '') {
     : null;
   if (confirmation)
     confirmation.addEventListener('input', () => confirmation.removeAttribute('aria-invalid'));
-  const remember = rememberField(form, access);
+  const ssoReady = !setup && access.provider?.linked && access.provider?.ready;
+  const preferences = ssoReady ? element('div') : null;
+  const remember = rememberField(preferences || form, access);
   const submit = element('button', setup ? 'Create account' : 'Sign in');
   submit.type = 'submit';
   form.append(submit, status);
@@ -331,13 +340,37 @@ function signIn(access, notice = '') {
       form.setAttribute('aria-busy', 'false');
     }
   });
-  if (setup || access.local_login) main.append(form);
-  else if (access.provider?.linked && access.provider?.ready) {
-    const preferences = element('div');
-    rememberField(preferences, access);
-    preferences.querySelector('input').replaceWith(remember);
-    main.append(preferences, element('p', 'Use your linked single sign-on account.', 'hint'));
-  } else
+  if (setup) main.append(form);
+  else if (ssoReady) {
+    // The linked provider is the everyday path, so it leads. The local
+    // password stays one disclosure away and remains the recovery path.
+    // Its errors render in their own region: the shared form status can sit
+    // inside the closed disclosure, where a message would stay invisible.
+    const ssoStatus = statusBox();
+    const sso = button(
+      'Continue with ' + access.provider.label,
+      async () => {
+        sso.disabled = true;
+        ssoStatus.textContent = '';
+        try {
+          await beginSSO('/v1/owner/oidc/start', remember.checked);
+        } catch (error) {
+          sso.disabled = false;
+          errorMessage(ssoStatus, error.message);
+        }
+      },
+      'sso-button',
+    );
+    sso.prepend(icon('key'));
+    main.append(sso, ssoStatus, preferences);
+    if (access.local_login) {
+      const alt = element('details', '', 'auth-alt');
+      alt.append(element('summary', 'Sign in with your Inky password instead'));
+      alt.append(form);
+      main.append(alt);
+    } else main.append(element('p', 'Use your linked single sign-on account.', 'hint'));
+  } else if (access.local_login) main.append(form);
+  else
     main.append(
       element(
         'p',
@@ -345,19 +378,6 @@ function signIn(access, notice = '') {
         'notice',
       ),
     );
-  if (!setup && access.provider?.linked && access.provider?.ready) {
-    const sso = button('Sign in with ' + access.provider.label, async () => {
-      sso.disabled = true;
-      try {
-        await beginSSO('/v1/owner/oidc/start', remember.checked);
-      } catch (error) {
-        sso.disabled = false;
-        if (!main.contains(status)) main.append(status);
-        errorMessage(status, error.message);
-      }
-    });
-    main.append(sso);
-  }
   if (access.provider?.error) main.append(element('p', access.provider.error, 'error'));
   if (!setup)
     main.append(
@@ -366,7 +386,7 @@ function signIn(access, notice = '') {
         'The access guide below gives native and Docker commands. Use your installation’s configuration file. You will confirm the change and enter the new password in a hidden prompt. If someone installed Inky for you, ask them to recover access.',
       ]),
     );
-  const docs = element('a', 'Download the access and recovery guide (.md)');
+  const docs = element('a', 'Download the access and recovery guide (.md)', 'doc-link');
   docs.href = '/app/access-guide';
   docs.download = 'Inky-access-guide.md';
   main.append(docs);

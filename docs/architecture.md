@@ -1,6 +1,6 @@
 # Architecture
 
-Inky Bird Frame has three roles. The controller discovers birds and creates
+Inky Bird has three roles. The controller discovers birds and creates
 plates. The display node pulls approved images. An optional publisher sends new
 plates to a shared GitHub catalog. The controller also serves its bundled browser
 journal. Owner sessions can manage private choices. Separate read-only screen
@@ -116,7 +116,13 @@ A locked generation cycle completes that migration, recovers passing pending
 work, and then passes the latest non-stale snapshot, durable queue, retry
 schedule, approvals, and terminal states through the same side-effect-free work
 calculation exposed by `status`. Current observations take priority over queued
-taxa, and retry-due candidates are actionable. The cycle then:
+taxa, and retry-due candidates are actionable. Browser retry intents are prepared
+under the cycle lock only when the shared discovery freshness and policy gate
+passes. Unusable discovery leaves intents queued rather than creating species
+failures. Prepared requests take priority
+in request order; interrupted preparation remains held until an explicit new
+request. The existing generation queue and review gates still own execution.
+The cycle then:
 
 1. selects taxa without a terminal local state;
 2. acquires and verifies licensed references;

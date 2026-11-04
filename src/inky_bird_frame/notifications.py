@@ -305,7 +305,7 @@ def send_notification_test(config: AppConfig) -> dict[str, object]:
     item = NotificationItem(
         item_id="manual-test",
         event=NotificationEvent.TERMINAL_ERROR,
-        title="Inky Bird Frame notification test",
+        title="Inky Bird notification test",
         body="Notifications are configured and delivery was requested successfully.",
         created_at=now,
         attempts=0,

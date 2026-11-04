@@ -4,10 +4,15 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Inky screen</title>
+  <link rel="icon" type="image/png" sizes="32x32" href="/app/icon-32.png">
+  <link rel="icon" type="image/png" sizes="64x64" href="/app/icon-64.png">
+  <link rel="apple-touch-icon" href="/app/icon-180.png">
   <link rel="stylesheet" href="/app/app.css">
   <script type="module" src="/app/viewer.js"></script>
 </head>
 <body>
+  <!-- No inline images here: a paired screen must hold zero img elements
+       once its permitted view empties or its access ends. -->
   <header><a href="/app">Inky</a><span>A screen, not an owner login</span></header>
   <main id="main"><h1>Show birds here</h1><p role="status">Checking screen access…</p><noscript>Enable JavaScript to pair this screen.</noscript></main>
 </body>

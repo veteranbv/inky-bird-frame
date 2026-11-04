@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import io
 import json
 from dataclasses import replace
 from datetime import UTC, datetime
@@ -7,6 +8,7 @@ from pathlib import Path
 from unittest.mock import patch
 
 import pytest
+from PIL import Image
 from starlette.testclient import TestClient
 
 from inky_bird_frame.access import AccessDeniedError, AccessStore
@@ -646,4 +648,14 @@ def test_bundled_owner_page_uses_external_assets_and_cannot_frame(tmp_path: Path
             assert response.status_code == 200
             assert response.headers["cache-control"] == "no-store"
             assert "frame-ancestors 'none'" in response.headers["content-security-policy"]
+        for size in (512, 180, 64, 32):
+            icon = client.get(f"/app/icon-{size}.png")
+            assert icon.status_code == 200
+            assert icon.headers["content-type"] == "image/png"
+            with Image.open(io.BytesIO(icon.content)) as image:
+                assert image.format == "PNG"
+                assert image.size == (size, size)
+        favicon = client.get("/favicon.ico")
+        assert favicon.status_code == 200
+        assert favicon.content.startswith(b"\x00\x00\x01\x00")
         assert client.get("/app/../access.json").status_code == 404

@@ -135,7 +135,11 @@ function present(initial) {
     caption = el('p'),
     status = el('p');
   image.className = 'frame-art';
+  caption.className = 'frame-caption';
   image.hidden = true;
+  // The shared status contract: presenting-mode notices float inside the
+  // viewport, so a fullscreen screen never hides its reason below the fold.
+  status.className = 'hint';
   status.setAttribute('role', 'status');
   const controls = el('div');
   controls.className = 'frame-controls';

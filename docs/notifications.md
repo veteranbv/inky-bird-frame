@@ -1,6 +1,6 @@
 # Notifications
 
-Inky Bird Frame includes the open-source Apprise Python library. It translates
+Inky Bird includes the open-source Apprise Python library. It translates
 one local configuration into each provider's API. You do not need an Apprise
 account, hosted Apprise service, or separate notification container.
 

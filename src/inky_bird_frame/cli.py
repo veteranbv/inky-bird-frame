@@ -901,6 +901,10 @@ def controller_jobs(config: AppConfig, config_path: Path) -> list[ScheduledJob]:
 
 
 def scheduler_command(args: argparse.Namespace) -> int:
+    from .activity import activity_run, next_job_run
+    from .retry_requests import RETRY_WAKE_LISTENER, retry_wake_token
+    from .runtime_state import state_lock
+
     config = load_config(args.config, load_secrets=False)
     jobs = controller_jobs(config, args.config)
     stop = threading.Event()
@@ -917,16 +921,27 @@ def scheduler_command(args: argparse.Namespace) -> int:
     def wait(seconds: float) -> None:
         stop.wait(seconds)
 
+    def observed_runner(arguments: tuple[str, ...]) -> int:
+        with activity_run(config.controller.state_dir, "job-" + arguments[0]) as activity:
+            result = command_runner(arguments)
+            activity.succeeded = result == 0
+            return result
+
     try:
-        run_scheduler(
-            jobs,
-            command_runner,
-            stop_requested=stop.is_set,
-            wait=wait,
-            jobs_provider=lambda: controller_jobs(
-                load_config(args.config, load_secrets=False), args.config
-            ),
-        )
+        with state_lock(config.controller.state_dir / RETRY_WAKE_LISTENER, nonblocking=True):
+            run_scheduler(
+                jobs,
+                observed_runner,
+                stop_requested=stop.is_set,
+                wait=wait,
+                jobs_provider=lambda: controller_jobs(
+                    load_config(args.config, load_secrets=False), args.config
+                ),
+                wake_provider=lambda: retry_wake_token(config.controller.state_dir),
+                on_schedule=lambda name, seconds: next_job_run(
+                    config.controller.state_dir, name, seconds
+                ),
+            )
     finally:
         signal.signal(signal.SIGTERM, previous_sigterm)
         signal.signal(signal.SIGINT, previous_sigint)

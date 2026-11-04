@@ -610,6 +610,11 @@ or use a separate callback route with access logging and tracing off. Keep
 ordinary status and error logs without these values. Do not enable OAuth debug
 payload logging on a live installation.
 
+When an identity is linked and the provider is ready, the sign-in page leads
+with Continue with your provider; the local password stays one step away
+behind "Sign in with your Inky password instead" and remains the recovery
+path. Without a ready linked provider, the password form leads unchanged.
+
 A provider outage disables the SSO button with an explanation. Local login
 works unless you deliberately chose SSO-only mode. Signing out of Inky revokes
 only that Inky login. It does not sign out other identity-service applications.
@@ -627,6 +632,37 @@ the provider to show its sign-in step again. Inky preserves the signed check
 time; a new provider token does not restart the ten-minute window. Keep both
 servers' clocks synchronized. A provider that omits this check time cannot
 complete sign-in.
+
+### Authentik says “Flow does not apply to current user”
+
+This message comes from Authentik before the browser returns to Inky. Check
+Authentik's flow rules and application access rules separately. Do not grant
+broader access or remove Inky's fresh-sign-in checks to work around it.
+
+If you use Google or another external sign-in source, inspect that source's
+authentication flow. A flow that requires the user to be signed out can reject
+Inky's identity check when the user is already signed in to Authentik. The
+default source-authentication flow can have this requirement.
+
+An Authentik administrator can use a source-specific authentication flow that
+accepts either initial sign-in state. Preserve the verified-source-only
+requirement, User Login stage and any existing MFA steps. Require the pending
+identity to match the current user if the browser is already signed in.
+Apply that guard at the flow and immediately before User Login, with native
+stage-policy re-evaluation enabled. Authentik's policy cache does not include
+flow context; a flow-level check alone does not prove that the login-stage
+check ran fresh.
+
+Before assigning it, test both a signed-out login and a fresh identity check
+from an existing session. Prime a successful policy result, then check that
+unverified, different-account and context-free requests cannot reach User
+Login. A rejected stage may finish or redirect the flow, so an HTTP error is
+not the acceptance test. Keep the original assignment for rollback. Changing
+a source flow can affect other applications that use that source.
+
+Until those checks pass, keep Inky's local password login available. Do not
+enable SSO-only mode. Related Authentik reauthentication behavior is tracked in
+[upstream issue 18507](https://github.com/goauthentik/authentik/issues/18507).
 
 ## Advanced: private remote access
 

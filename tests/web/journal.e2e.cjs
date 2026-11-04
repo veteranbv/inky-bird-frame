@@ -59,6 +59,8 @@ for identifier in [9999991,9999992]:
   image=Image.new('RGB',size,'white');ImageDraw.Draw(image).text((80,100),'SYNTHETIC QA CANDIDATE',fill='black',font_size=50);image.save(folder/name)
  profile=SpeciesProfileData(taxon_id=identifier,common_name=bird.common_name,scientific_name=bird.scientific_name,family='Fixture family',measurements={'length':'10 cm','wingspan':'20 cm','weight':'30 g'},field_marks=['One','Two','Three','Four'],habitat='Fixture habitat',behavior='Fixture behavior',palette=['white','gray','black'],sources=links)
  write_candidate_manifest(folder,bird,profile,[],QualityReview(True,5,5,5,5,True,(),tuple(links)),generator='fixture',prompt_version='fixture')
+held=state/'pending'/'9999993-synthetic-recovery-hold';held.mkdir(parents=True)
+image=Image.new('RGB',(1200,1600),'white');ImageDraw.Draw(image).text((80,100),'SYNTHETIC RECOVERY HOLD',fill='black',font_size=50);image.save(held/'portrait.png')
 `,
   ],
   { cwd: root },
@@ -189,6 +191,9 @@ let browser,
     })
     .waitFor();
   assert.equal(await page.getByText(/The last saved selection may be out of date/).count(), 0);
+  await page.getByRole('link', { name: '2 plates ready for your review', exact: true }).waitFor();
+  await page.getByRole('link', { name: '1 plate held for recovery', exact: true }).waitFor();
+  assert.equal(await page.getByText(/3 plates ready for your review/).count(), 0);
   phase = 'birdbuddy-bootstrap-ux';
   await page.goto(origin + '/app?page=settings&source=birdbuddy');
   await heading('Bird Buddy');
@@ -406,6 +411,56 @@ let browser,
       ),
     ),
   );
+  phase = 'recovery-hold-banner';
+  await page.goto(origin + '/app');
+  await heading('Your field journal');
+  await page.getByRole('link', { name: '1 plate held for recovery', exact: true }).waitFor();
+  assert.equal(await page.getByText(/ready for your review/).count(), 0);
+  await page.getByRole('link', { name: '1 plate held for recovery', exact: true }).click();
+  await heading('Plate work');
+  await page
+    .getByText('Taxon 9999993: incomplete or unsafe pending state. Use operator recovery before retrying.', { exact: true })
+    .waitFor();
+  assert.equal(await page.getByRole('link', { name: /Inspect .*9999993/ }).count(), 0);
+  phase = 'collection-filter';
+  await page.goto(origin + '/app?page=edit-collection');
+  await heading('New collection');
+  await page.getByLabel('Collection name', { exact: true }).fill('Filter journey');
+  await page.getByRole('checkbox', { name: /Northern Cardinal/ }).check();
+  // Filtering hides non-matching rows (role queries exclude hidden nodes)
+  // while chosen birds stay chosen. Scientific names match too.
+  await page.getByLabel('Find a bird to add', { exact: true }).fill('Turdus');
+  await page.getByRole('checkbox', { name: /American Robin/ }).waitFor();
+  assert.equal(await page.getByRole('checkbox', { name: /Northern Cardinal/ }).count(), 0);
+  await page.getByRole('checkbox', { name: /American Robin/ }).check();
+  await page.getByLabel('Find a bird to add', { exact: true }).fill('zz-no-such-bird');
+  await page.getByText('0 species shown · chosen birds stay chosen', { exact: true }).waitFor();
+  assert.equal(await page.getByRole('checkbox', { name: /American Robin/ }).count(), 0);
+  await page.getByLabel('Find a bird to add', { exact: true }).fill('');
+  assert(await page.getByRole('checkbox', { name: /Northern Cardinal/ }).isChecked());
+  assert(await page.getByRole('checkbox', { name: /American Robin/ }).isChecked());
+  // Leaving without saving commits nothing.
+  await page.goto(origin + '/app?page=collections');
+  await heading('Collections');
+  assert.equal(await page.getByRole('link', { name: 'Filter journey', exact: true }).count(), 0);
+  await page.goto(origin + '/app?page=edit-collection');
+  await heading('New collection');
+  await page.getByLabel('Collection name', { exact: true }).fill('Filter journey');
+  await page.getByRole('checkbox', { name: /Northern Cardinal/ }).check();
+  await page.getByLabel('Find a bird to add', { exact: true }).fill('American Robin');
+  await page.getByRole('checkbox', { name: /American Robin/ }).check();
+  await page.getByRole('button', { name: 'Save collection', exact: true }).click();
+  await heading('Collections');
+  await page.getByRole('link', { name: 'Filter journey', exact: true }).click();
+  await heading('Filter journey');
+  await page.getByRole('link', { name: /Northern Cardinal/ }).first().waitFor();
+  await page.getByRole('link', { name: /American Robin/ }).first().waitFor();
+  // Remove the journey collection so later phases see the expected state.
+  // The Remove action lives in the collection page's tools.
+  page.once('dialog', (dialog) => dialog.accept());
+  await page.getByRole('button', { name: 'Remove collection', exact: true }).click();
+  await heading('Collections');
+  assert.equal(await page.getByRole('link', { name: 'Filter journey', exact: true }).count(), 0);
   phase = 'pair-readonly-screen';
   await page.goto(origin + '/app?page=displays');
   await heading('Displays');
@@ -461,6 +516,22 @@ let browser,
     .data;
   let currentJournal = (await (await context.request.get(origin + '/v1/owner/journal')).json())
     .data;
+  // Where the engine honors a trusted fullscreen request, the paired screen
+  // runs the following state changes as an ambient display, and each notice
+  // must land inside the live window rather than below the full-height plate.
+  let screenAmbient = false;
+  const screenFullscreen = screen.getByRole('button', { name: 'Fullscreen', exact: true });
+  if ((await screenFullscreen.count()) === 1) {
+    await screenFullscreen.click();
+    screenAmbient = (await screen.evaluate(() => document.fullscreenElement?.tagName)) === 'HTML';
+  }
+  const screenInside = async (locator) => {
+    const size = await screen.evaluate(() => ({ width: innerWidth, height: innerHeight }));
+    const box = await locator.boundingBox();
+    return (
+      box && box.y >= 0 && box.x >= 0 && box.y + box.height <= size.height && box.x + box.width <= size.width
+    );
+  };
   await screenContext.route('**/v1/screen/plates/' + replacement.taxon_id + '?*', (route) =>
     route.fulfill({ status: 503, contentType: 'application/json', body: '{"ok":false}' }),
   );
@@ -480,6 +551,7 @@ let browser,
   );
   await screen.clock.runFor(15100);
   await screen.getByText(/temporarily unavailable/).waitFor();
+  if (screenAmbient) assert(await screenInside(screen.getByText(/temporarily unavailable/)));
   assert.equal(await screen.locator('img[src]').count(), 0);
   currentJournal = (await (await context.request.get(origin + '/v1/owner/journal')).json()).data;
   assert.equal(
@@ -492,11 +564,12 @@ let browser,
     200,
   );
   await screen.clock.runFor(15100);
-  await screen
-    .getByText('No approved plates in the permitted view. Inky will not switch views.', {
-      exact: true,
-    })
-    .waitFor();
+  const emptyNotice = screen.getByText(
+    'No approved plates in the permitted view. Inky will not switch views.',
+    { exact: true },
+  );
+  await emptyNotice.waitFor();
+  if (screenAmbient) assert(await screenInside(emptyNotice));
   assert.equal(await screen.locator('img[src]').count(), 0);
   await page.getByRole('button', { name: 'Revoke screen', exact: true }).click();
   await screen.clock.runFor(15100);
@@ -652,6 +725,165 @@ let browser,
   await page.getByRole('button', { name: 'Zoom', exact: true }).click();
   await page.getByRole('button', { name: 'Fit whole plate', exact: true }).click();
   assert(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth));
+  phase = 'frame-ambient-labels';
+  // The Bird name toggle reports its pressed state and hides the placard.
+  const labelsOn = page.getByRole('button', { name: 'Bird name on', exact: true });
+  assert.equal(await labelsOn.getAttribute('aria-pressed'), 'true');
+  await page.locator('.frame-caption').waitFor();
+  await labelsOn.click();
+  const labelsOff = page.getByRole('button', { name: 'Bird name off', exact: true });
+  await labelsOff.waitFor();
+  assert.equal(await labelsOff.getAttribute('aria-pressed'), 'false');
+  assert(!(await page.locator('.frame-caption').isVisible()));
+  await labelsOff.click();
+  await page.getByRole('button', { name: 'Bird name on', exact: true }).waitFor();
+  await page.locator('.frame-caption').waitFor();
+  phase = 'frame-ambient-fade';
+  // Idle fades the floating controls once focus leaves them; keyboard
+  // activity brings them back. Focus inside the bar deliberately keeps them.
+  await page.evaluate(() => {
+    if (document.activeElement instanceof HTMLElement) document.activeElement.blur();
+  });
+  await page.clock.runFor(5100);
+  await page.locator('.frame-controls.quiet').waitFor();
+  await page.keyboard.press('Shift');
+  await page.locator('.frame-controls:not(.quiet)').waitFor();
+  // Ambient fullscreen, where the engine honors a trusted request: the plate
+  // owns the viewport, the placard stays inside it, a cleared caption leaves
+  // no empty box, and failure notices stay on screen rather than below it.
+  phase = 'frame-ambient-fullscreen';
+  // The all-artwork view always holds at least two ready plates here, so
+  // Next must fetch a new portrait and the aborted request must surface its
+  // notice. The Fullscreen button renders only where the API exists, and an
+  // engine may still refuse the request; both gates skip without weakening
+  // the journeys that do enter real fullscreen.
+  await page.goto(origin + '/app?page=frame&view=all');
+  await page.locator('.frame-art').waitFor();
+  await page.locator('.frame-art').evaluate((image) => image.decode());
+  const fullscreenButton = page.getByRole('button', { name: 'Fullscreen', exact: true });
+  if ((await fullscreenButton.count()) === 1) await fullscreenButton.click();
+  if ((await page.evaluate(() => document.fullscreenElement?.tagName)) === 'HTML') {
+    // Fullscreen can resize the window to the real screen (Firefox), so the
+    // live window metrics are the frame of reference, not the viewport.
+    const size = await page.evaluate(() => ({ width: innerWidth, height: innerHeight }));
+    const inside = (box) =>
+      box && box.y >= 0 && box.x >= 0 && box.y + box.height <= size.height && box.x + box.width <= size.width;
+    assert(inside(await page.locator('.frame-caption').boundingBox()));
+    assert(
+      await page.evaluate(() => {
+        const caption = document.querySelector('.frame-caption');
+        const kept = caption.textContent;
+        caption.textContent = '';
+        const hidden = getComputedStyle(caption).display === 'none';
+        caption.textContent = kept;
+        return hidden;
+      }),
+    );
+    await page.route('**/v1/owner/journal/birds/*/portrait', (route) => route.abort());
+    await page.getByRole('button', { name: 'Next', exact: true }).click();
+    const notice = page.getByText(/Plate unavailable\. Keeping the last approved plate\./);
+    await notice.waitFor();
+    assert(inside(await notice.boundingBox()));
+    await page.unroute('**/v1/owner/journal/birds/*/portrait');
+    await page.evaluate(() => document.exitFullscreen());
+    await page.waitForFunction(() => !document.fullscreenElement);
+  }
+  phase = 'frame-ambient-notice-clearance';
+  // On every engine, at phone width with the controls revealed, a populated
+  // notice must sit fully above the one-row control bar, never behind it.
+  await page.keyboard.press('Shift');
+  await page.locator('.frame-controls:not(.quiet)').waitFor();
+  await page.route('**/v1/owner/journal/birds/*/portrait', (route) => route.abort());
+  // The scrolling bar must keep every control genuinely reachable: the
+  // first control (Previous) and the last (Keep screen awake) are clicked
+  // and focused through ordinary scrolling, not a keyboard shortcut around
+  // an inaccessible button. Previous steps to the other plate, whose
+  // aborted fetch surfaces the notice for the clearance geometry.
+  const windowWidth = await page.evaluate(() => innerWidth);
+  const reachable = async (locator) => {
+    await locator.evaluate((node) => node.scrollIntoView({ inline: 'nearest', block: 'nearest' }));
+    await locator.focus();
+    assert(await locator.evaluate((node) => document.activeElement === node));
+    const box = await locator.boundingBox();
+    // One-pixel tolerance: engines land scroll-into-view on subpixel edges.
+    assert(box && box.x >= -1 && box.x + box.width <= windowWidth + 1);
+  };
+  await reachable(page.locator('.frame-controls > *:last-child'));
+  const previousControl = page.getByRole('button', { name: 'Previous', exact: true });
+  await reachable(previousControl);
+  await previousControl.click();
+  const clearanceNotice = page.getByText(/Plate unavailable\. Keeping the last approved plate\./);
+  await clearanceNotice.waitFor();
+  const noticeBox = await clearanceNotice.boundingBox();
+  const barBox = await page.locator('.frame-controls').boundingBox();
+  assert(noticeBox && barBox && noticeBox.y >= 0 && noticeBox.y + noticeBox.height <= barBox.y);
+  await page.unroute('**/v1/owner/journal/birds/*/portrait');
+  phase = 'sso-error-visibility';
+  // Frontend contract only: the provider state and start failure are stubbed,
+  // like the community query. Real OIDC exchange stays backend-tested.
+  const ssoContext = await browser.newContext({
+    viewport: { width: 390, height: 844 },
+    reducedMotion: 'reduce',
+  });
+  const ssoPage = await ssoContext.newPage();
+  await ssoPage.route('**/v1/access', (route) =>
+    route.fulfill({
+      json: {
+        ok: true,
+        schema_version: 1,
+        data: {
+          secure: true,
+          setup_required: false,
+          registration_allowed: false,
+          setup_code: null,
+          password_min_length: 15,
+          password_max_length: 1024,
+          encrypted: true,
+          access_mode: 'https-only',
+          legacy_account: false,
+          session_policy: { regular_hours: 24, remembered_days: 30 },
+          provider: { label: 'Authentik', ready: true, linked: true },
+          local_login: true,
+        },
+      },
+    }),
+  );
+  await ssoPage.route('**/v1/owner/oidc/start', (route) =>
+    route.fulfill({
+      status: 502,
+      json: {
+        ok: false,
+        schema_version: 1,
+        error: { code: 'provider_error', message: 'Synthetic provider start failure.' },
+      },
+    }),
+  );
+  await ssoPage.goto(origin + '/app');
+  await ssoPage.getByRole('heading', { name: 'Welcome back', exact: true }).waitFor();
+  const passwordDisclosure = ssoPage.locator('details.auth-alt');
+  assert.equal(await passwordDisclosure.count(), 1);
+  assert(!(await passwordDisclosure.evaluate((node) => node.open)));
+  // One shared stay-signed-in control, one hint, used by the leading action.
+  assert.equal(
+    await ssoPage.getByRole('checkbox', { name: 'Stay signed in on this device' }).count(),
+    1,
+  );
+  assert.equal(await ssoPage.locator('#remember-hint').count(), 1);
+  const ssoStart = ssoPage.getByRole('button', { name: 'Continue with Authentik', exact: true });
+  await ssoStart.click();
+  await ssoPage
+    .getByText('Synthetic provider start failure.', { exact: true })
+    .waitFor({ state: 'visible' });
+  assert(await ssoStart.isEnabled());
+  assert(!(await passwordDisclosure.evaluate((node) => node.open)));
+  await passwordDisclosure.locator('summary').click();
+  assert(await passwordDisclosure.evaluate((node) => node.open));
+  assert.equal(
+    await ssoPage.getByRole('checkbox', { name: 'Stay signed in on this device' }).count(),
+    1,
+  );
+  assert.equal(await ssoPage.locator('#remember-hint').count(), 1);
+  await ssoContext.close();
   if (process.env.INKY_QA_UPLOAD_FILE) {
     phase = 'large-mobile-upload';
     await page.goto(origin + '/app?page=imports&kind=ebird-archive');

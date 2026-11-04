@@ -13,6 +13,7 @@ from starlette.testclient import TestClient
 
 from inky_bird_frame import settings as settings_module
 from inky_bird_frame.config import load_config
+from inky_bird_frame.controller import exclusive_cycle_lock
 from inky_bird_frame.owner_operations import (
     MAX_RESULT_BYTES,
     OwnerOperationBusyError,
@@ -20,6 +21,8 @@ from inky_bird_frame.owner_operations import (
     OwnerOperations,
     execute_owner_operation,
 )
+from inky_bird_frame.retry_requests import RETRY_WAKE_LISTENER, retry_requests, retry_wake_token
+from inky_bird_frame.runtime_state import state_lock
 from inky_bird_frame.settings import initialize_config, settings_status
 from inky_bird_frame.web import create_app
 
@@ -259,18 +262,25 @@ def test_concurrent_save_cannot_change_confirmed_notification_destinations(tmp_p
     assert "changed.test" in path.read_text()
 
 
-def test_http_operation_boundary_and_no_secret_or_model_operation(tmp_path: Path) -> None:
+@pytest.mark.parametrize("ownership", ["app", "managed"])
+def test_http_operation_boundary_and_no_secret_or_model_operation(
+    tmp_path: Path, ownership: str
+) -> None:
     path = tmp_path / "config.toml"
     initialize_config(path)
     origin = "https://inky.example.test"
     path.write_text(
-        path.read_text().replace(
-            '["controller"]', '["controller"]\nowner_allowed_origins = ["' + origin + '"]'
-        )
+        path.read_text()
+        .replace('["controller"]', '["controller"]\nowner_allowed_origins = ["' + origin + '"]')
+        .replace('"generation_enabled" = false', '"generation_enabled" = true')
+        .replace('"configuration_ownership" = "app"', f'"configuration_ownership" = "{ownership}"')
     )
     config = load_config(path)
+    assert config.controller.generation_enabled
+    assert config.controller.configuration_ownership == ownership
     with TestClient(create_app(config.controller, app_config=config), base_url=origin) as client:
         assert client.get("/v1/owner/operations").status_code == 401
+        assert client.get("/v1/owner/management").status_code == 401
         signed = client.post(
             "/v1/owner/register",
             json={
@@ -315,3 +325,67 @@ def test_http_operation_boundary_and_no_secret_or_model_operation(tmp_path: Path
             not in (config.controller.state_dir / "owner-operations.json").read_text()
         )
         assert not (config.controller.state_dir / "generation-queue.json").exists()
+        assert client.get("/v1/owner/management").json()["data"]["available"] is True
+        assert client.get("/app/work-status.js").status_code == 200
+        retry_body = {
+            **body,
+            "kind": "retry-now",
+            "key": "http-synthetic-batch-retry",
+            "taxon_ids": [101, 202],
+        }
+        for ids in ([True], [101, 101], [], ["101"]):
+            assert (
+                client.post(
+                    "/v1/owner/operations", json={**retry_body, "taxon_ids": ids}, headers=headers
+                ).status_code
+                == 400
+            )
+        assert (
+            client.post(
+                "/v1/owner/operations", json={**retry_body, "taxon_id": 101}, headers=headers
+            ).status_code
+            == 400
+        )
+        listener = config.controller.state_dir / RETRY_WAKE_LISTENER
+        assert client.get("/v1/owner/management").json()["data"]["retry_wake_available"] is False
+        assert not listener.exists()
+        response = client.post(
+            "/v1/owner/operations",
+            json={**retry_body, "key": "synthetic-no-scheduler"},
+            headers=headers,
+        )
+        receipt_id = response.json()["data"]["operation_id"]
+        unavailable = completed(
+            lambda: client.get("/v1/owner/operations/" + receipt_id).json()["data"]
+        )
+        assert unavailable["status"] == "failed"
+        failure = unavailable["result"]
+        assert isinstance(failure, dict) and "scheduled check" in failure["message"]
+        assert retry_requests(config.controller.state_dir) == []
+        response = client.post(
+            "/v1/owner/operations",
+            json={**retry_body, "kind": "retry", "key": "synthetic-scheduled", "taxon_ids": [303]},
+            headers=headers,
+        )
+        receipt_id = response.json()["data"]["operation_id"]
+        scheduled = completed(
+            lambda: client.get("/v1/owner/operations/" + receipt_id).json()["data"]
+        )
+        assert scheduled["status"] == "succeeded"
+        assert retry_wake_token(config.controller.state_dir) is None
+        with state_lock(listener), exclusive_cycle_lock(config.controller.state_dir):
+            assert client.get("/v1/owner/management").json()["data"]["retry_wake_available"] is True
+            response = client.post("/v1/owner/operations", json=retry_body, headers=headers)
+            assert response.status_code == 200
+            receipt_id = response.json()["data"]["operation_id"]
+            result = completed(
+                lambda: client.get("/v1/owner/operations/" + receipt_id).json()["data"]
+            )
+            assert result["status"] == "succeeded"
+        assert client.get("/v1/owner/management").json()["data"]["retry_wake_available"] is False
+        assert retry_wake_token(config.controller.state_dir) is not None
+        assert [row.taxon_id for row in retry_requests(config.controller.state_dir)] == [
+            303,
+            101,
+            202,
+        ]

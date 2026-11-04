@@ -288,7 +288,7 @@ def controller_systemd_units(
     serving = common + owner_environment + SYSTEMD_SERVICE_HARDENING
     units = {
         "inky-bird-frame-controller.service": f"""[Unit]
-Description=Serve the Inky Bird Frame approved catalog
+Description=Serve the Inky Bird approved catalog
 After=network-online.target
 Wants=network-online.target
 
@@ -304,7 +304,7 @@ WantedBy=multi-user.target
     }
     if config.controller.configuration_ownership == "app":
         units["inky-bird-frame-scheduler.service"] = f"""[Unit]
-Description=Schedule Inky Bird Frame application-owned work
+Description=Schedule Inky Bird application-owned work
 After=network-online.target
 Wants=network-online.target
 
@@ -344,7 +344,7 @@ WantedBy=multi-user.target
             else "After=network-online.target\nWants=network-online.target"
         )
         units[f"inky-bird-frame-{name}.service"] = f"""[Unit]
-Description=Run the Inky Bird Frame {name} cycle
+Description=Run the Inky Bird {name} cycle
 {unit_dependencies}
 
 [Service]
@@ -353,7 +353,7 @@ Type=oneshot
 TimeoutStartSec=30min
 """
         units[f"inky-bird-frame-{name}.timer"] = f"""[Unit]
-Description=Schedule the Inky Bird Frame {name} cycle
+Description=Schedule the Inky Bird {name} cycle
 
 [Timer]
 OnActiveSec=2min
@@ -384,7 +384,7 @@ def display_systemd_units(
         for name, value in native_tls_environment(config_path).items()
     )
     service = f"""[Unit]
-Description=Rotate the next approved Inky Bird Frame plate
+Description=Rotate the next approved Inky Bird plate
 After=network-online.target
 Wants=network-online.target
 
@@ -397,7 +397,7 @@ Environment=PYTHONUNBUFFERED=1
 TimeoutStartSec=15min
 """
     timer = f"""[Unit]
-Description=Rotate the Inky Bird Frame on its configured schedule
+Description=Rotate the Inky Bird on its configured schedule
 
 [Timer]
 OnActiveSec={config.schedule.display_startup_delay_seconds}s

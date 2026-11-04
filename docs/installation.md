@@ -7,7 +7,7 @@ bird observations.
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="images/installation-architecture-dark.png">
-  <img src="images/installation-architecture.png" alt="Inky Bird Frame runtime architecture showing observation and generation services; the controller; the Raspberry Pi display node and an optional trusted browser application reading the approved catalog over a private network; and the Inky Impression panel">
+  <img src="images/installation-architecture.png" alt="Inky Bird runtime architecture showing observation and generation services; the controller; the Raspberry Pi display node and an optional trusted browser application reading the approved catalog over a private network; and the Inky Impression panel">
 </picture>
 
 Every application connection is client-initiated. The display node connects
@@ -182,7 +182,7 @@ For a compact status card, add one `customapi` widget:
 
 ```yaml
 - Birds:
-    - Inky Bird Frame:
+    - Inky Bird:
         icon: mdi-bird
         href: https://github.com/veteranbv/inky-bird-frame
         description: Observation-driven field-journal plates
@@ -208,7 +208,7 @@ For the featured-plate card, use Homepage's multiple-widget form and add the
 
 ```yaml
 - Birds:
-    - Inky Bird Frame:
+    - Inky Bird:
         icon: mdi-bird
         href: https://github.com/veteranbv/inky-bird-frame
         description: Observation-driven field-journal plates
