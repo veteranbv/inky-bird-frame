@@ -83,7 +83,12 @@ cleanup() {
 trap cleanup EXIT
 remote_command mkdir -p "${remote_stage}/src" "${remote_stage}/catalog" \
   "${remote_stage}/deploy" "${remote_stage}/docs"
-printf -v rsync_shell '%q ' ssh "${ssh_options[@]}"
+# rsync parses -e itself: quotes group spaces, doubled quotes escape a quote,
+# and backslashes are literal (unlike Bash's %q output).
+rsync_shell=''
+for argument in ssh "${ssh_options[@]}"; do
+  rsync_shell+="\"${argument//\"/\"\"}\" "
+done
 rsync -a --delete -e "${rsync_shell}" "${root}/src/" "${remote}:${remote_stage}/src/"
 rsync -a -e "${rsync_shell}" "${root}/catalog/" "${remote}:${remote_stage}/catalog/"
 for file in pyproject.toml uv.lock README.md LICENSE docs/browser-access.md; do

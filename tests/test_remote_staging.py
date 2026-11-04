@@ -151,7 +151,7 @@ def test_remote_staging_never_precopies_live_targets(
     config = home / "private config.toml"
     config.write_text("unchanged private config")
     venv = home / "private venv"
-    key = tmp_path / "synthetic key's path"
+    key = tmp_path / 'synthetic key\'s "quoted" \\path'
     key.touch(mode=0o600)
     bin_dir = tmp_path / "bin"
     bin_dir.mkdir()
@@ -159,6 +159,10 @@ def test_remote_staging_never_precopies_live_targets(
     fake_ssh.write_text(
         f"#!{sys.executable}\nimport json,shlex,subprocess,sys\n"
         f"with open({str(calls)!r},'a') as f: f.write(json.dumps(['ssh',sys.argv[-1]])+'\\n')\n"
+        "if '--server' in sys.argv:\n"
+        f" with open({str(calls)!r},'a') as f: "
+        "f.write(json.dumps(['rsync-ssh',*sys.argv[1:]])+'\\n')\n"
+        " sys.exit(0)\n"
         "command=sys.argv[-1]\n"
         + (
             "if command.startswith('bash -s --') and len(shlex.split(command)) == 6:\n"
@@ -170,11 +174,19 @@ def test_remote_staging_never_precopies_live_targets(
     )
     fake_ssh.chmod(0o755)
     fake_rsync = bin_dir / "rsync"
+    real_rsync = shutil.which("rsync")
+    assert real_rsync is not None, "The real rsync argument parser is required"
     fake_rsync.write_text(
-        f"#!{sys.executable}\nimport json,shutil,sys\nfrom pathlib import Path\n"
+        f"#!{sys.executable}\nimport json,shutil,subprocess,sys\nfrom pathlib import Path\n"
         f"with open({str(calls)!r},'a') as f: "
         "f.write(json.dumps(['rsync',sys.argv[-2],sys.argv[-1]])+'\\n')\n"
         + ("sys.exit(42)\n" if failure == "transfer" else "")
+        + f"subprocess.run([{real_rsync!r},'--dry-run',*sys.argv[1:]],"
+        "capture_output=True,check=False)\n"
+        f"parsed=[json.loads(line)[1:] for line in Path({str(calls)!r}).read_text().splitlines() "
+        "if json.loads(line)[0]=='rsync-ssh']\n"
+        f"assert parsed and parsed[-1][:6]==['-i',{str(key)!r},"
+        "'-o','BatchMode=yes','-o','IdentitiesOnly=yes'], parsed\n"
         + "source=Path(sys.argv[-2]); target=Path(sys.argv[-1].split(':',1)[1])\n"
         "if source.is_dir(): shutil.copytree(source,target,dirs_exist_ok=True)\n"
         "else: shutil.copy2(source,target / source.name if target.is_dir() else target)\n"
