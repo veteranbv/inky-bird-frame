@@ -22,7 +22,7 @@ name: review-gate-retrigger
 # The `if:` below admits only the exact Codex bot before any runner starts or
 # API call is made, so other commenters cannot trigger billed reruns. Comment
 # bodies are never interpolated into shell. Thread resolution, ready/reopen
-# and missed events have no trigger here: use `homelab pr recheck <n> --repo veteranbv/inky-bird-frame --yes`.
+# and missed events have no trigger here: use `homelab pr recheck <n> --repo veteranbv/inky-bird --yes`.
 
 on:
   # Intentional: runs the default branch's copy and only re-runs the gate for
@@ -100,7 +100,7 @@ jobs:
           while read -r run_id status; do
             if [ "${status}" != "completed" ]; then
               # Never cancel or wait on a running gate; it reads live evidence.
-              echo "Run ${run_id} is still running; if it missed this receipt, run homelab pr recheck --repo veteranbv/inky-bird-frame."
+              echo "Run ${run_id} is still running; if it missed this receipt, run homelab pr recheck --repo veteranbv/inky-bird."
               continue
             fi
             job_id=$(gh api "repos/${REPO}/actions/runs/${run_id}/jobs?filter=latest&per_page=100" \

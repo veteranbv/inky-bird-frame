@@ -5,7 +5,7 @@ Inky. To keep your own collections, install the controller and open its browser
 journal. A physical frame, observation sources, and generation are separate choices.
 
 These guides describe `main`. If you run a tagged version, start with the
-[release notes and instructions for that version](https://github.com/veteranbv/inky-bird-frame/releases).
+[release notes and instructions for that version](https://github.com/veteranbv/inky-bird/releases).
 
 ## Install or upgrade
 
@@ -31,6 +31,7 @@ These guides describe `main`. If you run a tagged version, start with the
 - [Check services, update, or publish a catalog](operations.md).
 - [See what stays private and what leaves the controller](privacy.md).
 - [Back up and restore private data](backup.md).
+- [Update names without losing existing state](repository-name.md).
 - [Diagnose a problem](troubleshooting.md).
 - [Understand how the controller, display, and trust boundaries fit together](architecture.md).
 

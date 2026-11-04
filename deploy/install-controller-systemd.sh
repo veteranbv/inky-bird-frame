@@ -7,9 +7,10 @@ if [ "$(uname -s)" != "Linux" ] || ! command -v systemctl >/dev/null 2>&1; then
 fi
 
 root=$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)
-app_dir=${INKY_BIRD_APP_DIR:-"${HOME}/Services/inky-bird-frame"}
-support_dir=${INKY_BIRD_SUPPORT_DIR:-"${HOME}/.config/inky-bird-frame"}
-config_path=${INKY_BIRD_CONFIG_PATH:-"${support_dir}/config.toml"}
+native_names=$(python3 "${root}/src/inky_bird_frame/native_names.py")
+service_prefix="" app_dir="" support_dir="" config_path=""
+eval "${native_names}"
+export INKY_BIRD_SERVICE_PREFIX="${service_prefix}"
 python_version=${INKY_BIRD_PYTHON_VERSION:-3.11}
 quiesce_timeout_seconds=1800
 uv_bin=${UV_BIN:-}
@@ -48,13 +49,13 @@ trap cleanup EXIT
 
 # App-owned installations use the same dynamic scheduler as Docker. Stop it
 # before replacing its runtime; a managed installation removes it below.
-if systemctl is-active --quiet inky-bird-frame-scheduler.service; then
-  active_timers+=("inky-bird-frame-scheduler.service")
+if systemctl is-active --quiet "${service_prefix}-scheduler.service"; then
+  active_timers+=("${service_prefix}-scheduler.service")
 fi
-sudo systemctl stop inky-bird-frame-scheduler.service 2>/dev/null || true
+sudo systemctl stop "${service_prefix}-scheduler.service" 2>/dev/null || true
 
 for name in refresh generate catalog-publish notifications; do
-  timer="inky-bird-frame-${name}.timer"
+  timer="${service_prefix}-${name}.timer"
   if systemctl is-active --quiet "${timer}"; then
     active_timers+=("${timer}")
   fi
@@ -62,7 +63,7 @@ for name in refresh generate catalog-publish notifications; do
 done
 deadline=$((SECONDS + quiesce_timeout_seconds))
 for name in refresh generate catalog-publish notifications; do
-  service="inky-bird-frame-${name}.service"
+  service="${service_prefix}-${name}.service"
   while true; do
     state=$(systemctl show --property=ActiveState --value "${service}" 2>/dev/null || true)
     case "${state}" in
@@ -92,6 +93,7 @@ fi
 
 "${app_dir}/.venv/bin/python" - \
   "${unit_dir}" "${root}" "${app_dir}" "${config_path}" "${HOME}" "$(id -un)" <<'PY'
+import os
 import sys
 from pathlib import Path
 
@@ -153,7 +155,7 @@ with catalog_state_lock(config.controller.state_dir):
         retain_independent_approvals=True,
     )
 
-executable = app_dir / ".venv/bin/inky-bird-frame"
+executable = app_dir / ".venv/bin/inky-bird"
 units = controller_systemd_units(
     config,
     executable=executable,
@@ -161,15 +163,16 @@ units = controller_systemd_units(
     config_path=config_path,
     home=home,
     user=user,
+    service_prefix=os.environ["INKY_BIRD_SERVICE_PREFIX"],
 )
 for name, content in units.items():
     (unit_dir / name).write_text(content)
 PY
 
-"${app_dir}/.venv/bin/inky-bird-frame" refresh --config "${config_path}"
+"${app_dir}/.venv/bin/inky-bird" refresh --config "${config_path}"
 
-if [ -f "${unit_dir}/inky-bird-frame-catalog-publish.timer" ]; then
-  "${app_dir}/.venv/bin/inky-bird-frame" catalog-publish \
+if [ -f "${unit_dir}/${service_prefix}-catalog-publish.timer" ]; then
+  "${app_dir}/.venv/bin/inky-bird" catalog-publish \
     --config "${config_path}" --dry-run
 fi
 
@@ -177,78 +180,78 @@ for unit in "${unit_dir}"/*; do
   sudo install -m 0644 "${unit}" "/etc/systemd/system/$(basename "${unit}")"
 done
 for optional in refresh generate catalog-publish notifications; do
-  if [ ! -f "${unit_dir}/inky-bird-frame-${optional}.timer" ]; then
-    sudo systemctl disable --now "inky-bird-frame-${optional}.timer" 2>/dev/null || true
+  if [ ! -f "${unit_dir}/${service_prefix}-${optional}.timer" ]; then
+    sudo systemctl disable --now "${service_prefix}-${optional}.timer" 2>/dev/null || true
     sudo rm -f \
-      "/etc/systemd/system/inky-bird-frame-${optional}.service" \
-      "/etc/systemd/system/inky-bird-frame-${optional}.timer"
+      "/etc/systemd/system/${service_prefix}-${optional}.service" \
+      "/etc/systemd/system/${service_prefix}-${optional}.timer"
   fi
 done
-if [ ! -f "${unit_dir}/inky-bird-frame-scheduler.service" ]; then
-  sudo systemctl disable --now inky-bird-frame-scheduler.service 2>/dev/null || true
-  sudo rm -f /etc/systemd/system/inky-bird-frame-scheduler.service
+if [ ! -f "${unit_dir}/${service_prefix}-scheduler.service" ]; then
+  sudo systemctl disable --now "${service_prefix}-scheduler.service" 2>/dev/null || true
+  sudo rm -f "/etc/systemd/system/${service_prefix}-scheduler.service"
 fi
 
 sudo systemctl daemon-reload
-sudo systemctl enable inky-bird-frame-controller.service
-if [ -f "${unit_dir}/inky-bird-frame-refresh.timer" ]; then
-  sudo systemctl enable inky-bird-frame-refresh.timer
+sudo systemctl enable "${service_prefix}-controller.service"
+if [ -f "${unit_dir}/${service_prefix}-refresh.timer" ]; then
+  sudo systemctl enable "${service_prefix}-refresh.timer"
 fi
-if [ -f "${unit_dir}/inky-bird-frame-scheduler.service" ]; then
-  sudo systemctl enable inky-bird-frame-scheduler.service
+if [ -f "${unit_dir}/${service_prefix}-scheduler.service" ]; then
+  sudo systemctl enable "${service_prefix}-scheduler.service"
 fi
-if [ -f "${unit_dir}/inky-bird-frame-generate.timer" ]; then
-  sudo systemctl enable inky-bird-frame-generate.timer
+if [ -f "${unit_dir}/${service_prefix}-generate.timer" ]; then
+  sudo systemctl enable "${service_prefix}-generate.timer"
 fi
-if [ -f "${unit_dir}/inky-bird-frame-catalog-publish.timer" ]; then
-  sudo systemctl enable inky-bird-frame-catalog-publish.timer
+if [ -f "${unit_dir}/${service_prefix}-catalog-publish.timer" ]; then
+  sudo systemctl enable "${service_prefix}-catalog-publish.timer"
 fi
-if [ -f "${unit_dir}/inky-bird-frame-notifications.timer" ]; then
-  sudo systemctl enable inky-bird-frame-notifications.timer
+if [ -f "${unit_dir}/${service_prefix}-notifications.timer" ]; then
+  sudo systemctl enable "${service_prefix}-notifications.timer"
 fi
-sudo systemctl restart inky-bird-frame-controller.service
-if [ -f "${unit_dir}/inky-bird-frame-refresh.timer" ]; then
-  sudo systemctl restart inky-bird-frame-refresh.timer
+sudo systemctl restart "${service_prefix}-controller.service"
+if [ -f "${unit_dir}/${service_prefix}-refresh.timer" ]; then
+  sudo systemctl restart "${service_prefix}-refresh.timer"
 fi
-if [ -f "${unit_dir}/inky-bird-frame-scheduler.service" ]; then
-  sudo systemctl restart inky-bird-frame-scheduler.service
+if [ -f "${unit_dir}/${service_prefix}-scheduler.service" ]; then
+  sudo systemctl restart "${service_prefix}-scheduler.service"
 fi
-if [ -f "${unit_dir}/inky-bird-frame-generate.timer" ]; then
-  sudo systemctl restart inky-bird-frame-generate.timer
+if [ -f "${unit_dir}/${service_prefix}-generate.timer" ]; then
+  sudo systemctl restart "${service_prefix}-generate.timer"
 fi
-if [ -f "${unit_dir}/inky-bird-frame-catalog-publish.timer" ]; then
-  sudo systemctl restart inky-bird-frame-catalog-publish.timer
+if [ -f "${unit_dir}/${service_prefix}-catalog-publish.timer" ]; then
+  sudo systemctl restart "${service_prefix}-catalog-publish.timer"
 fi
-if [ -f "${unit_dir}/inky-bird-frame-notifications.timer" ]; then
-  sudo systemctl restart inky-bird-frame-notifications.timer
+if [ -f "${unit_dir}/${service_prefix}-notifications.timer" ]; then
+  sudo systemctl restart "${service_prefix}-notifications.timer"
 fi
 
-systemctl is-enabled --quiet inky-bird-frame-controller.service
-systemctl is-active --quiet inky-bird-frame-controller.service
-if [ -f "${unit_dir}/inky-bird-frame-refresh.timer" ]; then
-  systemctl is-enabled --quiet inky-bird-frame-refresh.timer
-  systemctl is-active --quiet inky-bird-frame-refresh.timer
+systemctl is-enabled --quiet "${service_prefix}-controller.service"
+systemctl is-active --quiet "${service_prefix}-controller.service"
+if [ -f "${unit_dir}/${service_prefix}-refresh.timer" ]; then
+  systemctl is-enabled --quiet "${service_prefix}-refresh.timer"
+  systemctl is-active --quiet "${service_prefix}-refresh.timer"
 fi
-if [ -f "${unit_dir}/inky-bird-frame-scheduler.service" ]; then
-  systemctl is-enabled --quiet inky-bird-frame-scheduler.service
-  systemctl is-active --quiet inky-bird-frame-scheduler.service
+if [ -f "${unit_dir}/${service_prefix}-scheduler.service" ]; then
+  systemctl is-enabled --quiet "${service_prefix}-scheduler.service"
+  systemctl is-active --quiet "${service_prefix}-scheduler.service"
 fi
-if [ -f "${unit_dir}/inky-bird-frame-generate.timer" ]; then
-  systemctl is-enabled --quiet inky-bird-frame-generate.timer
-  systemctl is-active --quiet inky-bird-frame-generate.timer
+if [ -f "${unit_dir}/${service_prefix}-generate.timer" ]; then
+  systemctl is-enabled --quiet "${service_prefix}-generate.timer"
+  systemctl is-active --quiet "${service_prefix}-generate.timer"
 fi
-if [ -f "${unit_dir}/inky-bird-frame-catalog-publish.timer" ]; then
-  systemctl is-enabled --quiet inky-bird-frame-catalog-publish.timer
-  systemctl is-active --quiet inky-bird-frame-catalog-publish.timer
+if [ -f "${unit_dir}/${service_prefix}-catalog-publish.timer" ]; then
+  systemctl is-enabled --quiet "${service_prefix}-catalog-publish.timer"
+  systemctl is-active --quiet "${service_prefix}-catalog-publish.timer"
 fi
-if [ -f "${unit_dir}/inky-bird-frame-notifications.timer" ]; then
-  systemctl is-enabled --quiet inky-bird-frame-notifications.timer
-  systemctl is-active --quiet inky-bird-frame-notifications.timer
+if [ -f "${unit_dir}/${service_prefix}-notifications.timer" ]; then
+  systemctl is-enabled --quiet "${service_prefix}-notifications.timer"
+  systemctl is-active --quiet "${service_prefix}-notifications.timer"
 fi
 
 installation_complete=true
 echo "Controller installed from ${root} into ${app_dir}."
 echo "Configuration: ${config_path}"
-if ! "${app_dir}/.venv/bin/inky-bird-frame" access setup --if-needed --config "${config_path}"; then
+if ! "${app_dir}/.venv/bin/inky-bird" access setup --if-needed --config "${config_path}"; then
   echo "Controller installation completed; owner setup is incomplete. Run access setup in a private terminal. Display and scheduled work continue." >&2
 fi

@@ -1003,7 +1003,7 @@ def add_config_argument(parser: argparse.ArgumentParser) -> None:
 
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
-        prog="inky-bird-frame",
+        prog="inky-bird",
         description="Generate, approve, serve, and display bird field-journal plates.",
     )
     parser.add_argument("--version", action="version", version=f"%(prog)s {__version__}")

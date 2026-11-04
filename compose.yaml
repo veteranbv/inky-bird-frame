@@ -1,7 +1,8 @@
+# Stable project identity preserves existing named volumes across the rename.
 name: inky-bird-frame
 
 x-controller-common: &controller-common
-  image: ${INKY_BIRD_IMAGE:-ghcr.io/veteranbv/inky-bird-frame:latest}
+  image: ${INKY_BIRD_IMAGE:-ghcr.io/veteranbv/inky-bird:latest}
   read_only: true
   cap_drop:
     - ALL

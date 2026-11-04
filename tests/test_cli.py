@@ -401,7 +401,7 @@ class CliTests(unittest.TestCase):
         load.assert_not_called()
 
     def test_runtime_version_matches_package_metadata(self) -> None:
-        self.assertEqual(inky_bird_frame.__version__, version("inky-bird-frame"))
+        self.assertEqual(inky_bird_frame.__version__, version("inky-bird"))
 
     def test_source_checkout_version_falls_back_safely(self) -> None:
         with patch(
@@ -416,7 +416,7 @@ class CliTests(unittest.TestCase):
             main(["--version"])
 
         self.assertEqual(raised.exception.code, 0)
-        self.assertEqual(output.getvalue(), f"inky-bird-frame {inky_bird_frame.__version__}\n")
+        self.assertEqual(output.getvalue(), f"inky-bird {inky_bird_frame.__version__}\n")
 
     def test_status_requires_explicit_config(self) -> None:
         args = build_parser().parse_args(["status", "--config", "instance.toml"])

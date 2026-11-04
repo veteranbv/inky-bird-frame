@@ -173,19 +173,19 @@ controller image to that release.
 mkdir -p "$HOME/inky-bird-frame"
 cd "$HOME/inky-bird-frame"
 curl -fsSLO \
-  https://github.com/veteranbv/inky-bird-frame/releases/latest/download/inky-bird-frame-docker.tar.gz
+  https://github.com/veteranbv/inky-bird/releases/latest/download/inky-bird-docker.tar.gz
 curl -fsSLO \
-  https://github.com/veteranbv/inky-bird-frame/releases/latest/download/inky-bird-frame-docker.tar.gz.sha256
-sha256sum -c inky-bird-frame-docker.tar.gz.sha256
-tar -xzf inky-bird-frame-docker.tar.gz --strip-components=1
+  https://github.com/veteranbv/inky-bird/releases/latest/download/inky-bird-docker.tar.gz.sha256
+sha256sum -c inky-bird-docker.tar.gz.sha256
+tar -xzf inky-bird-docker.tar.gz --strip-components=1
 ```
 
 The checksum command uses GNU `sha256sum`, which is standard on Linux. On
 macOS, use:
 
 ```bash
-expected=$(cut -d ' ' -f 1 inky-bird-frame-docker.tar.gz.sha256)
-printf '%s  %s\n' "$expected" inky-bird-frame-docker.tar.gz | shasum -a 256 -c -
+expected=$(cut -d ' ' -f 1 inky-bird-docker.tar.gz.sha256)
+printf '%s  %s\n' "$expected" inky-bird-docker.tar.gz | shasum -a 256 -c -
 ```
 
 If you prefer a source checkout, clone the repository and use the same
@@ -290,7 +290,7 @@ the CSV and recordings do not belong in the persistent volume. For example:
 
 ```bash
 docker compose cp /path/to/results.csv controller:/tmp/results.csv
-docker compose exec controller inky-bird-frame birdnet-analyzer import \
+docker compose exec controller inky-bird birdnet-analyzer import \
   --config /data/config.toml --csv /tmp/results.csv --observed-on 2026-08-09
 docker compose exec controller rm /tmp/results.csv
 ```
@@ -303,9 +303,9 @@ temporary filesystem, preview it, and then import it:
 
 ```bash
 docker compose cp /path/to/ebird.zip controller:/tmp/ebird.zip
-docker compose exec controller inky-bird-frame ebird archive import \
+docker compose exec controller inky-bird ebird archive import \
   --config /data/config.toml --archive /tmp/ebird.zip --dry-run
-docker compose exec controller inky-bird-frame ebird archive import \
+docker compose exec controller inky-bird ebird archive import \
   --config /data/config.toml --archive /tmp/ebird.zip
 docker compose exec controller rm /tmp/ebird.zip
 ```
@@ -525,7 +525,7 @@ The new owner account does not interrupt catalog serving or scheduled work.
 If this installation has no owner yet, create one locally after startup:
 
 ```bash
-docker compose exec controller inky-bird-frame access setup --config /data/config.toml
+docker compose exec controller inky-bird access setup --config /data/config.toml
 ```
 
 Existing owners do not need that command. It will not replace them. An

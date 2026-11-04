@@ -57,9 +57,9 @@ RUN set -eux; \
 FROM ${PYTHON_IMAGE} AS runtime
 ARG VCS_REF=unknown
 ARG BUILD_DATE=unknown
-LABEL org.opencontainers.image.title="Inky Bird Frame Controller" \
-      org.opencontainers.image.description="Discovery, generation, review, publication, and catalog serving for Inky Bird Frame" \
-      org.opencontainers.image.source="https://github.com/veteranbv/inky-bird-frame" \
+LABEL org.opencontainers.image.title="Inky Bird Controller" \
+      org.opencontainers.image.description="Discovery, generation, review, publication, and catalog serving for Inky Bird" \
+      org.opencontainers.image.source="https://github.com/veteranbv/inky-bird" \
       org.opencontainers.image.revision="${VCS_REF}" \
       org.opencontainers.image.created="${BUILD_DATE}" \
       org.opencontainers.image.licenses="MIT"
@@ -89,5 +89,5 @@ ENV PATH=/app/.venv/bin:/usr/local/bin:/usr/bin:/bin \
 USER 10001:10001
 WORKDIR /data
 EXPOSE 8793
-ENTRYPOINT ["inky-bird-frame"]
+ENTRYPOINT ["inky-bird"]
 CMD ["serve", "--config", "/data/config.toml"]

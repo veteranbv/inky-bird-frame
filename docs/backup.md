@@ -384,23 +384,23 @@ wildcard bind such as `0.0.0.0` is checked through `127.0.0.1`.
    files without contacting providers:
 
    ```bash
-   uv run inky-bird-frame config validate --config "$CONFIG"
-   uv run inky-bird-frame catalog validate --catalog "$CATALOG"
-   uv run inky-bird-frame status --config "$CONFIG"
+   uv run inky-bird config validate --config "$CONFIG"
+   uv run inky-bird catalog validate --catalog "$CATALOG"
+   uv run inky-bird status --config "$CONFIG"
    ```
 
 6. Test HTTP serving without installing or enabling a service. Run the server
    in one terminal, check it from another, then stop it with Control-C:
 
    ```bash
-   uv run inky-bird-frame serve --config "$CONFIG"
+   uv run inky-bird serve --config "$CONFIG"
    ```
 
    ```bash
    curl --fail --silent "$HEALTH_URL"
    ```
 
-7. Run `uv run inky-bird-frame discover --config "$CONFIG"` as a deliberate
+7. Run `uv run inky-bird discover --config "$CONFIG"` as a deliberate
    live provider check and inspect its JSON output. It does not replace the
    saved observation snapshot. Bird Buddy is the narrow stateful exception:
    authenticated discovery rotates its saved refresh token and makes the saved
@@ -426,10 +426,10 @@ wildcard bind such as `0.0.0.0` is checked through `127.0.0.1`.
    services:
 
    ```bash
-   uv run inky-bird-frame setup controller \
+   uv run inky-bird setup controller \
      --config "$CONFIG" --source-dir "$PWD" --yes
-   uv run inky-bird-frame doctor controller --config "$CONFIG"
-   uv run inky-bird-frame status --config "$CONFIG"
+   uv run inky-bird doctor controller --config "$CONFIG"
+   uv run inky-bird status --config "$CONFIG"
    ```
 
 If the restore moves data to different paths, edit the private configuration

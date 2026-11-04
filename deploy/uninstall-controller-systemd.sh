@@ -6,9 +6,10 @@ if [ "$(uname -s)" != "Linux" ] || ! command -v systemctl >/dev/null 2>&1; then
   exit 1
 fi
 
-app_dir=${INKY_BIRD_APP_DIR:-"${HOME}/Services/inky-bird-frame"}
-support_dir=${INKY_BIRD_SUPPORT_DIR:-"${HOME}/.config/inky-bird-frame"}
-config_path=${INKY_BIRD_CONFIG_PATH:-"${support_dir}/config.toml"}
+root=$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)
+native_names=$(python3 "${root}/src/inky_bird_frame/native_names.py")
+service_prefix="" app_dir="" support_dir="" config_path=""
+eval "${native_names}"
 
 if ! sudo -v; then
   echo "Administrator access is required to remove system services." >&2
@@ -16,18 +17,19 @@ if ! sudo -v; then
 fi
 
 for name in refresh generate catalog-publish notifications; do
-  timer="inky-bird-frame-${name}.timer"
-  service="inky-bird-frame-${name}.service"
+  timer="${service_prefix}-${name}.timer"
+  service="${service_prefix}-${name}.service"
   sudo systemctl disable --now "${timer}" 2>/dev/null || true
   echo "Stopped and disabled ${timer}."
   sudo systemctl stop "${service}" 2>/dev/null || true
   echo "Stopped ${service}."
 done
-sudo systemctl disable --now inky-bird-frame-controller.service 2>/dev/null || true
-echo "Stopped and disabled inky-bird-frame-controller.service."
+sudo systemctl disable --now "${service_prefix}-controller.service" 2>/dev/null || true
+sudo systemctl disable --now "${service_prefix}-scheduler.service" 2>/dev/null || true
+echo "Stopped and disabled ${service_prefix}-controller.service."
 
-for name in controller refresh generate catalog-publish notifications; do
-  for unit in "inky-bird-frame-${name}.service" "inky-bird-frame-${name}.timer"; do
+for name in controller scheduler refresh generate catalog-publish notifications; do
+  for unit in "${service_prefix}-${name}.service" "${service_prefix}-${name}.timer"; do
     if [ -f "/etc/systemd/system/${unit}" ]; then
       sudo rm -f "/etc/systemd/system/${unit}"
       echo "Removed /etc/systemd/system/${unit}."

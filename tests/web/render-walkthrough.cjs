@@ -133,7 +133,7 @@ async function renderCinematic() {
   ];
   try {
     await still('v2-title.png', `<div class="center">${brand}<p>A field journal for the birds you see.</p></div>`);
-    await still('v2-end.png', `<div class="center">${brand}<p>Browse the gallery · henrysowell.com/birds</p><p class="repo">github.com/veteranbv/inky-bird-frame</p></div>`,
+    await still('v2-end.png', `<div class="center">${brand}<p>Browse the gallery · henrysowell.com/birds</p><p class="repo">github.com/veteranbv/inky-bird</p></div>`,
       '.repo{font:26px/1.5 system-ui,sans-serif;color:var(--ink-soft);margin-top:18px}');
     await still('v2-backdrop.png', '<div class="card"></div><div class="sample">Sample data</div>',
       '.card{position:absolute;left:180px;top:76px;width:1560px;height:975px;background:var(--paper-raised);border-radius:calc(var(--radius)*2);box-shadow:var(--shadow)}.sample{position:absolute;right:180px;top:20px;font:600 22px/1.4 system-ui,sans-serif;letter-spacing:.025em;color:var(--accent);padding:5px 16px;background:var(--accent-soft);border-radius:20px}');
@@ -211,7 +211,7 @@ async function renderCinematic() {
   const stamp = value => `00:${value.toFixed(3).padStart(6, '0')}`;
   writeFileSync(path.join(output, 'inky-walkthrough.vtt'), 'WEBVTT\n\n' + [
     [0, 2.5, 'Inky Bird. A field journal for the birds you see.'], ...lines,
-    [24, 28, 'Browse the gallery: henrysowell.com/birds. github.com/veteranbv/inky-bird-frame'],
+    [24, 28, 'Browse the gallery: henrysowell.com/birds. github.com/veteranbv/inky-bird'],
   ].map(([begin, end, text]) => `${stamp(begin)} --> ${stamp(end)}\n${text}\n`).join('\n'));
   const files = ['inky-walkthrough.mp4', 'inky-walkthrough-share.gif', 'inky-walkthrough-poster.png',
     'inky-walkthrough-poster.jpg',

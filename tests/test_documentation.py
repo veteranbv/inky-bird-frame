@@ -92,8 +92,18 @@ def test_installation_native_checks_use_the_managed_runtime() -> None:
     guide = (ROOT / "docs/installation.md").read_text(encoding="utf-8")
     section = guide.split("### Verify controller data", 1)[1].split("\n## ", 1)[0]
 
-    assert 'IBF="$HOME/Services/inky-bird-frame/.venv/bin/inky-bird-frame"' in section
+    assert 'IBF="$HOME/Services/inky-bird/.venv/bin/inky-bird"' in section
     assert re.search(r"^inky-bird-frame(?:\s|$)", section, re.MULTILINE) is None
+
+
+def test_canonical_repository_links_and_clone_directory_agree() -> None:
+    canonical = "https://github.com/veteranbv/inky-bird"
+    contribution = (ROOT / "CONTRIBUTING.md").read_text()
+    assert f"git clone {canonical}.git\ncd inky-bird\n" in contribution
+    for path in ("README.md", "pyproject.toml", "src/inky_bird_frame/web/journal.js"):
+        text = (ROOT / path).read_text()
+        assert canonical in text
+        assert canonical + "-frame" not in text
 
 
 def test_status_labels_distinguish_rotation_from_the_approved_library() -> None:

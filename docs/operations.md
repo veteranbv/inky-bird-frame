@@ -422,7 +422,7 @@ controller. It is not part of the repository.
 
 ## Releases and upgrades
 
-Tagged [GitHub releases](https://github.com/veteranbv/inky-bird-frame/releases)
+Tagged [GitHub releases](https://github.com/veteranbv/inky-bird/releases)
 are the supported installation points. Patch releases are intended to remain
 compatible within their minor line. Before version 1.0, a minor release may
 include a documented configuration or operational migration. Release notes are

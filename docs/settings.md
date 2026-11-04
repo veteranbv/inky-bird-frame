@@ -16,8 +16,8 @@ Use a fresh checkout and check the
 
 ```bash
 uv sync --extra controller --locked
-uv run inky-bird-frame config init --destination ./private/config.toml
-uv run inky-bird-frame setup controller --config ./private/config.toml
+uv run inky-bird config init --destination ./private/config.toml
+uv run inky-bird setup controller --config ./private/config.toml
 ```
 
 The `config init` command creates a mode-0600 configuration and refuses to

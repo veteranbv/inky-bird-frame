@@ -7,9 +7,10 @@ if [ "$(uname -s)" != "Linux" ] || ! command -v systemctl >/dev/null 2>&1; then
 fi
 
 root=$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)
-app_dir=${INKY_BIRD_APP_DIR:-"${HOME}/Services/inky-bird-frame"}
-support_dir=${INKY_BIRD_SUPPORT_DIR:-"${HOME}/.config/inky-bird-frame"}
-config_path=${INKY_BIRD_CONFIG_PATH:-"${support_dir}/config.toml"}
+native_names=$(python3 "${root}/src/inky_bird_frame/native_names.py")
+service_prefix="" app_dir="" support_dir="" config_path=""
+eval "${native_names}"
+export INKY_BIRD_SERVICE_PREFIX="${service_prefix}"
 venv=${INKY_BIRD_DISPLAY_VENV:-"${HOME}/.virtualenvs/pimoroni"}
 run_initial_display=${INKY_BIRD_RUN_INITIAL_DISPLAY:-false}
 noninteractive_sudo=${INKY_BIRD_NONINTERACTIVE_SUDO:-false}
@@ -21,6 +22,20 @@ fi
 if [ ! -x "${venv}/bin/python" ]; then
   echo "Pimoroni Python environment is missing: ${venv}" >&2
   exit 1
+fi
+# Distribution ownership changes only while the display role is quiescent.
+# setup is not a substitute for an operator's backup/upgrade transaction.
+if "${venv}/bin/python" -m pip show inky-bird-frame >/dev/null 2>&1; then
+  for suffix in timer service; do
+    state=$(systemctl show --property=ActiveState --value "${service_prefix}-display.${suffix}")
+    case "${state}" in
+      inactive | failed) ;;
+      *)
+        echo "Stop the existing display timer and let its service finish before the package-name migration. Preserve a recoverable runtime backup first. No changes made." >&2
+        exit 1
+        ;;
+    esac
+  done
 fi
 sudo_command=(sudo)
 case "${noninteractive_sudo}" in
@@ -50,12 +65,18 @@ if [ "${root}" != "${app_dir}" ]; then
     install -m 0644 "${root}/${file}" "${app_dir}/${file}"
   done
 fi
+# The old and new distributions own the same import files. Remove the old
+# RECORD before installing the renamed distribution, never after it.
+if "${venv}/bin/python" -m pip show inky-bird-frame >/dev/null 2>&1; then
+  "${venv}/bin/python" -m pip uninstall --yes inky-bird-frame
+fi
 "${venv}/bin/python" -m pip install --disable-pip-version-check -e "${app_dir}[inky]"
 
 unit_dir=$(mktemp -d)
 trap 'rm -rf "${unit_dir}"' EXIT
 "${venv}/bin/python" - \
   "${unit_dir}" "${app_dir}" "${config_path}" "${venv}" "$(id -un)" <<'PY'
+import os
 import sys
 from pathlib import Path
 
@@ -65,7 +86,7 @@ from inky_bird_frame.installation import display_systemd_units
 
 unit_dir, app_dir, config_path, venv = map(Path, sys.argv[1:5])
 user = sys.argv[5]
-executable = venv / "bin/inky-bird-frame"
+executable = venv / "bin/inky-bird"
 config = load_config(config_path)
 units = display_systemd_units(
     config,
@@ -73,25 +94,26 @@ units = display_systemd_units(
     app_dir=app_dir,
     config_path=config_path,
     user=user,
+    service_prefix=os.environ["INKY_BIRD_SERVICE_PREFIX"],
 )
 for name, content in units.items():
     (unit_dir / name).write_text(content)
 PY
 
 "${sudo_command[@]}" install -m 0644 \
-  "${unit_dir}/inky-bird-frame-display.service" \
-  /etc/systemd/system/inky-bird-frame-display.service
+  "${unit_dir}/${service_prefix}-display.service" \
+  "/etc/systemd/system/${service_prefix}-display.service"
 "${sudo_command[@]}" install -m 0644 \
-  "${unit_dir}/inky-bird-frame-display.timer" \
-  /etc/systemd/system/inky-bird-frame-display.timer
+  "${unit_dir}/${service_prefix}-display.timer" \
+  "/etc/systemd/system/${service_prefix}-display.timer"
 "${sudo_command[@]}" systemctl daemon-reload
-"${sudo_command[@]}" systemctl enable inky-bird-frame-display.timer
-"${sudo_command[@]}" systemctl restart inky-bird-frame-display.timer
+"${sudo_command[@]}" systemctl enable "${service_prefix}-display.timer"
+"${sudo_command[@]}" systemctl restart "${service_prefix}-display.timer"
 if [ "${run_initial_display}" = true ]; then
-  "${sudo_command[@]}" systemctl start inky-bird-frame-display.service
+  "${sudo_command[@]}" systemctl start "${service_prefix}-display.service"
 fi
-systemctl is-enabled --quiet inky-bird-frame-display.timer
-systemctl is-active --quiet inky-bird-frame-display.timer
+systemctl is-enabled --quiet "${service_prefix}-display.timer"
+systemctl is-active --quiet "${service_prefix}-display.timer"
 
 echo "Display node installed from ${root} into ${app_dir}."
 echo "Configuration: ${config_path}"

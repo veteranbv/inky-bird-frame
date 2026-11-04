@@ -22,9 +22,10 @@ on:
 permissions:
   contents: read
 
-# Repository branding may change; existing installations keep this image name.
+# Both names receive the SAME build, including provenance and SBOM manifests.
 env:
-  CONTROLLER_IMAGE: ghcr.io/${{ github.repository_owner }}/inky-bird-frame
+  CONTROLLER_IMAGE: ghcr.io/${{ github.repository_owner }}/inky-bird
+  COMPATIBILITY_IMAGE: ghcr.io/${{ github.repository_owner }}/inky-bird-frame
 
 concurrency:
   group: controller-container-publish-${{ github.ref }}
@@ -62,16 +63,20 @@ jobs:
         run: |
           set -euo pipefail
           image="${CONTROLLER_IMAGE}"
+          emit_tag() {
+            echo "${image}:$1"
+            echo "${COMPATIBILITY_IMAGE}:$1"
+          }
           version=""
           {
             echo 'tags<<EOF'
             case "$EVENT_NAME" in
               workflow_run)
-                echo "${image}:sha-${SOURCE_SHA}"
+                emit_tag "sha-${SOURCE_SHA}"
                 git fetch --no-tags --depth=1 origin \
                   refs/heads/main:refs/remotes/origin/main
                 if [ "$(git rev-parse refs/remotes/origin/main)" = "$SOURCE_SHA" ]; then
-                  echo "${image}:latest"
+                  emit_tag latest
                 else
                   echo "Skipping latest tag because ${SOURCE_SHA} is no longer current main." >&2
                 fi
@@ -82,14 +87,14 @@ jobs:
                   exit 1
                 fi
                 version="${GITHUB_REF_NAME#v}"
-                echo "${image}:${version}"
+                emit_tag "${version}"
                 ;;
               workflow_dispatch)
                 if [[ ! "$REQUESTED_TAG" =~ ^[A-Za-z0-9_][A-Za-z0-9_.-]{0,127}$ ]]; then
                   echo "Invalid container tag" >&2
                   exit 1
                 fi
-                echo "${image}:${REQUESTED_TAG}"
+                emit_tag "${REQUESTED_TAG}"
                 ;;
               *)
                 echo "Unsupported event: ${EVENT_NAME}" >&2
@@ -116,6 +121,7 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build and publish
+        id: publish
         uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc # v7.4.0
         with:
           context: .
@@ -127,6 +133,34 @@ jobs:
             BUILD_DATE=${{ steps.image.outputs.created }}
           provenance: mode=max
           sbom: true
+
+      - name: Verify both published names
+        env:
+          IMAGE_TAGS: ${{ steps.image.outputs.tags }}
+          EXPECTED_DIGEST: ${{ steps.publish.outputs.digest }}
+        run: |
+          set -euo pipefail
+          [[ "$EXPECTED_DIGEST" =~ ^sha256:[a-f0-9]{64}$ ]]
+          while IFS= read -r tag; do
+            test -n "$tag"
+            verified=false
+            for attempt in 1 2 3 4; do
+              if manifest=$(docker buildx imagetools inspect "$tag" --format '{{json .Manifest}}'); then
+                if jq -e --arg expected "$EXPECTED_DIGEST" '
+                  .digest == $expected
+                  and ([.manifests[].platform | select(.os == "linux") | .architecture]
+                    | sort == ["amd64", "arm64"])
+                  and ([.manifests[] | select(.annotations["vnd.docker.reference.type"] == "attestation-manifest")]
+                    | length == 2)
+                ' <<< "$manifest"; then
+                  verified=true
+                  break
+                fi
+              fi
+              sleep "$((attempt * 3))"
+            done
+            test "$verified" = true
+          done <<< "$IMAGE_TAGS"
 
   release-bundle:
     if: github.event_name == 'release'
@@ -147,7 +181,7 @@ jobs:
         run: |
           set -euo pipefail
           test -n "$VERSION"
-          bundle="inky-bird-frame-docker"
+          bundle="inky-bird-docker"
           mkdir -p "${bundle}/deploy/apparmor"
           install -m 0644 compose.yaml "${bundle}/compose.yaml"
           install -m 0644 config.example.toml "${bundle}/config.example.toml"
@@ -162,12 +196,18 @@ jobs:
             > "${bundle}/README.txt"
           tar -czf "${bundle}.tar.gz" "$bundle"
           sha256sum "${bundle}.tar.gz" > "${bundle}.tar.gz.sha256"
+          # Keep the old download filename as a byte-identical alias. Both
+          # archives contain the same canonical top-level directory.
+          cp "${bundle}.tar.gz" inky-bird-frame-docker.tar.gz
+          sha256sum inky-bird-frame-docker.tar.gz > inky-bird-frame-docker.tar.gz.sha256
 
       - name: Attach Docker deployment bundle
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           gh release upload "$GITHUB_REF_NAME" \
+            inky-bird-docker.tar.gz \
+            inky-bird-docker.tar.gz.sha256 \
             inky-bird-frame-docker.tar.gz \
             inky-bird-frame-docker.tar.gz.sha256 \
             --clobber

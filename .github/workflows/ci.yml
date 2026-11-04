@@ -131,7 +131,7 @@ jobs:
             and (.services["config-sync"].environment.ACCESS_BOUNDARY_SENTINEL == null)
             and (.services.bootstrap.environment.SECRET_BOUNDARY_SENTINEL == null)
             and (.services["config-sync"].environment.SECRET_BOUNDARY_SENTINEL == "present")
-            and ([.services[] | .image] | all(. == "ghcr.io/veteranbv/inky-bird-frame:latest"))
+            and ([.services[] | .image] | all(. == "ghcr.io/veteranbv/inky-bird:latest"))
             and ([.services[] | .build] | all(. == null))
             and (.services.scheduler.security_opt | index("seccomp=unconfined") != null)
             and (.services.scheduler.security_opt | index("apparmor=unconfined") != null)

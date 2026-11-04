@@ -37,9 +37,9 @@ https://github.com/user-attachments/assets/ab99fb77-3844-4e41-8619-2046dc6ed76c
 Sample data, accelerated navigation, and a separate e-paper installation;
 browser Play does not refresh the wall.
 
-[![CI](https://github.com/veteranbv/inky-bird-frame/actions/workflows/ci.yml/badge.svg)](https://github.com/veteranbv/inky-bird-frame/actions/workflows/ci.yml)
-[![Latest release](https://img.shields.io/github/v/release/veteranbv/inky-bird-frame)](https://github.com/veteranbv/inky-bird-frame/releases/latest)
-[![License: MIT](https://img.shields.io/github/license/veteranbv/inky-bird-frame)](LICENSE)
+[![CI](https://github.com/veteranbv/inky-bird/actions/workflows/ci.yml/badge.svg)](https://github.com/veteranbv/inky-bird/actions/workflows/ci.yml)
+[![Latest release](https://img.shields.io/github/v/release/veteranbv/inky-bird)](https://github.com/veteranbv/inky-bird/releases/latest)
+[![License: MIT](https://img.shields.io/github/license/veteranbv/inky-bird)](LICENSE)
 
 ## Start with what you have
 
@@ -49,14 +49,14 @@ browser Play does not refresh the wall.
 | Keep a journal on a phone, tablet, or computer | Run the controller on an existing machine: [Docker or NAS](docs/docker.md) or [native installation](docs/installation.md). Open `/app` and [create your owner account](docs/browser-access.md). |
 | Put birds on a wall | Use a browser in [Frame mode](docs/presentation.md#owner-frame), [pair a read-only screen](docs/presentation.md#pair-a-read-only-screen), or build the [7.3-inch or 13.3-inch e-paper frame](docs/hardware.md). |
 | Connect a station, feeder, or observation account | [Choose a source](docs/discovery.md). Start with one, or keep using saved collections without any sources. |
-| Upgrade an existing installation | [Back up your controller](docs/backup.md), read the notes for the [target release](https://github.com/veteranbv/inky-bird-frame/releases), and follow its update guide. |
+| Upgrade an existing installation | [Back up your controller](docs/backup.md), read the notes for the [target release](https://github.com/veteranbv/inky-bird/releases), and follow its update guide. |
 
 Browse, save collections, and play plates in the browser. With approved
 artwork, you need no camera, microphone, provider account, or Codex login.
 New app-managed setups start with generation off.
 
 These docs describe `main`, which may be ahead of your install. If you run a
-[tagged release](https://github.com/veteranbv/inky-bird-frame/releases), follow
+[tagged release](https://github.com/veteranbv/inky-bird/releases), follow
 the instructions shipped with it.
 
 ## Bring your own birds
@@ -87,7 +87,7 @@ network and use a separate credential for status. See
 The shared plates are AI-generated illustrations checked against references
 and reviewed separately before approval. You can reuse the public catalog
 under the [MIT license](LICENSE). If a species is missing, you can
-[request it](https://github.com/veteranbv/inky-bird-frame/issues/new?template=bird_request.yml)
+[request it](https://github.com/veteranbv/inky-bird/issues/new?template=bird_request.yml)
 or configure your own controller to generate it with Codex. Generation can
 use a subscription allowance or incur API costs. See the
 [review process](docs/architecture.md) and [owner controls](docs/owner-operations.md).
@@ -113,11 +113,11 @@ as individual field-journal plates. You can start with the artwork alone.
 - [Documentation index](docs/README.md)
 - [Troubleshooting](docs/troubleshooting.md)
 - [Contribute code, docs, or a plate](CONTRIBUTING.md)
-- [Report a bug](https://github.com/veteranbv/inky-bird-frame/issues/new?template=bug_report.yml)
-  or [flag a published plate problem](https://github.com/veteranbv/inky-bird-frame/issues/new?template=plate_problem.yml)
+- [Report a bug](https://github.com/veteranbv/inky-bird/issues/new?template=bug_report.yml)
+  or [flag a published plate problem](https://github.com/veteranbv/inky-bird/issues/new?template=plate_problem.yml)
 - [Report a security issue privately](SECURITY.md)
 
 Made by [Henry Sowell](https://henrysowell.com). Thanks to
 [@dwalters0](https://github.com/dwalters0) for helping close the
-[trusted browser-client gap](https://github.com/veteranbv/inky-bird-frame/pull/246),
+[trusted browser-client gap](https://github.com/veteranbv/inky-bird/pull/246),
 and to everyone who has shared a bird, a bug, or a fix.
