@@ -1,7 +1,8 @@
 # History imports and personal trips
 
-This guide covers the browser development candidate. The release is not yet
-qualified for production. The [CLI import paths](discovery.md) remain available.
+Import an export you already have. Inky does not continuously sync a personal
+eBird account or retain its password. The [CLI import paths](discovery.md) also
+remain available.
 
 ## Your eBird checklists
 

@@ -1,12 +1,11 @@
-# Browser journal: development candidate
+# Browser journal
 
 The browser uses your controller's approved art and private selections. It does
 not run another discovery service or keep a second copy of your history in
 browser storage. Open `/app` and [set up your owner account](browser-access.md).
 
-This is a 1.0 candidate, not a published release. Do not replace a
-working deployment with this branch. The complete acceptance scope remains in
-[issue #310](https://github.com/veteranbv/inky-bird-frame/issues/310).
+This guide describes the app on `main`. Start with [approved art](settings.md#start-with-approved-art)
+if you want to try it without generation, connected sources, or a physical display.
 
 ## Find your way around
 

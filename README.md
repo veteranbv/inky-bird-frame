@@ -1,416 +1,119 @@
 # Inky Bird
 
 <p align="center">
-  <img src="docs/images/inky-app-icon.png" width="128" alt="Inky Bird app icon: a layered paper-cut bird in warm madder red with a cream breast, on an ivory rounded square">
+  <img src="docs/images/inky-app-icon.png" width="96" alt="A paper-cut red bird on a cream background">
 </p>
 
-<p align="center"><em>Formerly Inky Bird Frame. The repository, package and
-<code>inky-bird-frame</code> commands keep their existing names, so working
-installations and documented commands are unchanged.</em></p>
+A private field journal for the birds you see, hear, and remember. Browse
+illustrated plates on your phone, keep a collection from a favorite trip, or
+let the birds take turns on an optional color e-paper frame.
 
-Keep birding present between outings. Bring the birds around you, the birds
-your station hears, and the birds you remember from a trip to your wall,
-browser or dashboard as reviewed field-journal plates.
-
-Start with the shared artwork. Add your sources when you are ready. An e-paper
-frame and AI generation are optional; your private history stays on your controller.
-
-This branch is the 1.0 development candidate. The published release remains the
-safe production choice until the candidate completes qualification and review.
+[Browse the public gallery](https://henrysowell.com/birds) ·
+[Start without a frame](docs/settings.md#start-with-approved-art) ·
+[Build a wall frame](docs/hardware.md)
 
 [![CI](https://github.com/veteranbv/inky-bird-frame/actions/workflows/ci.yml/badge.svg)](https://github.com/veteranbv/inky-bird-frame/actions/workflows/ci.yml)
 [![Latest release](https://img.shields.io/github/v/release/veteranbv/inky-bird-frame)](https://github.com/veteranbv/inky-bird-frame/releases/latest)
 [![License: MIT](https://img.shields.io/github/license/veteranbv/inky-bird-frame)](LICENSE)
 
-<p align="center">
-  <img src="docs/images/framed-installation.jpg" alt="Inky Bird displaying an Eastern Bluebird field-journal plate in a bronze portrait frame" width="560">
-  <br><em>A finished portrait installation using the recommended 12 x 16 inch frame with a panel-fitted mat opening.</em>
-</p>
-
-I built Inky to keep birding present between outings. A feeder visit, a sound
-outside, or a bird logged on a trip can become something beautiful on the wall
-and something my family can learn from.
-
-<p align="center">
-  <a href="https://henrysowell.com/birds"><strong>Browse the plates</strong></a>
-  ·
-  <a href="docs/hardware.md"><strong>Build the frame</strong></a>
-  ·
-  <a href="docs/docker.md"><strong>Run with Docker</strong></a>
-</p>
-
 <table>
   <tr>
-    <td width="50%" align="center">
-      <a href="catalog/species/12942-eastern-bluebird/portrait.png"><img src="docs/images/readme-eastern-bluebird.jpg" alt="Eastern Bluebird scientific field-journal plate" width="100%"></a>
-      <br><strong>Eastern Bluebird</strong> · <em>Sialia sialis</em>
+    <td width="50%" align="center" valign="top">
+      <a href="docs/images/journal-home.png"><img src="docs/images/journal-home.png" alt="Inky Bird Home showing an approved Northern Cardinal plate with Play and Browse controls" width="330"></a>
+      <br><strong>Open your journal</strong>
     </td>
-    <td width="50%" align="center">
-      <a href="catalog/species/9083-northern-cardinal/portrait.png"><img src="docs/images/readme-northern-cardinal.jpg" alt="Northern Cardinal scientific field-journal plate" width="100%"></a>
-      <br><strong>Northern Cardinal</strong> · <em>Cardinalis cardinalis</em>
+    <td width="50%" align="center" valign="top">
+      <a href="docs/images/journal-collection.png"><img src="docs/images/journal-collection.png" alt="A private Garden birds collection with Northern Cardinal and American Robin plates" width="330"></a>
+      <br><strong>Keep a collection</strong>
     </td>
   </tr>
 </table>
 
-Inky brings several kinds of bird evidence into one private collection:
+Screenshots show the app on `main` using public approved artwork and manual
+demo selections. Open either image for the full-size view.
 
-- nearby observations from iNaturalist and eBird;
-- your own eBird history, including birds recorded on past trips;
-- acoustic detections from BirdWeather, self-hosted BirdNET-Go, or BirdNET
-  Analyzer; and
-- authorized Bird Buddy feeder postcards and optional manual sightings.
+## Start with what you have
 
-The controller reuses an approved plate whenever one exists. For a missing
-species, it gathers licensed references, researches the bird, creates the plate
-with Codex, and runs a separate factual and visual review before the image can
-appear. Your discovery location and observation history stay private.
-
-## Start here
-
-Choose the part you want first. You can browse the shared artwork before
-buying hardware or connecting a bird service.
-
-- **Just see the birds:** [browse the plate gallery](https://henrysowell.com/birds).
-- **Build the complete wall frame:** choose parts in the
-  [hardware guide](docs/hardware.md), then follow the
-  [native installation](docs/installation.md).
-- **Run the controller on Docker or a NAS:** use the
-  [Docker controller guide](docs/docker.md).
-- **Use an existing Mac, Linux host, or Raspberry Pi:** use the
-  [native installation guide](docs/installation.md).
-- **Connect eBird, BirdNET, Bird Buddy, or another source:** choose providers in
-  the [discovery guide](docs/discovery.md).
-- **Use a phone, tablet or computer:** open the [browser journal](docs/journal.md).
-  Browse birds, keep Favorites and trip collections, connect sources, and play
-  full plates. Normal setup needs only an Inky username and password.
-- **Add a dashboard:** use the [Home Assistant and Homepage guide](docs/presentation.md)
-  for a selected art view and separate read-only status sensors. The existing
-  [Homepage recipe](docs/installation.md#homepage-dashboard) remains compatible.
-- **Already running Inky:** read the [update steps](docs/installation.md#update)
-  and [backup guide](docs/backup.md) before changing versions.
-- **Request or contribute a bird:** start with
-  [Contributing](CONTRIBUTING.md).
-
-## Your journal, on your screen
-
-Keep Favorites, remember a trip, or just enjoy the artwork. The browser uses
-the same controller as the wall frame. It does not create a second bird list
-or turn a saved selection into a sighting.
-
-<table>
-  <tr>
-    <td width="50%" valign="top" align="center">
-      <a href="docs/images/journal-home.png"><img src="docs/images/journal-home.png" alt="Inky journal Home showing an approved American Robin plate and its Saved selection label" width="330"></a>
-      <br><strong>A bird worth keeping close</strong>
-    </td>
-    <td width="50%" valign="top" align="center">
-      <a href="docs/images/journal-collection.png"><img src="docs/images/journal-collection.png" alt="A manual Garden birds collection showing Northern Cardinal and American Robin artwork, with collection tools below the plates" width="330"></a>
-      <br><strong>A collection, ready to play</strong>
-    </td>
-  </tr>
-</table>
-
-These are actual candidate screens with public approved artwork and manual
-demo selections. They contain no personal sightings or deployment information.
-Open either image for the full-size view. Start with the
-[journal guide](docs/journal.md), or add a
-[read-only screen or dashboard](docs/presentation.md).
-
-## How it works
-
-<p align="center">
-  <a href="docs/images/readme-overview.svg">
-    <picture>
-      <source media="(prefers-color-scheme: dark)" srcset="docs/images/readme-overview-dark.svg">
-      <img src="docs/images/readme-overview.svg" alt="Configured bird observations and detections enter the private controller, which reuses or creates and independently reviews field-journal plates before serving the approved catalog to an Inky display node or an optional trusted browser application" width="900">
-    </picture>
-  </a>
-  <br><em><a href="docs/images/readme-overview.svg">Open the full-size overview</a> on a small screen. The <a href="docs/installation.md">installation guide</a> includes the complete runtime and network diagram.</em>
-</p>
-
-The project has two installed roles:
-
-- The **controller** checks configured sources, creates and reviews missing
-  plates, and serves an approved catalog on a trusted private network.
-- The **display node** downloads approved assets, verifies their checksums, and
-  rotates them on the Inky panel. It never runs discovery or Codex.
-
-The controller includes one [browser journal](docs/journal.md) at `/app`, not
-a separate companion service. Home, Birds, Collections and Manage share the
-same approved art, source history and work rules. A long-running tablet can
-use a paired read-only screen instead of holding an owner login.
-
-Use local username/password setup, optional HTTPS, or optional Authentik single
-sign-on. No setup code is needed for normal use. Existing installs keep their
-source choices, generation policy and default wall behavior. New installs create
-the owner in the browser; existing unowned installs do it once locally, so a
-visitor cannot claim retained bird history during an upgrade. Read
-[first setup](docs/browser-access.md#ordinary-home-network-setup) or the
-[1.0 migration guide](docs/migration-v1.md).
-
-Local HTTP assumes a trusted network and trusted web services on the same
-address. Different ports do not isolate browser sign-in cookies; see the
-[access requirements](docs/browser-access.md#sessions-and-private-files).
-
-The legacy catalog and embed routes remain trusted-network services. Owner
-sign-in does not protect them. Do not expose the controller directly to the internet.
-
-The controller and display may run on one capable Raspberry Pi, but the
-recommended wall build keeps a lightweight Pi behind the frame and runs the
-controller on an existing Mac, Linux computer, Raspberry Pi 4 or 5, or Docker
-host. A controller or network outage does not blank the e-paper panel; it keeps
-showing its last successful image.
-
-A same-origin application proxy is the recommended browser path. It can
-authenticate users, keeps the controller on the trusted network, and needs no
-CORS setting. Direct cross-origin access is disabled by default. Browser local
-network and mixed-content policies vary, so a direct connection may prompt for
-permission or fail even when its origin is allowed. Browser reads never count
-as display-node health. Allowing an origin does not add authentication or make
-the controller safe to expose to the internet. See
-[Browser applications](docs/installation.md#browser-applications) for the
-API, embed, privacy, and network limits.
-
-## Observation sources
-
-- **Nearby public sightings: iNaturalist or eBird.** These use the configured
-  point, radius, and supported time window.
-- **Your sightings and trips: eBird Archive.** Inky imports the official
-  **Download My Data** ZIP or CSV. Retained history keeps species, dates and
-  hashed checklist links, not account credentials, locations or media. The
-  temporary upload can contain private trip details; see its
-  [deletion and retention rules](docs/history-imports.md#private-files-retention-and-backup).
-- **A live acoustic station: BirdWeather or BirdNET-Go.** Inky reads species
-  summaries and never receives recordings or manages microphones.
-- **Offline acoustic results: BirdNET Analyzer.** Only CSV history you
-  explicitly import enters private controller state.
-- **A smart feeder: Bird Buddy.** This opt-in private-API provider requires
-  permission from Bird Buddy and an explicit authorization confirmation.
-
-Providers run independently, so one failure does not stop healthy providers.
-Every result must resolve to the same active iNaturalist bird species before it
-can enter generation. BirdWeather, BirdNET-Go, and Bird Buddy can also give the
-newest eligible detection one display turn before normal rotation resumes.
-
-See [Discovery sources](docs/discovery.md) for credentials, provider limits,
-privacy, setup, verification, failure handling, recovery, and disabling a
-provider.
-
-### Related project
-
-If you want an end-to-end backyard listening station,
-[AvianVisitors](https://github.com/Twarner491/AvianVisitors) by Teddy Warner is a
-project I’m happy to point people toward. Built around BirdNET-Pi, it turns local
-microphone detections into a live illustrated collage and connects with Home
-Assistant, MQTT, remote access, and eBird regional filtering. Teddy also offers
-hardware kits for the microphone and frame, and the optional e-ink frame can run
-from either the local station or BirdWeather data. His detailed
-[AvianVisitors project write-up](https://theodore.net/projects/AvianVisitors/)
-is a great guide to the full listening-station workflow.
-
-Inky Bird meets that ecosystem at a different point. It can bring in
-acoustic detections from BirdNET-Go, BirdWeather, and BirdNET Analyzer alongside
-eBird, iNaturalist, Bird Buddy, and personal eBird history, then turn them into
-reviewed, reusable field-journal plates. Inky does not record or analyze raw
-audio, configure microphones, or install and manage a BirdNET detector.
-
-## Plates you can trust and reuse
-
-Creating an image does not approve it. A separate Codex run checks every
-candidate:
-
-1. independently verifies the species profile against at least two authoritative
-   sources;
-2. compares anatomy, plumage, proportions, and field marks with every reference
-   photograph;
-3. checks names, measurements, labels, and location neutrality; and
-4. returns structured scores and concrete corrections.
-
-A failed review edits the candidate with those corrections. Attempts are
-bounded, and exhausted work stops for inspection rather than publishing. Regular
-application code, not Codex, owns provider parsing, license rules, checksums,
-dimensions, catalog state, downloads, and display rotation.
-
-Approved plates and manifests contain no postal code, coordinates, observation
-dates, local place names, network details, or machine paths. That separation
-lets every installation reuse the same reviewed plate. Downloaded references,
-private observations, run logs, rejected work, and display state stay outside
-the reusable catalog.
-
-[Browse the public gallery](https://henrysowell.com/birds) or read the
-[architecture and privacy model](docs/architecture.md).
-
-## Hardware
-
-The reference display uses the 13.3-inch PIM774, a Pi Zero 2 W with a
-pre-soldered header, and a 12 x 16 inch portrait frame. The supported 7.3-inch
-PIM773 provides a smaller build; the display node fits the complete canonical
-plate without cropping or stretching.
-
-An existing 64-bit Mac or Linux computer can host the controller at no added
-hardware cost. A dedicated Raspberry Pi 4 is optional. The reference prices
-checked on July 9, 2026 put the framed PIM774 display at **$358.94** and the
-optional dedicated controller at **$173.64**, before tax and shipping.
-
-The [hardware guide](docs/hardware.md) contains the complete bill of materials,
-panel and mat dimensions, assembly photographs, reuse guidance, and physical
-safety notes. Verify every measurement against the panel before cutting a mat or
-backing board.
-
-## Install
-
-Choose the path that matches the controller:
-
-- **Docker or a NAS:** the [Docker controller guide](docs/docker.md) downloads a
-  release bundle and pulls the published AMD64 or ARM64 image from
-  [GitHub Container Registry](https://github.com/veteranbv/inky-bird-frame/pkgs/container/inky-bird-frame).
-- **macOS, Ubuntu, or Raspberry Pi OS:** the
-  [native installation guide](docs/installation.md) previews every managed setup
-  change before applying it.
-
-Both paths continue through the same five checkpoints: prepare and diagnose the
-controller, flash and attach the display Pi, prove the panel with an included
-plate, prove private-network access, then enable live rotation and automatic
-generation.
-
-The controller needs Python 3.11 or newer and either a ChatGPT plan that includes
-Codex or separately billed OpenAI API access. It also needs network access to
-the observation, geocoder, research, and Codex services you configure. The
-display needs Pimoroni’s Inky package and private-network access to the
-controller.
-
-## Living with the frame
-
-Normal installations schedule observation refresh, generation, catalog serving,
-notifications, and display rotation. These commands are the useful first checks
-on a native installation. They use the default managed runtime; if you chose a
-different application directory, point `IBF` at its `.venv/bin/inky-bird-frame`
-instead.
-
-```bash
-IBF="$HOME/Services/inky-bird-frame/.venv/bin/inky-bird-frame"
-"$IBF" --version
-"$IBF" doctor controller --config /path/to/config.toml
-"$IBF" status --config /path/to/config.toml
-"$IBF" refresh --config /path/to/config.toml
-"$IBF" generate --config /path/to/config.toml
-```
-
-`shuffle_bag` is the default rotation: it shows every active bird once before a
-new round and admits newly discovered birds into the current round. The active
-catalog includes approved species that are currently observed or explicitly
-kept in the private collection.
-
-See [Operations](docs/operations.md) for Docker equivalents, historical seeding,
-collection management, rotation modes, publication, backups, and failure
-recovery. Start with [Troubleshooting](docs/troubleshooting.md) when a doctor
-check fails.
-
-## Notifications
-
-Notifications tell you when something worth seeing happens: a new bird appears,
-a plate passes review, a failed service recovers, or generation needs help.
-Routine successes stay quiet. Delivery uses a retry queue, so a notification
-provider outage does not block discovery or generation.
-
-![Pushover notifications for a recovered generation queue and an approved American Goldfinch plate](docs/images/pushover-notifications.png)
-
-Pushover is one option. The same configuration can target Discord, ntfy, Gotify,
-Slack, email, Home Assistant, and other Apprise-supported services. See
-[Notifications](docs/notifications.md) for setup, event controls, retries, and
-secret handling.
-
-## Homepage dashboard
-
-For my fellow homelabbers, I wanted Inky to feel at home beside the rest of
-your services. The compact card gives you a quick read on catalog readiness,
-active birds, approved plates, and the controller version. If you have a little
-more room, the featured-plate card adds an upright bird plate that refreshes
-every 15 minutes.
-
-<p align="center">
-  <img src="docs/images/homepage-dashboard-compact.png" alt="Compact Homepage service card for Inky Bird showing catalog readiness, active birds, approved plates, and controller version" width="720">
-  <br><strong>Compact status</strong>
-</p>
-
-<p align="center">
-  <img src="docs/images/homepage-dashboard-featured-plate.png" alt="Homepage service card for Inky Bird showing catalog stats above an upright featured Eastern Bluebird plate" width="720">
-  <br><strong>Status and featured plate</strong>
-</p>
-
-Both versions use Homepage's stock service widgets. There is no custom plugin
-or JavaScript to install. The screenshots use a deterministic v0.7.0 demo: the
-162 public plates published in that release and a fixed Eastern Bluebird. They
-include no provider, location, observation time, or personal observation data.
-
-Follow the [Homepage dashboard recipe](docs/installation.md#homepage-dashboard)
-for the copy-and-paste configuration and private-network requirements.
-
-## Contributing
-
-Code, documentation, hardware compatibility, and new catalog plates are welcome.
-
-- [Request a bird](https://github.com/veteranbv/inky-bird-frame/issues/new?template=bird_request.yml)
-- [Report a bug](https://github.com/veteranbv/inky-bird-frame/issues/new?template=bug_report.yml)
-- [Propose a feature](https://github.com/veteranbv/inky-bird-frame/issues/new?template=feature_request.yml)
-- [Report a problem with a published plate](https://github.com/veteranbv/inky-bird-frame/issues/new?template=plate_problem.yml)
-- [Read the contribution guide](CONTRIBUTING.md)
-
-Public CI checks privacy, provenance, checksums, image structure, and immutable
-catalog rules. External pull requests never receive Codex, deployment,
-notification, or publisher credentials.
-
-The project does not offer individual setup support. Start with the doctor
-commands and [troubleshooting guide](docs/troubleshooting.md); open a bug only
-when you can describe reproducible incorrect behavior.
-
-Thank you to [@dwalters0](https://github.com/dwalters0), whose contribution
-identified and helped close the trusted browser-client gap, and to everyone who
-shares an issue, plate, fix, or idea.
-
-## Documentation
-
-| If you need to… | Read… |
+| I want to… | Start here |
 | --- | --- |
-| Choose parts or assemble a frame | [Hardware](docs/hardware.md) |
-| Install on macOS, Linux, or Raspberry Pi OS | [Native installation](docs/installation.md) |
-| Run the controller with Docker or on a NAS | [Docker controller](docs/docker.md) |
-| Configure observation and detection sources | [Discovery sources](docs/discovery.md) |
-| Operate, seed, recover, update, or roll back | [Operations](docs/operations.md) |
-| Back up or restore private controller state | [Backup and restore](docs/backup.md) |
-| Configure alerts | [Notifications](docs/notifications.md) |
-| Add Inky to a Homepage dashboard | [Homepage dashboard](docs/installation.md#homepage-dashboard) |
-| Use the journal and private trip collections | [Browser journal](docs/journal.md) |
-| Pair screens, choose a wall view, or add Home Assistant | [Presentation](docs/presentation.md) |
-| Upgrade to the browser journal without losing settings | [Migration](docs/migration-v1.md) |
-| Diagnose a failure | [Troubleshooting](docs/troubleshooting.md) |
-| Understand trust, privacy, and data flow | [Architecture](docs/architecture.md) |
-| Submit a change or plate | [Contributing](CONTRIBUTING.md) |
-| Report a vulnerability privately | [Security](SECURITY.md) |
+| See the artwork, with nothing to install | [Browse the public gallery](https://henrysowell.com/birds). |
+| Keep a journal on a phone, tablet, or computer | Run the controller on an existing machine: [Docker or NAS](docs/docker.md) or [native installation](docs/installation.md). Open `/app` and [create your owner account](docs/browser-access.md). |
+| Put birds on a wall | Use a browser in [Frame mode](docs/presentation.md#owner-frame), [pair a read-only screen](docs/presentation.md#pair-a-read-only-screen), or build the [7.3-inch or 13.3-inch e-paper frame](docs/hardware.md). |
+| Connect a station, feeder, or observation account | [Choose a source](docs/discovery.md). Start with one, or keep using saved collections without any sources. |
+| Upgrade an existing installation | [Back up your controller](docs/backup.md), read the notes for the [target release](https://github.com/veteranbv/inky-bird-frame/releases), and follow its update guide. |
 
-## Development
+Install the controller with Docker or from the terminal. Day-to-day
+browsing, collections, and playback happen in the browser. With approved
+artwork, you need no camera, microphone, provider account, or Codex login.
+Generation is off in a new configuration until you choose to enable it.
 
-```bash
-uv sync --extra dev --locked
-uv run ruff format --check .
-uv run ruff check .
-uv run mypy
-uv run pytest
-uv run inky-bird-frame catalog validate --catalog catalog
-```
+These docs describe `main`. For an existing installation, use the instructions
+shipped with your [tagged release](https://github.com/veteranbv/inky-bird-frame/releases)
+rather than assuming the features shown here are already available to you.
 
-## About the maker
+## Bring your own birds
 
-Inky Bird is made by [Henry Sowell](https://henrysowell.com) — the plates live
-on [henrysowell.com/birds](https://henrysowell.com/birds). Ideas, feedback and
-bird requests are welcome in
-[GitHub issues](https://github.com/veteranbv/inky-bird-frame/issues). Elsewhere:
-[GitHub](https://github.com/veteranbv) ·
-[X](https://x.com/realhenry).
+- **Nearby sightings:** use iNaturalist or eBird public observations.
+- **A trip or life list:** import your own eBird archive and turn selected
+  checklists into a private collection. This is an import, not continuous
+  personal eBird sync.
+- **Birds your station heard:** connect BirdWeather or BirdNET-Go, or import
+  BirdNET Analyzer results. Inky reads detections; it does not record sound or
+  run the detector.
+- **Feeder visits:** connect Bird Buddy if you have permission to use its
+  private API. You can also save a bird from the artwork catalog without
+  recording a sighting.
 
-## License
+[Compare source options and their limits](docs/discovery.md).
 
-Inky Bird is available under the [MIT License](LICENSE). The controller
-container also includes Codex CLI and GitHub CLI. Their licenses and the exact
-in-image notice paths are listed in
-[`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md).
+## One plate, several ways to see it
+
+The controller reuses approved art for a species when it has a match. Save
+birds in Favorites or a named collection, then choose **Play** to see the
+full plates without changing the physical wall. The optional e-paper display
+downloads only approved assets and keeps the last picture if the network goes
+down. Home Assistant and Homepage can show selected art on your trusted
+network and use a separate credential for status. See
+[screens and dashboards](docs/presentation.md).
+
+<p align="center">
+  <img src="docs/images/framed-installation.jpg" alt="An Eastern Bluebird field-journal plate on a color e-paper screen in a bronze portrait frame" width="520">
+  <br><em>Eastern Bluebird on the 13.3-inch portrait build.</em>
+</p>
+
+The shared plates are AI-generated illustrations checked against references
+and reviewed separately before approval. If a species is missing, you can
+[request it](https://github.com/veteranbv/inky-bird-frame/issues/new?template=bird_request.yml)
+or configure your own controller to generate it with Codex. Generation can
+use a subscription allowance or incur API costs. See the
+[review process](docs/architecture.md) and [owner controls](docs/owner-operations.md).
+
+Your private sightings and selections stay separate from the reusable
+catalog. Connected providers and generation still contact the services you
+configure. Keep the controller on a trusted network: owner sign-in does not
+protect the legacy catalog and display routes. Do not port-forward the
+controller to the internet. For private remote access, see the
+[access guide](docs/browser-access.md).
+
+## Other bird projects
+
+If you want a microphone-to-collage build, Teddy Warner’s
+[AvianVisitors](https://github.com/Twarner491/AvianVisitors) is a good place to
+start. [Fugleramme](https://github.com/arnegiacomo/fugleramme) and
+[Featherframe](https://github.com/wr/featherframe) pair station detections
+with historical natural-history illustrations. Inky is for keeping and
+revisiting birds from several sources, including trips and manual selections,
+as individual field-journal plates. It can start with artwork alone.
+
+## Docs and contributions
+
+- [Documentation index](docs/README.md)
+- [Troubleshooting](docs/troubleshooting.md)
+- [Contribute code, docs, or a plate](CONTRIBUTING.md)
+- [Report a bug](https://github.com/veteranbv/inky-bird-frame/issues/new?template=bug_report.yml)
+  or [flag a published plate problem](https://github.com/veteranbv/inky-bird-frame/issues/new?template=plate_problem.yml)
+- [Report a security issue privately](SECURITY.md)
+
+Made by [Henry Sowell](https://henrysowell.com). Thanks to
+[@dwalters0](https://github.com/dwalters0) for helping close the trusted
+browser-client gap, and to everyone who has shared a bird, a bug, or a fix.

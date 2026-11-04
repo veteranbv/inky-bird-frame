@@ -30,7 +30,7 @@ credential-sensitive. `birdbuddy-detections.json`, eBird Archive state, BirdNET
 Analyzer state, discovery snapshots, and run records contain private species and
 time history even when they contain no account credentials or precise location.
 
-The browser candidate also keeps private owner/session state in this directory.
+The browser also keeps private owner and session state in this directory.
 Treat a backup containing it as credential-sensitive even without Bird Buddy.
 Named selections in `journal.json` can reveal travel and personal interests.
 They supplement, and do not replace, the legacy Saved birds `collection.json`.
@@ -39,6 +39,13 @@ private view choices. Keep it with the matching owner state. Restore can restore
 previously valid access; revoke lost screens and credentials after recovery.
 Temporary history/community previews may contain private source selections.
 Stop browser serving as well as scheduled writers before copying these files.
+
+Keep `retry-requests.json` and `owner-operations.json` with the matching state.
+They distinguish waiting requests from interrupted work. Restoring an older
+runtime over newer records can lose that distinction. Use its matching full
+backup, not a hand-edited queue. `retry-wake-listener.lock` is a process lock,
+not a queue or a saved running status. Do not remove it to stop a scheduler or
+clear a request.
 
 Codex and optional GitHub authentication are separate from the application
 paths. Reauthentication on a restored host is safer than copying those stores.

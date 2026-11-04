@@ -6,16 +6,16 @@ subscription is required. The first account owns this installation. Finish
 setup before sharing access. Existing installations create that first account
 locally, so a visitor cannot claim your retained birds during an upgrade.
 
-This development candidate includes the [browser journal](journal.md), source
-setup, history imports, collections, plate work and [scoped presentation](presentation.md).
-It is not a published 1.0 release. Qualification and exact-head review remain
-required before a production upgrade.
+Owner access covers the [journal](journal.md), sources, history imports,
+collections, and plate work. [Paired screens and dashboards](presentation.md)
+use separate read-only access. This guide describes `main`; for an upgrade,
+follow the instructions that ship with your target release.
 
 ## Ordinary home-network setup
 
 1. Follow [new native setup](settings.md#start-with-approved-art), or the [Docker guide](docker.md#2-create-private-configuration), including its one-time new-installation preparation.
 2. Keep the controller on your trusted home network.
-3. Open the controller's local address followed by /app.
+3. Open the controller's local address followed by `/app`.
 4. Choose a username and an Inky password of at least 15 characters.
 5. Save the password and complete account creation.
 

@@ -127,6 +127,19 @@ CSV. Never supply personal history. These journeys complement unit tests;
 they do not prove live provider contracts, physical hardware or real-phone
 certificate trust.
 
+### Refresh the README screenshots
+
+With the same controller dependencies and Chromium installed, run:
+
+```bash
+INKY_QA_PLAYWRIGHT="$qa_tools/node_modules/playwright" node tests/web/capture-readme.cjs
+```
+
+The script starts the checked-out app on loopback with a disposable owner and
+two approved public plates. It creates a manual collection through the real
+browser UI. Inspect the two PNGs in the printed output directory before copying
+them to `docs/images/`. Publish only those images, not the fixture state.
+
 ## Catalog contributions
 
 Catalog entries are immutable, location-neutral artifacts. A contribution adds

@@ -1,9 +1,8 @@
 # Screens, wall views and dashboards
 
 Inky can show approved art in your browser, on a paired screen, in a dashboard
-or on the physical wall. They share a catalog, not management authority.
-Status sensors are separate. This guide describes the 1.0
-candidate; wait for its reviewed release before changing a working deployment.
+or on the physical wall. They share approved artwork. A paired screen or status
+sensor does not get owner permissions.
 
 | Destination | Access | What it can do |
 | --- | --- | --- |

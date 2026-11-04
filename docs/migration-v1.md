@@ -1,9 +1,10 @@
 # Moving an existing controller to the browser journal
 
-This is the migration contract for the 1.0 candidate, not an instruction to
-deploy an unreviewed branch. Wait for the qualified release. Keep the exact old
-runtime and a matching complete private backup until the new installation passes
-your checks. No migration requires a public account, reverse proxy or e-paper frame.
+Use this guide with the release notes for the version you plan to install. It
+describes what the browser journal changes and how to keep your existing data.
+Keep the exact old runtime and a matching complete private backup until the new
+installation passes your checks. You do not need a public account, reverse proxy,
+or e-paper frame to migrate.
 
 ## What stays the same
 

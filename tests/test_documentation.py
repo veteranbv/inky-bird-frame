@@ -88,26 +88,23 @@ def test_internal_documentation_links_and_anchors_resolve() -> None:
     assert not problems, "\n" + "\n".join(problems)
 
 
-def test_readme_native_checks_use_the_managed_runtime() -> None:
-    readme = (ROOT / "README.md").read_text(encoding="utf-8")
-    section = readme.split("## Living with the frame", 1)[1].split("\n## ", 1)[0]
+def test_installation_native_checks_use_the_managed_runtime() -> None:
+    guide = (ROOT / "docs/installation.md").read_text(encoding="utf-8")
+    section = guide.split("### Verify controller data", 1)[1].split("\n## ", 1)[0]
 
     assert 'IBF="$HOME/Services/inky-bird-frame/.venv/bin/inky-bird-frame"' in section
     assert re.search(r"^inky-bird-frame(?:\s|$)", section, re.MULTILINE) is None
 
 
-def test_homepage_dashboard_examples_are_public_and_metadata_free() -> None:
+def test_historical_homepage_images_are_not_presented_as_current() -> None:
     readme = (ROOT / "README.md").read_text(encoding="utf-8")
-    section = readme.split("## Homepage dashboard", 1)[1].split("\n## ", 1)[0]
 
-    assert "The screenshots use a deterministic v0.7.0 demo" in section
-    assert "162 public plates published in that release and a fixed Eastern Bluebird" in section
     for name, expected_size in (
         ("homepage-dashboard-compact.png", (900, 300)),
         ("homepage-dashboard-featured-plate.png", (900, 920)),
     ):
         path = ROOT / "docs/images" / name
-        assert name in section
+        assert name not in readme
         with Image.open(path) as image:
             image.verify()
         with Image.open(path) as image:

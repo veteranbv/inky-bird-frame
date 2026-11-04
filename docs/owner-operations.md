@@ -1,10 +1,7 @@
 # Owner actions and saved outcomes
 
-This describes the 1.0 browser candidate. Implementation and local checks are
-not a release or production-deployment claim.
-
-Sources offers **Refresh observations**. Plate work accepts a selection of up
-to 32 birds for retry. Notifications offers a real delivery test
+In **Manage**, Sources offers **Refresh observations**. Plate work accepts up to
+32 birds for retry at once. Notifications offers a real delivery test
 and, when needed, retry of existing dead letters. Each action has a separate
 confirmation. Host repair, advanced correction-source selection and replacement
 of approved art remain operator workflows.

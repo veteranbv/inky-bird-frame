@@ -1,14 +1,16 @@
-# Settings in the browser candidate
+# Browser settings
 
-This guide describes the unfinished 1.0 development branch, not the latest
-published release. Keep a working controller on its released version until the
-complete candidate passes qualification.
+This guide describes `main`. Use the guide for your installed release when
+upgrading a working controller.
 
 ## Start with approved art
 
-From a development checkout with its controller dependencies installed:
+Use a fresh checkout with the controller dependencies and the
+[native prerequisites](installation.md#before-you-begin). The hardware and
+Codex requirements for a complete wall installation do not apply to this path.
 
 ```bash
+uv sync --extra controller --locked
 uv run inky-bird-frame config init --destination ./private/config.toml
 uv run inky-bird-frame setup controller --config ./private/config.toml
 ```
