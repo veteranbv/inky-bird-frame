@@ -8,8 +8,9 @@ accelerated; automatic browser playback remains once a minute.
 ## Transcript
 
 - **0:00–0:02.5:** The simple Inky Bird title card is fully visible from the first
-  frame. A field journal for the birds you see.
+  frame. A field journal for the birds in your life.
 - **0:02.5–0:07:** Close view of the approved Northern Cardinal plate.
+  The cardinal at your feeder deserves a page.
 - **0:07–0:12:** Home, Collections and Garden birds in the actual app.
 - **0:12–0:19:** Frame mode, a real Play action and a manual Next action to
   American Robin. Automatic playback changes once a minute; this short clip
