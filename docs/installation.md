@@ -680,11 +680,21 @@ publicly.
 Keep using your existing `$CONFIG`, runtime directory and service names during
 an upgrade. Do not create the new default config directory beside an existing
 one. If setup detects both native identities, it stops before making changes.
-For the first package-name update on the display, stop its timer, let the
+For every display runtime update, stop its timer, let the
 current service finish, and preserve a recoverable runtime backup. The installer
-refuses to remove the old Python distribution while that role is running.
+refuses to replace either installed Python distribution while that role is running.
 Resume the recorded timer state after validation; a forced panel cycle is not
 required. See [package upgrade and rollback](repository-name.md#python-environments).
+
+The remote display wrapper transfers public source to a private staging
+directory beside the application, not over the installed runtime. It checks
+capacity for staging and a complete managed copy before transfer. The local
+installer then checks identity, quiescence and administrator access before
+copying live files. Refusal leaves the runtime and private config untouched;
+the wrapper removes only its own staging directory. Later installation failures
+still require your matched runtime/state backup. Initial panel refresh is
+opt-in with `INKY_BIRD_RUN_INITIAL_DISPLAY=true`; normal updates can wait for
+the configured timer instead.
 
 Read the release notes and take a quiesced backup using the
 [backup and restore guide](backup.md). Choose the exact target release, update

@@ -389,7 +389,7 @@ def test_native_managed_copy_preserves_required_package_inputs(
 
 def test_remote_display_copy_includes_the_required_bundled_guide() -> None:
     script = (Path(__file__).resolve().parents[1] / "deploy/install-display-node.sh").read_text()
-    assert '"$1/docs"' in script
+    assert '"${remote_stage}/docs"' in script
     assert (
         "for file in pyproject.toml uv.lock README.md LICENSE docs/browser-access.md; do" in script
     )
