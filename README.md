@@ -47,15 +47,15 @@ browser Play does not refresh the wall.
 Bring nearby sightings, feeder visits, station detections and years of personal
 birding history into one journal. Use one source or combine several.
 
-| Source | What it brings | Connection |
-| --- | --- | --- |
-| [iNaturalist](docs/discovery.md#nearby-inaturalist-and-ebird-setup) | Nearby public bird observations | Location; no provider account |
-| [eBird](docs/discovery.md#nearby-inaturalist-and-ebird-setup) | Recent public sightings around a location | Personal API key |
-| [eBird Archive](docs/discovery.md#ebird-personal-archive) | Your own checklists, trips and life list | Import your export; not continuous account sync |
-| [BirdWeather](docs/discovery.md#birdweather-station-setup) | Acoustic detections from your station | Station token |
-| [BirdNET-Go](docs/discovery.md#self-hosted-birdnet-go-setup) | Detections from your self-hosted station | Read-only API connection |
-| [BirdNET Analyzer](docs/discovery.md#birdnet-analyzer-csv-import) | Detections from recorded-audio analysis | CSV import |
-| [Bird Buddy](docs/discovery.md#bird-buddy-setup) | Feeder postcard species and optional manual sightings | Account plus permission to use its private API |
+| Source | What you can bring into Inky |
+| --- | --- |
+| [iNaturalist](docs/discovery.md#nearby-inaturalist-and-ebird-setup) | Nearby public bird observations around your location; no provider account. |
+| [eBird](docs/discovery.md#nearby-inaturalist-and-ebird-setup) | Recent public sightings around your location; personal API key. |
+| [eBird Archive](docs/discovery.md#ebird-personal-archive) | Your own checklists, trips and life list from an export; not continuous account sync. |
+| [BirdWeather](docs/discovery.md#birdweather-station-setup) | Your station's acoustic detections; station token. |
+| [BirdNET-Go](docs/discovery.md#self-hosted-birdnet-go-setup) | Your self-hosted station's detections over its read-only API. |
+| [BirdNET Analyzer](docs/discovery.md#birdnet-analyzer-csv-import) | Recorded-audio detections from a CSV import. |
+| [Bird Buddy](docs/discovery.md#bird-buddy-setup) | Feeder postcard species and optional manual sightings; account plus permission to use its private API. |
 
 Inky reads detections; it does not record sound or run the detector. Public
 nearby observations are not a claim that you personally saw a bird. Your imported
