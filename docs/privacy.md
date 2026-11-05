@@ -14,6 +14,12 @@ state. Keep [controller backups](backup.md) and exports private. Removing an
 import does not necessarily remove saved birds, generated work, or old backups;
 follow the [private-data removal guide](backup.md#private-data-lifecycle-and-removal).
 
+For Bird Buddy, a dedicated guest account is the recommended least-privilege
+choice. An operator can explicitly accept the broader permissions of an owner
+account instead. Its refresh token retains that account's permissions; choosing
+one feeder in Inky does not make the token read-only or reduce its scope. See
+[Bird Buddy setup](discovery.md#bird-buddy-setup) for authorization and token custody.
+
 ## What can leave the controller
 
 | When you use… | What to expect |
