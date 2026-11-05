@@ -76,6 +76,7 @@ No source is required to browse approved art, save collections or play plates.
 | Keep a journal on a phone, tablet, or computer | Run the controller on an existing machine: [Docker or NAS](docs/docker.md) or [native installation](docs/installation.md). Open `/app` and [create your owner account](docs/browser-access.md). |
 | Put birds on a wall | Use a browser in [Frame mode](docs/presentation.md#owner-frame), [pair a read-only screen](docs/presentation.md#pair-a-read-only-screen), or build the [7.3-inch or 13.3-inch e-paper frame](docs/hardware.md). |
 | Connect a station, feeder, or observation account | [Choose a source](docs/discovery.md). Start with one, or keep using saved collections without any sources. |
+| Choose how I sign in and connect | Use built-in [username and password](docs/browser-access.md#ordinary-home-network-setup), or connect [single sign-on (OIDC)](docs/browser-access.md#advanced-authentik-and-other-openid-connect-providers). Add encrypted HTTPS [directly in Inky](docs/browser-access.md#advanced-supply-a-certificate) or [through your existing reverse proxy](docs/browser-access.md#advanced-https-through-a-reverse-proxy). |
 | Upgrade an existing installation | [Back up your controller](docs/backup.md), read the notes for the [target release](https://github.com/veteranbv/inky-bird/releases), and follow its update guide. |
 
 Browse, save collections, and play plates in the browser. With approved
