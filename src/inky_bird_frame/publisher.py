@@ -5,8 +5,10 @@ from __future__ import annotations
 import fcntl
 import hashlib
 import json
+import os
 import re
 import shutil
+import stat
 import subprocess
 from collections.abc import Iterator
 from contextlib import contextmanager
@@ -748,25 +750,104 @@ def _catalog_transaction_prefix(destination_catalog: Path, *, committed: bool) -
     return f".catalog-sync-{state}-{catalog_digest}-"
 
 
-def _catalog_transactions(destination_catalog: Path, *, committed: bool) -> list[Path]:
+def _catalog_transactions(
+    destination_catalog: Path, *, committed: bool, transaction_dir: Path | None = None
+) -> list[Path]:
     prefix = _catalog_transaction_prefix(destination_catalog, committed=committed)
-    return sorted(destination_catalog.parent.glob(f"{prefix}*"))
+    parent = transaction_dir if transaction_dir is not None else destination_catalog.parent
+    return sorted(parent.glob(f"{prefix}*"))
 
 
-def _validate_catalog_transaction(transaction: Path) -> None:
+def _catalog_transaction_directory(
+    source_catalog: Path, destination_catalog: Path, requested: Path | None
+) -> Path | None:
+    if requested is None:
+        return None
+    if requested.is_symlink():
+        raise CatalogPublishError("Catalog transaction directory must not be a symlink")
+    directory = requested.resolve()
+    if any(
+        directory.is_relative_to(catalog.resolve())
+        for catalog in (source_catalog, destination_catalog)
+    ):
+        raise CatalogPublishError("Catalog transaction directory must be outside both catalogs")
+    if directory != destination_catalog.parent.resolve() and any(
+        _catalog_transactions(destination_catalog, committed=committed)
+        for committed in (False, True)
+    ):
+        raise CatalogPublishError(
+            "Recover existing sibling catalog transactions before changing transaction directory"
+        )
+    custody = directory if directory.exists() else directory.parent
+    try:
+        info = custody.lstat()
+        if (
+            not stat.S_ISDIR(info.st_mode)
+            or info.st_uid != os.geteuid()
+            or stat.S_IMODE(info.st_mode) & 0o022
+            or stat.S_IMODE(info.st_mode) & 0o300 != 0o300
+        ):
+            raise CatalogPublishError(
+                "Catalog transaction directory must be caller-owned, writable "
+                "and not shared-writable"
+            )
+        for ancestor in directory.parents:
+            parent_info = ancestor.lstat()
+            if (
+                not stat.S_ISDIR(parent_info.st_mode)
+                or parent_info.st_uid not in (0, os.geteuid())
+                or (
+                    stat.S_IMODE(parent_info.st_mode) & 0o022
+                    and not parent_info.st_mode & stat.S_ISVTX
+                )
+            ):
+                raise CatalogPublishError(
+                    "Catalog transaction ancestors must not permit path replacement by other users"
+                )
+        target = destination_catalog
+        while not target.exists():
+            target = target.parent
+        if info.st_dev != target.stat().st_dev:
+            raise CatalogPublishError("Catalog transactions require the destination filesystem")
+        directory.mkdir(mode=0o700, exist_ok=True)
+        created = directory.lstat()
+        if (
+            not stat.S_ISDIR(created.st_mode)
+            or created.st_uid != os.geteuid()
+            or stat.S_IMODE(created.st_mode) & 0o022
+            or stat.S_IMODE(created.st_mode) & 0o300 != 0o300
+            or created.st_dev != target.stat().st_dev
+        ):
+            raise CatalogPublishError("Catalog transaction directory custody changed")
+    except OSError as exc:
+        raise CatalogPublishError("Catalog transaction directory is unavailable") from exc
+    return directory
+
+
+def _validate_catalog_transaction(transaction: Path, *, private: bool = False) -> None:
     if transaction.is_symlink() or not transaction.is_dir():
         raise CatalogPublishError(f"Invalid catalog sync transaction path: {transaction}")
+    if private:
+        info = transaction.lstat()
+        if info.st_uid != os.geteuid() or stat.S_IMODE(info.st_mode) & 0o022:
+            raise CatalogPublishError("Catalog transaction is not in caller custody")
 
 
-def _recover_catalog_transactions(destination_catalog: Path) -> bool:
+def _recover_catalog_transactions(
+    destination_catalog: Path, *, transaction_dir: Path | None = None
+) -> bool:
     destination_species = destination_catalog / "species"
-    committed_transactions = _catalog_transactions(destination_catalog, committed=True)
+    committed_transactions = _catalog_transactions(
+        destination_catalog, committed=True, transaction_dir=transaction_dir
+    )
     for transaction in committed_transactions:
-        _validate_catalog_transaction(transaction)
+        _validate_catalog_transaction(transaction, private=transaction_dir is not None)
         shutil.rmtree(transaction)
-    active_transactions = _catalog_transactions(destination_catalog, committed=False)
+    active_transactions = _catalog_transactions(
+        destination_catalog, committed=False, transaction_dir=transaction_dir
+    )
     for transaction in active_transactions:
-        _validate_catalog_transaction(transaction)
+        _validate_catalog_transaction(transaction, private=transaction_dir is not None)
         _restore_catalog_replacements(transaction, destination_species)
     if active_transactions:
         rebuild_catalog_index(destination_catalog)
@@ -776,11 +857,13 @@ def _recover_catalog_transactions(destination_catalog: Path) -> bool:
     return bool(active_transactions)
 
 
-def _new_catalog_transaction(destination_catalog: Path) -> Path:
+def _new_catalog_transaction(
+    destination_catalog: Path, *, transaction_dir: Path | None = None
+) -> Path:
     return Path(
         mkdtemp(
             prefix=_catalog_transaction_prefix(destination_catalog, committed=False),
-            dir=destination_catalog.parent,
+            dir=transaction_dir if transaction_dir is not None else destination_catalog.parent,
         )
     )
 
@@ -804,6 +887,7 @@ def sync_public_catalog(
     taxon_ids: set[int] | None = None,
     allow_replacements: bool = False,
     retain_independent_approvals: bool = False,
+    transaction_dir: Path | None = None,
 ) -> dict[str, object]:
     source_entries = validate_public_catalog(source_catalog)
     all_source_taxa = {entry.taxon_id for entry in source_entries}
@@ -816,9 +900,14 @@ def sync_public_catalog(
         entry.taxon_id: entry for entry in source_entries if entry.taxon_id in requested_taxa
     }
 
+    transaction_dir = _catalog_transaction_directory(
+        source_catalog, destination_catalog, transaction_dir
+    )
     _validate_catalog_root(destination_catalog, allow_create=True)
     destination_species = destination_catalog / "species"
-    recovered_transaction = _recover_catalog_transactions(destination_catalog)
+    recovered_transaction = _recover_catalog_transactions(
+        destination_catalog, transaction_dir=transaction_dir
+    )
     if (destination_catalog / "index.json").exists():
         try:
             validate_public_catalog(destination_catalog)
@@ -841,7 +930,7 @@ def sync_public_catalog(
     retained_independent: list[dict[str, object]] = []
     existing: list[int] = []
 
-    transaction = _new_catalog_transaction(destination_catalog)
+    transaction = _new_catalog_transaction(destination_catalog, transaction_dir=transaction_dir)
     try:
         for taxon_id, entry in sorted(source_by_taxon.items()):
             source = source_catalog / "species" / f"{taxon_id}-{entry.slug}"

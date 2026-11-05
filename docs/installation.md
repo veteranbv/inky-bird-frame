@@ -469,6 +469,32 @@ An existing controller can explicitly retain every currently approved plate
 after upgrading by previewing and applying `collection import-approved`; see
 the [operations guide](operations.md#seed-and-manage-a-private-collection).
 
+### Import an approved catalog without changing parent permissions
+
+For a controller that owns its catalog and state directories but cannot write
+their parent, supply the existing controller state directory when importing:
+
+```bash
+inky-bird catalog sync \
+  --source-catalog reviewed-catalog \
+  --catalog data/catalog \
+  --state-dir data/state
+```
+
+The command holds the catalog lock and keeps recoverable transactions under
+`data/state/catalog-sync-work`. That location must be caller-owned, not writable
+by other users, on the destination filesystem and outside both catalogs. Its
+ancestors must be owned by the caller or root and prevent replacement by other
+users; shared writable ancestors need the sticky bit. No
+parent permission change or privileged import is required. Use the same
+`--state-dir` when resuming an interrupted import. Existing sibling transaction
+records must be recovered before changing the transaction location; the command
+does not silently discard them. Imports without `--state-dir` retain sibling
+transaction staging for offline catalogs.
+
+Catalog import preserves the approved artwork and its metadata. Adding that
+artwork to Saved birds is a separate owner action, not evidence of a sighting.
+
 ## 2. Prepare the display Pi
 
 ### Flash Raspberry Pi OS
