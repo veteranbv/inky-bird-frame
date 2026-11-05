@@ -1,0 +1,34 @@
+{
+  "anatomy_accuracy": 4,
+  "composition_quality": 5,
+  "correction_findings": [],
+  "findings": [
+    "The primary specimen and detached studies are consistent with Brown Creeper: mottled brown-and-buff upperparts, pale eyebrow, dark eye line, white underparts, patterned dark wings, decurved bill, and stiff pointed tail.",
+    "Magnified inspection shows one visible foot, with three forward toes and one opposing hind toe, open curved claws, and a coherent tarsal attachment. The short shared basal toe segment is consistent with the supplied structural evidence. Historical descriptions of two visible gripping feet conflict with the current pixels; those requests are not marked resolved.",
+    "The far leg and far wing are convincingly occluded. There is one complete primary specimen with one head, one bill, paired wings and legs accounted for, and one tail. The detached wing and head studies are coherent supplementary anatomy.",
+    "The breast and belly follow a sufficiently slim, bark-hugging profile. Both depicted bills have traceable mandibles and credible slender, decurved shapes. Gape projections read as feather tips, not distinct rictal bristles.",
+    "Every visible text line was checked, including the names, family, measurements, habitat, behavior, six field marks, ruler labels, and footer. No misspelling, omitted word, duplicated word, or numerical discrepancy was found.",
+    "Cornell directly supports all three proposed measurement ranges with the Both Sexes qualifier. Audubon's different weight range does not invalidate this compatible published set.",
+    "Direct sources support the family, field marks, habitat, and behavior; no profile conflict was established.",
+    "The ruler increases from 4.7 in (12 cm) at the bottom to 5.5 in (14 cm) at the top. The repeated body-length range agrees, and the explicit schematic\u2014not-to-scale notice prevents interpretation as printed specimen size.",
+    "The composition is legible and balanced. No place name, ZIP code, coordinates, map, or local-observation detail appears."
+  ],
+  "location_free": true,
+  "passed": true,
+  "species_accuracy": 4,
+  "text_accuracy": 5,
+  "verification_sources": [
+    {
+      "title": "Brown Creeper Identification \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Brown_Creeper/id"
+    },
+    {
+      "title": "Brown Creeper \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/brown-creeper"
+    },
+    {
+      "title": "Certhia americana \u2014 Animal Diversity Web",
+      "url": "https://animaldiversity.org/accounts/Certhia_americana/"
+    }
+  ]
+}

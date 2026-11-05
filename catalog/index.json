@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-04T19:35:36+00:00",
+  "generated_at": "2026-11-05T03:29:15+00:00",
   "schema_version": 1,
   "species": [
     {
@@ -320,6 +320,17 @@
       "scientific_name": "Buteo platypterus",
       "slug": "broad-winged-hawk",
       "taxon_id": 5227
+    },
+    {
+      "approved_at": "2026-11-05T03:29:15+00:00",
+      "common_name": "Brown Creeper",
+      "display_path": "species/7458-brown-creeper/display.png",
+      "display_sha256": "4cc293e22b799b1e8a15988078d9b8c086f451e006c56e296e4efa9404183070",
+      "portrait_path": "species/7458-brown-creeper/portrait.png",
+      "portrait_sha256": "0b93d13bcb7036a7723171b8ceb66242137b1063572f2432587df7fa47dbc5ec",
+      "scientific_name": "Certhia americana",
+      "slug": "brown-creeper",
+      "taxon_id": 7458
     },
     {
       "approved_at": "2026-08-10T01:55:00+00:00",
