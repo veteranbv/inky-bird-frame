@@ -1296,6 +1296,8 @@ class ServerTests(unittest.TestCase):
             )
 
         log = json.loads(output.getvalue().strip())
+        timestamp = datetime.fromisoformat(log["timestamp"])
+        self.assertEqual(timestamp.utcoffset(), timedelta(0))
         self.assertEqual(log["event"], "http_request")
         self.assertEqual(log["method"], "GET")
         self.assertEqual(log["route"], "/health")

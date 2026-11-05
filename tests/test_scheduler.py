@@ -1,7 +1,9 @@
 from __future__ import annotations
 
+import json
 import unittest
 from argparse import Namespace
+from datetime import UTC, datetime
 from pathlib import Path
 from signal import SIGTERM
 from unittest.mock import Mock, patch
@@ -11,7 +13,12 @@ from inky_bird_frame.config import load_config
 from inky_bird_frame.errors import CatalogError
 from inky_bird_frame.retry_requests import RETRY_WAKE_LISTENER
 from inky_bird_frame.runtime_state import state_lock_held
-from inky_bird_frame.scheduler import ScheduledJob, SubprocessCommandRunner, run_scheduler
+from inky_bird_frame.scheduler import (
+    ScheduledJob,
+    SubprocessCommandRunner,
+    _log_event,
+    run_scheduler,
+)
 from inky_bird_frame.settings import initialize_config
 
 
@@ -42,6 +49,58 @@ class FakeClock:
 
 
 class SchedulerTests(unittest.TestCase):
+    def test_event_timestamp_is_utc_and_preserves_existing_fields(self) -> None:
+        before = datetime.now(UTC)
+        with patch("builtins.print") as log:
+            _log_event("job_failed", ScheduledJob("refresh", ("refresh",), 60), exit_code=1)
+        after = datetime.now(UTC)
+
+        payload = json.loads(log.call_args.args[0])
+        timestamp = datetime.fromisoformat(payload.pop("timestamp"))
+        assert timestamp.utcoffset() == UTC.utcoffset(None)
+        assert before <= timestamp <= after
+        assert payload == {"event": "job_failed", "job": "refresh", "exit_code": 1}
+        assert log.call_args.kwargs == {"flush": True}
+
+    def test_retry_wake_failure_and_recovery_are_timestamped_without_private_detail(self) -> None:
+        clock = FakeClock()
+        calls: list[str] = []
+        wake_calls = 0
+
+        def wake() -> None:
+            nonlocal wake_calls
+            wake_calls += 1
+            if wake_calls == 1:
+                raise ValueError("PRIVATE_FILE_PAYLOAD")
+
+        def runner(arguments: tuple[str, ...]) -> int:
+            calls.append(arguments[0])
+            return 0
+
+        with patch("builtins.print") as log:
+            run_scheduler(
+                [ScheduledJob("refresh", ("refresh",), 2)],
+                runner,
+                stop_requested=lambda: len(calls) >= 2,
+                wait=clock.wait,
+                monotonic=clock.monotonic,
+                wake_provider=wake,
+            )
+
+        events = [json.loads(call.args[0]) for call in log.call_args_list]
+        assert all(
+            datetime.fromisoformat(event["timestamp"]).utcoffset() == UTC.utcoffset(None)
+            for event in events
+        )
+        wake_events = [event for event in events if event["event"].startswith("retry_wake_")]
+        assert [event["event"] for event in wake_events] == [
+            "retry_wake_failed",
+            "retry_wake_recovered",
+        ]
+        assert wake_events[0]["error_type"] == "ValueError"
+        assert all("job" not in event for event in wake_events)
+        assert not any("PRIVATE_FILE_PAYLOAD" in call.args[0] for call in log.call_args_list)
+
     def test_completed_job_deadline_is_published_before_the_next_long_job(self) -> None:
         clock = FakeClock()
         calls: list[str] = []

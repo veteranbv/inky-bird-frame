@@ -414,7 +414,15 @@ class CatalogService:
                 self.config.state_dir / filename, {"schema_version": 1, field: utc_now()}
             )
         except OSError:
-            print(json.dumps({"event": "display_telemetry_write_failed", "file": filename}))
+            print(
+                json.dumps(
+                    {
+                        "timestamp": utc_now(),
+                        "event": "display_telemetry_write_failed",
+                        "file": filename,
+                    }
+                )
+            )
             return False
         return True
 
@@ -520,6 +528,7 @@ class CatalogService:
         print(
             json.dumps(
                 {
+                    "timestamp": utc_now(),
                     "event": "http_request",
                     "method": request.method,
                     "route": route,
@@ -534,7 +543,7 @@ def rebuild_index_logging_failures(catalog_dir: Path) -> None:
     try:
         rebuild_catalog_index(catalog_dir)
     except (CatalogError, OSError):
-        print(json.dumps({"event": "catalog_index_rebuild_failed"}))
+        print(json.dumps({"timestamp": utc_now(), "event": "catalog_index_rebuild_failed"}))
 
 
 def serve_catalog(config: ControllerConfig, *, app_config: AppConfig | None = None) -> None:

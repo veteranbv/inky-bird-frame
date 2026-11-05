@@ -9,6 +9,7 @@ import time
 from collections.abc import Callable, Sequence
 from contextlib import suppress
 from dataclasses import dataclass
+from datetime import UTC, datetime
 
 
 @dataclass(frozen=True)
@@ -56,10 +57,13 @@ class SubprocessCommandRunner:
             os.killpg(process.pid, signum)
 
 
-def _log_event(event: str, job: ScheduledJob, **details: object) -> None:
+def _log_event(event: str, job: ScheduledJob | None = None, **details: object) -> None:
+    payload = {"timestamp": datetime.now(UTC).isoformat(), "event": event, **details}
+    if job is not None:
+        payload["job"] = job.name
     print(
         json.dumps(
-            {"event": event, "job": job.name, **details},
+            payload,
             sort_keys=True,
         ),
         flush=True,
@@ -130,17 +134,12 @@ def run_scheduler(
                 # Corrupt retry state must fail generation closed, not stop
                 # discovery, catalog publication or notification delivery.
                 if not wake_failed:
-                    print(
-                        json.dumps(
-                            {"event": "retry_wake_failed", "error_type": type(exc).__name__}
-                        ),
-                        flush=True,
-                    )
+                    _log_event("retry_wake_failed", error_type=type(exc).__name__)
                 wake_failed = True
                 wake = None
             else:
                 if wake_failed:
-                    print(json.dumps({"event": "retry_wake_recovered"}), flush=True)
+                    _log_event("retry_wake_recovered")
                 wake_failed = False
             if wake is not None and wake != seen_wake and "generate" in next_runs:
                 seen_wake = wake
