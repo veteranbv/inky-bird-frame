@@ -100,7 +100,15 @@ def test_unit_references_never_mix_families(tmp_path: Path, family: str, ownersh
         assert f"{family}-refresh.timer" not in units
 
 
-@pytest.mark.parametrize("versions", [{"inky-bird": "1.2.3"}, {"inky-bird-frame": "0.9.7"}, {}])
+@pytest.mark.parametrize(
+    "versions",
+    [
+        {"inky-bird": "1.2.3"},
+        {"inky-bird": "1.0.0rc1"},
+        {"inky-bird-frame": "0.9.7"},
+        {},
+    ],
+)
 def test_version_lookup_supports_both_distributions(versions: dict[str, str]) -> None:
     from importlib.metadata import PackageNotFoundError
 

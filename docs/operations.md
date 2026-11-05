@@ -435,6 +435,12 @@ the source of truth for each upgrade.
 
 ### Version 1 compatibility contract
 
+`1.0.0rc1` identifies the first release candidate, not a stable 1.0 release.
+Qualification, recovery and soak results remain tracked in
+[#264](https://github.com/veteranbv/inky-bird/issues/264). A source version or
+successful build does not mean those gates have passed. Stable release notes
+and a version tag follow final acceptance.
+
 Beginning with v1.0.0, the version number describes the compatibility promise:
 
 - A patch release fixes defects, security issues, dependencies, documentation,
