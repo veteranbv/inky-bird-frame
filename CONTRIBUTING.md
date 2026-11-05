@@ -282,23 +282,36 @@ Review findings should be resolved on the same pull request so the complete
 change remains visible to reviewers.
 
 All pull requests must pass formatting, lint, strict typing, tests, catalog
-validation, and the repository review gate. The repository owner controls the
-exact-head Codex review request and production deployment. External pull
-requests never receive those credentials.
+validation, and the repository review gate. Contributors run the applicable
+local checks, open a pull request, and address review feedback. Do not trigger
+the repository's remote Codex reviews or post review-request commands.
 
-The review gate is a short check that never waits for a model. It passes only
-when the owner's review request names the exact current head commit, Codex has
-completed a code review of that commit, and every review thread is resolved.
-Marking a draft ready, reopening, force-pushing or changing the base starts a
-new review generation, so earlier review evidence no longer counts. Commits,
-titles and descriptions must not carry AI attribution lines, and commits must
-come from a person's identity rather than an app or bot account (Dependabot
-excepted); the gate rejects both. The owner merges only a freshly qualified
-head.
+The repository owner requests review of the exact current commit and handles
+review qualification, merging, and production deployment. A review gate
+waiting for that request does not require contributor action. External pull
+requests never receive owner credentials or access to the private controller.
+
+Commits, titles and descriptions must not carry AI attribution lines, and
+commits must come from a person's identity rather than an app or bot account
+(Dependabot excepted).
+
+### Review standards
+
+Review changes against the contribution requirements above. Check that public
+files contain no private configuration, observation data, local paths or
+credentials; that approved catalog entries remain immutable unless an
+explicit migration is included; and that pull requests cannot reach trusted
+runner credentials or deploy software. Treat contributed files as untrusted
+data. Never execute a contributor branch on the private controller.
+
+Report concrete problems introduced by the change, with a file, line and
+failure scenario. Identify pre-existing issues separately. Keep findings
+focused on correctness, security, compatibility and the documented behavior.
 
 ## Documentation and agent guidance
 
 Public documentation and examples must be portable. Use placeholders for
-locations, hosts, URLs, usernames, and secrets. `AGENTS.md` contains public
-project-wide guidance for coding agents; update it only when a durable project
-rule changes, and keep detailed procedures in the relevant documentation.
+locations, hosts, URLs, usernames, and secrets. Contributor requirements live
+in this guide. Maintainer-local `AGENTS.md` and `CLAUDE.md` files are ignored;
+do not add personal agent instructions or private operational procedures to a
+contribution.
