@@ -17,3 +17,7 @@ access.env
 native-access.env
 private/
 .env
+
+# Maintainer-local agent instructions, not contributor requirements.
+/AGENTS.md
+/CLAUDE.md
