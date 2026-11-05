@@ -1,0 +1,169 @@
+{
+  "approved_at": "2026-11-05T03:29:15+00:00",
+  "assets": {
+    "display": {
+      "filename": "display.png",
+      "sha256": "4cc293e22b799b1e8a15988078d9b8c086f451e006c56e296e4efa9404183070"
+    },
+    "portrait": {
+      "filename": "portrait.png",
+      "sha256": "0b93d13bcb7036a7723171b8ceb66242137b1063572f2432587df7fa47dbc5ec"
+    }
+  },
+  "common_name": "Brown Creeper",
+  "generation": {
+    "attempt": 4,
+    "generated_at": "2026-11-05T03:09:20+00:00",
+    "generator": "Codex desktop / built-in image generation",
+    "max_attempts": 4,
+    "prompt_version": "brown-creeper-curated-direct-20261104"
+  },
+  "profile": {
+    "behavior": "Forages by hitching upward in short, jerky spirals around trunks and large branches, bracing with its stiff tail and probing bark crevices for insects and spiders; usually flies down to the base of another tree to begin again.",
+    "common_name": "Brown Creeper",
+    "family": "Certhiidae",
+    "field_marks": [
+      "Slim, bark-clinging body with mottled brown-and-buff upperparts",
+      "White throat and underparts",
+      "Broad buff eyebrow above a dark eye line",
+      "Slender, pointed, downcurved bill",
+      "Dark wings with buff spotting and a pale wing bar",
+      "Long, stiff, pointed tail; short legs with strongly curved claws"
+    ],
+    "habitat": "Primarily mature coniferous, deciduous, and mixed forests with large trees for foraging and loose-barked dead or dying trees for nesting; uses a wider variety of wooded habitats outside the breeding season.",
+    "measurements": {
+      "length": "Both sexes: 4.7\u20135.5 in (12\u201314 cm)",
+      "weight": "Both sexes: 0.2\u20130.3 oz (5\u201310 g)",
+      "wingspan": "Both sexes: 6.7\u20137.9 in (17\u201320 cm)"
+    },
+    "palette": [
+      "mottled brown",
+      "warm buff",
+      "cream-white",
+      "charcoal black",
+      "rusty tan"
+    ],
+    "scientific_name": "Certhia americana",
+    "sources": [
+      {
+        "title": "Brown Creeper Identification \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Brown_Creeper/id"
+      },
+      {
+        "title": "Brown Creeper \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/brown-creeper"
+      },
+      {
+        "title": "Certhia americana \u2014 Animal Diversity Web",
+        "url": "https://animaldiversity.org/accounts/Certhia_americana/"
+      }
+    ],
+    "taxon_id": 7458
+  },
+  "quality_review": {
+    "anatomy_accuracy": 4,
+    "composition_quality": 5,
+    "correction_findings": [],
+    "findings": [
+      "The primary specimen and detached studies are consistent with Brown Creeper: mottled brown-and-buff upperparts, pale eyebrow, dark eye line, white underparts, patterned dark wings, decurved bill, and stiff pointed tail.",
+      "Magnified inspection shows one visible foot, with three forward toes and one opposing hind toe, open curved claws, and a coherent tarsal attachment. The short shared basal toe segment is consistent with the supplied structural evidence. Historical descriptions of two visible gripping feet conflict with the current pixels; those requests are not marked resolved.",
+      "The far leg and far wing are convincingly occluded. There is one complete primary specimen with one head, one bill, paired wings and legs accounted for, and one tail. The detached wing and head studies are coherent supplementary anatomy.",
+      "The breast and belly follow a sufficiently slim, bark-hugging profile. Both depicted bills have traceable mandibles and credible slender, decurved shapes. Gape projections read as feather tips, not distinct rictal bristles.",
+      "Every visible text line was checked, including the names, family, measurements, habitat, behavior, six field marks, ruler labels, and footer. No misspelling, omitted word, duplicated word, or numerical discrepancy was found.",
+      "Cornell directly supports all three proposed measurement ranges with the Both Sexes qualifier. Audubon's different weight range does not invalidate this compatible published set.",
+      "Direct sources support the family, field marks, habitat, and behavior; no profile conflict was established.",
+      "The ruler increases from 4.7 in (12 cm) at the bottom to 5.5 in (14 cm) at the top. The repeated body-length range agrees, and the explicit schematic\u2014not-to-scale notice prevents interpretation as printed specimen size.",
+      "The composition is legible and balanced. No place name, ZIP code, coordinates, map, or local-observation detail appears."
+    ],
+    "location_free": true,
+    "passed": true,
+    "species_accuracy": 4,
+    "text_accuracy": 5,
+    "verification_sources": [
+      {
+        "title": "Brown Creeper Identification \u2014 All About Birds",
+        "url": "https://www.allaboutbirds.org/guide/Brown_Creeper/id"
+      },
+      {
+        "title": "Brown Creeper \u2014 Audubon Field Guide",
+        "url": "https://www.audubon.org/field-guide/bird/brown-creeper"
+      },
+      {
+        "title": "Certhia americana \u2014 Animal Diversity Web",
+        "url": "https://animaldiversity.org/accounts/Certhia_americana/"
+      }
+    ]
+  },
+  "references": [
+    {
+      "attribution": "no rights reserved",
+      "filename": "01-698790360.jpg",
+      "height": 1536,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/698790360/original.jpg",
+      "license_code": "cc0",
+      "observation_id": 381873459,
+      "observer": "zorthesosen",
+      "photo_id": 698790360,
+      "sha256": "bbd670e0bde17c0b21c5e75a729f3d49d9f532c8cc6734776d720b70d8540802",
+      "source_url": "https://www.inaturalist.org/observations/381873459",
+      "width": 2048
+    },
+    {
+      "attribution": "no rights reserved",
+      "filename": "04-748232922.jpg",
+      "height": 1253,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/748232922/original.jpg",
+      "license_code": "cc0",
+      "observation_id": 407186856,
+      "observer": "lyneisfilm",
+      "photo_id": 748232922,
+      "sha256": "1ea183f66e56ee9ddab6ea491093703dcf68ae9ca2b562f716d15c10148d1a47",
+      "source_url": "https://www.inaturalist.org/observations/407186856",
+      "width": 1552
+    },
+    {
+      "attribution": "(c) Donald Davesne, some rights reserved (CC BY)",
+      "filename": "01-337876022.jpg",
+      "height": 1362,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/337876022/original.jpg",
+      "license_code": "cc-by",
+      "observation_id": 192466961,
+      "observer": "donalddavesne",
+      "photo_id": 337876022,
+      "sha256": "c39109c2375a300d77b2167a3fd0b97951f64b4040efea6d6a4ab7e048ae5654",
+      "source_url": "https://www.inaturalist.org/observations/192466961",
+      "width": 2048
+    },
+    {
+      "attribution": "no rights reserved",
+      "filename": "02-240135909.jpeg",
+      "height": 1470,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/240135909/original.jpeg",
+      "license_code": "cc0",
+      "observation_id": 140297387,
+      "observer": "wildreturn",
+      "photo_id": 240135909,
+      "sha256": "2ff0109b80c2f4d0bb46407639db1b52a0a8c1f9c5dc173aef202dede4fd2780",
+      "source_url": "https://www.inaturalist.org/observations/140297387",
+      "width": 1139
+    },
+    {
+      "attribution": "(c) Jeff Bartlett, some rights reserved (CC BY)",
+      "filename": "03-609808771.jpg",
+      "height": 1365,
+      "image_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/609808771/original.jpg",
+      "license_code": "cc-by",
+      "observation_id": 335656221,
+      "observer": "jbartlett79",
+      "photo_id": 609808771,
+      "sha256": "28879d43d09da34fcdaac8f8b54ffecb5fe8f8870da4095aeb7e3c0f30604ca9",
+      "source_url": "https://www.inaturalist.org/observations/335656221",
+      "width": 2048
+    }
+  ],
+  "schema_version": 1,
+  "scientific_name": "Certhia americana",
+  "slug": "brown-creeper",
+  "status": "approved",
+  "taxon_id": 7458
+}
