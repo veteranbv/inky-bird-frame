@@ -1,9 +1,13 @@
 from __future__ import annotations
 
+import io
 import json
+import os
 import shutil
+import stat
 import subprocess
 import unittest
+from contextlib import redirect_stdout
 from pathlib import Path
 from tempfile import TemporaryDirectory
 from unittest.mock import call, patch
@@ -12,6 +16,7 @@ import pytest
 from PIL import Image, PngImagePlugin
 
 from inky_bird_frame.catalog import rebuild_catalog_index, sha256_file
+from inky_bird_frame.cli import build_parser, catalog_sync_command
 from inky_bird_frame.config import PublicCatalogConfig, load_config
 from inky_bird_frame.errors import CatalogPublishError
 from inky_bird_frame.http import write_json_atomic
@@ -407,6 +412,262 @@ class PublisherTests(unittest.TestCase):
             self.assertEqual(repeated["published"], [])
             self.assertEqual(repeated["replaced"], [])
             self.assertEqual(repeated["already_present"], [1])
+
+    def test_controller_sync_stages_in_owned_state_with_a_protected_parent(self) -> None:
+        if os.geteuid() == 0:
+            self.skipTest("A non-root caller must exercise the protected parent")
+        with TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            protected = root / "protected"
+            destination = protected / "catalog"
+            source = root / "source"
+            state = root / "state"
+            original = _create_species(destination, 1, "First Bird")
+            _create_species(source, 1, "First Bird")
+            _create_species(source, 2, "Second Bird")
+            before = {p.name: p.read_bytes() for p in original.iterdir()}
+            protected.chmod(0o555)
+            try:
+                args = build_parser().parse_args(
+                    [
+                        "catalog",
+                        "sync",
+                        "--source-catalog",
+                        str(source),
+                        "--catalog",
+                        str(destination),
+                        "--state-dir",
+                        str(state),
+                    ]
+                )
+                with redirect_stdout(io.StringIO()):
+                    self.assertEqual(catalog_sync_command(args), 0)
+                self.assertEqual(len(validate_public_catalog(destination)), 2)
+                self.assertEqual(before, {p.name: p.read_bytes() for p in original.iterdir()})
+                self.assertEqual(stat.S_IMODE(protected.stat().st_mode), 0o555)
+                self.assertEqual(list((state / "catalog-sync-work").iterdir()), [])
+                self.assertFalse(list(protected.glob(".catalog-sync-*")))
+            finally:
+                protected.chmod(0o755)
+
+    def test_custom_transaction_directory_rejects_unsafe_locations(self) -> None:
+        with TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            source = root / "source"
+            destination = root / "destination"
+            _create_species(source, 1, "First Bird")
+            _create_species(destination, 2, "Second Bird")
+            before = (destination / "index.json").read_bytes()
+            shared = root / "shared"
+            shared.mkdir(mode=0o777)
+            shared.chmod(0o777)
+            link = root / "link"
+            link.symlink_to(shared, target_is_directory=True)
+            for directory, message in (
+                (link, "symlink"),
+                (shared, "caller-owned"),
+                (source / "work", "outside both"),
+                (destination / "work", "outside both"),
+            ):
+                with self.subTest(directory=directory):
+                    with self.assertRaisesRegex(CatalogPublishError, message):
+                        sync_public_catalog(source, destination, transaction_dir=directory)
+                    self.assertEqual((destination / "index.json").read_bytes(), before)
+            self.assertFalse((source / "work").exists())
+            self.assertFalse((destination / "work").exists())
+
+    def test_custom_transaction_directory_rejects_foreign_owner_or_filesystem(self) -> None:
+        with TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            source = root / "source"
+            destination = root / "destination"
+            work = root / "work"
+            work.mkdir(mode=0o700)
+            _create_species(source, 1, "First Bird")
+            _create_species(destination, 2, "Second Bird")
+            before = (destination / "index.json").read_bytes()
+            with (
+                patch("inky_bird_frame.publisher.os.geteuid", return_value=os.geteuid() + 1),
+                self.assertRaisesRegex(CatalogPublishError, "caller-owned"),
+            ):
+                sync_public_catalog(source, destination, transaction_dir=work)
+            work = work.resolve()
+            real_lstat = Path.lstat
+
+            def other_device(path: Path) -> os.stat_result:
+                info = real_lstat(path)
+                if path == work:
+                    fields = list(info)
+                    fields[2] += 1
+                    return os.stat_result(fields)
+                return info
+
+            with (
+                patch.object(Path, "lstat", other_device),
+                self.assertRaisesRegex(CatalogPublishError, "destination filesystem"),
+            ):
+                sync_public_catalog(source, destination, transaction_dir=work)
+            self.assertEqual((destination / "index.json").read_bytes(), before)
+            self.assertEqual(list(work.iterdir()), [])
+
+    def test_custom_transaction_directory_rejects_replaceable_ancestors(self) -> None:
+        with TemporaryDirectory() as temporary:
+            root = Path(temporary).resolve()
+            source = root / "source"
+            destination = root / "destination"
+            parent = root / "shared-parent"
+            work = parent / "private-work"
+            work.mkdir(mode=0o700, parents=True)
+            _create_species(source, 1, "First Bird")
+            _create_species(destination, 2, "Second Bird")
+            before = (destination / "index.json").read_bytes()
+            parent.chmod(0o777)
+            with self.assertRaisesRegex(CatalogPublishError, "ancestors"):
+                sync_public_catalog(source, destination, transaction_dir=work)
+            parent.chmod(0o755)
+            real_lstat = Path.lstat
+
+            def foreign_parent(path: Path) -> os.stat_result:
+                info = real_lstat(path)
+                if path == parent:
+                    fields = list(info)
+                    fields[4] = os.geteuid() + 1
+                    return os.stat_result(fields)
+                return info
+
+            with (
+                patch.object(Path, "lstat", foreign_parent),
+                self.assertRaisesRegex(CatalogPublishError, "ancestors"),
+            ):
+                sync_public_catalog(source, destination, transaction_dir=work)
+            self.assertEqual((destination / "index.json").read_bytes(), before)
+            self.assertEqual(list(work.iterdir()), [])
+
+    def test_custom_recovery_rejects_a_shared_writable_transaction(self) -> None:
+        with TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            source = root / "source"
+            destination = root / "destination"
+            work = root / "work"
+            work.mkdir(mode=0o700)
+            _create_species(source, 1, "First Bird")
+            _create_species(destination, 2, "Second Bird")
+            before = (destination / "index.json").read_bytes()
+            transaction = (
+                work / f"{_catalog_transaction_prefix(destination, committed=False)}foreign"
+            )
+            transaction.mkdir()
+            transaction.chmod(0o777)
+            with self.assertRaisesRegex(CatalogPublishError, "caller custody"):
+                sync_public_catalog(source, destination, transaction_dir=work)
+            self.assertEqual((destination / "index.json").read_bytes(), before)
+            self.assertTrue(transaction.exists())
+
+    def test_custom_transaction_directory_does_not_hide_legacy_recovery(self) -> None:
+        with TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            source = root / "source"
+            destination = root / "destination"
+            _create_species(source, 1, "First Bird")
+            _create_species(destination, 2, "Second Bird")
+            before = (destination / "index.json").read_bytes()
+            for committed in (False, True):
+                with self.subTest(committed=committed):
+                    prefix = _catalog_transaction_prefix(destination, committed=committed)
+                    legacy = root / f"{prefix}interrupted"
+                    legacy.mkdir()
+                    try:
+                        with self.assertRaisesRegex(
+                            CatalogPublishError, "Recover existing sibling"
+                        ):
+                            sync_public_catalog(source, destination, transaction_dir=root / "work")
+                        self.assertTrue(legacy.is_dir())
+                        self.assertFalse((root / "work").exists())
+                        self.assertEqual((destination / "index.json").read_bytes(), before)
+                    finally:
+                        legacy.rmdir()
+
+    def test_custom_transaction_directory_recovers_active_replacement(self) -> None:
+        with TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            source = root / "source"
+            destination = root / "destination"
+            replacement = root / "replacement"
+            work = root / "state/catalog-sync-work"
+            work.parent.mkdir(mode=0o700)
+            approved = _create_species(destination, 1, "First Bird")
+            original = (approved / "portrait.png").read_bytes()
+            shutil.copytree(destination, source)
+            _create_portrait_replacement(
+                replacement, 1, "First Bird", approved_at="2026-07-10T00:00:00+00:00", color="black"
+            )
+            replace_public_catalog_taxon(replacement, source, 1, "Reviewed correction.")
+            with (
+                patch(
+                    "inky_bird_frame.publisher._commit_catalog_transaction",
+                    side_effect=OSError("interrupted before commit"),
+                ),
+                self.assertRaisesRegex(OSError, "before commit"),
+            ):
+                sync_public_catalog(
+                    source, destination, allow_replacements=True, transaction_dir=work
+                )
+            active = list(
+                work.glob(f"{_catalog_transaction_prefix(destination, committed=False)}*")
+            )
+            self.assertEqual(len(active), 1)
+            self.assertEqual(
+                (active[0] / "approved/1-first-bird/portrait.png").read_bytes(), original
+            )
+            restored: list[bytes] = []
+            from inky_bird_frame.publisher import _restore_catalog_replacements
+
+            def capture_restore(transaction: Path, species: Path) -> None:
+                _restore_catalog_replacements(transaction, species)
+                restored.append((species / "1-first-bird/portrait.png").read_bytes())
+
+            with patch(
+                "inky_bird_frame.publisher._restore_catalog_replacements",
+                side_effect=capture_restore,
+            ):
+                sync_public_catalog(
+                    source, destination, allow_replacements=True, transaction_dir=work
+                )
+            self.assertEqual(restored, [original])
+            self.assertEqual(list(work.iterdir()), [])
+            self.assertEqual(
+                (approved / "portrait.png").read_bytes(),
+                (source / "species/1-first-bird/portrait.png").read_bytes(),
+            )
+            self.assertEqual(len(validate_public_catalog(destination)), 1)
+
+    def test_custom_transaction_directory_recovers_committed_cleanup(self) -> None:
+        with TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            source = root / "source"
+            destination = root / "destination"
+            work = root / "work"
+            _create_species(source, 1, "First Bird")
+            real_rmtree = shutil.rmtree
+
+            def interrupt_cleanup(path: Path) -> None:
+                if Path(path).name.startswith(
+                    _catalog_transaction_prefix(destination, committed=True)
+                ):
+                    raise OSError("interrupted committed cleanup")
+                real_rmtree(path)
+
+            with (
+                patch("inky_bird_frame.publisher.shutil.rmtree", side_effect=interrupt_cleanup),
+                self.assertRaisesRegex(OSError, "committed cleanup"),
+            ):
+                sync_public_catalog(source, destination, transaction_dir=work)
+            prefix = _catalog_transaction_prefix(destination, committed=True)
+            self.assertEqual(len(list(work.glob(f"{prefix}*"))), 1)
+            result = sync_public_catalog(source, destination, transaction_dir=work)
+            self.assertEqual(result["already_present"], [1])
+            self.assertEqual(list(work.iterdir()), [])
+            self.assertEqual(len(validate_public_catalog(destination)), 1)
 
     def test_sync_applies_a_hash_bound_catalog_replacement(self) -> None:
         with TemporaryDirectory() as temporary:

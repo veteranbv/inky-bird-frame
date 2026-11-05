@@ -614,6 +614,7 @@ def catalog_sync_command(args: argparse.Namespace) -> int:
             args.catalog,
             allow_replacements=apply_reviewed_migrations,
             retain_independent_approvals=retain_independent_approvals,
+            transaction_dir=args.state_dir / "catalog-sync-work" if args.state_dir else None,
         )
     print_result(
         {
@@ -1287,7 +1288,7 @@ def build_parser() -> argparse.ArgumentParser:
     catalog_sync_parser.add_argument(
         "--state-dir",
         type=Path,
-        help="Optional controller state directory used to lock catalog writes",
+        help="Controller state directory for catalog locking and recoverable transaction staging",
     )
     catalog_sync_parser.add_argument(
         "--apply-reviewed-migrations",

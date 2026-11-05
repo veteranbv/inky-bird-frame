@@ -600,6 +600,7 @@ class CliTests(unittest.TestCase):
             Path("managed-catalog"),
             allow_replacements=True,
             retain_independent_approvals=False,
+            transaction_dir=Path("controller-state/catalog-sync-work"),
         )
 
     def test_catalog_sync_remains_add_only_without_reviewed_migration_opt_in(self) -> None:
@@ -628,6 +629,7 @@ class CliTests(unittest.TestCase):
             Path("managed-catalog"),
             allow_replacements=False,
             retain_independent_approvals=False,
+            transaction_dir=None,
         )
 
     def test_catalog_sync_accepts_compose_environment_opt_in(self) -> None:
@@ -660,6 +662,7 @@ class CliTests(unittest.TestCase):
             Path("managed-catalog"),
             allow_replacements=True,
             retain_independent_approvals=False,
+            transaction_dir=None,
         )
 
     def test_catalog_sync_accepts_compose_independent_approval_opt_in(self) -> None:
@@ -692,6 +695,7 @@ class CliTests(unittest.TestCase):
             Path("managed-catalog"),
             allow_replacements=False,
             retain_independent_approvals=True,
+            transaction_dir=None,
         )
 
     def test_scheduler_requires_explicit_config(self) -> None:
