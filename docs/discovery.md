@@ -442,12 +442,20 @@ access. Obtain Bird Buddy's permission for your account before enabling this
 provider. Inky Bird cannot grant or verify that permission; you are
 responsible for ensuring it remains valid.
 
-Create a dedicated email-and-password guest account and invite it to the feeder
-you want Inky to follow. Bird Buddy documents the
+For least privilege, we recommend a dedicated email-and-password guest account
+invited to the feeder you want Inky to follow. Bird Buddy documents the
 [guest invitation flow](https://support.mybirdbuddy.com/hc/en-us/articles/4404431992337-Adding-guest-Feeder-Members-to-your-Birdbuddy).
 This is also the supported path when the feeder owner signs in with Apple,
 Google, or Facebook. Keep the guest account for this integration rather than
 using it interactively, so postcard state stays predictable.
+
+An owner account is also supported if you explicitly accept its broader account
+permissions. Inky stores a rotating refresh token for the selected account;
+selecting one feeder does not reduce that token's account permissions. A guest
+account limits the account access exposed if the token is compromised. Keeping
+an existing owner account is an operator risk decision, not a setup failure or
+a requirement to migrate credentials. Either choice still requires Bird Buddy's
+permission for automated access and the authorization attestation below.
 
 Add the provider without putting credentials in TOML:
 
