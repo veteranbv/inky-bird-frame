@@ -41,6 +41,11 @@ generation, and review; otherwise the controller inherits the machine-wide
 Codex default. Each private run record states the requested value explicitly,
 including `null` when the default was inherited.
 
+Scheduler events and sanitized catalog-service request and failure logs include
+an ISO-8601 UTC `timestamp`. Use the event time when correlating rotated logs;
+the time a collector ingests a line can be later. Earlier logs may not contain
+this field, so their exact event times cannot be recovered from the JSON alone.
+
 Bird Buddy uses controller-private authentication state rather than configured
 credentials. Obtain Bird Buddy's permission first, run `birdbuddy login`, and
 verify the selected feeder with `birdbuddy status`. The controller stores only
