@@ -1,0 +1,42 @@
+{
+  "behavior": "Forages by hitching upward in short, jerky spirals around trunks and large branches, bracing with its stiff tail and probing bark crevices for insects and spiders; usually flies down to the base of another tree to begin again.",
+  "common_name": "Brown Creeper",
+  "family": "Certhiidae",
+  "field_marks": [
+    "Slim, bark-clinging body with mottled brown-and-buff upperparts",
+    "White throat and underparts",
+    "Broad buff eyebrow above a dark eye line",
+    "Slender, pointed, downcurved bill",
+    "Dark wings with buff spotting and a pale wing bar",
+    "Long, stiff, pointed tail; short legs with strongly curved claws"
+  ],
+  "habitat": "Primarily mature coniferous, deciduous, and mixed forests with large trees for foraging and loose-barked dead or dying trees for nesting; uses a wider variety of wooded habitats outside the breeding season.",
+  "measurements": {
+    "length": "Both sexes: 4.7\u20135.5 in (12\u201314 cm)",
+    "weight": "Both sexes: 0.2\u20130.3 oz (5\u201310 g)",
+    "wingspan": "Both sexes: 6.7\u20137.9 in (17\u201320 cm)"
+  },
+  "palette": [
+    "mottled brown",
+    "warm buff",
+    "cream-white",
+    "charcoal black",
+    "rusty tan"
+  ],
+  "scientific_name": "Certhia americana",
+  "sources": [
+    {
+      "title": "Brown Creeper Identification \u2014 All About Birds",
+      "url": "https://www.allaboutbirds.org/guide/Brown_Creeper/id"
+    },
+    {
+      "title": "Brown Creeper \u2014 Audubon Field Guide",
+      "url": "https://www.audubon.org/field-guide/bird/brown-creeper"
+    },
+    {
+      "title": "Certhia americana \u2014 Animal Diversity Web",
+      "url": "https://animaldiversity.org/accounts/Certhia_americana/"
+    }
+  ],
+  "taxon_id": 7458
+}
